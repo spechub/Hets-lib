@@ -21,20 +21,24 @@ spec Set = Boolean then
   var S,T : Type
   type Set S := S ->? Unit;
   ops emptySet : Set S;
+      allSet : Set S;
       {__} : S -> Set S;
       __isIn__ : S * Set S ->? Unit;
       __subset__ :Pred( Set(S) * Set(S) );
       __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
+      bigunion : Set(Set S) -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S * Set T -> Set (S*T);
       __disjointUnion__ :  Set S * Set S -> Set (S*Boolean);
       injl,injr : S -> S*Boolean;
-  forall x,x':S; y:T; s,s':Set S; t:Set(T) 
+  forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
   . not (x isIn emptySet)
+  . x isIn allSet
   . x isIn {x'} <=> x=x'
   . x isIn s <=> s x
   . s subset s' <=> forall x:S . x isIn s => x isIn s'
   . x isIn s union s' <=> x isIn s \/ x isIn s'
+  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X
   . x isIn s intersection s' <=> x isIn s /\ x isIn s'
   . x isIn s \\ s' <=> x isIn s /\ not x isIn s'
   . s disjoint s' <=> s intersection s' = emptySet

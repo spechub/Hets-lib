@@ -16,6 +16,10 @@ spec TopologicalSpace_Ngh =
   . U isIn Ngh(x) =>
                exists V:Set S . V isIn Ngh(x) 
                /\ forall y:S . y isIn V => U isIn Ngh(y)
+end
+
+spec RichTopologicalSpace_Ngh =
+  TopologicalSpace_Ngh
 then %def
   ops int(X:Set S):Set S = \ x:S . X isIn Ngh(x);
       cls(X:Set S):Set S = 
@@ -33,6 +37,10 @@ spec TopologicalSpace_Kuratowski =
   . X subset cls(X)
   . cls(cls(X)) = cls(X)
   . cls(X union Y) = cls(X) union cls(Y)
+end
+
+spec RichTopologicalSpace_Kuratowski =
+  TopologicalSpace_Kuratowski
 then %def
   ops int(X:Set S):Set S = allSet \\ cls(allSet \\ X);
       Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X);
@@ -52,17 +60,86 @@ spec TopologicalSpace_OpenSet =
   . allSet isIn tau
   . X isIn tau /\ Y isIn tau => X intersection Y isIn tau
   . XX subset tau => bigunion XX isIn tau
+end
+
+spec RichTopologicalSpace_OpenSet =
+  TopologicalSpace_OpenSet
 then %def
   ops int(X:Set S):Set S = bigunion (\ Y:Set S . Y isIn tau /\ Y subset X);
       cls(X:Set S):Set S = allSet \\ int(allSet \\ X);
       Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X) 
 end
 
-view KN : TopologicalSpace_Kuratowski to TopologicalSpace_Ngh
+view KN : RichTopologicalSpace_Kuratowski to RichTopologicalSpace_Ngh
 end
 
-view NO : TopologicalSpace_Ngh to TopologicalSpace_OpenSet
+view NO : RichTopologicalSpace_Ngh to RichTopologicalSpace_OpenSet
 end
 
-view OK : TopologicalSpace_OpenSet to TopologicalSpace_Kuratowski
+view OK : RichTopologicalSpace_OpenSet to RichTopologicalSpace_Kuratowski
+end
+
+spec T0 = RichTopologicalSpace_Ngh
+then
+  forall x,y:S
+  . exists U:Set S . U isIn tau /\ (x isIn U <=> not y isIn U)
+end
+
+spec T1 = %% Frechet space
+RichTopologicalSpace_Ngh
+then
+  forall x,y:S
+  . exists U:Set S . U isIn Ngh(x) /\ not y isIn U
+then %implies
+  T0
+end
+
+spec T2 = %% Hausdorff space
+RichTopologicalSpace_Ngh
+then
+  forall x,y:S
+  . exists U,V:Set S . U isIn Ngh(x) /\ V isIn Ngh(y) /\ U disjoint V
+then %implies
+  T1
+end
+
+spec T3 = %% Vietoris space
+RichTopologicalSpace_Ngh
+then
+  forall x:S; Y:Set S
+  . not x isIn Y /\ Y=cls(Y) =>
+    exists U,V:Set S . U isIn Ngh(x) 
+                       /\ (forall y:S . y isIn Y => V isIn Ngh(y))
+                       /\ U disjoint V
+end
+
+spec T4 = %% Tietze space
+RichTopologicalSpace_Ngh
+then
+  forall X,Y:Set S
+  . X disjoint Y /\ X=cls(X) /\ Y=cls(Y) =>
+    exists U,V:Set S .    (forall x:S . x isIn X => U isIn Ngh(x))
+                       /\ (forall y:S . y isIn Y => V isIn Ngh(y))
+                       /\ U disjoint V
+end
+
+spec RegularSpace = T1 and T3
+then %implies
+  T2
+end
+
+spec NormalSpace = T1 and T4
+then %implies
+  T3
+end
+
+
+from HasCASL/MetricSpaces get MetricSpace
+
+view MetricInducesTopology : TopologicalSpace_Ngh to 
+     { MetricSpace and Set then
+       op Ngh(x:S):Set(Set S) = \X : Set . 
+          exists epsilon:Real . epsilon > 0 
+            /\ forall y:S . d(x,y)<epsilon => y isIn X
+     } 
 end
