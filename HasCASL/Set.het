@@ -135,16 +135,16 @@ then
   type MapS := Set S * Map S * Set S
   %% Überlagerung klappt noch nicht
   ops dom' (a : Set S; f : Map S; b: Set S): Set S = a;
-      cod' (a : Set S; f : Map S; b: Set S): Set S = b;
+      cod (a : Set S; f : Map S; b: Set S): Set S = b;
       func (a : Set S; f : Map S; b: Set S): Map S = f;
       __o'__ : MapS * MapS ->? MapS
   forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
-  . def (f o' g) <=> cod' g = dom' f
+  . def (f o' g) <=> cod g = dom' f
   . ((b,g',c) o' (a,f',b)) = (a,g' o f',c)
 end
 
 view CategoryofSets : Category to SetCategory =
-     Ob |-> SetS, Mor |-> MapS, __o__, dom |-> dom', cod |-> cod'
+     Ob |-> SetS, Mor |-> MapS, __o__ |-> __o'__, dom |-> dom', cod
 end
 
 
@@ -203,7 +203,7 @@ end
 spec SetCoproduct[SetRepresentation] given Map = %def
   SetCategory and UniqueChoice[sort S]
 then
-  %% type CPCocone = {(h,k) : MapS * MapS . cod' h = cod' k}
+  %% type CPCocone = {(h,k) : MapS * MapS . cod h = cod k}
   type CPCocone := MapS * MapS
   ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? MapS));
   forall s1,s2:SetS
@@ -233,17 +233,17 @@ end
 spec SetCoequalizer[SetRepresentation] given Map = %def
   SetCategory and UniqueChoice [sort S]
 then
-  type CEDiagram = {(f,g) : MapS * MapS . dom' f = dom' g /\ cod' f = cod' g};
+  type CEDiagram = {(f,g) : MapS * MapS . dom' f = dom' g /\ cod f = cod g};
   ops coequalizer : CEDiagram -> (MapS * (MapS -> MapS))
   forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
   . (f,g) as CEDiagram= d =>
     coequalizer d = 
        let r:PER S = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
            c:Map S = coeq r;
-           med = \h:MapS . (cod' h,\x:S . choice(\y:S . 
+           med = \h:MapS . (cod h,\x:S . choice(\y:S . 
 	       exists z:S . func h z = x /\ c z = y),range c)
        in
-       ((cod' f, c, range c),med)
+       ((cod f, c, range c),med)
 end
 
 
