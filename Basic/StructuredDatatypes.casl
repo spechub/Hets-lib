@@ -1,5 +1,7 @@
 library Basic/StructuredDatatypes
-version 0.5 
+version 0.7
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 16.3.01
 
 %left_assoc __ + __, __ - __, __ ++ __
 %right_assoc __ :: __
@@ -7,22 +9,15 @@ version 0.5
 %prec {__ ++ __} < {__ :: __}
 %string [], __::__
 
-from
-     Basic/RelationsAndOrders version 0.5
-     get PartialOrder, BooleanAlgebra
-from
-     Basic/Algebra_I version 0.5 get Monoid
-from
-     Basic/PreNumbers version 0.5 get PreNat, PreInt
-from 
-     Basic/Numbers version 0.5 get Nat
-from
-     Basic/SimpleDatatypes version 0.5 get Char
+from Basic/Numbers version 0.5 get Nat, Int
 
-spec
-     GenerateFiniteSet  [sort Elem] =
-free
-     {
+from Basic/RelationsAndOrders version 0.7
+     get PartialOrder, BooleanAlgebra
+from Basic/Algebra_I version 0.7 get Monoid
+from Basic/SimpleDatatypes version 0.7 get Char
+
+spec GenerateFiniteSet  [sort Elem] =
+free {
           type
                 FinSet[Elem]::=    {}
                                 |  {__} (Elem)
@@ -33,18 +28,13 @@ free
      }
 end
 
-spec
-     FiniteSet  [sort Elem] given PreNat =
-     GenerateFiniteSet [sort Elem]
-then
-     %def
-     sort
-          NonEmptySet[Elem] = { s: FinSet[Elem] . not s = {} }
-     preds
-           isNonEmpty:       FinSet[Elem];
-           __ eps__:         Elem * FinSet[Elem];
-           __ isSubsetOf __: FinSet[Elem] * FinSet[Elem]
-     ops
+spec FiniteSet  [sort Elem] given Nat =
+  GenerateFiniteSet [sort Elem]
+then %def
+  preds  isNonEmpty:       FinSet[Elem];
+          __ eps__:        Elem * FinSet[Elem];
+         __ isSubsetOf __: FinSet[Elem] * FinSet[Elem]
+  ops
            __ + __ : Elem * FinSet[Elem] -> FinSet[Elem];
            __ + __, __ - __ : FinSet[Elem] * Elem -> FinSet[Elem];
            __ intersection __, __ -
@@ -52,88 +42,66 @@ then
            __ symmDiff __:            FinSet[Elem] * FinSet[Elem] ->
                                       FinSet[Elem];
            #__:                       FinSet[Elem] -> Nat;
-     forall
-          x,y : Elem; S,T,U,V:FinSet[Elem]
-     .
-          isNonEmpty(S) <=> not S = {}             %(isNonEmpty_def)%
-     .
-          not x eps {}             %(elemOf_empty)%
-     .
-          x eps {y} <=> (x=y)             %(elemOf_set)%
-     .
-          x eps (S union T) <=> (x eps S) \/ (x eps T)             %(elemOf_union)%
-     .
-          {} isSubsetOf S             %(subset_empty)%
-     .
-          {x} isSubsetOf S <=> x eps S             %(subset_set)%
-     .
-          (S union T) isSubsetOf U <=> S isSubsetOf U /\ T
-          isSubsetOf U             %(subset_union)%
-     .
-          x + S = {x} union S             %(FinSet_add_def1)%
-     .
-          S + x = x + S             %(FinSet_add_def2)%
-     .
-          {} - x = {}             %(FinSet_sub_empty)%
-     .
-          {y} - x = {y} if not x = y             %(FinSet_sub_set1)%
-     .
-          {y} - x = {} if x = y             %(FinSet_sub_set2)%
-     .
-          (S union T) - x = (S - x) union (T - x)             %(FinSet_sub_union)%
-     .
-          {} intersection S = {}             %(intersect_empty)%
-     .
-          {x} intersection S = {} if not x eps S             %(intersect_set1)%
-     .
-          {x} intersection S = {x} if x eps S             %(intersect_set2)%
-     .
-          (S union T) intersection U = ( S intersection U
-          ) union (T intersection U)             %(intersect_union)%
-     .
-          {} - S = {}             %(diff_empty)%
-     .
-          {x} - S = {x} if not x eps S             %(diff_set1)%
-     .
-          {x} - S = {} if x eps S             %(diff_set2)%
-     .
-          (S union T) - U = (S - U ) union (T - U)             %(diff_union)%
-     .
-          S symmDiff T = (S - T) union (T - S)             %(symmDiff_def)%
-     .
-          #{} = 0             %(FinSet_numberOf_empty)%
-     .
-          #{x} = 1             %(numberOf_FinSet_set)%
-     .
-          #(S union T) = #S + #(T-S)             %(numberOf_FinSet_union)%
-then
-     %implies
+
+  forall x,y : Elem; S,T,U,V:FinSet[Elem]
+
+  . isNonEmpty(S) <=> not S = {}             %(isNonEmpty_def)%
+
+  . not x eps {}                                  %(elemOf_empty)%
+  . x eps {y} <=> (x=y)                           %(elemOf_set)%
+  . x eps (S union T) <=> (x eps S) \/ (x eps T)  %(elemOf_union)%
+
+
+  . {} isSubsetOf S                               %(subset_empty)%
+  . {x} isSubsetOf S <=> x eps S                  %(subset_set)%
+  . (S union T) isSubsetOf U <=> 
+    S isSubsetOf U /\ T isSubsetOf U              %(subset_union)%
+
+  . x + S = {x} union S             %(FinSet_add_def1)%
+  . S + x = x + S                   %(FinSet_add_def2)%
+
+  . {} - x = {}                              %(FinSet_sub_empty)%
+  . {y} - x = {y} if not x = y               %(FinSet_sub_set1)%
+  . {y} - x = {} if x = y                    %(FinSet_sub_set2)%
+  . (S union T) - x = (S - x) union (T - x)  %(FinSet_sub_union)%
+
+  . {} intersection S = {}                   %(intersect_empty)%
+  . {x} intersection S = {} if not x eps S   %(intersect_set1)%
+  . {x} intersection S = {x} if x eps S      %(intersect_set2)%
+  . (S union T) intersection U = 
+    (S intersection U) union (T intersection U)  %(intersect_union)%
+
+  . {} - S = {}                               %(diff_empty)%
+  . {x} - S = {x} if not x eps S              %(diff_set1)%
+  . {x} - S = {} if x eps S                   %(diff_set2)%
+  . (S union T) - U = (S - U ) union (T - U)  %(diff_union)%
+
+  . S symmDiff T = (S - T) union (T - S)             %(symmDiff_def)%
+
+  . #{} = 0                       %(FinSet_numberOf_empty)%
+  . #{x} = 1                      %(numberOf_FinSet_set)%
+  . #(S union T) = #S + #(T-S)    %(numberOf_FinSet_union)%
+
+then %implies
      ops
            __ intersection __: FinSet[Elem] * FinSet[Elem] -> FinSet[Elem],
                                assoc, comm, idem;
            __ symmDiff __ :    FinSet[Elem] * FinSet[Elem] -> FinSet[Elem],
                                comm;
-     forall
-          x: Elem; S,T: FinSet[Elem]
-     .
-          S isSubsetOf T <=> ( forall x: Elem . x eps S => x eps T )             %(subset_characterization)%
+     forall x: Elem; S,T: FinSet[Elem]
+     . S isSubsetOf T <=> 
+       ( forall x: Elem . x eps S => x eps T )             
+       %(subset_characterization)%
 end
 
-view
-     PartialOrder_in_FiniteSet  [sort Elem] given PreNat:
-     PartialOrder to FiniteSet [sort Elem]
-=
-     sort
-          Elem |-> FinSet[Elem] ,
-     pred
-          __ <= __ |-> __ isSubsetOf __
+view PartialOrder_in_FiniteSet  [sort Elem] given Nat:
+     PartialOrder to FiniteSet [sort Elem] =
+     sort Elem     |-> FinSet[Elem] ,
+     pred __ <= __ |-> __ isSubsetOf __
 end
 
-spec
-     FinitePowerSet
-     [FiniteSet[sort Elem] then op X: FinSet[Elem]]
-=
-%def
+spec FinitePowerSet [FiniteSet[sort Elem] then op X: FinSet[Elem]]
+= %def
      sorts
            FinPS[X]= { Y: FinSet[Elem] . Y isSubsetOf X };
            Elem[X] = {x : Elem . x eps X }
@@ -152,11 +120,8 @@ spec
            #__:                         FinPS[X] -> Nat;
 end
 
-view
-     BooleanAlgebra_in_FinitePowerSet
-     [FiniteSet[sort Elem] then op X: FinSet[Elem]]
-     
-:
+view BooleanAlgebra_in_FinitePowerSet
+     [FiniteSet[sort Elem] then op X: FinSet[Elem]] :
      BooleanAlgebra to
      FinitePowerSet[FiniteSet[sort Elem] then op X: FinSet[Elem]]
 =
@@ -169,357 +134,8 @@ view
            __ cup __ |-> __ union __
 end
 
-spec
-     GenerateList  [sort Elem] =
-     free
-          types
-           List[Elem]   ::=  [] | sort NeList[Elem];
-           NeList[Elem] ::=  __ :: __ (first : Elem; rest : List[Elem])
-end
-
-spec
-     List  [sort Elem] given PreNat =
-     GenerateList[sort Elem]
-then
-     type
-          List[Elem]::= [] | __ ::__ (Elem; List[Elem])
-     pred
-           isEmpty: List[Elem];
-           __eps__: Elem * List[Elem]
-     ops
-           __ :: __ : Elem * List[Elem] -> NeList[Elem];
-           __ + __ : List[Elem] * Elem -> List[Elem];
-           first, last: List[Elem] ->? Elem;
-           first, last: NeList[Elem] -> Elem;
-           front, rest: List[Elem] ->? List[Elem];
-           front, rest: NeList[Elem] -> List[Elem];
-           #__:         List[Elem] -> Nat;
-           __ ++ __ : List[Elem] * List[Elem] -> List[Elem];
-           __ ++ __ :  NeList[Elem] * List[Elem] -> NeList[Elem];
-           __ ++ __ :  List[Elem] * NeList[Elem] -> NeList[Elem];
-           reverse:     List[Elem] -> List[Elem];
-           __ ! __:     List[Elem] * Nat ->? Elem;
-           take,drop:   Nat * List[Elem] ->? List[Elem]
-     forall
-          x,y: Elem; n: Nat; p: Pos; L,K: List[Elem]; N: NeList[Elem]
-     .
-          isEmpty(L) <=> L=[]             %(isEmpty_def)%
-     .
-          not x eps []             %(List_elemOf_nil)%
-     .
-          x eps (x::L)             %(List_elemOf_NeList1)%
-     .
-          (x eps (y::L) <=> x eps L) if not x=y             %(List_elemOf_NeList1)%
-     .
-          L + x = L ++ (x::[])             %(append_def)%
-     .
-          not def first([])             %(first_partial_nil)%
-     .
-          not def last([])             %(last_partial_nil)%
-     .
-          last (x :: L) = x if isEmpty(L)             %(last_partial_NeList1)%
-     .
-          last (x :: L) = last(L) if not isEmpty(L)             %(last_partial_NeList2)%
-     .
-          not def front([])             %(front_partial_nil)%
-     .
-          front (L + x )= L             %(front_partial_NeList)%
-     .
-          not def first([])             %(rest_partial_nil)%
-     .
-          # [] = 0             %(numberOf_List_nil)%
-     .
-          # (x :: L) = suc( # L )             %(numberOf_List_NeList)%
-     .
-          [] ++ K = K             %(concat_nil_List)%
-     .
-          (x::L) ++ K = x :: (L ++ K)             %(concat_NeList_List)%
-     .
-          reverse([])=[]             %(reverse_nil)%
-     .
-          reverse(x::L) = reverse(L) ++ (x::[])             %(reverse_NeList)%
-     .
-          not def[]!n             %(index_nil)%
-     .
-          not def L!0             %(index_0)%
-     .
-          (x :: L)!1 = x             %(index_1)%
-     .
-          (x :: L)!suc(p) = L!p             %(index_suc)%
-     .
-          take (n,L) = K <=> exists S: List[Elem] . K ++ S = L /\ # K = n             %(take_def)%
-     .
-          drop (n,L) = K <=> exists S: List[Elem] . S ++ K = L /\ # S = n             %(drop_def)%
-then
-     %implies
-     free
-          types
-           List[Elem]::= [] | sort NeList[Elem];
-           NeList[Elem]::= __+__(front:List[Elem];last:Elem)
-     free
-          type
-           List[Elem]::= [] | __::__(Elem;List[Elem])
-     forall
-          n: Nat; L: List[Elem]; N:NeList[Elem]
-     .
-          first(N)::rest(N) = N             %(first_rest)%
-     .
-          front(N)+last(N) = N             %(front_last)%
-     .
-          def first(L) <=> not isEmpty(L)             %(first_domain)%
-     .
-          def last(L) <=> not isEmpty(L)             %(last_domain)%
-     .
-          def rest(L) <=> not isEmpty(L)             %(front_domain)%
-     .
-          def rest(L) <=> not isEmpty(L)             %(rest_domain)%
-     .
-          def take(n,L) <=> # L >= n             %(take_dom)%
-     .
-          def drop(n,L) <=> # L >= n             %(drop_dom)%
-end
-
-view
-     Monoid_in_List  [sort Elem] given PreNat:
-     Monoid to List [sort Elem]
-=
-     sort
-          Elem |-> List[Elem],
-     ops
-           e |-> [],
-           __*__ |-> __ ++ __
-end
-
-spec
-     String =
-    List [Char fit sort Elem |-> Char]
-    with
-      sorts List[Char] |-> String,
-            NeList[Char] |-> NonEmptyString
-end
-
-spec
-     GenerateFiniteMap  [sort S] [sort T] =
-free
-     {
-     type
-           FiniteMap[S,T] ::= [] | __[__/__] (FiniteMap[S,T];T;S)
-     op
-           __[__/__]: FiniteMap[S,T] * T * S -> FiniteMap[S,T]
-     forall
-          M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
-     .
-          M[t1/s][t2/s] = M[t2/s]             %(FM_overwrite)%
-     .
-          M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2             %(FM_comm)%
-     }
-end
-
-spec
-     FiniteMap  [sort S][sort T] given PreNat=
-     GenerateFiniteMap [sort S][sort T]
-and
-     FiniteSet [sort S fit Elem |-> S] and FiniteSet [sort T fit Elem |-> T]
-then
-
-     free
-           type Entry[S,T]::=[__/__] (target:T;source:S)
-     preds
-           isEmpty:    FiniteMap[S,T];
-           __eps__:    Entry[S,T] * FiniteMap[S,T];
-           __::__->__: FiniteMap[S,T] * FinSet[S] * FinSet[T]
-     ops
-           __+__,
-           __-__: FiniteMap[S,T] * Entry[S,T] -> FiniteMap[S,T];
-           __-__: FiniteMap[S,T] * S -> FiniteMap[S,T];
-           __-__: FiniteMap[S,T] * T -> FiniteMap[S,T];
-           dom:   FiniteMap[S,T] -> FinSet[S];
-           range: FiniteMap[S,T] -> FinSet[T];
-           eval:  S * FiniteMap[S,T] ->? T;
-           __ union __: FiniteMap[S,T] * FiniteMap[S,T] ->? FiniteMap[S,T]
-     forall
-           M,N,O: FiniteMap[S,T]; s,s1:S; t,t1: T; e: Entry[S,T];
-           X: FinSet[S]; Y: FinSet[T]
-     .
-          isEmpty(M) <=> M=[]             %(FM_isEmpty_def)%
-     .
-          not [t/s] eps []             %(FM_elemOf_empty)%
-     .
-          [t/s] eps M[t1/s1] <=> ( [t/s]=[t1/s1] \/ [t/s] eps M)             %(FM_elemOf_nonEmpty)%
-     .
-          M::X->Y <=> dom(M)=X /\ range(M) isSubsetOf Y             %(FM_arrow_def)%
-     .
-          M+[t/s]=M[t/s]             %(FM_overwrite2_def)%
-     .
-          []-[t/s] = []             %(FM_minus_empty)%
-     .
-          (M+[t/s])-[t1/s1] = M-[t1/s1] when [t/s]=[t1/s1] else
-                               (M-[t1/s1])+[t/s]             %(FM_minus_nonEmpty)%
-     .
-          []-s=[]             %(FM_minus_Source_empty)%
-     .
-          (M+e)-s=M-s when exists t:T . e=[t/s] else (M-s)+e             %(FM_minus_Source_nonEmpty)%
-     .
-          []-t=[]             %(FM_minus_Target_empty)%
-     .
-          (M+e)-t=M-t when exists s:S . e=[t/s] else (M-t)+e             %(FM_minus_Target_nonEmpty)%
-     .
-          s eps dom(M) <=> exists t:T . [t/s] eps M             %(FM_dom_def)%
-     .
-          t eps range(M) <=> exists s:S . [t/s] eps M             %(FM_range_def)%
-     .
-          not def eval(s,[])             %(FM_eval_empty)%
-     .
-          eval(s, M + [t1/s1]) = t1 when s=s1								else eval(s,M)             %(FM_eval_nonEmpty)%
-     .
-          M union N = O <=>
-          ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )             %(FM_union_def)%
-then
-     %implies
-     forall 
-          s: S; M: FiniteMap[S,T]
-     .
-          def eval(s,M) <=> s eps dom(M)             %(eval_dom)%
-end
-
-spec
-     GenerateBag  [sort Elem] =
-free
-     {
-          type
-                Bag[Elem]::=    {}
-                             |  {__} (Elem)
-                             |  __ union __ (Bag[Elem];Bag[Elem])
-          op
-                __ union __: Bag[Elem] * Bag[Elem] -> Bag[Elem],
-                             assoc, comm, unit {}
-     }
-end
-
-spec
-     Bag  [sort Elem] given PreNat =
-     GenerateBag[sort Elem]
-and
-     Nat reveal op min
-then
-     %def
-     sort
-          NonEmptyBag[Elem] = { b: Bag[Elem] . not b = {} }
-     preds
-           isNonEmpty:       Bag[Elem];
-           __ eps__:         Elem * Bag[Elem];
-           __ isSubsetOf __: Bag[Elem] * Bag[Elem]
-     ops
-           __ + __ : Elem * Bag[Elem] -> Bag[Elem];
-           __ + __, __ - __ : Bag[Elem] * Elem -> Bag[Elem];
-           __ intersection __, __ - __: Bag[Elem] * Bag[Elem] -> Bag[Elem];
-           freq:                        Elem * Bag[Elem] -> Nat;
-     forall
-          x,y : Elem; B,C,D,E:Bag[Elem]
-     .
-          freq(x,{}) = 0             %(freq_empty)%
-     .
-          freq(x,{y}) = 0 if not (x=y)             %(freq_set1)%
-     .
-          freq(x,{y}) = 1 if (x=y)             %(freq_set2)%
-     .
-          freq(x,B union C) = freq(x,B) + freq(x,C)             %(freq_union)%
-     .
-          isNonEmpty(B) <=> not B = {}             %(isNonEmpty_def)%
-     .
-          not x eps {}             %(Bag_elemOf_empty)%
-     .
-          x eps {y} <=> (x=y)             %(Bag_elemOf_set)%
-     .
-          x eps (B union C) <=> (x eps B) \/ (x eps C)             %(Bag_elemOf_union)%
-     .
-          B isSubsetOf C <=> forall x: Elem . freq(x,B) <=
-          freq(x,C)             %(Bag_subseteq)%
-     .
-          x + B = {x} union B             %(Bag_add_def1)%
-     .
-          B + x = x + B             %(Bag_add_def2)%
-     .
-          B - x = B if not x eps B             %(Bag_sub_def1)%
-     .
-          ( B - x = C <=>
-           ( forall y: Elem . ( not y = x => freq (y,B) = freq(y,C)) /\
-                              ( y = x => freq (y,B) = freq (y,C) + 1)) ) if
-                              x eps B             %(Bag_sub_def2)%
-     .
-          B intersection C = D <=> forall x: Elem . freq(x,D) = min (
-          freq(x,B), freq(x,C) )             %(Bag_cap)%
-     .
-          B - C = D <=>
-           forall x: Elem .
-           ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
-           /\
-           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )             %(Bag_diff)%
-then
-     %implies
-     ops
-           __ intersection __: Bag[Elem] * Bag[Elem] -> Bag[Elem],
-                               assoc, comm, idem
-end
-
-view
-     PartialOrder_in_Bag  [sort Elem] given PreNat:
-     PartialOrder to Bag[sort Elem]
-=
-     sort
-          Elem |-> Bag[Elem],
-     pred
-          __ <= __ |-> __ isSubsetOf __
-end
-
-spec
-     Pair  [sort S] [sort T] =
-     free
-          type Pair[S,T] ::= pair(first:S; second:T)
-end
-
-spec
-     Array
-     [ops min, max: Int axiom min <= max             %(Cond_nonEmptyIndex)%]
-     [sort Elem]
-     given PreInt
-=
-     sort
-          Index = { i : Int . min <= i /\ i <= max }
-then
-     {
-
-           FiniteMap [sort Index fit sort S|-> Index]
-                     [sort Elem fit sort T |-> Elem]
-           with
-           sort FiniteMap[Index,Elem] |-> Array[Elem],
-           ops  [] |-> init
-
-     then
-          ops
-                __!__:=__ : Array[Elem] * Index *Elem -> Array[Elem];
-                __!__ :     Array[Elem] * Index ->? Elem
-          forall
-               A: Array[Elem]; i: Index; e:Elem
-          .
-               A!i:=e = A[e/i]             %(assignment_def)%
-          .
-               A!i = eval(i,A)             %(evaluate_def)%
-     }
-          reveal
-           sort Array[Elem],
-           ops  init, __!__, __!__:=__
-then
-     %implies
-     forall
-          A: Array[Elem]; i,j: Index; e,f: Elem
-     .
-          not def init!i             %(evaluate_Array_domain1)%
-     .
-          def (A!i:=e)!i             %(evaluate_Array_domain2)%
-     .
-          (A!i:=e)!j = e if i=j             %(evaluate_Array_assignment1)%
-     .
-          (A!i:=e)!j = A!j if not (i=j)             %(evaluate_Array_assignment2)%
+spec GenerateList  [sort Elem] =
+  free types 
+  List[Elem] ::=  [] |  __ :: __ (first ? : Elem; rest ? : List[Elem])
 end
 

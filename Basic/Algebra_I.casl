@@ -8,10 +8,10 @@ version 0.7
 %prec {__ + __, __ - __, -__} < {__ / __, __ * __}
 
 
-from Basic/RelationsAndOrders version 0.5 get TotalOrder, ExtTotalOrder,
+from Basic/RelationsAndOrders version 0.7 get TotalOrder, ExtTotalOrder,
 RichTotalOrder, PreOrder, EquivalenceRelation
 
-from Basic/Numbers version 0.5 get Nat, Int, Rat
+from Basic/Numbers version 0.7 get Nat, Int, Rat
 
 spec 
      BinAlg =
@@ -282,7 +282,7 @@ spec
 then
      forall x: Elem; n: Pos
      . x ^ 1 = x             			%(SGroup_pow_1)%
-     . x ^ suc(n) = x * x ^ n             	%(SGroup_pow_suc)%
+     . x ^ suc(n) = x * (x ^ n)             	%(SGroup_pow_suc)%
 then
      %implies
      PowerTheorems [Nat fit sort Exponent |-> Pos]

@@ -1,7 +1,9 @@
-library Basic/Numbers
-version 0.5 
+library Advanced/Numbers
+version 0.7
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 20.3.01
 
-%prec { __ - __, -__ } < { __ frac __ }
+%prec { __ - __, -__ } < { __ / __ }
 %prec { __ -? __ , __ + __, __-__ } <  { __ * __, __ /? __ , __ div __, __ mod __, __ quot __, __rem __ }
 %prec { +__, __ /? __, __div__, __mod__, __ quot __, __ rem __ } < { __ ^ __}
 %prec { __ * __ } <> { __ /? __, __ div __, __ mod __, __ quot __, __ rem __ }
@@ -9,16 +11,16 @@ version 0.5
 %left_assoc __ @@ __
 %number __@@__
 
-from Basic/RelationsAndOrders version 0.5 get
+from Advanced/RelationsAndOrders version 0.7 get
 SigOrder, ExtTotalOrder
 
-from Basic/PreNumbers version 0.5 get
+from Advanced/PreNumbers version 0.7 get
 SigPreNumbers,
 PreNat, TotalOrder_in_PreNat,
 PreInt, TotalOrder_in_PreInt,
 PreRat, TotalOrder_in_PreRat
 
-from Basic/Algebra_I version 0.5 get
+from Advanced/Algebra_I version 0.7 get
 SigPowerBinAlg,ExtCommutativeMonoid,
 CommutativeMonoid_in_PreNat_Mult,
 CommutativeMonoid_in_PreNat_Add,
@@ -26,9 +28,8 @@ EuclidianRing,
 ExtEuclidianRing, EuclidianRing_in_PreInt,
 Field, ExtField, Field_in_PreRat
 
-spec
-     SigNumbers[sort Elem][sort NonNeg][sort Exponent] =
-     SigPreNumbers[sort Elem][sort NonNeg]
+spec SigNumbers[sort Elem][sort NonNeg][sort Exponent] =
+     SigPreNumbers[sort Elem]
 then
      SigPowerBinAlg[sort Exponent]
 then
@@ -59,7 +60,7 @@ and
       ops min, max
 and
      SigNumbers[sort Nat][sort Nat][sort Nat]
-then
+then %def
      sorts
           NonZero[Nat]=Pos;
 	  Pos[Nat]=Pos
@@ -125,8 +126,10 @@ then
           m @@ n = (m * suc(9)) + n             %(Nat_decimal_def)%
 then
      %implies
-     forall
-          m,n,r,s,t: Nat; p: Pos
+     forall m,n,r,s,t: Nat; p: Pos
+
+     .  m times n = m * n             %(Nat_times)%
+
      .
           def(m-?n) <=> m >= n             %(Nat_sub_dom)%
      .
@@ -267,23 +270,23 @@ and
 then
      %def
      sort NonZero[Int] < NonZero[Rat]
-     generated types NonZero[Rat] ::= __ frac __ (NonZero[Int];Pos);
-		     Pos[Rat] ::= __ frac __ (Pos;Pos)
+     generated types NonZero[Rat] ::= __ / __ (NonZero[Int];Pos);
+		     Pos[Rat] ::= __ / __ (Pos;Pos)
 	 
 then
      %implies
      forall
           r,s: Rat; n,m: Int; p,q: Pos; u: NonZero[Int]
      .
-	  n frac p = n / p             %(Rat_frac)%
+	  n / p = n / p             %(Rat_frac)%
      .
-          - n frac p = (-n) frac p             %(Rat_neg)%
+          - n / p = (-n) / p             %(Rat_neg)%
      .
-          n frac p - m frac q = 
-		(n * q - m * p) frac (p * q)             %(Rat_sub)%
+          n / p - m / q = 
+		(n * q - m * p) / (p * q)             %(Rat_sub)%
      .
-          (n frac p) / (u frac q)
-           = (n * q * sign (u)) frac (p * abs(u) as Pos)             %(Rat_div_total)%
+          (n / p) / (u / q)
+           = (n * q * sign (u)) / (p * abs(u) as Pos)             %(Rat_div_total)%
 end
 
 

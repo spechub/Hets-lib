@@ -1,195 +1,122 @@
-library Basic/PreNumbers
-version 0.5 
+library Advanced/PreNumbers
+version 0.7
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 16.3.01
 
 %left_assoc __ + __, __ * __
-%prec { __ + __ } < { __ * __ }
-%prec {__ + __} < { __ frac __}
+%prec { __ + __ } < { __ * __, __/__ }
 
-from Basic/RelationsAndOrders version 0.5
+from Advanced/RelationsAndOrders version 0.7
 get SigOrder, TotalOrder
 
-spec
-     SigPreNumbers[sort Elem][sort NonNeg] =
+spec SigPreNumbers[sort Elem] =
      SigOrder [sort Elem]
 then
-     ops
-           0:                Elem;
-           __ + __, __ * __ : Elem * Elem -> Elem;
-           abs:              Elem -> NonNeg;
+  ops 0,1:               Elem;
+      __ + __, __ * __ : Elem * Elem -> Elem;
+      abs:               Elem -> Elem;
 end
 
-spec
-     GenerateNat =
-free
-     types
-      Nat ::= 0 | sort Pos;
-      Pos ::= suc(pre: Nat)
+spec GenerateNat =
+  free type Nat ::= 0 | suc(pre:? Nat)
 end
 
-spec
-     PreNat =
-     GenerateNat
-and
-     SigPreNumbers [sort Nat][sort Nat]
+spec PreNat =
+  GenerateNat 
+then %def
+{
+  SigPreNumbers [sort Nat]
 then
-     %def
-     op
-          1: Pos = suc(0);             %(PreNat_1_def)%  
-          1 : Nat
-then
-     forall
-          m,n: Nat; p: Pos
-     .
-          0 <= n             %(Nat_leq_def1)%
-     .
-          not (p <= 0)             %(Nat_leq_def2)%
-     .
-          suc(m) <= suc(n) <=> m <= n             %(Nat_leq_def3)%
-     .
-          0 + m = m             %(Nat_add_0)%
-     .
-          suc(n) + m = suc(n + m)             %(Nat_add_suc)%
-     .
-          0 * m = 0             %(Nat_mult_0)%
-     .
-          suc(n) * m = (n * m) + m             %(Nat_mult_suc)%
-     .
-          abs(m)=m             %(PreNat_abs)%
-then
-     %def
-     ops
-           __*__: Pos * Pos -> Pos;
-           __+__: Pos * Nat -> Pos;
-           __+__: Nat * Pos -> Pos;
-           abs :  Pos -> Pos 
+  forall  m,n: Nat
+
+  . 1 = suc(0)                        %(PreNat_1_def)%
+
+  . 0 <= n                            %(Nat_leq_def1)%
+  . not (suc(m) <= 0)                 %(Nat_leq_def2)%
+  . suc(m) <= suc(n) <=> m <= n       %(Nat_leq_def3)%
+
+  . 0 + m = m                         %(Nat_add_0)%
+  . suc(n) + m = suc(n + m)           %(Nat_add_suc)%
+
+  . 0 * m = 0                         %(Nat_mult_0)%
+  . suc(n) * m = (n * m) + m          %(Nat_mult_suc)%
+
+  . abs(m)=m                          %(PreNat_abs)%
+}
+then %def
+  sort Pos = { p: Nat . p > 0 }
+  ops 1:Pos;
+      __*__: Pos * Pos -> Pos;
+      __+__: Pos * Nat -> Pos;
+      __+__: Nat * Pos -> Pos;
+      suc: Nat -> Pos
 end
 
-view
-     TotalOrder_in_PreNat: TotalOrder to PreNat
-=
+view TotalOrder_in_PreNat: TotalOrder to PreNat =
      sort Elem |-> Nat
 end
 
-spec
-     GenerateInt =
-     GenerateNat
-then
-     free
-          types
-           Int ::=  sort Nat | sort Neg;
-           Neg ::=  minus (Pos)
-     ops
-           suc,
-           pre: Int -> Int
-     forall
-          p:Pos
-     .
-          suc(minus(suc(0))) = 0             %(Int_suc_minus_one)%
-     .
-          suc(minus(suc(p))) = minus(p)             %(Int_suc_Neg)%
-     .
-          pre(0) = minus(suc(0))             %(Int_pre_def1)%
-     .
-          pre(minus(p)) = minus(suc(p))             %(Int_pre_def2)%
+spec GenerateInt =
+  PreNat
+then %def
+  generated type Int ::= __ - __(Nat;Nat)
+  forall a,b,c,d: Nat
+  .  a - b = c - d <=> a + d = c + b    %(Int_equality)%
 end
 
-spec
-     PreInt =
-     GenerateInt and PreNat
-and
-     SigPreNumbers [sort Int][sort Nat]
+spec PreInt =
+  GenerateInt
+then %def
+  sort Nat < Int
+  forall a: Nat
+  .  a = a - 0                          %(Int_Nat_embedding)%
+then %def
+{
+  SigPreNumbers [sort Int]	     
 then
-     %def
-     op 1:Int = suc(0)
-     forall
-          m,n: Nat; p,q: Pos
-     .
-          minus(p) <= n             %(Int_leq_def1)%
-     .
-          not (m <= minus(p))             %(Int_leq_def2)%
-     .
-          minus(p) <= minus(q) <=> q <= p             %(Int_leq_def3)%
-     .
-          m + minus(p) = minus(p) + m             %(Int_add_def1)%
-     .
-          minus(p) + 0 = minus(p)             %(Int_add_def2)%
-     .
-          minus(p) + suc(m) = suc(minus(p)) + m             %(Int_add_def3)%
-     .
-          minus(p) + minus(q) = minus(p + q)             %(Int_add_def4)%
-     .
-          m * minus(p) = minus(p) * m             %(Int_mult_def1)%
-     .
-          minus(p) * 0 = 0             %(Int_mult_def2)%
-     .
-          minus(p) * q = minus(p * q)             %(Int_mult_def3)%
-     .
-          minus(p) * minus(q) = p * q             %(Int_mult_def4)%
-     .
-          abs(minus(p))=p             %(PreInt_abs_Neg)%
-then
-     %def
-     ops
-           __*__: Neg * Neg -> Pos;
-           __*__: Neg * Pos -> Neg;
-           __*__: Pos * Neg -> Neg;
-           __+__: Neg * Neg -> Neg;
-           abs :  Neg -> Pos
+     forall a,b,c,d: Nat
+     . (a - b) + (c - d) = (a + c) - (b + d)   %(Int_add_def)%
+     . (a - b) * (c - d) = 
+       (a * c + b * d) - (b * c + a * d)       %(Int_mult_def)%
+     . a-b <= c-d <=> a+d <= c+b               %(Int_leq_def)%
+     . abs(a-b) = b-a  if b > a                %(Int_abs_def)%
+}				
+then %def
+ op -__: Int -> Int
+ forall a,b: Nat
+ . - (a - b) = (b - a) 
 end
 
-view
-     TotalOrder_in_PreInt: TotalOrder to PreInt
-=
-     sort Elem |-> Int
+view TotalOrder_in_PreInt: TotalOrder to PreInt =
+  sort Elem |-> Int
 end
 
-spec
-     GenerateRat =
-     PreInt
+spec GenerateRat =
+  PreInt
 then
-     generated
-          type Rat ::= __ frac __ (Int;Pos)
-     forall
-          i,j: Int; p,q: Pos
-     .
-          i frac p = j frac q <=> i*q = j*p             %(Rat_equality)%
+ generated type Rat ::= __ / __ (Int;Pos)
+ forall i,j: Int; p,q: Pos
+ . i / p = j / q <=> i*q = j*p             %(Rat_equality)%
 end
 
-spec
-     PreRat =
-     GenerateRat
+spec PreRat =
+  GenerateRat
+then %def
+  sort Int < Rat
+  forall i:Int
+  . i / 1 = i             %(embeddingIntToRat)%
+then %def
+{
+  SigPreNumbers [sort Rat]	     
 then
-     sort NonNeg[Rat] < Rat
-     generated type NonNeg[Rat]::= __ frac __ (Nat;Pos)
-then
-     SigPreNumbers [sort Rat] [sort NonNeg[Rat]]
-then
-     %def
-     sort
-          Int < Rat
-     forall
-          i:Int
-     .
-          i frac 1 = i             %(embeddingIntToRat)%
-then
-     forall
-          n,m: Int; p,q:Pos
-     .
-          (n frac p <= m frac q <=> n * q <= m * p )             %(Rat_leq_def)%
-     .
-          n frac p + m frac q =	
-		(n * q + m * p) frac (p * q)             %(Rat_add_def)%
-     .
-          (n frac p) * (m frac q) = (n * m) frac (p * q)             %(Rat_mult_def)%
-     .
-          abs(n frac p)=abs(n) frac p             %(Rat_abs_def)%
-then
-     %def
-     op   1 : Rat
+  forall n,m: Int; p,q:Pos
+  . (n / p <= m / q <=> n * q <= m * p )             %(Rat_leq_def)%
+  .  n / p + m / q = (n * q + m * p) / (p * q)       %(Rat_add_def)%
+  . (n / p) * (m / q) = (n * m) / (p * q)            %(Rat_mult_def)%
+  . abs(n / p)=abs(n) / p                            %(Rat_abs_def)%
+}				
 end
 
-view
-     TotalOrder_in_PreRat : TotalOrder to PreRat
-=
-     sort Elem |-> Rat
+view TotalOrder_in_PreRat : TotalOrder to PreRat =
+  sort Elem |-> Rat
 end
