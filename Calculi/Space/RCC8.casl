@@ -13,7 +13,7 @@ from Calculi/Algebra/RelationAlgebra get RelationSet,
 
 spec RCC8Base = %mono
      { RelationSet[free type BaseRel ::= 
-			dc | ec | po | eq | tpp | tppi | ntpp | ntppi] 
+			dc | ec | po | tpp | tppi | ntpp | ntppi | eq] 
 		with  op id |-> eq 
 	}
 then 
@@ -29,7 +29,6 @@ then
      . dc cmps ntpp  = dc cup ec cup po cup tpp cup ntpp	%(comp_15)%
      . dc cmps tppi  = dc					%(comp_16)%
      . dc cmps ntppi = dc					%(comp_17)%
-     . dc cmps eq    = dc 					%(comp_18)%
 	 
      . ec cmps dc    = dc cup ec cup po cup tppi cup ntppi 	%(comp_21)%
      . ec cmps ec    = dc cup ec cup po cup tpp cup tppi cup eq	%(comp_22)%
@@ -38,7 +37,6 @@ then
      . ec cmps tppi  = po cup tpp cup ntpp			%(comp_25)%
      . ec cmps ntpp  = dc cup ec	 			%(comp_26)%
      . ec cmps ntppi = dc					%(comp_27)%
-     . ec cmps eq    = ec					%(comp_28)%
      	
      . po cmps dc    = dc cup ec cup po cup tppi cup ntppi   	%(comp_31)%
      . po cmps ec    = dc cup ec cup po cup tppi cup ntppi   	%(comp_32)%
@@ -47,7 +45,6 @@ then
      . po cmps tppi  = po cup tpp cup ntpp  			%(comp_35)%
      . po cmps ntpp  = dc cup ec cup po cup tppi cup ntppi   	%(comp_36)%
      . po cmps ntppi = dc cup ec cup po cup tppi cup ntppi   	%(comp_37)%
-     . po cmps eq    = po   					%(comp_38)%
 
      . tpp cmps dc    = dc					%(comp_41)%
      . tpp cmps ec    = dc cup ec				%(comp_42)%
@@ -56,7 +53,6 @@ then
      . tpp cmps tppi  = ntpp					%(comp_45)%
      . tpp cmps ntpp  = dc cup ec cup po cup tpp cup ntpp       %(comp_46)%  
      . tpp cmps ntppi = dc cup ec cup po cup tppi cup ntppi   	%(comp_47)%
-     . tpp cmps eq    = tpp 					%(comp_48)%
 
      . ntpp cmps dc    = dc  					%(comp_51)%
      . ntpp cmps ec    = dc  					%(comp_52)%
@@ -65,7 +61,6 @@ then
      . ntpp cmps tppi  = ntpp 					%(comp_55)%
      . ntpp cmps ntpp  = dc cup ec cup po cup tpp cup ntpp    	%(comp_56)%
      . ntpp cmps ntppi = 1 					%(comp_57)%
-     . ntpp cmps eq    = ntpp  					%(comp_58)%
 
      . tppi cmps dc    = dc cup ec cup po cup tppi cup ntppi 	%(comp_61)%
      . tppi cmps ec    = ec cup po cup tppi cup ntppi 		%(comp_62)%
@@ -74,7 +69,6 @@ then
      . tppi cmps tppi  = po cup tpp cup ntpp			%(comp_65)%
      . tppi cmps ntpp  = tppi cup ntppi				%(comp_66)%
      . tppi cmps ntppi = ntppi					%(comp_67)%
-     . tppi cmps eq    = tppi 					%(comp_68)%
 
      . ntppi cmps dc    = dc cup ec cup po cup tppi cup ntppi	%(comp_71)%
      . ntppi cmps ec    = po cup tppi cup ntppi			%(comp_72)%
@@ -84,16 +78,6 @@ then
 								%(comp_75)%
      . ntppi cmps ntpp  = ntppi					%(comp_76)%
      . ntppi cmps ntppi = ntppi					%(comp_77)%
-     . ntppi cmps eq    = ntppi 				%(comp_78)%
-
-     . eq cmps dc     = dc					%(comp_81)% 
-     . eq cmps ec     = ec 					%(comp_82)%
-     . eq cmps po     = po 					%(comp_83)%
-     . eq cmps tpp    = tpp          				%(comp_84)%
-     . eq cmps tppi   = tppi 					%(comp_85)%
-     . eq cmps ntpp   = ntpp 					%(comp_86)%
-     . eq cmps ntppi  = ntppi 					%(comp_87)%
-     . eq cmps eq     = eq 					%(comp_88)%
 
      . conv(dc) = dc						%(sym_dc)%
      . conv(ec) = ec						%(sym_ec)%
@@ -103,6 +87,23 @@ then
      . conv(tppi) = tpp						%(conv_tppi)%
      . conv(ntpp) = ntppi 					%(conv_ntpp)%
      . conv(ntppi) = ntpp 					%(conv_ntppi)%
+
+then %implies
+     . dc cmps eq    = dc 					%(comp_18)%
+     . ec cmps eq    = ec					%(comp_28)%
+     . po cmps eq    = po   					%(comp_38)%
+     . tpp cmps eq   = tpp 					%(comp_48)%
+     . ntpp cmps eq  = ntpp  					%(comp_58)%
+     . tppi cmps eq  = tppi 					%(comp_68)%
+     . ntppi cmps eq    = ntppi 				%(comp_78)%
+     . eq cmps dc     = dc					%(comp_81)% 
+     . eq cmps ec     = ec 					%(comp_82)%
+     . eq cmps po     = po 					%(comp_83)%
+     . eq cmps tpp    = tpp          				%(comp_84)%
+     . eq cmps tppi   = tppi 					%(comp_85)%
+     . eq cmps ntpp   = ntpp 					%(comp_86)%
+     . eq cmps ntppi  = ntppi 					%(comp_87)%
+     . eq cmps eq     = eq 					%(comp_88)%
 end
 
 spec RCC8 = %def
@@ -110,6 +111,72 @@ spec RCC8 = %def
 end
 
 
+
+spec RCC5Base = %mono
+     { RelationSet[free type BaseRel ::= 
+			dr | po | pp | ppi | eq ] 
+		with  op id |-> eq 
+	}
+then 
+     ops	     
+	  conv__: BaseRel -> GenRel; 
+        __cmps__: BaseRel * BaseRel -> GenRel 		   
+
+     . dr cmps dr    = 1					%(comp_11)%
+     . dr cmps po    = dr cup po cup pp				%(comp_12)%
+     . dr cmps pp    = dr cup po cup pp				%(comp_13)%
+     . dr cmps ppi   = dr					%(comp_14)%
+
+     . po cmps dr    = dr cup po cup ppi			%(comp_21)%
+     . po cmps po    = 1					%(comp_22)%
+     . po cmps pp    = po cup pp				%(comp_23)%
+     . po cmps ppi   = dr cup po cup ppi			%(comp_24)%
+
+     . pp cmps dr    = dr					%(comp_31)%
+     . pp cmps po    = dr cup po cup pp				%(comp_32)%
+     . pp cmps pp    = pp					%(comp_33)%
+     . pp cmps ppi   = 1					%(comp_34)%
+
+     . ppi cmps dr   = dr cup po cup ppi			%(comp_41)%
+     . ppi cmps po   = po cup ppi				%(comp_42)%
+     . ppi cmps pp   = compl(dr)				%(comp_43)%
+     . ppi cmps ppi  = ppi					%(comp_44)%
+
+     . conv(dr) = dr   						%(sym_dr)%
+     . conv(po) = po						%(sym_po)%
+     . conv(pp) = ppi						%(conv_pp)%
+     . conv(ppi) = pp						%(conv_ppi)%
+
+then %implies
+     . dr cmps eq   = dr					%(comp_15)%
+     . po cmps eq   = po					%(comp_25)%
+     . pp cmps eq   = pp					%(comp_35)%
+     . ppi cmps eq  = ppi					%(comp_45)%
+     . eq cmps dr   = dr					%(comp_51)%
+     . eq cmps po   = po					%(comp_52)%
+     . eq cmps pp   = pp					%(comp_53)%
+     . eq cmps ppi  = ppi					%(comp_54)%
+     . eq cmps eq   = eq					%(comp_55)%
+end
+
+
+spec RCC5 = %def
+     GenerateRelationAlgebra [RCC5Base] 
+end
+
+
+view RCC8_as_RCC5:
+     RCC5 
+to   { RCC8 
+	then %def
+	ops dr,pp,ppi,po,eq:GenRel
+	. dr = dc cup ec
+	. pp = tpp cup ntpp
+	. ppi =  tppi cup ntppi
+     }	
+=
+     sort BaseRel |-> GenRel
+end
 
 
 
