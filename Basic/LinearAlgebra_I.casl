@@ -112,8 +112,9 @@ spec VSWithBase [Field][sort Base]=
 		 ops __ + __: Space * Space -> Space, 
 		     0	    : Space,
 	    	     __ * __: Elem * Space -> Space,
-		     __ * __, __ + __: Elem * Elem -> Elem,
-		     0, e: Elem
+		     __ * __: Elem * Elem -> Elem,
+		     __ + __: Elem * Elem -> Elem,
+		     0, e   : Elem
 end
 
 
@@ -347,9 +348,6 @@ view VectorSpace_in_VectorTuple [VectorSpace [Field]]
      sort Space |-> Tuple[Space,n]
 end
 
-%[
-%% This view is incorrect, since VSWithBase contains sorts Pos, Nat, Int
-%% that are not present in Field
 view VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
      VSWithBase [Field][sort Base] to
      {Field then sort Singleton[a] = {x: Elem. x = a} } =
@@ -357,7 +355,6 @@ view VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
      op __ * __: Elem * Space -> Space |->
 		          __ * __: Elem * Elem -> Elem
 end
-]%
 
 view VSWithBase_in_Vector [Field][op n: Pos] given Nat:
      VSWithBase [Field][sort Base] to Vector [Field][op n:Pos] =
