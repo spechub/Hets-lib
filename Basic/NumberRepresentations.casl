@@ -6,7 +6,7 @@ version 0.5
 from
      Basic/RelationsAndOrders version 0.5 get SigOrder
 from
-     Basic/Numbers version 0.5 get Nat, Rat
+     Basic/Numbers version 0.5 get Nat, Int, Rat
 from
      Basic/StructuredDatatypes version 0.5 get
      List, Array, Pair
@@ -49,11 +49,12 @@ spec
      ExactFixedPointNumber
      [
       op    L:List[Nat]
-      axioms%[EFPN_Param_Cond1] forall n:Nat · n eps L => n>1;
-            %[EFPN_Param_Cond2] not isEmpty(L)
+      axioms %[EFPN_Param_Cond1] forall n:Nat · n eps L => n>1;
+             %[EFPN_Param_Cond2] not isEmpty(L)
      ]
-given
-     List [Nat fit sort Elem |-> Nat ]
+
+given  List [Nat fit sort Elem |-> Nat ]
+
 =
      op
            m:Nat = #(L); %% number of moduli
@@ -68,14 +69,17 @@ then
       Index      |->  IndexEfpn,
       Array[Nat] |->  ArrayEfpn
 then
+  Int
+then
      sorts
            IndexModulus < IndexEfpn;
            IndexModulus, IndexEfpn <  Nat;
-           PosEfpn =                  {  A: ArrayEfpn . def A!(n as
-                                         IndexModulus) /\
-                                         forall i:IndexModulus . A!i < L!i
-                                         };
-           Sign =                     RUnit[Int]
+           PosEfpn = {  A: ArrayEfpn . 
+                          def A!(n as IndexModulus)
+                          /\  forall i:IndexModulus . A!i < L!i
+                     };
+           Sign =  { x: Int . x=1 \/ x= -1 }
+
 then
      Pair
      [ sort Sign fit S |-> Sign ]
@@ -92,6 +96,8 @@ then
            isZero, isPos, isNeg: Efpn;
            __ < __ :             Efpn × Efpn;
      ops
+           1: Sign;
+           -__: Sign -> Sign;
            0, 1 :               Efpn;
            proj:                IndexEfpn × Efpn -> Nat;
            sgn:                 Efpn -> Sign; 
@@ -123,12 +129,15 @@ then
           .
                %[intToEfpn_def]
                 intToEfpn(z)=x <=>
-                (( z >= 0 => sgn(x)=1 ) /\
-                (z < 0 => sgn(x)= -1 ) /\
-                ( number(x)!(n as IndexEfpn) = abs(z) div prod(m) ) /\
-                ( (forall k:IndexModulus .
-                ( number(x)!k = (abs(z) div prod(k -? 1)) mod L!k)
-                )))
+                (
+                  ( z >= 0 => sgn(x)=1 ) /\
+                  ( z < 0 => sgn(x)= -1 )/\
+                  ( number(x)!(n as IndexEfpn) = abs(z) div prod(m) ) /\
+                  ( (forall k:IndexModulus .
+                    ( number(x)!k = (abs(z) div prod(k -? 1)) mod L!k))
+                  )
+                )                
+
           .
                %[sum_0] sum(x,0) = 0
           .
@@ -138,7 +147,7 @@ then
                 if i>0
           .
                %[efpnToInt_def]
-               efpnToInt(x)= sgn(x) * sum(x,n)
+               efpnToInt(x)=  sgn(x) * sum(x,n)
      then
           %implies
           vars
@@ -196,9 +205,7 @@ then
                def make(i,k) <=>
                i=n \/ (i<n => k < L!(i as IndexModulus))
 then
-     SigOrder
-     with
-      sort Elem |-> Efpn,
-      preds __<__, __>__, __ <= __, __ >= __
+     SigOrder[sort Efpn]
+     with preds __<__, __>__, __ <= __, __ >= __
 end
 
