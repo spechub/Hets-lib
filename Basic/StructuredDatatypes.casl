@@ -479,25 +479,24 @@ then %implies
      . (A!i:=e)!j = A!j if not (i=j)     %(lookup_assignment2_Array)%
 end
 
-spec GenerateBinTree [sort Elem] =
+spec GenerateBinTree [sort Elem] = %mono
   free type BinTree[Elem] 
     ::= nil 
       | binTree (entry:? Elem; left:?  BinTree[Elem]; 
                                right:? BinTree[Elem])
 end
 
-spec BinTree [sort Elem] given Nat, Set[sort Elem] =
+spec BinTree [sort Elem] given Nat, Set[sort Elem] = %mono
     GenerateBinTree[sort Elem]  
   and 
     Set[sort Elem]
-then
+then %def
   preds isEmpty,
         isLeaf:  BinTree[Elem];
         isCompoundTree: BinTree[Elem];
         __eps__ : Elem * BinTree[Elem];
 
   ops   height: BinTree[Elem] -> Nat;
-
         leaves: BinTree[Elem] -> Set[Elem]
 
   forall x,y: Elem; T, T1,T2: BinTree[Elem]
@@ -589,7 +588,7 @@ then %def
    
 end
 
-spec GenerateNTree [sort Elem] =  
+spec GenerateNTree [sort Elem] = %mono
   free types
     List[NTree[Elem]]
      ::= [] 
@@ -599,13 +598,13 @@ spec GenerateNTree [sort Elem] =
        | nTree(entry:? Elem; branches:? List[NTree[Elem]])
 end
 
-spec NTree [sort Elem] given Nat, Set[sort Elem] =
+spec NTree [sort Elem] given Nat, Set[sort Elem] = %mono
     GenerateNTree[sort Elem]
   and
     Set[sort Elem]
   and
     List[sort NTree[Elem] fit sort Elem |-> NTree[Elem]]
-then
+then %def
   preds isEmpty,
         isLeaf:  NTree[Elem];
         isCompoundTree: NTree[Elem];
@@ -742,16 +741,16 @@ then %def
    
 end
 
-spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  
+spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] = %mono
   NTree [sort Elem]
-then
+then %mono
   sort KTree[Elem] = { nTree: NTree[Elem] .
                        nTree = nil \/ # branches(nTree) = k }
 end
 
-spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  
+spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  %mono
   NTree2 [sort Elem]
-then
+then %mono
   sort KTree2[Elem] = { t: NTree2[Elem] .
                           exists e:Elem. t=leaf(e) \/
                           # branches(t) = k        \/
