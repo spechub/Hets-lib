@@ -13,7 +13,7 @@ version 0.1
 
 
 from Calculi/Algebra/RelationAlgebraModel get Relation,
-	GenerateModelFromBaseRelationModel
+	GeneratePreModelFromBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get LinFlowOfTime,DnsLinFlowOfTimeSEnd
 
 
@@ -34,8 +34,9 @@ end
 
 
 spec GeneratePreModelOfPointAlgebraLin[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationModelOfPointAlgebraLin[LinFlowOfTime]
-	fit sort Elem |-> Instant]
+      GeneratePreModelFromBaseRelationModel
+	[BaseRelationModelOfPointAlgebraLin[LinFlowOfTime]
+      fit sort Elem |-> Instant]
 then %implies
      ops  idRel: Rel;
           conv: BaseRel -> BaseRel;

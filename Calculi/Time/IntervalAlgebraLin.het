@@ -23,7 +23,7 @@ from Calculi/Algebra/RelationAlgebraSymbolic get
 	SetRepresentationOfRelations
 from Calculi/Algebra/RelationAlgebraModel get 
 	AlgebraOfBinaryRelations,
-	GenerateModelFromBaseRelationModel,
+	GeneratePreModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
 	Relation
 from Calculi/Time/LinearFlowOfTime get 
@@ -425,7 +425,7 @@ end
 
 
 spec GeneratePreAllenModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime]
+      GeneratePreModelFromBaseRelationModel[BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime]
 	fit sort Elem |-> AllenInterval]
 then %cons
      ops  eRel: Rel;
@@ -485,7 +485,7 @@ end
 
 
 spec GeneratePreConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime]
+      GeneratePreModelFromBaseRelationModel[BaseRelationConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime]
 	fit sort Elem |-> ConvexSetInterval]
 then %cons
      ops  eRel: Rel;
