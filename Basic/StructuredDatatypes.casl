@@ -52,7 +52,7 @@ then
            __ symmDiff __:            FinSet[Elem] * FinSet[Elem] ->
                                       FinSet[Elem];
            #__:                       FinSet[Elem] -> Nat;
-     vars
+     forall
           x,y : Elem; S,T,U,V:FinSet[Elem]
      .
           isNonEmpty(S) <=> not S = {}             %(isNonEmpty_def)%
@@ -113,7 +113,7 @@ then
                                assoc, comm, idem;
            __ symmDiff __ :    FinSet[Elem] * FinSet[Elem] -> FinSet[Elem],
                                comm;
-     vars
+     forall
           x: Elem; S,T: FinSet[Elem]
      .
           S isSubsetOf T <=> ( forall x: Elem . x eps S => x eps T )             %(subset_characterization)%
@@ -200,7 +200,7 @@ then
            reverse:     List[Elem] -> List[Elem];
            __ ! __:     List[Elem] * Nat ->? Elem;
            take,drop:   Nat * List[Elem] ->? List[Elem]
-     vars
+     forall
           x,y: Elem; n: Nat; p: Pos; L,K: List[Elem]; N: NeList[Elem]
      .
           isEmpty(L) <=> L=[]             %(isEmpty_def)%
@@ -259,7 +259,7 @@ then
      free
           type
            List[Elem]::= [] | __::__(Elem;List[Elem])
-     vars
+     forall
           n: Nat; L: List[Elem]; N:NeList[Elem]
      .
           first(N)::rest(N) = N             %(first_rest)%
@@ -306,7 +306,7 @@ free
            FiniteMap[S,T] ::= [] | __[__/__] (FiniteMap[S,T];T;S)
      op
            __[__/__]: FiniteMap[S,T] * T * S -> FiniteMap[S,T]
-     vars
+     forall
           M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
      .
           M[t1/s][t2/s] = M[t2/s]             %(FM_overwrite)%
@@ -337,7 +337,7 @@ then
            range: FiniteMap[S,T] -> FinSet[T];
            eval:  S * FiniteMap[S,T] ->? T;
            __ union __: FiniteMap[S,T] * FiniteMap[S,T] ->? FiniteMap[S,T]
-     vars
+     forall
            M,N,O: FiniteMap[S,T]; s,s1:S; t,t1: T; e: Entry[S,T];
            X: FinSet[S]; Y: FinSet[T]
      .
@@ -376,7 +376,7 @@ then
           ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )             %(FM_union_def)%
 then
      %implies
-     vars 
+     forall 
           s: S; M: FiniteMap[S,T]
      .
           def eval(s,M) <=> s eps dom(M)             %(eval_dom)%
@@ -414,7 +414,7 @@ then
            __ + __, __ - __ : Bag[Elem] * Elem -> Bag[Elem];
            __ intersection __, __ - __: Bag[Elem] * Bag[Elem] -> Bag[Elem];
            freq:                        Elem * Bag[Elem] -> Nat;
-     vars
+     forall
           x,y : Elem; B,C,D,E:Bag[Elem]
      .
           freq(x,{}) = 0             %(freq_empty)%
@@ -499,7 +499,7 @@ then
           ops
                 __!__:=__ : Array[Elem] * Index *Elem -> Array[Elem];
                 __!__ :     Array[Elem] * Index ->? Elem
-          vars
+          forall
                A: Array[Elem]; i: Index; e:Elem
           .
                A!i:=e = A[e/i]             %(assignment_def)%
@@ -511,7 +511,7 @@ then
            ops  init, __!__, __!__:=__
 then
      %implies
-     vars
+     forall
           A: Array[Elem]; i,j: Index; e,f: Elem
      .
           not def init!i             %(evaluate_Array_domain1)%

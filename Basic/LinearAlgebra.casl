@@ -28,7 +28,7 @@ then
      closed{AbelianGroup with
           sort Elem |-> Space, ops e |-> 0, __ * __ |-> __ + __}
 then
-     vars
+     forall
           x,y: Space; a,b: Elem
      .
           (a + b) * x = a * x + b * x             %(VS_distr1)%
@@ -87,7 +87,7 @@ then
           eval: LC[Space,Elem] -> Space
      pred
           isZero: LC[Space,Elem]
-     vars
+     forall
           x: Space; r: Elem; l:LC[Space,Elem]
      .
           eval([])=0             %(eval_empty)%
@@ -113,7 +113,7 @@ then
 then
      sort
           LC[Base,Elem]<LC[Space,Elem]
-     var
+     forall
           l:LC[Base,Elem]
      .
           forall y:Space. exists k:LC[Base,Elem]. y=eval(k)             %(generating)%
@@ -140,7 +140,7 @@ and
 	with sort LC[Base,Elem]
 then
      %implies
-     vars
+     forall
           l,k: LC[Base,Elem]
      .
           eval(l)=eval(k) => l=k             %(unique_representation)%
@@ -148,13 +148,13 @@ then
      %def
      op
           coefficients: Space -> LC[Base,Elem]
-     var
+     forall
           x:Space
      .
           eval(coefficients(x))=x             %(coefficients_def)%
 then
      %implies
-     var
+     forall
           l:LC[Base,Elem]
      .
           coefficients(eval(l))=l             %(recover_coefficients)%
@@ -186,7 +186,7 @@ and
 then
      sort
           Elem < Space
-     vars
+     forall
           r: Elem; x, y: Space
      .
           (r * x) * y = r * (x * y)             %(Algebra_left_linear)%
@@ -207,7 +207,7 @@ and
 then
      op
           eval: Poly[Elem] * Space -> Space
-     vars
+     forall
           a: Elem; p: Poly[Elem]; x: Space
      .
           eval(0,x) = 0             %(eval_poly_0)%
@@ -238,7 +238,7 @@ view
      then
           op
                inject: Base -> Space
-          var
+          forall
                x:Base
           .
                inject(x) = x             %(VSWB_inject_def)%
@@ -252,7 +252,7 @@ view
 	then
 	   %def
 	   sort Base < Space
-	   var x: Base
+	   forall x: Base
 	   .
 		x = inject(x)             %(FVS_embed_def)%
      }
@@ -279,7 +279,7 @@ spec
                 __+__:  Tuple[Space,n] * Tuple[Space,n] -> Tuple[Space,n];
                 auxsum: Tuple[Space,n] * Nat[n] -> Space;
                 sum:    Tuple[Space,n] -> Space
-          vars
+          forall
                r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
           .
                0 ! i = 0             %(Tuple_zero_def)%
@@ -326,7 +326,7 @@ then
           auxprod:     Vector[Elem,n] * Nat[n] -> Elem
      pred
           perp: Vector[Elem,n] * Vector[Elem,n]
-     vars
+     forall
           x, y: Vector[Elem,n]; i, j: Nat[n]
      .
           auxmult(x,y) ! i = (x ! i) * (y ! i)             %(Vector_auxmult_def)%
@@ -350,7 +350,7 @@ then
      hide ops auxmult,auxprod
 then
      %implies
-     vars
+     forall
           x,y: Vector[Elem,n]
      .
           <x || y> = <y || x>             %(scalar_prod_comm)%
@@ -401,7 +401,7 @@ then
            __  comp  __: Perm[n] * Perm[n] -> Perm[n];
            sign: Perm[n] -> RUnit[Int];
            nFac: Nat = n!
-     var
+     forall
           p,q: Perm[n]; i: Nat[n]
      .
 	  id ! i = i             %(Perm_id_def)%
@@ -450,7 +450,7 @@ then
            __ * __:    Matrix[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
            __ * __:    Matrix[Elem,n] * Matrix[Elem,n] -> Matrix[Elem,n];
            det:        Matrix[Elem,n] -> Elem
-     vars
+     forall
           a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
      .
           (transpose(a) ! i) ! j = (a ! j) ! i             %(transpose_def)%
@@ -481,7 +481,7 @@ then
                     factors:  Matrix[Elem,n] * PNat[n] -> Vector[Elem,n]
      }
      within {
-     vars
+     forall
           a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
      .
           factors(a,j) ! i = (a ! i) ! (perm(j) ! i)             %(Matrix_factors_def)%
@@ -493,7 +493,7 @@ then
      } 
 then
      %implies
-vars
+forall
      a,b: Matrix[Elem,n]
 .
      det(0) = 0             %(det_0)%

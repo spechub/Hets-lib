@@ -34,10 +34,10 @@ and
 then
      %def
      op
-          1: Pos = suc(0)             %(PreNat_1_def)%  %% Till
-     op   1 : Nat
+          1: Pos = suc(0);             %(PreNat_1_def)%  
+          1 : Nat
 then
-     vars
+     forall
           m,n: Nat; p: Pos
      .
           0 <= n             %(Nat_leq_def1)%
@@ -81,7 +81,7 @@ then
      ops
            suc,
            pre: Int -> Int
-     var
+     forall
           p:Pos
      .
           suc(minus(suc(0))) = 0             %(Int_suc_minus_one)%
@@ -101,7 +101,7 @@ and
 then
      %def
      op 1:Int = suc(0)
-     vars
+     forall
           m,n: Nat; p,q: Pos
      .
           minus(p) <= n             %(Int_leq_def1)%
@@ -149,7 +149,7 @@ spec
 then
      generated
           type Rat ::= __ frac __ (Int;Pos)
-     vars
+     forall
           i,j: Int; p,q: Pos
      .
           i frac p = j frac q <=> i*q = j*p             %(Rat_equality)%
@@ -167,12 +167,12 @@ then
      %def
      sort
           Int < Rat
-     var
+     forall
           i:Int
      .
           i frac 1 = i             %(embeddingIntToRat)%
 then
-     vars
+     forall
           n,m: Int; p,q:Pos
      .
           (n frac p <= m frac q <=> n * q <= m * p )             %(Rat_leq_def)%

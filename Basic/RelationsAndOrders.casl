@@ -16,7 +16,7 @@ spec
      ReflexiveRelation =
      Relation
 then
-     var
+     forall
           x:Elem
      .
           x ~ x             %(refl)%
@@ -26,7 +26,7 @@ spec
      SymmetricRelation =
      Relation
 then
-     vars
+     forall
           x,y:Elem
      .
           x ~ y if y ~ x             %(sym)%
@@ -36,7 +36,7 @@ spec
      TransitiveRelation =
      Relation
 then
-     vars
+     forall
           x,y,z:Elem
      .
           x ~ z if x ~ y /\ y ~ z             %(trans)%
@@ -62,7 +62,7 @@ spec
      preds
            __ <= __, __ < __,
            __ >= __, __ > __: Elem * Elem;
-     vars
+     forall
           x,y:Elem
      .
           x >= y <=> y <= x             %(SigOrder_geq_def)%
@@ -82,7 +82,7 @@ spec
      PartialOrder =
      PreOrder
 then
-     vars
+     forall
           x,y:Elem
      .
           x = y if x <= y /\ y <= x             %(POrder_antisym)%
@@ -97,7 +97,7 @@ and
 {
           ops
                 inf,sup : Elem * Elem ->? Elem
-          vars
+          forall
                x,y,z: Elem
           .
                inf(x,y) = z <=>
@@ -118,7 +118,7 @@ spec
      TotalOrder =
      PartialOrder
 then
-     vars
+     forall
           x,y:Elem
      .
           x <= y \/ y <= x             %(TOrder_comparability)%
@@ -133,7 +133,7 @@ and
 {
           ops
                min, max: Elem * Elem -> Elem
-          vars
+          forall
                x,y: Elem
           .
                min(x,y) = x when x <= y else y             %(min_def)%
@@ -147,7 +147,7 @@ and
 }
 then
      %implies
-     vars
+     forall
           x,y: Elem
      .
           min(x,y)=inf(x,y)             %(min_inf_relation)%
@@ -163,7 +163,7 @@ spec
            0,1:       Elem;
            __ cap __: Elem * Elem -> Elem, assoc, comm, unit 1;
            __ cup __: Elem * Elem -> Elem, assoc, comm, unit 0;
-     vars
+     forall
           x,y,z:Elem
      .
           x cap ( x cup y) = x             %(absorption_def1)%
@@ -183,7 +183,7 @@ then
      %implies
      op
           __ cup __, __ cap __ : Elem * Elem -> Elem , idem
-     var
+     forall
           x: Elem
      .
           exists! x': Elem . x cup x' = 1 /\ x cap
@@ -196,18 +196,18 @@ spec
      %def
      {
           SigOrder [sort Elem]
-          then vars x,y:Elem
+          then forall x,y:Elem
           . x <= y <=> x cap y = x             %(BA_po_def)%
      }
      and
      {
           op compl: Elem -> Elem
-          vars x,y:Elem
+          forall x,y:Elem
           . compl(x)=y <=> x cup y = 1 /\ x cap y = 0             %(BA_compl_def)%
      }
 then
      %implies
-     vars
+     forall
           x,y: Elem
      .
           compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%

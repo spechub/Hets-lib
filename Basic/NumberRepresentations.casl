@@ -26,7 +26,7 @@ then
      local
      op
           tenPower: Nat -> Nat
-     vars
+     forall
           n,m: Nat
      %%   tenPower(n):= min { 10k | k in N \{0}, 10k > n }:
      .
@@ -34,7 +34,7 @@ then
      .
           tenPower(n)= 10 * tenPower(n div 10) if n >= 10             %(tenPower_number)%
 within
-     vars
+     forall
           r:Rat; n,m: Nat; p: Pos; i:Int
      %%   represent the decimal fraction n.m as rational:
      .
@@ -48,8 +48,8 @@ spec
      ExactFixedPointNumber
      [
       op    L:List[Nat]
-      axioms forall n:Nat . n eps L => n>1             %(EFPN_Param_Cond1)%
-      axioms     not isEmpty(L)             %(EFPN_Param_Cond2)%  %% Till
+      axioms forall n:Nat . n eps L => n>1;   %(EFPN_Param_Cond1)%
+             not isEmpty(L)                   %(EFPN_Param_Cond2)%  
      ]
 
 given  List [Nat fit sort Elem |-> Nat ]
@@ -117,7 +117,7 @@ then
                 sum:       Efpn * Nat ->? Int;
                            %% computes SUMi=1k zi * prod(i-1)
 
-          vars
+          forall
                z: Int; x:Efpn; i: Nat
           .
                prod(0) = 1             %(prod_0)%
@@ -144,7 +144,7 @@ then
                efpnToInt(x)=  sgn(x) * sum(x,n)             %(efpnToInt_def)%
      then
           %implies
-          vars
+          forall
                z: Int; x:Efpn; i: Nat
           .
                def prod(i) <=> i <= m             %(prod_domain)%
@@ -156,7 +156,7 @@ then
                intToEfpn(efpnToInt(x)) = x             %(EfpnInt_bij2)%
      }
      within
-          vars
+          forall
                x,y:Efpn
           .
                isZero(x) <=> efpnToInt(x) = 0             %(isZeroEfpn_def)%
@@ -167,9 +167,9 @@ then
           .
                x < y <=> efpnToInt(x) < efpnToInt(y)             %(isLessEfpn_def)%
           axioms
-                0 = efpnToInt(0)             %(ZeroEfpn_def)%
-            axioms    1 = efpnToInt(1)             %(OneEfpn_def)%  %% Till
-          vars
+                0 = efpnToInt(0);             %(ZeroEfpn_def)%
+                1 = efpnToInt(1)              %(OneEfpn_def)%  
+          forall
                x,y:Efpn; i:IndexEfpn; k:Nat; z:Int
           .
                proj(i,x) = number(x)!i             %(proj_def)%
@@ -191,7 +191,7 @@ then
                x * z = z * x             %(MultEfpn_def2)%
      then
           %implies
-          vars
+          forall
                i:IndexEfpn; k:Nat; z:Int
           .
                def make(i,k) <=>

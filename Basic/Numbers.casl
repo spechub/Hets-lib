@@ -38,7 +38,7 @@ then
 	   Pos[Elem] < NonZero[Elem]
      ops   +__: Elem -> Elem;
 	   abs: NonZero[Elem] -> Pos[Elem] 
-     var   x: Elem
+     forall   x: Elem
      .
           + x = x             %(plus_def)%
 end
@@ -77,7 +77,7 @@ then
      ops
            1,2,3,4,5,6,7,8,9: Nat;
            __ @@ __ : Nat * Nat -> Nat
-     vars
+     forall
           m,n,r,s: Nat; p: Pos
      .
           not def(m /? 0)             %(Nat_divide_0)%
@@ -125,7 +125,7 @@ then
           m @@ n = (m * suc(9)) + n             %(Nat_decimal_def)%
 then
      %implies
-     vars
+     forall
           m,n,r,s,t: Nat; p: Pos
      .
           def(m-?n) <=> m >= n             %(Nat_sub_dom)%
@@ -184,7 +184,7 @@ then
            __ div __, __ mod __ , __ quot __, 
 	   __ rem __ : Int * NonZero[Int] -> Int;
 	   sign: Int -> Int
-     vars
+     forall
           m,n,s: Nat; p,q: Pos; x,y,r,z: Int
      .
           x /? y = z <=> ( x = z * y /\ not y=0)             %(Int_divide)%
@@ -213,7 +213,7 @@ then
 	  sign(minus(p)) = minus(1)             %(Int_sign_neg)%
 then
      %implies
-     vars
+     forall
           n : NonZero[Int]; x,y,r: Int; s: Nat; p: Pos
      .
 	  minus(p) = - p             %(Int_minus)%
@@ -272,7 +272,7 @@ then
 	 
 then
      %implies
-     var
+     forall
           r,s: Rat; n,m: Int; p,q: Pos; u: NonZero[Int]
      .
 	  n frac p = n / p             %(Rat_frac)%

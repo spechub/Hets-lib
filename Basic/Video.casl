@@ -29,7 +29,7 @@ then
           show: 
                         Time -> String; 
 
-     vars
+     forall
          v: VideoTape; m: Movie; d,h,m,s: Nat 
      .         time(d,h,m,s) = make(4,d) + make(3,h) + make(2,m) + make(1,s) 
      .         t180=time(0,3,0,0) 
@@ -48,7 +48,7 @@ then
 
 then
      %%implies 
-     vars
+     forall
          d,h,m,s: Nat 
      .         def time(d,h,m,s) <=> h <= 24 /\ m <= 60 /\ s <= 60 
 end

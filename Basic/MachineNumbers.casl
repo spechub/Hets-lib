@@ -14,7 +14,7 @@ spec
 then
      type
           CARDINAL ::= natToCard (cardToNat : Nat)?
-     vars
+     forall
           x : Nat; c:CARDINAL
      .
           def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1             %(natToCard_dom)%
@@ -35,9 +35,9 @@ then
            __ div __,
            __ mod __:   CARDINAL * CARDINAL ->? CARDINAL;
      axiom
-           maxCardinal= (2 ^ Wordlength) -? 1             %(maxCardinal_Nat)%
-     axiom       maxCardinal= natToCard(maxCardinal)             %(maxCardinal_CARDINAL)%   %% Till
-     vars
+           maxCardinal= (2 ^ Wordlength) -? 1;       %(maxCardinal_Nat)%
+           maxCardinal= natToCard(maxCardinal)       %(maxCardinal_CARDINAL)%   
+     forall
           x,y: CARDINAL
      .
           natToCard(0) = 0             %(def_0_CARDINAL)%
@@ -66,7 +66,7 @@ then
                     assoc, comm, unit 0;
            __ * __: CARDINAL * CARDINAL ->? CARDINAL,
                     assoc, comm, unit 1;
-     vars
+     forall
           x,y: CARDINAL
      .
           def x+y <=> cardToNat(x) + cardToNat(y) <= maxCardinal             %(add_CARDINAL_dom)%
@@ -86,7 +86,7 @@ spec
 then
      type
           INTEGER ::= intToInteger (integerToInt: Int)?
-     vars
+     forall
           x:Int; i:INTEGER
      .
           def intToInteger(x) <=>
@@ -115,11 +115,11 @@ then
            __ quot __,
            __ rem__:   INTEGER * INTEGER ->? INTEGER
      axioms
-           maxInteger= (2 ^ (Wordlength-?1))-1             %(maxInteger_Int)%
-      axioms     minInteger= -(2 ^ (Wordlength-?1))             %(minInteger_Int)%
-      axioms     maxInteger=intToInteger(maxInteger)             %(maxInteger_INTEGER)%
-      axioms     minInteger=intToInteger(minInteger)             %(minInteger_INTEGER)%  %% Till
-     vars
+           maxInteger= (2 ^ (Wordlength-?1))-1;            %(maxInteger_Int)%
+           minInteger= -(2 ^ (Wordlength-?1));             %(minInteger_Int)%
+           maxInteger=intToInteger(maxInteger);            %(maxInteger_INTEGER)%
+           minInteger=intToInteger(minInteger)             %(minInteger_INTEGER)%  
+     forall
           x,y: INTEGER
      .
           intToInteger(0) = 0             %(def_0_INTEGER)%
@@ -162,7 +162,7 @@ then
                     assoc, comm, unit 0;
            __ * __: INTEGER * INTEGER ->? INTEGER,
                     assoc, comm, unit 1;
-     vars
+     forall
           x,y:INTEGER
      .
           def - x <=> integerToInt(x) >= minInteger + 1             %(minus_INTEGER_dom)%

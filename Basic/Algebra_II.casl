@@ -29,7 +29,7 @@ free
      then
           PartialOrder with sort Elem |-> CompactInt
      then
-     vars
+     forall
           n:Int;m,k:CompactInt
      .
           minus(minus(m)) = m             %(CI_double_neg_compact)%
@@ -67,7 +67,7 @@ then
           equiv: Factors[Elem] * Factors[Elem]
      op
           prod: Factors[Elem] -> Elem
-     vars
+     forall
           i,j: Irred[Elem]; S,T:Factors[Elem]
      .
           prod({}) = e             %(product_Bag_empty)%
@@ -78,7 +78,7 @@ then
                           (exists s,t: Irred[Elem] . (s eps S /\ t eps T /\
                           associated(s,t) /\ equiv(S - s, T - t)) ) )             %(equiv_Bag_def)%
 then
-     vars
+     forall
           x:Elem; S,T:Factors[Elem]
      .
           exists V:Factors[Elem] . x = prod(V)             %(exists_factorization)%
@@ -131,7 +131,7 @@ within
                 __:::__: Elem*Poly[Elem] -> Poly[Elem];
 		__ + __: Poly[Elem] * Poly[Elem] -> Poly[Elem];
 		__ * __: Poly[Elem] * Poly[Elem] -> Poly[Elem]
-          vars
+          forall
                a: Elem; p: Poly[Elem]
           .
                0 = []             %(Poly_0)%
@@ -149,7 +149,7 @@ within
                {ExtCommutativeRing[CommutativeRing] with
                          sort Elem |-> Poly[Elem]}
      then
-          vars
+          forall
                p, q: Poly[Elem]; a, b: Elem
           .
                p + 0 = p             %(add_Polynomial_zero_def)%
@@ -162,7 +162,7 @@ within
 		(0:::(0:::(p * q)))             %(mult_Polynomial_cons_def)%
      then
           %implies
-          vars
+          forall
                p,q:Poly[Elem]
           .
                degree(p) <= degree(q) => degree(p+q) <= degree(q)             %(degree_sum)%
@@ -179,7 +179,7 @@ view
 	{Polynomial [Field]
 	  then
 	     op natdegree: Poly[Elem] ->? Nat
-	     var p: Poly[Elem]
+	     forall p: Poly[Elem]
 	     .
 		natdegree(p) = degree(p) as Nat             %(Poly_natdegree_def)%
 	} =

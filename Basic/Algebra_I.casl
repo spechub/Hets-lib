@@ -52,7 +52,7 @@ spec
 		    ops __ + __, __ * __: Exponent * Exponent -> Exponent] =
      SigPowerBinAlg [sort Exponent]
 then
-     vars x: Elem; n,m: Exponent
+     forall x: Elem; n,m: Exponent
      .    x ^ (n + m)=x ^ n * x ^ m             %(Power_add)%
      .    x ^ (n * m)=(x ^ n) ^ m             %(Power_mult)%
 end
@@ -63,7 +63,7 @@ spec
 %def
      SigPowerBinAlg [sort Pos]
 then
-     vars
+     forall
           x: Elem; n: Pos
      .
           x ^ 1 = x             %(SemiGroup_power_1)%
@@ -86,7 +86,7 @@ spec
 		ops __ + __, __ * __: Exponent * Exponent -> Exponent] =
      SigPowerBinAlg [sort Exponent]
 then
-     vars x,y: Elem; n: Exponent
+     forall x,y: Elem; n: Exponent
      .
           x^ n * y^ n=(x*y)^ n             %(Power_basemult)%
 end
@@ -116,13 +116,13 @@ spec
 then 
      SigPowerBinAlg [sort Nat]
 then
-     var
+     forall
           x: Elem
      .
           x ^ 0 = e             %(Monoid_power_0)%
 then
      %implies
-     {vars
+     {forall
           x: Elem; n,m: Nat
      .    
 	  e ^ n = e             %(Monoid_power_unit)%
@@ -187,7 +187,7 @@ spec
      Group =
      Monoid
 then
-     var x: Elem
+     forall x: Elem
      .
 	exists x': Elem . x' * x = e
 end
@@ -201,7 +201,7 @@ then
      ops
            inv: Elem -> Elem;
            __ / __: Elem * Elem -> Elem;
-     vars
+     forall
           x,y: Elem
      .
           inv(x) * x = e             %(Group_inverse_def)%
@@ -210,13 +210,13 @@ then
 then
      SigPowerBinAlg [sort Int]
 then
-     vars
+     forall
           x: Elem; p: Pos
      .
           x^ minus(p)=inv(x ^ p)             %(ExtGroup_power_neg)%
 then
      %implies
-     {vars x,y,z: Elem; n,m: Int
+     {forall x,y,z: Elem; n,m: Int
      .
 	  x * inv(x) = e             %(Group_right_inv)%
      .
@@ -265,7 +265,7 @@ spec
           Space
      op
           __*__: Elem * Space -> Space
-     vars
+     forall
           x: Space; a,b: Elem
      .
           e * x = x             %(MonoidAction_unit)%
@@ -279,7 +279,7 @@ spec
      ExtMonoid [Monoid]
 then 
      pred connected: Space * Space
-     var x,y: Space
+     forall x,y: Space
      .
 	  connected(x,y) <=> 
 		exists a: Elem . a * x = y             %(Action_connected_def)%
@@ -304,7 +304,7 @@ and
      ExtGroup [Group]
 then
      %implies
-     var a,b:Elem; x,y: Space
+     forall a,b:Elem; x,y: Space
      .
 	x = y if a * x = a * y             %(GroupAct_inj)%
      .
@@ -327,7 +327,7 @@ and
      Monoid with ops e, __*__
 then
      %prec { __ + __ } < { __ * __ }
-     vars
+     forall
           x,y,z:Elem
      .
           (x + y) * z = (x * z) + (y * z)             %(Ring_distr1)%
@@ -359,7 +359,7 @@ and
            NonZero[Elem] = { x: Elem . not x = 0 };
            RUnit[Elem] = { x: Elem . isUnit(x) };
            Irred[Elem] = { x: Elem . isIrred(x) }
-     vars
+     forall
           x,y: Elem
      .
           isUnit(x) <=> 
@@ -393,7 +393,7 @@ then
            hasNoZeroDivisors: ();
            __ divides __ :    Elem * Elem;
            associated:        Elem * Elem
-     vars
+     forall
           x,y: Elem
      .
           hasNoZeroDivisors <=> forall x,y: Elem . (x * y = 0 => x=0 \/ y=0)             %(hasNoZeroDivisors_def)%
@@ -403,7 +403,7 @@ then
           associated(x,y) <=> exists u:RUnit[Elem]. x=u*y             %(associated_def)%
 then
      %implies
-     vars
+     forall
           x,y:Elem
      .
           associated(x,y) <=> (x divides y /\ y divides x)
@@ -454,7 +454,7 @@ spec
 then
      op
           delta: Elem ->? Nat
-     vars
+     forall
           a,b: Elem
      .
           def delta(a) if not a = 0             %(ER_delta_dom)%
@@ -535,7 +535,7 @@ then
      op
            __ / __: Elem * Elem ->? Elem;
            __ / __: Elem * NonZero[Elem] -> Elem
-     vars
+     forall
           x:Elem; n: NonZero[Elem]
      .
           0/n=0             %(ExtField_div_def1)%
@@ -543,7 +543,7 @@ then
           not def x/0             %(ExtField_div_def2)%
 then
      %implies
-     vars
+     forall
           x,y:Elem
      .
           def x/y <=> not y=0             %(ExtField_div_dom)%
