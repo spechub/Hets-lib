@@ -1,12 +1,14 @@
 library Basic/MachineNumbers
-version 0.5 
+version 0.7
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 23.3.01
 
 
 
 from
-     Basic/RelationsAndOrders version 0.5 get SigOrder
+     Basic/RelationsAndOrders version 0.7 get SigOrder
 from
-     Basic/Numbers version 0.5 get Nat, Int
+     Basic/Numbers version 0.7 get Nat, Int
 
 spec
      CARDINAL  [op Wordlength: Nat] given Nat =
@@ -16,10 +18,8 @@ then
           CARDINAL ::= natToCard (cardToNat : Nat)?
      forall
           x : Nat; c:CARDINAL
-     .
-          def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1             %(natToCard_dom)%
-     .
-          natToCard (cardToNat(c)) = c             %(natToCard_def)%
+     . def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1  %(natToCard_dom)%
+     . natToCard (cardToNat(c)) = c                     %(natToCard_def)%
 then
      SigOrder[sort CARDINAL]
 then
@@ -35,30 +35,20 @@ then
            __ div __,
            __ mod __:   CARDINAL * CARDINAL ->? CARDINAL;
      axiom
-           maxCardinal= (2 ^ Wordlength) -? 1;       %(maxCardinal_Nat)%
-           maxCardinal= natToCard(maxCardinal)       %(maxCardinal_CARDINAL)%   
+           maxCardinal= (2 ^ Wordlength) -? 1;              %(maxCardinal_Nat)%
+           maxCardinal= natToCard(maxCardinal)              %(maxCardinal_CARDINAL)%   
      forall
           x,y: CARDINAL
-     .
-          natToCard(0) = 0             %(def_0_CARDINAL)%
-     .
-          natToCard(1) = 1             %(def_1_CARDINAL)%
-     .
-          x <= y <=> cardToNat(x) <= cardToNat(y)             %(leq_CARDINAL)%
-     .
-          + x = natToCard(+ cardToNat(x))             %(plus_CARDINAL)%
-     .
-          abs(x) = natToCard(abs(cardToNat(x)))             %(abs_CARDINAL)%
-     .
-          x + y = natToCard(cardToNat(x) + cardToNat(y))             %(add_CARDINAL)%
-     .
-          x-y = natToCard(cardToNat(x) -? cardToNat(y))             %(sub_CARDINAL)%
-     .
-          x*y = natToCard(cardToNat(x) * cardToNat(y))             %(mult_CARDINAL)%
-     .
-          x div y = natToCard(cardToNat(x) div cardToNat(y))             %(div_CARDINAL)%
-     .
-          x mod y = natToCard(cardToNat(x) mod cardToNat(y))             %(mod_CARDINAL)%
+     . natToCard(0) = 0                                     %(def_0_CARDINAL)%
+     . natToCard(1) = 1                                     %(def_1_CARDINAL)%
+     . x <= y <=> cardToNat(x) <= cardToNat(y)              %(leq_CARDINAL)%
+     . + x = natToCard(+ cardToNat(x))                      %(plus_CARDINAL)%
+     . abs(x) = natToCard(abs(cardToNat(x)))                %(abs_CARDINAL)%
+     . x + y = natToCard(cardToNat(x) + cardToNat(y))       %(add_CARDINAL)%
+     . x-y = natToCard(cardToNat(x) -? cardToNat(y))        %(sub_CARDINAL)%
+     . x*y = natToCard(cardToNat(x) * cardToNat(y))         %(mult_CARDINAL)%
+     . x div y = natToCard(cardToNat(x) div cardToNat(y))   %(div_CARDINAL)%
+     . x mod y = natToCard(cardToNat(x) mod cardToNat(y))   %(mod_CARDINAL)%
 then
      %implies
      ops
@@ -68,16 +58,11 @@ then
                     assoc, comm, unit 1;
      forall
           x,y: CARDINAL
-     .
-          def x+y <=> cardToNat(x) + cardToNat(y) <= maxCardinal             %(add_CARDINAL_dom)%
-     .
-          def x-y <=> x >= y             %(sub_CARDINAL_dom)%
-     .
-          def x*y <=> cardToNat(x) * cardToNat(y) <= maxCardinal             %(mult_CARDINAL_dom)%
-     .
-          def x div y <=> not y=0             %(div_CARDINAL_dom)%
-     .
-          def x mod y <=> not y=0             %(mod_CARDINAL_dom)%
+     . def x+y <=> cardToNat(x) + cardToNat(y) <= maxCardinal   %(add_CARDINAL_dom)%
+     . def x-y <=> x >= y                                       %(sub_CARDINAL_dom)%
+     . def x*y <=> cardToNat(x) * cardToNat(y) <= maxCardinal   %(mult_CARDINAL_dom)%
+     . def x div y <=> not y=0                                  %(div_CARDINAL_dom)%
+     . def x mod y <=> not y=0                                  %(mod_CARDINAL_dom)%
 end
 
 spec
@@ -88,12 +73,10 @@ then
           INTEGER ::= intToInteger (integerToInt: Int)?
      forall
           x:Int; i:INTEGER
-     .
-          def intToInteger(x) <=>
+     . def intToInteger(x) <=>
            - (2 ^ (Wordlength-?1)) <= x /\
            x <= (2 ^ (Wordlength-?1)) -1             %(intToInteger_dom)%
-     .
-          intToInteger (integerToInt(i)) = i             %(intToInteger_def)%
+     . intToInteger (integerToInt(i)) = i            %(intToInteger_def)%
 then
      SigOrder[sort INTEGER]
 then
@@ -121,39 +104,25 @@ then
            minInteger=intToInteger(minInteger)             %(minInteger_INTEGER)%  
      forall
           x,y: INTEGER
-     .
-          intToInteger(0) = 0             %(def_0_INTEGER)%
-     .
-          intToInteger(1) = 1             %(def_1_INTEGER)%
-     .
-          x <= y <=> integerToInt(x) <= integerToInt(y)             %(leq_INTEGER)%
-     .
-          + x = x             %(plus_INTEGER)%
-     .
-          - x = intToInteger( - integerToInt(x) )             %(minus_INTEGER)%
-     .
-          abs(x) = intToInteger( abs( integerToInt(x)) )             %(abs_INTEGER)%
-     .
-          x + y = intToInteger( integerToInt(x) +
-          integerToInt(y))             %(add_INTEGER)%
-     .
-          x - y = intToInteger( integerToInt(x) -
-          integerToInt(y) )             %(sub_INTEGER)%
-     .
-          x * y = intToInteger( integerToInt(x) *
-          integerToInt(y))             %(mult_INTEGER)%
-     .
-          x / y = intToInteger( integerToInt(x) /?
-          integerToInt(y))             %(divide_INTEGER)%
-     .
-          x div y = intToInteger (integerToInt(x) div integerToInt(y))             %(div_INTEGER)%
-     .
-          x mod y = intToInteger( integerToInt(x) mod integerToInt(y))             %(mod_INTEGER)%
-     .
-          x quot y = intToInteger( integerToInt(x) quot integerToInt(y))             %(quot_INTEGER)%
-     .
-          x rem y = intToInteger( integerToInt(x) rem
-          integerToInt(y))             %(rem_INTEGER)%
+     . intToInteger(0) = 0                                            %(def_0_INTEGER)%
+     . intToInteger(1) = 1                                            %(def_1_INTEGER)%
+     . x <= y <=> integerToInt(x) <= integerToInt(y)                  %(leq_INTEGER)%
+     . + x = x                                                        %(plus_INTEGER)%
+     . - x = intToInteger( - integerToInt(x) )                        %(minus_INTEGER)%
+     . abs(x) = intToInteger( abs( integerToInt(x)) )                 %(abs_INTEGER)%
+     . x + y = intToInteger( integerToInt(x) +
+          integerToInt(y))                                            %(add_INTEGER)%
+     . x - y = intToInteger( integerToInt(x) -
+          integerToInt(y) )                                           %(sub_INTEGER)%
+     . x * y = intToInteger( integerToInt(x) *
+          integerToInt(y))                                            %(mult_INTEGER)%
+     . x / y = intToInteger( integerToInt(x) /?
+          integerToInt(y))                                            %(divide_INTEGER)%
+     . x div y = intToInteger (integerToInt(x) div integerToInt(y))   %(div_INTEGER)%
+     . x mod y = intToInteger( integerToInt(x) mod integerToInt(y))   %(mod_INTEGER)%
+     . x quot y = intToInteger( integerToInt(x) quot integerToInt(y)) %(quot_INTEGER)%
+     . x rem y = intToInteger( integerToInt(x) rem
+          integerToInt(y))                                            %(rem_INTEGER)%
 then
      %implies
      ops
@@ -164,28 +133,18 @@ then
                     assoc, comm, unit 1;
      forall
           x,y:INTEGER
-     .
-          def - x <=> integerToInt(x) >= minInteger + 1             %(minus_INTEGER_dom)%
-     .
-          def abs(x) <=> integerToInt(x) >= minInteger + 1             %(abs_INTEGER_dom)%
-     .
-          def x + y <=> minInteger <= integerToInt(x) + integerToInt(y) /\
-                         integerToInt(x) + integerToInt(y) <= maxInteger             %(add_INTEGER_dom)%
-     .
-          def x - y <=> minInteger <= integerToInt(x) - integerToInt(y) /\
-                         integerToInt(x) - integerToInt(y) <= maxInteger             %(sub_INTEGER_dom)%
-     .
-          def x * y <=> minInteger <= integerToInt(x) * integerToInt(y) /\
-                         integerToInt(x) * integerToInt(y) <= maxInteger             %(mult_INTEGER_dom)%
-     .
-          def x / y <=> def intToInteger(integerToInt(x)/?integerToInt(y))             %(divide_INTEGER_dom)%
-     .
-          def x div y <=> not y=0             %(div_INTEGER_dom)%
-     .
-          def x mod y <=> not y=0             %(mod_INTEGER_dom)%
-     .
-          def x quot y <=> not y=0             %(quot_INTEGER_dom)%
-     .
-          def x rem y <=> not y=0             %(rem_INTEGER_dom)%
+     . def - x <=> integerToInt(x) >= minInteger + 1                       %(minus_INTEGER_dom)%
+     . def abs(x) <=> integerToInt(x) >= minInteger + 1                    %(abs_INTEGER_dom)%
+     . def x + y <=> minInteger <= integerToInt(x) + integerToInt(y) /\
+                         integerToInt(x) + integerToInt(y) <= maxInteger   %(add_INTEGER_dom)%
+     . def x - y <=> minInteger <= integerToInt(x) - integerToInt(y) /\
+                         integerToInt(x) - integerToInt(y) <= maxInteger   %(sub_INTEGER_dom)%
+     . def x * y <=> minInteger <= integerToInt(x) * integerToInt(y) /\
+                         integerToInt(x) * integerToInt(y) <= maxInteger   %(mult_INTEGER_dom)%
+     . def x / y <=> def intToInteger(integerToInt(x)/?integerToInt(y))    %(divide_INTEGER_dom)%
+     . def x div y <=> not y=0                                             %(div_INTEGER_dom)%
+     . def x mod y <=> not y=0                                             %(mod_INTEGER_dom)%
+     . def x quot y <=> not y=0                                            %(quot_INTEGER_dom)%
+     . def x rem y <=> not y=0                                             %(rem_INTEGER_dom)%
 end
 
