@@ -10,28 +10,20 @@ library HasCASL/Set
 %prec {__+__} < {__*__,__div__}
 %prec {__=__} < {__o__,__<__}
 
-from HasCASL/Categories get Category, Coproduct, Coequalizer, 
-                            PushoutAsCoequalizerOfCoproduct
-
-logic HasCASL
+logic CASL
 
 spec Bool = 
   sort Bool
   ops False, True : Bool;
 end
 
-spec Nat = 
-  sort Nat
-  ops __+__,__*__,__div__ : Nat*Nat->Nat;
-      0,1,2 : Nat
-  pred __<__ : Nat*Nat;
-end
+from Basic/Numbers get Nat
 
-spec List =
-  var Elem: Type+
-  free type List Elem ::= nil | cons(Elem; List Elem)
-end
+logic HasCASL
 
+
+from HasCASL/Categories get Category, Coproduct, Coequalizer, 
+                            PushoutAsCoequalizerOfCoproduct
 
 %{ Typed sets are represented by predicates over the type.
    Set membership is just holding of the predicate: x isIn s <=> s x
