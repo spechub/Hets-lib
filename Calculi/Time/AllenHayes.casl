@@ -1,7 +1,7 @@
 library Calculi/Time/AllenHayes
 version 0.1 
 
-%author: S. Wölfl, T. Mossakowski
+%author: S. Wölfl
 %date: 22-10-04
 
 %{
@@ -207,8 +207,11 @@ end
 
 
 
-spec ExtAllenHayes [AllenHayes] =  ExtBaseAllenHayes [BaseAllenHayes]
-spec ExtAllenHayesLadkin [AllenHayesLadkin] = ExtBaseAllenHayes [BaseAllenHayes]
+spec ExtAllenHayes [AllenHayes] =  
+     ExtBaseAllenHayes [BaseAllenHayes]
+
+spec ExtAllenHayesLadkin [AllenHayesLadkin] = 
+     ExtBaseAllenHayes [BaseAllenHayes]
 
 
 spec RichBaseAllenHayes	  = ExtBaseAllenHayes [BaseAllenHayes]
@@ -219,7 +222,7 @@ spec RichAllenHayesLadkin = ExtAllenHayesLadkin [AllenHayesLadkin]
 
 
 spec ConstructPointsFromIntervals =
-     BaseAllenHayes
+     AllenHayesLadkin   %%% BaseAllenHayes is not sufficient
 then %def
      preds  __ __ Equiv __ __: Interval * Interval * Interval * Interval;
 	    __ __ PointLess __ __: Interval * Interval * Interval * Interval
@@ -239,7 +242,7 @@ then %implies
 
      . x M y => not(x y PointLess x y)			%(PointLess_irrefl)%
      . x y PointLess z u /\ z u PointLess v w => x y PointLess v w 
-							%(PointLess_trans)%    
+	   						%(PointLess_trans)%    
      . x M y /\ z M u => (x y PointLess z u \/ x y Equiv z u  \/ 
 			      z u PointLess x y)
 							%(PointLess_linear)%
