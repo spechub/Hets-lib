@@ -19,7 +19,7 @@ from Basic/Numbers get Nat
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Auxiliary get Set
 from Calculi/Algebra/Auxiliary get AtomicBooleanAlgebra 
-from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
+from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra,RelationAlgebra
 
 
 
@@ -49,6 +49,10 @@ then %def
      . compl(r) = 1 - r
 
 then %implies
+     ops
+	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+          __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+ 
      forall x,y:BaseRel; r:Rel
      . not x = y => x cap y = 0		
      . exists z:BaseRel . z eps r
@@ -67,8 +71,8 @@ end
 spec RelationBase[sort BaseRel] = 
      SetRepresentationOfRelations[sort BaseRel]
 then
-     ops	 	 
-         id      : BaseRel;
+     ops
+         id	 : BaseRel;	 	 
 	 conv    : BaseRel -> BaseRel; 
          __cmps__: BaseRel * BaseRel -> Rel
      forall x:BaseRel
@@ -79,27 +83,26 @@ then
 end
 
 
+
 spec GenerateRelationAlgebra[RelationBase[sort BaseRel]] = %mono
      ops 
-          %% id   : Rel;
+	  id	  : Rel;
           conv    : Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel, assoc, unit id;       
+	  __cmps__: Rel * Rel -> Rel       
 
      forall x,y:BaseRel; u,v:Rel
+     . conv(u cup x) = conv(u) cup conv(x)
      . (u cup x) cmps (v cup y) =
 	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
-     . conv(u cup x) = conv(u) cup conv(x)
+
+then %implies
+     op __cmps__: Rel * Rel -> Rel, assoc, unit id;       
 end
 
 
-%[
+
 spec GeneratedRelationAlgebra = 
      GenerateRelationAlgebra[RelationBase[sort BaseRel]]
-
-
-view GeneratedRelationAlgebra_as_RelationAlgebra:
-     RelationAlgebra to GeneratedRelationAlgebra 
-end 
 
 
 view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
@@ -118,16 +121,16 @@ to
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 
-]%
+
 
 
 spec CompositionTable =
      sorts BaseRel < Rel
      ops 
-        1:Rel;
+          1      : Rel;
 	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
             compl: Rel -> Rel;
-	     conv: BaseRel -> Rel;
+	     conv: BaseRel -> BaseRel;
 	 __cmps__: BaseRel * BaseRel -> Rel;
 end
 
@@ -140,29 +143,43 @@ end
 )%
 
 
-spec BaseRelationsOfCalculus =
+spec BaseRelationsOfCalculus = %mono
      free type BaseRel ::= relation1 | relation2
 end
 
 
 spec CompositionTableOfCalculus =
-     CompositionTable
+     sort BaseRel
+     ops relation1,relation2: BaseRel    
+and
+     CompositionTable 
+then
+     . conv(relation1) = relation1
+     . conv(relation2) = relation2
+     . relation1 cmps relation1 = relation1
+     . relation1 cmps relation2 = relation2
+     . relation2 cmps relation1 = relation2
+     . relation2 cmps relation2 = relation2
 end
 
 
 spec RelationBaseOfCalculus = 
-     SetRepresentationOfRelations[BaseRelationsOfCalculus]
+     SetRepresentationOfRelations[BaseRelationsOfCalculus] 
 and
      CompositionTableOfCalculus
 end
 
 
+
 view RelationBaseOfCalculus_as_RelationBase[BaseRelationsOfCalculus] :
      RelationBase[sort BaseRel] to RelationBaseOfCalculus
+=
+     op id:BaseRel |-> relation1
 end
 
+
 spec Calculus = 
-     GenerateRelationAlgebra [RelationBaseOfCalculus]  
+     GenerateRelationAlgebra [RelationBaseOfCalculus fit op id:BaseRel |-> relation1]
 end
 
 
