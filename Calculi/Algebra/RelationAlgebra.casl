@@ -31,13 +31,13 @@ spec RelationAlgebra  =
 then
      ops
 	        id: Rel;
-	    conv__: Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel
+	    conv__: Rel -> Rel, idem;
+	  __cmps__: Rel * Rel -> Rel, assoc, unit id
 	
      forall x,y,z: Rel
-     . (x cmps y) cmps z = x cmps (y cmps z)            	%(cmps_assoc)%
-     . x cmps id = x /\ id cmps x = x				%(cmps_unit_id)%
-     . conv(conv(x)) = x					%(conv_idempot)%
+%%     . (x cmps y) cmps z = x cmps (y cmps z)            	%(cmps_assoc)%
+%%     . x cmps id = x /\ id cmps x = x				%(cmps_unit_id)%
+%%     . conv(conv(x)) = x					%(conv_idempot)%
      . conv(x cup y) = conv(x) cup conv(y)			%(conv_cup)%
      . conv(compl(x)) = compl(conv(x))				%(conv_compl)%
      . conv(x cmps y) = conv(y) cmps conv(x)			%(conv_cmps)%
@@ -72,9 +72,26 @@ spec IntegralRelationAlgebra =
      RelationAlgebraWithPartialOrder
 then 
      . Atom(id)
+then %implies
+     forall x,y:Rel
+     . x cmps y = 0 => x=0 \/ y = 0
 end
 
+spec SymmetricRelationAlgebra =
+     RelationAlgebra
+then 
+     forall x:Rel
+     . conv(x) = x
+end
 
+spec CommutativeRelationAlgebra =
+     RelationAlgebra
+then 
+     op
+	  __cmps__: Rel * Rel -> Rel, assoc, comm, unit id
+end
+
+	
 spec AtomicRelationAlgebra = 
      RelationAlgebraWithPartialOrder
 and
