@@ -150,11 +150,20 @@ from  HasCASL/Topology get RegularClosedSets
 
 logic HasCASL
 
-view RCC_in_Topology : 
+view RCC_in_Topology_closed : 
   { RCC_FirstOrder reveal __C__ }
   to 
   { RegularClosedSets then
     pred __C__ (X,Y:RegularClosed) <=> not X disjoint Y
   } =
   Reg |-> RegularClosed
+end
+
+view RCC_in_Topology_open : 
+  { RCC_FirstOrder reveal __C__ }
+  to 
+  { RegularClosedSets then
+    pred __C__ (X,Y:RegularOpen) <=> not cls(X) disjoint cls(Y)
+  } =
+  Reg |-> RegularOpen
 end

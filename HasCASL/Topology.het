@@ -134,6 +134,31 @@ then %implies
 end
 
 
+spec RegularClosedSets =
+  RichTopologicalSpace_Kuratowski
+then %def
+  ops regularClosed : Set(Set S) = \X:Set S . X=cls(int(X));
+      regularOpen : Set(Set S) = \X:Set S . X=int(cls(X))
+  types RegularClosed = {X:Set S . regularClosed X};
+        RegularOpen = {X:Set S . regularOpen X}
+end
+
+from Basic/RelationsAndOrders get BooleanAlgebra
+
+%(view BooleanAlgebra_in_RegularClosedSets 
+     : BooleanAlgebra to { RegularClosedSets then
+         ops emptySet, allSet : RegularClosed;
+             __union__,__intersection__ :
+                  RegularClosed * RegularClosed -> RegularClosed;
+             __cap__(X,Y:RegularClosed):RegularClosed = 
+                  cls(int(X intersection Y))
+     }
+      =
+  Elem |-> RegularClosed, 0 |-> emptySet, 1 |-> allSet,
+  __cup__ |-> __union__, __cap__
+end
+)%
+
 from HasCASL/MetricSpaces get MetricSpace
 
 view MetricInducesTopology : TopologicalSpace_Ngh to 
