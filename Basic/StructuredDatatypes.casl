@@ -609,6 +609,8 @@ then %def
         isLeaf:  NTree[Elem];
         isCompoundTree: NTree[Elem];
         __eps__ : Elem * NTree[Elem];
+        __ is __ branching: NTree[Elem] * Nat 
+
   ops   height: NTree[Elem] -> Nat;
         maxHeight: List[NTree[Elem]] -> Nat;
         leaves: NTree[Elem] -> Set[Elem];
@@ -616,7 +618,8 @@ then %def
 
   forall x,y: Elem; 
          T: NTree[Elem];
-         L: List[NTree[Elem]]
+         L: List[NTree[Elem]];
+         n: Nat
 
   %% axioms concerning predicates
 
@@ -627,7 +630,7 @@ then %def
       forall T:NTree[Elem].
         T eps L => T = nil                 %(isLeaf_nTree)%
 
-  . not isCompoundTree(nil)                   %(isCompoundTree_nil_NTree)%
+  . not isCompoundTree(nil)                %(isCompoundTree_nil_NTree)%
   . isCompoundTree(nTree(x,L)) <=> 
       not isLeaf(nTree(x,L))               %(isCompoundTree_nTree)%
 
@@ -636,6 +639,13 @@ then %def
       (x = y \/ 
       exists T:NTree[Elem].
         T eps L /\  x eps T)               %(eps_nTree)%
+
+  . nil is n branching                     %(isKbranching_nil_NTree)%
+  . nTree(x,L) is n branching <=>
+      L = [] \/   
+     (# L = n /\
+        forall T: NTree[Elem]. 
+           T eps L => T is n branching)    %(isKbranching_nTree_NTree)%
 
   %% axioms concerning operations
 
@@ -690,11 +700,12 @@ then %def
         isLeaf:  NTree2[Elem];
         isCompoundTree: NTree2[Elem];
         __eps__ : Elem * NTree2[Elem];
+        __ is __ branching: NTree2[Elem] * Nat 
 
   ops   branches: NTree2[Elem] -> NonEmptyList[NonEmptyNTree2[Elem]];
-        h: List[NonEmptyNTree2[Elem]] * Nat -> Nat;  %%	helps defining height
+        h: List[NonEmptyNTree2[Elem]] * Nat -> Nat; %% helps defining height
         height: NTree2[Elem] -> Nat;
-        l: List[NonEmptyNTree2[Elem]] -> Set[Elem];  %%	helps defining leaves
+        l: List[NonEmptyNTree2[Elem]] -> Set[Elem]; %% helps defining leaves
         leaves: NTree2[Elem] -> Set[Elem]
 
   forall x,y: Elem; 
@@ -720,6 +731,14 @@ then %def
   . x eps nTree(L) <=>
       exists T: NonEmptyNTree2[Elem]. 
         T eps L /\ x eps T                 %(eps_nTree_NTree2)%
+  . not x eps nil                          %(eps_nil_NTree2)%
+
+  . leaf(x) is n branching                 %(isKbranching_leaf_NTree2)%
+  . nTree(L) is n branching <=>
+      # L = n /\ 
+      (forall T: NonEmptyNTree2[Elem] .
+         T eps L => T is n branching )     %(isKbranching_nTree_NTree2)%
+  . nil is n branching                     %(isKbranching_nil_NTree2)%
 
   %% axioms concerning operations
 
@@ -727,7 +746,7 @@ then %def
 
   . h([],n)  = n                           %(h_nil_nTree2)%
   . h(NT::K,n) = max(height(NT), h(K,n))   %(n_cons_nTree2)%
-
+ 
   . height(leaf(x)) = 1                    %(height_leaf_nTree2)%
   . height(nTree(L))= h(L,0) + 1           %(height_nTree_nTree2)%
   . height(nil) = 0                        %(height_nil_nTree2)%   
@@ -744,17 +763,12 @@ end
 spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] = %mono
   NTree [sort Elem]
 then %mono
-  sort KTree[Elem] = { nTree: NTree[Elem] .
-                       nTree = nil \/ # branches(nTree) = k }
+  sort KTree[Elem] = { T : NTree[Elem] . T is k branching}
 end
 
 spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  %mono
   NTree2 [sort Elem]
 then %mono
-  sort KTree2[Elem] = { t: NTree2[Elem] .
-                          exists e:Elem. t=leaf(e) \/
-                          # branches(t) = k        \/
-                          t = nil 
-                      }
+  sort KTree2[Elem] = { T : NTree2[Elem] . T is k branching}
 end
 
