@@ -8,35 +8,32 @@ logic CASL
 from Basic/Numbers get Nat
 from Basic/Algebra_I get OrderedField
 
-Flexible translations
+Explicit translations
 ---------------------
 logic HasCASL
 
-%% Reals via convergence of Cauchy sequences
 spec DefineHigherOrderReal1 = 
-   logic CASL: Nat with logic --> HasCASL
-and logic CASL: OrderedField with logic --> HasCASL with Elem |-> Real 
+   logic CASL Nat with logic --> HasCASL
+and logic CASL OrderedField with logic --> HasCASL with Elem |-> Real 
 then ...
 
-Alternative syntax: Translations only as LIB-ITEMs
---------------------------------------------------
+ %% Scope of "logic CASL" is just the following GROUP-SPEC
 
-translate Nat:CASL --> HNat:HasCASL
-translate OrderedField:CASL --> HOrderedField:HasCASL
+Implicit translations
+---------------------
 
 logic HasCASL
 
-%% Reals via convergence of Cauchy sequences
 spec DefineHigherOrderReal1 = 
-   HNat 
-and HOrderedField with Elem |-> Real 
-then
+  Nat
+  and  OrderedField with Elem |-> Real 
+then ...
 
 with versus hide
 ----------------
 
 spec Real =
-  logic CASL : Nat with logic --> HasCASL
+  logic CASL : Nat with logic -> HasCASL
   then ... %%definition of reals
   hide logic --> CASL  %% projection back to CASL
 end
@@ -45,29 +42,23 @@ Named translations
 ------------------
 
 spec Sp =
-  logic CASL : Nat with logic encoding1 -> HasCASL
+  logic CASL : Nat with logic encoding1:CASL -> HasCASL
 and
-  logic CASL : Nat with logic encoding2 -> HasCASL
+  logic CASL : Nat with logic encoding2:CASL -> HasCASL,
   type sort Nat |-> Nat2
 end
 
 
-Making the source explicit (unnessecary feature?)
--------------------------------------------------
+Making the source explicit
+--------------------------
 
 spec Sp =
-  logic CASL : Nat with logic CASL --> HasCASL
+  logic CASL : Nat with logic CASL -> HasCASL
 and
-  logic CASL : Nat with logic CASL --> HasCASL
+  logic CASL : Nat with logic CASL -> HasCASL
   with type Nat |-> Nat2
 end
 
-spec Sp =
-  logic CASL : Nat with logic CASL -- encoding1 -> HasCASL
-and
-  logic CASL : Nat with logic CASL -- encoding2 -> HasCASL
-  with type Nat |-> Nat2
-end
 
 Just use the name of the logic translation
 ------------------------------------------
@@ -79,8 +70,8 @@ and
   with type Nat |-> Nat2
 end
 
-Join two withs in one?
-----------------------
+Join two withs in one
+---------------------
 
 spec Sp =
   logic CASL : Nat with logic encoding1
@@ -91,17 +82,9 @@ end
 Views: intra, inter, intra
 --------------------------
 
-logic CASL
-view v : SPEC1 to SPEC2 =
-  op f:s->t |-> g,  %% CASL syntax
-  logic CASL --> HasCASL,
-  op p:Pred(s) |-> q  %% HasCASL syntax
-end
-
-%% Alternative possibility
 view v : {logic CASL : SPEC1} to SPEC2 =
   op f:s->t |-> g,  %% CASL syntax
-  logic CASL --> HasCASL,
+  logic CASL -> HasCASL,
   op p:Pred(s) |-> q  %% HasCASL syntax
 end
 
@@ -111,12 +94,12 @@ Sublogics
 spec Nat =
   logic CASL.PCFOL= :
   free type Nat ::= 0 | suc(pre:?Nat)
-  hide logic --> CASL.CFOL=  %% Hides the operation pre
+  hide logic -> CASL.CFOL=  %% Hides the operation pre
 end
 
 spec Nat =
   free type Nat ::= 0 | suc(pre:?Nat)
-  hide logic --> CASL.Eq=  %% Hides the operation pre and axioms (which still take effect)
+  hide logic -> CASL.Eq=  %% Hides the operation pre and axioms (which still take effect)
 end
 
 Larger example
@@ -133,8 +116,8 @@ logic HasCASL
 
 %% Reals via convergence of Cauchy sequences
 spec DefineHigherOrderReal1 = 
-   logic CASL: Nat with logic --> HasCASL
-and logic CASL: OrderedField with logic --> HasCASL with Elem |-> Real 
+  Nat
+and OrderedField with Elem |-> Real 
 then
   ops  __ < __ : pred(Real * pred(Real)); 
        __ < __ : pred(pred(Real) * Real); 
@@ -184,7 +167,7 @@ end
 
 %% Reals via suprema and infima of bounded sets
 spec DefineHigherOrderReal2 = 
-  OrderedField with logic --> HasCASL with Elem |-> Real 
+  OrderedField with Elem |-> Real 
 then
   ops __ < __ : pred(Real * pred(Real)); 
       __ < __ : pred(pred(Real) * Real); 
@@ -206,7 +189,7 @@ logic CoCASL
 
 %% Reals coalgebraically
 spec DefineCoCASLReal1 =
-  logic CASL : Nat with logic --> CoCASL
+  Nat
 then
   free type Bit ::= 0 | 1
   cofree types BinSeq ::= (head:Bit; tail:BinSeq)
@@ -288,33 +271,30 @@ end
 
 
 view RealEquivalence1 : 
-     { logic HasCASL: DefineHigherOrderReal1 
+     { DefineHigherOrderReal1 
        reveal sort Real, ops 0,1,__+__,__*__,__<__
-       hide logic --> CASL }
+       hide logic -> CASL }
      to     
      { logic CoCASL: DefineCoCASLReal1
-       hide logic --> CASL }
+       hide logic -> CASL }
 end
 
 %% Should we provide the following alternative notation?
 
 view RealEquivalence1a : 
-     { logic HasCASL: DefineHigherOrderReal1 
+     { DefineHigherOrderReal1 
        reveal sort Real, ops 0,1,__+__,__*__, __<__
-       hide logic --> CASL}
+       hide logic -> CASL}
      to 
      DefineCoCASLReal1 =
-     logic CASL --> CoCASL
+     logic CASL -> CoCASL
 end
 
 view RealEquivalence2 : 
-     { logic HasCASL: DefineHigherOrderReal2 
+     { DefineHigherOrderReal2 
        reveal sort Real, ops 0,1,__+__,__*__, pred __<__
-       hide logic --> CASL }
+       hide logic -> CASL }
      to 
      { logic CoCASL: DefineCoCASLReal1
-       hide logic --> CASL }
+       hide logic -> CASL }
 end
-
-
-
