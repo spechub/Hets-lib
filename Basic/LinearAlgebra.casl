@@ -7,8 +7,8 @@ from
      Basic/Algebra_I version 0.4 get
      AbelianGroup, ExtAbelianGroup, Monoid, ExtMonoid,
      Group, ExtGroup, MonoidAction, ExtMonoidAction,
-     GroupAction, ExtGroupAction, Ring, ExtRing,
-     CommutativeRing, ExtCommutativeRing, Field, ExtField
+     GroupAction, ExtGroupAction, Ring, AbelianGroup_in_Ring_add,
+     ExtRing, CommutativeRing, ExtCommutativeRing, Field, ExtField
 from
      Basic/PreNumbers version 0.4 get PreNat, PreInt
 from 
@@ -266,22 +266,22 @@ spec
      {{Array [ops 1,n: Int fit ops min |-> 1, max |-> n]
 	[sort Space fit sort Elem|-> Space]
           with sorts
-           Index |-> Index[n], Array[Space]}
-	  hide sorts FinSet[Space], FinSet[Index[n]],
-		     NonEmptySet[Space], NonEmptySet[Index[n]]}
+           Index |-> Nat[n], Array[Space]}
+	  hide sorts FinSet[Space], FinSet[Nat[n]],
+		     NonEmptySet[Space], NonEmptySet[Nat[n]]}
      then
           sort
 		Tuple[Space,n]={ x: Array[Space].
-			 forall i: Index[n]. def x ! i }		
+			 forall i: Nat[n]. def x ! i }		
           ops
-		__ ! __: Tuple[Space,n] * Index[n] -> Space;
+		__ ! __: Tuple[Space,n] * Nat[n] -> Space;
                 0:      Tuple[Space,n];
                 __*__:  Elem * Tuple[Space,n] -> Tuple[Space,n];
                 __+__:  Tuple[Space,n] * Tuple[Space,n] -> Tuple[Space,n];
-                auxsum: Tuple[Space,n] * Index[n] -> Space;
+                auxsum: Tuple[Space,n] * Nat[n] -> Space;
                 sum:    Tuple[Space,n] -> Space
           vars
-               r: Elem; x,y: Tuple[Space,n]; i: Index[n]
+               r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
           .
                %[Tuple_zero_def] 0 ! i = 0
           .
@@ -290,13 +290,13 @@ spec
                %[Tuple_plus_def] (x + y) ! i = (x ! i) + (y ! i)
           .
                %[Tuple_auxsum_1]
-               auxsum(x, 1 as Index[n]) = x ! (1 as Index[n])
+               auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])
           .
                %[Tuple_auxsum_suc]
-                auxsum(x, suc(i) as Index[n])=
-                auxsum(x,i) + (x ! (suc(i) as Index[n]))
+                auxsum(x, suc(i) as Nat[n])=
+                auxsum(x,i) + (x ! (suc(i) as Nat[n]))
           .
-               %[Tuple_sum_def] sum(x) = auxsum(x, n as Index[n])
+               %[Tuple_sum_def] sum(x) = auxsum(x, n as Nat[n])
 }
      hide op auxsum
 end
@@ -315,42 +315,42 @@ spec
 %def
      {VectorTuple [view VectorSpace_in_Field [Field]][op n: Pos] with
           sort
-                Tuple[Elem,n] |-> Vector[Elem,n], Index[n],
+                Tuple[Elem,n] |-> Vector[Elem,n], Nat[n],
           ops
                 0, __ * __, __ + __, sum} 
-	with op __ ! __: Vector[Elem,n] * Index[n] -> Elem
+	with op __ ! __: Vector[Elem,n] * Nat[n] -> Elem
 then
      {
      ops
           <__ || __> : Vector[Elem,n] * Vector[Elem,n] -> Elem;
           prod:        Vector[Elem,n] -> Elem;
-          unitVector:  Index[n] -> Vector[Elem,n];
+          unitVector:  Nat[n] -> Vector[Elem,n];
           auxmult:     Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
-          auxprod:     Vector[Elem,n] * Index[n] -> Elem
+          auxprod:     Vector[Elem,n] * Nat[n] -> Elem
      pred
           perp: Vector[Elem,n] * Vector[Elem,n]
      vars
-          x, y: Vector[Elem,n]; i, j: Index[n]
+          x, y: Vector[Elem,n]; i, j: Nat[n]
      .
           %[Vector_auxmult_def] auxmult(x,y) ! i = (x ! i) * (y ! i)
      .
           %[Vector_times_def] <x || y> =sum(auxmult(x,y))
      .
           %[Vector_auxprod_1]
-          auxprod(x, 1 as Index[n])=x ! (1 as Index[n])
+          auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])
      .
           %[Vector_auxprod_suc]
-          auxprod(x, suc(i) as Index[n]) = auxprod(x,i) * (x ! (suc(i) as 
-          Index[n]))
+          auxprod(x, suc(i) as Nat[n]) = auxprod(x,i) * (x ! (suc(i) as 
+          Nat[n]))
      .
-          %[Vector_prod_def] prod(x) = auxprod(x, n as Index[n])
+          %[Vector_prod_def] prod(x) = auxprod(x, n as Nat[n])
      .
           %[perp_def] perp(x,y) <=> ( <x || y> =0)
      .
           %[unitVector_def] unitVector(i) ! j = e when i = j else 0
      sort
            UnitVector[Elem,n]=
-           {x: Vector[Elem,n] . exists i: Index[n]. x = unitVector(i)}
+           {x: Vector[Elem,n] . exists i: Nat[n]. x = unitVector(i)}
 }
      hide ops auxmult,auxprod
 then
@@ -394,8 +394,8 @@ then
 then
      %def
      Array [ops 1, n: Int fit ops min |-> 1, max |-> n]
-	[sort Nat[n] fit sort Elem|-> Nat[n]]
-          with sorts Array[Nat[n]], Index |-> Nat[n]
+	[sort Nat[n] fit sort Elem|-> Nat[n]] 
+   		with sorts Array[Nat[n]], Index |-> Nat[n]
 then
      %def
      sort
@@ -442,19 +442,21 @@ spec
      VectorTuple [view VectorSpace_in_Vector [Field]]
           [op n: Pos]
      with
-          sort Index[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
+          sort Nat[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
 and 
      ConstructVector [Field][op n: Pos]
+and  
+     ExtRing [Field]
 then
      ops
            transpose:  Matrix[Elem,n] -> Matrix[Elem,n];
            1:          Matrix[Elem,n];
-           elementary: Index[n] * Index[n] -> Matrix[Elem,n];
+           elementary: Nat[n] * Nat[n] -> Matrix[Elem,n];
            __ * __:    Matrix[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
            __ * __:    Matrix[Elem,n] * Matrix[Elem,n] -> Matrix[Elem,n];
            det:        Matrix[Elem,n] -> Elem
      vars
-          a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Index[n]
+          a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
      .
           %[transpose_def] (transpose(a) ! i) ! j = (a ! j) ! i
      .
@@ -468,7 +470,7 @@ then
           %[Matrix_mult_def] ((a * b) ! i) = a * (b ! i)
      sort
            ElemMatrix[Elem,n]=
-           {x: Matrix[Elem,n]. exists i,j: Index[n]. x = elementary(i,j)}
+           {x: Matrix[Elem,n]. exists i,j: Nat[n]. x = elementary(i,j)}
     then
           local {
                SymmetricGroup [op n: Pos] with
@@ -479,19 +481,20 @@ then
 		with sort Vector[Elem,nFac]
           then
                sorts
-                    Index[nFac]=PNat[n]
+                    Nat[nFac]=PNat[n]
                ops
                     summands: Matrix[Elem,n] -> Vector[Elem,nFac];
                     factors:  Matrix[Elem,n] * PNat[n] -> Vector[Elem,n]
      }
      within {
      vars
-          a: Matrix[Elem,n]; i: Index[n]; j: PNat[n]
+          a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
      .
-          %[Matrix_factors_def] factors(a,j) ! i=(a ! i) ! (perm(j) ! i)
+          %[Matrix_factors_def]  factors(a,j) ! i = (a ! i) ! (perm(j) ! i)
+		
      .
           %[Matrix_summands_def]
-          summands(a) ! j=sign(perm(j)) * prod(factors(a,j))
+          summands(a) ! j= prod(factors(a,j)) times sign(perm(j))
      .
           %[Leibnitz] det(a)=sum(summands(a))
      } 
