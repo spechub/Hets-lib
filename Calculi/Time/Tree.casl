@@ -1,0 +1,327 @@
+library Calculi/TemporalCalculi/Tree
+version 0.1
+%author: S. Wölfl
+%date: 15-10-04
+
+
+%{ This library provides basic specifications for branching time 
+   temporal reasoning, namely 
+   
+   - treelike structures
+
+   Some of the concepts introduced here can also be found in 
+   Basic/RelationsAndOrdrs.casl
+}%
+
+%display __ pre __    %LATEX __ < __
+%display __ preE __   %LATEX __\leq__
+%display __ suc __    %LATEX __ > __
+%display __ sucE __   %LATEX __\geq__
+%display __ cmp __    %LATEX __\sqcup__
+%display __ uncmp __  %LATEX __\sqcap__
+
+
+from Calculi/TemporalCalculi/FlowOfTime get FlowOfTime, ExtFlowOfTime,
+	RichFlowOfTime, DenseFlowOfTime, LinearFlowOfTime,
+	FlowOfTimeWithoutMaxima, FlowOfTimeWithoutMinima,
+	FlowOfTimeWithoutEndpoints, DenseFlowOfTimeWithoutEndpoints
+
+
+
+spec Tree = 
+     FlowOfTime with sort Instant |-> Node
+then
+     forall x,y,z: Node
+     . x pre z /\ y pre z => x pre y \/ x = y \/ y pre x 
+							%(left_linear)%
+end
+
+spec Ext_Tree [Tree] =
+    {  Ext_FlowOfTime [FlowOfTime] with sort Instant |-> Node }
+
+then %implies
+     forall x,y,z: Node
+     . x pre y  /\ y cmp z => x cmp z			%(cmp_inh)%
+     . x pre y  /\ x uncmp z => y uncmp z		%(uncmp_inh)%
+
+     forall x,z: Node
+     . (exists y: Node . x pre y /\ y pre z) =>
+		  x pre z				%(PA_comp_prepre_elim)%
+     . (exists y: Node . x pre y /\ y suc z) => 
+	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc_elim)%
+     . (exists y: Node . x pre y /\ y uncmp z) => 
+		  (x pre z \/ x uncmp z)		%(PA_comp_preuncmp_elim)%
+     . (exists y: Node . x pre y /\ y = z) => 
+		  x pre z				%(PA_comp_preeq_elim)%
+     . (exists y: Node . x suc y /\ y pre z) =>
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+							%(PA_comp_sucpre_elim)%
+     . (exists y: Node . x suc y /\ y suc z) => 
+		  x suc z				%(PA_comp_sucsuc_elim)%
+     . (exists y: Node . x suc y /\ y uncmp z) => 
+		  x uncmp z				%(PA_comp_sucuncmp_elim)%
+     . (exists y: Node . x suc y /\ y = z) => 
+		  x suc z				%(PA_comp_suceq_elim)%
+     . (exists y: Node . x uncmp y /\ y pre z) =>
+	  	  x uncmp z				%(PA_comp_uncmppre_elim)%
+     . (exists y: Node . x uncmp y /\ y suc z) =>
+	  	  (x suc z \/ x uncmp z)		%(PA_comp_uncmpsuc_elim)%
+     . (exists y: Node . x uncmp y /\ y uncmp z) =>
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+							%(PA_comp_uncmpuncmp_elim)%
+     . (exists y: Node . x uncmp y /\ y = z) =>
+	  	  x uncmp z				%(PA_comp_uncmpeq_elim)%
+
+     . (exists y: Node . x = y /\ y pre z) => 
+		  x pre z				%(PA_comp_eqpre_elim)%
+     . (exists y: Node . x = y /\ y suc z) => 
+		  x suc z				%(PA_comp_eqsuc_elim)%
+     . (exists y: Node . x = y /\ y uncmp z) => 
+		  x uncmp z				%(PA_comp_equncmp_elim)%
+     . (exists y: Node . x = y /\ y = z) => 
+		  x = z					%(PA_comp_eqeq_elim)% 
+end
+
+spec Rich_Tree = Ext_Tree[Tree]
+
+
+spec ConnectedTree =
+     Rich_Tree
+then 
+     forall x,y: Node
+     . exists z: Node . z preE x /\ z preE y 	       %(connected)%
+
+then %implies
+     forall x,y: Node
+     . x uncmp y => (exists z: Node . z pre x /\ z pre y)
+						       %(connected1)%
+end
+
+view Linear_implies_Connected:
+	ConnectedTree to { LinearFlowOfTime with sort Instant |-> Node }
+end
+
+
+spec DenseTree = 
+     Rich_Tree and { DenseFlowOfTime with sort Instant |-> Node }
+end
+
+
+spec TreeWithoutMaxima = 
+     Tree and { FlowOfTimeWithoutMaxima with sort Instant |-> Node }
+end
+
+
+spec TreeWithoutMinima = 
+     Tree and { FlowOfTimeWithoutMinima  with sort Instant |-> Node }
+end
+
+
+spec TreeWithoutEndpoints = 
+     Tree and { FlowOfTimeWithoutEndpoints with sort Instant |-> Node }
+then %implies
+     { TreeWithoutMaxima and TreeWithoutMinima }
+end
+
+spec RootedTree =
+     Rich_Tree
+then 
+     . exists x:Node . forall y:Node . x preE y
+end
+
+
+spec Ext_RootedTree [RootedTree] =
+     Ext_Tree [Tree]	
+then %def
+     op root:Node
+     
+     forall x:Node
+     . root preE x 
+
+then %implies
+     ConnectedTree	
+end
+
+
+spec Rich_RootedTree = Ext_RootedTree [RootedTree] 
+
+
+spec BranchingDenseTree =
+     Rich_Tree
+then 
+     forall x,y:Node
+     . x pre y => (exists z:Node . x pre z /\ y uncmp z) 
+							%(branching_dense)%
+then %implies	
+     forall x,y:Node			      
+     . x suc y => (exists z:Node . x uncmp z /\ z suc y)
+							%(help_3)%
+end
+
+
+
+spec StrongBranchingDenseTree =
+     Rich_Tree
+then 
+     forall x,y,z:Node
+     . x pre y /\ x pre z => 
+               (exists u:Node . (x pre u /\ y uncmp u /\ z uncmp u)) 
+						     %(strong_branching_dense)%
+then %implies	
+     BranchingDenseTree
+and
+     forall x,y:Node	
+     . x uncmp y => (exists z:Node . x uncmp z /\ z uncmp y)	
+							%(help_9)%
+end
+
+
+spec DenseTreeWithoutEndpoints = 
+     { DenseTree and TreeWithoutEndpoints 
+	then %implies
+     DenseFlowOfTimeWithoutEndpoint }
+
+then %implies
+     forall x,y:Node			      
+    . x uncmp y => (exists z:Node. x uncmp z /\ z suc y)
+							%(help_4)%
+end
+
+
+
+spec BranchingDenseTreeWithoutEndpoints = 
+     BranchingDenseTree and TreeWithoutEndpoints 
+
+then %implies
+     forall x,y:Node			      
+     . x pre y => (exists z:Node . x uncmp z /\ z uncmp y)
+							%(help_5)%
+     . x suc y => (exists z:Node . x uncmp z /\ z uncmp y)
+							%(help_6)%
+     . x = y => (exists z:Node . x uncmp z /\ z uncmp y)
+							%(help_7)%
+     . x cmp y => (exists z:Node . x uncmp z /\ z uncmp y)
+							%(help_8)%
+end
+
+
+spec ConnectedBranchingDenseTree =
+     BranchingDenseTree and ConnectedTree
+
+
+spec ConnectedStrongBranchingDenseTree =
+     StrongBranchingDenseTree and ConnectedTree
+then %implies
+     ConnectedBranchingDenseTree 	
+end
+
+spec DenseBranchingDenseTreeWithoutEndpoints =
+     DenseTreeWithoutEndpoints and BranchingDenseTree
+then %implies
+     BranchingDenseTreeWithoutEndpoints
+end
+
+spec DenseStrongBranchingDenseTreeWithoutEndpoints =
+     DenseTreeWithoutEndpoints and StrongBranchingDenseTree
+then %implies
+     DenseBranchingDenseTreeWithoutEndpoints
+end
+
+
+spec ConnectedDenseBranchingDenseTreeWithoutEndpoints =
+     DenseBranchingDenseTreeWithoutEndpoints and ConnectedTree
+
+
+spec ConnectedDenseStrongBranchingDenseTreeWithoutEndpoints =
+     DenseStrongBranchingDenseTreeWithoutEndpoints and ConnectedTree
+then %implies
+     ConnectedDenseBranchingDenseTreeWithoutEndpoints
+end
+
+
+spec CompositionCompleteTree =
+	ConnectedDenseStrongBranchingDenseTreeWithoutEndpoints
+
+then %implies
+     forall x,z: Node
+     .  x pre z => 
+		(exists y: Node . x pre y /\ y pre z) 	%(PA_comp_prepre_intro)%
+     . (x pre z \/ x = z \/ x suc z) =>
+		(exists y: Node . x pre y /\ y suc z) 	%(PA_comp_presuc_intro)%
+     . (x pre z \/ x uncmp z) =>
+		(exists y: Node . x pre y /\ y uncmp z) %(PA_comp_preuncmp_intro)%
+     . x pre z => 
+		(exists y: Node . x pre y /\ y = z)     %(PA_comp_preeq_intro)%
+     . (x pre z \/ x = z \/ x suc z \/ x uncmp z) =>
+		(exists y: Node . x suc y /\ y pre z) 	%(PA_comp_sucpre_intro)%
+     . x suc z => 
+		(exists y: Node . x suc y /\ y suc z) 	%(PA_comp_sucsuc_intro)%
+     . x uncmp z => 
+		(exists y: Node . x suc y /\ y uncmp z) %(PA_comp_sucuncmp_intro)%
+     . x suc z => 
+		(exists y: Node . x suc y /\ y = z) 	%(PA_comp_suceq_intro)%
+     . x uncmp z => 
+		(exists y: Node . x uncmp y /\ y pre z) %(PA_comp_uncmppre_intro)%
+     . (x suc z \/ x uncmp z) =>
+		(exists y: Node . x uncmp y /\ y suc z) %(PA_comp_uncmpsuc_intro)%
+     . (x pre z \/ x = z \/ x suc z \/ x uncmp z) => 
+		(exists y: Node . x uncmp y /\ y uncmp z) 
+							%(PA_comp_uncmpuncmp_intro)%
+     . x uncmp z =>
+		(exists y: Node . x uncmp y /\ y = z) 	%(PA_comp_uncmpeq_intro)%
+     . x pre z => 
+		(exists y: Node . x = y /\ y pre z) 	%(PA_comp_eqpre_intro)%
+     . x suc z => 
+		(exists y: Node . x = y /\ y suc z)  	%(PA_comp_eqsuc_intro)%
+     . x uncmp z => 
+		(exists y: Node . x = y /\ y uncmp z) 	%(PA_comp_equncmp_intro)%
+     . x = z => 
+		(exists y: Node . x = y /\ y = z) 	%(PA_comp_eqeq_intro)% 
+
+     forall x,z: Node
+     . (exists y: Node . x pre y /\ y pre z) <=>
+		  x pre z				%(PA_comp_prepre)%
+     . (exists y: Node . x pre y /\ y suc z) <=> 
+	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc)%
+     . (exists y: Node . x pre y /\ y uncmp z) <=> 
+		  (x pre z \/ x uncmp z)		%(PA_comp_preuncmp)%
+     . (exists y: Node . x pre y /\ y = z) <=> 
+		  x pre z				%(PA_comp_preeq)%
+     . (exists y: Node . x suc y /\ y pre z) <=>
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+							%(PA_comp_sucpre)%
+     . (exists y: Node . x suc y /\ y suc z) <=> 
+		  x suc z				%(PA_comp_sucsuc)%
+     . (exists y: Node . x suc y /\ y uncmp z) <=> 
+		  x uncmp z				%(PA_comp_sucuncmp)%
+     . (exists y: Node . x suc y /\ y = z) <=> 
+		  x suc z				%(PA_comp_suceq)%
+     . (exists y: Node . x uncmp y /\ y pre z) <=>
+	  	  x uncmp z				%(PA_comp_uncmppre)%
+     . (exists y: Node . x uncmp y /\ y suc z) <=>
+	  	  (x suc z \/ x uncmp z)		%(PA_comp_uncmpsuc)%
+     . (exists y: Node . x uncmp y /\ y uncmp z) <=>
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+							%(PA_comp_uncmpuncmp)%
+     . (exists y: Node . x uncmp y /\ y = z) <=>
+	  	  x uncmp z				%(PA_comp_uncmpeq)%
+
+     . (exists y: Node . x = y /\ y pre z) <=> 
+		  x pre z				%(PA_comp_eqpre)%
+     . (exists y: Node . x = y /\ y suc z) <=> 
+		  x suc z				%(PA_comp_eqsuc)%
+     . (exists y: Node . x = y /\ y uncmp z) <=> 
+		  x uncmp z				%(PA_comp_equncmp)%
+     . (exists y: Node . x = y /\ y = z) <=> 
+		  x = z					%(PA_comp_eqeq)% 
+
+end
+
+
+
+
+
+
+
+
+
