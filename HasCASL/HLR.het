@@ -10,16 +10,14 @@ then
   pred  POComplement  : Mor * Mor * Ob
   forall o: Ob; f,h:Mor
   . POComplement (f,h,o) <=> 
-    exists g,k : Mor . ((h,k) as POCocone) isCoconeFor ((f,g) as PODiagram)
-    /\ dom k = o
+    exists g,k : Mor . (h,k) = f pushout g /\ dom k = o
 end
 
 spec Transformation[Category] =
   POComplement[Category]
 then
   sort M < Mor
-  type Rules = {(l,r): M * M
-                      . dom l = dom r}
+  type Rules = {(l,r): M * M . dom l = dom r}
 
   ops transform: Rules * Mor ->? Ob;
   
@@ -30,15 +28,14 @@ then
         exists g2,g3,c1,c2 : Mor . POComplement (l,g1,dom c1)
     /\ (forall o1,o2 : Ob . POComplement (l,g1,o1) /\ POComplement (l,g1,o2)
          => o1 = o2)
-    /\ ((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
-    /\ ((g3,c2) as POCocone) isCoconeFor ((r,g2) as PODiagram)
+    /\ (g1,c1) = l pushout g2
+    /\ (g3,c2) = r pushout g2
   
    . let (l,r) = p
     in
     def transform(p,g1) => 
     exists g2,g3,c1,c2 : Mor . 
-    ((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
-    /\ ((g3,c2) as POCocone) isCoconeFor ((r,g2) as PODiagram) 
-    /\ transform(p,g1) = r objPushout g2
+    /\ (g1,c1) = l pushout g2
+    /\ (g3,c2) = r pushout g2
+    /\ transform(p,g1) = cod g3
 end
-

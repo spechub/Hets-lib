@@ -123,12 +123,14 @@ spec Pushout[Category] =
   Colimit[Category][view POShape]
   and PushoutShape
 then %def
-  ops __objPushout__ : Mor * Mor -> Ob
+  ops __pushout__ : Mor * Mor ->? Mor * Mor;
+      __objPushout__ : Mor * Mor ->? Ob
   forall a,b: Ob; f,g:Mor
-  . (f objPushout g) =
-    let (c,med) = colimit (f, g);
-        (h,k) = c
-    in cod h
+  . f pushout g =
+    let (c,med) = colimit ((f, g) as PODiagram)
+    in c
+  . f objPushout g =
+    let (h,k) = f pushout g in cod h
 end
 
 spec PushoutAsCoequalizerOfCoproduct
