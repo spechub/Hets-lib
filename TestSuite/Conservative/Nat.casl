@@ -1,0 +1,18 @@
+library Nat
+
+spec Nat = {} then
+  free type Nat ::= 0 | suc(Nat)
+  op __+__ : Nat*Nat->Nat
+  forall x,y:Nat
+  . 0+x=x
+  . suc(x)+y=suc(x+y)
+end
+
+spec List = 
+Nat then
+  free type List ::= [] | __::__(Nat;List)
+  op __++__ : List * List -> List
+  forall x:Nat; l1,l2,l3:List
+  . [] ++ l1 = l1
+  . (x::l1)++l2 = x::(l1++l2)
+end
