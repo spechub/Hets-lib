@@ -4,7 +4,7 @@ from Basic/Numbers get Nat
 
 from HasCASL/Set get Set, Map, SumNatSet
 
-from HasCASL/Petri get MultiSet, PetriNet
+from HasCASL/Petri get MultiSet
 
 from HasCASL/Categories get Category
 
@@ -40,20 +40,19 @@ end
 spec MapMultiSet=
   RichMultiSet and SumNatSet
 then
-  var Elem : Type
-  type  MapMultiSet Elem := MultiSet Elem ->? MultiSet Elem
+  var S : Type
+  type  MapMultiSet S := MultiSet S ->? MultiSet S
 then %def
-  var Elem, S, T : Type
+  var S, T : Type
   ops __ :: __ --> __ : Pred ( (S->? MultiSet T) * Set S * Set T);
-      freeMap : Map Elem -> MapMultiSet Elem;
+      freeMap : Map S -> MapMultiSet S;
       linMap : (S->? MultiSet T) -> (MultiSet S->? MultiSet T)
-  forall x1, x2, y: Elem; x3, x4: S; m:MultiSet Elem; s: Set S; t: Set T;  
-         f: Map Elem; h: S->? MultiSet T
+  forall x1, x2, y: S; x3, x4: S; z:T; m:MultiSet S; s: Set S; t: Set T;  
+         f: Map S; h: S->? MultiSet T
    . h :: s --> t <=> forall x:S . x isIn s => MultiSetToSet(h x) subset t
-   . freeMap f m y = sum m (\x:Elem . y = f x)
-   . linMap h {} = {}
-   . linMap h ({x3}+{x4}) = h x3  + h x4 ; 
-
+   . freeMap f m y = sum m (\x:S . y = f x)
+   . linMap h m z = sum (\x:S . m x * h x z) (\x:S . true) 
+end
 
 spec PetriNetCategory = 
   MapMultiSet
@@ -107,33 +106,33 @@ then
   ops  marking   : System -> Marking;
        net       : System -> Net;
   type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
-                  (net(sys1), hp, ht, net(sys2)) in HomNet 
+                  ((net(sys1), hp, ht, net(sys2)) in HomNet )
        /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
   ops  empty     : Marking;
         __|<__>    : System * T -> System; 
         __|<__>    : System * MultiSet T ->? System;
-       dom : HomSys  -> Net;
-       cod : HomSys  -> Net;
+       dom : HomSys  -> System;
+       cod : HomSys  -> System;
        placesMap : HomSys  -> (P->?P);
        transitionsMap : HomSys  -> (T->?T);
        id : System ->? HomSys;
-       __o__ : Hom  * HomSys  ->? HomSys 
-  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys 
+       __o__ : HomSys  * HomSys  ->? HomSys 
+  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys; v: MultiSet T 
   . empty = {}
   . net sys = let (n,m) = sys in n
   . marking sys = let (n,m) = sys in m
-  . def sys|<t> <=> t isIn dom preMap(net(sys)) /\  preMap(net(sys))  t <= marking(sys)
-  . def sys|<t> => sys|<t> = (net(sys), marking(sys) -  preMap(net(sys)) t + postMap(net(sys)) t)
-  . def sys|<v> <=> forall t:T . t isIn v /\ t isIn dom preMap(net(sys)) /\ linMap preMap(net(sys)) v <= marking(sys)
+  . def sys|<t> <=> t isIn (dom (preMap(net(sys)))) /\  preMap(net(sys))  t <= marking(sys)
+  . def sys|<t> => sys|<t> = (net(sys), (marking(sys) -  preMap(net(sys)) t) + postMap(net(sys)) t)
+  . def sys|<v> <=> forall t:T . t isIn v /\ t isIn (dom (preMap(net(sys)))) /\ linMap (preMap(net(sys))) v <= marking(sys)
   . def sys|<v> => 
-    sys|<v> = (net(sys), marking(sys) - linMap preMap(net(sys)) v + linMap postMap(net(sys)) v )
+    sys|<v> = (net(sys), (marking(sys) - linMap (preMap(net(sys))) v) + linMap (postMap(net(sys))) v )
   . let h=(sys1,hp,ht,sys2) in dom (h) = sys1
-  . let h=(sys1,hp,ht,sys2)  in cod (h) = sys2
-  . let h=(sys1,hp,ht,sys2)  in placesMap (h) = hp
-  . let h=(sys1,hp,ht,sys2)  in transitionsMap (h) = ht
+  . let h=(sys1,hp,ht,sys2) in cod (h) = sys2
+  . let h=(sys1,hp,ht,sys2) in placesMap (h) = hp
+  . let h=(sys1,hp,ht,sys2) in transitionsMap (h) = ht
   . def (h2 o h1) <=> cod h1 = dom h2
   . def (h2 o h1) => h2 o h1 = 
-     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitonsMap h1,cod h2)
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
       as HomSys
 end
 
