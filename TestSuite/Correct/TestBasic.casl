@@ -11,7 +11,15 @@ library TestBasic
 %% Global annotations
 
 %display __+__ %HTML + %LATEX __+__ %RTF +
+%[ This Annotation contains a malformed Id,
+   because "to" is a keyword... 
 %display( sum__to__
+          %HTML sum<sub>__<sup>__
+          %LATEX \sum_{__}^{__} 
+          %RTF sum
+        )%
+]%
+%display( sum__To__
           %HTML sum<sub>__<sup>__
           %LATEX \sum_{__}^{__} 
           %RTF sum
@@ -23,6 +31,11 @@ library TestBasic
        {__/__, __quot__}
      )%
 %prec {__a__} <> {__b__}
+
+%prec {__exp__,__frac__} < {__@@__}
+%prec {__exp__} < {__frac__}
+
+%left_assoc __@@__
 
 %left_assoc __+__, __-__
 %left_assoc( __*__,
