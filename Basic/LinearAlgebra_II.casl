@@ -70,11 +70,14 @@ spec ExtFreeAlgebra [Field] given Int=
      ExtAlgebra [FreeAlgebra[Field]]
 end
 
+%[
+%% This view is incorrect, since we do not have Elem < Matrix[Elem,n] !
 view Algebra_in_Matrix [Field][op n: Pos] given Nat:
      Algebra [Field] to Matrix [Field][op n: Pos]=
      sort Space |-> Matrix[Elem,n],
      op e |-> 1
 end
+]%
 
 spec RichAlgebra [Field]=
      ExtAlgebra [Algebra [Field]]

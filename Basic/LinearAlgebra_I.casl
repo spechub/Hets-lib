@@ -1,4 +1,4 @@
-library Basic/LinearAlgebra
+library Basic/LinearAlgebra_I
 version 0.9
 %authors: L. Schröder <lschrode@tzi.de>, M. Roggenbach, T. Mossakowski
 %date: 21 May 2003
@@ -347,6 +347,9 @@ view VectorSpace_in_VectorTuple [VectorSpace [Field]]
      sort Space |-> Tuple[Space,n]
 end
 
+%[
+%% This view is incorrect, since VSWithBase contains sorts Pos, Nat, Int
+%% that are not present in Field
 view VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
      VSWithBase [Field][sort Base] to
      {Field then sort Singleton[a] = {x: Elem. x = a} } =
@@ -354,6 +357,7 @@ view VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
      op __ * __: Elem * Space -> Space |->
 		          __ * __: Elem * Elem -> Elem
 end
+]%
 
 view VSWithBase_in_Vector [Field][op n: Pos] given Nat:
      VSWithBase [Field][sort Base] to Vector [Field][op n:Pos] =
