@@ -1,4 +1,7 @@
-library Graphs
+library HasCASL/Graphs
+
+%left_assoc __union__
+%prec {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __intersection__}
 
 from HasCASL/Set get Set
 %{ Directed graphs over some arbitrary but fixed node and edge types,
@@ -6,23 +9,7 @@ from HasCASL/Set get Set
    Note that the node set may be larger than the range of these maps
    in case that there are isolated nodes. }%
 
-logic HasCASL
-
-spec Bool = 
-  sort Bool
-  ops False, True : Bool;
-end
-
-spec Nat = 
-  sort Nat
-  ops __+__,__*__,__div__ : Nat*Nat->Nat;
-      0,1,2 : Nat
-  pred __<__ : Nat*Nat;
-end
-
-spec List =
-  free type List[Elem] ::= nil | cons(Elem; List[Elem])
-end
+from HasCASL/Set get Map
 
 logic HasCASL
 
@@ -31,16 +18,20 @@ spec DirectedGraph =
   Set
 then
   var N,E : Type
-  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
+  %[ type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
                       dom source=dom target 
                       /\ (source : dom source --> n)
                       /\ (target : dom target --> n) }
+  ]%
+  type Graph N E := Set N * (E->?N) * (E->?N) 
+%%  op source (n: Set N; s,t : (E->?N)) : (E->?N) = s  		 
+%%  op target (n: Set N; s,t : (E->?N)) : (E->?N) = t  		 
 end
 
 %{ Some useful operations on directed graphs. }%
 
 spec RichDirectedGraph =
-  DirectedGraph
+  DirectedGraph and Map
 then %def
   var N,E : Type
   ops emptyGraph : Graph N E;
@@ -50,13 +41,13 @@ then %def
       addNode,removeNode : N -> Graph N E -> Graph N E;
       addEdge : E * N * N -> Graph N E -> Graph N E;
       removeEdge : E -> Graph N E -> Graph N E;
-      symmetric, transitive, loopFree, complete : Graph N E;
-      __subgraph__, __cliqueOf__, __maxCliqueOf__ : Pred(Graph N E * Graph N E);
-      __union__, __intersection__ : Graph N E * Graph N E -> Graph N E
+  preds symmetric, transitive, loopFree, complete : Graph N E;
+         __subgraph__, __cliqueOf__, __maxCliqueOf__ : Graph N E * Graph N E;
+  ops  __uniong__, __intersection__ : Graph N E * Graph N E -> Graph N E
 
-  forall n,n1,n2:N; e,e1,e2:E; g,g':Graph N E;
-         nn : Set N
-  . emtpyGraph = (emptySet,emptyMap,emptyMap) as Graph N E %(emtpyGraph)%
+  forall n,n1,n2:N; e,e1,e2:E; g1,g2,g,g':Graph N E;
+         nn : Set N; s, t, source, target : E->?N
+  . emptyGraph = (emptySet,emptyMap,emptyMap) as Graph N E %(emtpyGraph)%
 
   . nodes (nn,s,t) = nn
 
@@ -81,21 +72,21 @@ then %def
 
   . symmetric g <=> 
     forall e:E .
-        e isIn edges g => 
-        exists e':E . e' isIn edges g 
-                      /\ sourceMapMap g e = targetMap g e'
+        e isIn (edges g) => 
+        exists e':E . e' isIn (edges g) 
+                      /\ sourceMap g e = targetMap g e'
                       /\ targetMap g e' = targetMap g e      %(symmetric_def)%
 
   . transitive g <=>
     forall e1,e2:E .
-      e1 isIn egdes g /\ e2 isIn edges g /\
+      e1 isIn edges g /\ e2 isIn edges g /\
       targetMap g e1 = sourceMap g e2 =>
       exists e3:E . e3 isIn edges g
-                    /\ sourceMap e3 g = sourceMap e1 g
-                    /\ targetMap e3 g = targetMap e2 g      %(transitive_def)%
+                    /\ sourceMap g e3 = sourceMap g e1
+                    /\ targetMap g e3 = targetMap g e2      %(transitive_def)%
 
   . loopFree g <=>
-    not (exists e:E . e isIn edges g /\ sourceMap e g = targetMap e g)
+    not (exists e:E . e isIn edges g /\ sourceMap g e = targetMap g e)
                                                               %(loopFree_def)%
 
   . g1 subgraph g2 <=>
@@ -244,3 +235,4 @@ then
      targetMap g1 coproduct targetMap g2)
 end
 ]%
+
