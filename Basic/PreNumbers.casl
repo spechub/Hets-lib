@@ -2,6 +2,8 @@ library Basic/PreNumbers
 version 0.5 
 
 %left_assoc __ + __, __ * __
+%prec { __ + __ } < { __ * __ }
+%prec {__ + __} < { __ frac __}
 
 from Basic/RelationsAndOrders version 0.5
 get SigOrder, TotalOrder
@@ -14,7 +16,6 @@ then
            0:                Elem;
            __ + __, __ * __ : Elem * Elem -> Elem;
            abs:              Elem -> NonNeg;
-     %prec { __ + __ } < { __ * __ }
 end
 
 spec
@@ -171,7 +172,6 @@ then
      .
           i frac 1 = i             %(embeddingIntToRat)%
 then
-     %prec {__ + __} < { __ frac __}
      vars
           n,m: Int; p,q:Pos
      .
@@ -193,4 +193,3 @@ view
 =
      sort Elem |-> Rat
 end
-

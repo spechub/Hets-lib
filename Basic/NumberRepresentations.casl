@@ -2,6 +2,7 @@ library Basic/NumberRepresentations
 version 0.5 
 
 %prec { __ E __ } < { __ ::: __ }
+%prec { __+__, __-__, __*__, __div__, __mod__ } < {__!__}
 %floating __:::__, __E__
 
 
@@ -104,7 +105,6 @@ then
            __ + __, __ - __ :   Efpn * Efpn -> Efpn;
            __ * __:             Int * Efpn -> Efpn;
            __ * __:             Efpn * Int -> Efpn;
-     %prec { __+__, __-__, __*__, __div__, __mod__ } < {__!__}
      then
           local
      {
