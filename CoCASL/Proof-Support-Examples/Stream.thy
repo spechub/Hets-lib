@@ -2,62 +2,23 @@ theory Stream = Main:
 
 use tactics
 
-ML"fun step1_fun thm = let val thms = (REPEAT (rtac disjI2 1) THEN (instantiate_tac [(\"R\" , \"Rcs union (Trans ?R)\" )])) thm in \
-                            thms end" 
-
-ML"fun step2_fun thm = let val thms = (REPEAT (rtac disjI2 1) THEN (instantiate_tac [(\"R\" , \"Rm union (Trans ?R)\" )])) thm in \
-                            thms end" 
-
-ML"fun step3_fun thm = let val thms = (REPEAT (rtac disjI2 1) THEN (instantiate_tac [(\"R\" , \"R0 union (Trans ?R)\" )])) thm in \
-                            thms end" 
-
-ML"fun close_or_step_fun thm = let val thms = ((close_fun) ORELSE ((solve_fun 1) THEN ((close_fun) ORELSE ((step_fun) THEN TRY (solve_fun 1) THEN TRY (rtac disjI2 1) THEN TRY (solve_fun 1) THEN TRY (xy_exI_fun) THEN (solve_fun 1) THEN TRY (close_fun)) THEN TRY(REPEAT(rtac disjI1 1) THEN (blast_tac (claset ()) 1 ) THEN (close_fun))))) thm in \
-                           thms end"
-
-ML"fun close_or_step2_fun thm = let val thms = ((close_fun) ORELSE ((solve_fun 1) THEN ((close_fun) ORELSE ((step2_fun) THEN TRY (solve_fun 1) THEN TRY (rtac disjI2 1) THEN TRY (solve_fun 1) THEN TRY (xy_exI_fun) THEN (solve_fun 1) THEN TRY (close_fun))) THEN TRY(REPEAT(rtac disjI1 1) THEN (blast_tac (claset ()) 1 ) THEN (close_fun)))) thm in \
-                           thms end"
-
-ML"fun close_or_step3_fun thm = let val thms = ((close_fun) ORELSE ((solve_fun 1) THEN ((close_fun) ORELSE ((step3_fun) THEN TRY (solve_fun 1) THEN TRY (rtac disjI2 1) THEN TRY (solve_fun 1) THEN TRY (xy_exI_fun) THEN (solve_fun 1) THEN TRY (close_fun))) THEN TRY(REPEAT(rtac disjI1 1) THEN (blast_tac (claset ()) 1 ) THEN (close_fun)))) thm in \
-                           thms end"
-
-ML"fun coinduction_fun1 thm= let val thms = 
-                  ((SUBGOAL (fn (sub,_) => res_inst_tac [(\"R\",\"?Rzero\")] ((fn (x,_,_) => x) (get_cogeneration_axiom sub)) 1) 1) \ 
-                  THEN (instantiate_Rzero_fun) \
-                  THEN (step1_fun)) thm in \
-                             thms end"
-
-ML"fun coinduction_fun2 thm= let val thms = 
-                  ((SUBGOAL (fn (sub,_) => res_inst_tac [(\"R\",\"?Rzero\")] ((fn (x,_,_) => x) (get_cogeneration_axiom sub)) 1) 1) \ 
-                  THEN (instantiate_Rzero_fun) \
-                  THEN (step2_fun)) thm in \
-                             thms end"
-
-ML"fun coinduction_fun3 thm= let val thms = 
-                  ((SUBGOAL (fn (sub,_) => res_inst_tac [(\"R\",\"?Rzero\")] ((fn (x,_,_) => x) (get_cogeneration_axiom sub)) 1) 1) \ 
-                  THEN (instantiate_Rzero_fun) \
-                  THEN (step3_fun)) thm in \
-                             thms end"
-
-method_setup init = "build_tactic (init_fun)" "(simp|(solve,blast))?,init2_fun?"
-method_setup solve= "build_tactic (solve_fun 1)" "((exE|conjE|conjI)+)?,(simp)?,((exE|conjE|conjI)+)?,(simp)?"
-method_setup close= "build_tactic (close_fun)" "((disjI1|disjI2)+)?,((exE|conjE)+)?,force_solve|solve,disji1+,blast"
-method_setup finish = "build_tactic (finish_fun)" "inst r false,solve1"
-method_setup breakup = "build_tactic (breakup_fun)" "simp,((exE|conjE)+)?,disjE"
-method_setup close_or_step= "build_tactic (close_or_step_fun)" "close|(solve,(close|(step,solve?,disjI2?,solve?,xy_exi?,solve,close?),((disjI1+)?,blast,close)?))"
-method_setup close_or_step2= "build_tactic (close_or_step2_fun)" "close|(solve,(close|(step2,solve?,disjI2?,solve?,xy_exi?,solve,close?),((disjI1+)?,blast,close)?))"
-method_setup close_or_step3= "build_tactic (close_or_step3_fun)" "close|(solve,(close|(step3,solve?,disjI2?,solve?,xy_exi?,solve,close?),((disjI1+)?,blast,close)?))"
-method_setup step = "build_tactic (step_fun)" "((disjI2)+)?,inst r (rcs union (trans r))"
-method_setup step1 = "build_tactic (step1_fun)" "((disjI2)+)?,inst r (rcs union (trans r))"
-method_setup step2 = "build_tactic (step2_fun)" "((disjI2)+)?,inst r (rcs union (trans r))"
-method_setup step3 = "build_tactic (step3_fun)" "((disjI2)+)?,inst r (rcs union (trans r))"
+method_setup circular_coinduction = "build_tactic (circular_coinduction_fun)" "all"
 method_setup coinduction = "build_tactic (coinduction_fun)" "rule_tac R=?Rzero in ga_cogenerated, instantiate_tac Rzero %s1.?R,step"
-method_setup coinduction1 = "build_tactic (coinduction_fun1)" "rule_tac R=?Rzero in ga_cogenerated, instantiate_tac Rzero %s1.?R,step"
-method_setup coinduction2 = "build_tactic (coinduction_fun2)" "rule_tac R=?Rzero in ga_cogenerated, instantiate_tac Rzero %s1.?R,step"
-method_setup coinduction3 = "build_tactic (coinduction_fun3)" "rule_tac R=?Rzero in ga_cogenerated, instantiate_tac Rzero %s1.?R,step"
+method_setup init = "build_tactic (init_fun)" "(simp|(solve,blast))?,init2_fun?"
+method_setup breakup = "build_tactic (breakup_fun)" "simp,((exE|conjE)+)?,disjE"
+method_setup solve= "build_tactic (solve_fun 1)" "((exE|conjE|conjI)+)?,(simp)?,((exE|conjE|conjI)+)?,(simp)?"
+method_setup step = "build_tactic (step_fun)" "((disjI2)+)?,inst r (rcs union (trans r))"
+method_setup close= "build_tactic (close_fun)" "((disjI1|disjI2)+)?,((exE|conjE)+)?,force_solve|solve,disji1+,blast"
+method_setup close_or_step= "build_tactic (close_or_step_fun)" ""
+method_setup force_finish = "build_tactic (force_finish_fun)" "force: inst r false,solve1"
+method_setup exi = "build_tactic (exI_fun)" "rule_tac x=getvarname in exI"
+
+
 
 typedecl "Elem"
 typedecl "Stream"
 consts
+"identity" :: "Elem => Elem"
 "cons" :: "Elem => Stream => Stream"
 "hd" :: "Stream => Elem"
 "tl" :: "Stream => Stream"
@@ -70,6 +31,14 @@ consts
 "odd" :: "Stream => Stream"
 "const" :: "Elem => Stream"
 "swap" :: "Elem => Elem => Stream"
+"iterate" :: "(Elem => Elem) => Elem => Stream"
+"map" :: "(Elem => Elem) => Stream => Stream"
+"one" :: "Stream => Stream"
+"two" :: "Stream => Stream"
+"three" :: "Stream => Stream"
+"four" :: "Stream => Stream"
+"fourmerge" :: "Stream => Stream => Stream => Stream => Stream"
+
 
 consts
   BinRelImage :: "('a => 'b) => ('a => 'a => bool) => ('b => 'b => bool)"
@@ -81,6 +50,24 @@ defs
   union_def [simp] : "R union S == % x y . R x y | S x y"
 
 axioms
+
+one_hd [simp]: "!! s :: Stream . (hd (one s)) = (hd s)"
+one_tl [simp]: "!! s :: Stream . (tl (one s)) = one (tl (tl (tl (tl s))))"
+two_hd [simp]: "!! s :: Stream . (hd (two s)) = (hd (tl s))"
+two_tl [simp]: "!! s :: Stream . (tl (two s)) = two (tl (tl (tl (tl s))))"
+three_hd [simp]: "!! s :: Stream . (hd (three s)) = (hd (tl (tl s)))"
+three_tl [simp]: "!! s :: Stream . (tl (three s)) = three (tl (tl (tl (tl s))))"
+four_hd [simp]: "!! s :: Stream . (hd (four s)) = (hd (tl (tl (tl s))))"
+four_tl [simp]: "!! s :: Stream . (tl (four s)) = four (tl (tl (tl (tl s))))"
+fourmerge_hd [simp]: "!! s1 :: Stream . !! s2 :: Stream . !! s3 :: Stream . !! s4 :: Stream . (hd (fourmerge s1 s2 s3 s4)) = (hd s1)"
+fourmerge_tl [simp]: "!! s1 :: Stream . !! s2 :: Stream . !! s3 :: Stream . !! s4 :: Stream . (tl (fourmerge s1 s2 s3 s4)) = fourmerge s2 s3 s4 (tl s1)"
+
+
+identity_1 [simp]: "!! e :: Elem . (identity e) = (e)"
+map_hd [simp]: "!! f :: Elem => Elem . !! s :: Stream . (hd (map f s)) = (f (hd s))"
+map_tl [simp]: "!! f :: Elem => Elem . !! s :: Stream . (tl (map f s)) = (map f (tl s))"
+iterate_hd [simp] : "!! f :: (Elem => Elem) . !! e :: Elem . (hd (iterate f e)) = e"
+iterate_tl [simp] : "!! f :: (Elem => Elem) . !! e :: Elem . (tl (iterate f e)) = (iterate f (f e))"
 const_hd [simp] : "!! e :: Elem . (hd (const e)) = e"
 const_tl [simp] : "!! e :: Elem . (tl (const e)) = const e"
 swap_hd [simp] : "!! e1 :: Elem . !! e :: Elem . (hd (swap e1 e2)) = e1"
@@ -105,10 +92,36 @@ ga_selector_hd: "! X1 :: Elem . ! X2 :: Stream . (hd (cons X1 X2)) = X1"
 ga_selector_tl: "! X1 :: Elem . ! X2 :: Stream . (tl (cons X1 X2)) = X2"
 
 
-consts Rcs :: "[Stream, Stream] => bool"
-defs Rcs_def [simp] : "Rcs == % x y . (? a b .(x=(merge (const a) (const b)) & y=(swap a b) ))"
+theorem Stream_Iter_Const: "!! e :: Elem . const e = iterate identity e"
+apply(circular_coinduction)
+done
+
+theorem Stream_Even_Const: "!! e :: Elem . const e = even (const e)"
+apply(circular_coinduction)
+done
+
+theorem Stream_Odd_Swap: "!! e :: Elem . !! f :: Elem . const e = odd (swap e f)"
+apply(circular_coinduction)
+done
+
+theorem Stream_Swap_Const: "!! e :: Elem . const e = swap e e"
+apply(circular_coinduction)
+done
+
+theorem Stream_Iter_Const: "!! e :: Elem . const e = map identity (const e)"
+apply(circular_coinduction)
+done
+
+
+theorem Stream_Iter_Map: "!! e :: Elem . !! f :: (Elem => Elem) . (iterate f (f e)) = (map f (iterate f e))"
+apply(circular_coinduction)
+done
+
 
 theorem Stream_Const_Swap: "!! a :: Elem . !! b :: Elem . (merge (const a) (const b)) = (swap a b)"
+apply(circular_coinduction)
+(*apply(force_finish)
+
 apply(coinduction)
 apply(init)
 
@@ -116,57 +129,121 @@ apply(breakup)
 
 apply(close_or_step)
 
-apply(finish)
+apply(force_finish)*)
 
 done
 
-
-consts R0 :: "[Stream, Stream] => bool"
-defs R0_def [simp] : "R0 == % x y . (? s . (x=(tripplemerge (first s) (second s)(third s)) & y=s))"
-
-theorem X8: "!! s :: Stream . ((tripplemerge (first s) (second s)) (third s)) = s"
-apply(coinduction3)
+theorem Stream_Four_Merge: "!! s :: Stream . ((fourmerge (one s) (two s)) (three s) (four s)) = s"
+(*apply(circular_coinduction)*)
+apply(coinduction)
 apply(init)
 
 apply(breakup)
 
-apply(close_or_step3)
+apply(close_or_step)
+
+(*apply(rule conjI)
+apply(simp)
+apply(step)
+apply(rule_tac x=x in exI)
+apply(rule_tac x=y in exI)
+apply(simp)*)
+
+(*apply(close_or_step)*)
 
 apply(breakup)
 
-apply(close_or_step3)
+apply(close_or_step)
+
+(*apply(rule conjI)
+apply(simp)
+apply(step)
+apply(rule_tac x=x in exI)
+apply(rule_tac x=y in exI)
+apply(rule conjI)
 apply(rule disjI2)
-apply(rule_tac x=u in exI)
-apply(rule_tac x=v in exI)
-apply(close_or_step3)
-apply(close_or_step3)
+apply(exi)
+apply(exi)
+apply(rule conjI)
+apply(force_simp)
+apply(force_simp)
+apply(force_simp)
+*)
 
 apply(breakup)
 
-apply(close_or_step3)
+(*apply(tc)*)
 
-apply(finish)
+apply(rule conjI)
+apply(simp)
+apply(step)
+apply(rule_tac x=x in exI)
+apply(rule_tac x=y in exI)
+apply(rule conjI)
+apply(rule disjI2)
+apply(exi)
+apply(exi)
+apply(rule conjI)
+apply(rule disjI2)
+apply(rule_tac x=ua in exI)
+apply(rule_tac x=va in exI)
+(*
+apply(exi)
+apply(exi)
+*)
+apply(rule conjI)
+apply(simp)
+apply(simp)
+apply(simp)
+apply(simp)
 
+apply(breakup)
+
+apply(close_or_step)
+
+apply(force_finish)
+done 
+
+theorem Stream_Tripple_Merge: "!! s :: Stream . ((tripplemerge (first s) (second s)) (third s)) = s"
+apply(circular_coinduction)
+(*
+apply(coinduction)
+apply(init)
+
+apply(breakup)
+
+apply(close_or_step)
+
+apply(breakup)
+
+apply(close_or_step)
+apply(close_or_step)
+apply(close_or_step)
+
+apply(breakup)
+
+apply(close_or_step)
+
+apply(force_finish)
+*)
 done
-
-
-consts Rm :: "[Stream, Stream] => bool"
-defs Rm [simp] : "Rm == % x y . (? s . (x=merge (odd s) (even s) & y=s))"
 
 theorem Stream_Merge: "!! s :: Stream . merge (odd s) (even s) = s"
-apply(coinduction2)
+apply(circular_coinduction)
+(*
+apply(coinduction)
 apply(init)
 
 apply(breakup)
 
-apply(close_or_step2)
+apply(close_or_step)
 
 apply(breakup)
 
-apply(close_or_step2)
+apply(close_or_step)
 
 apply(finish)
-
+*)
 done
 
 end
