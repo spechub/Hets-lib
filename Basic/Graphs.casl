@@ -199,7 +199,7 @@ then
   . g pathSubgraphOf g' <=>
       (forall n:NodeId . n isIn g <=> n isIn g') /\
       (forall n1,n2:NodeId; e:EdgeId .
-          e::n1-->n2 isIn g <=> (e::[])::n1-->n2 isIn g') 
+          e::n1-->n2 isIn g <=> [e]::n1-->n2 isIn g') 
                                                 %(pathSubgraphOf_def)%
   . pathTransitive(g') <=>
       forall n1,n2,n3:NodeId; e1,e2:List[EdgeId] . 

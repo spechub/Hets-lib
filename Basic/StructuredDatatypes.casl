@@ -6,7 +6,7 @@ version 0.99
 %left_assoc __ + __, __ - __, __ ++ __
 %left_assoc __union__, __intersection__
 %right_assoc __ :: __
-%%list [__], [], __::__
+%list [__], [], __::__
 %prec {__ ++ __} < {__ :: __}
 
 %string emptyString, __:@:__
@@ -204,7 +204,7 @@ spec List [sort Elem] given Nat = %mono
 
      %% axioms concerning operations
 
-     . L + x = L ++ (x::[])                  %(append_def)%
+     . L + x = L ++ [x]                      %(append_def)%
 
      . def first(L) <=> not isEmpty(L)       %(first_dom)%         %implied
      . not def first([])                     %(first_partial_nil)% %implied
@@ -228,7 +228,7 @@ spec List [sort Elem] given Nat = %mono
      . (x::L) ++ K = x :: (L ++ K)           %(concat_NeList_List)%
 
      . reverse([])=[]                          %(reverse_nil)%
-     . reverse(x::L) = reverse(L) ++ (x::[])   %(reverse_NeList)%
+     . reverse(x::L) = reverse(L) ++ [x]       %(reverse_NeList)%
 
      . def L!n <=> #L >= n                     %(index_dom)% %implied
      . not def[]!n                             %(index_nil)%

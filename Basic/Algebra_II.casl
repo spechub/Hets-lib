@@ -122,8 +122,8 @@ within
 			Poly[Elem] * Poly[Elem] -> Poly[Elem]
 
           forall a, b: Elem; p, q: Poly[Elem]
-	  . X = (0 :: e :: []) 			%(X_def_Poly)%
-          . a = [] when a = 0 else a :: [] 	%(emb_def_Poly)%
+	  . X = [0, e]  			%(X_def_Poly)%
+          . a = [] when a = 0 else [a]  	%(emb_def_Poly)%
 
           . a ::: p = a when p = 0 else a :: p	%(cons_def_Poly)%
           . degree(p) = - infty when p = 0 else pre(#p)
@@ -284,7 +284,7 @@ view FreeMonoid_in_List  [sort Elem] given Nat :
    to 
   {List [sort Elem]
    then
-   op singleton(x: Elem): List[Elem] = x ::[]
+   op singleton(x: Elem): List[Elem] = [x]
   } 
 =
   sorts Elem |-> List[Elem], Generators |-> Elem,
