@@ -1,0 +1,240 @@
+library Calculi/Time/IntervalAlgebra
+version 0.1
+%% author: S. Wölfl
+%% date: 07-02-2005
+%% 
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__}
+
+from Calculi/Algebra/RelationAlgebra get RelationSet,
+     GenerateRelationAlgebra
+
+
+%( 
+	The Interval Algebra for linear flows of time 
+     
+     The Interval Algebra for linear flows of time has 13 base relations,
+     namely, b ("before"), m ("meets"), o ("overlaps"),
+     d ("during"), s ("starts"), f ("finishes"), e ("equals"),
+     and the inverses of b, m, o, d, s, and f (denoted by bi, mi, oi, di, 
+     si, and fi).
+)%
+
+spec IntervalAlgebraLinBase = %mono
+     { RelationSet[free type BaseRel ::= 
+			b | m | o | d | s | f | e | 
+			bi | mi | oi | di | si | fi ] 
+	with  op id |-> e
+	}
+then 
+     ops	     
+	  conv__: BaseRel -> GenRel; 
+        __cmps__: BaseRel * BaseRel -> GenRel 		   
+
+     . b cmps b  = b 					%(cmps_bb)%	
+     . b cmps bi = 1					%(cmps_bbi)%
+     . b cmps d  = b cup o cup m cup d cup s		%(cmps_bd)%
+     . b cmps di = b					%(cmps_bdi)%
+     . b cmps o  = b					%(cmps_bo)%
+     . b cmps oi = b cup o cup m cup d cup s		%(cmps_boi)%
+     . b cmps m  = b					%(cmps_bm)%
+     . b cmps mi = b cup o cup m cup d cup s		%(cmps_bmi)%
+     . b cmps s  = b					%(cmps_bs)%
+     . b cmps si = b 					%(cmps_bsi)%
+     . b cmps f  = b cup o cup m cup d cup s		%(cmps_bf)%
+     . b cmps fi = b					%(cmps_bfi)%	
+
+     . bi cmps b  = 1 					%(cmps_bib)%	
+     . bi cmps bi = bi					%(cmps_bibi)%
+     . bi cmps d  = bi cup oi cup mi cup d cup f	%(cmps_bid)%
+     . bi cmps di = bi 					%(cmps_bidi)%
+     . bi cmps o  = bi cup oi cup mi cup d cup f       	%(cmps_bio)%
+     . bi cmps oi = bi 					%(cmps_bioi)%
+     . bi cmps m  = bi  cup oi cup mi cup d cup f  	%(cmps_bim)%
+     . bi cmps mi = bi 					%(cmps_bimi)%
+     . bi cmps s  = bi cup oi cup mi cup d cup f	%(cmps_bis)%
+     . bi cmps si = bi 					%(cmps_bisi)%
+     . bi cmps f  = bi					%(cmps_bif)%
+     . bi cmps fi = bi					%(cmps_bifi)%	
+
+     . d cmps b  = b 					%(cmps_db)%	
+     . d cmps bi = bi					%(cmps_dbi)%
+     . d cmps d  = d					%(cmps_dd)%
+     . d cmps di = 1 					%(cmps_ddi)%
+     . d cmps o  = b cup o cup m cup d cup s       	%(cmps_do)%
+     . d cmps oi = bi cup oi cup mi cup d cup f		%(cmps_doi)%
+     . d cmps m  = b				  	%(cmps_dm)%
+     . d cmps mi = bi 					%(cmps_dmi)%
+     . d cmps s  = d					%(cmps_ds)%
+     . d cmps si = bi cup oi cup mi cup d cup f 	%(cmps_dsi)%
+     . d cmps f  = d					%(cmps_df)%
+     . d cmps fi = b cup o cup m cup d cup s 		%(cmps_dfi)%	
+
+     . di cmps b  = b cup o cup m cup di cup fi 	%(cmps_dib)%	
+     . di cmps bi = bi cup oi cup mi cup di cup si	%(cmps_dibi)%
+     . di cmps d  = compl(b cup bi cup m cup mi)	%(cmps_did)%
+     . di cmps di = di					%(cmps_didi)%
+     . di cmps o  = o cup di cup fi 		       	%(cmps_dio)%
+     . di cmps oi = oi cup di cup si			%(cmps_dioi)%
+     . di cmps m  = o cup di cup fi 		  	%(cmps_dim)%
+     . di cmps mi = oi cup di cup si			%(cmps_dimi)%
+     . di cmps s  = o cup di cup fi			%(cmps_dis)%
+     . di cmps si = di				 	%(cmps_disi)%
+     . di cmps f  = oi cup di cup si			%(cmps_dif)%
+     . di cmps fi = di			 		%(cmps_difi)%	
+
+     . o cmps b  = b 					%(cmps_ob)%	
+     . o cmps bi = bi cup oi cup mi cup di cup si	%(cmps_obi)%
+     . o cmps d  = o cup d cup s			%(cmps_od)%
+     . o cmps di = b cup o cup m cup di cup fi		%(cmps_odi)%
+     . o cmps o  = b cup o cup m  		     	%(cmps_oo)%
+     . o cmps oi = compl(b cup bi cup m cup mi)		%(cmps_ooi)%
+     . o cmps m  = b				  	%(cmps_om)%
+     . o cmps mi = oi cup di cup si			%(cmps_omi)%
+     . o cmps s  = o					%(cmps_os)%
+     . o cmps si = di cup fi cup o		 	%(cmps_osi)%
+     . o cmps f  = d cup s cup o			%(cmps_of)%
+     . o cmps fi = b cup o cup m	 		%(cmps_ofi)%	
+
+     . oi cmps b  = b cup o cup m cup di cup fi 	%(cmps_oib)%	
+     . oi cmps bi = bi					%(cmps_oibi)%
+     . oi cmps d  = oi cup d cup f			%(cmps_oid)%
+     . oi cmps di = bi cup oi cup mi cup di cup si	%(cmps_oidi)%
+     . oi cmps o  = compl(b cup bi cup m cup mi)      	%(cmps_oio)%
+     . oi cmps oi = bi cup oi cup mi			%(cmps_oioi)%
+     . oi cmps m  = o cup di cup fi 		  	%(cmps_oim)%
+     . oi cmps mi = bi					%(cmps_oimi)%
+     . oi cmps s  = oi cup d cup f			%(cmps_ois)%
+     . oi cmps si = bi cup oi cup mi		 	%(cmps_oisi)%
+     . oi cmps f  = oi 					%(cmps_oif)%
+     . oi cmps fi = oi cup di cup si	 		%(cmps_oifi)%	
+
+     . m cmps b  = b 					%(cmps_mb)%	
+     . m cmps bi = bi cup oi cup mi cup di cup si	%(cmps_mbi)%
+     . m cmps d  = o cup d cup s			%(cmps_md)%
+     . m cmps di = b 					%(cmps_mdi)%
+     . m cmps o  = b 		  		     	%(cmps_mo)%
+     . m cmps oi = o cup d cup s			%(cmps_moi)%
+     . m cmps m  = b				  	%(cmps_mm)%
+     . m cmps mi = f cup di cup e			%(cmps_mmi)%
+     . m cmps s  = m					%(cmps_ms)%
+     . m cmps si = m				 	%(cmps_msi)%
+     . m cmps f  = d cup s cup o			%(cmps_mf)%
+     . m cmps fi = b			 		%(cmps_mfi)%	
+
+     . mi cmps b  = b cup o cup m cup di cup fi 	%(cmps_mib)%	
+     . mi cmps bi = bi					%(cmps_mibi)%
+     . mi cmps d  = oi cup d cup f			%(cmps_mid)%
+     . mi cmps di = bi 					%(cmps_midi)%
+     . mi cmps o  = oi cup d cup f		      	%(cmps_mio)%
+     . mi cmps oi = bi 					%(cmps_mioi)%
+     . mi cmps m  = s cup si cup e 		  	%(cmps_mim)%
+     . mi cmps mi = bi					%(cmps_mimi)%
+     . mi cmps s  = d cup f cup oi			%(cmps_mis)%
+     . mi cmps si = bi				 	%(cmps_misi)%
+     . mi cmps f  = mi 					%(cmps_mif)%
+     . mi cmps fi = mi 			 		%(cmps_mifi)%	
+
+     . s cmps b  = b 					%(cmps_sb)%	
+     . s cmps bi = bi 					%(cmps_sbi)%
+     . s cmps d  = d					%(cmps_sd)%
+     . s cmps di = b cup o cup m cup di cup fi		%(cmps_sdi)%
+     . s cmps o  = b cup o cup m  		     	%(cmps_so)%
+     . s cmps oi = oi cup d cup f			%(cmps_soi)%
+     . s cmps m  = b				  	%(cmps_sm)%
+     . s cmps mi = mi					%(cmps_smi)%
+     . s cmps s  = s					%(cmps_ss)%
+     . s cmps si = s cup si cup e		 	%(cmps_ssi)%
+     . s cmps f  = d 					%(cmps_sf)%
+     . s cmps fi = b cup m cup o	 		%(cmps_sfi)%	
+
+     . si cmps b  = b cup o cup m cup di cup fi 	%(cmps_sib)%	
+     . si cmps bi = bi					%(cmps_sibi)%
+     . si cmps d  = oi cup d cup f			%(cmps_sid)%
+     . si cmps di = di 					%(cmps_sidi)%
+     . si cmps o  = o cup di cup fi		      	%(cmps_sio)%
+     . si cmps oi = oi 					%(cmps_sioi)%
+     . si cmps m  = o cup di cup fi 		  	%(cmps_sim)%
+     . si cmps mi = mi					%(cmps_simi)%
+     . si cmps s  = s cup si cup e			%(cmps_sis)%
+     . si cmps si = si				 	%(cmps_sisi)%
+     . si cmps f  = oi 					%(cmps_sif)%
+     . si cmps fi = di 			 		%(cmps_sifi)%	
+
+     . f cmps b  = b 					%(cmps_fb)%	
+     . f cmps bi = bi 					%(cmps_fbi)%
+     . f cmps d  = d					%(cmps_fd)%
+     . f cmps di = bi cup oi cup mi cup di cup si	%(cmps_fdi)%
+     . f cmps o  = o cup d cup s  		     	%(cmps_fo)%
+     . f cmps oi = bi cup oi cup mi			%(cmps_foi)%
+     . f cmps m  = m				  	%(cmps_fm)%
+     . f cmps mi = bi					%(cmps_fmi)%
+     . f cmps s  = d					%(cmps_fs)%
+     . f cmps si = bi cup oi cup mi		 	%(cmps_fsi)%
+     . f cmps f  = f 					%(cmps_ff)%
+     . f cmps fi = f cup fi cup e	 		%(cmps_ffi)%	
+
+     . fi cmps b  = b 				 	%(cmps_fib)%	
+     . fi cmps bi = bi cup oi cup mi cup di cup si	%(cmps_fibi)%
+     . fi cmps d  = o cup d cup s			%(cmps_fid)%
+     . fi cmps di = di 					%(cmps_fidi)%
+     . fi cmps o  = o 				      	%(cmps_fio)%
+     . fi cmps oi = oi cup di cup si			%(cmps_fioi)%
+     . fi cmps m  = m		 		  	%(cmps_fim)%
+     . fi cmps mi = si cup oi cup di			%(cmps_fimi)%
+     . fi cmps s  = o					%(cmps_fis)%
+     . fi cmps si = di				 	%(cmps_fisi)%
+     . fi cmps f  = f cup fi cup e			%(cmps_fif)%
+     . fi cmps fi = fi 			 		%(cmps_fifi)%	
+
+     . conv(b) = bi					%(conv_b)%
+     . conv(bi) = b					%(conv_bi)%
+     . conv(m) = mi					%(conv_m)%
+     . conv(mi) = m					%(conv_mi)%
+     . conv(o) = oi					%(conv_o)%
+     . conv(oi) = o					%(conv_oi)%
+     . conv(d) = di					%(conv_d)%
+     . conv(di) = d					%(conv_di)%
+     . conv(s) = si					%(conv_s)%
+     . conv(si) = s					%(conv_si)%
+     . conv(f) = fi					%(conv_f)%
+     . conv(fi) = f					%(conv_fi)%
+     . conv(e) = e					%(sym_e)%
+
+
+then %implies
+     . b cmps e  = b 				 	%(cmps_be)%	
+     . bi cmps e = bi 					%(cmps_bie)%
+     . d cmps e  = d					%(cmps_de)%
+     . di cmps e = di 					%(cmps_die)%
+     . o cmps e  = o 				      	%(cmps_oe)%
+     . oi cmps e = oi 					%(cmps_oie)%
+     . m cmps e  = m		 		  	%(cmps_me)%
+     . mi cmps e = mi					%(cmps_mie)%
+     . s cmps e  = s					%(cmps_se)%
+     . si cmps e = si				 	%(cmps_sie)%
+     . f cmps e  = f				 	%(cmps_fe)%
+     . fi cmps e  = fi 					%(cmps_fie)%
+     . e cmps e = e 			 		%(cmps_ee)%	
+
+     . e cmps b  = b 				 	%(cmps_eb)%	
+     . e cmps bi = bi 					%(cmps_ebi)%
+     . e cmps d  = d					%(cmps_ed)%
+     . e cmps di = di 					%(cmps_edi)%
+     . e cmps o  = o 				      	%(cmps_eo)%
+     . e cmps oi = oi 					%(cmps_eoi)%
+     . e cmps m  = m		 		  	%(cmps_em)%
+     . e cmps mi = mi					%(cmps_emi)%
+     . e cmps s  = s					%(cmps_es)%
+     . e cmps si = si				 	%(cmps_esi)%
+     . e cmps f  = f 					%(cmps_ef)%
+     . e cmps fi = fi 			 		%(cmps_efi)%	
+     . e cmps e  = e 			 		%(cmps_ee)%	
+
+
+end
+
+spec IntervalAlgebraLin = %def
+     GenerateRelationAlgebra [IntervalAlgebraLinBase] 
+end
