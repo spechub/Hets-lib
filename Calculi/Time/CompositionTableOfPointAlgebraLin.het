@@ -1,0 +1,39 @@
+sorts BaseRel, Rel
+sorts BaseRel < Rel
+op 0 : Rel
+op 1 : Rel
+op < : BaseRel
+op > : BaseRel
+op __cap__ : Rel * Rel -> Rel
+op __cmps__ : BaseRel * BaseRel -> Rel
+op __cup__ : Rel * Rel -> Rel
+op compl__ : Rel -> Rel
+op conv__ : BaseRel -> Rel
+op i : BaseRel
+op id : Rel
+
+
+ . < cmps < = < %(cmps_11)%
+
+ . < cmps > = (inj(<) cup inj(i)) cup inj(>) %(cmps_12)%
+
+ . > cmps < = (inj(<) cup inj(i)) cup inj(>) %(cmps_21)%
+
+ . > cmps > = > %(cmps_22)%
+
+ . conv i = i %(sym_i)%
+
+ . conv < = > %(conv_earlier)%
+
+ . conv > = < %(conv_later)%
+
+ . < cmps i = < %(cmps_13)%
+
+ . > cmps i = > %(cmps_23)%
+
+ . i cmps < = < %(cmps_31)%
+
+ . i cmps > = > %(cmps_32)%
+
+ . i cmps i = i %(cmps_33)%
+
