@@ -6,11 +6,13 @@ M5exist: "!! x :: Interval . !! y :: Interval .
   M x y ==> ? z :: Interval . ? u :: Interval . ? v :: Interval . 
       M z x & M x y & M y u & M z v & M v u"
 
+(*
+  author: Stefan Woelfl
+  date:   05-11-2004
 
-
-(* 
-  We show that, given the other axioms of BaseAllenLadkin, the following
-  axiom M5var is equivalent to M5exist.
+  Summary:
+      We show that, given the other axioms of BaseAllenLadkin, the following
+      axiom M5var is equivalent to M5exist.
   
 
 M5var: "!! x :: Interval . !! y :: Interval . M x y ==> ? z :: Interval . ! u :: Interval . 
