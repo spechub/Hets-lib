@@ -1,11 +1,5 @@
 library Basic/NumberRepresentations
-<<<<<<< NumberRepresentations.casl
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, Lutz Schröder
-%% copyright: 15.12.00
-=======
 version 0.5 
->>>>>>> 1.7
 
 %prec { __ E __ } < { __ ::: __ }
 %prec { __+__, __-__, __*__, __div__, __mod__ } < {__!__}
@@ -65,13 +59,7 @@ given  List [Nat fit sort Elem |-> Nat ]
            m:Nat = #(L); %% number of moduli
            n:Nat = m+1 %% number of components of an efp-number
 sort
-<<<<<<< NumberRepresentations.casl
-     IndexModulus = {i : Nat · 1<=i /\ i<=m }
-then
-     Int
-=======
      IndexModulus = {i : Nat . 1<=i /\ i<=m }
->>>>>>> 1.7
 then
      Array
      [ op n:Int fit ops min |-> 1, max |-> n ]
@@ -212,5 +200,4 @@ then
      SigOrder[sort Efpn]
      with preds __<__, __>__, __ <= __, __ >= __
 end
-
 
