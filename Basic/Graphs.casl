@@ -21,9 +21,9 @@ from Basic/StructuredDatatypes get FiniteSet, FiniteMap, List
 
 spec AbstractGraph[sort NodeLabel][sort EdgeLabel] =
   generated type Graph ::= emptyGraph
-                         | addNode(node :? NodeLabel; graph :? Graph)
-                         | addEdge(source,target :? NodeLabel; 
-                                   edge :? EdgeLabel; graph :? Graph)
+                         | addNode(NodeLabel; Graph)
+                         | addEdge(NodeLabel; NodeLabel; 
+                                   EdgeLabel; Graph)
   preds __isIn__ : NodeLabel * Graph;
         __::__-->__ isIn __ : EdgeLabel * NodeLabel * NodeLabel * Graph
   forall n,n1,s,t,s1,t1,s2,t2:NodeLabel; e,e1,e2:EdgeLabel; g,g':Graph
@@ -81,13 +81,13 @@ then %def
                                                         %(loopFree_def)%
 
   pred __subgraphOf__ (g1,g2:Graph) <=>
-    (forall n:NodeLabel . n isIn g1 <=> n isIn g2) /\
+    (forall n:NodeLabel . n isIn g1 => n isIn g2) /\
     (forall n1,n2:NodeLabel; e:EdgeLabel .
-          e::n1-->n2 isIn g1 <=> e::n1-->n2 isIn g2)  %(subgraphOf_def)%
+          e::n1-->n2 isIn g1 => e::n1-->n2 isIn g2)  %(subgraphOf_def)%
 
   pred complete(g:Graph) <=>
-    forall n1,n2:NodeLabel . exists e:EdgeLabel . e::n1-->n2 isIn g
-                                                            %(complete)%
+    forall n1,n2:NodeLabel . n1 isIn g /\ n2 isIn g =>
+         exists e:EdgeLabel . e::n1-->n2 isIn g             %(complete)%
 
   pred __cliqueOf__ (g1,g2:Graph) <=>
     g1 subgraphOf g2 /\ complete(g1)                    %(cliqueOf_def)%
@@ -99,6 +99,17 @@ then %def
                                                     %(max_cliqueOf_def)%
 end
 
+
+spec AbstractGraphToSet[sort NodeLabel][sort EdgeLabel] =
+  AbstractGraph[sort NodeLabel][sort EdgeLabel] 
+and
+  FiniteMap[sort EdgeLabel][sort NodeLabel]
+then %def
+  ops sourceMap, targetMap : Graph -> FiniteMap[EdgeLabdel][NodeLabel]
+  forall g:Graph; n:NodeLabel; e:EdgeLabel
+  . [n/e] eps sourceMap(g) <=> exists n':NodeLabel . e::n-->n' isIn g 
+  . [n/e] eps targetMap(g) <=> exists n':NodeLabel . e::n'-->n isIn g 
+end
 
 spec DirectedGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel]
