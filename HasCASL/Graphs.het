@@ -131,7 +131,7 @@ end
 spec GraphHomomorphism =
   RichDirectedGraph and Map
 then
-  var N1, E1, N2, E2, N3, E3 : Type
+  var a, N1, E1, N2, E2, N3, E3 : Type
   type Hom N1 E1 N2 E2 = 
      {(g1,hn,he,g2) : Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2 .
        hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
@@ -139,17 +139,23 @@ then
           (   hn(sourceMap g1 e) = sourceMap g2 (he e)
            /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
   type HomHom E N := Hom E N E N
-  ops dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
+  ops undefined : a; 
+      dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
       cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
       nodeMap : Hom N1 E1 N2 E2 -> (N1->?N2);
       edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
+      id : Graph N1 E1 -> Hom N1 E1 N1 E1;
       __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
-  forall g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
+  forall g,g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
          h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
+  . not def undefined
   . dom ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g1
   . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
   . nodeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = hn
   . edgeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = he
+  . id g = (g,\n:N1 . if n isIn nodes g then n else undefined,
+              \e:E1 . if e isIn edges g then e else undefined,
+            g) as HomHom N1 E1
   . def (h2 o h1) %% <=> cod h1 = dom h2
   . def (h2 o h1) => 
     h2 o h1 = 

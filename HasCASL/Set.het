@@ -108,6 +108,32 @@ spec Map =
   . injective f <=> forall x,y:S . f x =e= f y => x=y
 end
 
+spec FinSet = 
+  Map and Nat
+then
+  var S,T : Type
+  preds isFinite : Set S;  
+        finiteDomain : Nat->?S
+  forall s:Set S; f:Nat->?S 
+  . finiteDomain f <=> exists n:Nat . forall m:Nat . def f m => m<n
+  . isFinite s <=> 
+     exists f:Nat->?S . finiteDomain f /\ range f subset s
+end
+
+spec SumNatSet =
+  Map and Nat
+then
+  ops sumN : (Nat->?Nat) -> Nat -> Nat;
+      sum : Set Nat ->? Nat
+  forall f:Nat->?Nat; s:Set Nat; n,x:Nat
+  . sumN f 0 = 0
+  . sumN f (suc(n)) = sumN f n + if def f (suc n) then f (suc n) else 0
+  . sum s = x <=> 
+      exists f:Nat->?Nat; n:Nat . 
+         (forall m:Nat . def f m => m<n) /\ range f subset s /\ injective f 
+         /\ sumN f n = x 
+end
+
 spec SetCategory =
   Map
 then

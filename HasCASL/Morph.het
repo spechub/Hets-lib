@@ -2,83 +2,56 @@ library HasCASL/Morphisms
 
 from Basic/Numbers get Nat
 
-from HasCASL/Set get Set, Map
+from HasCASL/Set get Set, Map, SumNatSet
 
 from HasCASL/Petri get MultiSet 
 
 from HasCASL/Categories get Category
 
+from HasCASL/Graphs get DirectedGraph, GraphHomomorphism
+
 logic HasCASL
 
-spec GraphCategory=
-  Set and Map
-then
+spec GraphCategory =
   sorts N,E 
-  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
-                      dom source=dom target 
-                      /\ (source :: dom source --> n)
-                      /\ (target :: dom target --> n) }
-  type HomGraph = 
-     {(g1,hn,he,g2) : Graph  * (N->?N) * (E->?E) * Graph .
-       hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
-       /\ forall e:E . e isIn edges g1 =>
-          (   hn(sourceMap g1 e) = sourceMap g2 (he e)
-           /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
-   ops nodes : Graph  -> Set N;
-       edges : Graph  -> Set E;
-       sourceMap, targetMap : Graph  -> (E->?N);
-       dom : HomGraph  -> Graph;
-       cod : HomGraph  -> Graph;
-       nodeMap : HomGraph  -> (N->?N);
-       edgeMap : HomGraph  -> (E->?E);
-       id : Graph ->? HomGraph;
-       __o__ : HomGraph  * HomGraph  ->? HomGraph
-   forall g, g1, g2 : Graph; n : Set N; s, t : E->?N; hn:N->?N; he:E->?E; h, h1, h2:HomGraph 
-   . let g=(n,s,t) in nodes g = n
-   . let g=(n,s,t) in edges g = dom s
-   . let g=(n,s,t) in sourceMap = s
-   . let g=(n,s,t) in targetMap = s
-   . let h=(g1,hn,he,g2) in dom (h) = g1
-   . let h=(g1,hn,he,g2) in cod (h) = g2
-   . let h=(g1,hn,he,g2) in nodeMap (h) = hn
-   . let h=(g1,hn,he,g2) in edgeMap (h) = he
-   . def (h2 o h1) <=> cod h1 = dom h2
-   . def (h2 o h1) => h2 o h1 = 
-     (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
-      as HomGraph
+and 
+  GraphHomomorphism
+then
+  types G := Graph N E;
+        H := HomHom N E
 end
 
-
 view CategoryofGraphs : Category to GraphCategory =
-     Ob |-> Graphs, Mor |-> HomGraph, __o__, dom, cod, id
+     Ob |-> G, Mor |-> H, __o__, dom, cod, id
 end
 
 
 spec RichMultiSet = 
   MultiSet 
 then
+  var Elem : Type
  op   MultiSetToSet : MultiSet Elem -> Set Elem
  forall B:MultiSet Elem; S: Set Elem
-     . let MultiSetToSet(B) = S in 
+     . let S = MultiSetToSet(B) in 
         forall x: Elem. x isIn S <=> freq(x,B) > 0
 end
 
 
 spec MapMultiSet=
-  RichMultiSet
+  RichMultiSet and SumNatSet
 then
   var Elem : Type
   type  MapMultiSet Elem := MultiSet Elem ->? MultiSet Elem
 then %def
   var Elem, S, T : Type
   ops __ :: __ --> __ : Pred ( (S->? MultiSet T) * Set S * Set T);
-      freeMap__ : Map Elem -> MapMultiSet Elem;
-      linMap__ : (S->? MultiSet T) -> (MultiSet S->? MultiSet T)
-forall x1, x2: Elem; x3, x4: S; s: Set S; t: Set T;  f: Map Elem; h: S->? MultiSet T
+      freeMap : Map Elem -> MapMultiSet Elem;
+      linMap : (S->? MultiSet T) -> (MultiSet S->? MultiSet T)
+  forall x1, x2, y: Elem; x3, x4: S; m:MultiSet Elem; s: Set S; t: Set T;  
+         f: Map Elem; h: S->? MultiSet T
    . h :: s --> t <=> forall x:S . x isIn s => MultiSetToSet(h x) subset t
-   . freeMap f {} = {};
-   . freeMap f ({x1}+{x2}) = {f x1} + {f x2} 
-   . linMap h {} = {};
+   . freeMap f m y = sum (image m (\x:Elem . y = f x))
+   . linMap h {} = {}
    . linMap h ({x3}+{x4}) = h x3  + h x4 ; 
 
 
