@@ -58,6 +58,8 @@ spec AtomicBooleanAlgebra =
 then
      forall x:Elem
      . not x = 0 => (exists y:Elem . Atom(y) /\ y <= x) 	
+then %def
+     sort Atom = { x:Elem . Atom(x) }
 end
 
 

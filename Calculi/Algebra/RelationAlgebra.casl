@@ -78,7 +78,7 @@ end
 spec AtomicRelationAlgebra = 
      RelationAlgebraWithPartialOrder
 and
-     AtomicBooleanAlgebra with sort Elem |-> Rel
+     AtomicBooleanAlgebra with sort Elem |-> Rel, Atom |-> AtomRel
 end
 
 
@@ -123,17 +123,19 @@ then %implies
 then
      ops	 	 
          id      : BaseRel;
-	 conv__  : BaseRel -> GenRel; 
+	 conv__  : BaseRel -> BaseRel; 
          __cmps__: BaseRel * BaseRel -> GenRel
      forall x:BaseRel
-     . 	x cmps id = x
-     . 	id cmps x = x
-     .  conv(id) = id
+     . x cmps id = x
+     . id cmps x = x
+     . conv(id) = id
+     . conv(conv(x)) = x
 end
 
 
 spec GenerateRelationAlgebra[RelationSet[sort BaseRel]] = %mono
      ops 
+	  id	  : GenRel;
           conv__  : GenRel -> GenRel;
 	  __cmps__: GenRel * GenRel -> GenRel, assoc, unit id;       
 						 %% composition of relations
@@ -154,19 +156,15 @@ spec GeneratedRelationAlgebra =
 view GeneratedRelationAlgebra_as_RelationAlgebra:
      RelationAlgebra 
 to
-     { GeneratedRelationAlgebra  
-	reveal ops __cup__, __cap__,conv__,compl__,0,1,id
-     }
+     GeneratedRelationAlgebra 
+	
 =
      sort Rel |-> GenRel
 end 
 
 
 view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
-     { AtomicRelationAlgebra 
-     	then %def
-     	sort AtomRel = { x:Rel . Atom(x) } 
-     }
+     AtomicRelationAlgebra 
 to
      { GeneratedRelationAlgebra  
 	then %def
