@@ -93,6 +93,7 @@ then op res : Name * State -> State
            /\ conc(r, s, f) member harden(b, p) 
            /\ not n member freenames(s)
            /\ not n member freenames(r))
+      . freenames(res(n, p)) = freenames(p) - n
 
 spec ParallelComposition = ACDomain[sort Name]
 then op __||__ : State * State -> State, assoc
