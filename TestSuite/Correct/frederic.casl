@@ -9,26 +9,25 @@ preds P, Q, R : () ;
       Px, Qx, Rx: N;
       pp (x:N) <=> x=x
 var x:N;
-axioms
-   P => Q => R;  %% groups to the right
-   P if Q if R;  %% groups to the left 
-   P /\ Q /\ R;  %% groups to the left
-   P \/ Q \/ R;  %% groups to the left
-   P => Q /\ R;  %% /\ has higher precedence
-   P /\ Q => R;  %% /\ has higher precedence
-   not P \/ Q ;  %% not has higher precedence
+ .  P => Q => R;  %% groups to the right
+ .  P if Q if R;  %% groups to the left 
+ .  P /\ Q /\ R;  %% groups to the left
+ .  P \/ Q \/ R;  %% groups to the left
+ .  P => Q /\ R;  %% /\ has higher precedence
+ .  P /\ Q => R;  %% /\ has higher precedence
+ .  not P \/ Q ;  %% not has higher precedence
 
-   exists x:N . Px(x) => Qx(x) => Rx(x) ;   %% quantification extends to the rig
-   P <=> exists x: N . Px(x) <=> R ;        %% correct without grouping
-   P <=> ( exists x: N . Px(x) <=> R ) ;    %% same form as above
+ .  exists x:N . Px(x) => Qx(x) => Rx(x) ;   %% quantification extends to the rig
+ .  P <=> exists x: N . Px(x) <=> R ;        %% correct without grouping
+ .  P <=> ( exists x: N . Px(x) <=> R ) ;    %% same form as above
 
 
-   P => exists x:N . Qx(x) /\ Rx(x) ;       %% quantification extends to the rig
-   P /\ exists x:N . Qx(x) => Rx(x) ;       %% quantification extends to the rig
+ .  P => exists x:N . Qx(x) /\ Rx(x) ;       %% quantification extends to the rig
+ .  P /\ exists x:N . Qx(x) => Rx(x) ;       %% quantification extends to the rig
 
-  not exists x:N . Px(x) \/ Qx(x) ;
-  (not exists x:N . Px(x) ) \/ Qx(x) ;
-  Px(x) \/ exists x:N . Px(x) if Qx(x) ;
+ . not exists x:N . Px(x) \/ Qx(x) ;
+ . (not exists x:N . Px(x) ) \/ Qx(x) ;
+ . Px(x) \/ exists x:N . Px(x) if Qx(x) ;
 end
 
 spec NATURAL = sort Nat end
@@ -55,7 +54,7 @@ then
 %%  op     < > : Seq 
 
 %% Not yet handled:
-   ops :-[], :-{} : faces ;
+   ops %[ :- [], ]% :-{} : faces ;
      f __ ? : S ->? S;
      { } : List;
      {__} : S->Nat; 
@@ -75,10 +74,8 @@ then
 %% devrait etre errone, puisque "to" est un mot reserve.
 %% hide add__to__ 
 
-reveal pred __<__, __ < __ : Nat * Nat, __ < __,
-       op __ * __ : Nat * Nat -> Nat |-> __<__ : Nat* Nat -> Nat,
-       pred __ < __ ,
-       pred __<__, __ < __: Nat*Nat
+reveal pred __ < __ : Nat * Nat, 
+       op __ * __ : Nat * Nat -> Nat |-> __<__ : Nat* Nat -> Nat
 end
 
 
@@ -93,24 +90,21 @@ ops   p __, __ r, __ r2 : N -> N ;
       q : N ;
       __ __ : N*N -> N;
 
-axioms
-     p(x) q as S when F else x r = x ;
+  .   p(x) q as S when F else x r = x ;
 
-     p (x) q : S when F else x r = x if F2 (x) ;
-
+  .   p (x) q : S when F else x r = x if F2 (x) ;
 %%   syntax error since "r if F2(x)" is a formula, not a term.
 %%   p (x) q : S when F else (r if F2 (x)) ;
+  .   (p (x) q : S when F else x r) = x if F2 (x) ;
 
-     (p (x) q : S when F else x r) = x if F2 (x) ;
+  .   p (x) q when F else x r when F2(x) else x r2 = x;
 
-     p (x) q when F else x r when F2(x) else x r2 = x;
-
-     p x when F if F2(x) else x r = x;
+  .   p x when F if F2(x) else x r = x;
 
 %% Bremen parser does not seem to like any of these:
-     p x when F else x r: S = x;
-     p x when F else (x r: S) = x ;
-     (p x when F else x r) : S = x;
+  .   p x when F else x r: S = x;
+  .   p x when F else (x r: S) = x ;
+  .   (p x when F else x r) : S = x;
 end
 
 spec correct_formulas3 =
