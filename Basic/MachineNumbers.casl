@@ -1,7 +1,27 @@
 library Basic/MachineNumbers
 version 0.95
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% date: 19.06.02
+%% Corresponding authir: T. Mossakowski, till@tzi.de
+%% date: 23.08.02
+
+%{
+This library contains specifications of those subtypes
+of the naturals and the integers that are used on actual
+machines.
+The specifications CARDINAL und INTEGER provide subtypes
+of Nat and Int consisting of those numbers that have
+a binary representation within a given word length.
+Operations on these data types are partial restrictions
+of the usual operations on Nat and Int - they are undefined
+if the word length is exceeded.
+The specification TwoComplement provides a "cyclic"
+version of bounded integers that corresponds to the
+common two complement representation of integers
+used in many programming languages.
+Operations are total here - the successor of the
+maximal positive number fitting in the word length is
+the minimal negative number.
+}%
 
 from Basic/RelationsAndOrders version 0.95 get SigOrder
 from Basic/Numbers version 0.95 get Nat, Int
@@ -118,5 +138,55 @@ then %implies
   . def x mod y <=> not y=0                                             %(mod_INTEGER_dom)%
   . def x quot y <=> not y=0                                            %(quot_INTEGER_dom)%
   . def x rem y <=> not y=0                                             %(rem_INTEGER_dom)%
+end
+
+spec TwoComplement  [op Wordlength: Nat] given Nat = %mono
+  Int
+then %mono
+  generated type TwoComplement ::= intToTC (Int)
+  ops maxInteger,
+      minInteger: Int;
+      TCtoInt : TwoComplement -> Int
+  . maxInteger= (2 ^ (Wordlength-?1))-1          %(maxInteger_Int)%
+  . minInteger= -(2 ^ (Wordlength-?1))           %(minInteger_Int)%
+  forall x,y:Int; i:TwoComplement
+  . intToTC(x) = intToTC(x+ 2^Wordlength)               %(cycle_max)%
+  . intToTC(x) = intToTC(y) => x-y mod 2^Wordlength = 0 %(cycle_min)%
+  . TCtoInt(intToTC(x)) = x if minInteger<=x /\ x<=maxInteger
+then %def
+  { SigOrder[sort TwoComplement]
+    then
+    forall x,y:TwoComplement . x <= y <=> TCtoInt(x) <= TCtoInt(y)    %(leq_TwoComplement)%
+  }
+then %def
+  ops 0,1,
+      maxInteger,
+      minInteger: TwoComplement;
+      -__,
+      abs:        TwoComplement ->? TwoComplement;
+      __ + __,
+      __ - __,
+      __ * __,
+      __ / __,
+      __ div __,
+      __ mod __,
+      __ quot __,
+      __ rem__:   TwoComplement * TwoComplement ->? TwoComplement
+
+  . maxInteger=intToTC(maxInteger)          %(maxInteger_TwoComplement)%
+  . minInteger=intToTC(minInteger)          %(minInteger_TwoComplement)%
+  forall x,y: TwoComplement
+  . intToTC(0) = 0                                            %(def_0_TwoComplement)%
+  . intToTC(1) = 1                                            %(def_1_TwoComplement)%
+  . - x = intToTC( - TCtoInt(x) )                        %(minus_TwoComplement)%
+  . abs(x) = intToTC( abs( TCtoInt(x)) )                 %(abs_TwoComplement)%
+  . x + y = intToTC( TCtoInt(x) + TCtoInt(y))       %(add_TwoComplement)%
+  . x - y = intToTC( TCtoInt(x) - TCtoInt(y))       %(sub_TwoComplement)%
+  . x * y = intToTC( TCtoInt(x) * TCtoInt(y))       %(mult_TwoComplement)%
+  . x / y = intToTC( TCtoInt(x) /? TCtoInt(y))      %(divide_TwoComplement)%
+  . x div y = intToTC (TCtoInt(x) div TCtoInt(y))   %(div_TwoComplement)%
+  . x mod y = intToTC( TCtoInt(x) mod TCtoInt(y))   %(mod_TwoComplement)%
+  . x quot y = intToTC( TCtoInt(x) quot TCtoInt(y)) %(quot_TwoComplement)%
+  . x rem y = intToTC( TCtoInt(x) rem TCtoInt(y))   %(rem_TwoComplement)%
 end
 
