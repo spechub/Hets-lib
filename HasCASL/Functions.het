@@ -1,0 +1,30 @@
+library Functions
+
+logic HasCASL
+
+spec Functions =
+
+  ops __o__ : forall a, b, c:Type . 
+               (b ->? c) * (a ->? b) -> (a ->? c);
+      id    : forall a:Type . a ->? a;
+
+  forall a, b, c : Type;
+         f       : b ->? c;
+         g       : a ->? b;
+         x       : a
+   . f o g = \ x .! f (g x)             %(o_def)%
+   . id = \ x . x                      %(id_def)%
+
+ then %implies
+
+  forall a, b, c, d : Type;
+         f'         : a ->? a;
+         f          : c ->? d;
+         g          : b ->? c;
+         h          : a ->? b
+   . f o (g o h) = (f o g) o h         %(o_assoc)%
+   . f' o id = f'                      %(id_neut)%
+   . f' o f' = id => forall x, y:a .
+         f' x = f' y => x = y              %(inj)%
+   . f' o f' = id => forall x:a .
+         exists y:a . f' y = x            %(surj)%

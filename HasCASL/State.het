@@ -1,0 +1,31 @@
+library State
+
+logic HasCASL
+
+spec State =
+
+  sort S;
+
+  op __>>=__ : forall a : Type . (S ->? (S * a)) * 
+                (a ->? (S ->? (S * a))) ->? (S ->? (S * a));
+     return  : forall a : Type . a ->? (S ->? (S * a));
+
+  forall a : Type; 
+         x : a;
+         m : S ->? (S * a); 
+         f : a ->? (S ->? (S * a))
+   . return x = \ s:S . (s, x)                 %(return_def)%
+   . m >>= f = \ s:S . let (s', a) 
+                          = m s in (f a) s'      %(bind_def)%
+
+ then %implies
+
+  forall a       : Type; 
+         x       : a;
+         m       : S ->? (S * a); 
+         f, g, h : a ->? (S ->? (S * a))
+   . forall x:a . (f x >>= g) >>= h 
+                 = f x >>= (\ y:a . g y >>= h) %(monad_assoc)%
+   . f x >>= return = f x                      %(monad_unit1)%
+   . def (f x) => return x >>= f = f x        %(monad_unit2a)%
+   . m >>= (\ x:a . return x >>= f) = m >>= f %(monad_unit2b)%
