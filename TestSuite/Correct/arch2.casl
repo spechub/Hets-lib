@@ -1,0 +1,59 @@
+library arch2
+
+spec sp1 =
+  sort s
+end
+
+spec sp2 =
+  sort t,u
+end
+
+spec sp3 =
+  sort e
+end
+
+
+%[
+arch spec wrong_asp1 =
+  units A:sp1;
+        B:sp1 -> sp2;
+  result B[A] with t |-> v, u |-> v
+end
+]%
+
+%% hiding
+arch spec asp2 =
+  units A:sp1;
+        B:sp1 -> sp2;
+        C:sp1
+  result B[A] hide s  and C
+end
+
+arch spec asp3 =
+  units A:sp3;
+        B:sp1 -> sp2;
+        C:sp3
+  result B[A]%% hide e and C
+end
+
+
+arch spec asp4 =
+  units A:sp3;
+        B:sp1 -> sp2;
+        C:sp3;
+        T= B[A] hide e and C
+  result T
+end
+
+%% true unit expressions
+arch spec asp5 =
+  units B:sp1 -> sp2;
+  result lambda X:sp1 . B[X]
+end
+
+%% unit imports
+arch spec asp6 =
+  units A:sp1;
+        B:sp2 given sp1
+  result B
+end
