@@ -128,11 +128,11 @@ spec Nat = %mono
 
 then %mono
      sort Pos = { p: Nat . p > 0 }
-     ops   1: Pos = suc(0);             %(1_as_Pos_def)%
+     ops   suc: Nat -> Pos; 
+           1: Pos = suc(0);             %(1_as_Pos_def)%
            __*__: Pos * Pos -> Pos;
            __+__: Pos * Nat -> Pos;
-           __+__: Nat * Pos -> Pos;
-	   suc: Nat -> Pos
+           __+__: Nat * Pos -> Pos
 
 then %implies
 
