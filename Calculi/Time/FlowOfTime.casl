@@ -1,18 +1,18 @@
-library Calculi/TemporalCalculi/FlowOfTime
-version 0.1
+library Calculi/Time/FlowOfTime
+version 0.2
 %author: S. Wölfl
-%date: 15-10-04
+%date: 08-02-05
 
 
 %{ This library provides basic specifications for temporal reasoning. 
    Here we focus on arbitrary flows of time and on further conditions.
    Linear flows of time are considered in 
 
-	Calculi/TemporalCalculi/LinearFlowOfTime
+	Calculi/Time/LinearFlowOfTime
 
    while treelike flows are the topic of
 
-	Calculi/TemporalCalculi/Tree
+	Calculi/Time/Tree
 	
    We will use the following abbreviations:
 	
@@ -32,7 +32,7 @@ version 0.1
 
    Some of the implications presented in the specifications are used for 
    constraint based reasonig. Here "PA" is used as an abbreviation of
-Point Algebra.
+   Point Algebra.
 
    We provide parameterized versions Ext_Spec of basic specifications Spec 
    as well as unparameterized versions Rich_Spec. Hope that's helpful.
@@ -96,15 +96,15 @@ then %implies
 		  x = z					%(PA_comp_eqeq_elim)%
 
      . x pre z => (exists y:Instant . x pre y /\ y = z) 
-							%(PA_comp_preeq_intro1)%
+							%(PA_comp_preeq_intro)%
      . x suc z => (exists y:Instant . x suc y /\ y = z) 
-							%(PA_comp_suceq_intro1)%
+							%(PA_comp_suceq_intro)%
      . x pre z => (exists y:Instant . x = y /\ y pre z) 
-							%(PA_comp_eqpre_intro1)%
+							%(PA_comp_eqpre_intro)%
      . x suc z => (exists y:Instant . x = y /\ y suc z) 
-							%(PA_comp_eqsuc_intro1)%
+							%(PA_comp_eqsuc_intro)%
      . x = z => (exists y:Instant . x = y /\ y = z) 
-							%(PA_comp_eqeq_intro1)%
+							%(PA_comp_eqeq_intro)%
 
 end
 
@@ -129,9 +129,9 @@ spec Ext_DnsFlowOfTime [DnsFlowOfTime] =
 then %implies
      forall x,z:Instant
      . x pre z => (exists y:Instant . x pre y /\ y pre z)
-							%(PA_comp_prepre_intro1)%
+							%(PA_comp_prepre_intro)%
     . x suc z => (exists y:Instant . x suc y /\ y suc z) 
-							%(PA_comp_sucsuc_intro1)%
+							%(PA_comp_sucsuc_intro)%
 end
 
 
