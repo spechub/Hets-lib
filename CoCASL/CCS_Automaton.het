@@ -47,6 +47,7 @@ spec FinalNonDeterministicAutomaton[Action] =
   cofree {
     Set[sort State]
     then op next : Act * State -> Set[State]   }
+%%    then cotype State ::= (next : Act -> Set[State])   }
 end
 
 spec Zero =
@@ -62,20 +63,18 @@ spec ActionPrefixing =
 then
   op __-->__ : Act * State -> State
   forall x, y : Act; s : State
-  . x = y => next (x , y -->s) = {s}
-  . not x = y => next (x , y -->s) = {} 
+  . next (x , y -->s) = {s} when x=y else {} 
 end
 
-spec PairSet[sort A][sort B] =
-    Set[sort A] with sort Set[A] |-> SetA
-and Set[sort B] with sort Set[B] |-> SetB
-and Set[sort Pair[A,B]]
-and Pair[sort A][sort B] 
+spec BinRel[sort S] =
+    Set[sort S]
+and Pair[sort S][sort S] 
+and Set[sort Pair[S,S]]
 then 
-  ops __*__ : A * SetB -> Set [Pair[A,B]];
-      __*__ : SetA * SetB -> Set [Pair[A,B]];
-      __*__ : SetA * B -> Set [Pair[A,B]]; 
-  forall a : A; b : B ; U,X : SetA; Y,Z : SetB
+  ops __*__ : S * Set[S] -> Set [Pair[S,S]];
+      __*__ : Set[S] * Set[S] -> Set [Pair[S,S]];
+      __*__ : Set[S] * S -> Set [Pair[S,S]]; 
+  forall a : S; b : S ; U,X : Set[S]; Y,Z : Set[S]
   . a * {} = {}
   . a * {b} = {pair(a, b)}
   . a * (Y union Z) = a * Y union a * Z
@@ -85,48 +84,50 @@ then
   . X * b = X * {b} 
 end
 
-spec PairSetFun[sort S; op __+__:S*S->S] =
-  PairSet[sort S][sort S] 
-    with SetA |-> Set[S], SetB |-> Set[S]
+spec BinRelFun[sort S; op __+__:S*S->S] =
+  BinRel[sort S]
 then
   op pplus : Set[Pair[S,S]] -> Set[S]
-  forall s1 , s2 : S; s: Set[Pair[S,S]]
+  forall s1 , s2 : S; set1,set2: Set[Pair[S,S]]
   . pplus({}) = {}
-  . pplus({pair(s1,s2)} union s) = {s1+s2} union pplus(s)
+  . pplus({pair(s1,s2)}) = {s1+s2} 
+  . pplus(set1 union set2) = pplus(set1) union pplus(set2)
 end
 
 spec Summation =
   Zero 
-and PairSetFun[sort State; op  __+__ : State * State -> State]
+and BinRelFun[sort State; op  __+__ : State * State -> State]
 then
   forall a : Act; s1 , s2 : State
   . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
 end
 
 spec FinAct = 
-  Set[sort Act]
+  ExtSet[sort Label]
 then
-  op actions : Set[Act]
+  op actions : Set[Label]
+  forall l:Label
+  . l eps actions
 end
 
 spec Composition = 
   FinAct
-and
-  Summation
+and BinRelFun[sort State; op  __||__ : State * State -> State]
+    with pplus |-> ppar
 and
   ExtSet[sort State]
 and
   ExtSet[sort Act]
 then
   ops __||__ : State * State -> State;
-      h : State * State * Set[Act] -> Set[State]
-  vars a : Act; l : Label; s1, s2 : State; set1, set2 : Set[Act]
+      h : State * State * Set[Label] -> Set[State]
+  vars a : Act; l : Label; s1, s2 : State; set1, set2 : Set[Label]
   . h(s1 , s2, {}) = {}
-  . h(s1, s2, {l}) = next(a, s1) intersection next(bar(l), s2)
+  . h(s1, s2, {l}) = next(l, s1) intersection next(bar(l), s2)
   . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
-  . next (a, s1 || s2) = pplus(next (a, s1 ) * s2 union s1 * next (a, s2))
-  . next (tau, s1 || s2) = 
-      pplus(next (tau, s1 ) * s2 union s1 * next (tau, s2)) union h(s1, s2, actions)
+  . next(a, s1 || s2) = pplus(next (a, s1 ) * s2 union s1 * next (a, s2))
+  . next(tau, s1 || s2) = 
+      ppar(next (tau, s1 ) * s2 union s1 * next (tau, s2)) union h(s1, s2, actions)
 end
 
 spec Hiding = 
@@ -151,14 +152,19 @@ then
 end
 
 spec CCS_Coalgebraic_Semantics =
-  Zero and ActionPrefixing and Summation and Composition and Hiding and Relabelling
+  FinAct
+and Zero and ActionPrefixing and Summation and Composition and Hiding and Relabelling
 and CCS
 and Map[sort AgentVariable][sort State] with Map[AgentVariable,State] |-> Env
 then
-  preds prefixedVars, isWeaklyGuarded : AgentExpression
+  preds variant : AgentVariable * Env * Env
+        prefixedVars, isWeaklyGuarded : AgentExpression;
   op {{__}}__ : AgentExpression * Env ->? State 
-  forall a:Act; env:Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
+  forall a:Act; env,env':Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
          set : Set[Label]; f : Relabelling
+ 
+  . variant(X,env,env') <=> forall Y:AgentVariable . not X=Y => lookup(X,env)=lookup(Y,env')
+
   . prefixedVars(C)
   . not prefixedVars(X)
   . prefixedVars(0)
@@ -180,33 +186,20 @@ then
   . isWeaklyGuarded(fix(X,E)) <=> isWeaklyGuarded(E) /\ prefixedVars(E)
 
   . {{X}}env = lookup(X,env)
-  . C definedAs E <=> {{C}}env = {{E}}env
+  . {{C}}env = {{definitionOf(E)}}env
   . {{0}}env = zero
   . {{a->E}}env = a-->{{E}}env
   . {{E1+E2}}env = {{E1}}env + {{E2}}env
   . {{E1||E2}} env = {{E1}}env || {{E2}}env
   . {{E-set}}env = {{E}}env - set
   . {{rel(E,f)}}env = rel({{E}}env,f)
-  . isWeaklyGuarded(E) =>
-    lookup(X,env) = {{fix(X,E)}}env => {{fix(X,E)}}env = {{E}}env
+  . isWeaklyGuarded(E) /\ variant(X,env,env') =>
+    {{X}}env={{E}}env => {{X}}env' = {{fix(X,E)}}env'
   . not isWeaklyGuarded(E) => not def {{fix(X,E)}}env
 
 then %implies
   forall a:Act; env:Env; E1,E2:AgentExpression
+  . isWeaklyGuarded(E) => def {{fix(X,E)}}env
   . isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2) =>
     (E1 - a -> E2 <=> {{E2}}env eps next(a,{{E1}}env))
 end
-
-%[
-
-    AgentExpression ::=
-        sort AgentVariable 
-    |   sort AgentConstant
-    |   0                                        %% inactive agent
-    |   __->__ (Act; AgentExpression)            %% Prefix
-    |   __+__ (AgentExpression;AgentExpression)  %% Summation; finite sums
-    |   __||__ (AgentExpression;AgentExpression) %% Composition
-    |   __-__  (AgentExpression;Set[Label])      %% Restriction
-    |   rel(AgentExpression;Relabelling)          %% Relabelling
-    |   fix(AgentVariable;AgentExpression)        %% Recursion; only 1 comp.
-]%
