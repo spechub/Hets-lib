@@ -1,6 +1,22 @@
 library piotr_short
 %% Example provided by Piotr Hoffman
 
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+end
+
+spec TotalOrder[sort Elem] =
+  pred __<__ : Elem * Elem
+  forall x,y,z : Elem
+  . not x<x
+  . x<y /\ y<z => x<z
+  . x<y \/ y<x
+end
+
+spec List[sort Elem] =
+  free type List ::= nil | __::__(Elem;List)
+end
+
 spec ListWithMost[sort Elem] =
    List[sort Elem] then
       local
@@ -31,7 +47,7 @@ unit spec GOAL =
    TotalOrder[sort Elem] * List[sort Elem] -> ListWithMost[sort Elem]
 end
 
-***************************************************************************
+%%***************************************************************************
 
 spec Pair[sort Elem1][sort Elem2] =
   free type Pair[Elem1,Elem2] ::= pair( p1 : Elem1; p2 : Elem2)
@@ -80,7 +96,7 @@ arch spec MAIN =
 		 TotalOrder[sort Elem] * 
 		 Pair[sort Elem][sort Nat] 
 		 ->
-    		 ConterDictWith_IncNum[sort Elem];
+    		 CounterDictWith_IncNum[sort Elem];
 
     DictToListMost :  CounterDictWith_IncNum[sort Elem] * 
 			List[sort Elem] 
@@ -92,10 +108,10 @@ arch spec MAIN =
        DictToListMost[ MakeDict[N][TO][MakePair[TO][Nat]] ][L]
        reveal Elem, List, __::__, nil, most, __<__
        
-      %% : GOAL
+      %[ : GOAL ]%
 end
 
-***************************************************************************
+%%***************************************************************************
 
 arch spec DictToListMost =
   units
@@ -119,12 +135,13 @@ arch spec DictToListMost =
     	   	  ExtDictToListMost[CDW_IN][L][ES][Pair]
     	   	  reveal Elem, List, __::__, nil, most
     	   	  
-    	%% : CounterDictWith_IncNum[sort Elem] * 
-	%%		List[sort Elem] -> 
-    	%%		ListWithMost[sort Elem]	
+    	%[ : CounterDictWith_IncNum[sort Elem] * 
+			List[sort Elem] -> 
+    			ListWithMost[sort Elem]	
+        ]%
 end
 
-************************************************************************
+%%************************************************************************
 
 spec BinTree[sort Elem] =
   free type Tree[Elem] ::= emptyTree | 
@@ -197,15 +214,16 @@ arch spec MakeDict =
 			hide
 		  Pair[Elem,Nat]
 		  
-	    %% : Nat * 
-	    %%	 TotalOrder[sort Elem] * 
-	    %%	 Pair[sort Elem][sort Nat ] 
-	    %%	 ->
-    	    %%	 CounterDictWith_IncNum[sort Elem];
+	    %[ : Nat * 
+	    	 TotalOrder[sort Elem] * 
+	    	 Pair[sort Elem][sort Nat ] 
+	    	 ->
+    	    	 CounterDictWith_IncNum[sort Elem];
+            ]%
 end
 
 
-******************************************************************************
+%%******************************************************************************
 
 spec AddBSTNumToTree =
   BinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat] ] and 
@@ -213,7 +231,7 @@ spec AddBSTNumToTree =
   
     BSTTree[ Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat]  ] then
   	
-      ops num : BST * Elem -> Nat
+      ops num : BST * Elem -> Nat;
           empty : BST
       vars e : Elem; p : Pair[Elem,Nat]; l, r : BST;
       axioms

@@ -2,13 +2,15 @@ library WareHouse
 %% authors: D. Bert, H. Baumeister
 %% date: 5.11.99
 
-from TestSuite/Invoice get ORDER, STOCK, INVOICE
+%display __is_in__ %LATEX $\in$
+
+from TestSuite/Correct/Invoice get ORDER, STOCK, INVOICE
 from Basic/StructuredDatatypes version 0.3 get List
 
 spec ORDER_QUEUE =
-  { List[ORDER fit Elem |-> Order] with List[Order] |-> OQueue }
+  { List[ORDER fit Elem |-> Order] with List[Order] |-> OQueue, [] |-> nil }
 then
-  pred __is_in__ %!<latex>$\in$%! : Order * OQueue
+  pred __is_in__  : Order * OQueue
   vars o,o2:Order; oq:OQueue
     . not o is_in nil
     . o2 is_in (o::oq) <=> o2 = o \/ o2 is_in oq
@@ -57,7 +59,7 @@ then
 
   vars o:Order; pq:PQueue; s:Stock
     . def first_invoiceable(pq,s) <=> invoiceable(pq,s)
-    . first_invoiceable(o::pq,s) = o when enough_qty(o,s)
+    . first_invoiceable((o::pq) as PQueue,s) = o when enough_qty(o,s)
 			      else first_invoiceable(pq,s)
 
   ops
@@ -71,7 +73,7 @@ then
   vars o,o1,o2:Order; p:Product; n:Pos; vgs:VGS;
        osm:OSM; s2:Stock
 
-    %% axioms for the mk_order operation
+    %[ axioms for the mk_order operation ]%
 
     . is_pending(mk_order(p,n,vgs))
     . not mk_order(p,n,vgs) is_in the_orders(vgs)
@@ -81,14 +83,15 @@ then
     %% axioms for the warehouse operation level
 
     . new_order(p,n,vgs) = vgs if not p is_in the_stock(vgs)
-    . new_order(p,n,vgs) = mk_gs(porders(vgs) <- mk_order(p,n,vgs),
+    . new_order(p,n,vgs) = mk_gs((porders(vgs) <- mk_order(p,n,vgs))
+                                  as PQueue,
 				 iorders(vgs), the_stock(vgs))
 				if p is_in the_stock(vgs)
 
     . cancel_order(o,vgs) =
-		mk_gs(remove(o,porders(vgs)),iorders(vgs),the_stock(vgs))
+		mk_gs(remove(o,porders(vgs)) as PQueue,iorders(vgs),the_stock(vgs))
 			when o is_in porders(vgs)
-	   else mk_gs(porders(vgs),remove(o,iorders(vgs)),
+	   else mk_gs(porders(vgs),remove(o,iorders(vgs)) as IQueue,
 		      add(reference(o),ordered_qty(o),the_stock(vgs)))
 			when o is_in iorders(vgs)
 	   else vgs
@@ -104,8 +107,8 @@ then
        /\ osm = invoice_order(o1,the_stock(vgs))
        /\ o2 = order_of(osm)
        /\ s2 = stock_of(osm))
-        => deal_with_order(vgs) = mk_gs(remove(o1,porders(vgs)),
-					iorders(vgs) <- o2,
+        => deal_with_order(vgs) = mk_gs(remove(o1,porders(vgs)) as PQueue,
+					(iorders(vgs) <- o2) as IQueue,
 					s2))
 		if invoiceable(porders(vgs),the_stock(vgs))
 

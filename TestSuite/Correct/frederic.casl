@@ -31,11 +31,12 @@ axioms
   Px(x) \/ exists x:N . Px(x) if Qx(x) ;
 end
 
+spec NATURAL = sort Nat end
 
 spec fv =
    NATURAL
 then
-   sort S ;
+   sort S, Seq, Seq', faces, List ;
    sort S1, S2 < S3;		   %% Here < is a reserved word
    sort S0 < S3;
 
@@ -43,7 +44,7 @@ then
    op __ * __ : Nat * Nat -> Nat;  %% two * with different meanings.
       __*__: Seq*Seq->Seq;
 
-   op <> : Seq';
+   op %[<> : Seq'; ]%
       <__> : Nat -> Seq';
    op :->, :->>, :-<, :-| , :-<>, #/:->, &:-|, :>--<  : faces
 
@@ -54,14 +55,14 @@ then
 %%  op     < > : Seq 
 
 %% Not yet handled:
-%%   op :-[], :-{} : faces ;
-%%   pred
-%%   f __ ? : S ->? S;
-%%     { } : List;
-%%     {__} : S->Nat; 
+   ops :-[], :-{} : faces ;
+     f __ ? : S ->? S;
+     { } : List;
+     {__} : S->Nat; 
+     0,1:Nat;
 
    sort S' = { x : S . { x } = 1 } ;
-   sort Biz = { x:S . x * y < x*z => x < y }
+   sort Biz = { x:Nat . forall y,z:Nat . x * y < x*z => x < y }
 
    sort iso1 = iso2 = iso3;
 
@@ -69,13 +70,13 @@ then
    pred inf(x,y:Nat) <=> x < y;
 
    op f: Nat*Nat->Nat, comm, assoc, unit 0 * 0;
-   op f: Nat*Nat->Nat, comm, assoc, unit 0 < 0;
+   op f: Nat*Nat->Nat, comm, assoc, unit 0;
 
 %% devrait etre errone, puisque "to" est un mot reserve.
 %% hide add__to__ 
 
-reveal op __<__, __ < __ : Nat * Nat -> Nat, __ < __,
-       op __*__, __ * __ : Nat * Nat -> Nat |-> __<__ : Nat* Nat -> Nat,
+reveal pred __<__, __ < __ : Nat * Nat, __ < __,
+       op __ * __ : Nat * Nat -> Nat |-> __<__ : Nat* Nat -> Nat,
        pred __ < __ ,
        pred __<__, __ < __: Nat*Nat
 end
@@ -84,7 +85,7 @@ end
 
 spec correct_formulas2 =
 
-sort N, S
+sorts S<N; N<S
 preds F : () ;
       F2: N;
 var x:N;
@@ -93,23 +94,23 @@ ops   p __, __ r, __ r2 : N -> N ;
       __ __ : N*N -> N;
 
 axioms
-     p(x) q as S when F else x r ;
+     p(x) q as S when F else x r = x ;
 
-     p (x) q : S when F else r if F2 (x) ;
+     p (x) q : S when F else x r = x if F2 (x) ;
 
 %%   syntax error since "r if F2(x)" is a formula, not a term.
 %%   p (x) q : S when F else (r if F2 (x)) ;
 
-     (p (x) q : S when F else r) if F2 (x) ;
+     (p (x) q : S when F else x r) = x if F2 (x) ;
 
-     p (x) q when F else x r when F2 else x r2 ;
+     p (x) q when F else x r when F2(x) else x r2 = x;
 
-     p x when F if F2 else x r ;
+     p x when F if F2(x) else x r = x;
 
 %% Bremen parser does not seem to like any of these:
-     p when F else r: S ;
-     p when F else (r: S) ;
-     (p when F else r) : S ;
+     p x when F else x r: S = x;
+     p x when F else (x r: S) = x ;
+     (p x when F else x r) : S = x;
 end
 
 spec correct_formulas3 =

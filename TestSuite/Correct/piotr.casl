@@ -22,7 +22,7 @@ spec Syntax =
   				if_then_else( BoolExp; Instr; Instr );
   free type Prog ::= program( Instr );
 end
-%(
+
 spec Interpreter =
   Ident and simpleNum and Syntax then
     op Meaning : Prog * Num ->? Num; 
@@ -74,7 +74,7 @@ spec Interpreter =
           Meaning(program(I),n) = find(out_data,M(I,cons(in_data,n,nil)));
       }
 end
-%)
+
 spec TotalOrder =
   sort Elem;
   pred __<__ : Elem * Elem;
