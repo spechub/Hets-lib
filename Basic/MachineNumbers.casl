@@ -1,19 +1,19 @@
 library Basic/MachineNumbers
-version 0.4
+version 0.5
 %% authors: M.Roggenbach, T.Mossakowski
 %% date: 1.3.00
 
 from
-     Basic/RelationsAndOrders version 0.4 get SigOrder
+     Basic/RelationsAndOrders version 0.5 get SigOrder
 from
-     Basic/Numbers version 0.4 get Nat, Int
+     Basic/Numbers version 0.5 get Nat, Int
 
 spec
      CARDINAL  [op Wordlength: Nat] given Nat =
      Nat
 then
      type
-          CARDINAL ::= natToCard(cardToNat : Nat) ?
+          CARDINAL ::= natToCard (cardToNat : Nat)?
      vars
           x : Nat; c:CARDINAL
      .
@@ -21,7 +21,8 @@ then
      .
           %[natToCard_def] natToCard (cardToNat(c)) = c
 then
-     SigOrder[sort CARDINAL]
+     SigOrder
+          with Elem |-> CARDINAL
 then
      ops
            maxCardinal: Nat;
@@ -89,7 +90,7 @@ spec
      Int
 then
      type
-          INTEGER ::= intToInteger (integerToInt: Int) ?
+          INTEGER ::= intToInteger (integerToInt: Int)?
      vars
           x:Int; i:INTEGER
      .
@@ -100,7 +101,9 @@ then
      .
           %[intToInteger_def] intToInteger (integerToInt(i)) = i
 then
-     SigOrder[sort INTEGER]
+     SigOrder
+     with
+          Elem |-> INTEGER
 then
      ops
            maxInteger,
