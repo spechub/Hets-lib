@@ -1,5 +1,6 @@
 library HasCASL/MetricSpaces
 
+%author: T. Mossakowski, S. Wölfl
 from HasCASL/Set get Set
 from HasCASL/Real get Real
 
@@ -19,6 +20,8 @@ end
 spec RichMetricSpace =
   MetricSpace and Set
 then
-  op disc(r:Real;x:S) : Set S = \y:S . d(x,y)<=r
-  type Discs = {X:Set S . exists r:Real;x:S . X=disc(r,x)}
+  op closedDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<=r
+  op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+  type ClosedDisc = {X:Set S . exists r:Real;x:S . X=closedDisc(r,x)}
+  type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
 end
