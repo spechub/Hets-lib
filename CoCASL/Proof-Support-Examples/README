@@ -1,0 +1,64 @@
+Examples for the Proof Support of CoCASL in Isabelle/HOL
+========================================================
+
+15.09.2004
+
+D. Hausmann, T. Mossakowski and L. Schroeder
+
+
+BinTree.thy        :  Infinite binary trees with nodes from <Elem>.
+
+		      Automatic proof of
+		      !! bt :: BinTree . mirror (mirror bt) = bt
+
+BinTree.thy        :  Infinite streams of bits.
+
+		      Automatic proof of
+		      tick = map flop tock
+
+		      Semi-Automatic proofs of
+		      !! b :: BitStream . map flop (map flop b) = b
+		      !! b :: BitStream . (flip (flip b)) = b
+
+Examples.het       :  CoCASL Specifications of infinite binary trees, bitstreams
+                      and sequences.
+
+NatStream.thy      :  Infinite streams of natural numbers.
+
+		      Automatic proofs of
+		      !! a :: Nat . !! b :: Nat . (merge (const a) (const b)) = (swap a b)
+		      !! l :: NatStream . (stradd l l) = (map double l)
+		      !! s1 :: NatStream . !! s2 :: NatStream . (stradd s1 s2) = (stradd s2 s1)
+		      !! s :: NatStream . merge (odd s) (even s) = s
+
+Sequence.thy       :  Finite or infinite streams (partial observers are not implemented yet!).
+
+                      Automatic proofs of
+		      !! f :: (Elem => Elem) . !! a :: Elem . map f (iterate f a) = iterate f (f a)
+		      !! s1 :: Sequence . !! s2 :: Sequence . !! s3 :: Sequence .
+		                                   conc (conc s1 s2) s3 = conc s1 (conc s2 s3)
+
+Stream.thy         :  Infinite Streams.
+
+		      Automatic proofs of
+		      !! e :: Elem . const e = iterate identity e
+	              !! e :: Elem . const e = swap e e
+		      !! e :: Elem . const e = even (const e)
+		      !! e :: Elem . !! f :: Elem . const e = odd (swap e f)
+		      !! e :: Elem . const e = map identity (const e)
+		      !! e :: Elem . !! f :: (Elem => Elem) . (iterate f (f e)) = (map f (iterate f e))
+		      !! a :: Elem . !! b :: Elem . (merge (const a) (const b)) = (swap a b)
+		      !! s :: Stream . ((tripplemerge (first s) (second s)) (third s)) = s
+		      !! s :: Stream . merge (odd s) (even s) = s
+
+		      Semi-Automatic proof of
+		      !! s :: Stream . ((fourmerge (one s) (two s)) (three s) (four s)) = s
+
+tactics.ML         :  Fixed Isabelle/HOL tactics for coinductive proofs.
+
+TreeStream.thy     :  Infinite Streams of infinite binary trees.
+
+                      Semi-Automatic proof of
+		      !! b :: BinTree . (swap (mirror(mirror b)) b = const b)
+
+VendingMachine.thy :  Classic coin/tea/coffee example. No working proofs yet.
