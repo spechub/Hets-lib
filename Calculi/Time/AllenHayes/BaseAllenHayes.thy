@@ -1,8 +1,7 @@
 
 theory BaseAllenHayes = Main:
 
-
-(*
+ (*
   author: Stefan Woelfl
   date:   05-11-2004
   
@@ -44,7 +43,7 @@ M4: "!! x y z u :: Interval .
 theorem M_irrefl[intro]: "!! x :: Interval . (Not (M x x))"
 proof -
   fix x
-  from M1 M2a M2b M2c M2d M3 M4
+  from M2b
   show "Not(M x x)" by blast
 qed
 
@@ -53,7 +52,7 @@ theorem M_asym[intro]: "!! x :: Interval . !! y :: Interval . M x y ==> (Not (M 
 proof -
   fix x y
   assume "M x y"
-  with M1 M2a M2b M2c M2d M3 M4
+  with M2b M2c
   show "(Not (M y x))"
     by blast
 qed
@@ -63,7 +62,7 @@ theorem M_atrans[intro]: "!! x :: Interval . !! y :: Interval . !! z :: Interval
 proof -
   fix x y z
   assume " M x y & M y z"
-  with M1 M2a M2b M2c M2d M3 M4
+  with M2c 
   show "Not (M x z)"
     by blast
 qed
