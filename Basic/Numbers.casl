@@ -55,6 +55,7 @@ spec Nat =
      . 0 + m = m                        %(Nat_add_0)%
      . suc(n) + m = suc(n + m)          %(Nat_add_suc)%
 
+
      . 0 * m = 0                        %(Nat_mult_0)%
      . suc(n) * m = (n * m) + m         %(Nat_mult_suc)%
 
@@ -100,7 +101,7 @@ spec Nat =
 
 then %def
      sort Pos = { p: Nat . p > 0 }
-     op    1: Pos = suc(0) as Pos;      %(Nat_1_as_Pos_def)%
+     op    1: Pos = suc(0);             %(Nat_1_as_Pos_def)%
            __*__: Pos * Pos -> Pos;
            __+__: Pos * Nat -> Pos;
            __+__: Nat * Pos -> Pos;
@@ -272,8 +273,4 @@ then %implies
 
      . (i / p) / (j / q) = 
        (i / p) * (q / j) if not j=0     %(Rat_divide_rule)%
-
-
-
-
 
