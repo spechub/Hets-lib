@@ -1,0 +1,124 @@
+library CoCASL/CCS_Automaton
+
+%prec({__union__} < {__*__})%
+
+%%from Basic/StructuredDatatypes get Pair
+from CoCASL/CCS get Action, CCS
+
+
+logic CoCASL
+
+%% Should come from CASL!
+spec Pair [sort S] [sort T] = %mono
+  free type Pair[S,T] ::= pair(first:S; second:T)
+end
+
+
+spec Set[sort Elem] =
+  free {
+         type Set[Elem] ::= {} | {__}(Elem) | __union__ (Set[Elem] ; Set[Elem]) 
+         op __union__ : Set[Elem] * Set[Elem] -> Set[Elem] , assoc, comm, idem, unit {} 
+     } 
+end
+
+spec ExtSet[sort Elem] =
+  Set[sort Elem]
+then
+  pred __eps__ : Elem * Set[Elem]
+  op __intersection__ : Set[Elem] * Set[Elem] -> Set[Elem]
+  forall a,b:Elem; s1,s2:Set[Elem]
+  . not a eps {}
+  . a eps {b} <=> a=b
+  . a eps (s1 union s2) <=> a eps s1 \/ a eps s2
+  . a eps (s1 intersection s2) <=> a eps s1 /\ a eps s2
+end
+
+spec FinalNonDeterministicAutomaton[Action] =
+  cofree {
+    Set[sort State]
+    then op next : Act * State -> Set[State]   }
+end
+
+spec Zero =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op zero : State 
+  vars a : Act
+  . next (a, zero) = {} 
+end
+
+spec ActionPrefixing =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op __-->__ : Act * State -> State
+  forall x, y : Act; s : State
+  . x = y => next (x , y -->s) = {s}
+  . not x = y => next (x , y -->s) = {} 
+end
+
+spec PairSet[sort A][sort B] =
+    Set[sort A] with sort Set[A] |-> SetA
+and Set[sort B] with sort Set[B] |-> SetB
+and Set[sort Pair[A,B]]
+and Pair[sort A][sort B] 
+then 
+  ops __*__ : A * SetB -> Set [Pair[A,B]];
+      __*__ : SetA * SetB -> Set [Pair[A,B]];
+      __*__ : SetA * B -> Set [Pair[A,B]]; 
+  forall a : A; b : B ; U,X : SetA; Y,Z : SetB
+  . a * {} = {}
+  . a * {b} = {pair(a, b)}
+  . a * (Y union Z) = a * Y union a * Z
+  . {} * Y = {}
+  . {a} * Y = a * Y
+  . (U union X) * Y = U * Y union X * Y 
+  . X * b = X * {b} 
+end
+
+spec Summation =
+  Zero 
+and { PairSet[sorts State][sort State] 
+      with SetA |-> Set[State], SetB |-> Set[State] }
+then
+  ops __+__ : State * State -> State;
+      pplus : Set[Pair[State,State]] -> Set[State]
+  forall a : Act; s1 , s2 : State; s: Set[Pair[State,State]]
+  . pplus({}) = {}
+  . pplus({pair(s1,s2)} union s) = {s1+s2} union pplus(s)
+  . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
+end
+
+spec FinAct = 
+  Set[sort Act]
+then
+  op actions : Set[Act]
+end
+
+spec Composition = 
+  FinAct
+then
+  FinalNonDeterministicAutomaton[Action]
+and
+  ExtSet[sort State]
+and { PairSet[sorts State][sort State] 
+      with SetA |-> Set[State], SetB |-> Set[State] }
+then
+  ops __|__ : State * State -> State;
+      h : State * State * Set[Act] -> Set[State]
+  vars a : Act; s1, s2 : State; set1, set2 : Set[Act]
+  . h(s1 , s2, {}) = {}
+  . h(s1, s2, {a}) = next(a, s1) intersection next(bar(a), s2)
+  . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
+  . next (a, s1 | s2) = next (a, s1 ) * s2 union s1 * next (a, s2)
+  . next (tau, s1 | s2) = next (tau, s1 ) * s2 union s1 * next (tau, s2) union h(s1, s2, actions) 
+end
+
+spec Hiding = 
+  FinalNonDeterministicAutomaton[Action]
+and Set[sort Act] 
+then
+  op __::__ : State * Set [Act] -> State 
+  forall a : Act; s : State; L : Set [Act]
+  . a eps L => next (a, s :: L) = {}
+  . not (a eps L) => next (a, s :: L) = next (a, s) 
+end

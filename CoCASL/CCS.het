@@ -1,119 +1,275 @@
 library CoCASL/CCS
 
-from Basic/StructuredDatatypes get Pair
+%prec({__-__} <> {__->__})%
 
-%prec({__union__} < {__*__})%
+from Basic/Numbers get Nat
+from Basic/SimpleDatatypes get Boolean
 
-logic CASL
+logic CoCASL
 
 spec Action =
-  sort Act
-  op tau:Act
+  %% Communications
+  sort Name                                    %% Names
+  free type Label ::= sort Name | bar(Name)    %% Labels
+  free type Act ::= sort Label | tau           %% Actions
+
+  op bar: Label -> Label
+  forall a: Name
+  . bar(bar(a))=a
 end
 
-spec Set[sort Elem] =
-  free {
-         type Set[Elem] ::= {} | {__}(Elem) | __union__ (Set[Elem] ; Set[Elem]) 
-         op __union__ : Set[Elem] * Set[Elem] -> Set[Elem] , assoc, comm, idem, unit {} 
-     } 
-end
+spec CCS =
 
-spec ExtSet[sort Elem] =
-  Set[sort Elem]
+Action
+
 then
-  pred __eps__ : Elem * Set[Elem]
-  op __intersection__ : Set[Elem] * Set[Elem] -> Set[Elem]
-  forall a,b:Elem; s1,s2:Set[Elem]
-  . not a eps {}
-  . a eps {b} <=> a=b
-  . a eps (s1 union s2) <=> a eps s1 \/ a eps s2
-  . a eps (s1 intersection s2) <=> a eps s1 /\ a eps s2
-end
 
-spec FinalNonDeterministicAutomaton[Action] =
-  cofree {
-    Set[sort State]
-    then op next : Act * State -> Set[State]   }
-end
+  %% Restriction by a Set of Labels
 
-spec Zero =
-  FinalNonDeterministicAutomaton[Action] 
+  Boolean
+
 then
-  op zero : State 
-  vars a : Act
-  . next (a, zero) = {} 
-end
 
-spec ActionPrefixing =
-  FinalNonDeterministicAutomaton[Action] 
-then
-  op __-->__ : Act * State -> State
-  forall x, y : Act; s : State
-  . x = y => next (x , y -->s) = {s}
-  . not x = y => next (x , y -->s) = {} 
-end
+  cofree { sort Set[Label];
+           op __isIn__ : Label * Set[Label] -> Boolean }
 
-spec PairSet[sort A][sort B] =
-    Set[sort A] with sort Set[A] |-> SetA
-and Set[sort B] with sort Set[B] |-> SetB
-and Set[sort Pair[A,B]]
-and Pair[sort A][sort B] 
 then 
-  ops __*__ : A * SetB -> Set [Pair[A,B]];
-      __*__ : SetA * SetB -> Set [Pair[A,B]];
-      __*__ : SetA * B -> Set [Pair[A,B]]; 
-  forall a : A; b : B ; U,X : SetA; Y,Z : SetB
-  . a * {} = {}
-  . a * {b} = {pair(a, b)}
-  . a * (Y union Z) = (a * Y) union (a * Z)
-  . {} * Y = {}
-  . {a} * Y = a * Y
-  . (U union X) * Y = (U * Y) union (X * Y )
-  . X * b = X * {b} 
+ 
+  %% Relabelling by Functions on Act
+
+  cofree { sort Fun[Label];
+           op eval : Fun[Label] * Label -> Label }
+
+then 
+
+  sort Relabelling = {f: Fun[Label] . 
+       forall l: Label   . eval(f,bar(l)) = bar(eval(f,l))
+    /\ forall l,k: Label . (eval(f,l) = eval(f,k) => k=l)
+    /\ forall l: Label   . exists k:Label . l=eval(f,k)
+  }
+
+then
+
+  %% CCS Syntax: AgentExpressions
+
+  sort AgentVariable 
+  sort AgentConstant
+
+  free type
+    AgentExpression ::=
+        sort AgentVariable 
+    |   sort AgentConstant
+    |   0                                        %% inactive agent
+    |   __->__ (Act; AgentExpression)            %% Prefix
+    |   __+__ (AgentExpression;AgentExpression)  %% Summation; finite sums
+    |   __||__ (AgentExpression;AgentExpression) %% Composition
+    |   __-__  (AgentExpression;Set[Label])      %% Restriction
+    |   rel(AgentExpression;Relabelling)          %% Relabelling
+    |   fix(AgentVariable;AgentExpression)        %% Recursion; only 1 comp.
+
+  %% Definition of AgentConstants:
+
+  pred __definedAs__ : AgentConstant * AgentExpression
+  forall C:AgentConstant . exists! E:AgentExpression . C definedAs E
+
+  %% Substitution:
+  op __{__/__}: AgentExpression * AgentExpression * AgentVariable
+                -> AgentExpression
+
+  forall P:AgentExpression; X:AgentVariable
+  . forall Y:AgentVariable .         Y{P/X} = P when Y=X else
+                                              Y 
+  . forall C:AgentConstant .         C{P/X} = C
+  .                                  0{P/X} = 0
+  . forall a:Act; E:AgentExpression. (a -> E){P/X} = a -> (E{P/X})
+  . forall E,F:AgentExpression.      (E+F){P/X} = (E{P/X}) + (F{P/X})
+  . forall E,F:AgentExpression.      (E||F){P/X} = (E{P/X})||(F{P/X})
+  . forall E:AgentExpression; 
+           L:Set[Label].             (E-L){P/X} = ( E{P/X} ) - L
+  . forall E:AgentExpression; 
+           f:Relabelling.            rel(E,f){P/X}   = rel(E{P/X},f)
+  . forall Y:AgentVariable;
+           E:AgentExpression.        fix(Y,E){P/X} = fix(Y,E) when  X=Y else
+                                                     fix(Y,E{P/X})
+then
+
+  %% Transistion System induced by AgentExpressions
+
+  free{
+  
+  pred __-__->__ : AgentExpression * Act * AgentExpression
+
+  axioms
+
+  %% (Act):
+  forall a:Act; E:AgentExpression. 
+
+    %[-------------]%
+      (a->E) -a-> E 
+
+  %% (Sum1): 
+  forall E,E',F:AgentExpression; a: Act .
+
+       E -a-> E'       =>
+    %[-------------]%
+      (E+F) -a-> E' 
+
+  %% (Sum2): 
+  forall E,F,F':AgentExpression; a: Act .
+
+       F -a-> F'       =>
+    %[-------------]%
+      (E+F) -a-> F' 
+
+
+  %% (Com1): 
+  forall E,E',F:AgentExpression; a: Act .
+
+       E -a-> E'       =>
+    %[-------------]%
+      (E||F) -a-> E' 
+
+  %% (Com2): 
+  forall E,F,F':AgentExpression; a: Act .
+
+       F -a-> F'       =>
+    %[-------------]%
+      (E||F) -a-> F' 
+
+  %% (Com3): 
+  forall E,E',F,F':AgentExpression; l: Label . 
+
+       E -l-> E' /\  F -bar(l)-> F'          =>
+    %[-----------------------------]%
+           (E||F) -tau-> (E'||F')
+
+  %% (Res):
+  forall E,E': AgentExpression; L: Set[Label]; l:Label .
+  
+    (l isIn L = False) /\ ( bar(l) isIn L = False ) /\ 
+
+       E -l-> E'        =>  
+    %[--------------]%
+      (E-L) -l-> E' 
+
+  %% (Rel-Label):
+  forall E,E': AgentExpression; f: Relabelling; l:Label .
+
+            E -l-> E'                  =>
+    %[-------------------------]%
+       rel(E,f) -eval(f,l)-> rel(E',f)
+
+
+  %% (Rel-tau):
+  forall E,E': AgentExpression; f: Relabelling .
+
+            E -tau-> E'               =>
+    %[--------------------]%
+       rel(E,f) -tau-> rel(E',f)
+
+  %% (Con):
+  forall C: AgentConstant; E,E': AgentExpression; 
+         f: Relabelling;  a:Act .
+
+         C definedAs E /\  
+
+       E -a-> E'    => 
+    %[----------]%
+       C -a-> E'
+  
+%% (Rec): 
+  forall X:AgentVariable; E,E':AgentExpression; a:Act .
+
+       E{fix(X,E)/X} -a-> E'   => 
+    %[------------------------]%
+        fix(X,E) -a-> E'   
+
+  }
+
+then
+
+  %% First Equivalence on CCS-Agents: Strong Bisimulation
+
+  generated type Process ::= semBisim (AgentExpression)
+  pred __-__->__ : Process * Act * Process
+
+  
+   forall E,E':AgentExpression; a: Act .
+   E -a-> E' <=> semBisim(E) -a-> semBisim(E')
+  
+  cogenerated { sort Process
+                pred __-__->__ : Process * Act * Process
+              }
+
+  pred __~__ : AgentExpression * AgentExpression
+  
+     forall E,F: AgentExpression .
+     E ~ F <=> semBisim(E)=semBisim(F)
+
+then
+  Nat
+then 
+  
+  %% Second Equivalence on CCS-Agents: Weak Bisimulation
+
+  generated type WProcess ::= semWeakBisim (AgentExpression)
+
+  free type Act' ::= sort Label | epsilon
+  pred __-__->__ : WProcess * Act' * WProcess
+
+  %% iterate tau-Transitions on AgentExpressions:
+
+  pred __-__->__ : AgentExpression * Nat * AgentExpression
+  forall E,E1,E3:AgentExpression; n: Nat
+  . E -0-> E
+  . E1-(n+1)->E3 <=> 
+    exists E2:AgentExpression. E1-n->E2 /\ E2 - tau -> E3
+
+  pred __--->__: AgentExpression * AgentExpression
+  forall E1,E2:AgentExpression
+  . E1 ---> E2 <=> exists n:Nat .  E1-n->E2
+
+  forall E,E':AgentExpression; l: Label
+
+  . semWeakBisim(E) -l-> semWeakBisim(E') <=> 
+      exists E1,E2:AgentExpression .          
+        E ---> E1 /\ (E1-l->E2) /\ E2 ---> E'
+
+  . semWeakBisim(E) - epsilon -> semWeakBisim(E') <=> E ---> E' 
+
+  cogenerated { sort WProcess
+                pred __-__->__ : WProcess * Act' * WProcess
+              }
+
+  pred __~~__ : AgentExpression * AgentExpression
+  axiom
+     forall E,F: AgentExpression .
+     E ~~ F <=> semWeakBisim(E)=semWeakBisim(F)
+
+then 
+
+  %% third equivalence on CCS-Agents: Observation Congruence
+
+  pred __==__==>__ : AgentExpression * Act * AgentExpression
+
+  forall E,E':AgentExpression; alpha: Act
+  . E ==alpha==> E' <=> 
+      exists E1,E2: AgentExpression .          
+        E ---> E1 /\ (E1-alpha->E2) /\ E2 ---> E'
+
+  pred __==__ : AgentExpression * AgentExpression
+  forall P,Q: AgentExpression 
+  . P==Q <=> 
+   forall alpha: Act .
+     (forall P': AgentExpression. P -alpha-> P' => 
+       (exists Q': AgentExpression. Q ==alpha==> Q' /\ P' ~~ Q')
+     )
+     /\
+     (forall Q': AgentExpression. Q -alpha-> Q' => 
+       (exists P': AgentExpression. P ==alpha==> P' /\ P' ~~ Q')
+     )
+
+
 end
 
-spec Summation =
-  Zero 
-and { PairSet[sorts State][sort State] 
-      with SetA |-> Set[State], SetB |-> Set[State] }
-then
-  ops __+__ : State * State -> State;
-      pplus : Set[Pair[State,State]] -> Set[State]
-  forall a : Act; s1 , s2 : State; s: Set[Pair[State,State]]
-  . pplus({}) = {}
-  . pplus({pair(s1,s2)} union s) = {s1+s2} union pplus(s)
-  . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
-end
 
-spec FinAct = 
-  Set[sort Act]
-then
-  op actions : Set[Act]
-end
-
-spec Composition = 
-  FinAct
-then
-  FinalNonDeterministicAutomaton[Action]
-and
-  ExtSet[sort State]
-then
-  ops __|__ : State * State -> State;
-      h : State * State * Set[Act] -> Set[State]
-  vars a : Act; s1, s2 : State; set1, set2 : Set[Act]
-  . h(s1 , s2, {}) = {}
-  . h(s1, s2, {a}) = next (a1 , s1 ) intersection next (bar (a1 ), s2 )
-  . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
-  . next (a, s1 | s2) = next (a, s1 ) * s2 union s1 * next (a, s2)
-  . next (tau, s1 | s2) = next (tau, s1 ) * s2 union s1 * next (tau, s2) union h(s1, s2, actions) 
-end
-
-spec Hiding = 
-  FinalNonDeterministicAutomaton[Action]
-and Set[sort Act] 
-then
-  op __::__ : State * Set [Act] -> State 
-  forall a : Act; s : State; L : Set [Act]
-  . a eps L => next (a, s :: L) = {}
-  . not (a eps L) => next (a, s :: L) = next (a, s) 
-end
