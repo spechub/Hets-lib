@@ -5,8 +5,8 @@ logic HasCASL
 
 spec Category =
   sorts Ob, Mor
-  ops dom__,cod__ : Mor -> Ob;
-      id__ : Ob -> Mor;
+  ops dom, cod : Mor -> Ob;
+      id : Ob -> Mor;
       __o__ : Mor*Mor ->? Mor;
   forall f,g,h : Mor; a,b:Ob
   . def (f o g) <=> cod g = dom f
