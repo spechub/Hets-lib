@@ -369,6 +369,11 @@ and
                           isUnit(z))))
 then
      %prec {-__, __ - __} < {__ * __ }
+then %def
+     ops 
+	e: RUnit[Elem];
+        -__: RUnit[Elem] -> RUnit[Elem];
+	__ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
 end
 
 spec

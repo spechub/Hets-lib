@@ -13,7 +13,7 @@ spec
      Nat
 then
      type
-          CARDINAL ::= natToCard (cardToNat : Nat)?
+          CARDINAL ::= natToCard(cardToNat : Nat) ?
      vars
           x : Nat; c:CARDINAL
      .
@@ -21,8 +21,7 @@ then
      .
           %[natToCard_def] natToCard (cardToNat(c)) = c
 then
-     SigOrder
-          with Elem |-> CARDINAL
+     SigOrder[sort CARDINAL]
 then
      ops
            maxCardinal: Nat;
@@ -90,7 +89,7 @@ spec
      Int
 then
      type
-          INTEGER ::= intToInteger (integerToInt: Int)?
+          INTEGER ::= intToInteger (integerToInt: Int) ?
      vars
           x:Int; i:INTEGER
      .
@@ -101,9 +100,7 @@ then
      .
           %[intToInteger_def] intToInteger (integerToInt(i)) = i
 then
-     SigOrder
-     with
-          Elem |-> INTEGER
+     SigOrder[sort INTEGER]
 then
      ops
            maxInteger,

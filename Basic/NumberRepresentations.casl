@@ -70,13 +70,12 @@ then
 then
      sorts
            IndexModulus < IndexEfpn;
-           IndexModulus, IndexEfpn <
-           Nat;
+           IndexModulus, IndexEfpn <  Nat;
            PosEfpn =                  {  A: ArrayEfpn . def A!(n as
                                          IndexModulus) /\
                                          forall i:IndexModulus . A!i < L!i
                                          };
-           Sign =                     {  z : Int . z = 1 \/ z = -1 }
+           Sign =                     RUnit[Int]
 then
      Pair
      [ sort Sign fit S |-> Sign ]
@@ -87,8 +86,8 @@ then
 then
      sort
            Efpn = {  p: Pair[Sign,PosEfpn] . not
-                     (sgn(p)= -1 /\ forall i:IndexEfpn . number(p)!i=0 )
-                  }
+                     (sgn(p)= -1 
+		 /\ forall i:IndexEfpn . number(p)!i=0 ) }
      preds
            isZero, isPos, isNeg: Efpn;
            __ < __ :             Efpn × Efpn;
@@ -117,10 +116,10 @@ then
           vars
                z: Int; x:Efpn; i: Nat
           .
-               %[prod_0] prod(0)= 1
+               %[prod_0] prod(0) = 1
           .
                %[prod_Pos]
-                prod(i)= prod(i-?1) * L!(i as IndexModulus) if i>0
+                prod(i)= prod(i -? 1) * L!(i as IndexModulus) if i>0
           .
                %[intToEfpn_def]
                 intToEfpn(z)=x <=>
@@ -128,14 +127,14 @@ then
                 (z < 0 => sgn(x)= -1 ) /\
                 ( number(x)!(n as IndexEfpn) = abs(z) div prod(m) ) /\
                 ( (forall k:IndexModulus .
-                ( number(x)!k = (abs(z) div prod(k-?1)) mod L!k)
+                ( number(x)!k = (abs(z) div prod(k -? 1)) mod L!k)
                 )))
           .
                %[sum_0] sum(x,0) = 0
           .
                %[sum_Pos]
-                sum(x,i) = sum(x,i-?1) +
-                           (number(x)!(i as IndexEfpn) * prod(i-?1))
+                sum(x,i) = sum(x,i -? 1) +
+                           (number(x)!(i as IndexEfpn) * prod(i -? 1))
                 if i>0
           .
                %[efpnToInt_def]
