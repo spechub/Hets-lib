@@ -1,0 +1,31 @@
+library HasCASL/Real
+
+from Basic/RelationsAndOrders get RichTotalOrder
+from Basic/Algebra_I get Field
+
+logic CASL
+
+spec OrderedField =
+    Field and RichTotalOrder
+then
+    vars a, b, c:Elem
+    . (a + c) < (b + c) if a < b
+    . (a * c) < (b * c) if a < b /\ c > 0
+end
+
+logic HasCASL
+spec Real = OrderedField with Elem |-> Real
+then
+  ops __<__ :     Pred(Real * Pred(Real));
+      __<__ :     Pred(Pred(Real) * Real);
+      isBounded : Pred(Pred(Real));
+      inf,sup :   Pred(Real) ->? Real
+   forall r,s:Real; M:Pred(Real)
+   . M < r <=> forall s:Real . M(s) => s < r
+   . r < M <=> forall s:Real . M(s) => r < s
+   . inf(M)=r <=> r < M /\ forall s:Real . s < M => s < r
+   . sup(M)=r <=> M < r /\ forall s:Real . M < s => r < s
+   . isBounded(M) <=> exists ub,lb:Real . lb < M /\ M < ub
+   . isBounded(M) => def inf(M) /\ def sup(M)  %(completeness)%
+end
+
