@@ -20,23 +20,23 @@ spec CompositionTableOfPointAlgebraLin =
      sort BaseRel
      ops <,>,i: BaseRel
 and 
-     CompositionTable 
+     CompositionTable with op id |-> i
 then
+     . 1 = < cup i cup >                %(def_1)%
+
      . < cmps < = <              	%(cmps_11)%
      . < cmps > = < cup i cup >     	%(cmps_12)%
+     . < cmps i = <		       	%(cmps_13)%
      . > cmps < = < cup i cup >  	%(cmps_21)%
      . > cmps > = >			%(cmps_22)%
-
-     . conv(i) = i 			%(sym_i)%
-     . conv(<) = >			%(conv_earlier)%
-     . conv(>) = <			%(conv_later)%
-
-then %implies
-     . < cmps i = <		       	%(cmps_13)%
      . > cmps i = >			%(cmps_23)%
      . i cmps < = < 			%(cmps_31)%
      . i cmps > = >			%(cmps_32)%
      . i cmps i = i			%(cmps_33)%
+
+     . conv(i) = i 			%(sym_i)%
+     . conv(<) = >			%(conv_earlier)%
+     . conv(>) = <			%(conv_later)%
 end
 
 
@@ -52,30 +52,30 @@ spec CompositionTableOfPointAlgebraBr =
      sort BaseRel
      ops <,>,i,u: BaseRel
 and 
-     CompositionTable 
+     CompositionTable with op id |-> i
 then
+     . 1 = < cup i cup > cup u          %(def_1)%
+
      . < cmps < = i                 	%(cmps_11)%
      . < cmps > = < cup > cup i     	%(cmps_12)%
      . < cmps u = < cup u	     	%(cmps_13)%
-     . > cmps < = < cup > cup u cup i  	%(cmps_21)%
+     . < cmps i = <		       	%(cmps_14)%
+     . > cmps < = 1  		  	%(cmps_21)%
      . > cmps > = >			%(cmps_22)%
      . > cmps u = u			%(cmps_23)%
+     . > cmps i = >			%(cmps_24)%
      . u cmps < = u        		%(cmps_31)%
      . u cmps > = > cup u		%(cmps_32)%
-     . u cmps u = < cup > cup u cup i	%(cmps_33)%
-  
-     . conv(<) = >			%(conv_earlier)%
-     . conv(>) = <			%(conv_later)%
-     . conv(u) = u			%(sym_unrelated)%
-
-then %implies
-     . < cmps i = <		       	%(cmps_14)%
-     . > cmps i = >			%(cmps_24)%
+     . u cmps u = 1			%(cmps_33)%
      . u cmps i = >			%(cmps_34)%
      . i cmps < = < 			%(cmps_41)%
      . i cmps > = >			%(cmps_42)%
      . i cmps u = u			%(cmps_43)%
      . i cmps i = i			%(cmps_44)%
+  
+     . conv(<) = >			%(conv_earlier)%
+     . conv(>) = <			%(conv_later)%
+     . conv(u) = u			%(sym_unrelated)%
 end
 
 

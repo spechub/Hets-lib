@@ -12,14 +12,11 @@ version 0.1
 )%
 
 
-from Basic/RelationsAndOrders get BooleanAlgebra
-from Calculi/Algebra/RelationAlgebraModel get  Relation,
-	BaseRelationModel,JEPDBaseRelationModel,
-	GenerateModelFromBaseRelationModel,
-	AlgebraOfBinaryRelations
+from Calculi/Algebra/RelationAlgebraModel get Relation,
+	GenerateModelFromBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get LinFlowOfTime,DnsLinFlowOfTimeSEnd
-from Calculi/Time/PointAlgebraCompositionTables get CompositionTableOfPointAlgebraLin
-from Calculi/Time/PointAlgebraSymbolic get PointAlgebraLin
+
+
 
 logic HasCASL
 
@@ -33,13 +30,6 @@ then
      . (x,y) isIn rep(preRel) <=> x pre y
      . (x,y) isIn rep(idRel) <=> x = y
      . (x,y) isIn rep(sucRel) <=> y pre x
-end
-
-
-view BaseRelationModelOfPointAlgebraLin_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort Instant] 
-to 
-     BaseRelationModelOfPointAlgebraLin[LinFlowOfTime]
 end
 
 
@@ -60,25 +50,6 @@ then %implies
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
 
-
-view DsnLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
-    AlgebraOfBinaryRelations[sort Elem] 
-to 
-    GenerateModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
-=
-    sort Elem |-> Instant , op id |-> idRel 
-end
-
-
-
-view DsnLinFlowOfTimeSEnd_induces_ModelOfPointAlgebraLin :
-     { PointAlgebraLin hide ops __+__,__-__,{},{__}    %% <- Das muss man verbessern, 
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %%    weil wir dann zu viel Theorie verlieren
-to 
-    GenerateModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
-=   
-    ops pre |-> preRel, id |-> idRel, suc |-> sucRel
-end
 
 
 
