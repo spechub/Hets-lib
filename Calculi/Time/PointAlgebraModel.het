@@ -14,51 +14,90 @@ version 0.1
 from HasCASL/Set get Set
 from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
 	ExtRelationAlgebraByPartialOrder, RelationAlgebraWithPartialOrder,
-	AtomicRelationAlgebra
+	AtomicRelationAlgebra,CompositionTable
+from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl
 from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTime,
 	DnsLinFlowOfTimeSEnd
+
+
 
 logic HasCASL
 
 
-spec JEPDBase =
+spec JEPDBase[sort Elem] =
      Set
 then
-     {   sort Elem
-         op baseRel:Set(Set(Elem*Elem))
-       then %def
-     	  type BaseRel = {X:Set(Elem*Elem) . baseRel X }
-     } 
+     op baseRel:Set(Set(Elem*Elem))
+     type BaseRel = {X:Set(Elem*Elem) . baseRel X }
+     %% type BaseRel :: Set(Set(Elem*Elem))
 then
-
-     forall x,y:Elem; r,s:BaseRel 
-     . exists r:BaseRel . (x,y) isIn r
-     . r intersection s = emptySet
+     forall x,y:Elem; r,s:BaseRel
+     . exists r:BaseRel . (x,y) isIn r			%(JointlyExhaustive)%
+     . not r = s => r intersection s = emptySet		%(PairwiseDisjoint)%
 end
 
 
-spec GenerateRelationAlgebraFromBase[JEPDBase]  = %def
+spec AlgebraOfBinaryRelation[sort Elem] =
+     Set
+then 
+     op rel:Set(Set(Elem*Elem))
 
-     op genRel:Set(Set(Elem*Elem)) = \X:Set(Elem*Elem) . 
-		(exists XX:Set(Set(Elem*Elem)) . XX subset baseRel /\ bigunion XX =X)
-     type GenRel  = {X:Set(Elem*Elem) . genRel X }
+then %def
+     type Rel = {X:Set(Elem*Elem) . rel X }
      ops
-	0,1,id:GenRel;
-        compl__,conv__:GenRel -> GenRel;
-	__cup__,__cap__,__cmps__:GenRel*GenRel -> GenRel
+	 0,1:Rel;
+         __cup__,__cap__:  Rel * Rel -> Rel;
+         compl__:Rel -> Rel;
 
-      forall X,Y:GenRel
+      forall r,s:Rel; x:Elem
       . 0 = emptySet
       . 1 = allSet
-      . id =  \(x,y):Elem*Elem . x = y
-      . conv(X) = \(x,y):Elem*Elem . (y,x) isIn X
-      . compl(X) = 1 \\ X
-      . X cup Y = X union Y
-      . X cap Y = X intersection Y
-      . X cmps Y = \(x,y):Elem*Elem . ( exists z:Elem . (x,z) isIn X /\ (z,y) isIn Y )
+      . compl(r) = 1 \\ r
+      . r cup s = r union s
+      . r cap s = r intersection s
+
+then %implies 
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, unit 1;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, unit 0;  
+        conv__:Rel -> Rel, idem ;
 end
 
 
+view AlgebraOfBinaryRelation_as_BoolenAlgebra:
+     BooleanAlgebraWithCompl to AlgebraOfBinaryRelation[sort Elem]
+=
+     sort Elem |-> Rel 
+end
+
+
+
+
+spec AlgebraOfBinaryRelationWithComposition[sort Elem] = %def
+      AlgebraOfBinaryRelation[sort Elem]
+then %def
+     ops
+	id:Rel; 
+        conv__:Rel -> Rel;         
+	__cmps__:  Rel * Rel -> Rel
+
+     forall r,s:Rel
+     . id =  \(x,y):Elem*Elem . x = y
+     . r cmps s = \(x,y):Elem*Elem . ( exists z:Elem . (x,z) isIn r /\ (z,y) isIn s )
+     . conv(r) = \(x,y):Elem*Elem . (y,x) isIn r
+
+then %implies
+     ops
+         conv__:Rel -> Rel, idem ;
+         __cmps__: Rel * Rel -> Rel, assoc, unit id;
+end
+
+
+
+
+
+
+%(
 spec ModelPointAlgebraLinBase = 
      DnsLinFlowOfTimeSEnd and Set
 then %def
@@ -82,13 +121,17 @@ spec ModelPointAlgebraLin =
 	GenerateRelationAlgebraFromBase[view ModelPointAlgebraLinBase_as_JEPDBase]
 end
 
+spec ModelPointAlgebraLinV =
+	GenerateRelationAlgebraFromBase[JEPDBase fit Elem |-> Instant]
+end
+
 
 view ModelPointAlgebraLin_as_RelationAlgebra:
      RelationAlgebra to ModelPointAlgebraLin
 =
      Rel |-> GenRel
 end
-
+)%
 
 
 

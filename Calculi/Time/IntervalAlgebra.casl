@@ -8,7 +8,7 @@ version 0.1
 %prec {__cup__} < {__cmps__}
 
 from Calculi/Algebra/RelationAlgebra get RelationSet,
-     GenerateRelationAlgebra
+     GenerateRelationAlgebra,CompositionTable
 
 
 %( 
@@ -21,17 +21,13 @@ from Calculi/Algebra/RelationAlgebra get RelationSet,
      si, and fi).
 )%
 
-spec IntervalAlgebraLinBase = %mono
-     { RelationSet[free type BaseRel ::= 
-			b | m | o | d | s | f | e | 
-			bi | mi | oi | di | si | fi ] 
-	with  op id |-> e
-	}
-then 
-     ops	     
-	  conv__: BaseRel -> BaseRel; 
-        __cmps__: BaseRel * BaseRel -> GenRel 		   
 
+spec IntervalAlgebraLinCompositionTable =
+     sort BaseRel
+     ops b,m,o,d,s,f,e,bi,mi,oi,di,si,fi: BaseRel
+and 
+     CompositionTable with op id |-> e
+then
      . b cmps b  = b 					%(cmps_bb)%	
      . b cmps bi = 1					%(cmps_bbi)%
      . b cmps d  = b cup o cup m cup d cup s		%(cmps_bd)%
@@ -51,7 +47,7 @@ then
      . bi cmps di = bi 					%(cmps_bidi)%
      . bi cmps o  = bi cup oi cup mi cup d cup f       	%(cmps_bio)%
      . bi cmps oi = bi 					%(cmps_bioi)%
-     . bi cmps m  = bi  cup oi cup mi cup d cup f  	%(cmps_bim)%
+     . bi cmps m  = bi cup oi cup mi cup d cup f  	%(cmps_bim)%
      . bi cmps mi = bi 					%(cmps_bimi)%
      . bi cmps s  = bi cup oi cup mi cup d cup f	%(cmps_bis)%
      . bi cmps si = bi 					%(cmps_bisi)%
@@ -202,7 +198,6 @@ then
      . conv(fi) = f					%(conv_fi)%
      . conv(e) = e					%(sym_e)%
 
-
 then %implies
      . b cmps e  = b 				 	%(cmps_be)%	
      . bi cmps e = bi 					%(cmps_bie)%
@@ -231,9 +226,19 @@ then %implies
      . e cmps f  = f 					%(cmps_ef)%
      . e cmps fi = fi 			 		%(cmps_efi)%	
      . e cmps e  = e 			 		%(cmps_ee)%	
-
-
 end
+
+
+spec IntervalAlgebraLinBase = %mono
+     { RelationSet[free type BaseRel ::= 
+			b | m | o | d | s | f | e | 
+			bi | mi | oi | di | si | fi ] 
+	with  op id |-> e
+	}
+and
+    IntervalAlgebraLinCompositionTable
+end
+
 
 spec IntervalAlgebraLin = %def
      GenerateRelationAlgebra [IntervalAlgebraLinBase] 
