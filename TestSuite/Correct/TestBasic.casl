@@ -121,6 +121,7 @@ spec Ops =
      ops c:s*s->s, assoc, comm, idem, unit a;
          c:s*s*s->s; 
      op a: ?s;    %[ Should be:  op a:?s ]%
+     op a:?s;    %[ Should be:  op a:?s ]%
      op b:s->?s;
      op c:s*s->?s, assoc, comm, idem, unit a;
      op c:s*s*s->?s; 
@@ -128,8 +129,8 @@ spec Ops =
      op c(x,y:s;z:t):s = a;
      op a:?s=a;
      op c(x,y:s;z:t):?s = a;
-     %[op a: ?s=a; 
-     op c(x,y:s;z:t): ?s = a; ]%
+     op a: ?s=a; 
+     op c(x,y:s;z:t): ?s = a; 
 end
 
 spec Preds =
