@@ -7,8 +7,8 @@ version 0.1
 %left_assoc __cup__,__cap__
 %prec {__cup__} < {__cmps__}
 
-from Calculi/Algebra/RelationAlgebra get RelationRep,
-     GenerateRelationAlgebra,CompositionTable
+from Calculi/Algebra/RelationAlgebra get RelationRep,RelationRep1,
+     GenerateRelationAlgebra,GenerateRelationAlgebra1,CompositionTable
 from Calculi/Time/PointAlgebraCompositionTables get 
 	CompositionTableOfPointAlgebraLin, 
 	CompositionTableOfPointAlgebraBr
@@ -25,17 +25,24 @@ from Calculi/Time/PointAlgebraCompositionTables get
 
 
 spec BaseOfPointAlgebraLin = %mono
-     	{ RelationRep[free type BaseRel ::= preRel | idRel | sucRel] with op id |-> idRel }
+     { RelationRep[free type BaseRel ::= preRel | idRel | sucRel] with op id |-> idRel }
 and  
-     CompositionTableOfPointAlgebraLin with  ops < |-> preRel, > |-> sucRel, i |-> idRel 
+     { CompositionTableOfPointAlgebraLin with  ops < |-> pre, > |-> suc, i |-> id }
 end 
 
      
-spec PointAlgebraLin = %def
+spec PointAlgebraLin = 
      GenerateRelationAlgebra [BaseOfPointAlgebraLin]  
 end
 
+spec BaseOfPointAlgebraLin1 = %mono
+     RelationRep1[free type BaseRel ::= pre | id | suc] 
+end
 
+spec PointAlgebraLin1 = %mono
+     GenerateRelationAlgebra1 [BaseOfPointAlgebraLin1]
+	[CompositionTableOfPointAlgebraLin with  ops < |-> pre, > |-> suc, i |-> id]
+end
 
 spec BaseOfPointAlgebraBr = %mono
      RelationRep[free type BaseRel ::= preR | idR | sucR | unR] 

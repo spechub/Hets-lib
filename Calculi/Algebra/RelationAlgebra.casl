@@ -113,6 +113,7 @@ end
 )%
 
 
+
 spec RelationRep[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
@@ -133,6 +134,7 @@ then %def
 then %implies
      forall x,y:BaseRel; r:Rel
      . not x = y => x cap y = 0		
+     . exists z:BaseRel . z eps r
      . r isSubsetOf 1
 then
      ops	 	 
@@ -147,7 +149,6 @@ then
 end
 
 
-
 view RelationRep_as_BoolenAlgebraWithCompl:
      BooleanAlgebraWithCompl to RelationRep[sort BaseRel]
 = 
@@ -158,7 +159,7 @@ end
 
 spec GenerateRelationAlgebra[RelationRep[sort BaseRel]] = %mono
      ops 
-    %%      id      : Rel;
+    %%      id    : Rel;
           conv__  : Rel -> Rel;
 	  __cmps__: Rel * Rel -> Rel, assoc, unit id;       
 						 %% composition of relations
@@ -207,6 +208,51 @@ spec CompositionTable =
 	 __cup__:  Rel * Rel -> Rel, assoc, idem, comm, unit 1;
 	 __cap__:  Rel * Rel -> Rel, assoc, idem, comm, unit 0;  
 end
+
+
+
+
+spec RelationRep1[sort BaseRel] = %mono
+     { Set[sort BaseRel fit Elem |-> BaseRel] 
+	    with Set[BaseRel] |-> Rel,
+	            __union__ |-> __cup__, 
+             __intersection__ |-> __cap__ }
+then %def
+     sort BaseRel < Rel
+     ops 
+	    0,1 : Rel;
+	 compl__: Rel -> Rel; 
+
+     forall x:BaseRel; y:Rel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . compl(y) = 1 - y
+
+then %implies
+     forall x,y:BaseRel; r:Rel
+     . not x = y => x cap y = 0		
+     . exists z:BaseRel . z eps r
+     . r isSubsetOf 1
+end
+
+
+spec GenerateRelationAlgebra1[RelationRep1[sort BaseRel]][CompositionTable] = %mono
+     ops 
+          conv__  : Rel -> Rel;
+	  __cmps__: Rel * Rel -> Rel
+     forall x,y:BaseRel; u,v:Rel
+     . (u cup x) cmps (v cup y) =
+	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
+     . conv(u cup x) = conv(u) cup conv(x)
+
+then %implies
+     op
+	 __cmps__: Rel * Rel -> Rel, assoc, unit id;       
+end
+
+
+
 
 
 
