@@ -8,16 +8,13 @@ get SigOrder, TotalOrder
 
 spec
      SigPreNumbers[sort Elem] =
-     SigOrder
+     SigOrder [sort Elem]
 then
      ops
            0:                Elem;
            __ + __, __ * __: Elem × Elem -> Elem %left assoc;
            abs:              Elem -> Elem;
      %prec { __ + __ } < { __ * __ }
-then
-     %def
-     sort NonZero[Elem] = { x : Elem . not x = 0 }
 end
 
 spec
@@ -35,8 +32,6 @@ and
      SigPreNumbers [sort Nat fit sort Elem |-> Nat]
 then
      %def
-     sorts
-          NonZero[Nat]=Pos
      op
           %[PreNat_1_def] 1: Pos = suc(0);
           1 : Nat
@@ -81,20 +76,20 @@ then
      free
           types
            Int ::=  sort Nat | sort Neg;
-           Neg ::=  -__ (Pos)
+           Neg ::=  minus (Pos)
      ops
            suc,
            pre: Int -> Int
      var
           p:Pos
      .
-          %[Int_suc_minus_one] suc(-suc(0)) = 0
+          %[Int_suc_minus_one] suc(minus(suc(0))) = 0
      .
-          %[Int_suc_Neg] suc(-suc(p)) = -p
+          %[Int_suc_Neg] suc(minus(suc(p))) = minus(p)
      .
-          %[Int_pre_def1] pre(0) = -suc(0)
+          %[Int_pre_def1] pre(0) = minus(suc(0))
      .
-          %[Int_pre_def2] pre(-p) = -suc(p)
+          %[Int_pre_def2] pre(minus(p)) = minus(suc(p))
 end
 
 spec
@@ -104,50 +99,42 @@ and
      SigPreNumbers [sort Int fit sort Elem |-> Int]
 then
      %def
-     sorts Pos, Neg < NonZero[Int]
      op 1:Int = suc(0)
-then
      vars
           m,n: Nat; p,q: Pos
      .
-          %[Int_leq_def1] -p <= n
+          %[Int_leq_def1] minus(p) <= n
      .
-          %[Int_leq_def2] not (m <= -p)
+          %[Int_leq_def2] not (m <= minus(p))
      .
-          %[Int_leq_def3] -p <= -q <=> q <= p
+          %[Int_leq_def3] minus(p) <= minus(q) <=> q <= p
      .
-          %[Int_add_def1] 0 + (-p) = -p
+          %[Int_add_def1] m + minus(p) = minus(p) + m
      .
-          %[Int_add_def2] (-p) + 0 = -p
+          %[Int_add_def2] minus(p) + 0 = minus(p)
      .
-          %[Int_add_def3] suc(m) + (-p) = m + suc(-p)
+          %[Int_add_def3] minus(p) + suc(m) = suc(minus(p)) + m
      .
-          %[Int_add_def4] (-p) + suc(m) = suc(-p) + m
+          %[Int_add_def4] minus(p) + minus(q) = minus(p + q)
      .
-          %[Int_add_def5] (-p) + (-q) = - (p + q)
+          %[Int_mult_def1] m * minus(p) = minus(p) * m
      .
-          %[Int_mult_def1] 0 * (-p) = 0
+          %[Int_mult_def2] minus(p) * 0 = 0
      .
-          %[Int_mult_def2] (-p) * 0 = 0
+          %[Int_mult_def3] minus(p) * q = minus(p * q)
      .
-          %[Int_mult_def3] (-p) * (-q) = p * q
+          %[Int_mult_def4] minus(p) * minus(q) = p * q
      .
-          %[Int_mult_def4] (-p) * q = - (p * q)
-     .
-          %[Int_mult_def5] p * (-q) = - (p * q)
-     .
-          %[PreInt_abs_Neg] abs(-p)=p
+          %[PreInt_abs_Neg] abs(minus(p))=p
 then
      %def
      ops
            __*__: Neg × Neg -> Pos;
            __*__: Neg × Pos -> Neg;
            __*__: Pos × Neg -> Neg;
-           __*__: NonZero[Int] × NonZero[Int] -> NonZero[Int];
            __+__: Neg × Neg -> Neg;
            abs :  Int -> Nat;
            abs :  Neg -> Pos;
-           abs :  NonZero[Int] -> Pos
 end
 
 view
@@ -161,11 +148,11 @@ spec
      PreInt
 then
      generated
-          type Rat ::= __ / __ (num: Int ; denom: NonZero[Int])
+          type Rat ::= __ frac __ (Int;Pos)
      vars
-          i,j: Int; p,q: NonZero[Int]
+          i,j: Int; p,q: Pos
      .
-          %[Rat_equality] i/p = j/q <=> i*q = j*p
+          %[Rat_equality] i frac p = j frac q <=> i*q = j*p
 end
 
 spec
@@ -180,30 +167,23 @@ then
      var
           i:Int
      .
-          %[embeddingIntToRat] i/1 = i
-     sort
-          NonZero[Int] < NonZero[Rat]
+          %[embeddingIntToRat] i frac 1 = i
 then
-     %prec {__+__} < { __/__}
+     %prec {__ + __} < { __ frac __}
      vars
-          r,s: Rat
+          n,m: Int; p,q:Pos
      .
-          %[Rat_leq_def] (r <= s <=> num(r)*denom(s) <= num(s) * denom(r))
-          if (denom(r) in Pos /\ denom(s) in Pos )
+          %[Rat_leq_def] (n frac p <= m frac q <=> n * q <= m * p )
      .
-          %[Rat_add_def]
-           r+s = (num(r) * denom(s) + num(s)* denom(r))/
-                 (denom(r) * denom(s))
+          %[Rat_add_def] n frac p + m frac q =	
+		(n * q + m * p) frac (p * q)
      .
-          %[Rat_mult_def] r*s = (num(r) * num(s)) / ( denom(r) * denom(s) )
+          %[Rat_mult_def] (n frac p) * (m frac q) = (n * m) frac (p * q)
      .
-          %[Rat_abs_def] abs(r)=abs(num(r))/abs(denom(r))
+          %[Rat_abs_def] abs(n frac p)=abs(n) frac p
 then
      %def
-     ops
-           __*__: NonZero[Rat] × NonZero[Rat] -> NonZero[Rat];
-           abs :  NonZero[Rat] -> NonZero[Rat];
-           1 : Rat
+     op   1 : Rat
 end
 
 view
@@ -212,4 +192,3 @@ view
      sort Elem |-> Rat
 end
 
-spec NakedRat=PreRat hide -__ %% Temporary

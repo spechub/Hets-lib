@@ -57,9 +57,7 @@ spec
 end
 
 spec
-     SigOrder =
-     sort
-          Elem
+     SigOrder[sort Elem] =
      preds
            __ <= __, __ < __,
            __ >= __, __ > __: Elem * Elem;
@@ -93,7 +91,7 @@ spec
      ExtPartialOrder  [PartialOrder]
 =
      %def
-     SigOrder
+     SigOrder [sort Elem]
 and
 {
           ops
@@ -199,7 +197,7 @@ spec
 =
      %def
      {
-          SigOrder
+          SigOrder [sort Elem]
           then vars x,y:Elem
           . %[BA_po_def] x <= y <=> x cap y = x
      }
