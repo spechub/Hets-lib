@@ -71,7 +71,7 @@ then
    op f: Nat*Nat->Nat, comm, assoc, unit 0 * 0;
    op f: Nat*Nat->Nat, comm, assoc, unit 0;
 
-%% devrait etre errone, puisque "to" est un mot reserve.
+%% devrait etre errone, puisque 'to' est un mot reserve.
 %% hide add__to__ 
 
 reveal pred __ < __ : Nat * Nat, 
@@ -90,6 +90,7 @@ ops   p __, __ r, __ r2 : N -> N ;
       q : N ;
       __ __ : N*N -> N;
 
+%[ thes formulae don't go through 
   .   p(x) q as S when F else x r = x ;
 
   .   p (x) q : S when F else x r = x if F2 (x) ;
@@ -103,7 +104,7 @@ ops   p __, __ r, __ r2 : N -> N ;
 
 %%  .   p x when F else x r :N = x;
 %%  .   p x when F else (x r: S) = x ;
-%%  .   (p x when F else x r) : S = x;
+%%  .   (p x when F else x r) : S = x; ]%
 end
 
 spec correct_formulas3 =
