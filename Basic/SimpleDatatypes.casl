@@ -63,212 +63,7 @@ then %mono
   . def chr(n) <=> n <= 255    %(chr_dom)%
   . chr(ord(c))=c              %(chr_ord_inverse)%
 
-  %% definition of the printable characters
-  %% This relies on the character names
-  ops  ' ' : Char = '\032';             %(printable_32)%
-       '!' : Char = '\033';             %(printable_33)%
-       '\"' : Char = '\034';            %(printable_34)%
-       '#' : Char = '\035';             %(printable_35)%
-       '$' : Char = '\036';             %(printable_36)%
-       '%' : Char = '\037';             %(printable_37)%
-       '&' : Char = '\038';             %(printable_38)%
-       '\'' : Char = '\039';            %(printable_39)%
-       '(' : Char = '\040';             %(printable_40)%
-       ')' : Char = '\041';             %(printable_41)%
-       '*' : Char = '\042';             %(printable_42)%
-       '+' : Char = '\043';             %(printable_43)%
-       ',' : Char = '\044';             %(printable_44)%
-       '-' : Char = '\045';             %(printable_45)%
-       '.' : Char = '\046';             %(printable_46)%
-       '/' : Char = '\047';             %(printable_47)%
-       '0' : Char = '\048';             %(printable_48)%
-       '1' : Char = '\049';             %(printable_49)%
-       '2' : Char = '\050';             %(printable_50)%
-       '3' : Char = '\051';             %(printable_51)%
-       '4' : Char = '\052';             %(printable_52)%
-       '5' : Char = '\053';             %(printable_53)%
-       '6' : Char = '\054';             %(printable_54)%
-       '7' : Char = '\055';             %(printable_55)%
-       '8' : Char = '\056';             %(printable_56)%
-       '9' : Char = '\057';             %(printable_57)%
-       ':' : Char = '\058';             %(printable_58)%
-       ';' : Char = '\059';             %(printable_59)%
-       '<' : Char = '\060';             %(printable_60)%
-       '=' : Char = '\061';             %(printable_61)%
-       '>' : Char = '\062';             %(printable_62)%
-       '?' : Char = '\063';             %(printable_63)%
-       '@' : Char = '\064';             %(printable_64)%
-       'A' : Char = '\065';             %(printable_65)%
-       'B' : Char = '\066';             %(printable_66)%
-       'C' : Char = '\067';             %(printable_67)%
-       'D' : Char = '\068';             %(printable_68)%
-       'E' : Char = '\069';             %(printable_69)%
-       'F' : Char = '\070';             %(printable_70)%
-       'G' : Char = '\071';             %(printable_71)%
-       'H' : Char = '\072';             %(printable_72)%
-       'I' : Char = '\073';             %(printable_73)%
-       'J' : Char = '\074';             %(printable_74)%
-       'K' : Char = '\075';             %(printable_75)%
-       'L' : Char = '\076';             %(printable_76)%
-       'M' : Char = '\077';             %(printable_77)%
-       'N' : Char = '\078';             %(printable_78)%
-       'O' : Char = '\079';             %(printable_79)%
-       'P' : Char = '\080';             %(printable_80)%
-       'Q' : Char = '\081';             %(printable_81)%
-       'R' : Char = '\082';             %(printable_82)%
-       'S' : Char = '\083';             %(printable_83)%
-       'T' : Char = '\084';             %(printable_84)%
-       'U' : Char = '\085';             %(printable_85)%
-       'V' : Char = '\086';             %(printable_86)%
-       'W' : Char = '\087';             %(printable_87)%
-       'X' : Char = '\088';             %(printable_88)%
-       'Y' : Char = '\089';             %(printable_89)%
-       'Z' : Char = '\090';             %(printable_90)%
-       '[' : Char = '\091';             %(printable_91)%
-       '\\' : Char = '\092';            %(printable_92)%
-       ']' : Char = '\093';             %(printable_93)%
-       '^' : Char = '\094';             %(printable_94)%
-       '_' : Char = '\095';             %(printable_95)%
-       '`' : Char = '\096';             %(printable_96)%
-       'a' : Char = '\097';             %(printable_97)%
-       'b' : Char = '\098';             %(printable_98)%
-       'c' : Char = '\099';             %(printable_99)%
-       'd' : Char = '\100' ;            %(printable_100)%
-       'e' : Char = '\101' ;            %(printable_101)%
-       'f' : Char = '\102' ;            %(printable_102)%
-       'g' : Char = '\103' ;            %(printable_103)%
-       'h' : Char = '\104' ;            %(printable_104)%
-       'i' : Char = '\105' ;            %(printable_105)%
-       'j' : Char = '\106' ;            %(printable_106)%
-       'k' : Char = '\107' ;            %(printable_107)%
-       'l' : Char = '\108' ;            %(printable_108)%
-       'm' : Char = '\109' ;            %(printable_109)%
-       'n' : Char = '\110' ;            %(printable_110)%
-       'o' : Char = '\111' ;            %(printable_111)%
-       'p' : Char = '\112' ;            %(printable_112)%
-       'q' : Char = '\113' ;            %(printable_113)%
-       'r' : Char = '\114' ;            %(printable_114)%
-       's' : Char = '\115' ;            %(printable_115)%
-       't' : Char = '\116' ;            %(printable_116)%
-       'u' : Char = '\117' ;            %(printable_117)%
-       'v' : Char = '\118' ;            %(printable_118)%
-       'w' : Char = '\119' ;            %(printable_119)%
-       'x' : Char = '\120' ;            %(printable_120)%
-       'y' : Char = '\121' ;            %(printable_121)%
-       'z' : Char = '\122' ;            %(printable_122)%
-       '{' : Char = '\123' ;            %(printable_123)%
-       '|' : Char = '\124' ;            %(printable_124)%
-       '}' : Char = '\125' ;            %(printable_125)%
-       '~' : Char = '\126' ;            %(printable_126)%
 
-       %% Iso-Latin-1 character number 160 is displayed as space,
-       %% but internally is different from character 32 (space)
-       ' ' : Char = '\160' ;            %(printable_160)%
-       '¡' : Char = '\161' ;            %(printable_161)%
-       '¢' : Char = '\162' ;            %(printable_162)%
-       '£' : Char = '\163' ;            %(printable_163)%
-       '¤' : Char = '\164' ;            %(printable_164)%
-       '¥' : Char = '\165' ;            %(printable_165)%
-       '¦' : Char = '\166' ;            %(printable_166)%
-       '§' : Char = '\167' ;            %(printable_167)%
-       '¨' : Char = '\168' ;            %(printable_168)%
-       '©' : Char = '\169' ;            %(printable_169)%
-       'ª' : Char = '\170' ;            %(printable_170)%
-       '«' : Char = '\171' ;            %(printable_171)%
-       '¬' : Char = '\172' ;            %(printable_172)%
-       '­' : Char = '\173' ;            %(printable_173)%
-       '®' : Char = '\174' ;            %(printable_174)%
-       '¯' : Char = '\175' ;            %(printable_175)%
-       '°' : Char = '\176' ;            %(printable_176)%
-       '±' : Char = '\177' ;            %(printable_177)%
-       '²' : Char = '\178' ;            %(printable_178)%
-       '³' : Char = '\179' ;            %(printable_179)%
-       '´' : Char = '\180' ;            %(printable_180)%
-       'µ' : Char = '\181' ;            %(printable_181)%
-       '¶' : Char = '\182' ;            %(printable_182)%
-       '·' : Char = '\183' ;            %(printable_183)%
-       '¸' : Char = '\184' ;            %(printable_184)%
-       '¹' : Char = '\185' ;            %(printable_185)%
-       'º' : Char = '\186' ;            %(printable_186)%
-       '»' : Char = '\187' ;            %(printable_187)%
-       '¼' : Char = '\188' ;            %(printable_188)%
-       '½' : Char = '\189' ;            %(printable_189)%
-       '¾' : Char = '\190' ;            %(printable_190)%
-       '¿' : Char = '\191' ;            %(printable_191)%
-       'À' : Char = '\192' ;            %(printable_192)%
-       'Á' : Char = '\193' ;            %(printable_193)%
-       'Â' : Char = '\194' ;            %(printable_194)%
-       'Ã' : Char = '\195' ;            %(printable_195)%
-       'Ä' : Char = '\196' ;            %(printable_196)%
-       'Å' : Char = '\197' ;            %(printable_197)%
-       'Æ' : Char = '\198' ;            %(printable_198)%
-       'Ç' : Char = '\199' ;            %(printable_199)%
-       'È' : Char = '\200' ;            %(printable_200)%
-       'É' : Char = '\201' ;            %(printable_201)%
-       'Ê' : Char = '\202' ;            %(printable_202)%
-       'Ë' : Char = '\203' ;            %(printable_203)%
-       'Ì' : Char = '\204' ;            %(printable_204)%
-       'Í' : Char = '\205' ;            %(printable_205)%
-       'Î' : Char = '\206' ;            %(printable_206)%
-       'Ï' : Char = '\207' ;            %(printable_207)%
-       'Ð' : Char = '\208' ;            %(printable_208)%
-       'Ñ' : Char = '\209' ;            %(printable_209)%
-       'Ò' : Char = '\210' ;            %(printable_210)%
-       'Ó' : Char = '\211' ;            %(printable_211)%
-       'Ô' : Char = '\212' ;            %(printable_212)%
-       'Õ' : Char = '\213' ;            %(printable_213)%
-       'Ö' : Char = '\214' ;            %(printable_214)%
-       '×' : Char = '\215' ;            %(printable_215)%
-       'Ø' : Char = '\216' ;            %(printable_216)%
-       'Ù' : Char = '\217' ;            %(printable_217)%
-       'Ú' : Char = '\218' ;            %(printable_218)%
-       'Û' : Char = '\219' ;            %(printable_219)%
-       'Ü' : Char = '\220' ;            %(printable_220)%
-       'Ý' : Char = '\221' ;            %(printable_221)%
-       'Þ' : Char = '\222' ;            %(printable_222)%
-       'ß' : Char = '\223' ;            %(printable_223)%
-       'à' : Char = '\224' ;            %(printable_224)%
-       'á' : Char = '\225' ;            %(printable_225)%
-       'â' : Char = '\226' ;            %(printable_226)%
-       'ã' : Char = '\227' ;            %(printable_227)%
-       'ä' : Char = '\228' ;            %(printable_228)%
-       'å' : Char = '\229' ;            %(printable_229)%
-       'æ' : Char = '\230' ;            %(printable_230)%
-       'ç' : Char = '\231' ;            %(printable_231)%
-       'è' : Char = '\232' ;            %(printable_232)%
-       'é' : Char = '\233' ;            %(printable_233)%
-       'ê' : Char = '\234' ;            %(printable_234)%
-       'ë' : Char = '\235' ;            %(printable_235)%
-       'ì' : Char = '\236' ;            %(printable_236)%
-       'í' : Char = '\237' ;            %(printable_237)%
-       'î' : Char = '\238' ;            %(printable_238)%
-       'ï' : Char = '\239' ;            %(printable_239)%
-       'ð' : Char = '\240' ;            %(printable_240)%
-       'ñ' : Char = '\241' ;            %(printable_241)%
-       'ò' : Char = '\242' ;            %(printable_242)%
-       'ó' : Char = '\243' ;            %(printable_243)%
-       'ô' : Char = '\244' ;            %(printable_244)%
-       'õ' : Char = '\245' ;            %(printable_245)%
-       'ö' : Char = '\246' ;            %(printable_246)%
-       '÷' : Char = '\247' ;            %(printable_247)%
-       'ø' : Char = '\248' ;            %(printable_248)%
-       'ù' : Char = '\249' ;            %(printable_249)%
-       'ú' : Char = '\250' ;            %(printable_250)%
-       'û' : Char = '\251' ;            %(printable_251)%
-       'ü' : Char = '\252' ;            %(printable_252)%
-       'ý' : Char = '\253' ;            %(printable_253)%
-       'þ' : Char = '\254' ;            %(printable_254)%
-       'ÿ' : Char = '\255' ;            %(printable_255)%
-
-  preds 
-    isLetter(c:Char) <=> (
-      (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
-      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)% 
-    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9'); 
-                                                         %(isDigit_def)%
-    isPrintable(c:Char) <=> (
-      (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
-      (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )   %(isPrintable_def)%
                         
   %% definition of individual characters by decimal codes:
   ops  '\000' : Char = chr(0);              %(slash_000)%
@@ -527,6 +322,215 @@ then %mono
        '\253' : Char = chr(253);            %(slash_253)%
        '\254' : Char = chr(254);            %(slash_254)%
        '\255' : Char = chr(255);            %(slash_255)%
+
+  %% definition of the printable characters
+  %% This relies on the character names
+  ops  ' ' : Char = '\032';             %(printable_32)%
+       '!' : Char = '\033';             %(printable_33)%
+       '\"' : Char = '\034';            %(printable_34)%
+       '#' : Char = '\035';             %(printable_35)%
+       '$' : Char = '\036';             %(printable_36)%
+       '%' : Char = '\037';             %(printable_37)%
+       '&' : Char = '\038';             %(printable_38)%
+       '\'' : Char = '\039';            %(printable_39)%
+       '(' : Char = '\040';             %(printable_40)%
+       ')' : Char = '\041';             %(printable_41)%
+       '*' : Char = '\042';             %(printable_42)%
+       '+' : Char = '\043';             %(printable_43)%
+       ',' : Char = '\044';             %(printable_44)%
+       '-' : Char = '\045';             %(printable_45)%
+       '.' : Char = '\046';             %(printable_46)%
+       '/' : Char = '\047';             %(printable_47)%
+       '0' : Char = '\048';             %(printable_48)%
+       '1' : Char = '\049';             %(printable_49)%
+       '2' : Char = '\050';             %(printable_50)%
+       '3' : Char = '\051';             %(printable_51)%
+       '4' : Char = '\052';             %(printable_52)%
+       '5' : Char = '\053';             %(printable_53)%
+       '6' : Char = '\054';             %(printable_54)%
+       '7' : Char = '\055';             %(printable_55)%
+       '8' : Char = '\056';             %(printable_56)%
+       '9' : Char = '\057';             %(printable_57)%
+       ':' : Char = '\058';             %(printable_58)%
+       ';' : Char = '\059';             %(printable_59)%
+       '<' : Char = '\060';             %(printable_60)%
+       '=' : Char = '\061';             %(printable_61)%
+       '>' : Char = '\062';             %(printable_62)%
+       '?' : Char = '\063';             %(printable_63)%
+       '@' : Char = '\064';             %(printable_64)%
+       'A' : Char = '\065';             %(printable_65)%
+       'B' : Char = '\066';             %(printable_66)%
+       'C' : Char = '\067';             %(printable_67)%
+       'D' : Char = '\068';             %(printable_68)%
+       'E' : Char = '\069';             %(printable_69)%
+       'F' : Char = '\070';             %(printable_70)%
+       'G' : Char = '\071';             %(printable_71)%
+       'H' : Char = '\072';             %(printable_72)%
+       'I' : Char = '\073';             %(printable_73)%
+       'J' : Char = '\074';             %(printable_74)%
+       'K' : Char = '\075';             %(printable_75)%
+       'L' : Char = '\076';             %(printable_76)%
+       'M' : Char = '\077';             %(printable_77)%
+       'N' : Char = '\078';             %(printable_78)%
+       'O' : Char = '\079';             %(printable_79)%
+       'P' : Char = '\080';             %(printable_80)%
+       'Q' : Char = '\081';             %(printable_81)%
+       'R' : Char = '\082';             %(printable_82)%
+       'S' : Char = '\083';             %(printable_83)%
+       'T' : Char = '\084';             %(printable_84)%
+       'U' : Char = '\085';             %(printable_85)%
+       'V' : Char = '\086';             %(printable_86)%
+       'W' : Char = '\087';             %(printable_87)%
+       'X' : Char = '\088';             %(printable_88)%
+       'Y' : Char = '\089';             %(printable_89)%
+       'Z' : Char = '\090';             %(printable_90)%
+       '[' : Char = '\091';             %(printable_91)%
+       '\\' : Char = '\092';            %(printable_92)%
+       ']' : Char = '\093';             %(printable_93)%
+       '^' : Char = '\094';             %(printable_94)%
+       '_' : Char = '\095';             %(printable_95)%
+       '`' : Char = '\096';             %(printable_96)%
+       'a' : Char = '\097';             %(printable_97)%
+       'b' : Char = '\098';             %(printable_98)%
+       'c' : Char = '\099';             %(printable_99)%
+       'd' : Char = '\100' ;            %(printable_100)%
+       'e' : Char = '\101' ;            %(printable_101)%
+       'f' : Char = '\102' ;            %(printable_102)%
+       'g' : Char = '\103' ;            %(printable_103)%
+       'h' : Char = '\104' ;            %(printable_104)%
+       'i' : Char = '\105' ;            %(printable_105)%
+       'j' : Char = '\106' ;            %(printable_106)%
+       'k' : Char = '\107' ;            %(printable_107)%
+       'l' : Char = '\108' ;            %(printable_108)%
+       'm' : Char = '\109' ;            %(printable_109)%
+       'n' : Char = '\110' ;            %(printable_110)%
+       'o' : Char = '\111' ;            %(printable_111)%
+       'p' : Char = '\112' ;            %(printable_112)%
+       'q' : Char = '\113' ;            %(printable_113)%
+       'r' : Char = '\114' ;            %(printable_114)%
+       's' : Char = '\115' ;            %(printable_115)%
+       't' : Char = '\116' ;            %(printable_116)%
+       'u' : Char = '\117' ;            %(printable_117)%
+       'v' : Char = '\118' ;            %(printable_118)%
+       'w' : Char = '\119' ;            %(printable_119)%
+       'x' : Char = '\120' ;            %(printable_120)%
+       'y' : Char = '\121' ;            %(printable_121)%
+       'z' : Char = '\122' ;            %(printable_122)%
+       '{' : Char = '\123' ;            %(printable_123)%
+       '|' : Char = '\124' ;            %(printable_124)%
+       '}' : Char = '\125' ;            %(printable_125)%
+       '~' : Char = '\126' ;            %(printable_126)%
+
+       %% Iso-Latin-1 character number 160 is displayed as space,
+       %% but internally is different from character 32 (space)
+       ' ' : Char = '\160' ;            %(printable_160)%
+       '¡' : Char = '\161' ;            %(printable_161)%
+       '¢' : Char = '\162' ;            %(printable_162)%
+       '£' : Char = '\163' ;            %(printable_163)%
+       '¤' : Char = '\164' ;            %(printable_164)%
+       '¥' : Char = '\165' ;            %(printable_165)%
+       '¦' : Char = '\166' ;            %(printable_166)%
+       '§' : Char = '\167' ;            %(printable_167)%
+       '¨' : Char = '\168' ;            %(printable_168)%
+       '©' : Char = '\169' ;            %(printable_169)%
+       'ª' : Char = '\170' ;            %(printable_170)%
+       '«' : Char = '\171' ;            %(printable_171)%
+       '¬' : Char = '\172' ;            %(printable_172)%
+       '­' : Char = '\173' ;            %(printable_173)%
+       '®' : Char = '\174' ;            %(printable_174)%
+       '¯' : Char = '\175' ;            %(printable_175)%
+       '°' : Char = '\176' ;            %(printable_176)%
+       '±' : Char = '\177' ;            %(printable_177)%
+       '²' : Char = '\178' ;            %(printable_178)%
+       '³' : Char = '\179' ;            %(printable_179)%
+       '´' : Char = '\180' ;            %(printable_180)%
+       'µ' : Char = '\181' ;            %(printable_181)%
+       '¶' : Char = '\182' ;            %(printable_182)%
+       '·' : Char = '\183' ;            %(printable_183)%
+       '¸' : Char = '\184' ;            %(printable_184)%
+       '¹' : Char = '\185' ;            %(printable_185)%
+       'º' : Char = '\186' ;            %(printable_186)%
+       '»' : Char = '\187' ;            %(printable_187)%
+       '¼' : Char = '\188' ;            %(printable_188)%
+       '½' : Char = '\189' ;            %(printable_189)%
+       '¾' : Char = '\190' ;            %(printable_190)%
+       '¿' : Char = '\191' ;            %(printable_191)%
+       'À' : Char = '\192' ;            %(printable_192)%
+       'Á' : Char = '\193' ;            %(printable_193)%
+       'Â' : Char = '\194' ;            %(printable_194)%
+       'Ã' : Char = '\195' ;            %(printable_195)%
+       'Ä' : Char = '\196' ;            %(printable_196)%
+       'Å' : Char = '\197' ;            %(printable_197)%
+       'Æ' : Char = '\198' ;            %(printable_198)%
+       'Ç' : Char = '\199' ;            %(printable_199)%
+       'È' : Char = '\200' ;            %(printable_200)%
+       'É' : Char = '\201' ;            %(printable_201)%
+       'Ê' : Char = '\202' ;            %(printable_202)%
+       'Ë' : Char = '\203' ;            %(printable_203)%
+       'Ì' : Char = '\204' ;            %(printable_204)%
+       'Í' : Char = '\205' ;            %(printable_205)%
+       'Î' : Char = '\206' ;            %(printable_206)%
+       'Ï' : Char = '\207' ;            %(printable_207)%
+       'Ð' : Char = '\208' ;            %(printable_208)%
+       'Ñ' : Char = '\209' ;            %(printable_209)%
+       'Ò' : Char = '\210' ;            %(printable_210)%
+       'Ó' : Char = '\211' ;            %(printable_211)%
+       'Ô' : Char = '\212' ;            %(printable_212)%
+       'Õ' : Char = '\213' ;            %(printable_213)%
+       'Ö' : Char = '\214' ;            %(printable_214)%
+       '×' : Char = '\215' ;            %(printable_215)%
+       'Ø' : Char = '\216' ;            %(printable_216)%
+       'Ù' : Char = '\217' ;            %(printable_217)%
+       'Ú' : Char = '\218' ;            %(printable_218)%
+       'Û' : Char = '\219' ;            %(printable_219)%
+       'Ü' : Char = '\220' ;            %(printable_220)%
+       'Ý' : Char = '\221' ;            %(printable_221)%
+       'Þ' : Char = '\222' ;            %(printable_222)%
+       'ß' : Char = '\223' ;            %(printable_223)%
+       'à' : Char = '\224' ;            %(printable_224)%
+       'á' : Char = '\225' ;            %(printable_225)%
+       'â' : Char = '\226' ;            %(printable_226)%
+       'ã' : Char = '\227' ;            %(printable_227)%
+       'ä' : Char = '\228' ;            %(printable_228)%
+       'å' : Char = '\229' ;            %(printable_229)%
+       'æ' : Char = '\230' ;            %(printable_230)%
+       'ç' : Char = '\231' ;            %(printable_231)%
+       'è' : Char = '\232' ;            %(printable_232)%
+       'é' : Char = '\233' ;            %(printable_233)%
+       'ê' : Char = '\234' ;            %(printable_234)%
+       'ë' : Char = '\235' ;            %(printable_235)%
+       'ì' : Char = '\236' ;            %(printable_236)%
+       'í' : Char = '\237' ;            %(printable_237)%
+       'î' : Char = '\238' ;            %(printable_238)%
+       'ï' : Char = '\239' ;            %(printable_239)%
+       'ð' : Char = '\240' ;            %(printable_240)%
+       'ñ' : Char = '\241' ;            %(printable_241)%
+       'ò' : Char = '\242' ;            %(printable_242)%
+       'ó' : Char = '\243' ;            %(printable_243)%
+       'ô' : Char = '\244' ;            %(printable_244)%
+       'õ' : Char = '\245' ;            %(printable_245)%
+       'ö' : Char = '\246' ;            %(printable_246)%
+       '÷' : Char = '\247' ;            %(printable_247)%
+       'ø' : Char = '\248' ;            %(printable_248)%
+       'ù' : Char = '\249' ;            %(printable_249)%
+       'ú' : Char = '\250' ;            %(printable_250)%
+       'û' : Char = '\251' ;            %(printable_251)%
+       'ü' : Char = '\252' ;            %(printable_252)%
+       'ý' : Char = '\253' ;            %(printable_253)%
+       'þ' : Char = '\254' ;            %(printable_254)%
+       'ÿ' : Char = '\255' ;            %(printable_255)%
+
+  preds 
+    isLetter(c:Char) <=> (
+      (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
+      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)% 
+    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9'); 
+                                                         %(isDigit_def)%
+    isPrintable(c:Char) <=> (
+      (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
+      (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )   %(isPrintable_def)%
+
+
 
   %% definition of characters by octal codes, i.e. '\o ppp',
   %% where p in {0,1,...,7} :
@@ -1046,6 +1050,7 @@ then %mono
        '\xFD' : Char = '\253';             %(slash_xFD)%
        '\xFE' : Char = '\254';             %(slash_xFE)%
        '\xFF' : Char = '\255';             %(slash_xFF)%
+
 
      %% special characters:
   ops  NUL:Char = '\000';             %(NUL_def)%
