@@ -15,15 +15,60 @@ spec sp =
    . true
 end
 
+%% Simple structuring operations and their priorities
 
-
-spec EuclidianRing =
-     sorts Elem, Nat , Int
-     ops   delta: Elem ->? Nat;
-           abs : Int -> Nat
+spec sp1 =
+  closed { free { sorts s,t
+  op f:s->t
+  pred p:s*s} } with sort s|->t, op f|->g, pred p|->q
+  reveal g hide g
+  and
+  local sp within op f:s->s
+  then sort s; op h:s->s with s|->t, h:s->s |-> k:t->t
 end
 
-spec ExtEuclidianRing  [EuclidianRing] = {}
+%[   `free' and `closed' have the highest precedence; 
+     `with', `reveal', and `hide' have lower precedence; 
+     `within' has still lower precedence; 
+     `and' has lower precedence than all the above; and 
+     `then' has the lowest precedence of all. ]%
+
+%% Parameterized specs
+
+spec gen_sp[sp][sp1] given {sort s} =
+   {}
+end
+
+spec test_gen_sp =
+  gen_sp[sp fit s|->s][sp1]
+end
+
+%% Views
+
+view v1 : sp to sp1
+end
+
+view v2 : sp to sp1 = 
+  sort s|->t
+end
+
+%% Tricky imports
+
+spec Nat =
+  sort Nat
+end
+
+spec PreInt =
+  sorts Nat, Int
+  op abs : Int ->? Nat
+end
+
+spec EuclidianRing =
+     sorts Elem, Nat
+     ops   delta: Elem ->? Nat;
+end
+
+spec ExtEuclidianRing  [EuclidianRing] given Nat = {}
 end
 
 spec
@@ -33,6 +78,8 @@ end
 spec COS =
   { sort s, t; op c : s; } hide op c : t
 end
+
+%% Views as fitting args
  
 spec sp [sort s,t; op f:s->?t] =
 sort t
@@ -56,3 +103,51 @@ end
 spec sp3 = sort s ; op f:s->s
 and sort s; op f:s->?s
 end
+
+
+%% Generic views
+
+
+spec
+     PartialOrder =
+  sort Elem
+  pred __<=__ : Elem * Elem
+  forall x,y,z:Elem
+     . x <= x
+     . x <= y /\ y <= z => x <= z
+     . x = y if x <= y /\ y <= x             %(POrder_antisym)%
+end
+
+spec FiniteSet  [sort Elem] given Nat =
+free {
+          type
+                FinSet[Elem]::=    {}
+                                |  {__} (Elem)
+                                |  __ union __ (FinSet[Elem];FinSet[Elem])
+     }
+then %def
+  preds  isNonEmpty:       FinSet[Elem];
+          __ eps__:        Elem * FinSet[Elem];
+         __ isSubsetOf __: FinSet[Elem] * FinSet[Elem]
+end
+
+view PartialOrder_in_FiniteSet  [sort Elem] given Nat:
+     PartialOrder to FiniteSet [sort Elem] =
+     sort Elem     |-> FinSet[Elem] ,
+     pred __ <= __ |-> __ isSubsetOf __
+end
+
+%% Specs from Serge Autexier
+
+spec A[sort s] given {sort t}  =
+sort c;
+op f : s * t -> c;
+
+
+spec B[sort a, s][closed {sort s, t}] given {sort a}, {sort t}  =
+op f : a * s -> t;
+
+
+
+spec C[sort s,t] =
+closed{sort s} then {sort t} then {op f : s -> t}
