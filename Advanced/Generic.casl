@@ -1,0 +1,226 @@
+library Sample/Generic 
+
+from Sample/Simple get Total_Order, Nat 
+
+spec Elem = 
+     sort Elem 
+       
+spec Set1 [Elem] = 
+ free 
+ { 
+      type Set[Elem] ::= {}  |  {__}(Elem)  |  __ cup __(Set[Elem]; Set[Elem]) 
+      op __ cup __ : Set[Elem]×Set[Elem]  -> Set[Elem],
+                    assoc, comm, idem, unit {} 
+ } 
+       
+spec Set2 [Elem] = 
+ Set1 [Elem] 
+ then 
+      pred __ inset __ : Elem × Set[Elem] 
+
+      forall  a,b : Elem; s,t : Set[Elem] 
+        .  not  a inset {} 
+        .  a inset {b}   <=>  a=b 
+        .  a inset (s cup t)   <=>  (a inset s)   \/  (a inset t) 
+       
+spec List [Elem] = 
+      free type List[Elem] ::= nil  |  cons(first:?Elem; rest:?List[Elem]) 
+      op __ ++ __ : List[Elem]×List[Elem]  -> List[Elem], assoc, unit nil 
+
+      vars e:Elem; l,l':List[Elem] 
+      . cons(e,l) ++ l' = cons(e,l ++ l') 
+      op reverse : List[Elem]  -> List[Elem] 
+      . reverse(nil) = nil 
+      . reverse(cons(e,l)) = reverse(l) ++ cons(e,nil) 
+end 
+       
+spec List_with_Order [Total_Order] = 
+ List [sort Elem] 
+ then 
+ ops insert : Elem×List[Elem] -> List[Elem]; 
+     order[__  <= __] : List[Elem] -> List[Elem]
+ forall  x,y : Elem; l : List[Elem] 
+ . order[__  <= __](nil)=nil 
+ . order[__  <= __](cons(x,l)) = insert(x,order[__  <= __](l)) 
+ . insert(x,nil)=cons(x,nil) 
+ . x  <= y   =>  insert(x,cons(y,l))=cons(x,insert(y,l)) 
+ . not (x  <= y)   =>  insert(x,cons(y,l))=cons(y,insert(x,l)) 
+ 
+ hide insert 
+end 
+       
+spec 
+     Ordered_Nat = 
+     Nat 
+ then 
+      preds  
+            __ <= __ , __ >= __ : Nat × Nat 
+
+      forall  m,n : Nat 
+        ·   zero  <= n 
+        ·   ¬  (succ m  <= zero) 
+        ·   succ m  <= succ n   <=>  m  <= n 
+        ·   m  >= n   <=>  n  <= m 
+
+ end 
+       
+
+       
+ spec 
+     Nat_List_with_Reverse_Orders = 
+     List_with_Order [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ <= 
+__ ] 
+ and 
+      
+     List_with_Order [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ >= 
+__] 
+ then 
+      
+      forall  l : List[Nat]   ·   order[__ >= __](l) = reverse(order[__ <=
+__](l)) 
+
+ end 
+       
+
+       
+ spec 
+     Non_Empty_List [Elem] = 
+      free type 
+              NeList[Elem] ::= sort Elem  |  __ __(Elem; NeList[Elem]) 
+      ops  
+                
+              first 
+                  : NeList[Elem]  -> 
+                                    Elem;
+              rest 
+                  : NeList[Elem]  ->? 
+                                    NeList[Elem] 
+
+
+      forall  e : Elem; l : NeList[Elem] 
+        ·   first(e) = e 
+                                   ·   first(e l) = e 
+        ·   ¬  def rest(e) 
+                                   ·   rest(e l) = l 
+
+ end 
+       
+
+       
+ spec 
+     Path = 
+     Non_Empty_List [sort Name] 
+      with 
+          NeList[Name] 
+                         |->  
+                            Path,
+          __ __ 
+                         |->  
+                            __/__ ,
+          first 
+                         |->  
+                            the_first_name_of__ ,
+          rest 
+                         |->  
+                            the_last_part_of__ 
+
+
+ then 
+      ops  
+          the_first_part_of__ 
+                            : Path ->? 
+                                     Path;
+          the_last_name_of__ 
+                            : Path -> 
+                                     Name 
+
+
+      forall  n : Name; p : Path 
+        ·   def (the_first_part_of p)   <=>  ¬  (p in Name)
+        ·   ¬  (p in Name)   =>  the_first_part_of (n/p)  =e= n/the_first_part_of p
+        ·   p in Name   =>  the_first_part_of (n/p)  =e= n
+        ·   the_last_name_of n = n 
+        ·   the_last_name_of (n/p) = the_last_name_of p 
+
+ end 
+       
+
+
+ 
+
+spec Name = sort Name 
+ %% ...
+
+
+spec Content = sort Content 
+ %% ...
+
+
+  
+ spec 
+     File = 
+     Name and Content 
+ then 
+       
+      generated type 
+                   File ::= <__ dot __> ( 
+                   the_name_of__:Name;
+                   the_content_of__:Content) 
+
+
+ end 
+       
+
+       
+ view 
+     Nat_as_Elem : Elem to Nat = 
+     Elem   |->  Nat 
+
+       
+ view 
+     List_as_Elem [Elem] : Elem to List [Elem] = 
+     Elem   |->  List[Elem] 
+
+       
+ spec 
+     List_of_List_of_List_of_Nat = 
+     List [view List_as_Elem [view List_as_Elem [view Nat_as_Elem]]] 
+
+       
+ view 
+     Ordered_Nat_as_Total_Order : 
+     Total_Order to Ordered_Nat = 
+      %{ 
+          Ordered_Nat_as_Total_Order can be seen as the requirement that 
+          Ordered_Nat indeed specifies a partial order. Thus defining the view 
+          would be significant even if the following instantiation were to be omitted. }%
+     Elem   |->  Nat 
+
+
+
+
+       
+ spec Nat_List_with_Order = 
+   List_with_Order [view Ordered_Nat_as_Total_Order] 
+
+       
+ spec Bounded_List [Elem] [op bound : Nat] given Nat = 
+   List [Elem] and Ordered_Nat 
+ then 
+   op length : List[Elem]  -> Nat 
+
+   forall  e:Elem; l:List[Elem] 
+   . length(nil) = zero 
+   . length(cons(e,l)) = succ length(l) 
+
+   sort Bounded_List[Elem] = { l:List[Elem] . length(l) <= bound } 
+   type Bounded_List[Elem] ::= nil  |  cons( 
+          first:?Elem; 
+          rest:?Bounded_List[Elem])? 
+
+           %{ The properties of the operations on Bounded_List[Elem] 
+              are determined by their overloadings on List[Elem]. }%
+end 
+       
+spec Bounded_Nat_List [op bound : Nat] given Nat = 
+  Bounded_List [view Nat_as_Elem] [op bound : Nat] 
