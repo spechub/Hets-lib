@@ -57,17 +57,17 @@ then
 
   BASIC_ITEMS      ::= sort SIG_ITEMS 
                    | free_datatype(NeList[DATATYPE_DECL])
-                   | Sort_gen(NeList[SIG_ITEMS])
+                   | sort_gen(NeList[SIG_ITEMS])
                    | var_items(NeList[VAR_DECL])
                    | local_var_axioms(NeList[VAR_DECL]; NeList[FORMULA])
                    | axiom_items(NeList[FORMULA]);
 
-  SIG_ITEMS        ::= Sort_items(NeList[SORT_ITEM])
+  SIG_ITEMS        ::= sort_items(NeList[SORT_ITEM])
                    | op_items(NeList[OP_ITEM])
                    | pred_items(NeList[PRED_ITEM])
                    | datatype_items(NeList[DATATYPE_DECL]);
 
-  SORT_ITEM        ::= Sort_decl(NeList[SORT])
+  SORT_ITEM        ::= sort_decl(NeList[SORT])
                    | subsort_decl(NeList[SORT]; SORT)
                    | subsort_defn(SORT; VAR; SORT; FORMULA)
                    | iso_decl(NeList[SORT]);
@@ -77,7 +77,7 @@ then
   OP_TYPE          ::= total_op_type(SORT_LIST; SORT)
                    | partial_op_type(SORT_LIST; SORT);
 
-  SORT_LIST        ::= Sort_list(List[SORT]);
+  SORT_LIST        ::= sort_list(List[SORT]);
 
   OP_ATTR          ::= assoc_op_attr | comm_op_attr | idem_op_attr
                    | unit_op_attr(TERM);
