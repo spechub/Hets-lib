@@ -9,7 +9,7 @@ version 0.7
 
 
 from Basic/RelationsAndOrders version 0.5 get TotalOrder, ExtTotalOrder,
-PreOrder, EquivalenceRelation
+RichTotalOrder, PreOrder, EquivalenceRelation
 
 from Basic/Numbers version 0.5 get Nat, Int, Rat
 
@@ -209,7 +209,20 @@ spec
 then
      forall x,y: Elem 
      . ( x * y = 0 => ( x = 0 \/ y = 0 ) ) 	%(noZeroDiv)%
-     . not (e = 0)             			%(zeroNeqOne)%;
+     . not (e = 0)             			%(zeroNeqOne)%
+end
+
+spec
+     EuclidianRing =
+     IntegralDomain and {Nat reveal pred  __<__ }
+then
+     op
+          delta: Elem ->? Nat
+     forall a,b: Elem
+     . def delta(a) if not a = 0 		%(ER_delta_dom)%
+     . (exists q,r : Elem . a = q * b + r /\
+                               (r = 0 \/ delta(r) < delta(b) )) 
+		if not b = 0             	%(ER_div)% 
 end
 
 view
@@ -313,6 +326,7 @@ then
      %implies
      PowerTheoremsComm [Nat fit sort Exponent |-> Nat] 
 end
+
 spec
      ExtGroup [Group] given Int =
 %def
@@ -328,7 +342,7 @@ then
      SigPowerBinAlg [sort Int]
 then
      forall x: Elem; p: Pos
-     . x^ minus(p)=inv(x ^ p)             	%(Group_pow_neg)%
+     . x^ (- p)=inv(x ^ p)             		%(Group_pow_neg)%
 then %implies
      forall x,y,z: Elem; n,m: Int
      . x * inv(x) = e             		%(Group_right_inv)%
@@ -380,7 +394,7 @@ then
 
 end
 
-view EqRel_in_ExtGroupAction [GroupAction [Group]]] given Int:
+view EqRel_in_ExtGroupAction [GroupAction [Group]] given Int:
      EquivalenceRelation to ExtGroupAction [GroupAction [Group]] =
      sort Elem |-> Space,
      pred __ ~ __ |-> connected
@@ -468,19 +482,6 @@ then
 end
 
 spec
-     EuclidianRing =
-     IntegralDomain and {Nat reveal pred  __<__ }
-then
-     op
-          delta: Elem ->? Nat
-     forall a,b: Elem
-     . def delta(a) if not a = 0 		%(ER_delta_dom)%
-     . (exists q,r : Elem . a = q * b + r /\
-                               (r = 0 \/ delta(r) < delta(b) )) 
-		if not b = 0             	%(ER_div)% 
-end
-
-spec
      ExtEuclidianRing  [EuclidianRing] given Int=
 %def
      ExtIntegralDomain [IntegralDomain]
@@ -538,8 +539,8 @@ spec RichMonoidAction [Monoid] =
      ExtMonoidAction [MonoidAction [Monoid]]
 end
 
-view PreOrder_in_RichMonoidAction:
-     PreOrder to RichMonoidAction =
+view PreOrder_in_RichMonoidAction [Monoid]:
+     PreOrder to RichMonoidAction [Monoid]=
      sort Elem |-> Space,
      pred __ <= __ |-> connected
 end
@@ -548,8 +549,8 @@ spec RichGroupAction [Group] =
      ExtGroupAction [GroupAction [Group]]
 end
 
-view EqRel_in_RichGroupAction:
-     EquivalenceRelation to RichGroupAction =
+view EqRel_in_RichGroupAction [Group]:
+     EquivalenceRelation to RichGroupAction [Group]=
      sort Elem |-> Space,
      pred __ ~ __ |-> connected
 end
@@ -594,7 +595,7 @@ view
      CommutativeSemiGroup to RichTotalOrder =
 op
      __ * __ |-> max
-end =
+end 
 
 view
      CommutativeSemiGroup_in_RichTotalOrder :
