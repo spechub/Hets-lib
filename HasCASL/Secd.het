@@ -14,7 +14,7 @@ from Basic/Numbers get Nat
 logic HasCASL
 
 spec List = 
-     var a : Type;
+     var a : Type+;
      free type List a ::= [] | __ :: __(a; List a)
 
 spec FiniteSet = 
@@ -125,12 +125,13 @@ then %implies
   . isClosed(Lam x b) => isClosed(subst a x b)
 
   spec LeftReduction = Term and Transitivity and Recursion then 
-  op leftRed: ClosedTerm ->? ClosedTerm
+  op leftRed: Term ->? Term
   program leftRed (App (App f a) c) = App (leftRed (App f a))c;
      leftRed(App (Lam x b)(App f a)) = 
           App (Lam x b) (leftRed (App f a));		
      leftRed(App (Lam x b)(Lam y t)) = 
-          (subst (Lam y t) x b) as ClosedTerm
+          (subst (Lam y t as ClosedTerm) x b)
+  op leftRed: ClosedTerm ->? ClosedTerm
   op leftRel,reducesTo: Pred (ClosedTerm * ClosedTerm)
   forall a,b : ClosedTerm
   . leftRel(a, b) <=> leftRed a = b
@@ -155,7 +156,7 @@ type Clos = {c: TermEnv. def(real c)}
 spec Dump = Closure and {List with [], __::__} and Recursion then 
 free type ExtTerm ::= Aps | type Term 
 type Control := List ExtTerm    %% synonyms                  
-type Stack := List Clos              
+type Stack := List TermEnv      %% List Clos             
 type Dump := List (Stack * Env * Control)     
 op step : Dump ->? Dump
 program step((s, e, Var x :: c) :: d) = (lookup e x :: s, e, c) :: d;
@@ -181,8 +182,8 @@ ops load : ClosedTerm -> Dump;
     isFinal : Pred Dump;
     run : Dump ->? Dump;
     count : Dump ->? Nat
-program load a = ([], Empty, a :: []) :: [] ;
- unload ((v :: [], Empty, []) :: []) = (real v) as Value;
+program load a = ([], Empty, a :: []) :: [];
+ unload ((v :: [], Empty, []) :: []) = real v as Value;
  isFinal d = case d of (v :: [], Empty, []) :: [] -> true | 
                d -> false;
  run d = repeat isFinal d;
@@ -196,7 +197,7 @@ op time : ClosedTerm ->? Nat
 forall x: Variable; a, b, f : ClosedTerm; v: Value
 . time v = 1
 . Lam x b = eval f /\ v = eval a => time (App f a) = 
-        (time a) + (time f) + (time((subst v x b)as ClosedTerm)) + 1
+        time a + time f + time(subst v x b as ClosedTerm) + 1
 
 spec TermEvalBySecdExec = 
      Time and Execution[view Secd]
