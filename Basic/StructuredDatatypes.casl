@@ -227,14 +227,15 @@ spec String =
 end
 
 
+
 spec GenerateFiniteMap  [sort S] [sort T] =
-free {
- type FiniteMap[S,T] ::= [] | __[__/__] (FiniteMap[S,T];T;S)
- op   __[__/__]: FiniteMap[S,T] * T * S -> FiniteMap[S,T]
- forall M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
- . M[t1/s][t2/s] = M[t2/s]                            %(FM_overwrite)%
- . M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2      %(FM_comm)%
-}
+  generated type FiniteMap[S,T] ::= [] | __[__/__] (FiniteMap[S,T];T;S) 
+  op  eval:  S * FiniteMap[S,T] ->? T;
+  forall M,N:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
+     . not def eval(s,[])             %(FM_eval_empty)%
+     . eval(s, M[t1/s1]) = t1 when s=s1		
+				 else eval(s,M)       %(FM_eval_nonEmpty)%
+     . M=N <=> forall s:S . eval(s,M)=eval(s,N)     
 end
 
 spec FiniteMap  [sort S][sort T] given Nat=
@@ -244,7 +245,6 @@ and
 and 
      FiniteSet [sort T fit Elem |-> T]
 then 
-
      free type Entry[S,T]::=[__/__] (target:T;source:S)
      preds
            isEmpty:    FiniteMap[S,T];
@@ -257,15 +257,12 @@ then
            __-__: FiniteMap[S,T] * T -> FiniteMap[S,T];
            dom:   FiniteMap[S,T] -> FinSet[S];
            range: FiniteMap[S,T] -> FinSet[T];
-           eval:  S * FiniteMap[S,T] ->? T;
            __ union __: FiniteMap[S,T] * FiniteMap[S,T] ->? FiniteMap[S,T]
 
      forall M,N,O: FiniteMap[S,T]; s,s1:S; t,t1: T; e: Entry[S,T];
             X: FinSet[S]; Y: FinSet[T]
      . isEmpty(M) <=> M=[]                 %(FM_isEmpty_def)%
-     .  not [t/s] eps []                   %(FM_elemOf_empty)%
-     . [t/s] eps M[t1/s1] <=> 
-       ( [t/s]=[t1/s1] \/ [t/s] eps M)     %(FM_elemOf_nonEmpty)%
+     . [t/s] eps M <=> eval(s,M)=t     %(FM_elemOf)%
 
      .  M::X->Y <=> dom(M)=X /\ range(M) isSubsetOf Y   %(FM_arrow_def)%
      .  M+[t/s]=M[t/s]                                  %(FM_overwrite2_def)%
@@ -281,19 +278,19 @@ then
      . (M+e)-t=M-t when exists s:S . e=[t/s] else (M-t)+e   
                            %(FM_minus_Target_nonEmpty)%
 
-     . s eps dom(M) <=> exists t:T . [t/s] eps M      %(FM_dom_def)%
-     . t eps range(M) <=> exists s:S . [t/s] eps M    %(FM_range_def)%
+     . s eps dom(M) <=> def eval(s,M)      %(FM_dom_def)%
+     . t eps range(M) <=> exists s:S . eval(s,M)=t   %(FM_range_def)%
 
-     . not def eval(s,[])             %(FM_eval_empty)%
-     . eval(s, M + [t1/s1]) = t1 when s=s1		
-				 else eval(s,M)       %(FM_eval_nonEmpty)%
      .  M union N = O <=>
        ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )
                                               %(FM_union_def)%
 then %implies
-     forall s: S; M: FiniteMap[S,T]
-     . def eval(s,M) <=> s eps dom(M)             %(eval_dom)%
+  forall M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
+   . M[t1/s][t2/s] = M[t2/s]                            %(FM_overwrite)%
+   . M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2      %(FM_comm)%
+   . def eval(s,M) <=> exists t:T . [s/t] eps M         %(eval_dom)%
 end
+
 
 spec GenerateBag  [sort Elem] =
 free {
