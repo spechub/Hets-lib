@@ -12,39 +12,38 @@ from
      ExtIntegralDomain, Field, ExtField, EuclidianRing,
      ExtEuclidianRing
 from
-     Basic/Numbers version 0.4 get Int
+     Basic/PreNumbers version 0.4 get PreInt
 from
      Basic/StructuredDatatypes version 0.4 get List, Bag
 
 spec
      CompactInt=
-     Int
+     PreInt
 then
 free
      {
      type
-          CompactInt::=sort Int | infinity | -__(CompactInt)
+          CompactInt::=sort Int | infinity | minus(CompactInt)
      ops
-           __+__: CompactInt × CompactInt ->? CompactInt, comm;
-           __-__: CompactInt× CompactInt ->? CompactInt
+           __ + __: CompactInt × CompactInt ->? CompactInt, comm;
      then
-          ExtPartialOrder[PartialOrder]
-          with sort Elem |-> CompactInt
+          PartialOrder with sort Elem |-> CompactInt
      then
      vars
           n:Int;m,k:CompactInt
      .
-          %[double_neg_compact] -(-m)=m
+          %[CI_double_neg_compact] minus(minus(m)) = m
      .
-          %[neg_sum_compact] (-m)+(-k)= -(m+k)
+          %[CI_neg_sum_compact] minus(m) + minus(k) = minus (m + k)
      .
-          %[leq_compact_def1] -infinity<n
+          %[CI_leq_compact_def1] minus(infinity) <= n
      .
-          %[leq_compact_def2] n<infinity
+          %[CI_leq_compact_def2] n <= infinity
      .
-          %[infinity_plus_n_def] m> -infinity => infinity+m=infinity
+          %[CI_infinity_plus_n] not m = minus(infinity) => 
+		infinity + m = infinity
      .
-          %[compact_minus_def] m - k = m + ( - k )
+	  %[CI_twice_infinity] infinity + infinity = infinity
 }
 end
 
@@ -98,7 +97,7 @@ spec
 end
 
 spec
-     ExtFactorialRing  [FactorialRing] given Int=
+     ExtFactorialRing  [FactorialRing] given PreInt=
      ExtIntegralDomain [FactorialRing]
 then
      ConstructFactorialRing
@@ -107,14 +106,14 @@ end
 
 view
      FactorialRing_in_ExtEuclRing  [EuclidianRing]
-     given Int:
+     given PreInt:
      FactorialRing to
      ExtEuclidianRing[EuclidianRing]
 end
 
 
 spec
-     Polynomial  [CommutativeRing] given Int =
+     Polynomial [CommutativeRing] given PreInt =
 %def
      CompactInt and ExtCommutativeRing[CommutativeRing]
 then
@@ -144,7 +143,8 @@ within
           .
                %[cons_Poly_def] a:::p = a when p = 0 else a :: p
           .
-               %[degree_def] degree(p) = -infinity when p = 0 else #p - 1
+               %[degree_def] degree(p) = minus(infinity)
+					 when p = 0 else pre(#p)
      then
           closed
                {ExtCommutativeRing[CommutativeRing] with
@@ -179,7 +179,7 @@ within
 end
 
 view
-     EuclidianRing_in_Polynomial [Field]:
+     EuclidianRing_in_Polynomial [Field] given PreInt:
      EuclidianRing to 
 	{Polynomial [Field]
 	  then

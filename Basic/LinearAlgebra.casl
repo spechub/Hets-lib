@@ -10,7 +10,9 @@ from
      GroupAction, ExtGroupAction, Ring, ExtRing,
      CommutativeRing, ExtCommutativeRing, Field, ExtField
 from
-     Basic/Numbers version 0.4 get Nat, Int
+     Basic/PreNumbers version 0.4 get PreNat, PreInt
+from 
+     Basic/Numbers version 0.4 get Int
 from
      Basic/Algebra_II version 0.4 get
      Polynomial
@@ -34,16 +36,37 @@ then
           %[VS_distr2] a * (x + y) = a * x + a * y
 end
 
+view AbelianGroup_in_VectorSpace [Field]:
+     AbelianGroup to VectorSpace [Field] = 
+     sort Elem |-> Space,
+	  ops  e         |-> 0,
+	        __ * __  |-> __ + __
+end
+
+view GroupAction_in_VectorSpace [Field]:
+     GroupAction [Group] to
+     {
+	VectorSpace [ExtField [Field] reveal 
+				sorts Elem, NonZero[Elem], 
+				ops __ + __, __ * __, 0, e]
+	then %def
+	   op __ * __: NonZero[Elem] * Space -> Space} =
+     
+     sort Elem |-> NonZero[Elem]
+end
+
+view VectorSpace_in_Field [Field]:
+     VectorSpace [Field] to Field =
+     sort Space |-> Elem,
+     op __ * __: Elem * Space -> Space |-> __ * __: Elem * Elem -> Elem
+end
+	
 spec
-     ExtVectorSpace [VectorSpace [Field]] given Int =
+     ExtVectorSpace [VectorSpace [Field]] given PreInt =
 %def
      ExtField [Field]
 and
-     ExtAbelianGroup [VectorSpace [Field] 
-	fit sort Elem 	 |-> Space,
-	    ops  e    	 |-> 0: Space,
-		 __ * __ : Elem * Elem -> Elem |->
-			 __ + __: Space * Space -> Space]
+     ExtAbelianGroup [view AbelianGroup_in_VectorSpace [Field]]
      with 
 	ops
 	  inv	  |-> -__,
@@ -52,13 +75,13 @@ and
 and
      ExtMonoidAction [MonoidAction [Monoid]]
 and
-     FiniteMap[sort Space fit sort S|->Space]
+     {FiniteMap[sort Space fit sort S|->Space]
 		[sort Elem fit sort T|->Elem]
-          with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]
+          with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]}
+	  hide sorts FinSet[Space], FinSet[Elem],
+		     NonEmptySet[Space], NonEmptySet[Elem]
 then
-     ExtGroupAction [VectorSpace[Field then 
-				sort NonZero[Elem] = {x: Elem . not x = 0 }]
-			fit sort Elem |-> NonZero[Elem]]
+     ExtGroupAction [view GroupAction_in_VectorSpace [Field]]
 then
      op
           eval: LC[Space,Elem] -> Space
@@ -72,12 +95,12 @@ then
           %[eval_add] [r/x]eps l => eval(l)=r*x+eval(l-[r/x])
      .
           %[isZero_def]
-          isZero(l) <=> forall y: Space. (y eps dom(l) => eval(y,l)=0)
+          isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)
 end
 
 spec
-     ConstructVSWithBase [Field][sort Base]=
-     ExtVectorSpace [Field]
+     ConstructVSWithBase [Field][sort Base] given PreInt=
+     ExtVectorSpace [VectorSpace [Field]]
 then
      %cons
 {
@@ -85,9 +108,9 @@ then
           Base < Space
 then
      %def
-     FiniteMap[sort Base fit sort S|-> Base]
+     FiniteMap [sort Base fit sort S|-> Base]
 		[sort Elem fit sort T|-> Elem]
-          with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
+         with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
 then
      sort
           LC[Base,Elem]<LC[Space,Elem]
@@ -102,15 +125,20 @@ end
 
 spec
      VSWithBase [Field][sort Base]=
-     ConstructVSWithBase [Field][sort Base]
-          reveal sorts Space,Elem,Base, ops __ + __, __ * __, 0, e
+    { ConstructVSWithBase [Field][sort Base]}
+          reveal sort Space, 
+		 ops __ + __: Space * Space -> Space, 
+	    	     __ * __: Elem * Space -> Space,
+		     0	    : Space
 end
 
 spec
-     ExtVSWithBase [VSWithBase [Field][sort Base]] given Int =
+     ExtVSWithBase [VSWithBase [Field][sort Base]] given PreInt =
 %def
-     ExtVectorSpace [ConstructVSWithBase [Field][sort Base]]
-          with sorts Base, LC[Base,Elem]
+     ExtVectorSpace [VSWithBase [Field][sort Base]]
+and
+     ConstructVSWithBase [Field][sort Base]
+	with sort LC[Base,Elem]
 then
      %implies
      vars
@@ -138,13 +166,15 @@ view
      VSWithBase [Field][sort Base] to
      {Field then sort One = {x: Elem. x = e} } =
      sorts
-          Space |-> Elem, Base |-> One
+          Space |-> Elem, Base |-> One,
+     op   __ * __: Elem * Space -> Space |->
+		          __ * __: Elem * Elem -> Elem
 end
 
 view
-     VSWithBase_in_ExtVectorSpace  [Field] given Int:
-     {VSWithBase[Field][sort Base] hide sort Base} to
-     ExtVectorSpace[Field]
+     VSWithBase_in_VectorSpace [Field] given PreInt:
+     {VSWithBase [Field][sort Base] hide sort Base} to
+     VectorSpace [Field]
 end
 
 spec
@@ -166,13 +196,13 @@ then
 end
 
 spec
-     ExtAlgebra [Algebra[Field]] given Int =
+     ExtAlgebra [Algebra [Field]] given PreInt =
 %def
      ExtField [Field]
 and
      ExtVectorSpace [VectorSpace [Field]]
 and
-     ExtRing [Algebra fit sort Elem |-> Space]
+     ExtRing [Algebra [Field] fit sort Elem |-> Space]
 and
      Polynomial [Field]
 then
@@ -197,42 +227,54 @@ free
 end
 
 spec
-     ExtFreeVectorSpace [Field][sort Base] given Int =
+     ExtFreeVectorSpace [Field][sort Base] given PreInt =
      ExtVectorSpace [FreeVectorSpace [Field][sort Base]]
 end
 
 view
-     FreeVectorSpace_in_ExtVSWithBase [Field] given Int:
+     FreeVectorSpace_in_VSWithBase [Field] given PreInt:
      FreeVectorSpace [Field][sort Base] to
      {
-          ExtVSWithBase [Field][sort Base]
+          VSWithBase [Field][sort Base]
      then
           op
                inject: Base -> Space
           var
                x:Base
           .
-               %[inject_def] inject(x) = x
+               %[VSWB_inject_def] inject(x) = x
      }
 end
 
 view
-     VSWithBase_in_ExtFreeVectorSpace [Field][sort Base] given Int:
+     VSWithBase_in_FreeVectorSpace [Field][sort Base] given PreInt:
      VSWithBase [Field][sort Base] to
-     ExtFreeVectorSpace [Field][sort Base]
+     {FreeVectorSpace [Field][sort Base] 
+	then
+	   %def
+	   sort Base < Space
+	   var x: Base
+	   .
+		%[FVS_embed_def] x = inject(x)
+     }
 end
 
 spec
-     VectorTuple [VectorSpace[Field]][op n: Nat] given Nat =
+     VectorTuple [VectorSpace[Field]][op n: Pos] given PreInt =
 %def
 {
-     Array [ops 1,n: Nat fit min |-> 1, max |-> n] 
-           [sort Space fit Elem |-> Space]
+     {{Array [ops 1,n: Int fit ops min: Int |-> 1, max: Int |-> n] 
+           [sort Space fit sort Elem |-> Space]
           with sorts
-           Index |-> Index[n],
-           Array[Space] |-> Tuple[Space,n]
+           Index |-> Index[n], Array[Space]}
+	  hide sorts FinSet[Space], FinSet[Index[n]],
+		     NonEmptySet[Space], NonEmptySet[Index[n]]}
      then
+          sort
+		Tuple[Space,n]={ x: Array[Space].
+			 forall i: Index[n]. def x ! i }		
           ops
+		__ ! __: Tuple[Space,n] * Index[n] -> Space;
                 0:      Tuple[Space,n];
                 __*__:  Elem * Tuple[Space,n] -> Tuple[Space,n];
                 __+__:  Tuple[Space,n] * Tuple[Space,n] -> Tuple[Space,n];
@@ -257,27 +299,26 @@ spec
                %[Tuple_sum_def] sum(x) = auxsum(x, n as Index[n])
 }
      hide op auxsum
-and
-     ExtVectorSpace [VectorSpace [Field]]
 end
 
 view
      VectorSpace_in_VectorTuple [VectorSpace [Field]]
-     [op n:Nat] given Nat:
+     [op n:Pos] given PreInt:
      VectorSpace [Field] to
-     VectorTuple [VectorSpace [Field]][op n:Nat]=
+     VectorTuple [VectorSpace [Field]][op n:Pos]=
      sort
           Space |-> Tuple[Space,n]
 end
 
 spec
-     Vector [Field][op n: Nat] given Nat =
+     ConstructVector [Field][op n: Pos] given PreInt =
 %def
-     VectorTuple [Field fit sort Space|->Elem][op n: Nat] with
-          sorts
-               Index[n], Tuple[Elem,n] |-> Vector[Elem,n],
+     {VectorTuple [view VectorSpace_in_Field [Field]][op n: Pos] with
+          sort
+                Tuple[Elem,n] |-> Vector[Elem,n], Index[n],
           ops
-               0, __ * __, __ + __, sum
+                0, __ * __, __ + __, sum} 
+	with op __ ! __: Vector[Elem,n] * Index[n] -> Elem
 then
      {
      ops
@@ -289,9 +330,9 @@ then
      pred
           perp: Vector[Elem,n] * Vector[Elem,n]
      vars
-          x,y:Vector[Elem,n]; i,j:Index[n]
+          x, y: Vector[Elem,n]; i, j: Index[n]
      .
-          %[Vector_auxmult_def] auxmult(x,y) ! i=(x ! i) * (y ! i)
+          %[Vector_auxmult_def] auxmult(x,y) ! i = (x ! i) * (y ! i)
      .
           %[Vector_times_def] <x || y> =sum(auxmult(x,y))
      .
@@ -306,7 +347,7 @@ then
      .
           %[perp_def] perp(x,y) <=> ( <x || y> =0)
      .
-          %[unitVector_def] unitVector(i) ! j = 1 when i = j else 0
+          %[unitVector_def] unitVector(i) ! j = e when i = j else 0
      sort
            UnitVector[Elem,n]=
            {x: Vector[Elem,n] . exists i: Index[n]. x = unitVector(i)}
@@ -319,33 +360,42 @@ then
      .
           %[scalar_prod_comm] <x || y> = <y || x>
      .
-          %[scalar_prod_pos] <x || x> = 0 => x = 0
+          %[scalar_prod_pos] <x || x> = 0 => x = 0 
 end
 
-view
-     VSWithBase_in_Vector [Field][op n:Nat] given Nat:
-     VSWithBase [Field][sort Base] to Vector [Field][op n:Nat] =
+spec Vector [Field]=
+     ConstructVector [Field][op n: Pos] 
+     reveal sorts Vector[Elem,n], UnitVector[Elem,n],
+	    ops __ + __: Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n],
+		__ * __: Elem * Vector[Elem,n] -> Vector[Elem,n],
+		0 : Vector[Elem,n]
+end
+
+view VectorSpace_in_Vector [Field] given PreNat:
+     VectorSpace [Field] to Vector [Field] =
+     sort Space |-> Vector[Elem,n]
+end
+
+	   
+view VSWithBase_in_Vector [Field] given PreNat:
+     VSWithBase [Field][sort Base] to Vector [Field] =
      sorts
-           Space |-> Vector[Elem,n],
-           Base |-> UnitVector[Elem,n]
+          Space |-> Vector[Elem,n],
+          Base |-> UnitVector[Elem,n]
 end
 
 spec
-     SymmetricGroup [op n:Nat] given Nat=
-     Int with sort RUnit[Int]
+     SymmetricGroup [op n: Pos] given PreInt =
+%def
+     Int reveal sort RUnit[Int], op __!
 then
-     %def
      sort
           Nat[n] = {i: Pos . i <= n}
 then
      %def
-     Array [op n:Nat fit ops min |-> 1, max |-> n]
+     Array [ops 1, n: Int fit ops min |-> 1, max |-> n]
 		[sort Nat[n] fit sort Elem |-> Nat[n]]
-          with sorts Array[Nat[n]], Index |-> Index[n]
-then
-     %def
-     sort
-          Index[n] = Nat[n]
+          with sorts Array[Nat[n]], Index |-> Nat[n]
 then
      %def
      sort
@@ -365,7 +415,7 @@ then
      .
           %[Perm_sign_homomorphic] sign(p comp q) = sign(p) * sign(q)
      .
-          %[Perm_sign_surjective] exists r: Perm[n]. sign(r)= -1
+          %[Perm_sign_surjective] exists r: Perm[n]. sign(r)= minus(1)
 then
      %cons
      sort
@@ -377,8 +427,8 @@ then
 end
 
 view
-     Group_in_SymmetricGroup [op n:Nat] given Nat:
-     Group to SymmetricGroup [op n:Nat]=
+     Group_in_SymmetricGroup [op n: Pos] given PreNat:
+     Group to SymmetricGroup [op n: Pos]=
      sort
           Elem |-> Perm[n],
      op
@@ -387,13 +437,14 @@ view
 end
 
 spec
-     Matrix [Field][op n:Nat] given Nat=
+     Matrix [Field][op n: Pos] given PreInt=
 %def
-     VectorTuple [Vector [Field][op n:Nat]
-               fit sort Space |-> Vector[Elem,n]]
-          [op n:Nat]
+     VectorTuple [view VectorSpace_in_Vector [Field]]
+          [op n: Pos]
      with
           sort Index[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
+and 
+     ConstructVector [Field][op n: Pos]
 then
      ops
            transpose:  Matrix[Elem,n] -> Matrix[Elem,n];
@@ -407,7 +458,7 @@ then
      .
           %[transpose_def] (transpose(a) ! i) ! j = (a ! j) ! i
      .
-          %[Matrix_1_def] (1 ! i) ! j = 1 when i = j else 0
+          %[Matrix_1_def] (1 ! i) ! j = e when i = j else 0
      .
           %[elementary_def]
           elementary(i,j) ! k = unitVector(j) when i = k else 0
@@ -418,13 +469,13 @@ then
      sort
            ElemMatrix[Elem,n]=
            {x: Matrix[Elem,n]. exists i,j: Index[n]. x = elementary(i,j)}
-     then
+    then
           local {
-               SymmetricGroup [op n:Nat] with
+               SymmetricGroup [op n: Pos] with
                     sorts Perm[n], PNat[n], ops sign, perm, nFac
           then
-               Vector [Field][op nFac:Nat fit op n|->nFac] with
-                    sort Vector[Elem,nFac]
+               closed{ConstructVector [Field][op nFac: Pos fit op n|->nFac]}
+		with sort Vector[Elem,nFac]
           then
                sorts
                     Index[nFac]=PNat[n]
@@ -442,7 +493,7 @@ then
           summands(a) ! j=sign(perm(j)) * prod(factors(a,j))
      .
           %[Leibnitz] det(a)=sum(summands(a))
-     }
+     } 
 then
      %implies
 vars
@@ -453,14 +504,14 @@ vars
      %[det_vanishes]
      not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)
 .
-     %[det_1] det(1) = 1
+     %[det_1] det(1) = e
 .
      %[det_mult] det(a * b) = det(a) * det(b)
 end
 
 view
-     Algebra_in_Matrix [Field][op n:Nat] given Nat:
-     Algebra [Field] to Matrix [Field][op n:Nat]=
+     Algebra_in_Matrix [Field][op n: Pos] given PreNat:
+     Algebra [Field] to Matrix [Field][op n: Pos]=
      sort
           Space |-> Matrix[Elem,n],
      op
@@ -468,8 +519,8 @@ view
 end
 
 view
-     VSWithBase_in_Matrix [Field][op n:Nat] given Nat:
-     VSWithBase [Field][sort Base] to Matrix [Field][op n:Nat]=
+     VSWithBase_in_Matrix [Field][op n: Pos] given PreNat:
+     VSWithBase [Field][sort Base] to Matrix [Field][op n: Pos]=
      sorts
            Space |-> Matrix[Elem,n],
            Base |-> ElemMatrix[Elem,n]
@@ -481,19 +532,19 @@ spec
 end
 
 spec
-     ExtFreeAlgebra [FreeAlgebra[Field]] given Int=
+     ExtFreeAlgebra [FreeAlgebra[Field]] given PreInt=
      ExtAlgebra [FreeAlgebra[Field]]
 end
 
 view
-     FreeAlgebra_in_Polynomial [Field] given Int:
+     FreeAlgebra_in_Polynomial [Field] given PreInt:
      FreeAlgebra[Field] to Polynomial [Field]=
      sort
           Space |-> Poly[Elem]
 end
 
 view
-     Polynomial_in_ExtFreeAlgebra [Field] given Int:
+     Polynomial_in_ExtFreeAlgebra [Field] given PreInt:
      {Polynomial [Field]
          reveal sorts Elem, Poly[Elem], ops X, __ + __, __ * __} 
      to ExtFreeAlgebra [FreeAlgebra [Field]]=

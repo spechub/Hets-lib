@@ -9,7 +9,9 @@ from
 from
      Basic/Algebra_I version 0.4 get Monoid
 from
-     Basic/Numbers version 0.4 get Nat, Int
+     Basic/PreNumbers version 0.4 get PreNat, PreInt
+from 
+     Basic/Numbers version 0.4 get Nat
 from
      Basic/SimpleDatatypes version 0.4 get Char
 
@@ -28,9 +30,10 @@ free
 end
 
 spec
-     FiniteSet  [sort Elem] given Nat =
+     FiniteSet  [sort Elem] given PreNat =
      GenerateFiniteSet [sort Elem]
 then
+     %def
      sort
           NonEmptySet[Elem] = { s: FinSet[Elem] . not s = {} }
      preds
@@ -100,8 +103,7 @@ then
      .
           %[numberOf_FinSet_set] #{x} = 1
      .
-          %[numberOf_FinSet_union] #(S union T) = (#S + #T) -? (#(S
-          intersection T))
+          %[numberOf_FinSet_union] #(S union T) = #S + #(T-S)
 then
      %implies
      ops
@@ -117,7 +119,7 @@ then
 end
 
 view
-     PartialOrder_in_FiniteSet  [sort Elem] given Nat:
+     PartialOrder_in_FiniteSet  [sort Elem] given PreNat:
      PartialOrder to FiniteSet [sort Elem]
 =
      sort
@@ -130,6 +132,7 @@ spec
      FinitePowerSet
      [FiniteSet[sort Elem] then op X: FinSet[Elem]]
 =
+%def
      sorts
            FinPS[X]= { Y: FinSet[Elem] . Y isSubsetOf X };
            Elem[X] = {x : Elem . x eps X }
@@ -176,7 +179,7 @@ spec
 end
 
 spec
-     List  [sort Elem] given Nat =
+     List  [sort Elem] given PreNat =
      GenerateList[sort Elem]
 then
      type
@@ -283,7 +286,7 @@ then
 end
 
 view
-     Monoid_in_List  [sort Elem] given Nat:
+     Monoid_in_List  [sort Elem] given PreNat:
      Monoid to List [sort Elem]
 =
      sort
@@ -314,22 +317,22 @@ free
      vars
           M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
      .
-          %[overwriting] M[t1/s][t2/s] = M[t2/s]
+          %[FM_overwrite] M[t1/s][t2/s] = M[t2/s]
      .
-          %[FiniteMap_comm]
+          %[FM_comm]
           M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2
      }
 end
 
 spec
-     FiniteMap  [sort S][sort T] given Nat=
+     FiniteMap  [sort S][sort T] given PreNat=
      GenerateFiniteMap [sort S][sort T]
 and
      FiniteSet [sort S fit Elem |-> S ] and FiniteSet [sort T fit Elem |-> T ]
 then
 
      free
-          type Entry[S,T]::=[__/__] (target:T;source:S)
+           type Entry[S,T]::=[__/__] (target:T;source:S)
      preds
            isEmpty:    FiniteMap[S,T];
            __eps__:    Entry[S,T] × FiniteMap[S,T];
@@ -342,7 +345,7 @@ then
            dom:   FiniteMap[S,T] -> FinSet[S];
            range: FiniteMap[S,T] -> FinSet[T];
            eval:  S × FiniteMap[S,T] ->? T;
-           __+__: FiniteMap[S,T] × FiniteMap[S,T] ->? FiniteMap[S,T]
+           __ union __: FiniteMap[S,T] × FiniteMap[S,T] ->? FiniteMap[S,T]
      vars
            M,N,O: FiniteMap[S,T]; s,s1:S; t,t1: T; e: Entry[S,T];
            X: FinSet[S]; Y: FinSet[T]
@@ -354,10 +357,10 @@ then
           %[FM_elemOf_nonEmpty]
           [t/s] eps M[t1/s1] <=> ( [t/s]=[t1/s1] \/ [t/s] eps M)
      .
-          %[map_source_target]
+          %[FM_arrow_def]
           M::X->Y <=> dom(M)=X /\ range(M) isSubsetOf Y
      .
-          %[overwrite_def2] M+[t/s]=M[t/s]
+          %[FM_overwrite2_def] M+[t/s]=M[t/s]
      .
           %[FM_minus_empty] []-[t/s] = []
      .
@@ -365,32 +368,30 @@ then
            (M+[t/s])-[t1/s1] = M-[t1/s1] when [t/s]=[t1/s1] else
                                (M-[t1/s1])+[t/s]
      .
-          %[minus_Source_empty] []-s=[]
+          %[FM_minus_Source_empty] []-s=[]
      .
-          %[minus_Source_nonEmpty]
+          %[FM_minus_Source_nonEmpty]
           (M+e)-s=M-s when exists t:T . e=[t/s] else (M-s)+e
      .
-          %[minus_Target_empty] []-t=[]
+          %[FM_minus_Target_empty] []-t=[]
      .
-          %[minus_Target_nonEmpty]
+          %[FM_minus_Target_nonEmpty]
           (M+e)-t=M-t when exists s:S . e=[t/s] else (M-t)+e
      .
-          %[dom_def] s eps dom(M) <=> exists t:T . [t/s] eps M
+          %[FM_dom_def] s eps dom(M) <=> exists t:T . [t/s] eps M
      .
-          %[range_def] t eps range(M) <=> exists s:S . [t/s] eps M
+          %[FM_range_def] t eps range(M) <=> exists s:S . [t/s] eps M
      .
-          %[eval_empty] not def eval(s,[])
+          %[FM_eval_empty] not def eval(s,[])
      .
-          %[eval_nonEmpty] eval(s,M+[t1/s1]) = t1 when s=s1 else eval(s,M)
+          %[FM_eval_nonEmpty] eval(s, M + [t1/s1]) = t1 when s=s1								else eval(s,M)
      .
-          %[FM_union_dom] def M+N <=> dom(M) intersection dom(N) = {}
-     .
-          %[FM_union_def] M+N=O <=>
-          ( forall e:Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )
+          %[FM_union_def] M union N = O <=>
+          ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )
 then
      %implies
      vars
-          s:S; M:FiniteMap[S,T]
+          s: S; M: FiniteMap[S,T]
      .
           %[eval_dom] def eval(s,M) <=> s eps dom(M)
 end
@@ -410,9 +411,12 @@ free
 end
 
 spec
-     Bag  [sort Elem] given Nat =
+     Bag  [sort Elem] given PreNat =
      GenerateBag[sort Elem]
+and
+     Nat reveal op min
 then
+     %def
      sort
           NonEmptyBag[Elem] = { b: Bag[Elem] . not b = {} }
      preds
@@ -435,7 +439,7 @@ then
      .
           %[freq_set2] freq(x,{y}) = 1 if (x=y)
      .
-          %[freq_uniion] freq(x,B union C) = freq(x,B) + freq(x,C)
+          %[freq_union] freq(x,B union C) = freq(x,B) + freq(x,C)
      .
           %[isNonEmpty_def] isNonEmpty(B) <=> not B = {}
      .
@@ -456,7 +460,7 @@ then
      .
           %[Bag_sub_def2] ( B - x = C <=>
            ( forall y: Elem . ( not y = x => freq (y,B) = freq(y,C)) /\
-                              ( y = x => freq (y,B)-?1 = freq (y,C))) ) if
+                              ( y = x => freq (y,B) = freq (y,C) + 1)) ) if
                               x eps B
      .
           %[Bag_cap]
@@ -465,9 +469,9 @@ then
      .
           %[Bag_diff] B - C = D <=>
            forall x: Elem .
-           ( freq(x,B) >= freq(x,C) => freq(x,D)= freq(x,B)-? freq(x,C) )
+           ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
            /\
-           ( freq(x,B) <= freq(x,C) => freq(x,D)= 0 )
+           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )
 then
      %implies
      ops
@@ -476,7 +480,7 @@ then
 end
 
 view
-     PartialOrder_in_Bag  [sort Elem] given Nat:
+     PartialOrder_in_Bag  [sort Elem] given PreNat:
      PartialOrder to Bag[sort Elem]
 =
      sort
@@ -495,7 +499,7 @@ spec
      Array
      [ops min, max: Int axiom %[Cond_nonEmptyIndex] min <= max]
      [sort Elem]
-     given Int
+     given PreInt
 =
      sort
           Index = { i : Int . min <= i /\ i <= max }
