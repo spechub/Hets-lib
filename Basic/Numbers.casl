@@ -9,7 +9,8 @@ SigOrder, ExtTotalOrder
 from Basic/PreNumbers version 0.4 get
 PreNat, TotalOrder_in_PreNat,
 PreInt, TotalOrder_in_PreInt,
-PreRat, TotalOrder_in_PreRat
+PreRat, TotalOrder_in_PreRat,
+NakedRat	%% Temporary
 
 from Basic/Algebra_I version 0.4 get
 ExtCommutativeMonoid,
@@ -272,9 +273,7 @@ end
 
 spec
      Rat =
-     { PreRat and 
-       ExtField [Field] with Elem |-> Rat, NonZero[Elem] |-> NonZero[Rat]
-     }   %% changed
+     ExtField [NakedRat fit Elem|->Rat]  %% changed and changed back
      with
       sorts Rat, NonZero[Rat],
       preds __ <= __, __ >= __, __ < __, __ > __,

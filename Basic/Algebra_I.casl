@@ -124,6 +124,7 @@ then
           %[Group_Inverse] exists x': Elem . x' * x = 1 /\ x*x'=1
 end
 
+
 spec
      ExtGroup  [Group ] given PreInt =
 %def
@@ -180,65 +181,14 @@ view
 end
 
 spec ExtAbelianGroup  [AbelianGroup] given PreInt =
-
-%% changed MR
-
-%% AbelianGroup has the signature: 
-%% sort Elem, 
-%% ops  0: Elem, 
-%%      op  __+__: Elem * Elem -> Elem
-%%
-
-{
-
-%% Semigroup:
-  op  __ mult __: Elem * Elem -> Elem, assoc
-
-then %% Monoid:
-  ops e:          Elem;
-      __ mult __: Elem * Elem -> Elem, unit e
-
-then %% Group
-  var x:Elem
-     . %[Group_Leftinverse] exists x': Elem . x' mult x = e
-then %implies
-  var  x:Elem
-     . %[Group_Inverse] exists x': Elem . x' mult x = e /\ x mult x'= e
-
-then %% ExtGroup
-  ops inv: Elem -> Elem;
-       __ / __: Elem * Elem -> Elem;
-  vars x,y: Elem
-     . %[ExtGroup_inverse] inv(x) mult x = e
-     . %[ExtGroup_div_def] x / y = x mult inv(y)
-
-and %% ExtMonoid[Monoid] -- Monoid is already there
-  op  __ ^ __: Elem * Nat -> Elem
-  %prec {__ mult__} < {__^ __}
-  vars x: Elem; n: Nat
-     . %[ExtMonoid_power_0] x^0 = e
-     . %[ExtMonoid_power_suc] x^suc(n) = x mult x^n
-then %implies
-     vars x: Elem; n,m: Nat
-     . %[ExtMonoid_power_add] x^(n+m) = x^n mult x^m
-     . %[ExtMonoid_power_mult] x^(n*m) = (x^n)^m
-
-then %% ExtGroup continued
-     %def
-     op  __^ __: Elem * Int -> Elem
-     vars  x: Elem; p: Pos
-     . %[ExtGroup_power_neg] x^(-p)=inv(x^p)
-then %implies
-     vars x,y: Elem; n,m: Int
-     . %[ExtGroup_power_add] x^(n+m) = x^n mult x^m
-     . %[ExtGroup_power_mult] x^(n*m) = (x^n)^m
-     . %[inv_inv] inv(inv(x))=x
-     . %[inv_1] inv(e)=e
-     . %[inv_prod] inv(x mult y)=inv(y) mult inv(x)
-
-} with 
-  ops e          |-> 0,
-      __ mult __ |-> __+__,
+%def
+ExtGroup[AbelianGroup fit 1:Elem|->0:Elem,
+			  __*__:Elem*Elem->Elem|-> __+__:Elem*Elem->Elem] 
+%% restored LS 1/9/00. Qualifications due to "given PreInt" in ExtGroup!
+with 
+  ops 
+%%      1:Elem |-> 0,
+%%     __*__:Elem*Elem->Elem |-> __+__,
       inv        |-> -__,
       __/__      |-> __-__,
       __^__      |-> __*__
@@ -465,7 +415,7 @@ spec
 end
 
 view
-     Field_in_PreRat : Field to PreRat
+     Field_in_PreRat : Field to {PreRat hide -__}
 =
      sort Elem |-> Rat
 end
@@ -477,12 +427,8 @@ spec
 then
 closed
      {
-     ExtAbelianGroup [AbelianGroup]  %% changed
-     with
-           sort Elem |-> NonZero[Elem],
-           ops __+__|->__*__,0|->1,
-               __ - __ |-> __ / __ ,
-               -__ |-> multInv
+	ExtAbelianGroup[view AbelianGroup_in_ConstructField]
+	with NonZeroElem|->NonZero[Elem]
 }
 then
      %prec {__+ __, __ - __ } < { __ / __ }
