@@ -313,11 +313,12 @@ then
                               target : Graph2;
                               nodeMap : Map[N1,N2];
                               edgeMap : Map[E1,E2])
-  sort Hom =                                               %(Hom_def)% 
+  sort Hom =                                               
    {h:PreHom .
       forall n,n':N1; e:E1 . e::n-->n' isIn source(h) =>
        lookup(e,edgeMap(h))::lookup(n,nodeMap(h))-->lookup(n',nodeMap(h))
                                                     isIn target(h)   }
+							%(Hom_def)% 
 end
 
 %% A minor of a graph is something that can be homomorphically
