@@ -1,0 +1,45 @@
+library Basic/Graphs
+version 0.95
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 19.06.02
+
+from Basic/StructuredDatatypes get FiniteSet, FiniteMap
+
+spec Graph[sort NodeV][sort EdgeV] =
+  FiniteSet[sort NodeV fit Elem |-> NodeV]
+  and
+  FiniteSet[sort EdgeV fit Elem |-> EdgeV]
+  and
+  FiniteMap[sort EdgeV fit S |-> EdgeV][sort NodeV fit T |-> NodeV]
+  then
+  generated type Graph ::= 
+     make_graph (nodes : FinSet[NodeV];
+                 edges : FinSet[EdgeV];
+                 source, target : FiniteMap[EdgeV,NodeV])?
+  vars n:FinSet[NodeV];
+       e:FinSet[EdgeV]; 
+       s,t:FiniteMap[EdgeV,NodeV];
+       g,g':Graph
+  . def make_graph(n,e,s,t) <=> s::e->n /\ t::e->n
+  . g=g' => nodes(g)=nodes(g') /\ edges(g)=edges(g') /\
+            source(g)=source(g') /\ target(g)=target(g')
+
+then %def
+
+  ops add_node (n:NodeV; g:Graph) : Graph =
+        make_graph(nodes(g)+n, edges(g), source(g), target(g));
+       
+      add_edge (e:EdgeV; n1,n2:NodeV; g:Graph) :? Graph =
+        make_graph(nodes(g)+n1+n2, edges(g)+e, source(g)[n1/e], target(g)[n2/e]);
+       
+      remove_node(n:NodeV; g:Graph) : Graph =
+        make_graph(nodes(g)-n,
+                   edges(g) intersection dom(source(g)--n) intersection dom(target(g)--n),
+                   source(g)--n, target(g)--n);
+      
+      remove_edge(e:EdgeV; g:Graph) : Graph =
+        make_graph(nodes(g), edges(g)-e, source(g)-e, target(g)-e)
+        
+end
+
+
