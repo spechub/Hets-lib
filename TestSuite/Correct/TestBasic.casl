@@ -137,7 +137,7 @@ spec Datatypes =
      type Data3 ::= Cons31 (sel1:?Data1; sel2:?Data2) | Cons32(sel2:?Data2; sel1:?Data1)
      type Data4 ::= Cons41 (sel1:?Data1; sel2:?Data2)? | Cons42(sel2:?Data2; sel1:?Data1)?
                     sorts Data1, Data2, Data3
-     types Tree ::= Leaf Data1 | Forest;
+     types Tree ::= Leaf (Data1) | Forest;
            Forest ::= Nil | Cons (Tree;Forest)
      free type List ::= Nil | Cons(Data1; List)
      generated type Set ::= Mt | Add(Data1; Set)
