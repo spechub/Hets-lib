@@ -11,7 +11,7 @@ from HasCASL/Set get Set
    Note that the node set may be larger than the range of these maps
    in case that there are isolated nodes. }%
 
-from HasCASL/Set get Map
+from HasCASL/Set get Map, SetRepresentation
 
 logic HasCASL
 
@@ -157,20 +157,23 @@ then
       %% as Hom N1 E1 N2 E2
 end
 
+%[ %% AbstractSetConstruction is missing, case is wrong
+
 %{ Coproducts of directed graphs, defined in terms of the corresponding
    operations on sets, acting component wise.
    Note that we have to fix N and E here, since we need 
    set representations for them
    in order to get the needed constructions on sets. }%
-%[
-spec GraphCoproducts [SetRepresentation with S |-> N] [SetRepresentation with S |-> E] =
+
+spec GraphCoproducts [SetRepresentation with S |-> N] 
+     [SetRepresentation with S |-> E] =
   AbstractSetConstructions[SetRepresentation with S |-> N]
 and
   AbstractSetConstructions[SetRepresentation with S |-> E]
 and GraphHomomorphism
 then
   ops __coproduct__ : Graph N E * Graph N E -> Graph N E;
-                
+
   forall g,g1,g2: Graph N E
   . g1 coproduct g2 = 
     let (cn,medn) = nodes g1 coproduct nodes g2
@@ -185,16 +188,20 @@ then
                                (inre x) -> inrn o (targetMap g2) x)
         inlg = (g1,inln,inle,g) as HomHom N E
         inrg = (g2,inrn,inre,g) as HomHom N E
-        medg c1 = let (h,k) = c1
-                  in (g,medn (nodeMap h,nodeMap k),mede (edgeMap h,edgemap k),cod h)
+        medg c1 = 
+          let (h,k) = c1
+          in (g,medn (nodeMap h,nodeMap k),mede (edgeMap h,edgemap k),cod h)
     in ((inlg,inrg),medg)
 end
 
-%{ Constructions on directed graphs, defined in terms of the corresponding
-   operations on sets, usually acting component wise.
-   Note that we have to fix N and E here, since we need set representations for them
-   in order to get the needed constructions on sets. }%
-spec GraphCoequalizers [SetRepresentation with S |-> N] [SetRepresentation with S |-> E] =
+%{ Constructions on directed graphs, defined in terms of the
+   corresponding operations on sets, usually acting component wise.
+   Note that we have to fix N and E here, since we need set
+   representations for them in order to get the needed constructions
+   on sets. }%
+
+spec GraphCoequalizers [SetRepresentation with S |-> N] 
+     [SetRepresentation with S |-> E] =
   AbstractSetConstructions[SetRepresentation with S |-> N]
 and
   AbstractSetConstructions[SetRepresentation with S |-> E]
@@ -234,4 +241,3 @@ then
      targetMap g1 coproduct targetMap g2)
 end
 ]%
-
