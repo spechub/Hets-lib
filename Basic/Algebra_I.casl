@@ -3,6 +3,7 @@ version 0.5
 
 %prec {__*__} < {__^ __}
 %prec {__ + __, __ - __, -__} < {__ / __}
+%prec {-__, __ - __} < {__ * __ }
 
 
 from Basic/RelationsAndOrders version 0.5 get TotalOrder, ExtTotalOrder,
@@ -369,7 +370,6 @@ and
                           forall y, z: Elem . (x = y * z => (isUnit(z) \/
                           isUnit(z))))             %(Ring_isIrred_def)%
 then
-     %prec {-__, __ - __} < {__ * __ }
 %def
      ops 
 	e: RUnit[Elem];
