@@ -48,13 +48,12 @@ then %implies
 end
 
 
-
-
 spec Relation[sort Elem] = 
      Set	
 then 
      type Relation ::= abs(rep:Set(Elem*Elem))
 end
+
 
 
 spec AlgebraOfBinaryRelations[sort Elem] =
@@ -90,21 +89,20 @@ end
 spec FullRelationAlgebra[sort Elem] = 
      { AlgebraOfBinaryRelations[sort Elem] with type Rel |-> Relation }
 end
-   
 
-  
+
+%[ obsolete:  
 view AlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl:
      BooleanAlgebraWithCompl to AlgebraOfBinaryRelations[sort Elem]
 =
      sort Elem |-> Rel 
 end
-
+]%
 
 
 view AlgebraOfBinaryRelations_as_RelationAlgebra:
      RelationAlgebra to AlgebraOfBinaryRelations[sort Elem]
 end
-
 
 
 spec JEPDBase[sort Elem] =
@@ -117,15 +115,80 @@ then
      . not r = s => rep(r) intersection rep(s) = emptySet	%(PairwiseDisjoint)%
 end
 
-
 spec GenerateRelationAlgebraModel[JEPDBase[sort Elem]] = %def
-     type GenRel = {x:Relation . exists X:Set(BaseRel) .  
+     type Rel = {x:Relation . exists X:Set(BaseRel) .  
 			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
 		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
 and
-     AlgebraOfBinaryRelations[sort Elem] with sort Rel |-> GenRel
+     AlgebraOfBinaryRelations[sort Elem] 
+end
+
+
+
+
+
+%[ Following a  variant of the specifications above. Which one is better?
+
+spec Relation[sort Elem] = 
+     Set	
+then 
+     type Relation := Set(Elem*Elem)
+end
+
+
+spec AlgebraOfBinaryRelations[sort Elem] =
+	Relation[sort Elem]
+then
+     pred DefiniensOfRel:Relation
+     type Rel = {r:Relation . DefiniensOfRel r}
+     ops
+	 0,1,id:Rel;
+         __cup__,__cap__,__cmps__:  Rel * Rel -> Rel;
+         compl__,conv__:Rel -> Rel;
+
+     forall r,s:Rel; x,y:Elem
+     . 0 = emptySet:Set(Elem*Elem)
+     . 1 = allSet:Set(Elem*Elem)
+     . r cup s = r union s
+     . r cap s = r intersection s
+     . compl(r) = 1 \\ r
+     . (x,y) isIn r cmps s <=> exists z:Elem . (x,z) isIn r /\ (z,y) isIn s 
+     . (x,y) isIn conv(r) <=> (y,x) isIn r
+     . (x,y) isIn id <=> x = y
+
+then %implies 
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;  
+         __cmps__: Rel * Rel -> Rel, assoc, unit id;
+     forall x:Rel
+     . compl(compl(x)) = x 
+     . conv(conv(x)) = x 
+end
+
+
+
+spec JEPDBase[sort Elem] =
+     Relation[sort Elem]
+then
+     pred DefiniensOfBaseRel:Relation
+     type BaseRel = {r:Relation . DefiniensOfBaseRel r}
+     forall x,y:Elem; r,s:BaseRel
+     . not r = emptySet
+     . exists r:BaseRel . (x,y) isIn r				%(JointlyExhaustive)%
+     . not r = s => r intersection s = emptySet			%(PairwiseDisjoint)%
+end
+
+
+spec GenerateRelationAlgebraModel[JEPDBase[sort Elem]] = %def
+     pred DefiniensOfRel:Relation
+     forall x:Relation
+     . DefiniensOfRel x <=> exists X:Set(BaseRel) .  
+			(forall y,z:Elem . (y,z) isIn x <=> 
+		(exists r:BaseRel . r isIn X /\ (y,z) isIn r))
+and
+     AlgebraOfBinaryRelations[sort Elem] 
 end
      
 
-spec GeneratedRelationAlgebraModel = GenerateRelationAlgebraModel[JEPDBase[sort Elem]]
-
+]%
