@@ -23,7 +23,7 @@ from Calculi/Algebra/RelationAlgebraSymbolic get
 	SetRepresentationOfRelations
 from Calculi/Algebra/RelationAlgebraModel get 
 	AlgebraOfBinaryRelations,
-	GenerateModelFromBaseRelationModel,
+	GeneratePreModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
 	Relation
 from Calculi/Time/LinearFlowOfTime get 
@@ -190,9 +190,10 @@ then %def
 end
 
 spec GeneratePreOpenDiscModelOfRCC5[MetricSpace] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
+      GeneratePreModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
 	fit sort Elem |-> OpenDisc]
-then %cons
+then %implies  
+	%% <- Mein hets hat damit kein Problem??? und %implies ist gemeint!
      ops  eqRel: Rel;
           conv: BaseRel -> BaseRel;
           conv: Rel -> Rel
@@ -201,7 +202,8 @@ end
 
 spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
      GeneratePreOpenDiscModelOfRCC5[MetricSpace]
-then %cons
+then %implies 
+	%% siehe oben
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
