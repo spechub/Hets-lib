@@ -5,49 +5,65 @@ version 0.9
 %% date: 17.09.02
 
 %left_assoc __intersection__  %[ Should go to StructuredDatatypes ]%
+%left_assoc __+__
 
-from Basic/StructuredDatatypes get List
+%prec({__isIn__, __subset__, __disjoint__,__ :: __ --> __} 
+		 < {__union__, __intersection__, __\\__, __*__, 
+		    __disjointUnion__} )%
 
+%prec {__+__} < {__*__,__div__}
+
+%%from Basic/StructuredDatatypes get List
+%%from Basic/Numbers get Nat
 
 logic HasCASL
 
-spec Nat = {} end
-
-spec InternalLogic = {}
+spec Bool = 
+  sort Bool
+  ops false, true : Bool;
 end
+
+spec Nat = 
+  sort Nat
+  ops __+__,__*__,__div__ : Nat*Nat->Nat;
+      0,1,2 : Nat
+  pred __<__ : Nat*Nat;
+end
+
+spec List = {}
+spec InternalLogic = {}
 
 spec Extensionality = {}
-end
 
 %{ Typed sets are represented by predicates over the type.
    Set membership is just holding of the predicate: x isIn s <=> s x
    Note that for disjoint unions and products, the type changes.  }%
 
-spec Set = InternalLogic and Extensionality then
+spec Set = Bool and InternalLogic and Extensionality then
   var S,T : Type
-  type Set S = Pred S
+  type Set S := S ->? Unit;
   ops emptySet : Set S;
       {__} : S -> Set S;
-      __isIn__ : Pred (S * Set(S));
+      __isIn__ : S * Set S ->? Unit;
       __subset__ :Pred( Set(S) * Set(S) );
-      __union__, __intersection__, __\\__  : Set S -> Set S -> Set S;
+      __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S -> Set T -> Set (S*T);
       __disjointUnion__ :  Set S -> Set S -> Set (S*Bool);
-      inl,inr : S -> S*Bool;
-  forall x,x':S; y:T; s,s:Set(S); t:Set(T) 
-  . not x isIn emptySet
+      injl,injr : S -> S*Bool;
+  forall x,x':S; y:T; s,s':Set S; t:Set(T) 
+  . not (x isIn emptySet)
   . x isIn {x'} <=> x=x'
   . x isIn s <=> s x
-  . s subset s' <=> (forall x:S . x isIn s => x isIn s')
-  . x isIn (s union s') <=> x isIn s \/ x isIn s'
-  . x isIn (s intersection s') <=> x isIn s /\ x isIn s'
-  . x isIn (s \\ s') <=> x isIn s /\ not x isIn s'
-  . s disjoint s' <=> s intersection s' = emptySet
-  . (x,y) isIn s * t <=> x isIn s /\ y isIn t
-  . inl x = (x,false)
-  . inr x = (x,true)
-  . s disjointUnion s' = (s * {false}) union (s' * {true})
+  . s subset s' <=> forall x:S . (x isIn s) => (x isIn s')
+  . (x isIn (s union s')) <=> ((x isIn s) \/ (x isIn s'))
+  . (x isIn (s intersection s')) <=> ((x isIn s) /\ (x isIn s'))
+  . x isIn s \\ s' <=> x isIn s /\ not (x isIn s')
+  . (s disjoint s') <=> ((s intersection s') = emptySet)
+  %% . ((x,y) isIn (s * t)) <=> ((x isIn s) /\ (y isIn t))
+  . (injl x) = (x,false)
+  . (injr x) = (x,true)
+  %%. (s disjointUnion s') = ((s * {false}) union (s' * {true}))
 end
 
 %{ Relations and partial equivalence relations (PERs) }%
@@ -57,49 +73,50 @@ then
   var S : Type
   ops reflexive, symmetric, transitive : Pred(Set(S*S))
   forall r:Set(S*S)
-  . reflexive r <=> forall x:S . r(x,x)
-  . symmetric r <=> forall x,y:S . r(x,y) => r(y,x)
-  . transitive r <=> forall x,y,z:S . r(x,y) /\ r(y,z) => r(x,y)
-  type PER S = { r : Set(S*S) . symmetric r /\ transitive r }
-  op dom : PER S -> S
-  forall x:S; r: PER S
-  . x isIn dom r <=> (x,x) isIn r  
+  . (reflexive r) <=> (forall x:S . r(x,x))
+  . (symmetric r) <=> forall x,y:S . (r(x,y)) => (r(y,x))
+  . (transitive r) <=> forall x,y,z:S . ((r(x,y)) /\ (r(y,z))) => (r(x,y))
+  type PER S := Set(S*S)
+  %% = { r : Set(S*S) . (symmetric r) /\ (transitive r) }
+  op dom : PER S -> Set S
+  %%forall x:S; r: PER S
+  %%. (x isIn (dom r)) <=> ((x,x) isIn r)
 end
 
 %{ Partial maps and endomaps }%  
 spec Map =
   Set then
   var S,T,U : Type
-  type Map S = S->?S
+  type Map S := S->?S
   ops dom : (S->?T) -> Set S;
       range : (S->?T) -> Set T; 
       image : (S->?T) -> Set S -> Set T;
       emptyMap : (S->?T);
-      __ :: __ --> __ : Pred ( S->?T * Pred(S) * Pred(T) );
+      __ :: __ --> __ : Pred ( (S->?T) * Pred(S) * Pred(T) );
       __ [__/__] : (S->?T) * S * T -> (S->?T);
       __ - __ : (S->?T) * S -> (S->?T);
-      __ intersection __, __union__ : (S->?T) * (S->?T) -> (S->?T);
       __o__ : (T->?U) * (S->?T) -> (S->?U);
-      __||__ : (S->?T) -> Set S -> (S->?T);
+      __||__ : (S->?T) * Set S -> (S->?T);
+      undef__ : S ->?T;
       ker : (S->?T) -> Pred (S*S);
       injective : Pred(S->?T)
   forall f,g:S->?T; h:T->?U; s,s':Set S; t:Set T; x,x':S; y:T
-  . x isIn dom f <=> def f x
+  . x isIn dom f <=> def (f x)
   . y isIn range f <=> exists x:S . f x = y
   . y isIn image f s <=> exists x:S . x isIn s /\ f x = y
-  . not def emptyMap x
+  . not def (emptyMap x)
   . f :: s --> t <=> (forall x:S . x isIn s => f x isIn t) 
-  . f[x/y] x' = if x=x' then y else f x
-  . (f - x) x' = if x=x' then undef() else f x
-  . f intersection g x = if f x = g x then f x else undef()
-  . def f union g <=> (forall x:S. def f x /\ def g x => f x = g x)
-  . def f union g => f union g x = if def f x  then f x else g x
+  . f[x/y] x' = if x=x' then y else (f x)
+  . (f - x) x' = if x=x' then undef() else (f x)
+  . (s intersection s') x = if s x = s' x then s x else undef()
+  . def (s union s') <=> (forall x:S. def (s x) /\ def (s' x) => s x = s' x)
+  . def (s union s') => (s union s') x = if def (s x) then s x else (s' x)
   . (h o g) x = h(g(x))
   . (f || s) x = if x isIn s then f x else undef()
   %% the kernel is a PER with same domain as the function, hence the existential equation
   . (x,x') isIn ker f <=> f x =e= f x'
   %% injectivity only for values in the domain, hence the existential equation
-  . injective f <=> (forall x,y:s . f x =e= f y => x=y)
+  . injective f <=> (forall x,y:S . f x =e= f y => x=y)
 end
 
 %{ If we want to iterate the constructions product, disjoint union
@@ -111,7 +128,7 @@ end
    The following specification states the abstract requirement that
    such representations exists for a given type S. }%
 spec SetRepresentation =
-  Map
+  Map and Relation
 then
   type S;
   ops pair : S*S->S;   %% represent S*S in S
@@ -122,14 +139,14 @@ then
   . injective pair
   . injective inl
   . injective inr
-  . (range inl) disjoint (range inr)
+  . (range inl) disjoint (range inr);
   forall r:PER S
   . ker (coeq r) = r 
 end
 
 %{ Some sample set representation for the natural numbers ... }%
 spec Nat_SetRepresentation =
-  Map and Nat
+  Map and Nat and Relation
 then
   ops pair : Nat*Nat->Nat;   
       inl,inr : Nat->Nat; 
@@ -150,7 +167,6 @@ end
 view v : SetRepresentation to Nat_SetRepresentation = S |-> Nat
 end
 
-
 %{ Given a set representation, we now can define products, coproducts,
    coequalizers and pushouts, while staying within the same type of sets.
    Note that __*__ is now overloaded: for two given S-sets,
@@ -158,8 +174,8 @@ end
    Set above, or an S-Set, as defined here.
    We also specify the mediating morphisms that exist by the
    respective (co)universal properties of the constructions. }%
-spec AbstractSetConstructions[SetRepresentation] given Map = %%def 
-ops __*__,__coproduct__ : Set S * Set S -> Set S;
+spec AbstractSetConstructions[SetRepresentation] given Map = %def
+  ops __*__,__coproduct__ : Set S * Set S -> Set S;
       %% the mediating morphisms for (co)products depend on two morphisms
       %% going into the factors (out of the summands)
       <__! __>, [__! __] : Map S -> Map S -> Map S;
@@ -187,7 +203,7 @@ ops __*__,__coproduct__ : Set S * Set S -> Set S;
   . right (inr x) = x
   . factor r = range (coeq r)
   . f :: dom r --> t /\ ker f subset r => mediate r f (coeq x) = f x 
-then %%implies
+then %implies
   . pi1 :: s1 * s2 --> s1 
   . pi2 :: s1 * s2 --> s2  
   . inl :: s1 --> s1 coproduct s2  
@@ -204,7 +220,7 @@ then %%implies
   . f :: dom r --> t /\ ker f subset r => 
     mediate r f :: (factor r) --> t /\ 
     mediate r f o coeq r || dom r = f || dom r
-then %%def
+then %def
   var S : Type
   %% pushout mediators
   %% the mediating morphism for pushouts depends on a cocone,
@@ -222,26 +238,29 @@ then %%def
   . f copoduct g = [inl o f ! inr o g]
   . def pushout (s1,f,s2,g,s3) <=> f :: s1 --> s2 /\ g :: s1 --> s3
   %% pushouts are coequalizers of coproducts
-  %[. def pushout (s1,f,s2,g,s3) =>
+  . def pushout (s1,f,s2,g,s3) =>
     pushout (s1,f,s2,g,s3) = 
-          %% first take the coproduct ...
+          %[ first take the coproduct ... ]%
       let s = s2 coproduct s3;
-          %% r is the PER identifying those elements of s coming from elements of s1
-          %% r = \(x,y) : S*S . exists z:S . z isIn s1 /\ inl (f z) =x /\ inr (g z) = y
-          %%    as PER S
-          %% ... and then the coequalizer
+          %[ r is the PER identifying those elements of s coming from
+   elements of s1 ]%
+          r = \(x,y:S) . exists z:S . z isIn s1 /\ inl (f z) =x /\ inr (g z) = y
+              as PER S
+          %[ ... and then the coequalizer ]%
           q = coeq r
       in
-      %% the pushout object is the quotient, the cocone is the composition of the cocones
+      %[ the pushout object is the quotient, the cocone is the
+   composition of the cocones ]%
       (factor r,q o inl,q o inr,
-      %% the mediator first takes the coproduct mediator [h!k]
-      %% and then the coequalizer mediator (mediate r [h!k])
-       \(d,h,k):Med (Set S) (S->?S) . 
+      %[ the mediator first takes the coproduct mediator [h!k]
+      %% and then the coequalizer mediator (mediate r [h!k]) ]%
+       \(d,h,k:Med) (Set S) (S->?S) . 
          if h :: s2 --> d /\ k :: s3 --> d /\
             h o f || s1 = k o g || s1
             then mediate r [h!k] else undef())
 then %implies
   %% pushout properties
+ {}
 end
 
 
@@ -253,10 +272,10 @@ spec DirectedGraph =
   Set
 then
   var N,E : Type
-  type Graph N E = {(n,source,target):Set N * E->?N * E->?N  .
+  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
                       dom source=dom target 
-                      /\ source :: dom source --> n 
-                      /\ target :: dom target --> n }
+                      /\ (source : dom source --> n)
+                      /\ (target : dom target --> n) }
 end
 
 %{ Some useful operations on directed graphs. }%
@@ -265,10 +284,10 @@ spec RichDirectedGraph =
   DirectedGraph
 then %def
   var N,E : Type
-  ops emptyGraph : Graph N E
-      nodes : Graph N E -> Set N
-      edges : Graph N E -> Set E
-      sourceMap, targetMap : Graph N E -> (E->?N)
+  ops emptyGraph : Graph N E;
+      nodes : Graph N E -> Set N;
+      edges : Graph N E -> Set E;
+      sourceMap, targetMap : Graph N E -> (E->?N);
       addNode,removeNode : N -> Graph N E -> Graph N E;
       addEdge : E * N * N -> Graph N E -> Graph N E;
       removeEdge : E -> Graph N E -> Graph N E;
@@ -317,7 +336,7 @@ then %def
                     /\ targetMap e3 g = targetMap e2 g      %(transitive_def)%
 
   . loopFree g <=>
-    not (exists e:E /\ e isIn edges g /\ sourceMap e g = targetMap e g)
+    not (exists e:E . e isIn edges g /\ sourceMap e g = targetMap e g)
                                                               %(loopFree_def)%
 
   . g1 subgraph g2 <=>
@@ -356,7 +375,7 @@ spec SimpleGraph =
 then
   type SimpleGraph N E = {(nn,source,target):Graph N E .
                           forall e1,e2:E . source e1 = source e2
-                                          /\ target e1 = target e2 => e1=e2  
+                                          /\ target e1 = target e2 => e1=e2 }
   type LoopFreeGraph N E = {g:Graph N E . loopFree g}
 end
 
@@ -375,7 +394,7 @@ then
   ops dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
       cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
       nodeMap : Hom N1 E1 N2 E2 -> (N1->?N2);
-      edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2)
+      edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
       __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
   forall g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
          h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
@@ -416,11 +435,11 @@ then
 
   forall g,g1,g2: Graph N E; h1,h2:HomHom N E; r:Relation N E
 
-  . (g,rn,re) in Congruence
+  . ((g,rn,re) in Congruence)
     => graph ((g,rn,re) as Congruence) = g
-  . (g,rn,re) in Congruence
+  . ((g,rn,re) in Congruence)
     => nodeRel ((g,rn,re) as Congruence) = rn
-  . (g,rn,re) in Congruence
+  . ((g,rn,re) in Congruence)
     => edgeRel ((g,rn,re) as Congruence) = re
 
   . factor c =
@@ -448,19 +467,17 @@ then
     in    
     ((cod h1,ninl,einl,pgraph) as HomHom N E,
      (cod h2,ninr,einr,pgraph) as HomHom N E,
-     \(g,h,k):Graph N E* HomHom N E * HomHom N E .
+     \(g:Graph N E, h:HomHom N E, k:HomHom N E) .
       (pgraph,
        nmed (nodeMap h,nodeMap k),
        emed (edgeMap h,edgemap k),
        g  ) as HomHom N E  )
-]%
-
 end
   
 
 
 %% still first order !!!!!
-
+%[
 spec SymmetricClosure[sort NodeLabel][sort EdgeLabel] =
   RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
@@ -471,7 +488,6 @@ then
       (e::n1-->n2 isIn g \/ e::n2-->n1 isIn g)           %(sc_def_2)%
 end
 
-
 spec TransitiveClosure[sort NodeLabel][sort EdgeLabel] =
   RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
 and
@@ -479,8 +495,6 @@ and
 and
   SymmetricClosure[sort NodeLabel][sort List[EdgeLabel]]
   with Graph |-> PathGraph
-
-%[
 then
   ops tc,stc : Graph -> PathGraph
   preds __pathSubgraphOf__ : Graph * PathGraph;
@@ -510,8 +524,8 @@ and
   GraphHomomorphism[sort N1][sort E1][sort N2][sort List[E2]]
   with Graph2 |-> PathGraph 
 then
-  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           %(minorOf_def)%
-    exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)
+  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           
+    exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)     %(minorOf_def)%
 end
 
 spec K5 =
@@ -552,4 +566,5 @@ then
                                                         %(planar_def)%
 end
 
+%%
 ]%
