@@ -1,4 +1,4 @@
-library Basic/Number
+library Basic/Numbers
 version 0.7
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% date: 23.3.01
@@ -41,6 +41,7 @@ spec Nat =
 %%   Operations to represent natural numbers with digits:
            1,2,3,4,5,6,7,8,9: Nat;
            __ @@ __ :         Nat * Nat -> Nat 
+
      
      forall m,n,r,s: Nat
 
@@ -99,6 +100,7 @@ spec Nat =
      . 9 = suc (8)                      %(Nat_9_def)%
      . m @@ n = (m * suc(9)) + n        %(Nat_decimal_def)%
 
+
 then %def
      sort Pos = { p: Nat . p > 0 }
      op    1: Pos = suc(0);             %(Nat_1_as_Pos_def)%
@@ -125,10 +127,12 @@ end
 
 spec Int =
      Nat 
+
 then %def
      generated type Int ::= __ - __(Nat;Nat)
      forall a,b,c,d: Nat
      .  a - b = c - d <=> a + d = c + b    %(Int_equality)%
+
 then
      sort  Nat < Int	
      forall a: Nat
@@ -192,7 +196,8 @@ then
 				
 then %implies
 
-     generated type Int::= Nat | -__ (Nat)
+ %[ this is not legal, since -__:Nat->Int is not in the signature!
+    generated type Int::= Nat | -__ (Nat) ]%
 
      forall m,n,r: Int; a,b: Nat
      . def(a -? b) => a -? b = a - b                %(Int_Nat_sub_compat)%
@@ -273,4 +278,3 @@ then %implies
 
      . (i / p) / (j / q) = 
        (i / p) * (q / j) if not j=0     %(Rat_divide_rule)%
-
