@@ -136,9 +136,9 @@ spec Hiding =
 and ActionRelabelling
 then
   op __-__ : State * Set [Label] -> State 
-  forall a : Act; s : State; L : Set [Label]
-  . next (a, s - L) = {} when (a as Label) isIn L = True 
-    else next (a, s) 
+  forall l : Label; s : State; L : Set [Label]
+  . next (l, s - L) = {} when l isIn L = True else next (l, s) 
+  . next (tau, s - L) = next (tau, s) 
 end
 
 spec Relabelling = 
@@ -164,7 +164,7 @@ then
   forall a:Act; env,env':Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
          set : Set[Label]; f : Relabelling
  
-  . variant(X,env,env') <=> forall Y:AgentVariable . not X=Y => lookup(X,env)=lookup(Y,env')
+  . variant(X,env,env') <=> forall Y:AgentVariable . not X=Y => lookup(Y,env)=lookup(Y,env')
 
   . prefixedVars(C)
   . not prefixedVars(X)
@@ -195,7 +195,7 @@ then
   . {{E-set}}env = {{E}}env - set
   . {{rel(E,f)}}env = rel({{E}}env,f)
   . isWeaklyGuarded(E) /\ variant(X,env,env') =>
-    {{X}}env={{E}}env => {{X}}env' = {{fix(X,E)}}env'
+    {{X}}env={{E}}env => {{X}}env = {{fix(X,E)}}env'
   . not isWeaklyGuarded(E) => not def {{fix(X,E)}}env
 
 then %implies
