@@ -1,0 +1,237 @@
+library FlipFlop_FO
+version 0.1
+%author: T. Soller
+%date: 18-11-04
+%%Calculi Flip-Flop and Extension -- First order theory
+
+
+
+spec FlipFlop_FO = 
+
+sort Point
+
+%% some ternary relations in infix notation
+
+preds
+	__ __so__ : Point * Point * Point; %(referent same as origin)%
+	__ __sr__ : Point * Point * Point; %(referent same as relatum)%
+	__ __bo__ : Point * Point * Point; %(referent behind origin)%
+	__ __fr__ : Point * Point * Point; %(referent front)%
+	__ __ba__ : Point * Point * Point; %(referent back)%
+	__ __ri__ : Point * Point * Point; %(referent right)%
+	__ __le__ : Point * Point * Point  %(referent left)%
+
+then %def
+
+forall x,y,z : Point
+
+. x y so z <=> (x = z) /\ not (x = y)
+. x y sr z <=> (y = z) /\ not (x = y)
+
+
+then %implies
+
+forall x,y,z,w : Point
+
+%% transformations (generalize the converses of binary relations)
+
+. x y so z <=> y x sr z
+. x y so z <=> y z sr x 
+. x y so z <=> z y so x
+
+. x y sr z <=> y x so z
+. x y sr z <=> x z sr y
+. x y sr z <=> z x so y
+
+. x y ri z <=> y x le z
+. x y ri z <=> x z le y
+. x y ri z <=> y z ri x 
+. x y ri z <=> z x ri y
+. x y ri z <=> z y le x
+
+. x y le z <=> y x ri z
+. x y le z <=> x z ri y
+. x y le z <=> y z le x 
+. x y le z <=> z x le y
+. x y le z <=> z y ri x
+
+. x y ba z <=> y x bo z
+. x y ba z <=> x z fr y
+. x y ba z <=> y z bo x 
+. x y ba z <=> z x fr y
+. x y ba z <=> z y ba x
+
+. x y fr z <=> y x fr z
+. x y fr z <=> x z ba y
+. x y fr z <=> y z ba x 
+. x y fr z <=> z x bo y
+. x y fr z <=> z y bo x
+
+. x y bo z <=> y x ba z
+. x y bo z <=> x z bo y
+. x y bo z <=> y z fr x 
+. x y bo z <=> z x ba y
+. x y bo z <=> z y fr x
+
+
+%% composition:  x y R1 w /\ w y R2 z => x y R3 z
+
+. x y ri w /\ w y ri z => x y ri z \/ x y le z \/ x y ba z
+. x y ri w /\ w y le z => x y ri z \/ x y le z \/ x y fr z \/ x y bo z \/ 
+			   x y so z
+. x y ri w /\ w y ba z => x y le z
+. x y ri w /\ w y fr z => x y ri z
+. x y ri w /\ w y bo z => x y ri z
+. x y ri w /\ w y so z => x y ri z 
+. x y ri w /\ w y sr z => x y sr z
+
+. x y le w /\ w y ri z => x y ri z \/ x y le z \/ x y fr z \/ x y bo z \/ 
+			   x y so z
+. x y le w /\ w y le z => x y ri z \/ x y le z \/ x y ba z
+. x y le w /\ w y ba z => x y ri z
+. x y le w /\ w y fr z => x y le z
+. x y le w /\ w y bo z => x y le z
+. x y le w /\ w y so z => x y le z
+. x y le w /\ w y sr z => x y sr z
+
+. x y ba w /\ w y ri z => x y le z
+. x y ba w /\ w y le z => x y ri z
+. x y ba w /\ w y ba z => x y fr z \/ x y bo z \/ x y so z
+. x y ba w /\ w y fr z => x y ba z
+. x y ba w /\ w y bo z => x y ba z
+. x y ba w /\ w y so z => x y ba z
+. x y ba w /\ w y sr z => x y sr z
+
+. x y fr w /\ w y ri z => x y ri z
+. x y fr w /\ w y le z => x y le z
+. x y fr w /\ w y ba z => x y ba z
+. x y fr w /\ w y fr z => x y fr z
+. x y fr w /\ w y bo z => x y fr z \/ x y bo z \/ x y so z
+. x y fr w /\ w y so z => x y fr z
+. x y fr w /\ w y sr z => x y sr z
+
+. x y bo w /\ w y ri z => x y ri z
+. x y bo w /\ w y le z => x y le z
+. x y bo w /\ w y ba z => x y ba z
+. x y bo w /\ w y fr z => x y fr z \/ x y bo z \/ x y so z
+. x y bo w /\ w y bo z => x y bo z
+. x y bo w /\ w y so z => x y bo z
+. x y bo w /\ w y sr z => x y sr z
+
+. x y so w /\ w y ri z => x y ri z
+. x y so w /\ w y le z => x y le z
+. x y so w /\ w y ba z => x y ba z
+. x y so w /\ w y fr z => x y fr z
+. x y so w /\ w y bo z => x y bo z
+. x y so w /\ w y so z => x y so z
+. x y so w /\ w y sr z => x y sr z
+
+. x y sr w /\ w y ri z => false
+. x y sr w /\ w y le z => false
+. x y sr w /\ w y ba z => false
+. x y sr w /\ w y fr z => false
+. x y sr w /\ w y bo z => false
+. x y sr w /\ w y so z => false
+. x y sr w /\ w y sr z => false
+
+
+end
+
+
+
+spec FlipFlopExt_FO =
+
+     FlipFlop_FO
+
+then
+
+%% additional base relations
+
+preds
+	__ __tri__ : Point * Point * Point; %(origin=relatum=referent)%
+	__ __dou__ : Point * Point * Point; %(origin=relatum, referent diff.)%
+
+then %def
+
+forall x,y,z : Point
+
+. x y tri z <=> (x = y) /\ (y = z)
+. x y dou z <=> (x = y) /\ not (y = z)
+
+
+then %implies
+
+forall x,y,z,w : Point
+
+%% 'reflexive'
+
+. x x tri x
+
+
+%% additional transformations
+
+. x y tri z <=> y x tri z
+. x y tri z <=> x z tri y
+. x y tri z <=> y z tri x
+. x y tri z <=> z x tri y
+. x y tri z <=> z y tri x
+
+. x y dou z <=> y x dou z
+. x y dou z <=> x z so y
+. x y dou z <=> y z so x
+. x y dou z <=> z x sr y
+. x y dou z <=> z y sr x
+
+. x y so z <=> x z dou y
+. x y so z <=> z x dou y
+
+. x y sr z <=> y z dou x 
+. x y sr z <=> z y dou x
+
+
+%% additional compositions
+
+. x y ri w /\ w y dou z => false
+. x y ri w /\ w y tri z => false
+
+. x y le w /\ w y dou z => false
+. x y le w /\ w y tri z => false
+
+. x y ba w /\ w y dou z => false
+. x y ba w /\ w y tri z => false
+
+. x y fr w /\ w y dou z => false
+. x y fr w /\ w y tri z => false
+
+. x y bo w /\ w y dou z => false
+. x y bo w /\ w y tri z => false
+
+. x y so w /\ w y dou z => false
+. x y so w /\ w y tri z => false
+
+. x y sr w /\ w y dou z => x y ri z \/ x y le z \/ x y ba z \/ x y fr z \/ 
+			    x y bo z \/ x y so z 
+. x y sr w /\ w y tri z => x y sr z
+
+. x y dou w /\ w y ri z => x y ri z
+. x y dou w /\ w y le z => x y ri z
+. x y dou w /\ w y ba z => x y ri z
+. x y dou w /\ w y fr z => x y le z
+. x y dou w /\ w y bo z => x y le z
+. x y dou w /\ w y so z => x y le z
+. x y dou w /\ w y sr z => x y sr z
+. x y dou w /\ w y dou z => false
+. x y dou w /\ w y tri z => false
+
+. x y tri w /\ w y ri z => false
+. x y tri w /\ w y le z => false
+. x y tri w /\ w y ba z => false
+. x y tri w /\ w y fr z => false
+. x y tri w /\ w y bo z => false
+. x y tri w /\ w y so z => false
+. x y tri w /\ w y sr z => false
+. x y tri w /\ w y dou z => x y dou z
+. x y tri w /\ w y tri z => x y tri z
+
+
+end
