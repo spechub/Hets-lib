@@ -61,7 +61,7 @@ then
 	
      forall a: Elem; p: Poly[Elem]; x: Space
      . eval(0,x) = 0				%(eval_0_EAlgebra)%
-     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_cons_EAlgebra)%
+     . eval(a:::p, x) = a * e + eval(p,x) * x	%(eval_cons_EAlgebra)%
 end
 
 spec ExtFreeAlgebra [Field] given Int=
@@ -71,7 +71,7 @@ end
 view Algebra_in_Matrix [Field][op n: Pos] given Nat:
      Algebra [Field] to Matrix [Field][op n: Pos]=
      sort Space |-> Matrix[Elem,n],
-     op e |-> 1
+     op e: Space |-> 1
 end
 
 spec RichAlgebra [Field]=
@@ -103,6 +103,3 @@ view FreeAlgebra_in_Polynomial [Field] given Int:
      FreeAlgebra[Field] to Polynomial [Field]=
      sort Space |-> Poly[Elem]
 end
-
-
-
