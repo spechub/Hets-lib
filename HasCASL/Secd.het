@@ -152,7 +152,7 @@ forall e : Env; x: Variable; c: Clos; t: Term
         real (Clos (subst (real c) x t)(remove x e))
 type Clos = {c: TermEnv. def(real c)}
 
-spec Dump = Closure and List and Recursion then 
+spec Dump = Closure and {List with [], __::__} and Recursion then 
 free type ExtTerm ::= Aps | type Term 
 type Control := List ExtTerm    %% synonyms                  
 type Stack := List Clos              
