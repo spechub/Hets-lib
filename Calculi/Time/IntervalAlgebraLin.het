@@ -8,28 +8,49 @@ version 0.1
 %prec {__cup__} < {__cmps__}
 
 %( 
-	The Interval Algebra for linear flows of time 
-     
+	The Interval Algebra for Linear Flows of Time 
+  
+Literature: TODO   
 )%
 
 
 from Calculi/Algebra/RelationAlgebra get 
 	AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
-	SetRepresentationOfRelations,
-	RelationBase,
+	CompositionTable,
      	GenerateRelationAlgebra,
-	CompositionTable
+	RelationBase,
+	SetRepresentationOfRelations
 from Calculi/Algebra/RelationAlgebraModel get 
+	AlgebraOfBinaryRelations,
+	GenerateModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	AlgebraOfBinaryRelations
+	Relation
 from Calculi/Time/LinearFlowOfTime get 
-	LinFlowOfTime,
-	DnsLinFlowOfTimeSEnd
+	DnsLinFlowOfTimeSEnd,
+	LinFlowOfTime
+from Calculi/Time/FlowOfTime get 
+	ExtFlowOfTimeByConvexity,
+	ExtFlowOfTimeBySetRelations
 
 
-%(
-     The Interval Algebra for linear flows of time has 13 base relations,
+
+
+%(  Part I: Symbolic Level
+
+    We start by describing the symbolic level of the interval algebra of linear time (abbrev. by IAlin),
+    i.e., the set of base relations and the composition table. Arbitrary relations of IAlin are
+    represented as sets of base relations. In turn base relations are
+    identified with their respective singleton sets. The spec RelationBaseOfIntervalAlgebraLin builds 
+    this set of all relations, which is obviously an atomic boolean algebra. Via the composition table we then 
+    define a relation algebra on the set of all relations. This provides us with a specification of IAlin, 
+    namely spec IntervalAlgebraLin.
+)%
+
+
+
+
+%(   The Interval Algebra for linear flows of time has 13 base relations,
      namely, b ("before"), m ("meets"), o ("overlaps"),
      d ("during"), s ("starts"), f ("finishes"), e ("equals"),
      and the inverses of b, m, o, d, s, and f (denoted by bi, mi, oi, di, 
@@ -45,16 +66,10 @@ end
 
 
 
-
-%(  Part I Symbolic 
-    We start by describing the symbolic level of the relation algebra 
+%(   We following spec not only contains the raw composition table of IAlin, but also
+     information that the 1 is the union of all base relations, and that the set of base relations is
+     closed with respect to converses.
 )%
-
-
-
-%( The Composition Table
-)%
-
 
 
 spec CompositionTableOfIntervalAlgebraLin =
@@ -268,7 +283,7 @@ end
 spec RelationBaseOfIntervalAlgebraLin = %mono 
      SetRepresentationOfRelations[BaseRelationsOfIntervalAlgebraLin]
 and
-     CompositionTableOfIntervalAlgebraLin %% to be done with  ops < |-> pre, > |-> suc, i |-> id
+     CompositionTableOfIntervalAlgebraLin 
 end 
 
 
@@ -300,37 +315,54 @@ end
 
 
 
-logic HasCASL
 
-%( Part II
-    This library defines the model classes for the relation algebras defined previously
+
+%(  Part II: Semantic Level
+
+    Following we describe how models of IAlin can be constructed from Dedekind complete, dense 
+    linear flows of time without endpoints. We describe two distinct methods: (1) via Allen intervals and 
+    (2) via arbitrary convex subsets.
 )%
 
 
-from Calculi/Algebra/RelationAlgebraModel get Relation,
-	GenerateModelFromBaseRelationModel
-
-
 logic HasCASL
 
 
-spec BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime] = %def 
-     Relation[sort Instant] %% 
-then 
+spec BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime] = %def 
+
+     type AllenInterval = {(t,t'):Instant*Instant . t pre t'}
+     ops start,fin : AllenInterval -> Instant
+
+     forall x:AllenInterval; t,t':Instant 
+     . x = (t,t') => start(x) = t /\ fin(x) = t' 
+
+then %def
+     Relation[sort AllenInterval] 
+
+then %def
      ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation 
      type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel | 
 			biRel | miRel | oiRel | diRel | siRel | fiRel
-     forall x,y:Instant
-     . (x,y) isIn rep(bRel) <=> x pre y
-     . (x,y) isIn rep(mRel) <=> x = y
-     . (x,y) isIn rep(oRel) <=> y pre x
-    %%% unvollstaendig
+     forall x,y:AllenInterval
+     . (x,y) isIn rep(bRel) <=> fin(x) pre start(y)
+     . (x,y) isIn rep(mRel) <=> fin(x) = start(y)
+     . (x,y) isIn rep(oRel) <=> start(x) pre start(y) /\ start(y) pre fin(x) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(dRel) <=> start(y) pre start(x) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(sRel) <=> start(x) = start(y) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(fRel) <=> start(y) pre start(x) /\ fin(x) = fin(y)
+     . (x,y) isIn rep(eRel) <=> start(x) = start(y) /\ fin(x) = fin(y)
+     . (x,y) isIn rep(biRel) <=> fin(y) pre start(x)
+     . (x,y) isIn rep(miRel) <=> start(x) = fin(y) 
+     . (x,y) isIn rep(oiRel) <=> start(y) pre start(x) /\ start(x) pre fin(y) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(diRel) <=> start(x) pre start(y) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(siRel) <=> start(y) = start(x) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(fiRel) <=> start(x) pre start(y) /\ fin(x) = fin(y)
 end
 
 
-spec GeneratePreModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime]
-	fit sort Elem |-> Instant]
+spec GeneratePreAllenModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
+      GenerateModelFromBaseRelationModel[BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime]
+	fit sort Elem |-> AllenInterval]
 then %implies
      ops  eRel: Rel;
           conv: BaseRel -> BaseRel;
@@ -338,8 +370,61 @@ then %implies
 end
 
 
-spec GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd] = %def
-     GeneratePreModelOfIntervalAlgebraLin[LinFlowOfTime]
+spec GenerateAllenModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd] = %def
+     GeneratePreAllenModelOfIntervalAlgebraLin[LinFlowOfTime]
+then %implies     
+     op  __cmps__:  Rel * Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
+end
+
+
+
+spec BaseRelationConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime] =  
+     ExtFlowOfTimeByConvexity[LinFlowOfTime]
+and
+     ExtFlowOfTimeBySetRelations[LinFlowOfTime]
+then %def
+     type ConvexSetInterval = 
+	{X:Set(Instant) . Convex(X) /\ not X = emptySet
+		/\ (exists t,t':Instant . not t = t'/\ t isIn X /\ t' isIn X)}
+
+then %def
+     Relation[sort ConvexSetInterval] 
+
+then %def
+     ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation 
+     type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel | 
+			biRel | miRel | oiRel | diRel | siRel | fiRel
+     forall x,y:ConvexSetInterval
+     . (x,y) isIn rep(bRel) <=> exists z:ConvexSetInterval . x preE z /\ z preE y
+%(     . (x,y) isIn rep(mRel) <=> fin(x) = start(y)
+     . (x,y) isIn rep(oRel) <=> start(x) pre start(y) /\ start(y) pre fin(x) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(dRel) <=> start(y) pre start(x) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(sRel) <=> start(x) = start(y) /\ fin(x) pre fin(y)
+     . (x,y) isIn rep(fRel) <=> start(y) pre start(x) /\ fin(x) = fin(y)
+     . (x,y) isIn rep(eRel) <=> start(x) = start(y) /\ fin(x) = fin(y)
+     . (x,y) isIn rep(biRel) <=> fin(y) pre start(x)
+     . (x,y) isIn rep(miRel) <=> start(x) = fin(y) 
+     . (x,y) isIn rep(oiRel) <=> start(y) pre start(x) /\ start(x) pre fin(y) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(diRel) <=> start(x) pre start(y) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(siRel) <=> start(y) = start(x) /\ fin(y) pre fin(x)
+     . (x,y) isIn rep(fiRel) <=> start(x) pre start(y) /\ fin(x) = fin(y)
+)%
+end
+
+
+spec GeneratePreConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
+      GenerateModelFromBaseRelationModel[BaseRelationConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime]
+	fit sort Elem |-> ConvexSetInterval]
+then %implies
+     ops  eRel: Rel;
+          conv: BaseRel -> BaseRel;
+          conv: Rel -> Rel
+end
+
+
+spec GenerateConvexSetModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd] = %def
+     GeneratePreConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime]
 then %implies     
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
@@ -349,32 +434,62 @@ end
 
 
 
-%( Part III: Views
+%(  Part III: Views
 )%
 
 
-view BaseRelationModelOfIntervalAlgebraLin_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort Instant] 
+view BaseRelationAllenModelOfIntervalAlgebraLin_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort AllenInterval] 
 to 
-     BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime]
+     BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime]
 end
 
 
 view DsnLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
     AlgebraOfBinaryRelations[sort Elem] 
 to 
-    GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+    GenerateAllenModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
 =
-    sort Elem |-> Instant , op id |-> eRel 
+    sort Elem |-> AllenInterval , op id |-> eRel 
 end
 
 
 
-view DsnLinFlowOfTimeSEnd_induces_ModelOfIntervalAlgebraLin :
+view DsnLinFlowOfTimeSEnd_induces_AllenModelOfIntervalAlgebraLin :
      { IntervalAlgebraLin hide ops __+__,__-__,{},{__}    %% <- Das muss man verbessern, 
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } %%    weil wir dann zu viel Theorie verlieren
 to 
-    GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+    GenerateAllenModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+=   
+    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
+	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel
+end
+
+
+
+
+view BaseRelationConvexSetModelOfIntervalAlgebraLin_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort ConvexSetInterval] 
+to 
+     BaseRelationConvexSetModelOfIntervalAlgebraLin[LinFlowOfTime]
+end
+
+
+view DsnLinFlowOfTimeSEnd_induces_ConvexSetAlgebraOfBinaryRelations :
+    AlgebraOfBinaryRelations[sort Elem] 
+to 
+    GenerateConvexSetModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+=
+    sort Elem |-> ConvexSetInterval , op id |-> eRel 
+end
+
+
+
+view DsnLinFlowOfTimeSEnd_induces_ConvexSetModelOfIntervalAlgebraLin :
+     { IntervalAlgebraLin hide ops __+__,__-__,{},{__}    %% <- Das muss man verbessern, 
+	hide preds __eps__,__isSubsetOf__,isNonEmpty } %%    weil wir dann zu viel Theorie verlieren
+to 
+    GenerateConvexSetModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
 =   
     ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
 	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel
