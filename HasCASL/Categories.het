@@ -28,9 +28,9 @@ spec Functor =
 then
   type Functor = {(fob,fmor) : (Ob -> Ob') * (Mor -> Mor') . 
                        forall a:Ob . fmor(id(a))=id(fob(a))
-                    /\ forall f:Mor . fmor f:: fob(dom f) --> fob(cod f)
-                    /\ forall f,g:Mor . def (f o g) =>
-                               fmor(f o g) = fmor f o fmor g }
+                    /\ (forall f:Mor . fmor f:: fob(dom f) --> fob(cod f))
+                    /\ (forall f,g:Mor . def (f o g) =>
+                               fmor(f o g) = fmor f o fmor g) }
 end
 
 spec Shape =
