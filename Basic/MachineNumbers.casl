@@ -26,15 +26,15 @@ operations (inherited from TotalOrder). }%
 from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 from Basic/Numbers get Nat, Int
 
-spec CARDINAL [op Wordlength: Nat] given Nat = %mono
+spec CARDINAL [op WordLength: Nat] given Nat = %mono
   Nat
 then %mono
   %% Define CARDINAL to be isomorphic to the subset 
-  %% 0.. 2^Wordlength-1 of Nat
+  %% 0.. 2^WordLength-1 of Nat
   %% using a partial constructor natToCard
   type CARDINAL ::= natToCard (cardToNat : Nat)?
   forall x : Nat; c:CARDINAL
-  . def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1           %(natToCard_dom)%
+  . def natToCard(x) <=> x <= (2 ^ WordLength) -? 1           %(natToCard_dom)%
   . natToCard (cardToNat(c)) = c                              %(natToCard_def)%
 then %def
   %% The predicates and operations are just inherited from Nat, 
@@ -52,7 +52,7 @@ then %def
       __ div __,
       __ mod __ : CARDINAL * CARDINAL ->? CARDINAL;
 
-  . maxCardinal = (2 ^ Wordlength) -? 1                  %(maxCardinal_Nat)%
+  . maxCardinal = (2 ^ WordLength) -? 1                  %(maxCardinal_Nat)%
   . maxCardinal = natToCard(maxCardinal)            %(maxCardinal_CARDINAL)%   
   forall x,y: CARDINAL
   . natToCard(0) = 0                                      %(def_0_CARDINAL)%
@@ -77,17 +77,17 @@ then %implies
   . def x mod y <=> not y=0                                %(mod_CARDINAL_dom)%
 end
 
-spec INTEGER  [op Wordlength: Nat] given Nat = %mono
+spec INTEGER  [op WordLength: Nat] given Nat = %mono
   Int
 then %mono
   %% Define INTEGER to be isomorphic to the subset 
-  %% -2^(Wordlength-1)..2^(Wordlength-1)-1 of Int
+  %% -2^(WordLength-1)..2^(WordLength-1)-1 of Int
   %% using a partial constructor intToInteger
   type INTEGER ::= intToInteger (integerToInt: Int)?
   forall x:Int; i:INTEGER
   . def intToInteger(x) <=>
-        - (2 ^ (Wordlength-?1)) <= x /\
-        x <= (2 ^ (Wordlength-?1)) -1             %(intToInteger_dom)%
+        - (2 ^ (WordLength-?1)) <= x /\
+        x <= (2 ^ (WordLength-?1)) -1             %(intToInteger_dom)%
   . intToInteger (integerToInt(i)) = i            %(intToInteger_def)%
 then %def
   %% The predicates and operations are just inherited from Int, 
@@ -112,8 +112,8 @@ then %def
       __ quot __,
       __ rem__:   INTEGER * INTEGER ->? INTEGER
 
-  . maxInteger= (2 ^ (Wordlength-?1))-1                      %(maxInteger_Int)%
-  . minInteger= -(2 ^ (Wordlength-?1))                       %(minInteger_Int)%
+  . maxInteger= (2 ^ (WordLength-?1))-1                      %(maxInteger_Int)%
+  . minInteger= -(2 ^ (WordLength-?1))                       %(minInteger_Int)%
   . maxInteger=intToInteger(maxInteger)                  %(maxInteger_INTEGER)%
   . minInteger=intToInteger(minInteger)                  %(minInteger_INTEGER)%
   forall x,y: INTEGER
@@ -155,23 +155,23 @@ then %implies
   . def x rem y <=> not y=0                                 %(rem_INTEGER_dom)%
 end
 
-spec TwoComplement  [op Wordlength: Nat] given Nat = %mono
+spec TwoComplement  [op WordLength: Nat] given Nat = %mono
   Int
 then %mono
   %% Define TwoComplement to be isomorphic to the subset 
-  %% -2^(Wordlength-1)..2^(Wordlength-1)-1 of Int
+  %% -2^(WordLength-1)..2^(WordLength-1)-1 of Int
   %% using a total constructor intToTC
   %% The constructor can be total because integers are
-  %% taken modulo 2^Wordlength
+  %% taken modulo 2^WordLength
   generated type TwoComplement ::= intToTC (Int)
   ops maxInteger,
       minInteger: Int;
       TCtoInt : TwoComplement -> Int
-  . maxInteger= (2 ^ (Wordlength-?1))-1            %(maxInteger_Int)%
-  . minInteger= -(2 ^ (Wordlength-?1))             %(minInteger_Int)%
+  . maxInteger= (2 ^ (WordLength-?1))-1            %(maxInteger_Int)%
+  . minInteger= -(2 ^ (WordLength-?1))             %(minInteger_Int)%
   forall x,y:Int; i:TwoComplement
-  . intToTC(x) = intToTC(x+ 2^Wordlength)               %(cycle_max)%
-  . intToTC(x) = intToTC(y) => x-y mod 2^Wordlength = 0 %(cycle_min)%
+  . intToTC(x) = intToTC(x+ 2^WordLength)               %(cycle_max)%
+  . intToTC(x) = intToTC(y) => x-y mod 2^WordLength = 0 %(cycle_min)%
   . TCtoInt(intToTC(x)) = x if minInteger<=x /\ x<=maxInteger
 then %def
   %% The predicates and operations are just inherited from Int.
@@ -211,30 +211,30 @@ then %def
   . x rem y = intToTC( TCtoInt(x) rem TCtoInt(y))      %(rem_TwoComplement)%
 end
 
-view TotalOrder_in_CARDINAL  [op Wordlength: Nat] given Nat : 
-       TotalOrder to CARDINAL [op Wordlength: Nat] =
+view TotalOrder_in_CARDINAL  [op WordLength: Nat] given Nat : 
+       TotalOrder to CARDINAL [op WordLength: Nat] =
   sort Elem |-> CARDINAL
 end 
 
-view TotalOrder_in_INTEGER  [op Wordlength: Nat] given Nat :
-       TotalOrder to INTEGER [op Wordlength: Nat] =
+view TotalOrder_in_INTEGER  [op WordLength: Nat] given Nat :
+       TotalOrder to INTEGER [op WordLength: Nat] =
   sort Elem |-> INTEGER
 end 
 
-view TotalOrder_in_TwoComplement  [op Wordlength: Nat] given Nat : 
-       TotalOrder to TwoComplement [op Wordlength: Nat] =
+view TotalOrder_in_TwoComplement  [op WordLength: Nat] given Nat : 
+       TotalOrder to TwoComplement [op WordLength: Nat] =
   sort Elem |-> TwoComplement
 end 
 
-spec ExtCARDINAL [op Wordlength: Nat] given Nat =
-  ExtTotalOrder[view TotalOrder_in_CARDINAL[op Wordlength: Nat]]
+spec ExtCARDINAL [op WordLength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_CARDINAL[op WordLength: Nat]]
 end
 
-spec ExtINTEGER [op Wordlength: Nat] given Nat =
-  ExtTotalOrder[view TotalOrder_in_INTEGER[op Wordlength: Nat]]
+spec ExtINTEGER [op WordLength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_INTEGER[op WordLength: Nat]]
 end
 
-spec ExtTwoComplement [op Wordlength: Nat] given Nat =
-  ExtTotalOrder[view TotalOrder_in_TwoComplement[op Wordlength: Nat]]
+spec ExtTwoComplement [op WordLength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_TwoComplement[op WordLength: Nat]]
 end
 

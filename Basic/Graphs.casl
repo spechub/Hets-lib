@@ -8,8 +8,8 @@ version 1.0
    nodes and edges.
    Ids of nodes must be unique.
    Ids of edges between two given nodes must be unique as well.
-   If you need multiple edges with the same label, take a product 
-   sort (e.g. Label x Int) as EdgeId. }%
+   If you need multiple edges with the same label, take a sort
+   isomorphic to a product (e.g. Label x Int) as EdgeId. }%
 
 %display __::__-->__isIn__ %LATEX __::__\longrightarrow__\epsilon__
 %display __isIn__          %LATEX __\epsilon__
@@ -127,15 +127,15 @@ then %def
   . [n/e] eps targetMap(g) <=> target(e,g)=n           %(targetMap_def)%
 then %def
    ops edgeSet : Graph -> Set[EdgeId];
-       successors, predeccessors: NodeId * Graph -> Set[NodeId];
+       successors, predecessors: NodeId * Graph -> Set[NodeId];
        inEdges,outEdges: NodeId * Graph -> Set[EdgeId];
        inDegree,outDegree: NodeId * Graph -> Nat
    forall n,n1,n2: NodeId; e : EdgeId; g: Graph
    . e eps edgeSet(g) <=> e isIn g                       %(edgeSet_def)%
    . n2 eps successors(n1,g) <=> 
      (exists e : EdgeId . e :: n1 --> n2 isIn g)      %(successors_def)%
-   . n1 eps predeccessors(n2,g) <=> 
-     (exists e : EdgeId . e :: n1 --> n2 isIn g)   %(predeccessors_def)%
+   . n1 eps predecessors(n2,g) <=> 
+     (exists e : EdgeId . e :: n1 --> n2 isIn g)    %(predecessors_def)%
    . e eps inEdges(n1,g) <=>
      (exists n2 : NodeId . e :: n2 --> n1 isIn g)        %(inEdges_def)%
    . e eps outEdges(n1,g) <=>
@@ -219,7 +219,7 @@ then
   %% using (symmetric) transitive closure
   pred connected(g:Graph) <=> complete(stc(g))       %(connected_def)%
 
-  pred stronglyConncted(g:Graph) <=> 
+  pred stronglyConnected(g:Graph) <=> 
            complete(tc(g))                   %(stronglyconnected_def)%
 
   pred acyclic(g:Graph) <=> loopFree(tc(g))            %(acyclic_def)%
@@ -269,13 +269,13 @@ spec GraphColorability[sort NodeId][sort EdgeId] given Nat =
   GraphToSet[sort NodeId][sort EdgeId]
 and Map[sort NodeId fit S |-> NodeId][sort Nat fit T |-> Nat]
 then
-  pred __is__colourable(g:Graph; n:Nat) <=>
+  pred __is__colorable(g:Graph; n:Nat) <=>
     exists f:Map[NodeId,Nat] .
       dom(f) = nodeSet(g)
       /\ (forall m:Nat . m eps range(f) => m<n)
       /\ forall e:EdgeId; s,t:NodeId .
-          e::s-->t isIn g => not lookup(s,f)=lookup(t,f)  %(colourable_def)%
-  pred bipartite(g:Graph) <=> g is 2 colourable        %(bipartite_def)%
+          e::s-->t isIn g => not lookup(s,f)=lookup(t,f)  %(colorable_def)%
+  pred bipartite(g:Graph) <=> g is 2 colorable        %(bipartite_def)%
 end
 
 %% Shortest paths in graphs having weights for their edges
