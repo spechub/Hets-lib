@@ -192,8 +192,7 @@ end
 spec GeneratePreOpenDiscModelOfRCC5[MetricSpace] = %def
       GeneratePreModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
 	fit sort Elem |-> OpenDisc]
-then %implies  
-	%% <- Mein hets hat damit kein Problem??? und %implies ist gemeint!
+then %cons  
      ops  eqRel: Rel;
           conv: BaseRel -> BaseRel;
           conv: Rel -> Rel
@@ -202,8 +201,7 @@ end
 
 spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
      GeneratePreOpenDiscModelOfRCC5[MetricSpace]
-then %implies 
-	%% siehe oben
+then %cons 
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
