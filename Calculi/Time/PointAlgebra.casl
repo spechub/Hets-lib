@@ -25,7 +25,7 @@ spec PointAlgebraLinBase = %mono
 	}
 then 
      ops	     
-	  conv__: BaseRel -> GenRel; 
+	  conv__: BaseRel -> BaseRel; 
         __cmps__: BaseRel * BaseRel -> GenRel 		   
 
      . < cmps < = <              	%(cmps_11)%
@@ -40,6 +40,7 @@ then %implies
      . i cmps > = >			%(cmps_32)%
      . i cmps i = i			%(cmps_33)%
 
+     . conv(i) = i 			%(sym_i)%
      . conv(<) = >			%(conv_earlier)%
      . conv(>) = <			%(conv_later)%
 end
@@ -67,7 +68,7 @@ spec PointAlgebraBrBase = %mono
 	}
 then 
      ops	     
-	  conv__: BaseRel -> GenRel; 
+	  conv__: BaseRel -> BaseRel; 
         __cmps__: BaseRel * BaseRel -> GenRel 		   
 
      . < cmps < = i                 	%(cmps_11)%
@@ -98,5 +99,6 @@ end
 spec PointAlgebraBr = %def
      GenerateRelationAlgebra [PointAlgebraBrBase] 
 end
+
 
 
