@@ -1,10 +1,6 @@
 
 theory BaseAllenHayes = Main:
 
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
-
 
 ML "proofs := 1"
 
@@ -39,7 +35,7 @@ proof -
 qed
 
 
-theorem M_asym: "!! x :: Interval . !! y :: Interval . M x y ==> (Not (M y x))"
+theorem M_asym[elim]: "!! x :: Interval . !! y :: Interval . M x y ==> (Not (M y x))"
 proof -
   fix x y
   assume "M x y"
@@ -49,7 +45,7 @@ proof -
 qed
 
 
-theorem M_atrans: "!! x :: Interval . !! y :: Interval . !! z :: Interval . M x y & M y z ==> (Not (M x z))"
+theorem M_atrans[elim]: "!! x :: Interval . !! y :: Interval . !! z :: Interval . M x y & M y z ==> (Not (M x z))"
 proof -
   fix x y z
   assume " M x y & M y z"
