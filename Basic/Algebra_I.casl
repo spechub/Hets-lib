@@ -322,3 +322,30 @@ view Field_in_Rat: Field to Rat =
      sort Elem |-> Rat,
      op e |-> 1
 end
+
+spec ResidueClassRing [op n:Int] given Int =
+sort Z[n]
+ops [__]: Int -> Z[n];
+    __+__, __*__: Z[n] * Z[n] -> Z[n];
+    0, e: Z[n]
+vars k,l: Int; x: Z[n]
+. [k] = [l] <=> (k-l) mod n = 0
+. exists m: Int. [m] = x
+. [k] + [l] = [k + l]
+. [k] * [l] = [k * l]
+
+view CommutativeRing_in_ResidueClassRing[op n: Int] given Int: 
+	CommutativeRing to ResidueClassRing[op n: Int] =
+sort Elem |-> Z[n]
+
+spec Prime[op n:Int] given Int =
+var m: Int
+. n mod m = 0 => m = 1 \/ m = n
+
+spec ResidueClassField[Prime[op n: Int]] given Int =
+ResidueClassRing[op n: Int]
+
+view Field_in_ResidueClassField[Prime[op n: Int]] given Int: 
+	CommutativeRing to ResidueClassField[Prime[op n: Int]] =
+sort Elem |-> Z[n]
+
