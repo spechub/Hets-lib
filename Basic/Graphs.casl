@@ -1,51 +1,55 @@
 library Basic/Graphs
-version 0.95
+version 0.9
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% Corresponding author: Till Mossakowski, till@tzi.de
 %% date: 17.09.02
 
 %left_assoc __intersection__  %[ Should go to StructuredDatatypes ]%
-%%list [__], [], __::__
 
 from Basic/StructuredDatatypes get FiniteSet, FiniteMap, List
 
 
-%[ Labelled (un)directed graphs; labels of nodes must be unique
-   Labels of edges between to given nodes must be unique as well
-   If necessary, take a product sort (e.g. OldLabel x Int) as labels
-   If you do not need labels, instantiate them with a singleton sort ]%
+%[ We treat labelled directed and undirected graphs uniformly, thus
+   avoiding duplicate definitions. Later, we refine this into directed
+   and undirected graphs.
+   Labels of nodes must be unique.
+   Labels of edges between two given nodes must be unique as well.
+   If you needed multiple edges with the same label, take a product 
+   sort (e.g. OldLabel x Int) as labels. If you do not need labels, 
+   instantiate them with a singleton sort (cf. SimpleAbstractGraph 
+   below). ]%
 
 spec AbstractGraph[sort NodeLabel][sort EdgeLabel] =
   generated type Graph ::= emptyGraph
                          | addNode(node :? NodeLabel; graph :? Graph)
                          | addEdge(source,target :? NodeLabel; 
                                    edge :? EdgeLabel; graph :? Graph)
-  preds __eps__ : NodeLabel * Graph;
-        __::__-->__ isin __ : EdgeLabel * NodeLabel * NodeLabel * Graph
+  preds __isIn__ : NodeLabel * Graph;
+        __::__-->__ isIn __ : EdgeLabel * NodeLabel * NodeLabel * Graph
   forall n,n1,s,t,s1,t1,s2,t2:NodeLabel; e,e1,e2:EdgeLabel; g,g':Graph
-  . not n eps emptyGraph                              %(eps_emptyGraph)%
-  . n eps addNode(n1,g) <=> n=n1 \/ n eps g              %(eps_addNode)%
-  . n eps addEdge(s,t,e,g) <=> n=s \/ n=t \/ n eps g     %(eps_addEdge)%
-  . not e::s-->t isin emptyGraph                     %(isin_emptyGraph)%
-  . e::s-->t isin addNode(n,g) <=> e::s-->t isin g      %(isin_addNode)%
-  %% __::__-->__ isin __ is left underspecified
-  %% This allows a refinement into both directed and undirected graphs
-  . e1::s1-->t1 isin addEdge(s1,t1,e1,g)               %(isin_addEdge1)%
-  . e::s-->t isin addEdge(s2,t2,e2,g) if e::s-->t isin g
-                                                       %(isin_addEdge2)%
+  . not n isIn emptyGraph                              %(isIn_emptyGraph)%
+  . n isIn addNode(n1,g) <=> n=n1 \/ n isIn g              %(isIn_addNode)%
+  . n isIn addEdge(s,t,e,g) <=> n=s \/ n=t \/ n isIn g     %(isIn_addEdge)%
+  . not e::s-->t isIn emptyGraph                     %(isIn_emptyGraph)%
+  . e::s-->t isIn addNode(n,g) <=> e::s-->t isIn g      %(isIn_addNode)%
 
-  . g=g' <=> (forall n:NodeLabel . n eps g <=> n eps g')
+  %% __::__-->__ isIn __ is left underspecified
+  %% This allows a refinement into both directed and undirected graphs
+  . e1::s1-->t1 isIn addEdge(s1,t1,e1,g)               %(isIn_addEdge1)%
+  . e::s-->t isIn addEdge(s2,t2,e2,g) if e::s-->t isIn g
+                                                       %(isIn_addEdge2)%
+
+  . g=g' <=> (forall n:NodeLabel . n isIn g <=> n isIn g')
          /\ (forall s,t:NodeLabel; e:EdgeLabel .
-                 e::s-->t isin g <=> e::s-->t isin g') %(extensionality)%
+                 e::s-->t isIn g <=> e::s-->t isIn g') %(extensionality)%
 end
 
 spec RichAbstractGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel] 
 then %def
   ops removeNode : NodeLabel * Graph -> Graph;
-      removeEdge : EdgeLabel * Graph -> Graph;
-  preds symmetric, transitive, loopFree : Graph;
-        __subgraphOf__ : Graph * Graph
+      removeEdge : EdgeLabel * Graph -> Graph
+
   forall n,n1,n2:NodeLabel; e,e1,e2:EdgeLabel; g,g':Graph
   . removeNode(n,emptyGraph) = emptyGraph      %(removeNode_emtpyGraph)%
   . removeNode(n,addNode(n1,g)) =
@@ -62,24 +66,37 @@ then %def
       removeEdge(e,g) when e=e1
       else addEdge(n1,n2,e1,removeEdge(e,g))      %(removeEdge_addEdge)%
 
-  . symmetric(g) <=> 
-      forall n1,n2:NodeLabel; e:EdgeLabel .
-        e::n1-->n2 isin g => 
-           exists e':EdgeLabel . e'::n2-->n1 isin g    %(symmetric_def)%
+  pred symmetric(g:Graph) <=> 
+    forall n1,n2:NodeLabel; e:EdgeLabel .
+        e::n1-->n2 isIn g => 
+           exists e':EdgeLabel . e'::n2-->n1 isIn g    %(symmetric_def)%
 
-  . transitive(g) <=>
-      forall n1,n2,n3:NodeLabel; e1,e2:EdgeLabel . 
-        e1::n1-->n2 isin g /\ e2::n2-->n3 isin g =>
-           exists e3:EdgeLabel . e2::n1-->n3 isin g   %(transitive_def)%
+  pred transitive(g:Graph) <=>
+    forall n1,n2,n3:NodeLabel; e1,e2:EdgeLabel . 
+        e1::n1-->n2 isIn g /\ e2::n2-->n3 isIn g =>
+           exists e3:EdgeLabel . e2::n1-->n3 isIn g   %(transitive_def)%
 
-  . loopFree(g) <=>
-       not (exists n:NodeLabel; e:EdgeLabel .
-             e::n-->n isin g)                           %(loopFree_def)%
+  pred loopFree(g:Graph) <=>
+     not (exists n:NodeLabel; e:EdgeLabel . e::n-->n isIn g)
+                                                        %(loopFree_def)%
 
-  . g subgraphOf g' <=>
-      (forall n:NodeLabel . n eps g <=> n eps g') /\
-      (forall n1,n2:NodeLabel; e:EdgeLabel .
-          e::n1-->n2 isin g <=> e::n1-->n2 isin g')   %(subgraphOf_def)%
+  pred __subgraphOf__ (g1,g2:Graph) <=>
+    (forall n:NodeLabel . n isIn g1 <=> n isIn g2) /\
+    (forall n1,n2:NodeLabel; e:EdgeLabel .
+          e::n1-->n2 isIn g1 <=> e::n1-->n2 isIn g2)  %(subgraphOf_def)%
+
+  pred complete(g:Graph) <=>
+    forall n1,n2:NodeLabel . exists e:EdgeLabel . e::n1-->n2 isIn g
+                                                            %(complete)%
+
+  pred __cliqueOf__ (g1,g2:Graph) <=>
+    g1 subgraphOf g2 /\ complete(g1)                    %(cliqueOf_def)%
+
+  pred __maxCliqueOf__ (g1,g2:Graph) <=>
+    g1 cliqueOf g2
+    /\ forall g3:Graph . 
+        g1 subgraphOf g3 /\ g3 cliqueOf g2 => g1=g3
+                                                    %(max_cliqueOf_def)%
 end
 
 
@@ -87,18 +104,18 @@ spec DirectedGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
   forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel; g:Graph
-  . e1::s1-->t1 isin addEdge(s2,t2,e2,g) <=>
-      (s1=s2 /\ t1=t2 /\ e1=e2) \/ e1::s1-->t1 isin g  %(isin_Directed)%
+  . e1::s1-->t1 isIn addEdge(s2,t2,e2,g) <=>
+      (s1=s2 /\ t1=t2 /\ e1=e2) \/ e1::s1-->t1 isIn g  %(isIn_Directed)%
 end
 
 spec UndirectedGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
   forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel; g:Graph
-  . e1::s1-->t1 isin addEdge(s2,t2,e2,g) <=> 
+  . e1::s1-->t1 isIn addEdge(s2,t2,e2,g) <=> 
     (s1=s2 /\ t1=t2 /\ e1=e2) \/ 
     (s1=t2 /\ t1=s2 /\ e1=e2) \/ 
-    e1::s1-->t1 isin g                               %(isin_Undirected)%
+    e1::s1-->t1 isIn g                               %(isIn_Undirected)%
 end
 
 %% the subsort of symmetric graphs
@@ -107,13 +124,13 @@ spec SymmetricGraph[sort NodeLabel][sort EdgeLabel] =
 then
   sort SymmetricGraph =                           %(SymmetricGraph_def)%
        {g:Graph . forall s,t:NodeLabel; e:EdgeLabel . 
-                    e::s-->t isin g <=> e::t-->s isin g}
+                    e::s-->t isIn g <=> e::t-->s isIn g}
   type SymmetricGraph ::= emptyGraph
             | addNode(node :? NodeLabel; graph :? SymmetricGraph)
             | addEdgeSym(source,target :? NodeLabel; 
                          edge :? EdgeLabel; graph :? SymmetricGraph)
-  preds __eps__ : NodeLabel * SymmetricGraph;
-        __::__-->__ isin __ : 
+  preds __isIn__ : NodeLabel * SymmetricGraph;
+        __::__-->__ isIn __ : 
                    EdgeLabel * NodeLabel * NodeLabel * SymmetricGraph
   forall s,t:NodeLabel; e:EdgeLabel; g:SymmetricGraph
   . addEdgeSym(s,t,e,g) = 
@@ -143,15 +160,15 @@ spec SimpleAbstractGraph[sort NodeLabel] =
 then
   AbstractGraph[sort NodeLabel][sort Unit]
 then
-  pred __-->__isin__ : NodeLabel * NodeLabel * Graph
+  pred __-->__isIn__ : NodeLabel * NodeLabel * Graph
   forall n1,n2:NodeLabel; g:Graph
-  . n1-->n2 isin g <=> * :: n1-->n2 isin g
+  . n1-->n2 isIn g <=> * :: n1-->n2 isIn g              %(isIn_def2)%
 end
 
 spec LoopFreeAbstractGraph[sort NodeLabel][sort EdgeLabel] =
   RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
-  forall g:Graph . loopFree(g)
+  forall g:Graph . loopFree(g)                           %(loopFree)%
 end
 
 spec SymmetricClosure[sort NodeLabel][sort EdgeLabel] =
@@ -159,8 +176,9 @@ spec SymmetricClosure[sort NodeLabel][sort EdgeLabel] =
 then
   op sc : Graph -> Graph
   forall n,n1,n2:NodeLabel; e:EdgeLabel; g:Graph
-  . n eps sc(g) <=> n eps g
-  . e::n1-->n2 isin sc(g) <=> (e::n1-->n2 isin g \/ e::n2-->n1 isin g)
+  . n isIn sc(g) <=> n isIn g                            %(sc_def_1)%
+  . e::n1-->n2 isIn sc(g) <=> 
+      (e::n1-->n2 isIn g \/ e::n2-->n1 isIn g)           %(sc_def_2)%
 end
 
 spec TransitiveClosure[sort NodeLabel][sort EdgeLabel] =
@@ -176,14 +194,14 @@ then
         pathTransitive : PathGraph
   forall n,n1,n2:NodeLabel; e:EdgeLabel; g:Graph; g':PathGraph
   . g pathSubgraphOf g' <=>
-      (forall n:NodeLabel . n eps g <=> n eps g') /\
+      (forall n:NodeLabel . n isIn g <=> n isIn g') /\
       (forall n1,n2:NodeLabel; e:EdgeLabel .
-          e::n1-->n2 isin g <=> (e::[])::n1-->n2 isin g') 
+          e::n1-->n2 isIn g <=> (e::[])::n1-->n2 isIn g') 
                                                 %(pathSubgraphOf_def)%
   . pathTransitive(g') <=>
       forall n1,n2,n3:NodeLabel; e1,e2:List[EdgeLabel] . 
-        e1::n1-->n2 isin g' /\ e2::n2-->n3 isin g' =>
-           (e1++e2)::n1-->n3 isin g'            %(pathTransitive_def)%
+        e1::n1-->n2 isIn g' /\ e2::n2-->n3 isIn g' =>
+           (e1++e2)::n1-->n3 isIn g'            %(pathTransitive_def)%
 
   . pathTransitive(tc(g))                                  %(tc_def1)%
   . g pathSubgraphOf tc(g)                                 %(tc_def2)%
@@ -206,12 +224,11 @@ then
                               target : Graph2;
                               nodeMap : FiniteMap[N1,N2];
                               edgeMap : FiniteMap[E1,E2])
-  sort Hom = {h:PreHom .
-        forall n,n':N1; e:E1 .
-          e::n-->n' isin source(h) =>
-            eval(e,edgeMap(h))::
-              eval(n,nodeMap(h))-->eval(n',nodeMap(h))
-                 isin target(h)   }
+  sort Hom =                                               %(Hom_def)% 
+   {h:PreHom .
+      forall n,n':N1; e:E1 . e::n-->n' isIn source(h) =>
+       eval(e,edgeMap(h))::eval(n,nodeMap(h))-->eval(n',nodeMap(h))
+                                                    isIn target(h)   }
 end
 
 spec Minor[sort N1][sort E1][sort N2][sort E2] =
@@ -220,10 +237,8 @@ and
   GraphHomomorphism[sort N1][sort E1][sort N2][sort List[E2]]
   with Graph2 |-> PathGraph 
 then
-  pred __minorOf__ : Graph1 * Graph2
-  forall g1:Graph1; g2:Graph2
-  . g1 minorOf g2 <=> 
-     exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)
+  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           %(minorOf_def)%
+    exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)
 end
 
 spec K5 =
@@ -233,8 +248,8 @@ then
 then
   op k5 : K5
   forall n,n1,n2 : Five
-  . n eps k5
-  . n1 --> n2 isin k5
+  . n isIn k5                                             %(k5_def_1)%
+  . n1 --> n2 isIn k5                                     %(k5_def_2)%
 end
 
 spec K3_3 =
@@ -245,12 +260,12 @@ then
 then
   op k3_3 : K3_3
   forall n,n1,n2 : Three
-  . left(n) eps k3_3
-  . right(n) eps k3_3
-  . left(n1) --> right(n2) isin k3_3
+  . left(n) isIn k3_3                                   %(k3_3_def_1)%
+  . right(n) isIn k3_3                                  %(k3_3_def_2)%
+  . left(n1) --> right(n2) isIn k3_3                    %(k3_3_def_3)%
 end
 
-%% planar graphs defined using the Kuratowski charaterization
+%% planar graphs defined using the Kuratowski characterization
 spec Planar[sort NodeLabel][sort EdgeLabel] =
   K5 and K3_3
 and
@@ -260,7 +275,7 @@ and
   Minor[sort Three2][sort Unit][sort NodeLabel][sort EdgeLabel]
   with Graph1 |-> K3_3, Graph2 |-> Graph
 then
-  pred planar : Graph
-  forall g:Graph
-  . planar(g) <=> not k5 minorOf g /\ not k3_3 minorOf g
+  pred planar(g:Graph) <=> not k5 minorOf g /\ not k3_3 minorOf g
+                                                        %(planar_def)%
 end
+
