@@ -12,17 +12,21 @@ version 0.1
 )%
 
 
-from Calculi/Algebra/RelationAlgebraModel get  JEPDBase,Relation,
-	GenerateRelationAlgebraModel,AlgebraOfBinaryRelations
+from Basic/RelationsAndOrders get BooleanAlgebra
+from Calculi/Algebra/RelationAlgebraModel get  Relation,
+	BaseRelationModel,JEPDBaseRelationModel,
+	GenerateModelFromBaseRelationModel,
+	AlgebraOfBinaryRelations
 from Calculi/Time/LinearFlowOfTime get LinFlowOfTime,DnsLinFlowOfTimeSEnd
-from Calculi/Time/PointAlgebra get CompositionTableOfPointAlgebraLin
+from Calculi/Time/PointAlgebraCompositionTables get CompositionTableOfPointAlgebraLin
+from Calculi/Time/PointAlgebraSymbolic get PointAlgebraLin
 
 logic HasCASL
 
 
-spec RelationBaseOfPointAlgebraLin[LinFlowOfTime] = %def 
-     Relation[sort Instant] %% 
-then 
+spec BaseRelationModelOfPointAlgebraLin[LinFlowOfTime] = %def 
+     Relation[sort Instant] 
+then  
      ops preRel,idRel,sucRel:Relation 
      type BaseRel ::= preRel | idRel | sucRel
      forall x,y:Instant
@@ -32,27 +36,49 @@ then
 end
 
 
-view RelationBaseOfPointAlgebraLin_as_JEPDBase:
-     JEPDBase[sort Elem] to RelationBaseOfPointAlgebraLin[LinFlowOfTime]
-=
-     sort Elem |-> Instant
+view BaseRelationModelOfPointAlgebraLin_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort Instant] 
+to 
+     BaseRelationModelOfPointAlgebraLin[LinFlowOfTime]
 end
 
 
-spec ModelOfPointAlgebraLin[LinFlowOfTime] =
-      GenerateRelationAlgebraModel[RelationBaseOfPointAlgebraLin[LinFlowOfTime]
+spec GeneratePreModelOfPointAlgebraLin[LinFlowOfTime] = %def
+      GenerateModelFromBaseRelationModel[BaseRelationModelOfPointAlgebraLin[LinFlowOfTime]
 	fit sort Elem |-> Instant]
-then %implies 
-      {	CompositionTableOfPointAlgebraLin with ops < |-> preRel, i |-> idRel, > |-> sucRel  }
+then %implies
+     ops  idRel: Rel;
+          conv: BaseRel -> BaseRel;
+          conv: Rel -> Rel
 end
 
 
-view ModelOfPointAlgebraLin_as_AlgebraOfBinaryRelations:
-     AlgebraOfBinaryRelations[sort Elem] to ModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
+spec GenerateModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd] = %def
+     GeneratePreModelOfPointAlgebraLin[LinFlowOfTime]
+then %implies     
+     op  __cmps__:  Rel * Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
+end
+
+
+view DsnLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
+    AlgebraOfBinaryRelations[sort Elem] 
+to 
+    GenerateModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
 =
-    sorts Elem |-> Instant, Rel |-> GenRel
+    sort Elem |-> Instant , op id |-> idRel 
 end
 
+
+
+view DsnLinFlowOfTimeSEnd_induces_ModelOfPointAlgebraLin :
+     { PointAlgebraLin hide ops __+__,__-__,{},{__}    %% <- Das muss man verbessern, 
+	hide preds __eps__,__isSubsetOf__,isNonEmpty } %%    weil wir dann zu viel Theorie verlieren
+to 
+    GenerateModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
+=   
+    ops pre |-> preRel, id |-> idRel, suc |-> sucRel
+end
 
 
 

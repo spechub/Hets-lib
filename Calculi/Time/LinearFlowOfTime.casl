@@ -64,6 +64,7 @@ end
 
 spec Ext_LinFlowOfTime [LinFlowOfTime] = %def 
 	Ext_FlowOfTime [FlowOfTime]
+     hide preds __cmp__,__uncmp__
 then %implies
      forall x,z: Instant
      . (exists y: Instant . x pre y /\ y suc z) => 
@@ -81,7 +82,7 @@ spec DnsLinFlowOfTime =
 
 
 spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = %def 
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 
 spec Rich_DnsLinFlowOfTime = 
@@ -93,7 +94,7 @@ spec LinFlowOfTimeSMax =
 
 
 spec Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax] = %def
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 
 spec Rich_LinFlowOfTimeSMax = 
@@ -108,7 +109,7 @@ end
 
 
 spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = %def 
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 
 spec Rich_DnsLinFlowOfTimeSMax = 
@@ -119,7 +120,7 @@ spec LinFlowOfTimeSMin =
      LinFlowOfTime and FlowOfTimeSMin
 
 spec Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin] = 
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 spec Rich_LinFlowOfTimeSMin = 
 	Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin]
@@ -132,7 +133,7 @@ then %implies
 end
 
 spec Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin] = %def
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 spec Rich_DnsLinFlowOfTimeSMin = 
 	Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin]
@@ -142,7 +143,7 @@ spec LinFlowOfTimeSEnd =
      LinFlowOfTime and FlowOfTimeSEnd
 
 spec Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd] = %def
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 
 spec Rich_LinFlowOfTimeSEnd = 
 	Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd]
@@ -157,7 +158,7 @@ end
 
 
 spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = %def 
-	Ext_FlowOfTime [FlowOfTime]
+	Ext_LinFlowOfTime [LinFlowOfTime]
 then %implies
      forall x,z: Instant
      . (exists y: Instant . x pre y /\ y pre z) <=> 
@@ -228,9 +229,9 @@ then %def
     . x preE X <=> forall y:Instant . y isIn X => x preE y
     . inf(X)=y <=> y preE X /\ forall x':Instant . x' preE X => x' preE x
     . sup(X)=y <=> X preE y /\ forall x':Instant . X preE x' => x preE x'
-   . isUpperBounded(X) <=> exists x:Instant . X preE x
-   . isLowerBounded(X) <=> exists x:Instant . x preE X
-   . isBounded(X) <=> isUpperBounded(X) /\ isLowerBounded(X)
+    . isUpperBounded(X) <=> exists x:Instant . X preE x
+    . isLowerBounded(X) <=> exists x:Instant . x preE X
+    . isBounded(X) <=> isUpperBounded(X) /\ isLowerBounded(X)
 then
    forall X:Pred(Instant)
    . isUpperBounded(X) => def sup(X)        %(completeness)%
@@ -242,10 +243,13 @@ end
 
 from HasCASL/Real get Real
 
-%[Comment: This specification is incorrect ]%
+%[Comment: This specification of the reals is incorrect ]%
 
 view FlowOfTime_in_Real : 
-     DedekindComplLinFlowOfTime to Real 
+     { DedekindComplLinFlowOfTime hide preds isUpperBounded,isLowerBounded,
+	__isIn__}  
+	to Real 
 =
-     sort Instant |-> Real, preds __pre__ |-> __<__, __preE__ |-> __<__
+     sort Instant |-> Real, preds __pre__ |-> __<__, __preE__ |-> __<__,
+	__suc__ |-> __>__, __sucE__ |-> __>=__
 end

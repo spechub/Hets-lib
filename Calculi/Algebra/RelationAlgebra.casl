@@ -15,11 +15,12 @@ version 0.2
 
 
 from Basic/Numbers get Nat
+from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Auxiliary get Set
 from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
 		ExtBooleanAlgebraByPartialOrder,AtomicBooleanAlgebra 
-from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra,RichBooleanAlgebra
+
 
 
 %( 
@@ -35,12 +36,10 @@ spec RelationAlgebra  =
 then
      ops
 	        id: Rel;
-	    conv__: Rel -> Rel;
+	      conv: Rel -> Rel;
 	  __cmps__: Rel * Rel -> Rel, assoc, unit id;
 	
      forall x,y,z: Rel
-%%     . (x cmps y) cmps z = x cmps (y cmps z)            	%(cmps_assoc)%
-%%     . x cmps id = x /\ id cmps x = x				%(cmps_unit_id)%
      . conv(conv(x)) = x					%(conv_idempot)%
      . conv(x cup y) = conv(x) cup conv(y)			%(conv_cup)%
      . conv(compl(x)) = compl(conv(x))				%(conv_compl)%
@@ -102,153 +101,6 @@ spec AtomicRelationAlgebra =
      { RelationAlgebraWithPartialOrder hide pred Atom }
 and
      AtomicBooleanAlgebra with sort Elem |-> Rel, Atom |-> AtomRel
-end
-
-
-
-%(
-    If the set of base relations is JEPD, i.e., is the base relations are 
-    pairwise disjoint and jointly exhaustive, unions of base relations can be
-    represented as sets of base relations.
-)%
-
-
-
-spec RelationRep[sort BaseRel] = %mono
-     { Set[sort BaseRel fit Elem |-> BaseRel] 
-	    with Set[BaseRel] |-> Rel,
-	            __union__ |-> __cup__, 
-             __intersection__ |-> __cap__ }
-then %def
-     sort BaseRel < Rel
-     ops 
-	    0,1 : Rel;
-	 compl__: Rel -> Rel; 
-
-     forall x:BaseRel; y:Rel
-     . x = {x}
-     . x eps 1
-     . not x eps 0
-     . compl(y) = 1 - y
-
-then %implies
-     forall x,y:BaseRel; r:Rel
-     . not x = y => x cap y = 0		
-     . exists z:BaseRel . z eps r
-     . r isSubsetOf 1
-then
-     ops	 	 
-         id      : BaseRel;
-	 conv__  : BaseRel -> BaseRel; 
-         __cmps__: BaseRel * BaseRel -> Rel
-     forall x:BaseRel
-     . x cmps id = x
-     . id cmps x = x
-     . conv(id) = id
-     . conv(conv(x)) = x
-end
-
-
-view RelationRep_as_BoolenAlgebraWithCompl:
-     BooleanAlgebraWithCompl to RelationRep[sort BaseRel]
-= 
-     Elem |-> Rel
-end
-
-
-
-spec GenerateRelationAlgebra[RelationRep[sort BaseRel]] = %mono
-     ops 
-    %%      id    : Rel;
-          conv__  : Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel, assoc, unit id;       
-						 %% composition of relations
-     forall x,y:BaseRel; u,v:Rel
-     . (u cup x) cmps (v cup y) =
-	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
-     . conv(u cup x) = conv(u) cup conv(x)
-end
-
-
-spec GeneratedRelationAlgebra = 
-     GenerateRelationAlgebra[RelationRep[sort BaseRel]]
-
-
-view GeneratedRelationAlgebra_as_RelationAlgebra:
-     RelationAlgebra to GeneratedRelationAlgebra 
-end 
-
-
-view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
-     AtomicRelationAlgebra 
-to
-     { GeneratedRelationAlgebra  
-	then %def
-	preds 
-		__<__,__<=__,__>__,__>=__:Rel*Rel
-	forall x,y:Rel
-	. x < y  <=> x isSubsetOf y /\ not x = y
-	. x <= y <=> x isSubsetOf y
-	. x > y  <=> y isSubsetOf x /\ not x = y
-	. x >= y <=> y isSubsetOf x
-     }
-=
-     sort Rel |-> Rel, sort AtomRel |-> BaseRel
-end 
-
-
-
-spec CompositionTable =
-     sorts BaseRel < Rel
-     ops 
-	 id,0,1:Rel;
-	 conv__:   BaseRel -> Rel;
-         compl__:   Rel -> Rel;
-	 __cmps__: BaseRel * BaseRel -> Rel;
-	 __cup__:  Rel * Rel -> Rel, assoc, idem, comm, unit 1;
-	 __cap__:  Rel * Rel -> Rel, assoc, idem, comm, unit 0;  
-end
-
-
-
-
-spec RelationRep1[sort BaseRel] = %mono
-     { Set[sort BaseRel fit Elem |-> BaseRel] 
-	    with Set[BaseRel] |-> Rel,
-	            __union__ |-> __cup__, 
-             __intersection__ |-> __cap__ }
-then %def
-     sort BaseRel < Rel
-     ops 
-	    0,1 : Rel;
-	 compl__: Rel -> Rel; 
-
-     forall x:BaseRel; y:Rel
-     . x = {x}
-     . x eps 1
-     . not x eps 0
-     . compl(y) = 1 - y
-
-then %implies
-     forall x,y:BaseRel; r:Rel
-     . not x = y => x cap y = 0		
-     . exists z:BaseRel . z eps r
-     . r isSubsetOf 1
-end
-
-
-spec GenerateRelationAlgebra1[RelationRep1[sort BaseRel]][CompositionTable] = %mono
-     ops 
-          conv__  : Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel
-     forall x,y:BaseRel; u,v:Rel
-     . (u cup x) cmps (v cup y) =
-	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
-     . conv(u cup x) = conv(u) cup conv(x)
-
-then %implies
-     op
-	 __cmps__: Rel * Rel -> Rel, assoc, unit id;       
 end
 
 

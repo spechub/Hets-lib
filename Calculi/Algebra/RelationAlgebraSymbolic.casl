@@ -1,0 +1,185 @@
+library Calculi/Algebra/RelationAlgebraSymbolic
+version 0.1
+%author: T. Mossakowski, K. Lüttich, S. Wölfl
+%date: 07-02-2005
+
+%( 
+    This library contains specifications that describe how a relation
+    algebra can be built from a finite set of base relations and a composition 
+    table.
+)%
+
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__} 
+%prec {__cmps__} < {__cmpl__} 
+
+
+from Basic/Numbers get Nat
+%% from Basic/StructuredDatatypes get Set
+from Calculi/Algebra/Auxiliary get Set
+from Calculi/Algebra/Auxiliary get AtomicBooleanAlgebra 
+from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
+
+
+
+%(
+    If the set of base relations is JEPD, i.e., is the base relations are 
+    pairwise disjoint and jointly exhaustive, unions of base relations can be
+    represented as sets of base relations.
+)%
+
+
+
+spec SetRepresentationOfRelations[sort BaseRel] = %mono
+     { Set[sort BaseRel fit Elem |-> BaseRel] 
+	    with Set[BaseRel] |-> Rel,
+	            __union__ |-> __cup__, 
+             __intersection__ |-> __cap__ }
+then %def
+     sort BaseRel < Rel
+     ops 
+	    0,1 : Rel;
+	  compl : Rel -> Rel; 
+
+     forall x:BaseRel; r:Rel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . compl(r) = 1 - r
+
+then %implies
+     forall x,y:BaseRel; r:Rel
+     . not x = y => x cap y = 0		
+     . exists z:BaseRel . z eps r
+     . r isSubsetOf 1
+end
+
+
+view SetRepresentationOfRelations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to SetRepresentationOfRelations[sort BaseRel]
+= 
+     Elem |-> Rel, Atom |-> BaseRel
+end
+
+
+
+spec RelationBase[sort BaseRel] = 
+     SetRepresentationOfRelations[sort BaseRel]
+then
+     ops	 	 
+         id      : BaseRel;
+	 conv    : BaseRel -> BaseRel; 
+         __cmps__: BaseRel * BaseRel -> Rel
+     forall x:BaseRel
+     . x cmps id = x
+     . id cmps x = x
+     . conv(id) = id
+     . conv(conv(x)) = x
+end
+
+
+spec GenerateRelationAlgebra[RelationBase[sort BaseRel]] = %mono
+     ops 
+          %% id   : Rel;
+          conv    : Rel -> Rel;
+	  __cmps__: Rel * Rel -> Rel, assoc, unit id;       
+
+     forall x,y:BaseRel; u,v:Rel
+     . (u cup x) cmps (v cup y) =
+	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
+     . conv(u cup x) = conv(u) cup conv(x)
+end
+
+
+%(
+spec GeneratedRelationAlgebra = 
+     GenerateRelationAlgebra[RelationBase[sort BaseRel]]
+
+
+view GeneratedRelationAlgebra_as_RelationAlgebra:
+     RelationAlgebra to GeneratedRelationAlgebra 
+end 
+
+
+view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
+     AtomicRelationAlgebra 
+to
+     { GeneratedRelationAlgebra  
+	then %def
+	preds 
+		__<__,__<=__,__>__,__>=__:Rel*Rel
+	forall x,y:Rel
+	. x < y  <=> x isSubsetOf y /\ not x = y
+	. x <= y <=> x isSubsetOf y
+	. x > y  <=> y isSubsetOf x /\ not x = y
+	. x >= y <=> y isSubsetOf x
+     }
+=
+     Rel |-> Rel, AtomRel |-> BaseRel
+end 
+)%
+
+
+spec CompositionTable =
+     sorts BaseRel < Rel
+     ops 
+        id,0,1:Rel;
+	  conv:   BaseRel -> BaseRel;
+         compl:   Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;
+	 __cup__:  Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+	 __cap__:  Rel * Rel -> Rel, assoc, idem, comm, unit 0;  
+end
+
+
+
+
+%(
+     Following one finds a template of how to specify a relation calculus
+     based on a set of base relations and a composition table.
+)%
+
+
+spec BaseRelationsOfCalculus =
+     type BaseRel ::= relation1 | relation2
+end
+
+
+spec CompositionTableOfCalculus =
+     CompositionTable
+end
+
+
+spec RelationBaseOfCalculus = 
+     SetRepresentationOfRelations[BaseRelationsOfCalculus]
+and
+     CompositionTableOfCalculus
+end
+
+
+view RelationBaseOfCalculus_as_RelationBase[BaseRelationsOfCalculus] :
+     RelationBase[sort BaseRel] to RelationBaseOfCalculus
+end
+
+spec Calculus = 
+     GenerateRelationAlgebra [RelationBaseOfCalculus]  
+end
+
+
+view Calculus_as_AtomicRelationAlgebra :
+     AtomicRelationAlgebra to 
+     { Calculus	then %def
+	preds 
+		__<__,__<=__,__>__,__>=__:Rel*Rel
+	forall x,y:Rel
+	. x < y  <=> x isSubsetOf y /\ not x = y
+	. x <= y <=> x isSubsetOf y
+	. x > y  <=> y isSubsetOf x /\ not x = y
+	. x >= y <=> y isSubsetOf x
+     }
+=
+     Rel |-> Rel , AtomRel |-> BaseRel
+end
+
+
