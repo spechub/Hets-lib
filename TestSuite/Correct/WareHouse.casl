@@ -1,0 +1,112 @@
+library WareHouse
+%% authors: D. Bert, H. Baumeister
+%% date: 5.11.99
+
+from TestSuite/Invoice get ORDER, STOCK, INVOICE
+from Basic/StructuredDatatypes version 0.3 get List
+
+spec ORDER_QUEUE =
+  { List[ORDER fit Elem |-> Order] with List[Order] |-> OQueue }
+then
+  pred __is_in__ %!<latex>$\in$%! : Order * OQueue
+  vars o,o2:Order; oq:OQueue
+    . not o is_in nil
+    . o2 is_in (o::oq) <=> o2 = o \/ o2 is_in oq
+
+%% Auxiliary definitions
+  ops __ <- __ : OQueue * Order -> OQueue;
+      remove   : Order * OQueue -> OQueue; 
+  vars o,o2:Order; oq:OQueue
+    . oq <- o = oq ++ (o::nil)
+    . remove(o,nil) = nil
+    . remove(o,o2::oq) = o2::remove(o,oq) when not(o=o2)
+			else remove(o,oq) 
+end
+
+spec QUEUES = ORDER_QUEUE
+then
+  preds unicity, pqueue, iqueue : OQueue
+  vars o:Order; oq:OQueue
+    . unicity(nil)
+    . unicity(o::oq) <=> not(o is_in oq) /\ unicity(oq)
+    . pqueue(oq) <=> forall x:Order . (x is_in oq => is_pending(x))
+    . iqueue(oq) <=> forall x:Order . (x is_in oq => is_invoiced(x))
+  sorts
+      UQueue = {oq:OQueue . unicity(oq)};
+      PQueue = {uq:UQueue . pqueue(uq)};
+      IQueue = {uq:UQueue . iqueue(uq)};
+end
+
+spec WHS = QUEUES and INVOICE
+then
+  free type GState ::= mk_gs(porders:PQueue; iorders:IQueue; the_stock:Stock);
+  op
+      the_orders(gs:GState):OQueue = porders(gs) ++ iorders(gs)
+  preds
+      referenced(oq:OQueue; s:Stock) <=>
+		forall x:Order . (x is_in oq => referenced(x,s));
+      consistent(gs:GState) <=>
+		unicity(gs) /\ referenced(the_orders(gs),the_stock(gs));
+  sort
+      VGS = {gs:GState . consistent(gs)};
+
+  pred
+      invoiceable(pq:PQueue; s:Stock) <=>
+		exists o:Order . (o is_in pq /\ enough_qty(o,s))
+  op  first_invoiceable : PQueue * Stock ->? Order
+
+  vars o:Order; pq:PQueue; s:Stock
+    . def first_invoiceable(pq,s) <=> invoiceable(pq,s)
+    . first_invoiceable(o::pq,s) = o when enough_qty(o,s)
+			      else first_invoiceable(pq,s)
+
+  ops
+      new_order       : Product * Pos * VGS -> VGS;
+      cancel_order    : Order * VGS -> VGS;
+      add_qty         : Product * Pos * VGS -> VGS;
+      deal_with_order : VGS -> VGS;
+
+      mk_order        : Product * Pos * VGS -> Order
+
+  vars o,o1,o2:Order; p:Product; n:Pos; vgs:VGS;
+       osm:OSM; s2:Stock
+
+    %% axioms for the mk_order operation
+
+    . is_pending(mk_order(p,n,vgs))
+    . not mk_order(p,n,vgs) is_in the_orders(vgs)
+    . reference(mk_order(p,n,vgs)) = p
+    . ordered_qty(mk_order(p,n,vgs)) = n
+
+    %% axioms for the warehouse operation level
+
+    . new_order(p,n,vgs) = vgs if not p is_in the_stock(vgs)
+    . new_order(p,n,vgs) = mk_gs(porders(vgs) <- mk_order(p,n,vgs),
+				 iorders(vgs), the_stock(vgs))
+				if p is_in the_stock(vgs)
+
+    . cancel_order(o,vgs) =
+		mk_gs(remove(o,porders(vgs)),iorders(vgs),the_stock(vgs))
+			when o is_in porders(vgs)
+	   else mk_gs(porders(vgs),remove(o,iorders(vgs)),
+		      add(reference(o),ordered_qty(o),the_stock(vgs)))
+			when o is_in iorders(vgs)
+	   else vgs
+
+    . add_qty(p,n,vgs) = vgs if not p is_in the_stock(vgs)
+    . add_qty(p,n,vgs) = mk_gs(porders(vgs),iorders(vgs),
+			       add(p,n,the_stock(vgs)))
+				if p is_in the_stock(vgs)
+
+    . deal_with_order(vgs) = vgs
+		if not invoiceable(porders(vgs),the_stock(vgs))
+    . ((o1 = first_invoiceable(porders(vgs),the_stock(vgs))
+       /\ osm = invoice_order(o1,the_stock(vgs))
+       /\ o2 = order_of(osm)
+       /\ s2 = stock_of(osm))
+        => deal_with_order(vgs) = mk_gs(remove(o1,porders(vgs)),
+					iorders(vgs) <- o2,
+					s2))
+		if invoiceable(porders(vgs),the_stock(vgs))
+
+end

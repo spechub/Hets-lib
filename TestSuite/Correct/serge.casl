@@ -1,0 +1,92 @@
+library serge
+
+%% Examples provided by Serge Autexier
+
+spec list = 
+  {
+   sort elem;
+  }
+
+then
+
+  {
+   generated type list ::= nil | cons(fst:elem; rest:list);
+   
+   var l1,l2:list;
+   var n1,n2:elem;
+
+   op app  : list * list -> list, assoc, unit nil;
+ 
+   axiom app(cons(n1,l1),l2) = cons(n1, app(l1,l2));
+
+   op addlast(n:elem; l:list):list =
+      cons(n,nil) when l = nil
+      else cons(fst(l), addlast(n,rest(l)));
+
+  }
+
+
+spec natlist = 
+
+  {
+   generated type nat ::= null | s(p:nat);
+
+   var x,y,z:nat;
+
+   op * : nat * nat -> nat, comm, assoc, unit s(null);
+
+   op +(x:nat; y:nat):nat =
+      y when x = null
+      else s(+(p(x), y));
+
+   axiom +(x,y) = +(y,x);
+
+   axiom +(x,+(y,z)) = +(+(x,y),z);
+  }
+
+  then 
+
+  {  
+   generated type natlist ::= nil | cons(fst:nat; rest:natlist);
+   
+   var l1,l2:natlist;
+   var n1,n2:nat;
+
+   op app : natlist * natlist -> natlist, assoc, unit nil;
+
+   axiom app(cons(n1,l1),l2) = cons(n1, app(l1,l2));
+
+   op addlast(n:nat; l:natlist):natlist =
+      cons(n,nil) when l = nil
+      else cons(fst(l), addlast(n,rest(l)));
+
+  }
+
+
+view viewit : natlist to list =
+     sorts nat |-> elem,
+           list |-> natlist
+end
+
+
+spec A = 
+sort s;
+
+spec B = 
+sort t;
+
+spec C[A] given B =
+sort c;
+op f : s * t -> c;
+
+spec D[A] given B = 
+sort d;
+op g : s * t -> d;
+
+spec F =
+sort bubu;
+
+view VIEWIT[F]  : C[F] to D[F] =
+     sorts c |-> d,
+     ops   f |-> g
+end

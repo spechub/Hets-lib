@@ -1,0 +1,208 @@
+
+library Invoice
+%% authors: Didier Bert, Hubert Baumeister
+%% date: 5.11.99
+%% Reference: Algebraic Specification in CASL, Chapter of a book
+%% to appear, Springer, FACIT (Formal Approaches to Computing and 
+%% Information Technology), Editors: Marc Frappier, Henri Habrias.
+
+%% %!<latex>$\in$%!
+
+from Basic/Numbers version 0.3 get Nat
+from Basic/StructuredDatatypes version 0.3 get List
+
+spec ORDER = Nat
+then
+  sorts 
+      Order, Product
+  ops   
+      reference : Order -> Product;
+      ordered_qty : Order -> Pos;
+  preds 
+      is_pending, is_invoiced : Order;
+  vars  o : Order
+    . not is_pending(o) <=> is_invoiced(o)
+end
+
+spec STOCK = Nat
+then
+  sorts 
+      Stock, Product
+  ops   
+      qty    : Product * Stock ->? Nat;
+      add    : Product * Pos * Stock ->? Stock;
+      remove : Product * Pos * Stock ->? Stock;
+  pred  
+      __ is_in __ : Product * Stock
+  vars p,p':Product; n:Pos; s:Stock
+    . def qty(p,s) <=> p is_in s
+    . def add(p,n,s) <=> p is_in s
+    . def remove(p,n,s) <=> p is_in s /\ qty(p,s) >= n
+    . qty(p,add(p,n,s)) = qty(p,s) + n if p is_in s
+    . qty(p',add(p,n,s)) = qty(p',s) if p is_in s /\ p' is_in s /\ not(p' = p)
+    . qty(p,remove(p,n,s)) = qty(p,s) -? n if p is_in s /\ qty(p,s) >= n
+    . qty(p',remove(p,n,s)) = qty(p',s) if p is_in s /\ p' is_in s /\ not(p'=p)
+end
+
+
+spec INVOICE = ORDER and STOCK
+then
+  free type Msg ::= success | not_pending | not_referenced | not_enough_qty;
+  free type OSM ::= mk(order_of:Order; stock_of:Stock; msg_of:Msg);
+
+  pred referenced(o:Order; s:Stock) <=> reference(o) is_in s;
+  pred enough_qty(o:Order; s:Stock) <=> 
+                ordered_qty(o) <= qty(reference(o),s);
+  pred invoice_ok(o:Order; s:Stock) <=> 
+                is_pending(o) /\ referenced(o,s) /\ enough_qty(o,s);
+
+  op invoice_order : Order * Stock -> OSM
+
+  vars o:Order; s:Stock
+
+    . is_invoiced(order_of(invoice_order(o,s))) if invoice_ok(o,s)
+    . stock_of(invoice_order(o,s)) = remove(reference(o),ordered_qty(o),s)
+                if invoice_ok(o,s)
+
+    . order_of(invoice_order(o,s)) = o if not invoice_ok(o,s)
+    . stock_of(invoice_order(o,s)) = s if not invoice_ok(o,s)
+
+    . reference(order_of(invoice_order(o,s))) = reference(o)
+    . ordered_qty(order_of(invoice_order(o,s))) = ordered_qty(o)
+
+    . msg_of(invoice_order(o,s)) = success if invoice_ok(o,s)
+    . msg_of(invoice_order(o,s)) = not_pending
+                if not is_pending(o)
+    . msg_of(invoice_order(o,s)) = not_referenced
+                if is_pending(o) /\ not referenced(o,s)
+    . msg_of(invoice_order(o,s)) = not_enough_qty
+                if is_pending(o) /\ referenced(o,s) /\ not enough_qty(o,s)
+
+end
+
+
+
+spec ORDER_QUEUE =
+  { List[ORDER fit Elem |-> Order] with List[Order] |-> OQueue }
+then
+  pred __is_in__  : Order * OQueue
+  vars o,o2:Order; oq:OQueue
+    . not o is_in []
+    . o2 is_in (o::oq) <=> o2 = o \/ o2 is_in oq
+
+%% Auxiliary definitions
+  ops __ <- __ : OQueue * Order -> OQueue;
+      remove   : Order * OQueue -> OQueue; 
+  vars o,o2:Order; oq:OQueue
+    . oq <- o = oq ++ (o::[])
+    . remove(o,[]) = []
+    . remove(o,o2::oq) = o2::remove(o,oq) when not(o=o2)
+                        else remove(o,oq) 
+end
+
+spec QUEUES = ORDER_QUEUE
+then
+  preds unicity, pqueue, iqueue : OQueue
+  vars o:Order; oq:OQueue
+    . unicity([])
+    . unicity(o::oq) <=> not(o is_in oq) /\ unicity(oq)
+    . pqueue(oq) <=> forall x:Order . (x is_in oq => is_pending(x))
+    . iqueue(oq) <=> forall x:Order . (x is_in oq => is_invoiced(x))
+  sorts
+      UQueue = {oq:OQueue . unicity(oq)};
+      PQueue = {uq:UQueue . pqueue(uq)};
+      IQueue = {uq:UQueue . iqueue(uq)};
+end
+
+spec WHS = QUEUES and INVOICE
+then
+  free type GState ::= mk_gs(porders:PQueue; iorders:IQueue; the_stock:Stock);
+  op
+      the_orders(gs:GState):OQueue = porders(gs) ++ iorders(gs)
+  preds
+      referenced(oq:OQueue; s:Stock) <=>
+                forall x:Order . (x is_in oq => referenced(x,s));
+      consistent(gs:GState) <=> unicity(the_orders(gs)) 
+                /\ referenced(the_orders(gs),the_stock(gs));
+  sort
+      VGS = {gs:GState . consistent(gs)};
+
+  pred
+      invoiceable(pq:PQueue; s:Stock) <=>
+                exists o:Order . (o is_in pq /\ enough_qty(o,s))
+  op  first_invoiceable : PQueue * Stock ->? Order
+
+  vars o:Order; pq:PQueue; s:Stock
+    . def first_invoiceable(pq,s) <=> invoiceable(pq,s)
+    . first_invoiceable((o::pq) as PQueue,s) = o when enough_qty(o,s)
+                              else first_invoiceable(pq,s)
+
+  ops
+      new_order       : Product * Pos * VGS -> VGS;
+      cancel_order    : Order * VGS -> VGS;
+      add_qty         : Product * Pos * VGS -> VGS;
+      deal_with_order : VGS -> VGS;
+
+      mk_order        : Product * Pos * VGS -> Order
+
+  vars o,o1,o2:Order; p:Product; n:Pos; vgs:VGS;
+       osm:OSM; s2:Stock
+
+    %% axioms for the mk_order operation
+
+    . is_pending(mk_order(p,n,vgs))
+    . not mk_order(p,n,vgs) is_in the_orders(vgs)
+    . reference(mk_order(p,n,vgs)) = p
+    . ordered_qty(mk_order(p,n,vgs)) = n
+
+    %% axioms for the warehouse operation level
+
+    . new_order(p,n,vgs) = vgs if not p is_in the_stock(vgs)
+    . new_order(p,n,vgs) = mk_gs((porders(vgs) <- mk_order(p,n,vgs)) as PQueue,
+                                 iorders(vgs), the_stock(vgs))
+                                if p is_in the_stock(vgs)
+
+    . cancel_order(o,vgs) =
+                mk_gs(remove(o,porders(vgs)) as PQueue,
+                      iorders(vgs),the_stock(vgs))
+                        when o is_in porders(vgs)
+           else mk_gs(porders(vgs),remove(o,iorders(vgs)) as IQueue,
+                      add(reference(o),ordered_qty(o),the_stock(vgs)))
+                        when o is_in iorders(vgs)
+           else vgs
+
+    . add_qty(p,n,vgs) = vgs if not p is_in the_stock(vgs)
+    . add_qty(p,n,vgs) = mk_gs(porders(vgs),iorders(vgs),
+                               add(p,n,the_stock(vgs)))
+                                if p is_in the_stock(vgs)
+
+    . deal_with_order(vgs) = vgs
+                if not invoiceable(porders(vgs),the_stock(vgs))
+    . ((o1 = first_invoiceable(porders(vgs),the_stock(vgs))
+       /\ osm = invoice_order(o1,the_stock(vgs))
+       /\ o2 = order_of(osm)
+       /\ s2 = stock_of(osm))
+        => deal_with_order(vgs) = mk_gs(remove(o1,porders(vgs)) as PQueue,
+                                        (iorders(vgs) <- o2) as IQueue,
+                                        s2))
+                if invoiceable(porders(vgs),the_stock(vgs))
+
+end
+
+
+
+arch spec Warehouse =
+units
+  NatAlg : Nat;
+  OrderFun : Nat -> ORDER;
+  OrderAlg = OrderFun[NatAlg];
+  StockFun : Nat -> STOCK;
+  StockAlg = StockFun[NatAlg];
+  InvoiceFun : ORDER * STOCK -> INVOICE given  NatAlg;
+  QueuesFun : ORDER -> QUEUES;
+  WhsFun : QUEUES * INVOICE -> WHS given OrderAlg, StockAlg;
+
+result
+  WhsFun [ QueuesFun [OrderAlg] ]
+         [  InvoiceFun [OrderAlg] [StockAlg] ]
+end

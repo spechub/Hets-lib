@@ -1,0 +1,27 @@
+spec PreInt =
+    sorts Nat, Int;
+    op    abs :  Int -> Nat;
+end
+
+
+spec EuclidianRing =
+     sorts Elem, Nat , Int
+     ops   delta: Elem ->? Nat;
+           abs : Int -> Nat
+end
+
+spec ExtEuclidianRing  [EuclidianRing] = {}
+end
+
+spec
+    Int = ExtEuclidianRing [PreInt fit Elem |-> Int, delta |-> abs]
+end
+
+
+spec sp [sort s; op f:s->?s] =
+sort t
+end
+
+spec sp1 =
+  sp [sort s; op g:s->s   fit sort s|-> s, op f:s->?s |->g:s->s ]
+end

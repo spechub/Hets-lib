@@ -1,0 +1,74 @@
+library pushouts
+
+%% Examples testing the pushout check
+
+spec Group =
+sort Elem
+op 0: Elem;
+  __+__: Elem*Elem->Elem
+end
+
+spec ExtGroup[Group] =
+sorts Pos < Nat
+ops 0,1:Nat; 0,1:Pos
+op inv : Elem-> Elem
+end
+
+spec Field =
+sorts NonZeroElem <  Elem
+ops   __*__: NonZeroElem*NonZeroElem->NonZeroElem;
+0:Elem;  1:NonZeroElem;
+  __+__: Elem*Elem->Elem;
+  __*__: Elem*Elem->Elem;
+1:Elem;
+end
+
+spec ExtField[Field] =
+ExtGroup[Field fit sort Elem |->NonZeroElem, op 0:Elem |-> 1, __+__ |-> __*__]
+end
+
+spec A = {sorts s,t} end
+
+spec B = {sort s} end
+
+spec C[A] = {ops a:s; a:t} end
+
+spec D = C[B] end  
+%[ This is no pushout, since a:s and a:t are identified,
+   while they can be mapped differently into a spec
+   while still identifying s and t  ]%
+
+
+
+spec A1 = {sorts s; ops a,b:s} end
+
+spec B1 = {sort s; op x:s} end
+
+spec C1[A1] = {ops c[a],c[b]:s} end
+
+spec D1 = C1[B1] end
+%[ This is no pushout, since c[a]:s and c[b]:s
+   are identified ]%
+
+%[
+
+spec Function[sort S] =
+
+  ExtFiniteMap[sort S][sort T fit sort T|->S]
+                with sort FiniteMap[S,S]|-> Function[S]
+...
+
+The instantiation does not give a pushout, because
+e.g. FinSet[S] and FinSet[T] are identified, while
+in the pushout they would be distinct.
+
+A workaround is to use
+
+spec Function[sort S] =
+
+  ExtFiniteMap[sort S][sort T]
+                with sorts T |-> S, FinSet[T] |-> FinSet[S],
+                           FiniteMap[S,T]|-> Function[S]
+...
+
+]%

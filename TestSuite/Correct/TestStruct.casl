@@ -1,0 +1,58 @@
+library TestStruct
+
+%% Provided by Till Mossakowski
+
+
+%% Annotations
+
+spec sp =
+   sort s
+   then %implies
+   forall x:s . true
+   then %cons
+   . true
+   then %def
+   . true
+end
+
+
+
+spec EuclidianRing =
+     sorts Elem, Nat , Int
+     ops   delta: Elem ->? Nat;
+           abs : Int -> Nat
+end
+
+spec ExtEuclidianRing  [EuclidianRing] = {}
+end
+
+spec
+    Int = ExtEuclidianRing [PreInt fit Elem |-> Int, delta |-> abs]
+end
+
+spec COS =
+  { sort s, t; op c : s; } hide op c : t
+end
+ 
+spec sp [sort s,t; op f:s->?t] =
+sort t
+end
+
+spec sp1 =
+  sp [sort t,u; op g:u->t   fit sort s|-> u, op f:s->?t |->g:u->t ]
+end
+
+view v : {sort s; op f:s->?s} to {sort s; op g:s->s} =
+sort s|-> s, op f:s->?s |->g:s->s
+end
+
+spec sp1a = sp[view v]
+end
+
+spec sp2 = sort s; op f:s->?s; sort t with sort s|-> s, op f |->g
+and sort s; op g:s->s
+end
+
+spec sp3 = sort s ; op f:s->s
+and sort s; op f:s->?s
+end
