@@ -420,8 +420,8 @@ then %def
 
   . M - x = N <=>
      (forall y: Elem .
-        x=y     => freq(N,y)=freq(M,x) -! 1 /\
-        not x=y => freq(N,y)=freq(M,y))           %(removeElem_def_Bag)% 
+        (x=y     => freq(N,y)=freq(M,x) -! 1) /\
+        (not x=y => freq(N,y)=freq(M,y)))           %(removeElem_def_Bag)% 
 
   . M - N = O <=>
      (forall x: Elem .
