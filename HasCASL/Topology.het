@@ -1,0 +1,46 @@
+library HasCASL/Topology
+
+from HasCASL/Set get Set
+
+logic HasCASL
+
+spec TopologicalSpace_Ngh =
+  Set then
+  var S : Type
+  type TopologicalSpace S = 
+       { Ngh: S -> Set (Set S) . 
+            (forall x:S . allSet isIn Ngh(x))
+         /\ (forall x:S . forall U,V:Set S . 
+               U subset V /\ U isIn Ngh(x) => V isIn Ngh(x))
+         /\ (forall x:S . forall U:Set S . U isIn Ngh(x) => x isIn U)
+         /\ (forall x:S . forall U,V:Set S . 
+               U isIn Ngh(x) /\ V isIn Ngh(x) => U intersection V isIn Ngh(x))
+         /\ (forall x:S . forall U:Set S . U isIn Ngh(x) =>
+               exists V:Set S . V isIn Ngh(x) 
+               /\ forall y:S . y isIn V => U isIN Ngh(y))
+       }
+then %def
+  op int(X:Set S):Set S = \ x:S . X isIn Ngh(x)
+  op cls(X:Set S):Set S = 
+           \ x:S . forall Y:Set S . Y isIn Ngh(x) => not Y disjoint X 
+end
+
+
+spec TopologicalSpace_Kuratowski =
+  Set then
+  op cls : Set S -> Set S
+  forall X,Y:Set S
+  . cls(emptySet) = emptySet
+  . X subset cls(X)
+  . cls(cls(X)) = cls(X)
+  . cls(X union Y) = cls(X) union cls(Y)
+then %def
+  op int(X:Set S):Set S = allSet \\ cls(allSet \\ X)
+then %implies
+  forall X,Y:Set S
+  . cls(X intersection Y) subset cls(X) intersection cls(Y)
+  . X subset Y => cls(X) subset cls(Y)
+end
+
+
+view TopologicalSpace_Kuratowski to TopologicalSpace
