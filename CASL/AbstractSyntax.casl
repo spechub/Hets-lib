@@ -1,0 +1,273 @@
+library CASL/AbstractSyntax
+
+from Basic/Numbers get Nat
+from Basic/StructuredDatatypes get List
+
+spec NeList[sort Elem] given Nat =
+   List[sort Elem]
+then
+  sort NeList[Elem] = {l:List[Elem] . not l=[]}
+end
+
+spec BasicAS =
+  sort WORDS
+and
+  NeList[sort BASIC_ITEMS fit Elem |-> BASIC_ITEMS]
+and
+  NeList[sort DATATYPE_DECL fit Elem |-> DATATYPE_DECL]
+and
+  NeList[sort SIG_ITEMS fit Elem |-> SIG_ITEMS]
+and
+  NeList[sort VAR_DECL fit Elem |-> VAR_DECL]
+and
+  NeList[sort FORMULA fit Elem |-> FORMULA]
+and
+  NeList[sort SORT_ITEM fit Elem |-> SORT_ITEM]
+and
+  NeList[sort OP_ITEM fit Elem |-> OP_ITEM]
+and
+  NeList[sort SORT fit Elem |-> SORT]
+and
+  NeList[sort OP_NAME fit Elem |-> OP_NAME]
+and
+  NeList[sort OP_ATTR fit Elem |-> OP_ATTR]
+and
+  NeList[sort ARG_DECL fit Elem |-> ARG_DECL]
+and
+  NeList[sort PRED_NAME fit Elem |-> PRED_NAME]
+and
+  NeList[sort ALTERNATIVE fit Elem |-> ALTERNATIVE]
+and
+  NeList[sort COMPONENTS fit Elem |-> COMPONENTS]
+and
+  NeList[sort VAR_DECL fit Elem |-> VAR_DECL]
+and
+  NeList[sort MIX_TOKEN fit Elem |-> MIX_TOKEN]
+and
+  NeList[sort ID fit Elem |-> ID]
+and
+  NeList[sort TERM fit Elem |-> TERM]
+and
+  NeList[sort VAR fit Elem |-> VAR]
+and
+  NeList[sort PRED_ITEM fit Elem |-> PRED_ITEM]
+then  
+  free types 
+  BASIC_SPEC       ::= basic_spec(List[BASIC_ITEMS]);
+
+  BASIC_ITEMS      ::= sort SIG_ITEMS 
+                   | free_datatype(NeList[DATATYPE_DECL])
+                   | Sort_gen(NeList[SIG_ITEMS])
+                   | var_items(NeList[VAR_DECL])
+                   | local_var_axioms(NeList[VAR_DECL]; NeList[FORMULA])
+                   | axiom_items(NeList[FORMULA]);
+
+  SIG_ITEMS        ::= Sort_items(NeList[SORT_ITEM])
+                   | op_items(NeList[OP_ITEM])
+                   | pred_items(NeList[PRED_ITEM])
+                   | datatype_items(NeList[DATATYPE_DECL]);
+
+  SORT_ITEM        ::= Sort_decl(NeList[SORT])
+                   | subsort_decl(NeList[SORT]; SORT)
+                   | subsort_defn(SORT; VAR; SORT; FORMULA)
+                   | iso_decl(NeList[SORT]);
+
+  OP_ITEM          ::= op_decl(NeList[OP_NAME]; OP_TYPE; List[OP_ATTR])
+                   | op_defn(OP_NAME; OP_HEAD; TERM);
+  OP_TYPE          ::= total_op_type(SORT_LIST; SORT)
+                   | partial_op_type(SORT_LIST; SORT);
+
+  SORT_LIST        ::= Sort_list(List[SORT]);
+
+  OP_ATTR          ::= assoc_op_attr | comm_op_attr | idem_op_attr
+                   | unit_op_attr(TERM);
+
+  OP_HEAD          ::= total_op_head(List[ARG_DECL]; SORT)
+                   | partial_op_head(List[ARG_DECL]; SORT);
+
+  ARG_DECL         ::= arg_decl(NeList[VAR]; SORT);
+
+  PRED_ITEM        ::= pred_decl(NeList[PRED_NAME]; PRED_TYPE)
+                   | pred_defn(PRED_NAME; PRED_HEAD; FORMULA);
+  PRED_TYPE        ::= pred_type(SORT_LIST);
+  PRED_HEAD        ::= pred_head(List[ARG_DECL]);
+
+  DATATYPE_DECL    ::= datatype_decl(SORT; NeList[ALTERNATIVE]);
+
+  ALTERNATIVE      ::= total_construct(OP_NAME; List[COMPONENTS])
+                   | partial_construct(OP_NAME; NeList[COMPONENTS])
+                   | subsorts(NeList[SORT]);
+
+  COMPONENTS       ::= total_select(NeList[OP_NAME]; SORT)
+                   | partial_select(NeList[OP_NAME]; SORT)
+                   | sort SORT;
+
+  VAR_DECL         ::= var_decl(NeList[VAR]; SORT);
+
+  FORMULA          ::= quantification(QUANTIFIER; NeList[VAR_DECL]; FORMULA)
+                   | conjunction(NeList[FORMULA])
+                   | disjunction(NeList[FORMULA])
+                   | implication(FORMULA; FORMULA)
+                   | equivalence(FORMULA; FORMULA)
+                   | negation(FORMULA)
+                   | true_atom | false_atom
+                   | predication(PRED_SYMB; TERMS)
+                   | definedness(TERM)
+                   | existl_equation(TERM; TERM)
+                   | strong_equation(TERM; TERM)
+                   | membership(TERM; SORT);
+
+  QUANTIFIER       ::= universal | existential | unique_existential;
+
+  PRED_SYMB        ::= sort PRED_NAME | qual_pred_name(PRED_NAME; PRED_TYPE);
+
+  TERMS            ::= terms(List[TERM]);
+  TERM             ::= sort SIMPLE_ID
+                   | qual_var(VAR; SORT)
+                   | application(OP_SYMB; TERMS)
+                   | sorted_term(TERM; SORT)
+                   | conditional(TERM; FORMULA; TERM)
+                   | cast(TERM; SORT);
+
+  OP_SYMB          ::= sort OP_NAME | qual_op_name(OP_NAME; OP_TYPE);
+
+  SORT             ::= sort SORT_ID
+                   | sort COMP_SORT_ID;
+  OP_NAME          ::= sort ID;
+  PRED_NAME        ::= sort ID;
+  VAR              ::= sort SIMPLE_ID;
+
+  SORT_ID          ::= sort WORDS;
+  ID               ::= id(NeList[MIX_TOKEN]);
+  SIMPLE_ID        ::= sort WORDS;
+  MIX_TOKEN        ::= sort TOKEN | sort PLACE
+                   | bracket_id(ID) | empty_brackets
+                   | braced_id(ID) | empty_braces
+                   | sort COMP_MIX_TOKEN;
+  TOKEN            ::= sort WORDS | sort DOT_WORDS | sort SIGNS | sort DIGIT | sort QUOTED_CHAR;
+
+  COMP_SORT_ID     ::= comp_sort_id(WORDS; NeList[ID]);
+  COMP_MIX_TOKEN   ::= comp_mix_token(NeList[ID])
+end
+
+spec StructuredAS =
+  NeList[sort SYMB_OR_MAP fit Elem |-> SYMB_OR_MAP]
+and
+  NeList[sort SYMB fit Elem |-> SYMB]
+and
+  NeList[sort SYMB_ITEMS fit Elem |-> SYMB_ITEMS]
+and
+  NeList[sort SYMB_MAP_ITEMS fit Elem |-> SYMB_MAP_ITEMS]
+and
+  NeList[sort FIT_ARG fit Elem |-> FIT_ARG]
+and
+  NeList[sort SPEC fit Elem |-> SPEC]
+and
+  BasicAS 
+then
+  free types
+  SPEC             ::= sort BASIC_SPEC
+                   | translation(SPEC; RENAMING)
+                   | reduction(SPEC; RESTRICTION)
+                   | union(NeList[SPEC])
+                   | extension(NeList[SPEC])
+                   | free_spec(SPEC)
+                   | local_spec(SPEC; SPEC)
+                   | closed_spec(SPEC)
+                   | spec_inst(SPEC_NAME; List[FIT_ARG]);
+
+  RENAMING         ::= renaming(NeList[SYMB_MAP_ITEMS]);
+
+  RESTRICTION      ::= Hide(NeList[SYMB_ITEMS])
+                   | Reveal(NeList[SYMB_MAP_ITEMS]);
+
+  SPEC_DEFN        ::= spec_defn(SPEC_NAME; GENERICITY; SPEC);
+  GENERICITY       ::= genericity(PARAMS; IMPORTED);
+  PARAMS           ::= params(List[SPEC]);
+  IMPORTED         ::= imported(List[SPEC]);
+
+  FIT_ARG          ::= fit_spec(SPEC; List[SYMB_MAP_ITEMS])
+                   | fit_view(VIEW_NAME; List[FIT_ARG]);
+
+  VIEW_DEFN        ::= view_defn(VIEW_NAME; GENERICITY; VIEW_TYPE;
+                               List[SYMB_MAP_ITEMS]);
+  VIEW_TYPE        ::= view_type(SPEC; SPEC);
+
+  SYMB_ITEMS       ::= symb_items(SYMB_KIND; NeList[SYMB]);
+  SYMB_MAP_ITEMS   ::= symb_map_items(SYMB_KIND; NeList[SYMB_OR_MAP]);
+  SYMB_KIND        ::= implicit | Sorts_kind | ops_kind | preds_kind;
+
+  SYMB             ::= sort ID | qual_id(ID; TYPE);
+  TYPE             ::= sort OP_TYPE | sort PRED_TYPE;
+  SYMB_MAP         ::= symb_map(SYMB; SYMB);
+  SYMB_OR_MAP      ::= sort SYMB | sort SYMB_MAP;
+
+  SPEC_NAME        ::= sort SIMPLE_ID;
+  VIEW_NAME        ::= sort SIMPLE_ID
+end
+
+spec ArchitecturalAS =
+  NeList[sort FIT_ARG_UNIT fit Elem |-> FIT_ARG_UNIT]
+and
+  NeList[sort UNIT_DEFN fit Elem |-> UNIT_DEFN]
+and
+  NeList[sort UNIT_TERM fit Elem |-> UNIT_TERM]
+and
+  NeList[sort UNIT_BINDING fit Elem |-> UNIT_BINDING]
+and
+  NeList[sort UNIT_DECL_DEFN fit Elem |-> UNIT_DECL_DEFN]
+and
+  StructuredAS 
+then
+  free types
+  ARCH_SPEC_DEFN   ::= arch_spec_defn(ARCH_SPEC_NAME; ARCH_SPEC);
+  ARCH_SPEC        ::= basic_arch_spec(NeList[UNIT_DECL_DEFN]; RESULT_UNIT)
+                   | sort ARCH_SPEC_NAME;
+  UNIT_DECL_DEFN   ::= sort UNIT_DECL | sort UNIT_DEFN;
+
+  UNIT_DECL        ::= unit_decl(UNIT_NAME; UNIT_SPEC; UNIT_IMPORTED);
+  UNIT_IMPORTED    ::= unit_imported(List[UNIT_TERM]);
+  UNIT_DEFN        ::= unit_defn(UNIT_NAME; UNIT_EXPRESSION);
+
+  UNIT_SPEC_DEFN   ::= unit_spec_defn(SPEC_NAME; UNIT_SPEC);
+  UNIT_SPEC        ::= sort UNIT_TYPE | sort SPEC_NAME | arch_unit_spec(ARCH_SPEC)
+                   | closed_unit_spec(UNIT_SPEC);
+  UNIT_TYPE        ::= unit_type(List[SPEC]; SPEC);
+
+  RESULT_UNIT      ::= result_unit(UNIT_EXPRESSION);
+  UNIT_EXPRESSION  ::= unit_expression(List[UNIT_BINDING]; UNIT_TERM);
+  UNIT_BINDING     ::= unit_binding(UNIT_NAME; UNIT_SPEC);
+  UNIT_TERM        ::= unit_translation(UNIT_TERM; RENAMING)
+                   | unit_reduction(UNIT_TERM; RESTRICTION)
+                   | amalgamation(NeList[UNIT_TERM])
+                   | local_unit(NeList[UNIT_DEFN]; UNIT_TERM)
+                   | unit_appl(UNIT_NAME; List[FIT_ARG_UNIT]);
+  FIT_ARG_UNIT     ::= fit_arg_unit(UNIT_TERM; List[SYMB_MAP_ITEMS]);
+
+  ARCH_SPEC_NAME   ::= sort SIMPLE_ID;
+  UNIT_NAME        ::= sort SIMPLE_ID
+end
+
+spec LibraryAS =
+  NeList[sort NUMBER fit Elem |-> NUMBER]
+and
+  NeList[sort ITEM_NAME_OR_MAP fit Elem |-> ITEM_NAME_OR_MAP]
+and
+  NeList[sort LIB_ITEM fit Elem |-> LIB_ITEM]
+and
+  ArchitecturalAS
+then
+  sorts PATH; URL
+  free types
+  LIB_DEFN         ::= lib_defn(LIB_NAME; List[LIB_ITEM]);
+  LIB_ITEM         ::= sort SPEC_DEFN | sort VIEW_DEFN
+                   | sort ARCH_SPEC_DEFN | sort UNIT_SPEC_DEFN
+                   | download_items(LIB_NAME; NeList[ITEM_NAME_OR_MAP]);
+  ITEM_NAME_OR_MAP ::= sort ITEM_NAME | item_name_map(ITEM_NAME; ITEM_NAME);
+  ITEM_NAME        ::= sort SIMPLE_ID;
+
+  LIB_NAME         ::= sort LIB_ID | sort LIB_VERSION;
+  LIB_VERSION      ::= lib_version(LIB_ID; VERSION_NUMBER);
+  VERSION_NUMBER   ::= version_number(NeList[NUMBER]);
+  LIB_ID           ::= direct_link(URL) | indirect_link(PATH)
+end
