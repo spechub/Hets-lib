@@ -27,9 +27,11 @@ spec Nat_Word_1 =
     Generic_Monoid [Natural] with  Monoid |-> Nat_Word
 end
 
+%[
 spec This_Is_Wrong =
     Generic_Monoid [Monoid]
 end
+]%
 
 spec Generic_Commutative_Monoid [sort Elem] =
     Generic_Monoid [sort Elem]
@@ -98,9 +100,11 @@ spec Set_and_List [sort Elem] =
     Generated_Set [sort Elem] and List_Selectors [sort Elem]
 end
 
+%[
 spec This_Is_Still_Wrong =
     Generic_Monoid [Generic_Monoid [sort Elem] fit  Elem |-> Monoid]
 end
+]%
 
 spec List_Rev [sort Elem] =
     free type List[Elem] ::= empty | cons(head:?Elem; tail:?List[Elem])
