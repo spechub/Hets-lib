@@ -20,9 +20,9 @@ end
 arch spec A =
   units
     u  : SP;
-    u1 : SP1;
+    u1 : SP1 given u;
     p1 : SP * SP1 -> SP2;
-    p2 : PSP;
+    p2 : PSP given u;
     i : SP2 given u, u1;
     u2 : arch spec {
             units un2 : {sort s}
@@ -30,7 +30,7 @@ arch spec A =
     u3 = p2[u][u fit t |-> s];
     u4 = local u5 = u and u1 within p2[u][u5];
   result
-    lambda x:SP; y:SP1 . { p2[x][y] and u } with s|-> u reveal u hide u
+    lambda y:{sort t} . { p2[u][y and u] and u } with s|-> v reveal u hide u
                          and y
 end
 
