@@ -288,7 +288,7 @@ then %implies
   forall M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
    . M[t1/s][t2/s] = M[t2/s]                            %(FM_overwrite)%
    . M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2      %(FM_comm)%
-   . def eval(s,M) <=> exists t:T . [s/t] eps M         %(eval_dom)%
+   . def eval(s,M) <=> exists t:T . [t/s] eps M         %(eval_dom)%
 end
 
 
