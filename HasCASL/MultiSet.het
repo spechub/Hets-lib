@@ -21,7 +21,7 @@ then %def
 
  forall x,y : Elem; B,C,D,E:MultiSet Elem; S: Set Elem
 
-     . freq(x,B) = if def B x then B x else 0     %(freq_def)%
+     . freq(x,B) = B x when def B x else 0        %(freq_def)%
      . freq(x,B + C) = freq(x,B) + freq(x,C)      %(freq_union)%
 
      . x isIn B <=> freq(x,B) > 0                     %(MultiSet_isIn)%
@@ -29,7 +29,7 @@ then %def
      . B <= C <=> 
        forall x: Elem . freq(x,B) <= freq(x,C)         %(MultiSet_subseteq)%
 
-     . freq (x,setToMultiSet S) = if x isIn S then 1 else 0
+     . freq (x,setToMultiSet S) = 1 when x isIn S else 0
 
      . B intersection C = D <=> 
        forall x: Elem . freq(x,D) = min (freq(x,B), freq(x,C))

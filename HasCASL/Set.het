@@ -95,13 +95,13 @@ spec Map =
   . y isIn image f s <=> exists x:S . x isIn s /\ f x = y
   . not def emptyMap x
   . f :: s --> t <=> forall x:S . x isIn s => f x isIn t
-  . (f[x/y]) x' = if x=x' then y else f x
-  . (f - x) x' = if x=x' then undef() else f x
-  . (f intersectionMap g) x = if f x = g x then f x else undef()
+  . (f[x/y]) x' = y when x=x' else f x
+  . (f - x) x' = undef() when x=x' else f x
+  . (f intersectionMap g) x = f x when f x = g x else undef()
   . def (f unionMap g) <=> forall x:S. def f x /\ def g x => f x = g x
-  . def (f unionMap g) => (f unionMap g) x = if def f x then f x else g x
+  . def (f unionMap g) => (f unionMap g) x = f x when def f x else g x
   . (h o g) x = h(g x)
-  . (f || s) x = if x isIn s then f x else undef()
+  . (f || s) x = f x when x isIn s else undef()
   %{ the kernel is a PER with same domain as the function, 
      hence the existential equation}%
   . (x,x') isIn ker f <=> f x =e= f x'
@@ -132,7 +132,7 @@ then
       sum : (a->?Nat) -> Pred a ->? Nat
   forall f:Nat->?Nat; s:Set Nat; n,x:Nat; m:a->?Nat; p: Pred a
   . sumN f 0 = 0
-  . sumN f (suc(n)) = sumN f n + if def f (suc n) then f (suc n) else 0
+  . sumN f (suc(n)) = sumN f n + (f (suc n) when def f (suc n) else 0)
   . sumSet s = x <=> 
       exists f:Nat->?Nat; n:Nat . 
          (forall m:Nat . def f m => m<n) /\ range f subset s /\ injective f 

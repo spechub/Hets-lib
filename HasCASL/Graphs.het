@@ -155,8 +155,8 @@ then
   . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
   . nodeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = hn
   . edgeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = he
-  . id g = (g,\n:N1 . if n isIn nodes g then n else undefined,
-              \e:E1 . if e isIn edges g then e else undefined,
+  . id g = (g,\n:N1 . n when n isIn nodes g else undefined,
+              \e:E1 . e when e isIn edges g else undefined,
             g) as HomHom N1 E1
   . def (h2 o h1) <=> cod h1 = dom h2
   . def (h2 o h1) => 

@@ -24,12 +24,11 @@ then
     let (p1,pre1,post1) = n1;
         (p2,pre2,post2) = n2
     in (p1 union p2,
-        \(t:T) . if def pre1(t) then if def pre2(t) then pre1(t) union pre2(t)
-                                                else pre1(t)
-                            else pre2(t),
-        \(t:T) . if def post1(t) then if def post2(t) then post1(t) union post2(t)
-                                                  else post1(t)
-                            else post2(t)) 
+        \(t:T) . (pre1(t) union pre2(t) when def pre2(t) else pre1(t))
+	         when def pre1(t) else pre2(t),
+
+        \(t:T) . (post1(t) union post2(t) when def post2(t) else post1(t))
+	         when def post1(t) else post2(t)) 
         as SimpleNet
 end
 

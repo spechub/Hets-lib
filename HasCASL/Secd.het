@@ -127,10 +127,10 @@ then %implies
   spec LeftReduction = Term and Transitivity and Recursion then 
   op leftRed: ClosedTerm ->? ClosedTerm
   program leftRed (App (App f a) c) = App (leftRed (App f a))c;
-%[     leftRed(App (Lam x b)(App f a)) = 
+     leftRed(App (Lam x b)(App f a)) = 
           App (Lam x b) (leftRed (App f a));		
      leftRed(App (Lam x b)(Lam y t)) = 
-          (subst (Lam y t) x b) as ClosedTerm ]%
+          (subst (Lam y t) x b) as ClosedTerm
   op leftRel,reducesTo: Pred (ClosedTerm * ClosedTerm)
   forall a,b : ClosedTerm
   . leftRel(a, b) <=> leftRed a = b
@@ -159,19 +159,18 @@ type Stack := List Clos
 type Dump := List (Stack * Env * Control)     
 op step : Dump ->? Dump
 program step((s, e, Var x :: c) :: d) = (lookup e x :: s, e, c) :: d;
-%[step((s, e, Lam x b :: c) :: d) =  
+step((s, e, Lam x b :: c) :: d) =  
      (Clos(Lam x b) e :: s, e, c) :: d; 
 step((s, e, (App f a):: c) :: d) = (s, e, a :: f :: Aps :: c) :: d; %(apply)%
 step((Clos(Lam x b) e_0 :: v :: s, e, Aps :: c) :: d) =
     ([], Add x v e_0, b :: []) :: (s, e, c) :: d;             %(call)%
 step((v :: [], e_0, []) :: (s, e, c) :: d) = (v :: s, e, c) :: d %(return)%
-]%
 
 spec Repeat[Step] = Recursion and Nat then 
 ops repeat : Pred State -> State ->? State;
     steps : Pred State -> State ->? Nat
-program repeat p s = if p s then s else repeat p(step s); 
-   steps p s = if p s then 0 else 1 + steps p(step s) 
+program repeat p s = s when p s else repeat p(step s); 
+   steps p s = 0 when p s else 1 + steps p(step s) 
 
   view DumpStep : Step to Dump =
       sort State |-> Dump
