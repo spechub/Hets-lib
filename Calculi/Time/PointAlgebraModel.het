@@ -23,37 +23,40 @@ from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTime,
 
 logic HasCASL
 
+spec Relation[sort Elem] = 
+     Set	
+then
+     type Relation ::= abs(int:Set(Elem*Elem))
+end
 
 spec JEPDBase[sort Elem] =
-     Set
+     Relation[sort Elem]
 then
-     type BaseRel 
-then
+     type BaseRel < Relation
      forall x,y:Elem; r,s:BaseRel
-     . exists r:BaseRel . (x,y) isIn r			%(JointlyExhaustive)%
-     . not r = s => r intersection s = emptySet		%(PairwiseDisjoint)%
+     . not int(r) = emptySet
+     . exists r:BaseRel . (x,y) isIn int(r)			%(JointlyExhaustive)%
+     . not r = s => int(r) intersection int(s) = emptySet	%(PairwiseDisjoint)%
 end
 
 
-
 spec FullRelationAlgebra[sort Elem] =
-     Set
+     Relation[sort Elem]
 then %def
-     type Relation = {X:Set(Elem*Elem) . X = X}
      ops
 	 0,1,id:Relation;
          __cup__,__cap__,__cmps__:  Relation * Relation -> Relation;
          compl__,conv__:Relation -> Relation;
 
      forall r,s:Relation; x,y:Elem
-     . 0 = emptySet
-     . 1 = allSet
-     . compl(r) = 1 \\ r
-     . r cup s = r union s
-     . r cap s = r intersection s
-     . (x,y) isIn id <=> x = y
-     . (x,y) isIn r cmps s <=> exists z:Elem . (x,z) isIn r /\ (z,y) isIn s 
-     . (x,y) isIn conv(r) <=> (y,x) isIn r
+     . int(0) = emptySet:Set(Elem*Elem)
+     . int(1) = allSet:Set(Elem*Elem)
+     . int(r cup s) = int(r) union int(s)
+     . int(r cap s) = int(r) intersection int(s)
+     . int(compl(r)) = int(1) \\ int(r)
+     . (x,y) isIn int(r cmps s) <=> exists z:Elem . (x,z) isIn int(r) /\ (z,y) isIn int(s) 
+     . (x,y) isIn int(conv(r)) <=> (y,x) isIn int(r)
+     . (x,y) isIn int(id) <=> x = y
 
 then %implies 
      ops
@@ -82,7 +85,7 @@ then %implies
      forall x,y:Rel
      . compl(compl(x)) = x 
      . conv(conv(x)) = x 
-%%     . exists y:Relation . x =y
+     . exists y:Relation . x = y
 end
    
 
@@ -94,16 +97,22 @@ view AlgebraOfBinaryRelation_as_BoolenAlgebra:
 end
 
 
-%(	
 
-spec AlgebraOfBinaryRelationWithComposition[sort Elem] = %def
-      AlgebraOfBinaryRelation[sort Elem]
-then %def
+%(
+
+
+
+spec AlgebraOfBinaryRelationWithComposition[sort Elem] = 
+     Set then 
+      type Rel < Set(Elem*Elem) 	
      ops
-	id:Rel; 
+	0,1,id:Rel; 
         conv__:Rel -> Rel;         
 	__cmps__:  Rel * Rel -> Rel
+      . 0 as Rel = emptySet as Set(Elem*Elem)
+end 
 
+%(
      forall r,s:Rel
      . id =  \(x,y):Elem*Elem . x = y
      . r cmps s = \(x,y):Elem*Elem . ( exists z:Elem . (x,z) isIn r /\ (z,y) isIn s )
@@ -116,9 +125,6 @@ then %implies
      . conv(conv(x)) = x
     . conv(id) = id
 end
-
-
-
 
 
 

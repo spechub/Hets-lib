@@ -127,16 +127,9 @@ then %def
      . compl(y) = 1 - y
 
 then %implies
-     forall x,y:BaseRel; u,v:GenRel
+     forall x,y:BaseRel; r:GenRel
      . not x = y => x cap y = 0		
-     . u isSubsetOf 1
-     . compl(compl(u)) = u
-     . compl(0) = 1
-     . compl(1) = 0
-     . compl(u cup v) = compl(u) cap compl(v)	
-     . compl(u cap v) = compl(u) cup compl(v)	
-     . (u cup x) cap (v cup y) = 
-		  (u cap v) cup (u cap y) cup (x cap v) cup (x cap y)
+     . r isSubsetOf 1
 then
      ops	 	 
          id      : BaseRel;
@@ -150,6 +143,13 @@ then
 end
 
 
+view RelationSet_as_BoolenAlgebraWithCompl:
+     BooleanAlgebraWithCompl to RelationSet[sort BaseRel]
+= 
+     Elem |-> GenRel
+end
+
+
 spec GenerateRelationAlgebra[RelationSet[sort BaseRel]] = %mono
      ops 
 	  id	  : GenRel;
@@ -160,9 +160,6 @@ spec GenerateRelationAlgebra[RelationSet[sort BaseRel]] = %mono
      . (u cup x) cmps (v cup y) =
 	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
      . conv(u cup x) = conv(u) cup conv(x)
-
-then %implies
-     { RelationAlgebra with sort Rel |-> GenRel }
 end
 
 
@@ -171,10 +168,7 @@ spec GeneratedRelationAlgebra =
 
 
 view GeneratedRelationAlgebra_as_RelationAlgebra:
-     RelationAlgebra 
-to
-     GeneratedRelationAlgebra 
-	
+     RelationAlgebra to GeneratedRelationAlgebra 
 =
      sort Rel |-> GenRel
 end 
@@ -201,16 +195,17 @@ to
 end 
 
 
+
 spec CompositionTable =
      sorts BaseRel < GenRel
-     ops
-         id:BaseRel;
-         0,1:GenRel;
-         conv__:   BaseRel -> BaseRel;
+     ops 
+	 id:BaseRel;
+	 0,1:GenRel;
+	 conv__:   BaseRel -> BaseRel;
          compl__:   GenRel -> GenRel;
-         __cmps__: BaseRel * BaseRel -> GenRel;
-         __cup__:  GenRel * GenRel -> GenRel, assoc, comm, unit 1;
-         __cap__:  GenRel * GenRel -> GenRel, assoc, comm, unit 0;
+	 __cmps__: BaseRel * BaseRel -> GenRel;
+	 __cup__:  GenRel * GenRel -> GenRel, assoc, idem, comm, unit 1;
+	 __cap__:  GenRel * GenRel -> GenRel, assoc, idem, comm, unit 0;  
 end
 
 

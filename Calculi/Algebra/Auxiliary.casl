@@ -26,6 +26,8 @@ spec ExtBooleanAlgebraByCompl[BooleanAlgebra] = %def
                                             %(compl_def_ExtBooleanAlgebra)%
 then %implies
      forall x,y: Elem
+     . compl(0) = 1
+     . compl(1) = 0
      . compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%
      . compl(x cup y) = compl(x) cap compl(y)             %(de_Morgan2)%
      . compl(compl(x)) = x        %(involution_compl_ExtBooleanAlgebra)%
