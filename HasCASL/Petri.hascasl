@@ -1,20 +1,24 @@
-spec Petri Net = Monoid+ Map then
-var P,T : Type
-type Net P T = {(p,pre,post) : Set P  *  (T ->? Mon P) * (T ->? Mon P)  
-                    	.dom pre=dom post 
-                     	pre :: dom  pre  -> mon p 
+spec PetriNet = 
+  Monoid and Map 
+then
+  sorts P,T 
+  type Net = {(p,pre,post) : Set P  *  (T ->? Mon P) * (T ->? Mon P)  
+                      	. dom pre=dom post /\
+                     	pre :: dom  pre  -> mon p /\
                      	post :: dom post  -> mon p }
+end
 
-spec Petri System = PetriNet then
-var P,T : Type
-type Sys P T = {(n,m) : Net P T  *  Mon P  
-                       .m isIn mon p}
+spec PetriSystem = 
+  PetriNet 
+then
+  type Sys = {((p,pre,post),m) : Net P T  *  Mon P  
+                          . m isIn mon p}
 
-ops  marking  :  Sys  P T  ->  Mon P 
-        __[__>  : Sys  P T  *  T - > Sys  P T }
+  ops  marking  : Sys  P T  ->  Mon P;
+        __[__>  : Sys  P T  *  T - > Sys  P T
 
-forall (n,m):Sys P T; m: Mon P; t:T
-  .marking(n,m)=m
-  .def (n,m)[t>  <=> t  isIn dom pre  /\ pre(t) <  m
-  .def (n,m)[t> => (n,m)[t> = m - pre(t) + post(t)
- 
+  forall sys:Sys P T; n:Net P T; m:Mon P; t:T
+  . marking ((n,m) as Sys P T) = m
+  . def sys[t> <=> t isIn dom pre  /\ pre(t) < marking(sys)
+  . def sys[t> => sys[t> = (net(sys), marking(sys) - pre(t) + post(t))
+end 
