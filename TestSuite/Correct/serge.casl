@@ -10,7 +10,7 @@ spec list =
 then
 
   {
-   generated type list ::= nil | cons(fst:elem; rest:list);
+   generated type list ::= nil | cons(fst:?elem; rest:?list);
    
    var l1,l2:list;
    var n1,n2:elem;
@@ -29,7 +29,7 @@ then
 spec natlist = 
 
   {
-   generated type nat ::= null | s(p:nat);
+   generated type nat ::= null | s(p:?nat);
 
    var x,y,z:nat;
 
@@ -47,7 +47,7 @@ spec natlist =
   then 
 
   {  
-   generated type natlist ::= nil | cons(fst:nat; rest:natlist);
+   generated type natlist ::= nil | cons(fst:?nat; rest:?natlist);
    
    var l1,l2:natlist;
    var n1,n2:nat;
