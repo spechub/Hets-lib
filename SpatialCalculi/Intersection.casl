@@ -53,4 +53,36 @@ then
   . overlap!1!2 = 1
   . overlap!2!1 = 1
   . overlap!2!2 = 1
+
+%% composition via matrix multiplication?
+end
+
+from HasCASL/TopologicalSpaces get RichTopologicalSpace
+
+logic HasCASL
+
+view FourIntersection_in_TopologicalSpace : 
+      { FourIntersection reveal disjoint , contains , inside , equal , 
+                                meet , covers , covered_by , overlap }
+ to 
+     { RichTopologicalSpace then
+       type Relations := Pred(RegularClosed * RegularClosed)
+       preds disjoint(X,Y:RegularClosed) <=> X disjoint Y;
+             contains(X,Y:RegularClosed) <=> Y subset X /\ not X=Y;
+             inside(X,Y:RegularClosed) <=> X subset Y /\ not X=Y;
+             equal(X,Y:RegularClosed) <=> X=Y;
+             meet(X,Y:RegularClosed) <=> 
+                (not boundary(X) intersection boundary(Y)=emptySet
+                 /\ int(X) intersection int(Y) = emptySet);
+             covers(X,Y:RegularClosed) <=> 
+                Y subset X /\ not X=Y 
+                /\not boundary(X) intersection boundary(Y)=emptySet;
+             covered_by(X,Y:RegularClosed) <=> 
+                X subset Y /\ not X=Y 
+                /\not boundary(X) intersection boundary(Y)=emptySet;
+             overlap(X,Y:RegularClosed) <=>
+                (not boundary(X) intersection boundary(Y)=emptySet
+                 /\ not int(X) intersection int(Y) = emptySet);
+     } =
+     IntersectionRelations |-> Relations
 end
