@@ -12,6 +12,7 @@ free type Nat ::= 0 | suc(Nat)
 op __+__ : Nat * Nat -> Nat
 
 , unit 0 forall x , y : Nat . x + suc(y) = suc(x + y)
+op 1:Nat = suc(0)
 
 spec Nat =
 
@@ -75,7 +76,7 @@ NatWithSuc refined to arch spec Addition_First
 
 arch spec Addition_First_With_Bin = units N :
 
-Nat refined via Nat |-> Bin to NatBin;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+Nat refined via Nat |-> Bin to NatBin  ;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
 
 result M
 
@@ -129,6 +130,7 @@ A'' : SP'' result K'[A'']} then  {K' to USP'}}
 
 refinement R5'' =SP
 
+
 refined to arch spec {units K : SP' -> SP; A' : SP' result K [A']} 
     then  {K to USP ,A' to arch spec 
     {units K' : SP'' -> SP'; A'' : SP'' result K'[A'']}}
@@ -153,7 +155,7 @@ Ref_Sbcs then {P to arch spec Arch_Preliminary,S to
 
 Unit_Sbcs_State,A to arch spec Arch_Analysis,C
 
-to Unit_Sbcs_State }
+to Unit_Sbcs_System }
 
 unit spec Unit_Sbcs_State =
 
