@@ -22,8 +22,6 @@ then %def
   ops maxCardinal: Nat;
       0,1,
       maxCardinal: CARDINAL;
-      +__,
-      abs:         CARDINAL -> CARDINAL;
       __ + __,
       __ - __,
       __ * __,
@@ -35,8 +33,6 @@ then %def
   forall x,y: CARDINAL
   . natToCard(0) = 0                                     %(def_0_CARDINAL)%
   . natToCard(1) = 1                                     %(def_1_CARDINAL)%
-  . + x = natToCard(+ cardToNat(x))                      %(plus_CARDINAL)%
-  . abs(x) = natToCard(abs(cardToNat(x)))                %(abs_CARDINAL)%
   . x + y = natToCard(cardToNat(x) + cardToNat(y))       %(add_CARDINAL)%
   . x-y = natToCard(cardToNat(x) -? cardToNat(y))        %(sub_CARDINAL)%
   . x*y = natToCard(cardToNat(x) * cardToNat(y))         %(mult_CARDINAL)%
@@ -75,7 +71,6 @@ then %def
       0,1,
       maxInteger,
       minInteger: INTEGER;
-      +__:        INTEGER -> INTEGER;
       -__,
       abs:        INTEGER ->? INTEGER;
       __ + __,
@@ -94,7 +89,6 @@ then %def
   forall x,y: INTEGER
   . intToInteger(0) = 0                                            %(def_0_INTEGER)%
   . intToInteger(1) = 1                                            %(def_1_INTEGER)%
-  . + x = x                                                        %(plus_INTEGER)%
   . - x = intToInteger( - integerToInt(x) )                        %(minus_INTEGER)%
   . abs(x) = intToInteger( abs( integerToInt(x)) )                 %(abs_INTEGER)%
   . x + y = intToInteger( integerToInt(x) + integerToInt(y))       %(add_INTEGER)%

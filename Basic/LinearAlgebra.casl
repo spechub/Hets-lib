@@ -105,6 +105,7 @@ view
           Space |-> Poly[Elem]
 end
 
+%[
 view
      Polynomial_in_FreeAlgebra [Field]:
      {Polynomial [Field]
@@ -113,16 +114,19 @@ view
               ops __ + __: Elem * Elem -> Elem, 
                   __ * __: Elem * Elem -> Elem, 
 		  0: Elem, 
-                  __ + __: Poly[Elem] * Poly[Elem] -> Poly[Elem],
-                  __ * __: Poly[Elem] * Poly[Elem] -> Poly[Elem], 
+                  e: Elem,
 		  0: Poly[Elem], 
-                  e, X
+                  e: Poly[Elem], 
+                  X: Poly[Elem],
+                  __ + __: Poly[Elem] * Poly[Elem] -> Poly[Elem],
+                  __ * __: Poly[Elem] * Poly[Elem] -> Poly[Elem]
      } 
      to FreeAlgebra [Field] =
      sort
           Poly[Elem] |-> Space,
           Elem |-> Elem
 end
+]%
 
 spec
      VectorSpaceLC [VectorSpace [Field]] =
