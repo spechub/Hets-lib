@@ -117,8 +117,6 @@ done
 
 (* same proof by definedness judgements - with tactic *)
 
-use "HCTactic.ML"
-
 theorem map_fuctor: "app (Some map) (pair (apt (Some o) (pair (Some g) (Some f))) (Some xs)) = app (Some map) (pair (Some g) (app (Some map) (pair (Some f) (Some xs))))"
 apply (rule_tac List=xs in induct_List_pl)
 apply (tactic "Force_tac 1")
