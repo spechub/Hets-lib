@@ -1,0 +1,54 @@
+library Calculi/Algebra/RelationAlgebraRepresentation
+
+version 0.1
+%author: S. Wölfl
+%date: 08-02-2005
+
+%( 
+    This library defines some basic higher order concepts from the 
+    theory of relation algebras (cf., for example, I. Hodkinson, Atom
+    structures of relation algebras, 1995).
+)%
+
+from HasCASL/Set get Set
+from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
+	ExtRelationAlgebraByPartialOrder, RelationAlgebraWithPartialOrder,
+	AtomicRelationAlgebra
+
+logic HasCASL
+
+
+spec RepresentationOfRelationAlgebra [RelationAlgebra] =
+     Set 
+then
+     sort Dom
+     op int: Rel -> Set (Dom * Dom)
+
+     forall r,s,t:Rel	
+     . (forall x,y,z:Dom . (x,y) isIn int(id:Rel)  <=> x = y)
+     . not r = 0 => 
+	(exists x,y:Dom . (x,y) isIn int(r))
+     . r = s cup t =>
+	(forall x,y:Dom . (x,y) isIn int(r) <=> (x,y) isIn int(s) \/ (x,y) isIn int(t))
+     . r = s cap t =>
+	(forall x,y:Dom . (x,y) isIn int(r) <=> (x,y) isIn int(s) /\ (x,y) isIn int(t))
+     . r = compl(s) =>
+	(forall x,y:Dom . (x,y) isIn int(1) => ((x,y) isIn int(r) <=> not (x,y) isIn int(s)))
+     . r = conv(s) =>
+	(forall x,y:Dom . (x,y) isIn int(r) <=> (y,x) isIn int(s))
+     . r = s cmps t =>
+	(forall x,y:Dom . (x,y) isIn int(r) <=> (exists z:Dom . (x,z) isIn int(s) /\ (z,y) isIn int(t)))
+
+end
+
+
+spec CompleteRepresentationOfRelationAlgebra [RelationAlgebraWithPartialOrder] =
+     RepresentationOfRelationAlgebra [RelationAlgebra] 
+then
+     forall x,y:Dom
+     . (x,y) isIn int(1:Rel) => (exists r:Rel . Atom(r) /\ (x,y) isIn int(r))
+then %implies
+     AtomicRelationAlgebra	
+end
+
+
