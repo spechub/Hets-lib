@@ -3,8 +3,9 @@ version 0.7
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% date: 23.3.01
 
-%prec {__*__} < {__^ __}
+%prec {__ * __} < {__ ^ __}
 %prec {__ + __, __ - __, -__} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __, __ ^ __
 
 from Basic/RelationsAndOrders version 0.7 get TotalOrder, ExtTotalOrder,
 RichTotalOrder, PreOrder, EquivalenceRelation
@@ -20,7 +21,7 @@ spec
 end
 
 spec
-     SemiGroup =
+     Semigroup =
      BinAlg
 then
      op
@@ -40,15 +41,15 @@ spec
      SigPowerBinAlg [sort Exponent]
 then
      forall x: Elem; n,m: Exponent
-     . x ^ (n + m)=x ^ n * x ^ m		%(Power_add)%
-     . x ^ (n * m)=(x ^ n) ^ m             	%(Power_mult)%
+     . x ^ (n + m)=x ^ n * x ^ m		%(add_Power)%
+     . x ^ (n * m)=(x ^ n) ^ m             	%(mult_Power)%
 end
 
 	
 
 spec 
-     CommutativeSemiGroup =
-     SemiGroup
+     CommutativeSemigroup =
+     Semigroup
 then
      op __*__: Elem * Elem -> Elem, comm
 end
@@ -59,12 +60,12 @@ spec
      SigPowerBinAlg [sort Exponent]
 then
      forall x,y: Elem; n: Exponent
-     . x^ n * y^ n=(x*y)^ n             	%(Power_basemult)%
+     . x^ n * y^ n=(x*y)^ n             	%(mult_base_Power)%
 end
 
 view
-     CommutativeSemiGroup_in_ExtTotalOrder_max [TotalOrder] :
-     CommutativeSemiGroup to ExtTotalOrder [TotalOrder] =
+     CommutativeSemigroup_in_ExtTotalOrder_max [TotalOrder] :
+     CommutativeSemigroup to ExtTotalOrder [TotalOrder] =
 op
      __ * __ |-> max
 end
@@ -72,8 +73,8 @@ end
 
 
 view
-     CommutativeSemiGroup_in_ExtTotalorder_min [TotalOrder] :
-     CommutativeSemiGroup to ExtTotalOrder [TotalOrder] =
+     CommutativeSemigroup_in_ExtTotalorder_min [TotalOrder] :
+     CommutativeSemigroup to ExtTotalOrder [TotalOrder] =
 op
      __*__ |-> min
 end
@@ -81,18 +82,18 @@ end
 
 spec
      Monoid =
-     SemiGroup
+     Semigroup
 then
      ops
-           e:      Elem;
-           __ * __:Elem * Elem -> Elem, unit e
+           e:       Elem;
+           __ * __: Elem * Elem -> Elem, unit e
 end
 
 spec
      CommutativeMonoid =
      Monoid
 and
-     CommutativeSemiGroup
+     CommutativeSemigroup
 end
 
 view
@@ -144,7 +145,7 @@ spec
      AbelianGroup =
 	Group 
 and
-	CommutativeMonoid
+	CommutativeSemigroup
 end
 
 view
@@ -165,13 +166,13 @@ spec
      op
           __*__: Elem * Space -> Space
      forall x: Space; a,b: Elem
-     . e * x = x	             		%(MAction_unit)%
-     . (a * b) * x = a * (b * x)             	%(MAction_assoc)%
+     . e * x = x	             		%(unit_MAction)%
+     . (a * b) * x = a * (b * x)             	%(assoc_MAction)%
 end
 
 spec
      GroupAction [Group] =
-     MonoidAction [Group]
+     MonoidAction [Group] %% Actually, MonoidAction [Monoid] would do
 end
 
 
@@ -184,8 +185,8 @@ and
      Monoid with ops e, __*__
 then
      forall x,y,z:Elem
-     . (x + y) * z = (x * z) + (y * z)       	%(Ring_distr1)%
-     . z * ( x + y ) = (z * x) + (z * y)     	%(Ring_distr2)%
+     . (x + y) * z = (x * z) + (y * z)       	%(distr1_Ring)%
+     . z * ( x + y ) = (z * x) + (z * y)     	%(distr2_Ring)%
 end
 
 view AbelianGroup_in_Ring_add:
@@ -196,7 +197,7 @@ end
 
 spec
      CommutativeRing =
-     Ring
+     Ring with ops 0,  __ + __, e, __ * __
 and
      CommutativeMonoid with ops e, __ * __     
 end
@@ -214,13 +215,13 @@ spec
      EuclidianRing =
      IntegralDomain and {Nat reveal pred  __<__ }
 then
-     op
-          delta: Elem ->? Nat
+     op	
+	delta: Elem ->? Nat
      forall a,b: Elem
-     . def delta(a) if not a = 0 		%(ER_delta_dom)%
+     . def delta(a) if not a = 0 		%(delta_dom_ER)%
      . (exists q,r : Elem . a = q * b + r /\
                                (r = 0 \/ delta(r) < delta(b) )) 
-		if not b = 0             	%(ER_div)% 
+		if not b = 0             	%(div_ER)% 
 end
 
 view
@@ -238,17 +239,11 @@ spec
      ConstructField =
      CommutativeRing
 then
-     axiom
-          not e = 0
+     . not e = 0
      sort
           NonZeroElem = { x: Elem . not x = 0 }
-then
-     closed
-     {
-          Group with
-           sort Elem |-> NonZeroElem,
-           ops e, __*__
-     }
+and
+     {Group with sort Elem |-> NonZeroElem, ops e, __*__}
 end
 
 %% an obvious view which helps to write the specification ExtField:
@@ -274,13 +269,13 @@ view
 end
 
 spec
-     ExtSemiGroup[SemiGroup] given Nat =
+     ExtSemigroup[Semigroup] given Nat =
 %def
      SigPowerBinAlg [sort Pos]
 then
      forall x: Elem; n: Pos
-     . x ^ 1 = x             			%(SGroup_pow_1)%
-     . x ^ suc(n) = x * (x ^ n)             	%(SGroup_pow_suc)%
+     . x ^ 1 = x             			%(pow_1_SGroup)%
+     . x ^ suc(n) = x * (x ^ n)             	%(pow_suc_SGroup)%
 then
      %implies
      PowerTheorems [Nat fit sort Exponent |-> Pos]
@@ -288,9 +283,9 @@ end
 
 
 spec 
-     ExtCommutativeSemiGroup [CommutativeSemiGroup] given Nat =
+     ExtCommutativeSemigroup [CommutativeSemigroup] given Nat =
 %def
-     ExtSemiGroup [SemiGroup]
+     ExtSemigroup [Semigroup]
 then
      %implies
      PowerTheoremsComm [Nat fit sort Exponent |-> Pos]
@@ -300,15 +295,15 @@ end
 spec
      ExtMonoid  [Monoid] given Nat =
 %def
-     ExtSemiGroup [SemiGroup]
+     ExtSemigroup [Semigroup]
 then 
      SigPowerBinAlg [sort Nat]
 then
      forall x: Elem
-     . x ^ 0 = e             			%(Monoid_pow_0)%
+     . x ^ 0 = e             			%(pow_0_EMonoid)%
 then %implies
      forall n: Nat
-     . e ^ n = e             			%(Monoid_pow_unit)%
+     . e ^ n = e             			%(pow_unit_EMonoid)%
 and
      PowerTheorems [Nat fit sort Exponent |-> Nat] 
 end
@@ -319,7 +314,7 @@ spec
 %def
      ExtMonoid [Monoid]
 and
-     ExtCommutativeSemiGroup [CommutativeSemiGroup]
+     ExtCommutativeSemigroup [CommutativeSemigroup]
 then
      %implies
      PowerTheoremsComm [Nat fit sort Exponent |-> Nat] 
@@ -334,21 +329,21 @@ then
            inv: Elem -> Elem;
            __ / __: Elem * Elem -> Elem;
      forall x,y: Elem
-     . inv(x) * x = e             		%(Group_inverse_def)%
-     . x / y = x * inv(y)             		%(Group_div_def)%
+     . inv(x) * x = e             		%(inv_def_Group)%
+     . x / y = x * inv(y)             		%(div_def_Group)%
 then
      SigPowerBinAlg [sort Int]
 then
      forall x: Elem; p: Pos
-     . x^ (- p)=inv(x ^ p)             		%(Group_pow_neg)%
+     . x^ (- p)=inv(x ^ p)             		%(pow_neg_Group)%
 then %implies
      forall x,y,z: Elem; n,m: Int
-     . x * inv(x) = e             		%(Group_right_inv)%
-     . x = y if z * x = z * y             	%(Group_left_canc)%
-     . x = y if x * z = y * z             	%(Group_right_canc)%
-     . inv(inv(x))=x             		%(Group_inv_inv)%
-     . inv(e)=e             			%(Group_inv_e)%
-     . inv(x*y)=inv(y)*inv(x)             	%(Group_inv_prod)%
+     . x * inv(x) = e             		%(rightInv_Group)%
+     . x = y if z * x = z * y             	%(leftCancel_Group)%
+     . x = y if x * z = y * z             	%(rightCancel_Group)%
+     . inv(inv(x))=x             		%(invInv_Group)%
+     . inv(e)=e             			%(invUnit_Group)%
+     . inv(x*y)=inv(y)*inv(x)             	%(invMult_Group)%
 and
      PowerTheorems [Int fit sort Exponent |-> Int]
 end
@@ -368,7 +363,7 @@ then
      pred connected: Space * Space
      forall x,y: Space
      . connected(x,y) <=> exists a: Elem . a * x = y     
-						%(Action_connected_def)%
+						%(connected_def_EMAction)%
 end
 
 view PreOrder_in_ExtMonoidAction [MonoidAction [Monoid]] given Nat:
@@ -387,8 +382,8 @@ and
 then
      %implies
      forall a,b:Elem; x,y: Space
-     . x = y if a * x = a * y             	%(GroupAct_inj)%
-     . exists z: Space . a * z = x             	%(GroupAct_surj)%
+     . x = y if a * x = a * y             	%(inj_EGAction)%
+     . exists z: Space . a * z = x             	%(surj_EGAction)%
 
 end
 
@@ -401,7 +396,7 @@ end
 
 spec
      ExtRing  [Ring ] given Int =
-%def
+%%mono
      ExtAbelianGroup [view AbelianGroup_in_Ring_add]
      with ops   inv     |-> -__,
 		__ / __ |-> __ - __,
@@ -418,10 +413,10 @@ and
            Irred[Elem] = { x: Elem . isIrred(x) }
      forall x,y: Elem
      . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
-						%(Ring_isUnit_def)%
+						%(isUnit_def_Ring)%
      . isIrred(x) <=> (not isUnit(x) /\ 
 	forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))        
-						%(Ring_isIrred_def)% 
+						%(isIrred_def_Ring)% 
 then
 %def
      ops 
@@ -430,9 +425,15 @@ then
 	__ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
 end
 
+view Group_in_ExtRing [Ring] given Int: 
+     Group to 
+     ExtRing[Ring] =
+     sort Elem |-> RUnit[Elem]
+end
+
 spec
      ExtCommutativeRing  [CommutativeRing] given Int =
-%def
+%%mono
      ExtRing[Ring]
 then
      preds
@@ -460,6 +461,14 @@ view
           __ <= __ |-> __ divides __
 end
 
+view 
+     AbelianGroup_in_ExtCRing [CommutativeRing] given Int:
+     AbelianGroup to
+     ExtCommutativeRing [CommutativeRing] =
+     sort
+          Elem |-> RUnit[Elem]
+end
+
 view
      EqRel_in_ExtCRing  [CommutativeRing] given Int:
      EquivalenceRelation to
@@ -470,7 +479,7 @@ end
 
 spec
      ExtIntegralDomain  [IntegralDomain] given Int =
-%def
+%%mono
      ExtCommutativeRing [CommutativeRing]
 then
      op __ * __:  NonZero[Elem] * NonZero[Elem] -> NonZero[Elem]
@@ -481,13 +490,13 @@ end
 
 spec
      ExtEuclidianRing  [EuclidianRing] given Int=
-%def
+%%mono
      ExtIntegralDomain [IntegralDomain]
 end
 
 spec
      ExtField  [Field] given Int=
-%def 
+%mono 
      ExtRing [Ring]
 then
 closed
@@ -499,22 +508,22 @@ then
      op
            __ / __: Elem * Elem ->? Elem;
      forall x:Elem; n: NonZero[Elem]
-     . 0/n=0             			%(Field_div_def1)%
-     . not def x/0				%(Field_div_def2)%
+     . 0/n=0             			%(div_def1_Field)%
+     . not def x/0				%(div_def2_Field)%
 then
      %implies
      forall x,y:Elem
-     . def x/y <=> not y=0             		%(Field_div_dom)%
+     . def x/y <=> not y=0             		%(div_dom_Field)%
 end
 
 
 
-spec RichSemiGroup =
-     ExtSemiGroup [SemiGroup]
+spec RichSemigroup =
+     ExtSemigroup [Semigroup]
 end
 
-spec RichCommutativeSemiGroup =
-     ExtCommutativeSemiGroup [CommutativeSemiGroup]
+spec RichCommutativeSemigroup =
+     ExtCommutativeSemigroup [CommutativeSemigroup]
 end
 
 spec RichMonoid =
@@ -589,18 +598,20 @@ end
 
 
 view
-     CommutativeSemiGroup_in_RichTotalOrder:
-     CommutativeSemiGroup to RichTotalOrder =
+     CommutativeSemigroup_in_RichTotalOrder:
+     CommutativeSemigroup to RichTotalOrder =
 op
      __ * __ |-> max
 end 
 
 view
-     CommutativeSemiGroup_in_RichTotalOrder :
-     CommutativeSemiGroup to RichTotalOrder =
+     CommutativeSemigroup_in_RichTotalOrder :
+     CommutativeSemigroup to RichTotalOrder =
 op
      __*__ |-> min
 end
+
+
 
 
 

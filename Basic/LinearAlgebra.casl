@@ -20,17 +20,22 @@ from
      Basic/StructuredDatatypes version 0.7 get
      Array, FiniteMap
 
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __, -__} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __, __ ^ __
+
 spec
      VectorSpace [Field]=
-     MonoidAction [Monoid with ops e,__*__]
-     with sort Space, op __*__
+     MonoidAction [Monoid with ops e, __ * __]
+          with sort Space, op __ * __
 then
      closed{AbelianGroup with
           sort Elem |-> Space, ops e |-> 0, __ * __ |-> __ + __}
 then
      forall x,y: Space; a,b: Elem
-     . (a + b) * x = a * x + b * x		%(VS_distr1)%
-     . a * (x + y) = a * x + a * y		%(VS_distr2)%
+     . (a + b) * x = a * x + b * x		%(distr1_VS)%
+     . a * (x + y) = a * x + a * y		%(distr2_VS)%
 end
 
 view AbelianGroup_in_VectorSpace [Field]:
@@ -43,12 +48,10 @@ end
 view GroupAction_in_VectorSpace [Field]:
      GroupAction [Group] to
      {
-	VectorSpace [RichField  reveal 
-				sorts Elem, NonZero[Elem], 
-				ops __ + __, __ * __, 0, e]
-	then %def
+	VectorSpace [Field]
+	then %%mono
+	   sort NonZero[Elem] = {x: Elem. not x = 0}
 	   op __ * __: NonZero[Elem] * Space -> Space} =
-     
      sort Elem |-> NonZero[Elem]
 end
 
@@ -86,17 +89,16 @@ then
           isZero: LC[Space,Elem]
 
      forall x: Space; r: Elem; l:LC[Space,Elem]
-     . eval([])=0				%(eval_empty)%
-     . [r/x]eps l => eval(l)=r*x+eval(l-[r/x])	%(eval_add)%
+     . eval([])=0				%(eval_empty_EVS)%
+     . [r/x]eps l => eval(l)=r*x+eval(l-[r/x])	%(eval_add_EVS)%
      . isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)
-						%(isZero_def)%
+						%(isZero_def_EVS)%
 end
 
 spec
      ConstructVSWithBase [Field][sort Base] given Int=
      ExtVectorSpace [VectorSpace [Field]]
 then
-     %cons
 {
      sort
           Base < Space
@@ -105,24 +107,26 @@ then
      FiniteMap [sort Base fit sort S|-> Base]
 	[sort Elem fit sort T |-> Elem]
          with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
+     hide sorts FinSet[Base], FinSet[Elem],
+		     NonEmptySet[Base], NonEmptySet[Elem]
 then
      sort
           LC[Base,Elem]<LC[Space,Elem]
 	
      forall l:LC[Base,Elem]
      . forall y:Space. exists k:LC[Base,Elem]. y=eval(k)
-						%(generating)%
-     . eval(l)=0 => isZero(l)			%(independent)%
+						%(generating_CVSB)%
+     . eval(l)=0 => isZero(l)			%(independent_CVSB)%
 }
 end
 
 spec
      VSWithBase [Field][sort Base]=
-    { ConstructVSWithBase [Field][sort Base]}
+    { ConstructVSWithBase [Field][sort Base]
           reveal sort Space, 
 		 ops __ + __: Space * Space -> Space, 
 	    	     __ * __: Elem * Space -> Space,
-		     0	    : Space
+		     0	    : Space}
 end
 
 spec
@@ -135,30 +139,32 @@ and
 then
      %implies
      forall l,k: LC[Base,Elem]
-     . eval(l)=eval(k) => l=k			%(unique_representation)%
+     . eval(l)=eval(k) => l=k			%(uniqueRepres_EVSB)%
 then
      %def
      op
           coefficients: Space -> LC[Base,Elem]
 
      forall x:Space
-     . eval(coefficients(x))=x			%(coefficients_def)%
+     . eval(coefficients(x))=x			%(coefficients_def_EVSB)%
 then
      %implies
      forall l:LC[Base,Elem]
-     . coefficients(eval(l))=l			%(recover_coefficients)%
+     . coefficients(eval(l))=l			%(recoverCoeff_EVSB)%
 end
 
 view
-     VSWithBase_in_Field [Field]:
+     VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
      VSWithBase [Field][sort Base] to
-     {Field then sort One = {x: Elem. x = e} } =
+     {Field then sort Singleton[a] = {x: Elem. x = a} } =
      sorts
-          Space |-> Elem, Base |-> One,
+          Space |-> Elem, Base |-> Singleton[a],
      op   __ * __: Elem * Space -> Space |->
 		          __ * __: Elem * Elem -> Elem
 end
 
+%% The following view expresses that every vector space has a base.
+%% This holds because the CASL semantics uses ZFC.
 view
      VSWithBase_in_VectorSpace [Field] given Int:
      {VSWithBase [Field][sort Base] hide sort Base} to
@@ -177,8 +183,8 @@ then
           Elem < Space
 
      forall r: Elem; x, y: Space
-     . (r * x) * y = r * (x * y)		%(Algebra_left_linear)%
-     . x * (r * y) = r  * (x * y)		%(Algebra_right_linear)%
+     . (r * x) * y = r * (x * y)		%(leftLinear_Algebra)%
+     . x * (r * y) = r  * (x * y)		%(rightLinear_Algebra)%
 end
 
 spec
@@ -196,17 +202,16 @@ then
           eval: Poly[Elem] * Space -> Space
 	
      forall a: Elem; p: Poly[Elem]; x: Space
-     . eval(0,x) = 0				%(eval_poly_0)%
-     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_poly_cons)%
+     . eval(0,x) = 0				%(eval_0_EAlgebra)%
+     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_cons_EAlgebra)%
 end
 
 spec
-     FreeVectorSpace [Field][sort Base]=
+     FreeVectorSpace [Field][sort Base]= %%mono
 free
      {VectorSpace [Field]
      then
-          op
-               inject: Base -> Space
+          op inject: Base -> Space
 }
 end
 
@@ -221,11 +226,9 @@ view
      {
           VSWithBase [Field][sort Base]
      then
-          op
-               inject: Base -> Space
-
+          op inject: Base -> Space
           forall x:Base
-          . inject(x) = x			%(VSWB_inject_def)%
+          . inject(x) = x			%(inject_def_VSB)%
      }
 end
 
@@ -238,13 +241,13 @@ view
 	   sort Base < Space
 
 	   forall x: Base
-	   . x = inject(x)			%(FVS_embed_def)%
+	   . x = inject(x)			%(embed_def_FVS)%
      }
 end
 
 spec
      VectorTuple [VectorSpace[Field]][op n: Pos] given Int =
-%def
+%%mono
 {
      {{Array [ops 1,n: Int fit ops min: Int |-> 1, max: Int |-> n]
 	[sort Space fit sort Elem|-> Space]
@@ -252,9 +255,9 @@ spec
            Index |-> Nat[n], Array[Space]}
 	  hide sorts FinSet[Space], FinSet[Nat[n]],
 		     NonEmptySet[Space], NonEmptySet[Nat[n]]}
-     then %implies
-	  sort
-		Nat[n] < Nat
+     then 
+          %def
+          sort Nat[n] < Nat
      then
           sort
 		Tuple[Space,n]={ x: Array[Space].
@@ -268,15 +271,15 @@ spec
                 sum:    Tuple[Space,n] -> Space
 
           forall r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
-          . 0 ! i = 0				%(Tuple_zero_def)%
-          . (r * x) ! i = r * (x ! i)		%(Elem_times_Tuple_def)%
-          . (x + y) ! i = (x ! i) + (y ! i)	%(Tuple_plus_def)%
+          . 0 ! i = 0				%(O_def_Tuple)%
+          . (r * x) ! i = r * (x ! i)		%(mult_def_Tuple)%
+          . (x + y) ! i = (x ! i) + (y ! i)	%(add_def_Tuple)%
           . auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])
-						%(Tuple_auxsum_1)%
+						%(auxsum_1_Tuple)%
           . auxsum(x, suc(i) as Nat[n])=
 		 auxsum(x,i) + (x ! (suc(i) as Nat[n]))
-						%(Tuple_auxsum_suc)%
-          . sum(x) = auxsum(x, n as Nat[n])	%(Tuple_sum_def)%
+						%(auxsum_suc_Tuple)%
+          . sum(x) = auxsum(x, n as Nat[n])	%(sum_def_Tuple)%
 }
      hide op auxsum
 end
@@ -285,14 +288,14 @@ view
      VectorSpace_in_VectorTuple [VectorSpace [Field]]
      [op n:Pos] given Int:
      VectorSpace [Field] to
-     VectorTuple [VectorSpace [Field]][op n:Pos]=
+     VectorTuple [VectorSpace [Field]][op n: Pos]=
      sort
           Space |-> Tuple[Space,n]
 end
 
 spec
      ConstructVector [Field][op n: Pos] given Int =
-%def
+%%mono
      {VectorTuple [view VectorSpace_in_Field [Field]][op n: Pos] with
           sort
                 Tuple[Elem,n] |-> Vector[Elem,n], Nat[n],
@@ -308,18 +311,18 @@ then
           auxmult:     Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
           auxprod:     Vector[Elem,n] * Nat[n] -> Elem
      pred
-          perp: Vector[Elem,n] * Vector[Elem,n]
+          orthogonal: Vector[Elem,n] * Vector[Elem,n]
 
      forall x, y: Vector[Elem,n]; i, j: Nat[n]
-     . auxmult(x,y) ! i = (x ! i) * (y ! i)	%(Vector_auxmult_def)%
-     . <x || y> =sum(auxmult(x,y))		%(Vector_times_def)%
+     . auxmult(x,y) ! i = (x ! i) * (y ! i)	%(auxmult_def_CVector)%
+     . <x || y> =sum(auxmult(x,y))		%(scp_def_CVector)%
      . auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])
-						%(Vector_auxprod_1)%
+						%(auxprod_1_CVector)%
      . auxprod(x, suc(i) as Nat[n]) = auxprod(x,i) * 
 					(x ! (suc(i) as Nat[n]))
-						%(Vector_auxprod_suc)%
-     . prod(x) = auxprod(x, n as Nat[n])	%(Vector_prod_def)%
-     . perp(x,y) <=> ( <x || y> =0)		%(perp_def)%
+						%(auxprod_suc_CVector)%
+     . prod(x) = auxprod(x, n as Nat[n])	%(prod_def_CVector)%
+     . orthogonal(x,y) <=> ( <x || y> =0)	%(orthogonal_def_CVector)%
      . unitVector(i) ! j = e when i = j else 0	%(unitVector_def)%
      sort
            UnitVector[Elem,n]=
@@ -329,11 +332,11 @@ then
 then
      %implies
      forall x,y: Vector[Elem,n]
-     . <x || y> = <y || x>			%(scalar_prod_comm)%
-     . <x || x> = 0 => x = 0			%(scalar_prod_pos)% 
+     . <x || y> = <y || x>			%(scpComm_CVector)%
+     . <x || x> = 0 => x = 0			%(scpPos_CVector)% 
 end
 
-spec Vector [Field]=
+spec Vector [Field][op n: Pos]=
      ConstructVector [Field][op n: Pos] 
      reveal sorts Vector[Elem,n], UnitVector[Elem,n],
 	    ops __ + __: Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n],
@@ -341,14 +344,14 @@ spec Vector [Field]=
 		0 : Vector[Elem,n]
 end
 
-view VectorSpace_in_Vector [Field] given Nat:
-     VectorSpace [Field] to Vector [Field] =
+view VectorSpace_in_Vector [Field][op n: Pos] given Nat:
+     VectorSpace [Field] to Vector [Field][op n: Pos] =
      sort Space |-> Vector[Elem,n]
 end
 
 	   
-view VSWithBase_in_Vector [Field] given Nat:
-     VSWithBase [Field][sort Base] to Vector [Field] =
+view VSWithBase_in_Vector [Field][op n: Pos] given Nat:
+     VSWithBase [Field][sort Base] to Vector [Field][op n:Pos] =
      sorts
           Space |-> Vector[Elem,n],
           Base |-> UnitVector[Elem,n]
@@ -358,6 +361,7 @@ spec
      SymmetricGroup [op n: Pos] given Int =
 %def
      sort
+
           Nat[n] = {i: Pos . i <= n}
 then
      %def
@@ -376,11 +380,11 @@ then
            nFac: Nat = n!
 
      forall p,q: Perm[n]; i: Nat[n]
-     . id ! i = i				%(Perm_id_def)%
-     . (p comp q) ! i = p ! (q ! i)		%(Perm_comp_def)%
-     . sign(p comp q) = sign(p) * sign(q)	%(Perm_sign_homomorphic)%
-     . abs(sign(p)) = 1				%(Perm_sign_range)%
-     . exists r: Perm[n]. sign(r)=  - 1		%(Perm_sign_surjective)%
+     . id ! i = i				%(id_def_SymGroup)%
+     . (p comp q) ! i = p ! (q ! i)		%(comp_def_SymGroup)%
+     . sign(p comp q) = sign(p) * sign(q)	%(signHomomorphic_SymGroup)%
+     . abs(sign(p)) = 1				%(signRange_SymGroup)%
+     . exists r: Perm[n]. sign(r)=  - 1		%(signSurj_SymGroup)%
 then
      %%cons
      sort
@@ -389,7 +393,7 @@ then
           perm: PNat[n] -> Perm[n]
      axiom
           forall p: Perm[n]. exists i: PNat[n]. perm(i) = p
-						%(Perm_num_sur)%
+						%(permSurj_SymGroup)%
 end
 
 view
@@ -404,8 +408,8 @@ end
 
 spec
      Matrix [Field][op n: Pos] given Int=
-%def
-     VectorTuple [view VectorSpace_in_Vector [Field]]
+%%mono
+     VectorTuple [view VectorSpace_in_Vector [Field][op n: Pos]]
           [op n: Pos]
      with
           sort Nat[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
@@ -423,12 +427,12 @@ then
            det:        Matrix[Elem,n] -> Elem
 
      forall a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
-     . (transpose(a) ! i) ! j = (a ! j) ! i	%(transpose_def)%
-     . (1 ! i) ! j = e when i = j else 0	%(Matrix_1_def)%
+     . (transpose(a) ! i) ! j = (a ! j) ! i	%(transpose_def_Matrix)%
+     . (1 ! i) ! j = e when i = j else 0	%(1_def_Matrix)%
      . elementary(i,j) ! k = unitVector(j) when i = k else 0
-						%(elementary_def)%
-     . (a * x) ! i = <transpose(a) ! i || x>	%(Matrix_times_Vector_def)%
-     . ((a * b) ! i) = a * (b ! i)		%(Matrix_mult_def)%
+						%(elementary_def_Matrix)%
+     . (a * x) ! i = <transpose(a) ! i || x>	%(scalmult_def_Matrix)%
+     . ((a * b) ! i) = a * (b ! i)		%(mult_def_Matrix)%
      sort
            ElemMatrix[Elem,n]=
            {x: Matrix[Elem,n]. exists i,j: Nat[n]. x = elementary(i,j)}
@@ -450,19 +454,19 @@ then
      within {
      forall a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
      . factors(a,j) ! i = (a ! i) ! (perm(j) ! i)
-						%(Matrix_factors_def)%
+						%(factors_def_Matrix)%
      . summands(a) ! j= prod(factors(a,j)) times sign(perm(j))
-						%(Matrix_summands_def)%
+						%(summands_def_Matrix)%
      . det(a)=sum(summands(a))			%(Leibnitz)%
      } 
 then
      %implies
      forall a,b: Matrix[Elem,n]
-     . det(0) = 0				%(det_0)%
+     . det(0) = 0				%(det0)%
      . not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)
-						%(det_vanishes)%
-     . det(1) = e				%(det_1)%
-     . det(a * b) = det(a) * det(b)		%(det_mult)%
+						%(detVanishes)%
+     . det(1) = e				%(det1)%
+     . det(a * b) = det(a) * det(b)		%(detMult)%
 end
 
 view
@@ -484,7 +488,10 @@ end
 
 spec
      FreeAlgebra [Field] =
-     free{Algebra [Field] then op X:Space}
+     free
+	{Algebra [Field] 
+	 then 
+	     op X: Space}
 end
 
 spec
