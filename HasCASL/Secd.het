@@ -7,7 +7,7 @@ version 0.1
 %right_assoc __ :: __
 
 from Basic/Numbers get Nat
-from Basic/SimpleDatatypes get Boolean
+%% from Basic/SimpleDatatypes get Boolean
 
 %% from Basic/StructuredDatatypes get List
 
@@ -167,11 +167,11 @@ step((Clos(Lam x b) e_0 :: v :: s, e, Aps :: c) :: d) =
 step((v :: [], e_0, []) :: (s, e, c) :: d) = (v :: s, e, c) :: d %(return)%
 ]%
 
-spec Repeat[Step] = Recursion and Nat and Boolean then 
-ops repeat : (State -> Boolean) -> State ->? State;
-    count : (State -> Boolean) -> State ->? Nat
-program repeat p s = if (p s) as Unit then s else repeat p(step s); 
-   count p s = if (p s) as Unit then 0 else 1 + count p(step s) 
+spec Repeat[Step] = Recursion and Nat then 
+ops repeat : Pred State -> State ->? State;
+    steps : Pred State -> State ->? Nat
+program repeat p s = if p s then s else repeat p(step s); 
+   steps p s = if p s then 0 else 1 + steps p(step s) 
 
   view DumpStep : Step to Dump =
       sort State |-> Dump
@@ -179,13 +179,15 @@ program repeat p s = if (p s) as Unit then s else repeat p(step s);
 spec SecdMachine = Repeat[view DumpStep] then 
 ops load : ClosedTerm -> Dump;
     unload : Dump ->? Value; 
-    isFinal : Dump -> Boolean;
-    run : Dump ->? Dump
+    isFinal : Pred Dump;
+    run : Dump ->? Dump;
+    count : Dump ->? Nat
 program load a = ([], Empty, a :: []) :: [] ;
  unload ((v :: [], Empty, []) :: []) = (real v) as Value;
- isFinal d = case d of (v :: [], Empty, []) :: [] -> True | 
-               d -> False;
- run d = repeat isFinal d
+ isFinal d = case d of (v :: [], Empty, []) :: [] -> true | 
+               d -> false;
+ run d = repeat isFinal d;
+ count = steps isFinal
 
 view Secd : Machine[Run] to SecdMachine =
      sorts State |-> Dump, Expr |-> ClosedTerm
@@ -200,5 +202,5 @@ forall x: Variable; a, b, f : ClosedTerm; v: Value
 spec TermEvalBySecdExec = 
      Time and Execution[view Secd]
 
-%view Implementation : EvalByTimedExec to TermEvalBySecdExec =
-%%      sorts State |-> Dump, Expr |-> ClosedTerm
+view Implementation : EvalByTimedExec to TermEvalBySecdExec =
+      sorts State |-> Dump, Expr |-> ClosedTerm
