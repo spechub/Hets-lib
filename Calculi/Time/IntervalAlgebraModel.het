@@ -1,0 +1,56 @@
+library Calculi/Time/IntervalAlgebraModel
+
+version 0.1
+%author: S. Wölfl
+%date: 15-02-2005
+
+%( 
+    This library defines the model classes for the relation algebras in
+    
+	Calculi/Time/IntervalAlgebraSymbolic
+
+)%
+
+
+from Calculi/Algebra/RelationAlgebraModel get  JEPDBase,Relation,
+	GenerateRelationAlgebraModel,AlgebraOfBinaryRelations
+from Calculi/Time/LinearFlowOfTime get LinFlowOfTime,
+	DnsLinFlowOfTimeSEnd,DedekindCompleteFlowOfTimeSEnd
+from Calculi/Time/PointAlgebra get CompositionTableOfPointAlgebraLin
+
+logic HasCASL
+
+
+spec RelationBaseOfPointAlgebraLin[LinFlowOfTime] = %def 
+     Relation[sort Instant] %% 
+then 
+     ops preRel,idRel,sucRel:Relation 
+     type BaseRel ::= preRel | idRel | sucRel
+     forall x,y:Instant
+     . (x,y) isIn rep(preRel) <=> x pre y
+     . (x,y) isIn rep(idRel) <=> x = y
+     . (x,y) isIn rep(sucRel) <=> y pre x
+end
+
+
+view RelationBaseOfPointAlgebraLin_as_JEPDBase:
+     JEPDBase[sort Elem] to RelationBaseOfPointAlgebraLin[LinFlowOfTime]
+=
+     sort Elem |-> Instant
+end
+
+
+spec ModelOfPointAlgebraLin[LinFlowOfTime] =
+      GenerateRelationAlgebraModel[RelationBaseOfPointAlgebraLin[LinFlowOfTime]
+	fit sort Elem |-> Instant]
+then %implies 
+      {	CompositionTableOfPointAlgebraLin with ops < |-> preRel, i |-> idRel, > |-> sucRel  }
+end
+
+
+view ModelOfPointAlgebraLin_as_AlgebraOfBinaryRelations:
+     AlgebraOfBinaryRelations[sort Elem] to ModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
+=
+    sorts Elem |-> Instant, Rel |-> GenRel
+end
+
