@@ -99,26 +99,26 @@ spec Nat = %mono
      . min(m,n) = m when m <= n else n  %(min_def_Nat)%
      . max(m,n) = n when m <= n else m  %(max_def_Nat)%
 
-     . def(m-?n) <=> m >= n             %implied  %(sub_dom_Nat)% 
+     . def(m-?n) <=> m >= n             %(sub_dom_Nat)% %implied 
      . m -? n = r <=> m = r + n         %(sub_def_Nat)%
 
      . def(m /? n) <=> 
-       not (n=0) /\ m mod n = 0             %implied %(divide_dom_Nat)%
+       not (n=0) /\ m mod n = 0             %(divide_dom_Nat)% %implied 
      . not def(m /? 0)                      %(divide_0_Nat)%
      . ( m /? n = r <=> m = r * n ) if n>0  %(divide_Pos_Nat)%
 
-     . def ( m div n ) <=> not (n=0)           %implied %(div_dom_Nat)%
+     . def ( m div n ) <=> not (n=0)           %(div_dom_Nat)% %implied 
      . m div n = r <=> 
        (exists s: Nat . m = n*r + s /\ s < n)  %(div_Nat)%
 
-     . def ( m mod n ) <=> not (n=0)           %implied %(mod_dom_Nat)%
+     . def ( m mod n ) <=> not (n=0)           %(mod_dom_Nat)% %implied 
      . m mod n = s <=> 
        (exists r: Nat . m = n*r + s /\ s < n)  %(mod_Nat)%
 
   %% important laws
 
-     . (r + s) * t = (r * t) + (s * t)  %implied %(distr1_Nat)%
-     . t * (r + s) = (t * r) + (t * s)  %implied %(distr2_Nat)%
+     . (r + s) * t = (r * t) + (s * t)  %(distr1_Nat)% %implied 
+     . t * (r + s) = (t * r) + (t * s)  %(distr2_Nat)% %implied 
 
 then %mono
      sort Pos = { p: Nat . p > 0 }
@@ -208,17 +208,17 @@ then %def
      . m ^ a = sign(m)^a * abs(m)^a  
        if not m = -1                           %(power_others_Int)%
 
-     . m /? n = r <=> not n = 0 /\ n * r = n   %implied %(divide_dom1_Int)%
+     . m /? n = r <=> not n = 0 /\ n * r = n   %(divide_dom1_Int)% %implied 
      . m /? n = 
        sign(m) * sign(n) * (abs(m) /? abs(n))  %(divide_Int)%
 
-     . def ( m div n ) <=> not (n=0)           %implied %(div_dom_Int)%
+     . def ( m div n ) <=> not (n=0)           %(div_dom_Int)% %implied
      . m div n = r <=> 
        (exists s: Nat . 
         m = n*r + s /\ s < abs(n) )            %(div_Int)%
 
 
-     . def ( m quot n ) <=> not (n=0)          %implied %(quot_dom_Int)%
+     . def ( m quot n ) <=> not (n=0)          %(quot_dom_Int)% %implied 
      . (m quot n = r <=> 
          (exists s: Int . 
            m = n*r + s /\  
@@ -230,7 +230,7 @@ then %def
               0 <= s /\ s < abs(n) )
        ) if m >= 0                             %(quot_others_Int)%
 
-     . def ( m rem n ) <=> not (n=0)           %implied %(rem_dom_Int)%
+     . def ( m rem n ) <=> not (n=0)           %(rem_dom_Int)% %implied 
      . (m rem n = s <=> 
          (exists r: Int . 
            m = n*r + s /\  
@@ -242,15 +242,15 @@ then %def
               0 <= s /\ s < abs(n) )
        ) if m >= 0                             %(rem_others_Int)%
 
-     . def ( m mod n ) <=> not (n=0)           %implied %(mod_dom_Int)%
+     . def ( m mod n ) <=> not (n=0)           %(mod_dom_Int)% %implied 
      . m mod n = a <=> 
        (exists r: Int . 
         m = n*r + a /\ a < abs(n))             %(mod_Int)%
 
   %% important laws
 
-     . (r + s) * t = (r * t) + (s * t)  %implied %(distr1_Int)%
-     . t * (r + s) = (t * r) + (t * s)  %implied %(distr2_Int)%
+     . (r + s) * t = (r * t) + (s * t)  %(distr1_Int)% %implied 
+     . t * (r + s) = (t * r) + (t * s)  %(distr2_Int)% %implied 
 
 then %implies
 
@@ -343,8 +343,8 @@ then %def
 
   %% important laws
 
-     . (x + y) * z = (x * z) + (y * z)  %implied %(distr1_Rat)%
-     . z * (x + y) = (z * x) + (z * y)  %implied %(distr2_Rat)%
+     . (x + y) * z = (x * z) + (y * z)  %(distr1_Rat)% %implied 
+     . z * (x + y) = (z * x) + (z * y)  %(distr2_Rat)% %implied 
 
 then %implies
    
