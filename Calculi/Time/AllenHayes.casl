@@ -1,11 +1,11 @@
-library Calculi/TemporalCalculi/AllenHayes
+library Calculi/Time/AllenHayes
 version 0.1 
 
 %author: S. Wölfl, T. Mossakowski
 %date: 22-10-04
 
 %{
-	 Allen Hayes First-ORder Theory on Intervals -- First order theory
+	 Allen Hayes First-Order Theory on Intervals -- First order theory
 	 Based on Peter B. ladkin's PhD thesis (1987): 
 	       The Logic of Time Represenation 
 
@@ -48,31 +48,31 @@ version 0.1
 	 Lad86.3 : Ladkin, P.B., Two Papers on Time Representation, Kestrel
 	 Institute Research Report KES.U.86.5, 1986.
 
-	 Lad87.1 : Ladkin, P.B., Specification of Time Dependencies and
+	 Lad87a : Ladkin, P.B., Specification of Time Dependencies and
 	 Synthesis of Concurrent Processes, Proceedings of the 9th
 	 International Conference on Software Engineering, Monterey, Ca, IEEE
 	 1987, also available as Kestrel Institute Technical Report
 	 KES.U.87.1.
 
-	 Lad87.2 : Ladkin, P.B., The Completeness of a Natural System for
+	 Lad87b : Ladkin, P.B., The Completeness of a Natural System for
 	 Reasoning with Time Intervals, Proceedings of the 10th International
 	 Joint Conference on Artificial Intelligence, Milano, Italy, Morgan
 	 Kaufmann 1987, 462-467, also available as Kestrel Institute Technical
 	 Report KES.U.87.5.
 
-	 Lad87.3 : Ladkin, P.B., Models of Axioms for Time Intervals,
+	 Lad87c : Ladkin, P.B., Models of Axioms for Time Intervals,
 	 Proceedings of AAAI87, Morgan Kaufmann 1987, also available in a
 	 longer version as Kestrel Institute Technical Report KES.U.87.4.
 
-	 Lad87.4 : Ladkin, P.B., Deciding First-Order Statements About Time
+	 Lad87d : Ladkin, P.B., Deciding First-Order Statements About Time
 	 Intervals: Preliminary Report, Kestrel Institute Technical Report
 	 KES.U.87.7.
 
-	 Lad87.5 : Ladkin, P.B., Constraint Satisfaction in Time Interval
+	 Lad87e : Ladkin, P.B., Constraint Satisfaction in Time Interval
 	 Structures I: Convex Intervals, forthcoming Kestrel Institute
 	 Technical Report, 1987.
 
-	 LadMad87.1 : Ladkin, P.B. and Maddux, R.D., The Algebra of Convex
+	 LadMad87 : Ladkin, P.B. and Maddux, R.D., The Algebra of Convex
 	 Time Intervals, Kestrel Institute Technical Report KES.U.87.2.
 
 	 New80 : Newton-Smith, W.H., The Structure of Time, Routledge Kegan
@@ -105,41 +105,41 @@ then
      forall x,y,z,u:Interval
 
      %% meeting places are unique:
-     . x M y /\ x M u /\ z M y => z M u			%(AllenHayes_M1)%
+     . x M y /\ x M u /\ z M y => z M u			%(M1)%
 
      %% meeting places are linearily ordered     
      . x M y /\ z M u =>  x M u 
 		      \/ (exists v:Interval. x M v /\ v M u) 
 		      \/ (exists v:Interval. z M v /\ v M y) 
-							%(AllenHayes_M2a)%
+							%(M2a)%
 
      . x M y /\ z M u /\ x M u => 
 			not (exists v:Interval. x M v /\ v M u) 
 		     /\ not (exists v:Interval. z M v /\ v M y) 
-							%(AllenHayes_M2b)%
+							%(M2b)%
 
      . x M y /\ z M u /\ (exists v:Interval. x M v /\ v M u) => 
 			not (x M u) 
 		     /\ not (exists v:Interval. z M v /\ v M y) 
-							%(AllenHayes_M2c)%
+							%(M2c)%
 
      . x M y /\ z M u /\ (exists v:Interval. z M v /\ v M y) => 
 			not (x M u) 
 		     /\ not (exists v:Interval. x M v /\ v M u) 
-							%(AllenHayes_M2d)%
+							%(M2d)%
 
      %% time is infinite, both to the past and to the future:		
-     . exists y,z:Interval . y M x /\ x M z		%(AllenHayes_M3)%
+     . exists y,z:Interval . y M x /\ x M z		%(M3)%
 						
      %% we do not care about endpoints of intervals:
-     . x M y /\ y M u /\ x M z /\ z M u => y = z	%(AllenHayes_M4)%
+     . x M y /\ y M u /\ x M z /\ z M u => y = z	%(M4)%
 
 
 then %implies
    forall x,y,z:Interval
-   . not (x M x)					%(AllenHayes_M_irrefl)%
-   . x M y => not (y M x)				%(AllenHayes_M_asym)%
-   . x M y /\ y M z => not (x M z)			%(AllenHayes_M_atrans)% 
+   . not (x M x)					%(M_irrefl)%
+   . x M y => not (y M x)				%(M_asym)%
+   . x M y /\ y M z => not (x M z)			%(M_atrans)% 
 end
 
 
@@ -151,25 +151,25 @@ spec ExtBaseAllenHayes [BaseAllenHayes] = %def
 	    __ Mi __ : Interval * Interval
       
      forall x,y:Interval
-     . x B y <=> exists z:Interval . x M z /\ z M y     %(AllenHayes_B_def)%
+     . x B y <=> exists z:Interval . x M z /\ z M y     %(B_def)%
      . x S y <=> exists z:Interval . x M z /\ 
 			(forall u:Interval . y M u <=> z M u)
-							%(AllenHayes_S_def)%
+							%(S_def)%
      . x F y <=> exists z:Interval . z M x /\ 
 			(forall u:Interval . u M y <=> u M z)
-							%(AllenHayes_F_def)%
+							%(F_def)%
      . x O y <=> exists z,u:Interval . z S x /\ z M y /\ 
 			x M u /\ u F y			
-					                %(AllenHayes_O_def)%
+					                %(O_def)%
      . x D y <=> exists z,u:Interval . z S y /\ z M x /\ 
 			x M u /\ u F y	
-					                %(AllenHayes_D_def)%
-     . x Bi y <=> y B x					%(AllenHayes_Bi_def)%
-     . x Oi y <=> y O x					%(AllenHayes_Oi_def)%
-     . x Si y <=> y S x					%(AllenHayes_Si_def)%
-     . x Fi y <=> y F x					%(AllenHayes_Fi_def)%
-     . x Di y <=> y D x					%(AllenHayes_Di_def)%
-     . x Mi y <=> y M x					%(AllenHayes_Mi_def)%
+					                %(D_def)%
+     . x Bi y <=> y B x					%(Bi_def)%
+     . x Oi y <=> y O x					%(Oi_def)%
+     . x Si y <=> y S x					%(Si_def)%
+     . x Fi y <=> y F x					%(Fi_def)%
+     . x Di y <=> y D x					%(Di_def)%
+     . x Mi y <=> y M x					%(Mi_def)%
 
 
 then %implies
@@ -177,8 +177,6 @@ then %implies
      . x B y \/ x M y \/ x O y \/ x D y \/ x S y \/ x F y \/ x = y \/
 	 x Bi y \/ x Mi y \/ x Oi y \/ x Di y \/ x Si y \/ x Fi y \/ x = y 
 	 						%(All13_JE)%
-
-end
 
 
 
@@ -189,7 +187,7 @@ then
      forall x,y:Interval
      . x M y => exists z,u,v:Interval .
 		z M x /\ x M y /\ y M u /\ z M v /\ y M u
-						      %(AllenHayes_M5exist)%
+						      %(M5exist)%
 end
 
 spec AllenHayes = 
@@ -202,7 +200,7 @@ then
      forall x,y:Interval
      . x M y => exists z,u:Interval .
 		z M x /\ x M y /\ y M u /\ z M (x cup y) /\ y M u
-						      %(AllenHayes_M5func)%
+						      %(M5func)%
 then %implies
      AllenHayesLadkin
 end
@@ -217,4 +215,33 @@ spec RichBaseAllenHayes	  = ExtBaseAllenHayes [BaseAllenHayes]
 spec RichAllenHayes	  = ExtAllenHayes [AllenHayes] 
 spec RichAllenHayesLadkin = ExtAllenHayesLadkin [AllenHayesLadkin]
 
+
+
+
+spec ConstructPointsFromIntervals =
+     BaseAllenHayes
+then %def
+     preds  __ __ Equiv __ __: Interval * Interval * Interval * Interval;
+	    __ __ PointLess __ __: Interval * Interval * Interval * Interval
+
+
+     forall x,y,z,u:Interval
+     . x y Equiv z u <=> x M y /\ z M u /\ x M u	%(Equiv_def)%
+     . x y PointLess z u <=> (exists r,s,t:Interval 
+				    . x y Equiv r s /\ z u Equiv s t)
+							%(PointLess_def)%
+
+then %implies
+     forall x,y,z,u,v,w:Interval 
+     . x M y => x y Equiv x y				%(Equiv_refl)%
+     . x y Equiv z u => z u Equiv x y			%(Equiv_sym)%
+     . x y Equiv z u /\ z u Equiv v w => x y Equiv v w  %(Equiv_trans)%
+
+     . x M y => not(x y PointLess x y)			%(PointLess_irrefl)%
+     . x y PointLess z u /\ z u PointLess v w => x y PointLess v w 
+							%(PointLess_trans)%    
+     . x M y /\ z M u => (x y PointLess z u \/ x y Equiv z u  \/ 
+			      z u PointLess x y)
+							%(PointLess_linear)%
 end
+

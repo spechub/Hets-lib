@@ -1,0 +1,207 @@
+library Calculi/TemporalCalculi/FlowOfTime
+version 0.1
+%author: S. Wölfl
+%date: 15-10-04
+
+
+%{ This library provides basic specifications for temporal reasoning. 
+   Here we focus on arbitrary flows of time and on further conditions.
+   Linear flows of time are considered in 
+
+	Calculi/TemporalCalculi/LinearFlowOfTime
+
+   while treelike flows are the topic of
+
+	Calculi/TemporalCalculi/Tree
+	
+   We will use the following abbreviations:
+	
+	Dns:	  dense
+	Lin: 	  linear
+	CMax:     with ("cum") Maxima
+	SMax: 	  without ("sine") Maxima
+	CMin:     with Minima
+	SMin: 	  without Minima
+	CEnd: 	  with Endpoints (abbr. of CMaxCMin)
+	SEnd:     without Endpoints (abbr. of SMaxSMin)
+	Cnn:	  connected
+	FDis:     discrete w.r.t. the future
+	PDis:     discrete w.r.t. the past
+	Dis:	  discrete w.r.t. future and past
+	...
+
+   Some of the implications presented in the specifications are used for 
+   constraint based reasonig. "PA" is an abbreviation of Point Algebra. 
+
+   We provide parameterized versions Ext_Spec of basic specifications Spec 
+   as well as unparameterized versions Rich_Spec. Hope that's helpful.
+ 
+   Some of the concepts introduced here can also be found in 
+   Basic/RelationsAndOrdrs.casl
+}%
+
+%display __ pre __    %LATEX __ < __
+%display __ preE __   %LATEX __\leq__
+%display __ suc __    %LATEX __ > __
+%display __ sucE __   %LATEX __\geq__
+%display __ cmp __    %LATEX __\sqcup__
+%display __ uncmp __  %LATEX __\sqcap__
+
+
+from Calculi/TemporalCalculi/FlowOfTime get
+	FlowOfTime, Ext_FlowOfTime, DnsFlowOfTime, 
+	FlowOfTimeSMax, FlowOfTimeSMin, FlowOfTimeSEnd,
+	DnsFlowOfTimeSMax, DnsFlowOfTimeSMin, DnsFlowOfTimeSEnd 
+
+
+spec LinFlowOfTime = 
+     FlowOfTime
+then 
+     forall x,y: Instant
+     . x pre y \/ x = y \/ y pre x			%(linear)%
+end
+
+
+spec Ext_LinFlowOfTime [LinFlowOfTime] = 
+	Ext_FlowOfTime [FlowOfTime]
+then %implies
+     forall x,z: Instant
+     . (exists y: Instant . x pre y /\ y suc z) => 
+	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc_elim)%
+     . (exists y: Instant . x suc y /\ y pre z) =>
+	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_sucpre_elim)%
+end
+
+spec Rich_LinFlowOfTime = Ext_LinFlowOfTime [LinFlowOfTime]
+
+
+spec DnsLinFlowOfTime =
+     LinFlowOfTime and DnsFlowOfTime 
+
+
+spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+
+spec Rich_DnsLinFlowOfTime = 
+	Ext_DnsLinFlowOfTime [DnsLinFlowOfTime]
+	
+
+spec LinFlowOfTimeSMax =
+     LinFlowOfTime and FlowOfTimeSMax
+
+
+spec Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+
+spec Rich_LinFlowOfTimeSMax = 
+	Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax]
+
+spec DnsLinFlowOfTimeSMax =
+     LinFlowOfTime and FlowOfTimeSMax
+then %implies
+     DnsFlowOfTimeSMax
+end
+
+
+spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+
+spec Rich_DnsLinFlowOfTimeSMax = 
+	Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax]
+
+
+spec LinFlowOfTimeSMin =
+     LinFlowOfTime and FlowOfTimeSMin
+
+spec Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+spec Rich_LinFlowOfTimeSMin = 
+	Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin]
+
+
+spec DnsLinFlowOfTimeSMin =
+     LinFlowOfTime and FlowOfTimeSMin
+then %implies
+     DnsFlowOfTimeSMin
+end
+
+spec Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+spec Rich_DnsLinFlowOfTimeSMin = 
+	Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin]
+
+
+spec LinFlowOfTimeSEnd =
+     LinFlowOfTime and FlowOfTimeSEnd
+
+spec Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd] = 
+	Ext_FlowOfTime [FlowOfTime]
+
+spec Rich_LinFlowOfTimeSEnd = 
+	Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd]
+
+
+spec DnsLinFlowOfTimeSEnd =
+     LinFlowOfTime and FlowOfTimeSEnd
+then %implies
+      { DnsLinFlowOfTime and DnsFlowOfTimeSEnd
+	and LinFlowOfTimeSEnd }
+end
+
+
+spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = 
+	Ext_FlowOfTime [FlowOfTime]
+then %implies
+     forall x,z: Instant
+     . (exists y: Instant . x pre y /\ y pre z) <=> 
+		  x pre z				%(PA_comp_prepre)%
+     . (exists y: Instant . x pre y /\ y suc z) <=> 
+	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc)%
+     . (exists y: Instant . x pre y /\ y = z) <=> 
+		  x pre z				%(PA_comp_preeq)%
+     . (exists y: Instant . x suc y /\ y pre z) <=>
+		  (x pre z \/ x = z \/ x suc z)		%(PA_comp_sucpre)%
+     . (exists y: Instant . x suc y /\ y suc z) <=> 
+		  x suc z				%(PA_comp_sucsuc)%
+     . (exists y: Instant . x suc y /\ y = z) <=> 
+		  x suc z				%(PA_comp_suceq)%
+     . (exists y: Instant . x = y /\ y pre z) <=> 
+		  x pre z				%(PA_comp_eqpre)%
+     . (exists y: Instant . x = y /\ y suc z) <=> 
+		  x suc z				%(PA_comp_eqsuc)%
+     . (exists y: Instant . x = y /\ y = z) <=> 
+		  x = z					%(PA_comp_eqeq)%
+end
+
+spec Rich_DnsLinFlowOfTimeSEnd = 
+	Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd]
+
+
+
+from Basic/Numbers get Nat, Int, Rat
+
+
+view FlowOfTime_in_Nat: LinFlowOfTimeSMax to Nat =
+     sort Instant |-> Nat, pred __ pre __ |-> __ < __
+end
+
+view FlowOfTime_in_Nat_inverse: LinFlowOfTimeSMin to Nat =
+     sort Instant |-> Nat,  pred __ pre __ |-> __ > __
+end
+
+view FlowOfTime_in_Int: LinFlowOfTimeSEnd to Int =
+     sort Instant |-> Int, pred __ pre __ |-> __ < __
+end
+
+view FlowOfTime_in_Rat: DnsLinFlowOfTimeSEnd to Rat =
+     sort Instant |-> Nat, pred __ pre __ |-> __ < __
+end
+
+
+
+
