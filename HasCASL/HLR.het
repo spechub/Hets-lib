@@ -15,14 +15,14 @@ spec Transformation =
   Rules and PushoutShape and Pushout[Category]
 then
   ops transform: Rules * Mor ->? Ob;
-  forall r1 : Rules; g1,g2,g3,c1,c2 : Mor
+  forall r1 : Rules; g1 : Mor
   . let (l,r) = r1 
     in
     def (transform(r1,g1)) => cod l = dom g1
   . let (l,r) = r1 
     in
-    (((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
-    /\ ((c2,g3) as POCocone) isCoconeFor ((g2,r) as PODiagram))
-     => transform(r1,g1) = r objPushout g2
+    exists g2,g3,c1,c2 : Mor .(((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
+    /\ ((g3,c2) as POCocone) isCoconeFor ((r,g2) as PODiagram)
+     => transform(r1,g1) = r objPushout g2)
 end
 
