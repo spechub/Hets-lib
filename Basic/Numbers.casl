@@ -31,7 +31,7 @@ then
 	   Pos[Elem] = { x: Elem . x > 0 };
 	   Pos[Elem] < NonZero[Elem]
      ops   +__: Elem -> Elem;
-	   abs: NonZero[Elem] -> Pos[Elem]
+	   abs: NonZero[Elem] ->? Pos[Elem] %%CHANGE!
      %prec {+__} <> {__ ^ __}
      var   x: Elem
      .
@@ -200,15 +200,15 @@ then
           %[Int_odd_def] odd(minus(p)) <=> odd(p)
      .
           %[Int_div_partial1] minus(p) div n = 
-	    minus (p div n) when p mod n = 0 else minus (p div n) + 1
+	    - (p div n) when p mod n = 0 else - (p div n) + 1
      .
-          %[Int_div_partial2] x div minus(q) = minus (x div q)
+          %[Int_div_partial2] x div minus(q) = - (x div q)
      .
 	  %[Int_mod_partial] x mod y = x - y * (x div y)
      .
-          %[Int_quot_partial1] minus(p) quot n = minus (p quot n)
+          %[Int_quot_partial1] minus(p) quot n = - (p quot n)
      .
-          %[Int_quot_partial2] x quot minus(q) = minus (x quot q)
+          %[Int_quot_partial2] x quot minus(q) = - (x quot q)
      .
           %[Int_rem_partial] x rem y = x - y * (x quot y)
      . 

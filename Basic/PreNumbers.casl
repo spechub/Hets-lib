@@ -13,7 +13,7 @@ then
      ops
            0:                Elem;
            __ + __, __ * __: Elem × Elem -> Elem %left assoc;
-           abs:              Elem -> NonNeg;
+           abs:              Elem ->? NonNeg; %% CHANGE!
      %prec { __ + __ } < { __ * __ }
 end
 
@@ -60,7 +60,7 @@ then
            __*__: Pos × Pos -> Pos;
            __+__: Pos × Nat -> Pos;
            __+__: Nat × Pos -> Pos;
-           abs :  Pos -> Pos
+           abs :  Pos ->? Pos %%CHANGE!
 end
 
 view
@@ -133,8 +133,7 @@ then
            __*__: Neg × Pos -> Neg;
            __*__: Pos × Neg -> Neg;
            __+__: Neg × Neg -> Neg;
-           abs :  Int -> Nat;
-           abs :  Neg -> Pos;
+           abs :  Neg ->? Pos; %% CHANGE!
 end
 
 view

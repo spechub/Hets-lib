@@ -328,7 +328,8 @@ spec
      FiniteMap  [sort S][sort T] given PreNat=
      GenerateFiniteMap [sort S][sort T]
 and
-     FiniteSet [sort S] and FiniteSet [sort T]
+     FiniteSet [sort S fit sort Elem|-> S] 
+	and FiniteSet [sort T fit sort Elem|-> T]
 then
 
      free
@@ -390,7 +391,7 @@ then
           ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )
 then
      %implies
-     vars
+     vars 
           s: S; M: FiniteMap[S,T]
      .
           %[eval_dom] def eval(s,M) <=> s eps dom(M)
@@ -506,7 +507,8 @@ spec
 then
      {
 
-           FiniteMap [sort Index][sort Elem]
+           FiniteMap [sort Index fit sort S|-> Index]
+			[sort Elem fit sort T |-> Elem]
            with
            sort FiniteMap[Index,Elem] |-> Array[Elem],
            ops  [] |-> init
