@@ -1,0 +1,214 @@
+library Basic/PreNumbers
+version 0.4
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% copyright 5.5.00
+
+from Basic/RelationsAndOrders version 0.4
+get SigOrder, TotalOrder
+
+spec
+     SigPreNumbers[sort Elem] =
+     SigOrder
+then
+     ops
+           0:                Elem;
+           __ + __, __ * __: Elem × Elem -> Elem %left assoc;
+           abs:              Elem -> Elem;
+     %prec { __ + __ } < { __ * __ }
+then
+     %def
+     sort NonZero[Elem] = { x : Elem . not x = 0 }
+end
+
+spec
+     GenerateNat =
+free
+     types
+      Nat ::= 0 | sort Pos;
+      Pos ::= suc(pre: Nat)
+end
+
+spec
+     PreNat =
+     GenerateNat
+and
+     SigPreNumbers [sort Nat fit sort Elem |-> Nat]
+then
+     %def
+     sorts
+          NonZero[Nat]=Pos
+     op
+          %[PreNat_1_def] 1: Pos = suc(0);
+          1 : Nat
+then
+     vars
+          m,n: Nat; p: Pos
+     .
+          %[Nat_leq_def1] 0 <= n
+     .
+          %[Nat_leq_def2] not (p <= 0)
+     .
+          %[Nat_leq_def3] suc(m) <= suc(n) <=> m <= n
+     .
+          %[Nat_add__0] 0 + m = m
+     .
+          %[Nat_add_suc] suc(n) + m = suc(n + m)
+     .
+          %[Nat_mult_0] 0 * m = 0
+     .
+          %[Nat_mult_suc] suc(n) * m = (n * m) + m
+     .
+          %[PreNat_abs] abs(m)=m
+then
+     %def
+     ops
+           __*__: Pos × Pos -> Pos;
+           __+__: Pos × Nat -> Pos;
+           __+__: Nat × Pos -> Pos;
+           abs :  Pos -> Pos
+end
+
+view
+     TotalOrder_in_PreNat: TotalOrder to PreNat
+=
+     sort Elem |-> Nat
+end
+
+spec
+     GenerateInt =
+     GenerateNat
+then
+     free
+          types
+           Int ::=  sort Nat | sort Neg;
+           Neg ::=  -__ (Pos)
+     ops
+           suc,
+           pre: Int -> Int
+     var
+          p:Pos
+     .
+          %[Int_suc_minus_one] suc(-suc(0)) = 0
+     .
+          %[Int_suc_Neg] suc(-suc(p)) = -p
+     .
+          %[Int_pre_def1] pre(0) = -suc(0)
+     .
+          %[Int_pre_def2] pre(-p) = -suc(p)
+end
+
+spec
+     PreInt =
+     GenerateInt and PreNat
+and
+     SigPreNumbers [sort Int fit sort Elem |-> Int]
+then
+     %def
+     sorts Pos, Neg < NonZero[Int]
+     op 1:Int = suc(0)
+then
+     vars
+          m,n: Nat; p,q: Pos
+     .
+          %[Int_leq_def1] -p <= n
+     .
+          %[Int_leq_def2] not (m <= -p)
+     .
+          %[Int_leq_def3] -p <= -q <=> q <= p
+     .
+          %[Int_add_def1] 0 + (-p) = -p
+     .
+          %[Int_add_def2] (-p) + 0 = -p
+     .
+          %[Int_add_def3] suc(m) + (-p) = m + suc(-p)
+     .
+          %[Int_add_def4] (-p) + suc(m) = suc(-p) + m
+     .
+          %[Int_add_def5] (-p) + (-q) = - (p + q)
+     .
+          %[Int_mult_def1] 0 * (-p) = 0
+     .
+          %[Int_mult_def2] (-p) * 0 = 0
+     .
+          %[Int_mult_def3] (-p) * (-q) = p * q
+     .
+          %[Int_mult_def4] (-p) * q = - (p * q)
+     .
+          %[Int_mult_def5] p * (-q) = - (p * q)
+     .
+          %[PreInt_abs_Neg] abs(-p)=p
+then
+     %def
+     ops
+           __*__: Neg × Neg -> Pos;
+           __*__: Neg × Pos -> Neg;
+           __*__: Pos × Neg -> Neg;
+           __*__: NonZero[Int] × NonZero[Int] -> NonZero[Int];
+           __+__: Neg × Neg -> Neg;
+           abs :  Int -> Nat;
+           abs :  Neg -> Pos;
+           abs :  NonZero[Int] -> Pos
+end
+
+view
+     TotalOrder_in_PreInt: TotalOrder to PreInt
+=
+     sort Elem |-> Int
+end
+
+spec
+     GenerateRat =
+     PreInt
+then
+     generated
+          type Rat ::= __ / __ (num: Int ; denom: NonZero[Int])
+     vars
+          i,j: Int; p,q: NonZero[Int]
+     .
+          %[Rat_equality] i/p = j/q <=> i*q = j*p
+end
+
+spec
+     PreRat =
+     GenerateRat
+and
+     SigPreNumbers [sort Rat fit sort Elem |-> Rat]
+then
+     %def
+     sort
+          Int < Rat
+     var
+          i:Int
+     .
+          %[embeddingIntToRat] i/1 = i
+     sort
+          NonZero[Int] < NonZero[Rat]
+then
+     %prec {__+__} < { __/__}
+     vars
+          r,s: Rat
+     .
+          %[Rat_leq_def] (r <= s <=> num(r)*denom(s) <= num(s) * denom(r))
+          if (denom(r) in Pos /\ denom(s) in Pos )
+     .
+          %[Rat_add_def]
+           r+s = (num(r) * denom(s) + num(s)* denom(r))/
+                 (denom(r) * denom(s))
+     .
+          %[Rat_mult_def] r*s = (num(r) * num(s)) / ( denom(r) * denom(s) )
+     .
+          %[Rat_abs_def] abs(r)=abs(num(r))/abs(denom(r))
+then
+     %def
+     ops
+           __*__: NonZero[Rat] × NonZero[Rat] -> NonZero[Rat];
+           abs :  NonZero[Rat] -> NonZero[Rat];
+           1 : Rat
+end
+
+view
+     TotalOrder_in_PreRat : TotalOrder to PreRat
+=
+     sort Elem |-> Rat
+end
+

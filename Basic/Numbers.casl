@@ -1,0 +1,322 @@
+library Basic/Numbers
+version 0.4
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% copyright: 5.5.00
+
+from Basic/RelationsAndOrders version 0.4 get
+SigOrder, ExtTotalOrder
+
+from Basic/PreNumbers version 0.4 get
+PreNat, TotalOrder_in_PreNat,
+PreInt, TotalOrder_in_PreInt,
+PreRat, TotalOrder_in_PreRat
+
+from Basic/Algebra_I version 0.4 get
+ExtCommutativeMonoid,
+CommutativeMonoid_in_PreNat_Mult,
+CommutativeMonoid_in_PreNat_Add,
+EuclidianRing,
+ExtEuclidianRing, EuclidianRing_in_PreInt,
+Field, ExtField, Field_in_PreRat
+
+spec
+     SigNumbers =
+     SigOrder
+then
+     sorts
+          Elem, Exponent
+     ops
+           +__, abs:         Elem -> Elem;
+           __ + __, __ * __: Elem × Elem -> Elem %left assoc;
+           __ ^ __:          Elem × Exponent -> Elem;
+     %prec { __ + __ } < { __ * __ }
+     %prec { __*__ } < {__ ^ __}
+     %prec {+__} <> {__ ^ __}
+     vars
+          x: Elem
+     .
+          %[plus_def] + x = x
+end
+
+spec
+     Nat =
+     ExtCommutativeMonoid [PreNat fit Elem |-> Nat]
+     with
+      sorts Nat, Pos,
+      preds __ <= __, __ >= __, __ < __, __ > __,
+      ops  suc, pre, __+__, __*__, abs, __ ^ __
+and
+     ExtCommutativeMonoid [PreNat fit Elem |-> Nat]
+     with op  __ ^ __ |-> __*__
+and
+     ExtTotalOrder [PreNat hide  __ >= __, __ < __, __ > __ fit Elem |-> Nat]
+       %% changed
+     with
+      ops min, max
+and
+     SigNumbers
+     with
+      sorts Elem |-> Nat, Exponent |-> Nat
+then
+     preds
+          odd, even: Nat
+     ops
+           __! :    Nat -> Nat;
+           __ -?__: Nat × Nat ->? Nat
+     ops
+           __ /? __:                                    Nat × Nat ->? Nat;
+           __ div __, __ mod __ , __ quot __, __ rem __ :Nat × Nat ->? Nat;
+           __ div __, __ mod __ , __ quot __, __ rem __ : Nat × Pos -> Nat;
+     %prec { __ -? __ , __ + __ } < { __ * __, __ /? __ }
+     %prec { __ -? __ , __ + __ } < { __ div __, __ mod __, __ quot __, __rem __ }
+     %prec { __ /? __, __div__, __mod__, __ quot __, __ rem __ } < { __ ^ __}
+     %%   Operations to represent natural numbers as digits:
+     ops
+           1,2,3,4,5,6,7,8,9: Nat;
+           __ @@ __ :         Nat × Nat -> Nat %left assoc
+     %number
+          __@@__
+     vars
+          m,n,r,s: Nat; p: Pos
+     .
+          %[Nat_divide_0] not def(m /? 0)
+     .
+          %[Nat_divide_Pos] ( m /? n = r <=> m = r * n ) if n>0
+     .
+          %[even_zero] even(0)
+     .
+          %[odd_zero] not odd(0)
+     .
+          %[odd_suc] odd(suc(m)) <=> even(m)
+     .
+          %[even_suc] even(suc(m)) <=> odd(m)
+     .
+          %[factorial_0] 0! =1
+     .
+          %[factorial_suc] suc(n)! =suc(n)*n!
+     .
+          %[Nat_sub_def] m -? n = r <=> m = r + n
+     .
+          %[Nat_div_partial]
+           m div n = r <=> (exists s: Nat . m = n*r + s /\ s < n)
+     .
+          %[Nat_mod_partial]
+           m mod n = s <=> (exists r: Nat . m = n*r + s /\ s < n)
+     .
+          %[Nat_quot_partial] m quot n = m div n
+     .
+          %[Nat_rem_partial] m rem n = m mod n
+     .
+          %[digit_def1] 1 = suc (0)
+     .
+          %[digit_def2] 2 = suc (1)
+     .
+          %[digit_def3] 3 = suc (2)
+     .
+          %[digit_def4] 4 = suc (3)
+     .
+          %[digit_def5] 5 = suc (4)
+     .
+          %[digit_def6] 6 = suc (5)
+     .
+          %[digit_def7] 7 = suc (6)
+     .
+          %[digit_def8] 8 = suc (7)
+     .
+          %[digit_def9] 9 = suc (8)
+     .
+          %[sequence_def] m @@ n = (m * suc(9)) + n
+then
+     %implies
+     vars
+          m,n,r,s,t: Nat; p: Pos
+     .
+          %[Nat_sub_dom] def(m-?n) <=> m >= n
+     .
+          %[Nat_divide_dom] def(m /? n) <=> m mod n = 0
+     .
+          %[Nat_div_total]
+           m div p = r <=> (exists s: Nat . m = p*r + s /\ s < p)
+     .
+          %[Nat_div_dom] def ( m div n ) <=> not (n=0)
+     .
+          %[Nat_mod_total]
+           m mod p = s <=> (exists r: Nat . m = p*r + s /\ s < p)
+     .
+          %[Nat_mod_dom] def ( m mod n ) <=> not (n=0)
+     .
+          %[Nat_quot_total] m quot p = m div p
+     .
+          %[Nat_quot_dom] def ( m quot n ) <=> not (n=0)
+     .
+          %[Nat_rem_total] m rem p = m mod p
+     .
+          %[Nat_rem_dom] def ( m rem n ) <=> not (n=0)
+     .
+          %[min_unit_0] min(m,0) = m
+     .
+          %[Nat_distr1] (r + s) * t = (r * t) + (s * t)
+     .
+          %[Nat_distr2] t * (r + s) = (t* r ) + (t * s)
+end
+
+spec
+     Int =
+     { PreInt
+       and 
+       ExtEuclidianRing [EuclidianRing]
+         with sorts Elem |-> Int, 
+              op delta |-> abs  %%changed
+     }
+     with
+      sorts Int, Nat, Pos, Neg, NonZero[Int],
+      preds __ <= __, __ >= __, __ < __, __ > __,
+      ops  suc, pre, __+__, __*__, abs,
+           __-__, -__, __ ^ __
+and
+     ExtTotalOrder [PreInt hide  __ >= __, __ < __, __ > __ fit Elem |-> Int]
+     %% changed
+     with
+      ops min, max
+and
+     Nat
+and
+     SigNumbers
+     with
+      sorts Elem |-> Int, Exponent |-> Nat
+then
+     preds
+          odd, even: Int
+     ops
+           __ /? __:                            Int × Int ->? Int;
+           __ div __, __ mod __ , __ quot __, __
+           rem __ : Int × Int ->? Int;
+           __ div __, __ mod __ , __ quot __, __
+           rem __ : Int × NonZero[Int] -> Int;
+     ops
+           -__ :  Int -> Int;
+           __-__: Int × Int -> Int
+     %prec { __ - __ } < { __ * __, __ /? __, __ div __, __ mod __, __ quot __, __ rem __ }
+     %prec { - __} <> { __ ^ __}
+     vars
+          m,n,s: Nat; p,q: Pos; x,y,r,z: Int
+     .
+          %[Int_divide_0] not def(x /? y) if y=0
+     .
+          %[Int_divide_NonZero[Int]] ( x /? y = z <=> x = z * y ) if not y=0
+     .
+          %[even_Neg] even(-p) <=> even(p)
+     .
+          %[odd_Neg] odd(-p) <=> odd(p)
+     .
+          %[Int_div_partial1] m div -q = - (m div q)
+     .
+          %[Int_div_partial2] -p div n = - (-p div -n)
+     .
+          %[Int_div_partial3]
+           -p div -q = r <=> (exists s: Nat . -p = -q * r + s /\ s < q)
+     .
+          %[Int_mod_partial1] m mod -q = m mod q
+     .
+          %[Int_mod_partial2] -p mod n = -p mod -n
+     .
+          %[Int_mod_partial3]
+           -p mod -q = s <=> (exists r: Int . -p = -q*r + s /\ s < q)
+     .
+          %[Int_quot_partial1] m quot -q = - (m quot q)
+     .
+          %[Int_quot_partial2] -p quot n = - (p quot n)
+     .
+          %[Int_quot_partial3] -p quot -q = p quot q
+     .
+          %[Int_rem_partial1] m rem -q = m rem q
+     .
+          %[Int_rem_partial2] -p rem n = - (p rem n)
+     .
+          %[Int_rem_partial3] -p rem -q = - (p rem q)
+then
+     %implies
+     vars
+          n : NonZero[Int]; x,y,r: Int; s: Nat
+     .
+          %[divide_Int_dom] def (x /? y) <=> x mod y = 0
+     .
+          %[div_Int_total]
+           x div n = r <=> (exists s: Nat . x = r*n + s /\ s < abs(n))
+     .
+          %[div_Int_dom] def (x div y) <=> not y=0
+     .
+          %[mod_Int_total]
+           x mod n = s <=> (exists r: Int . x = r*n + s /\ s < abs(n))
+     .
+          %[mod_Int_dom] def (x mod y) <=> not y=0
+     .
+          %[quot_Int_total1]
+           x quot n = abs(x) div abs(n) if (x >= 0 /\ n > 0) \/ (x < 0 /\ n
+           < 0)
+     .
+          %[quot_Int_total2]
+           x quot n = - (abs(x) div abs(n)) if (x >= 0 /\ n < 0) \/ (x < 0
+           /\ n > 0)
+     .
+          %[quot_Int_dom] def (x quot y) <=> not y=0
+     .
+          %[rem_Int_total1]
+          x rem n = abs(x) mod abs(n) if x >= 0
+     .
+          %[rem_Int_partial2]
+          x rem n = - (abs(x) mod abs(n)) if x < 0
+     .
+          %[rem_Int_dom] def (x rem y) <=> not y=0
+end
+
+spec
+     Rat =
+     { PreRat and 
+       ExtField [Field] with Elem |-> Rat, NonZero[Elem] |-> NonZero[Rat]
+     }   %% changed
+     with
+      sorts Rat, NonZero[Rat],
+      preds __ <= __, __ >= __, __ < __, __ > __,
+      ops  __+__, __*__, abs,
+           __ ^ __, -__, __ - __,
+           __ / __ : Rat × NonZero[Rat] -> Rat,
+           __ / __ : Rat × Rat ->? Rat
+and
+     ExtTotalOrder [PreRat hide  __ >= __, __ < __, __ > __ fit Elem |-> Rat]
+     %% changed
+     with
+      ops min, max
+and
+     Int
+and
+     SigNumbers
+          with
+           sorts Elem |-> Rat, Exponent |-> Int
+then
+     ops
+           -__ :  Rat -> Rat;
+           __-__: Rat × Rat -> Rat
+     ops
+           __ / __ : Rat × NonZero[Rat] -> Rat;
+           __ / __ : Rat × Rat ->? Rat;
+then
+     %implies
+     vars
+          r,s,t:Rat; n:NonZero[Rat]
+     .
+          %[Rat_minus_def] - r = ( -num(r) ) / denom(r)
+     .
+          %[Rat_sub_def]
+           r-s = (num(r) * denom(s) - num(s)* denom(r))/
+                 ((denom(r) * denom(s)) )
+     .
+          %[Rat_div_partial]
+          r/s = (num(r) * denom(s)) / ((denom(r) * num(s) as NonZero[Int]))
+     .
+          %[Rat_div_total]
+           r/n = (num(r) * denom(n)) / (denom(r) * num(n))
+     .
+          %[Rat_div_dom] def r/s <=> not (s = 0)
+end
+

@@ -1,0 +1,228 @@
+library Basic/RelationsAndOrders
+version 0.4
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% copyright: 5.5.00
+
+spec
+     Relation =
+     sort
+          Elem
+     pred
+          __ ~ __: Elem * Elem
+end
+
+spec
+     ReflexiveRelation =
+     Relation
+then
+     var
+          x:Elem
+     .
+          %[refl] x ~ x
+end
+
+spec
+     SymmetricRelation =
+     Relation
+then
+     vars
+          x,y:Elem
+     .
+          %[sym] x ~ y if y ~ x
+end
+
+spec
+     TransitiveRelation =
+     Relation
+then
+     vars
+          x,y,z:Elem
+     .
+          %[trans] x ~ z if x ~ y /\ y ~ z
+end
+
+spec
+     SimilarityRelation =
+     ReflexiveRelation and SymmetricRelation
+end
+
+spec
+     PartialEquivalenceRelation =
+     SymmetricRelation and TransitiveRelation
+end
+
+spec
+     EquivalenceRelation =
+     ReflexiveRelation and PartialEquivalenceRelation
+end
+
+spec
+     SigOrder =
+     sort
+          Elem
+     preds
+           __ <= __, __ < __,
+           __ >= __, __ > __: Elem * Elem;
+     vars
+          x,y:Elem
+     .
+          %[SigOrder_geq_def] x >= y <=> y <= x
+     .
+          %[SigOrder_less_def] x < y <=> (x <= y /\ not (x=y))
+     .
+          %[SigOrder_greater_def] x > y <=> y < x
+end
+
+spec
+     PreOrder =
+     {ReflexiveRelation and TransitiveRelation}
+     with pred __ ~ __ |-> __ <= __
+end
+
+spec
+     PartialOrder =
+     PreOrder
+then
+     vars
+          x,y:Elem
+     .
+          %[POrder_antisym] x = y if x <= y /\ y <= x
+end
+
+spec
+     ExtPartialOrder  [PartialOrder]
+=
+     %def
+     SigOrder
+and
+{
+          ops
+                inf,sup : Elem × Elem ->? Elem
+          vars
+               x,y,z: Elem
+          .
+               %[inf_def] inf(x,y) = z <=>
+                z <= x /\ z <= y /\ (forall t: Elem . t <= x /\ t <= y => t
+                <= z)
+          .
+               %[sup_def] sup(x,y) = z <=>
+                x <= z /\ y <= z /\ (forall t: Elem . x <= t /\ y <= t => z
+                <= t)
+     then
+          %implies
+          ops
+               inf,sup : Elem × Elem ->? Elem, comm
+}
+end
+
+spec
+     TotalOrder =
+     PartialOrder
+then
+     vars
+          x,y:Elem
+     .
+          %[TOrder_comparability] x <= y \/ y <= x
+end
+
+spec
+     ExtTotalOrder  [TotalOrder]
+=
+     %def
+     ExtPartialOrder [PartialOrder]
+and
+{
+          ops
+               min, max: Elem × Elem -> Elem
+          vars
+               x,y: Elem
+          .
+               %[min_def] min(x,y) = x when x <= y else y
+          .
+               %[max_def] max(x,y) = y when x <= y else x
+     then
+          %implies
+          ops
+                min, max: Elem × Elem -> Elem,
+                          comm, assoc
+}
+then
+     %implies
+     vars
+          x,y: Elem
+     .
+          %[min_inf_relation] min(x,y)=inf(x,y)
+     .
+          %[max_sup_relation] max(x,y)=sup(x,y)
+end
+
+spec
+     BooleanAlgebra =
+     sort
+          Elem
+     ops
+           0,1:       Elem;
+           __ cap __: Elem * Elem -> Elem, assoc, comm, unit 1;
+           __ cup __: Elem * Elem -> Elem, assoc, comm, unit 0;
+     %prec
+          { __ cup __ } < { __ cap __}
+     vars
+          x,y,z:Elem
+     .
+          %[absorption_def1] x cap ( x cup y) = x
+     .
+          %[absorption_def2] x cup ( x cap y) = x
+     .
+          %[zeroAndCap] x cap 0 = 0
+     .
+          %[oneAndCup] x cup 1 = 1
+     .
+          %[BA_distr_def1] x cap ( y cup z) = (x cap y) cup ( x cap z)
+     .
+          %[BA_distr_def2] x cup ( y cap z) = (x cup y) cap ( x cup z)
+     .
+          %[BA_inverse_def]
+          exists x': Elem . x cup x' = 1 /\ x cap x' = 0
+then
+     %implies
+     op
+          __ cup __, __ cap __ : Elem * Elem -> Elem , idem
+     var
+          x: Elem
+     .
+          %[BA_uniqueComplement] exists! x': Elem . x cup x' = 1 /\ x cap
+          x' = 0
+end
+
+spec
+     ExtBooleanAlgebra  [BooleanAlgebra]
+=
+     %def
+     {
+          SigOrder
+          then vars x,y:Elem
+          . %[BA_po_def] x <= y <=> x cap y = x
+     }
+     and
+     {
+          op compl: Elem -> Elem
+          vars x,y:Elem
+          . %[BA_compl_def] compl(x)=y <=> x cup y = 1 /\ x cap y = 0
+     }
+then
+     %implies
+     vars
+          x,y: Elem
+     .
+          %[de_Morgan1] compl(x cap y) = compl(x) cup compl(y)
+     .
+          %[de_Morgan2] compl(x cup y) = compl(x) cap compl(y)
+     .
+          %[BA_involution_compl] compl(compl(x)) = x
+end
+
+view
+     PartialOrder_in_ExtBooleanAlgebra  [BooleanAlgebra]:
+     PartialOrder to ExtBooleanAlgebra[BooleanAlgebra]
+end
+

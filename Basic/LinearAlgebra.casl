@@ -1,0 +1,490 @@
+library Basic/LinearAlgebra
+version 0.4
+%% authors: M.Roggenbach, T.Mossakowski, L. Schröder
+%% copyright: 15.03.2000
+
+from
+     Basic/Algebra_I version 0.4 get
+     AbelianGroup, ExtAbelianGroup, Monoid, ExtMonoid,
+     Group, ExtGroup, MonoidAction, ExtMonoidAction,
+     GroupAction, ExtGroupAction, Ring, ExtRing,
+     CommutativeRing, ExtCommutativeRing, Field, ExtField
+from
+     Basic/Numbers version 0.4 get Nat, Int
+from
+     Basic/Algebra_II version 0.4 get
+     Polynomial
+from
+     Basic/StructuredDatatypes version 0.4 get
+     Array, FiniteMap
+
+spec
+     VectorSpace  [Field]=
+     MonoidAction[Monoid with ops 1,__*__]
+     with sort Space, op __*__
+then
+     closed{AbelianGroup with
+          sort Elem |-> Space, ops 0, __+__ }
+then
+     vars
+          x,y: Space; a,b: Elem
+     .
+          %[VS_distr1] (a+b)*x=a*x+b*x
+     .
+          %[VS_distr2] a*(x+y)=a*x+a*y
+end
+
+spec
+     ExtVectorSpace  [VectorSpace [Field]] given Int =
+%def
+     ExtField[Field]
+and
+     ExtAbelianGroup[AbelianGroup fit sort Elem |-> Space]
+and
+     ExtMonoidAction[MonoidAction[Monoid]]
+and
+     ExtGroupAction[GroupAction
+               [Group fit sort Elem |-> NonZero[Elem]]]
+and
+     FiniteMap[sort Space fit sort S|->Space]
+		[sort Elem fit sort T|->Elem]
+          with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]
+then
+     op
+          eval: LC[Space,Elem] -> Space
+     pred
+          isZero: LC[Space,Elem]
+     vars
+          x: Space; r: Elem; l:LC[Space,Elem]
+     .
+          %[eval_empty] eval([])=0
+     .
+          %[eval_add] [r/x]eps l => eval(l)=r*x+eval(l-[r/x])
+     .
+          %[isZero_def]
+          isZero(l) <=> forall y: Space. (y eps dom(l) => eval(y,l)=0)
+end
+
+spec
+     ConstructVSWithBase  [Field][sort Base]=
+     ExtVectorSpace[Field]
+then
+     %cons
+{
+     sort
+          Base<Space
+then
+     %def
+     FiniteMap[sort Base fit sort S|-> Base]
+		[sort Elem fit sort T|-> Elem]
+          with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
+then
+     sort
+          LC[Base,Elem]<LC[Space,Elem]
+     var
+          l:LC[Base,Elem]
+     .
+          %[generating] forall y:Space. exists k:LC[Base,Elem]. y=eval(k)
+     .
+          %[independent] eval(l)=0 => isZero(l)
+}
+end
+
+spec
+     VSWithBase  [Field][sort Base]=
+     ConstructVSWithBase[Field][sort Base]
+          reveal sorts Space,Elem,Base, ops __*__,__+__
+end
+
+spec
+     ExtVSWithBase  [VSWithBase[Field][sort Base]]
+     given Int =
+%def
+     ExtVectorSpace[ConstructVSWithBase[Field][sort Base]]
+          with sorts Base, LC[Base,Elem]
+then
+     %implies
+     vars
+          l,k: LC[Base,Elem]
+     .
+          %[unique_representation] eval(l)=eval(k) => l=k
+then
+     %def
+     op
+          coefficients: Space -> LC[Base,Elem]
+     var
+          x:Space
+     .
+          %[coefficients_def] eval(coefficients(x))=x
+then
+     %implies
+     var
+          l:LC[Base,Elem]
+     .
+          %[recover_coefficients] coefficients(eval(l))=l
+end
+
+view
+     VSWithBase_in_Field  [Field]:
+     VSWithBase[Field][sort Base] to
+     {Field then sort One={x:Elem. x=1} }=
+     sorts
+          Space |-> Elem, Base |-> One
+end
+
+view
+     VSWithBase_in_ExtVectorSpace  [Field] given Int:
+     {VSWithBase[Field][sort Base] hide sort Base} to
+     ExtVectorSpace[Field]
+end
+
+spec
+     Algebra  [Field]=
+     VectorSpace[Field]
+and
+     closed
+          {Ring with Elem |-> Space }
+then
+     sort
+          Elem<Space
+     vars
+          r:Elem;x,y:Space
+     .
+          %[Algebra_left_linear] (r*x)*y=r*(x*y)
+     .
+          %[Algebra_right_linear] x*(r*y)=r*(x*y)
+end
+
+spec
+     ExtAlgebra  [Algebra[Field]] given Int =
+%def
+     ExtField[Field]
+and
+     ExtVectorSpace[VectorSpace[Field]]
+and
+     ExtRing[Algebra fit sort Elem |-> Space]
+and
+     Polynomial[Field]
+then
+     op
+          eval: Poly[Elem] * Space -> Space
+     vars
+          a:Elem; p:Poly[Elem]; x:Space
+     .
+          %[eval_poly_0] eval(0,x)=0
+     .
+          %[eval_poly_cons] eval(a:::p,x)=a+eval(p,x)*x
+end
+
+spec
+     FreeVectorSpace  [Field][sort Base]=
+free
+     {VectorSpace[Field]
+     then
+          op
+               inject: Base -> Space
+}
+end
+
+spec
+     ExtFreeVectorSpace  [Field][sort Base] given Int =
+     ExtVectorSpace[FreeVectorSpace[Field][sort Base]]
+end
+
+view
+     FreeVectorSpace_in_ExtVSWithBase  [Field]
+     given Int :
+     FreeVectorSpace[Field][sort Base] to
+     {
+          ExtVSWithBase[Field][sort Base]
+     then
+          op
+               inject:Base -> Space
+          var
+               x:Base
+          .
+               %[inject_def] inject(x)=x
+     }
+end
+
+view
+     VSWithBase_in_ExtFreeVectorSpace  [Field][sort Base]
+     given Int :
+     VSWithBase[Field][sort Base] to
+     ExtFreeVectorSpace[Field][sort Base]
+end
+
+spec
+     VectorTuple  [VectorSpace[Field]][op n: Nat]
+     given Nat=
+%def
+{
+     Array [ops 1,n:Nat fit min |-> 1, max |-> n] 
+           [sort Space fit Elem|-> Space]
+          with sorts
+           Index |-> Index[n],
+           Array[Space] |-> Tuple[Space,n]
+     then
+          ops
+                0:     Tuple[Space,n];
+                __*__: Elem * Tuple[Space,n] -> Tuple[Space,n];
+                __+__: Tuple[Space,n] * Tuple[Space,n] -> Tuple[Space,n];
+                auxsum:Tuple[Space,n] * Index[n] -> Space;
+                sum:   Tuple[Space,n] -> Space
+          vars
+               r:Elem; x,y:Tuple[Space,n]; i:Index[n]
+          .
+               %[Tuple_zero_def] 0!i=0
+          .
+               %[Elem_times_Tuple_def] (r*x)!i=r*(x!i)
+          .
+               %[Tuple_plus_def] (x+y)!i=(x!i)+(y!i)
+          .
+               %[Tuple_auxsum_1]
+               auxsum(x,1 as Index[n])=x!(1 as Index[n])
+          .
+               %[Tuple_auxsum_suc]
+                auxsum(x,suc(i) as Index[n])=
+                auxsum(x,i)+(x!(suc(i) as Index[n]))
+          .
+               %[Tuple_sum_def] sum(x)=auxsum(x,n as Index[n])
+}
+     hide op auxsum
+and
+     ExtVectorSpace[VectorSpace[Field]]
+end
+
+view
+     VectorSpace_in_VectorTuple  [VectorSpace[Field]]
+     [op n:Nat] given Nat:
+     VectorSpace[Field] to
+     VectorTuple[VectorSpace[Field]][op n:Nat]=
+     sort
+          Space |-> Tuple[Space,n]
+end
+
+spec
+     Vector  [Field][op n: Nat] given Nat =
+%def
+     VectorTuple [Field fit sort Space|->Elem] [op n: Nat] with
+          sorts
+               Index[n],Tuple[Elem,n] |-> Vector[Elem,n],
+          ops
+               0,__*__,__+__,sum
+then
+     {
+     ops
+           <__ || __> :Vector[Elem,n] * Vector[Elem,n] -> Elem;
+           prod:        Vector[Elem,n] -> Elem;
+           unitVector:  Index[n] -> Vector[Elem,n];
+           auxmult:     Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
+           auxprod:     Vector[Elem,n] * Index[n] -> Elem;
+     pred
+          perp: Vector[Elem,n] * Vector[Elem,n]
+     vars
+          x,y:Vector[Elem,n]; i,j:Index[n]
+     .
+          %[Vector_auxmult_def] auxmult(x,y)!i=(x!i)*(y!i)
+     .
+          %[Vector_times_def] <x || y> =sum(auxmult(x,y))
+     .
+          %[Vector_auxprod_1]
+          auxprod(x,1 as Index[n])=x!(1 as Index[n])
+     .
+          %[Vector_auxprod_suc]
+          auxprod(x,suc(i) as Index[n])= auxprod(x,i)*(x!(suc(i) as
+          Index[n]))
+     .
+          %[Vector_prod_def] prod(x)=auxprod(x,n as Index[n])
+     .
+          %[perp_def] perp(x,y) <=> ( <x || y> =0)
+     .
+          %[unitVector_def] unitVector(i)!j=1 when i=j else 0
+     sort
+           UnitVector[Elem,n]=
+           {x:Vector[Elem,n]. exists i:Index[n]. x=unitVector(i)}
+}
+     hide ops auxmult,auxprod
+then
+     %implies
+     vars
+          x,y:Vector[Elem,n]
+     .
+          %[scalar_prod_comm] <x || y> = <y || x>
+     .
+          %[scalar_prod_pos] <x || x> =0 => x=0
+end
+
+view
+     VSWithBase_in_Vector  [Field][op n:Nat] given Nat:
+     VSWithBase[Field][sort Base] to Vector[Field][op n:Nat] =
+     sorts
+           Space |-> Vector[Elem,n],
+           Base |-> UnitVector[Elem,n]
+end
+
+spec
+     SymmetricGroup  [op n:Nat] given Nat=
+     Int with sort RUnit[Int]
+then
+     %def
+     sort
+          Nat[n]={ i:Pos . i <= n}
+then
+     %def
+     Array[op n:Nat fit ops min |-> 1, max |-> n][sort Nat[n] fit Elem
+|-> Nat[n]]
+          with sorts Array[Nat[n]], Index |-> Index[n]
+then
+     %implies
+     sort
+          Index[n]=Nat[n]
+then
+     %def
+     sort
+          Perm[n]={p:Array[Nat[n]]. forall i:Nat[n]. exists j:Nat[n]. p!j=i}
+     ops
+           nFac:   Nat=n!;
+           __  comp  __:Perm[n] * Perm[n] -> Perm[n];
+           sign:   Perm[n] -> RUnit[Int]
+     var
+          p,q:Perm[n];i:Nat[n]
+     .
+          %[Perm_comp_def] (p  comp  q)!i=p!(q!i)
+     .
+          %[Perm_sign_homomorphic] sign(p  comp  q)=sign(p)*sign(q)
+     .
+          %[Perm_sign_surjective] exists r:Perm[n]. sign(r)= -1
+then
+     %cons
+     sort
+          PNat[n]={i:Pos. i <= nFac}
+     op
+          perm: PNat[n] -> Perm[n]
+     axiom
+          forall p:Perm[n]. exists i:PNat[n]. perm(i)=p
+end
+
+view
+     Group_in_SymmetricGroup  [op n:Nat] given Nat:
+     Group to SymmetricGroup[op n:Nat]=
+     sort
+          Elem |-> Perm[n],
+     op
+          __*__ |-> __  comp  __
+end
+
+spec
+     Matrix  [Field][op n:Nat] given Nat=
+%def
+     VectorTuple[Vector[Field][op n:Nat]
+               fit sort Space |-> Vector[Elem,n]]
+          [op n:Nat]
+     with
+          sort Index[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
+then
+     ops
+           transpose: Matrix[Elem,n] -> Matrix[Elem,n];
+           1:         Matrix[Elem,n];
+           elementary:Index[n] * Index[n] -> Matrix[Elem,n];
+           __*__:     Matrix[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
+           __*__:     Matrix[Elem,n] * Matrix[Elem,n] -> Matrix[Elem,n];
+           det:       Matrix[Elem,n] -> Elem
+     vars
+          a,b:Matrix[Elem,n]; x:Vector[Elem,n]; i,j,k:Index[n]
+     .
+          %[transpose_def] (transpose(a)!i)!j=(a!j)!i
+     .
+          %[Matrix_1_def] (1!i)!j=1 when i=j else 0
+     .
+          %[elementary_def]
+          elementary(i,j)!k=unitVector(j) when i=k else 0
+     .
+          %[Matrix_times_Vector_def](a*x)!i= <transpose(a)!i || x>
+     .
+          %[Matrix_mult_def] ((a*b)!i)=a*(b!i)
+     sort
+           ElemMatrix[Elem,n]=
+           {x:Matrix[Elem,n]. exists i,j:Index[n]. x=elementary(i,j)}
+     then
+          local {
+               SymmetricGroup[op n:Nat] with
+                    sorts Perm[n], PNat[n], ops sign,perm,nFac
+          then
+               Vector[Field][op nFac:Nat fit op n|->nFac] with
+                    sort Vector[Elem,nFac]
+          then
+               sorts
+                    Index[nFac]=PNat[n]
+               ops
+                     summands:Matrix[Elem,n] -> Vector[Elem,nFac];
+                     factors: Matrix[Elem,n] * PNat[n] -> Vector[Elem,n]
+     }
+     within
+          {
+     vars
+          a:Matrix[Elem,n];i:Index[n];j:PNat[n]
+     .
+          %[Matrix_factors_def] factors(a,j)!i=(a!i)!(perm(j)!i)
+     .
+          %[Matrix_summands_def]
+          summands(a)!j=sign(perm(j))*prod(factors(a,j))
+     .
+          %[Leibnitz] det(a)=sum(summands(a))
+     }
+then
+     %implies
+vars
+     a,b:Matrix[Elem,n]
+.
+     %[det_0] det(0)=0
+.
+     %[det_vanishes]
+     not det(a)=0 <=> forall x:Vector[Elem,n]. (a*x=0 => x=0)
+.
+     %[det_1] det(1)=1
+.
+     %[det_mult] det(a*b)=det(a)*det(b)
+end
+
+view
+     Algebra_in_Matrix  [Field][op n:Nat] given Nat:
+     Algebra[Field] to Matrix[Field][op n:Nat]=
+     sort
+          Space |-> Matrix[Elem,n]
+end
+
+view
+     VSWithBase_in_Matrix  [Field][op n:Nat] given Nat:
+     VSWithBase[Field][sort Base] to Matrix[Field][op n:Nat]=
+     sorts
+           Space |-> Matrix[Elem,n],
+           Base |-> ElemMatrix[Elem,n]
+end
+
+spec
+     FreeAlgebra  [Field] =
+     free{Algebra[Field] then op X:Space}
+end
+
+spec
+     ExtFreeAlgebra  [FreeAlgebra[Field]] given Int=
+     ExtAlgebra[FreeAlgebra[Field]]
+end
+
+view
+     FreeAlgebra_in_Polynomial  [Field] given Int:
+     FreeAlgebra[Field] to Polynomial[Field]=
+     sort
+          Space |-> Poly[Elem]
+end
+
+view
+     Polynomial_in_ExtFreeAlgebra  [Field] given Int:
+     {Polynomial[Field]
+     reveal sorts Elem,Poly[Elem], ops X,__+__, __*__} to
+     ExtFreeAlgebra[FreeAlgebra[Field]]=
+     sort
+          Poly[Elem] |-> Space
+end
+

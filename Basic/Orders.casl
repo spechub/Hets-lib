@@ -1,0 +1,88 @@
+library Basic/Orders
+version 0.3
+%% authors: M.Roggenbach, T.Mossakowski
+%% date: 1.11.99
+
+spec
+     SigOrder =
+     sort
+          Elem
+     pred
+           __ <= __,
+           __ >= __,
+           __ < __,
+           __ > __: Elem ×Elem;
+     var
+          x,y:Elem
+     . %[SigOrder_geq_def] x >= y <=> y <= x
+     . %[SigOrder_less_def] x < y <=> (x <= y /\ ¬ (x=y))
+     . %[SigOrder_greater_def] x > y <=> y < x
+end
+
+spec
+     PartialOrder =
+     sort
+          Elem
+     pred
+          __ < __: Elem ×Elem
+     vars
+          x,y,z:Elem
+     . %[PO_refl] x < x
+     . %[PO_antisym] x = y if x < y /\ y < x
+     . %[PO_trans] x < z if x < y /\ y < z
+end
+
+spec
+     TotalOrder =
+     PartialOrder with sort Elem, pred __ < __
+then
+     vars
+          x,y:Elem
+     . %[TOrder_comparability] x < y \/ y < x
+end
+
+spec
+     DefineBooleanAlgebra =
+     sort
+          Elem
+     ops
+           0:Elem;
+           1:Elem;
+           __ cap __: Elem ×Elem -> Elem,
+                      assoc, comm, unit 1;
+           __ cup __: Elem ×Elem -> Elem,
+                      assoc, comm, unit 0;
+     %prec
+          {__ cup __} < {__ cap __}
+     vars
+          x,y,z:Elem
+     . %[adjointness1] x cap ( x cup y) = x
+     . %[adjointness2] x cup ( x cap y) = x
+     . %[zeroAndCap] x cap 0 = 0
+     . %[oneAndCap] x cup 1 = 1
+     . %[BA_distr_Def1] x cap ( y cup z) = (x cap y) cup ( x cap z)
+     . %[BA_distr_Def2] x cup ( y cap z) = (x cup y) cap ( x cup z)
+     . %[BA_inverse_Def]
+          exists x': Elem . x cup x' = 1 /\ x cap x' = 0
+end
+
+spec
+     BooleanAlgebra
+     [DefineBooleanAlgebra with sort Elem, ops 0, 1,__ cap __, __ cup __]
+=
+     SigOrder with preds __ < __,__ > __,__<__,__>__
+then
+     %def
+     vars
+          x,y:Elem
+     . %[BA_po_def] x < y <=> x cap y = x
+end
+
+view
+     PartialOrder_in_BooleanAlgebra
+     [DefineBooleanAlgebra]:
+     PartialOrder to BooleanAlgebra [DefineBooleanAlgebra]
+=
+      sort Elem |-> Elem,
+      pred __ < __ |-> __ < __
+end

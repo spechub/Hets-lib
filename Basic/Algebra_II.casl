@@ -1,0 +1,195 @@
+library Basic/Algebra_II
+version 0.4
+%% authors: M.Roggenbach, T.Mossakowski, L. Schröder
+%% copyright: 15.03.00
+
+from
+     Basic/RelationsAndOrders version 0.4 get
+     PartialOrder, ExtPartialOrder, TotalOrder
+from
+     Basic/Algebra_I version 0.4 get
+     CommutativeRing, ExtCommutativeRing, IntegralDomain,
+     ExtIntegralDomain, Field, ExtField, EuclidianRing,
+     ExtEuclidianRing
+from
+     Basic/Numbers version 0.4 get Nat, Int, Rat
+from
+     Basic/StructuredDatatypes version 0.4 get List, Bag
+
+spec
+     CompactInt=
+     Int
+then
+free
+     {
+     type
+          CompactInt::=sort Int | infinity | -__(CompactInt)
+     ops
+           __+__: CompactInt × CompactInt ->? CompactInt, comm;
+           __-__: CompactInt× CompactInt ->? CompactInt
+     then
+          ExtPartialOrder[PartialOrder]
+          with sort Elem |-> CompactInt
+     then
+     vars
+          n:Int;m,k:CompactInt
+     .
+          %[double_neg_compact] -(-m)=m
+     .
+          %[neg_sum_compact] (-m)+(-k)= -(m+k)
+     .
+          %[leq_compact_def1] -infinity<n
+     .
+          %[leq_compact_def2] n<infinity
+     .
+          %[infinity_plus_n_def] m> -infinity => infinity+m=infinity
+     .
+          %[compact_minus_def] m - k = m + ( - k )
+}
+end
+
+view
+     TotalOrder_in_CompactInt :
+     TotalOrder to CompactInt =
+     sort Elem |-> CompactInt %%changed
+end
+
+spec
+     ConstructFactorialRing =
+     ExtIntegralDomain [IntegralDomain]
+               with sorts RUnit[Elem], Irred[Elem], pred associated
+then
+     %def
+     Bag [sort Irred[Elem] fit Elem |-> Irred[Elem]] with sort Bag[Irred[Elem]] |-> Factors[Elem]
+then
+     %def
+     pred
+          equiv: Factors[Elem] * Factors[Elem]
+     op
+          prod: Factors[Elem] -> Elem
+     vars
+          i,j: Irred[Elem]; S,T:Factors[Elem]
+     .
+          %[product_Bag_empty] prod({}) = 1
+     .
+          %[product_Bag_plus] prod(S+i) = prod(S)*i
+     .
+          %[equiv_Bag_def]
+           equiv(S,T) <=> (( S={} /\ T={} ) \/
+                          (exists s,t: Irred[Elem] . (s eps S /\ t eps T /\
+                          associated(s,t) /\ equiv(S - s, T - t)) ) )
+then
+     vars
+          x:Elem; S,T:Factors[Elem]
+     .
+          %[exists_factorization] exists V:Factors[Elem] . x = prod(V)
+     .
+          %[unique_factorization] equiv(S,T) if associated(prod(S),prod(T))
+end
+
+spec
+     FactorialRing =
+     ConstructFactorialRing
+               reveal sort Elem, ops __+__:Elem*Elem->Elem , __*__:Elem*Elem->Elem %% changed
+end
+
+spec
+     ExtFactorialRing  [FactorialRing] given Int=
+     ConstructFactorialRing  %%changed
+end
+
+
+view
+     FactorialRing_in_ExtEuclRing  [EuclidianRing]
+     given Int:
+     FactorialRing to
+     ExtEuclidianRing[EuclidianRing]
+end
+
+view
+     EuclidianRing_in_Int :
+     EuclidianRing to Int=
+     sort
+          Elem |-> Int,
+     op
+          delta |-> abs
+end
+
+view
+     Field_in_Rat :
+     Field to Rat=
+     sort
+          Elem |-> Rat
+end
+
+spec
+     Polynomial  [CommutativeRing] given Int =
+%def
+     CompactInt and ExtCommutativeRing[CommutativeRing]
+then
+     local List[sort Elem]
+within
+     {
+          sort
+               Poly[Elem]={ l:List[Elem] . not last(l) = 0 }
+     then
+          sort
+               Elem < Poly[Elem]
+          ops
+                X: Poly[Elem];
+                degree:Poly[Elem] -> CompactInt;
+                __:::__:Elem×Poly[Elem] -> Poly[Elem]
+          vars
+               a: Elem; p:Poly[Elem]
+          .
+               %[Poly_0] 0=[]
+          .
+               %[Embedding_of_Elem_in_Poly] a = a :: [] if not a=0
+          .
+               %[X_def] X = 0 :: 1 :: []
+          .
+               %[cons_Poly_def] a:::p=a when p=0 else a :: p
+          .
+               %[degree_def] degree(p)= -infinity when p=0 else #p-1
+     then
+          closed
+               {ExtCommutativeRing[CommutativeRing] with
+                         sort Elem |-> Poly[Elem]}
+     then
+          vars
+               p,q:Poly[Elem];a,b:Elem
+          .
+               %[add_Polynomial_zero_def] p+0=p
+          .
+               %[add_Polynomial_cons_def]
+               (a:::p)+(b:::q)=(a+b):::(p+q)
+          .
+               %[mult_Polynomial_zero_def] p*(0:Elem)=0
+          .
+               %[mult_Polynomial_cons_def]
+               (a:::p)*(b:::q)=((a*b):::((b*p)+(a*q)))+(0:::(0:::(p*q)))
+     then
+          %implies
+          vars
+               p,q:Poly[Elem]
+          .
+               %[degree_sum]
+               degree(p) <= degree(q) => degree(p+q) <= degree(q)
+          .
+               %[degree_product] degree(p*q) <= degree(p)+degree(q)
+          .
+               %[degree_product_noZeroDivisors]
+               hasNoZeroDivisors => degree(p*q)=degree(p)+degree(q)
+}
+end
+
+view
+     EuclidianRing_in_Polynomial  [Field]:
+     EuclidianRing to Polynomial[Field] =
+     sort
+          Elem |-> Poly[Elem],
+     op
+          delta |-> degree
+end
+
+
