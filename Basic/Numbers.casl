@@ -168,6 +168,7 @@ spec
       preds __ <= __, __ >= __, __ < __, __ > __,
       ops  suc, pre, __+__, __*__, abs,
            __-__, -__, __ ^ __
+%(
 and
      ExtTotalOrder [PreInt reveal sort Int, pred __<=__ 
 		fit sort Elem |-> Int]
@@ -192,6 +193,7 @@ then
 	   __ rem __ : Int × NonZero[Int] -> Int;
 	   sign: Int -> Int
      %prec { __ * __ } <> { __ /? __, __ div __, __ mod __, __ quot __, __ rem __ }
+     op -__ : Int -> Int;
      vars
           m,n,s: Nat; p,q: Pos; x,y,r,z: Int
      .
@@ -320,3 +322,4 @@ end
 
 
 
+%)
