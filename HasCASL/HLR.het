@@ -1,0 +1,20 @@
+spec Rules =
+  Category
+then
+  type Rules = { (l,r): Mor * Mor .
+	             dom l = dom r
+		  /\ l injective
+		  /\ r injective }
+end
+
+spec Transformation =
+  Rules and Pushout[Category]
+then
+  ops transform: Rules * Mor ->? Ob;
+  forall (l,r): Rules; g1:Mor
+  . def (transform((l,r),g1)) => codom l = dom g1
+  . (((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
+    /\ ((c2,g3) as POCocone) isCoconeFor ((g2,r) as PODiagram))
+     => transform((l,r),g1)= r objPushout g2
+end
+
