@@ -296,15 +296,15 @@ view
            __*__ |-> __ ++ __
 end
 
-%%spec
-%%     String =
-%%    List [Char]
-%%    with
-%%      sorts List[Char] |-> String,
-%%            NeList[Char] |-> NonEmptyString
-%%then
-%%     %string [], __::__
-%%end
+spec
+     String =
+    List [Char fit sort Elem |-> Char]
+    with
+      sorts List[Char] |-> String,
+            NeList[Char] |-> NonEmptyString
+then
+     %string [], __::__
+end
 
 spec
      GenerateFiniteMap  [sort S] [sort T] =
@@ -328,8 +328,7 @@ spec
      FiniteMap  [sort S][sort T] given PreNat=
      GenerateFiniteMap [sort S][sort T]
 and
-     FiniteSet [sort S fit sort Elem|-> S] 
-	and FiniteSet [sort T fit sort Elem|-> T]
+     FiniteSet [sort S fit Elem |-> S] and FiniteSet [sort T fit Elem |-> T]
 then
 
      free
@@ -508,7 +507,7 @@ then
      {
 
            FiniteMap [sort Index fit sort S|-> Index]
-			[sort Elem fit sort T |-> Elem]
+                     [sort Elem fit sort T |-> Elem]
            with
            sort FiniteMap[Index,Elem] |-> Array[Elem],
            ops  [] |-> init

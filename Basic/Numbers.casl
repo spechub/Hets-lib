@@ -174,9 +174,7 @@ then
      %def
      Nat
 and
-     SigNumbers[sort Int fit sort Elem |-> Int]
-	[sort Nat fit sort NonNeg |-> Nat]
-	[sort Nat fit sort Exponent |-> Nat]
+     SigNumbers[sort Int] [sort Nat] [sort Nat]
 then 
      %def
      sort Pos = Pos[Int]
@@ -277,9 +275,7 @@ then %def
 and
      Int
 and
-     SigNumbers[sort Rat fit sort Elem |-> Rat]
-	[sort NonNeg[Rat] fit sort NonNeg |-> NonNeg[Rat]]
-	[sort Int fit sort Exponent |-> Int]
+     SigNumbers[sort Rat] [sort NonNeg[Rat]] [sort Int]
 then
      %def
      sort NonZero[Int] < NonZero[Rat]
