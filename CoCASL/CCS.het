@@ -18,7 +18,7 @@ spec Action =
   . bar(bar(a))=a
 end
 
-spec CCS =
+spec ActionRelabelling = 
 
 Action
 
@@ -47,6 +47,11 @@ then
     /\ forall l,k: Label . (eval(f,l) = eval(f,k) => k=l)
     /\ forall l: Label   . exists k:Label . l=eval(f,k)
   }
+end
+
+spec CCS =
+
+ActionRelabelling
 
 then
 
@@ -93,7 +98,7 @@ then
                                                      fix(Y,E{P/X})
 then
 
-  %% Transistion System induced by AgentExpressions
+  %% Transition System induced by AgentExpressions
 
   free{
   
