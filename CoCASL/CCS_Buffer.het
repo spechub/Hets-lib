@@ -18,24 +18,24 @@ CCS then
                             | C | C_0 | C_1 | C_00 | C_01 | C_10 | C_11
 
 
-  axioms
+  
 
-  B   definedAs   (input(0) -> B_0) 
+ . definitionOf( B   ) =   (input(0) -> B_0) 
                 + (input(1) -> B_1);
-  B_0 definedAs    bar(output(0)) -> B;
-  B_1 definedAs    bar(output(1)) -> B;
+ . definitionOf( B_0 ) =    bar(output(0)) -> B;
+ . definitionOf( B_1 ) =    bar(output(1)) -> B;
 
-  C   definedAs   (input(0) -> C_0) 
+ . definitionOf( C   ) =   (input(0) -> C_0) 
                 + (input(1) -> C_1);
-  C_0 definedAs   (input(0) -> C_00)
+ . definitionOf( C_0 ) =   (input(0) -> C_00)
                 + (input(1) -> C_10)
                 + (bar(output(0)) -> C);
-  C_1 definedAs   (input(0) -> C_01)
+ . definitionOf( C_1 ) =   (input(0) -> C_01)
                 + (input(1) -> C_11)
                 + (bar(output(1)) -> C);
-  C_00 definedAs bar(output(0)) -> C_0;
-  C_01 definedAs bar(output(1)) -> C_0;
-  C_10 definedAs bar(output(0)) -> C_1;
-  C_11 definedAs bar(output(1)) -> C_1
+  . definitionOf(C_00 ) = bar(output(0)) -> C_0;
+  . definitionOf(C_01 ) = bar(output(1)) -> C_0;
+  . definitionOf(C_10 ) = bar(output(0)) -> C_1;
+  . definitionOf(C_11 ) = bar(output(1)) -> C_1
 
 end
