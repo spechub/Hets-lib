@@ -1,0 +1,30 @@
+library Buffer
+
+logic CASL
+
+spec List =
+  sort Elem
+  free type List[Elem] ::= nil | cons(Elem; List[Elem])
+end
+
+logic CspCASL
+
+spec Buffer =
+  data List
+  channel read, write : Elem
+  process   
+  %%let Buf(l:List[Elem]) =
+  %%            read?x -> Buf( cons(x,nil) )
+  %%            [] if l=nil then STOP else write!last(l) -> Buf( rest(l) )
+  %%            in 
+                   Buf(nil)
+end
+
+
+spec FairBuffer =
+  Buffer with logic -> Modal
+then %implies
+  . true
+  %% . A G F exists x:Elem . <write.x> true
+%%  {} 
+end
