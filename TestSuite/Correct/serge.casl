@@ -63,8 +63,8 @@ spec natlist =
   }
 
 
-view viewit : natlist to list =
-     sorts nat |-> elem,
+view viewit : list to natlist =
+     sorts elem |-> nat,
            list |-> natlist
 end
 
@@ -86,7 +86,9 @@ op g : s * t -> d;
 spec F =
 sort bubu;
 
+%[
 view VIEWIT[F]  : C[F] to D[F] =
      sorts c |-> d,
      ops   f |-> g
 end
+]%

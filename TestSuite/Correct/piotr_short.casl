@@ -105,7 +105,7 @@ arch spec MAIN =
   result
     lambda TO : TotalOrder[sort Elem]; 
 	     L : List[sort Elem] .
-       DictToListMost[ MakeDict[N][TO][MakePair[TO][Nat]] ][L]
+    N %[  DictToListMost[ MakeDict[N][TO][MakePair[TO][N]] ][L]
        reveal Elem, List, __::__, nil, most, __<__
        
       %[ : GOAL ]%
@@ -121,7 +121,7 @@ arch spec DictToListMost =
 
     ExtDictToListMost : CounterDictWith_IncNum[sort Elem] *
     			List[sort Elem] *
-  			EnlargedSort[sort Elem] * 
+  			EnlargeSort[sort Elem] * 
   			Pair[sort Enlarged][sort Nat]
 			->
 			ListWithMost[sort Elem]

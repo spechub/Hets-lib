@@ -151,3 +151,16 @@ op f : a * s -> t;
 
 spec C[sort s,t] =
 closed{sort s} then {sort t} then {op f : s -> t}
+end
+
+%% Compound IDS
+
+spec spc [sorts s,t] =
+  sort c[s,t]
+end
+
+spec appl_spc =
+  spc [sorts a,b fit sorts s|->a, t|-> b]
+  then
+  op c:c[a,b]
+end
