@@ -1,0 +1,399 @@
+library DRA_FO
+version 0.1
+%author: T. Soller
+%date: 25-10-04
+%% Dipol Calculus DRAfp -- First order theory
+
+spec BasicDRA_FO = 
+
+sorts Point, Dipol
+
+ops
+	startP : Dipol -> Point; %(start point of dipol)%
+	endP :   Dipol -> Point  %(  end point of dipol)%
+	
+preds
+	__r__ : Dipol * Point; %(point right of dipol)%
+	__l__ : Dipol * Point; %(point left of dipol)%
+	__b__ : Dipol * Point; %(point in line back of dipol)%
+	__i__ : Dipol * Point; %(point in line interior of dipol)%
+	__f__ : Dipol * Point; %(point in line front of dipol)%
+	__e__ : Dipol * Point; %(point endpoint of dipol)%
+	__s__ : Dipol * Point; %(point startpoint of dipol)%
+	
+	__angleA__ : Dipol * Dipol; %(antiparallel)%
+	__angleP__ : Dipol * Dipol; %(parallel)%
+	__anglep__ : Dipol * Dipol; %(positive = counterclockwise)%
+	__anglen__ : Dipol * Dipol; %(negative = clockwise)%
+
+	%% 14 basic relations: the 4 expanded relations
+	__rrrrp__, __rrrrA__, __rrrrn__, __rrllp__, __rrllP__, __rrlln__, 
+	__llrrp__, __llrrP__, __llrrn__, __llllp__, __llllA__, 
+	__lllln__ : Dipol * Dipol;
+	
+	%% 14 basic relations: 10 further relations
+	__rrrln__, __rrlrp__, __rlrrp__, __rllrp__, __rlllp__, __lrrrn__,
+	__lrrln__, __lrlln__, __llrln__, __lllrp__ : Dipol * Dipol;
+	
+	%% 10 relations DRAc for algebra
+	__ellsp__, __errsn__, __leren__, __relep__, __slsrp__, __srsln__,
+	__lseln__, __rserp__, __seseP__, __esesA__ : Dipol * Dipol;
+
+	%% DRAf Relations: same line and same direction -> Allen's calculus
+	__ffbbP__, __efbsP__, __ifbiP__, __bfiiP__, __sfsiP__, __beieP__,
+	__bbffP__, __bsefP__, __biifP__, __iibfP__, __sisfP__, 
+	__iebeP__ : Dipol * Dipol;
+	
+	%% Coverses
+	__ffffA__, __fefeA__, __fifiA__, __fbiiA__, __fseiA__, __ebisA__,
+	__iifbA__, __eifsA__, __isebA__, __bbbbA__, __sbsbA__, 
+	__ibibA__ : Dipol * Dipol;
+	
+	%% further relations DRAf
+	__lllbp__, __llfln__, __llbrp__, __llrfn__, __lirlp__, __lfrrn__,
+	__lriln__, __lrrip__, __blrrn__, __irrln__, __frrrp__, 
+	__rbrrp__ : Dipol * Dipol;
+	
+	%% Converses
+	__lblln__, __flllp__, __brlln__, __rfllp__, __rllin__, __rrlfp__,
+	__illrp__, __rilrn__, __rrblp__, __rlirp__, __rrfrn__, 
+	__rrrbn__ : Dipol * Dipol
+
+	
+then %def
+	
+forall A,B : Dipol
+
+%% the definition of the expanded relations
+
+. A rrrrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A anglep B) 
+. A rrrrA B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A angleA B)
+. A rrrrn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A anglen B)
+. A rrllp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A anglep B)
+. A rrllP B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A angleP B)
+. A rrlln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A anglen B)
+. A llrrp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A anglep B)
+. A llrrP B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A angleP B)
+. A llrrn B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A)) /\ (A anglen B)
+. A llllp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A anglep B)
+. A llllA B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A angleA B)
+. A lllln B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A)) /\ (A anglen B)
+
+%% the definition of the relations with implicit angle
+
+. A rrrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rrlrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rlrrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rllrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rlllp B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A lrrrn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A lrrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A lrlln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A llrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A lllrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+	
+. A ellsp B <=> (A e startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B s endP(A))
+. A errsn B <=> (A e startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B s endP(A))
+. A leren B <=> (A l startP(B)) /\ (A e endP(B)) /\ 
+		(B r startP(A)) /\ (B e endP(A))
+. A relep B <=> (A r startP(B)) /\ (A e endP(B)) /\ 
+		(B l startP(A)) /\ (B e endP(A))
+. A slsrp B <=> (A s startP(B)) /\ (A l endP(B)) /\ 
+		(B s startP(A)) /\ (B r endP(A))
+. A srsln B <=> (A s startP(B)) /\ (A r endP(B)) /\ 
+		(B s startP(A)) /\ (B l endP(A))
+. A lseln B <=> (A l startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B l endP(A))
+. A rserp B <=> (A r startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B r endP(A))
+. A seseP B <=> (A s startP(B)) /\ (A e endP(B)) /\ 
+		(B s startP(A)) /\ (B e endP(A))
+. A esesA B <=> (A e startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B s endP(A))
+	
+. A ffbbP B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
+		(B b startP(A)) /\ (B b endP(A))
+. A efbsP B <=> (A e startP(B)) /\ (A f endP(B)) /\ 
+		(B b startP(A)) /\ (B s endP(A))
+. A ifbiP B <=> (A i startP(B)) /\ (A f endP(B)) /\ 
+		(B b startP(A)) /\ (B i endP(A))
+. A bfiiP B <=> (A b startP(B)) /\ (A f endP(B)) /\ 
+		(B i startP(A)) /\ (B i endP(A))
+. A sfsiP B <=> (A s startP(B)) /\ (A f endP(B)) /\ 
+		(B s startP(A)) /\ (B i endP(A))
+. A beieP B <=> (A b startP(B)) /\ (A e endP(B)) /\ 
+		(B i startP(A)) /\ (B e endP(A))
+. A bbffP B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
+		(B f startP(A)) /\ (B f endP(A))
+. A bsefP B <=> (A b startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B f endP(A))
+. A biifP B <=> (A b startP(B)) /\ (A i endP(B)) /\ 
+		(B i startP(A)) /\ (B f endP(A))
+. A iibfP B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
+		(B b startP(A)) /\ (B f endP(A))
+. A sisfP B <=> (A s startP(B)) /\ (A i endP(B)) /\ 
+		(B s startP(A)) /\ (B f endP(A))
+. A iebeP B <=> (A i startP(B)) /\ (A e endP(B)) /\ 
+		(B b startP(A)) /\ (B e endP(A))
+	
+. A ffffA B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
+		(B f startP(A)) /\ (B f endP(A))
+. A fefeA B <=> (A f startP(B)) /\ (A e endP(B)) /\ 
+		(B f startP(A)) /\ (B e endP(A))
+. A fifiA B <=> (A f startP(B)) /\ (A i endP(B)) /\ 
+		(B f startP(A)) /\ (B i endP(A))
+. A fbiiA B <=> (A f startP(B)) /\ (A b endP(B)) /\ 
+		(B i startP(A)) /\ (B i endP(A))
+. A fseiA B <=> (A f startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B i endP(A))
+. A ebisA B <=> (A e startP(B)) /\ (A b endP(B)) /\ 
+		(B i startP(A)) /\ (B s endP(A))
+. A iifbA B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
+		(B f startP(A)) /\ (B b endP(A))
+. A eifsA B <=> (A e startP(B)) /\ (A i endP(B)) /\ 
+		(B f startP(A)) /\ (B s endP(A))
+. A isebA B <=> (A i startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B b endP(A))
+. A bbbbA B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
+		(B b startP(A)) /\ (B b endP(A))
+. A sbsbA B <=> (A s startP(B)) /\ (A b endP(B)) /\ 
+		(B s startP(A)) /\ (B b endP(A))
+. A ibibA B <=> (A i startP(B)) /\ (A b endP(B)) /\ 
+		(B i startP(A)) /\ (B b endP(A))
+	
+. A lllbp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B b endP(A))
+. A llfln B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B f startP(A)) /\ (B l endP(A))
+. A llbrp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B b startP(A)) /\ (B r endP(A))
+. A llrfn B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B f endP(A))
+. A lirlp B <=> (A l startP(B)) /\ (A i endP(B)) /\ 
+		(B r startP(A)) /\ (B l endP(A))
+. A lfrrn B <=> (A l startP(B)) /\ (A f endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A lriln B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
+		(B i startP(A)) /\ (B l endP(A))
+. A lrrip B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B i endP(A))
+. A blrrn B <=> (A b startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A irrln B <=> (A i startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B l endP(A))
+. A frrrp B <=> (A f startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rbrrp B <=> (A r startP(B)) /\ (A b endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+	
+. A lblln B <=> (A l startP(B)) /\ (A b endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A flllp B <=> (A f startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A brlln B <=> (A b startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A rfllp B <=> (A r startP(B)) /\ (A f endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A rllin B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B i endP(A))
+. A rrlfp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B f endP(A))
+. A illrp B <=> (A i startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B r endP(A))
+. A rilrn B <=> (A r startP(B)) /\ (A i endP(B)) /\ 
+		(B l startP(A)) /\ (B r endP(A))
+. A rrblp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B b startP(A)) /\ (B l endP(A))
+. A rlirp B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+		(B i startP(A)) /\ (B r endP(A))
+. A rrfrn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B f startP(A)) /\ (B r endP(A))
+. A rrrbn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B b endP(A))
+
+
+end
+
+
+spec DRA_FO =
+
+     BasicDRA_FO
+
+then %implies
+
+forall A,B,C : Dipol
+
+%% jointly exhaustive
+. A rrrrp B \/ A rrrrA B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ A rrlln B
+	    \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ A llllp B \/ A llllA B
+	    \/ A lllln B \/ A rrrln B \/ A rrlrp B \/ A rlrrp B \/ A rllrp B
+	    \/ A rlllp B \/ A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B
+	    \/ A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ A relep B
+	    \/ A slsrp B \/ A srsln B \/ A lseln B \/ A rserp B \/ A seseP B
+	    \/ A esesA B \/ A ffbbP B \/ A efbsP B \/ A ifbiP B \/ A bfiiP B
+	    \/ A sfsiP B \/ A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B
+	    \/ A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ A fefeA B
+	    \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ A ebisA B \/ A iifbA B
+	    \/ A eifsA B \/ A isebA B \/ A bbbbA B \/ A sbsbA B \/ A ibibA B
+	    \/ A lllbp B \/ A llfln B \/ A llbrp B \/ A llrfn B \/ A lirlp B
+	    \/ A lfrrn B \/ A lriln B \/ A lrrip B \/ A blrrn B \/ A irrln B
+	    \/ A frrrp B \/ A rbrrp B \/ A lblln B \/ A flllp B \/ A brlln B
+	    \/ A rfllp B \/ A rllin B \/ A rrlfp B \/ A illrp B \/ A rilrn B
+	    \/ A rrblp B \/ A rlirp B \/ A rrfrn B \/ A rrrbn B
+
+%% disjunct 
+%%. A rrrrp B => not (A rrrrA B)
+%%. A rrrrp B => not (A rrrrn B)
+%% ...
+%%. A rrrrp B => not (A rrrbn B)
+%%. A rrrrA B => not (A rrrrn B)
+%% ...
+%%. A rrfrn B => not (A rrrbn B)
+%% 79*80/2 lines: too hard to write in FOL ;-)
+
+%% disjunct alternative version
+. A rrrrp B => not (A rrrrA B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ 
+		    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ 
+		    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/ 
+		    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/
+		    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/ 
+		    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ 
+		    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/ 
+		    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/ 
+		    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/ 
+		    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/ 
+		    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ 
+		    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ 
+		    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/ 
+		    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/ 
+		    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirlp B \/ 
+		    A lfrrn B \/ A lriln B \/ A lrrip B \/ A blrrn B \/ 
+		    A irrln B \/ A frrrp B \/ A rbrrp B \/ A lblln B \/ 
+		    A flllp B \/ A brlln B \/ A rfllp B \/ A rllin B \/ 
+		    A rrlfp B \/ A illrp B \/ A rilrn B \/ A rrblp B \/ 
+		    A rlirp B \/ A rrfrn B \/ A rrrbn B)
+
+. A rrrrA B => not (A rrrrp B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ 
+		    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ 
+		    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/ 
+		    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/ 
+		    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/ 
+		    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ 
+		    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/ 
+		    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/ 
+		    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/ 
+		    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/ 
+		    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ 
+		    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ 
+		    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/ 
+		    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/ 
+		    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirlp B \/ 
+		    A lfrrn B \/ A lriln B \/ A lrrip B \/ A blrrn B \/ 
+		    A irrln B \/ A frrrp B \/ A rbrrp B \/ A lblln B \/ 
+		    A flllp B \/ A brlln B \/ A rfllp B \/ A rllin B \/ 
+		    A rrlfp B \/ A illrp B \/ A rilrn B \/ A rrblp B \/ 
+		    A rlirp B \/ A rrfrn B \/ A rrrbn B)
+%%...
+%% 80 times => 80 LONG lines (or 80*20 shorter ones): too hard to write in FOL ;-)
+
+%% reflexive
+. A seseP A
+
+%% symmetric relations
+. A seseP B <=> B seseP A
+. A esesA B <=> B esesA A
+
+. A rrrrA B <=> B rrrrA A
+. A llllA B <=> B llllA A
+
+. A ffffA B <=> B ffffA B
+. A fefeA B <=> B fefeA A
+. A fifiA B <=> B fifiA A
+. A bbbbA B <=> B bbbbA A
+. A sbsbA B <=> B sbsbA A
+. A ibibA B <=> B ibibA A 
+
+%% converses
+. A rrrrp B <=> B rrrrn A
+. A rrllp B <=> B llrrn A
+. A rrllP B <=> B llrrP A
+. A llrrp B <=> B rrlln A
+. A llllp B <=> B lllln A
+
+. A rlrrp B <=> B rrrln A
+. A lrrrn B <=> B rrlrp A 
+. A lrrln B <=> B rllrp A
+. A llrln B <=> B rlllp A
+. A lllrp B <=> B lrlln A
+
+. A lseln B <=> B ellsp A
+. A rserp B <=> B errsn A
+. A relep B <=> B leren A
+. A srsln B <=> B slsrp A
+
+. A ffbbP B <=> B bbffP A
+. A efbsP B <=> B bsefP A
+. A ifbiP B <=> B biifP A
+. A bfiiP B <=> B iibfP A
+. A sfsiP B <=> B sisfP A
+. A beieP B <=> B iebeP A
+
+. A fbiiA B <=> B iifbA A
+. A fseiA B <=> B eifsA A
+. A ebisA B <=> B isebA A
+
+. A lllbp B <=> B lblln A
+. A llfln B <=> B flllp A
+. A llbrp B <=> B brlln A
+. A llrfn B <=> B rfllp A
+. A lirlp B <=> B rllin A
+. A lfrrn B <=> B rrlfp A
+. A lriln B <=> B illrp A
+. A lrrip B <=> B rilrn A
+. A blrrn B <=> B rrblp A
+. A irrln B <=> B rlirp A
+. A frrrp B <=> B rrfrn A
+. A rbrrp B <=> B rrrbn A
+
+%% transitive relations
+. (A seseP B /\ B seseP C) => A seseP C 
+. (A ffbbP B /\ B ffbbP C) => A ffbbP C
+. (A bbffP B /\ B bbffP C) => A bbffP C
+. (A rrllP B /\ B rrllP C) => A rrllP C
+. (A llrrP B /\ B llrrP C) => A llrrP C
+
+%% some compostions
+
+%%. (A seseP B /\ B rrrrp C) => A rrrrp C
+%%. (A seseP B /\ B rrrrA C) => A rrrrA C
+%% ... for 79 relations: too hard to write in FOL ;-)
+%%. (A rrrrp B /\ B seseP C) => A rrrrp C
+%%. (A rrrrA B /\ B seseP C) => A rrrrA C
+%% ... for 79 relations: too hard to write in FOL ;-)
+
+
+end
