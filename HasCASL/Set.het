@@ -135,17 +135,17 @@ then
   type SetS := Set S
   type MapS := Set S * Map S * Set S
   %% Überlagerung klappt noch nicht
-  ops dom' (a : Set S; f : Map S; b: Set S): Set S = a;
+  ops dom (a : Set S; f : Map S; b: Set S): Set S = a;
       cod (a : Set S; f : Map S; b: Set S): Set S = b;
       func (a : Set S; f : Map S; b: Set S): Map S = f;
-      __o'__ : MapS * MapS ->? MapS
+      __o__ : MapS * MapS ->? MapS
   forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
-  . def (f o' g) <=> cod g = dom' f
-  . ((b,g',c) o' (a,f',b)) = (a,g' o f',c)
+  . def (f o g) <=> cod g = dom f
+  . ((b,g',c) o (a,f',b)) = (a,g' o f',c)
 end
 
 view CategoryofSets : Category to SetCategory =
-     Ob |-> SetS, Mor |-> MapS, __o__ |-> __o'__, dom |-> dom', cod
+     Ob |-> SetS, Mor |-> MapS, __o__, dom, cod
 end
 
 
@@ -234,7 +234,7 @@ end
 spec SetCoequalizer[SetRepresentation] given Map = %def
   SetCategory and UniqueChoice [sort S]
 then
-  type CEDiagram = {(f,g) : MapS * MapS . dom' f = dom' g /\ cod f = cod g};
+  type CEDiagram = {(f,g) : MapS * MapS . dom f = dom g /\ cod f = cod g};
   ops coequalizer : CEDiagram -> (MapS * (MapS -> MapS))
   forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
   . (f,g) as CEDiagram= d =>

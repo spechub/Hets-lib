@@ -60,7 +60,7 @@ then %def
   . targetMap (nn,source,target) = target
 
   . addNode n (nn,source,target) =
-    (nn union {n}, source, target) %% as Graph N E            %(addNode)%
+    ( nn union {n}, source, target) %% as Graph N E            %(addNode)%
 
   . removeNode n (nn,source,target) =
     (nn \\ {n}, source, target) as Graph N E             %(removeNode)%
@@ -110,15 +110,15 @@ then %def
     /\ forall g3:Graph N E . 
         g1 subgraph g3 /\ g3 cliqueOf g2 => g1=g3         %(max_cliqueOf_def)%
 
-  . (g:Graph N E) union g' = 
+  . g union g' = 
     (nodes g union nodes g',
      sourceMap g unionMap sourceMap g',
-     targetMap g unionMap targetMap g') %% as Graph N E
+     targetMap g unionMap targetMap g') as Graph N E
 
-  . (g:Graph N E) intersection g' = 
+  . g intersection g' = 
     (nodes g intersection nodes g',
      sourceMap g intersectionMap sourceMap g',
-     targetMap g intersectionMap targetMap g') %% as Graph N E
+     targetMap g intersectionMap targetMap g') as Graph N E
 end
 
 
@@ -152,16 +152,16 @@ then
       cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
       nodeMap : Hom N1 E1 N2 E2 -> (N1->?N2);
       edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
-      __o'__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
+      __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
   forall g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
          h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
   . dom ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g1
   . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
   . nodeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = hn
   . edgeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = he
-  . def (h2 o' h1) %% <=> cod h1 = dom h2
-  . def (h2 o' h1) => 
-    h2 o' h1 = 
+  . def (h2 o h1) %% <=> cod h1 = dom h2
+  . def (h2 o h1) => 
+    h2 o h1 = 
      (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
       %% as Hom N1 E1 N2 E2
 end
