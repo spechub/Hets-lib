@@ -75,16 +75,21 @@ then
   . X * b = X * {b} 
 end
 
-spec Summation =
-  Zero 
-and { PairSet[sorts State][sort State] 
-      with SetA |-> Set[State], SetB |-> Set[State] }
+spec PairSetFun[sort S; op __+__:S*S->S] =
+  PairSet[sort S][sort S] 
+    with SetA |-> Set[S], SetB |-> Set[S]
 then
-  ops __+__ : State * State -> State;
-      pplus : Set[Pair[State,State]] -> Set[State]
-  forall a : Act; s1 , s2 : State; s: Set[Pair[State,State]]
+  op pplus : Set[Pair[S,S]] -> Set[S]
+  forall s1 , s2 : S; s: Set[Pair[S,S]]
   . pplus({}) = {}
   . pplus({pair(s1,s2)} union s) = {s1+s2} union pplus(s)
+end
+
+spec Summation =
+  Zero 
+and PairSetFun[sort State; op  __+__ : State * State -> State]
+then
+  forall a : Act; s1 , s2 : State
   . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
 end
 
@@ -96,26 +101,27 @@ end
 
 spec Composition = 
   FinAct
-then
-  FinalNonDeterministicAutomaton[Action]
+and
+  Summation
 and
   ExtSet[sort State]
-and { PairSet[sorts State][sort State] 
-      with SetA |-> Set[State], SetB |-> Set[State] }
+and
+  ExtSet[sort Act]
 then
   ops __|__ : State * State -> State;
       h : State * State * Set[Act] -> Set[State]
-  vars a : Act; s1, s2 : State; set1, set2 : Set[Act]
+  vars a : Act; l : Label; s1, s2 : State; set1, set2 : Set[Act]
   . h(s1 , s2, {}) = {}
-  . h(s1, s2, {a}) = next(a, s1) intersection next(bar(a), s2)
+  . h(s1, s2, {l}) = next(a, s1) intersection next(bar(l), s2)
   . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
-  . next (a, s1 | s2) = next (a, s1 ) * s2 union s1 * next (a, s2)
-  . next (tau, s1 | s2) = next (tau, s1 ) * s2 union s1 * next (tau, s2) union h(s1, s2, actions) 
+  . next (a, s1 | s2) = pplus(next (a, s1 ) * s2 union s1 * next (a, s2))
+  . next (tau, s1 | s2) = 
+      pplus(next (tau, s1 ) * s2 union s1 * next (tau, s2)) union h(s1, s2, actions)
 end
 
 spec Hiding = 
   FinalNonDeterministicAutomaton[Action]
-and Set[sort Act] 
+and ExtSet[sort Act] 
 then
   op __::__ : State * Set [Act] -> State 
   forall a : Act; s : State; L : Set [Act]
