@@ -1,0 +1,27 @@
+library haskell_test
+
+logic Haskell
+
+spec test =
+data T = A | B | C
+f :: T->T
+f x = x
+end
+
+logic Haskell
+
+spec test2 =
+  test 
+then
+type S = T
+g :: T->T
+g x = x
+end
+
+spec test3_fehlerhaft =
+  test 
+then
+type S = T
+g :: T->T->T
+g x = x
+end
