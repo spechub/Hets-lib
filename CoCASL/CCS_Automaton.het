@@ -158,14 +158,11 @@ and Zero and ActionPrefixing and Summation and Composition and Hiding and Relabe
 and CCS
 and Map[sort AgentVariable][sort State] with Map[AgentVariable,State] |-> Env
 then
-  preds variant : AgentVariable * Env * Env;
-        prefixedVars, isWeaklyGuarded : AgentExpression
+  preds prefixedVars, isWeaklyGuarded : AgentExpression
   op {{__}}__ : AgentExpression * Env ->? State 
-  forall a:Act; env,env':Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
+  forall a:Act; env:Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
          set : Set[Label]; f : Relabelling
  
-  . variant(X,env,env') <=> forall Y:AgentVariable . not X=Y => lookup(Y,env)=lookup(Y,env')
-
   . prefixedVars(C)
   . not prefixedVars(X)
   . prefixedVars(0)
@@ -194,8 +191,8 @@ then
   . {{E1||E2}} env = {{E1}}env || {{E2}}env
   . {{E-set}}env = {{E}}env - set
   . {{rel(E,f)}}env = rel({{E}}env,f)
-  . isWeaklyGuarded(E) /\ variant(X,env,env') =>
-    {{X}}env={{E}}env => {{X}}env = {{fix(X,E)}}env'
+  . isWeaklyGuarded(E) =>
+    {{fix(X,E)}}env = {{E}}env[{{fix(X,E)}}env/X]
   . not isWeaklyGuarded(E) => not def {{fix(X,E)}}env
 
 then %implies
