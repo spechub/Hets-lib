@@ -6,13 +6,12 @@ version 0.5
 from
      Basic/Algebra_I version 0.5 get
      AbelianGroup, ExtAbelianGroup, Monoid, ExtMonoid,
-     Group, ExtGroup, MonoidAction, ExtMonoidAction,
+     Group, ExtGroup, MonoidAction, RichMonoidAction, RichField,
      GroupAction, ExtGroupAction, Ring, AbelianGroup_in_Ring_add,
-     ExtRing, CommutativeRing, ExtCommutativeRing, Field, ExtField
+     ExtRing, CommutativeRing, ExtCommutativeRing, Field, 
+     EuclidianRing_in_Int
 from
-     Basic/PreNumbers version 0.5 get PreNat, PreInt
-from 
-     Basic/Numbers version 0.5 get Int
+     Basic/Numbers version 0.5 get Nat, Int
 from
      Basic/Algebra_II version 0.5 get
      Polynomial
@@ -28,12 +27,9 @@ then
      closed{AbelianGroup with
           sort Elem |-> Space, ops e |-> 0, __ * __ |-> __ + __}
 then
-     forall
-          x,y: Space; a,b: Elem
-     .
-          (a + b) * x = a * x + b * x             %(VS_distr1)%
-     .
-          a * (x + y) = a * x + a * y             %(VS_distr2)%
+     forall x,y: Space; a,b: Elem
+     . (a + b) * x = a * x + b * x		%(VS_distr1)%
+     . a * (x + y) = a * x + a * y		%(VS_distr2)%
 end
 
 view AbelianGroup_in_VectorSpace [Field]:
@@ -46,7 +42,7 @@ end
 view GroupAction_in_VectorSpace [Field]:
      GroupAction [Group] to
      {
-	VectorSpace [ExtField [Field] reveal 
+	VectorSpace [RichField  reveal 
 				sorts Elem, NonZero[Elem], 
 				ops __ + __, __ * __, 0, e]
 	then %def
@@ -62,9 +58,9 @@ view VectorSpace_in_Field [Field]:
 end
 	
 spec
-     ExtVectorSpace [VectorSpace [Field]] given PreInt =
+     ExtVectorSpace [VectorSpace [Field]] given Int =
 %def
-     ExtField [Field]
+     RichField
 and
      ExtAbelianGroup [view AbelianGroup_in_VectorSpace [Field]]
      with 
@@ -73,7 +69,7 @@ and
 	  __ ^ __ |-> __ times __, 
 	  __ / __ |-> __ - __
 and
-     ExtMonoidAction [MonoidAction [Monoid]]
+     RichMonoidAction [Monoid]
 and
      {FiniteMap[sort Space fit sort S |-> Space]
 		[sort Elem fit sort T |-> Elem]
@@ -87,21 +83,19 @@ then
           eval: LC[Space,Elem] -> Space
      pred
           isZero: LC[Space,Elem]
-     forall
-          x: Space; r: Elem; l:LC[Space,Elem]
-     .
-          eval([])=0             %(eval_empty)%
-     .
-          [r/x]eps l => eval(l)=r*x+eval(l-[r/x])             %(eval_add)%
-     .
-          isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)             %(isZero_def)%
+
+     forall x: Space; r: Elem; l:LC[Space,Elem]
+     . eval([])=0				%(eval_empty)%
+     . [r/x]eps l => eval(l)=r*x+eval(l-[r/x])	%(eval_add)%
+     . isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)
+						%(isZero_def)%
 end
 
 spec
-     ConstructVSWithBase [Field][sort Base] given PreInt=
+     ConstructVSWithBase [Field][sort Base] given Int=
      ExtVectorSpace [VectorSpace [Field]]
 then
-     %%cons
+     %cons
 {
      sort
           Base < Space
@@ -113,12 +107,11 @@ then
 then
      sort
           LC[Base,Elem]<LC[Space,Elem]
-     forall
-          l:LC[Base,Elem]
-     .
-          forall y:Space. exists k:LC[Base,Elem]. y=eval(k)             %(generating)%
-     .
-          eval(l)=0 => isZero(l)             %(independent)%
+	
+     forall l:LC[Base,Elem]
+     . forall y:Space. exists k:LC[Base,Elem]. y=eval(k)
+						%(generating)%
+     . eval(l)=0 => isZero(l)			%(independent)%
 }
 end
 
@@ -132,7 +125,7 @@ spec
 end
 
 spec
-     ExtVSWithBase [VSWithBase [Field][sort Base]] given PreInt =
+     ExtVSWithBase [VSWithBase [Field][sort Base]] given Int =
 %def
      ExtVectorSpace [VSWithBase [Field][sort Base]]
 and
@@ -140,24 +133,19 @@ and
 	with sort LC[Base,Elem]
 then
      %implies
-     forall
-          l,k: LC[Base,Elem]
-     .
-          eval(l)=eval(k) => l=k             %(unique_representation)%
+     forall l,k: LC[Base,Elem]
+     . eval(l)=eval(k) => l=k			%(unique_representation)%
 then
      %def
      op
           coefficients: Space -> LC[Base,Elem]
-     forall
-          x:Space
-     .
-          eval(coefficients(x))=x             %(coefficients_def)%
+
+     forall x:Space
+     . eval(coefficients(x))=x			%(coefficients_def)%
 then
      %implies
-     forall
-          l:LC[Base,Elem]
-     .
-          coefficients(eval(l))=l             %(recover_coefficients)%
+     forall l:LC[Base,Elem]
+     . coefficients(eval(l))=l			%(recover_coefficients)%
 end
 
 view
@@ -171,7 +159,7 @@ view
 end
 
 view
-     VSWithBase_in_VectorSpace [Field] given PreInt:
+     VSWithBase_in_VectorSpace [Field] given Int:
      {VSWithBase [Field][sort Base] hide sort Base} to
      VectorSpace [Field]
 end
@@ -186,18 +174,16 @@ and
 then
      sort
           Elem < Space
-     forall
-          r: Elem; x, y: Space
-     .
-          (r * x) * y = r * (x * y)             %(Algebra_left_linear)%
-     .
-          x * (r * y) = r  * (x * y)             %(Algebra_right_linear)%
+
+     forall r: Elem; x, y: Space
+     . (r * x) * y = r * (x * y)		%(Algebra_left_linear)%
+     . x * (r * y) = r  * (x * y)		%(Algebra_right_linear)%
 end
 
 spec
-     ExtAlgebra [Algebra [Field]] given PreInt =
+     ExtAlgebra [Algebra [Field]] given Int =
 %def
-     ExtField [Field]
+     RichField
 and
      ExtVectorSpace [VectorSpace [Field]]
 and
@@ -207,12 +193,10 @@ and
 then
      op
           eval: Poly[Elem] * Space -> Space
-     forall
-          a: Elem; p: Poly[Elem]; x: Space
-     .
-          eval(0,x) = 0             %(eval_poly_0)%
-     .
-          eval(a:::p, x) = a + eval(p,x) * x             %(eval_poly_cons)%
+	
+     forall a: Elem; p: Poly[Elem]; x: Space
+     . eval(0,x) = 0				%(eval_poly_0)%
+     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_poly_cons)%
 end
 
 spec
@@ -226,48 +210,50 @@ free
 end
 
 spec
-     ExtFreeVectorSpace [Field][sort Base] given PreInt =
+     ExtFreeVectorSpace [FreeVectorSpace[Field][sort Base]] given Int =
      ExtVectorSpace [FreeVectorSpace [Field][sort Base]]
 end
 
 view
-     FreeVectorSpace_in_VSWithBase [Field] given PreInt:
+     FreeVectorSpace_in_VSWithBase [Field] given Int:
      FreeVectorSpace [Field][sort Base] to
      {
           VSWithBase [Field][sort Base]
      then
           op
                inject: Base -> Space
-          forall
-               x:Base
-          .
-               inject(x) = x             %(VSWB_inject_def)%
+
+          forall x:Base
+          . inject(x) = x			%(VSWB_inject_def)%
      }
 end
 
 view
-     VSWithBase_in_FreeVectorSpace [Field][sort Base] given PreInt:
+     VSWithBase_in_FreeVectorSpace [Field][sort Base] given Int:
      VSWithBase [Field][sort Base] to
      {FreeVectorSpace [Field][sort Base] 
 	then
 	   %def
 	   sort Base < Space
+
 	   forall x: Base
-	   .
-		x = inject(x)             %(FVS_embed_def)%
+	   . x = inject(x)			%(FVS_embed_def)%
      }
 end
 
 spec
-     VectorTuple [VectorSpace[Field]][op n: Pos] given PreInt =
+     VectorTuple [VectorSpace[Field]][op n: Pos] given Int =
 %def
 {
-     {{Array [ops 1,n: Int fit ops min |-> 1, max |-> n]
+     {{Array [ops 1,n: Int fit ops min: Int |-> 1, max: Int |-> n]
 	[sort Space fit sort Elem|-> Space]
           with sorts
            Index |-> Nat[n], Array[Space]}
 	  hide sorts FinSet[Space], FinSet[Nat[n]],
 		     NonEmptySet[Space], NonEmptySet[Nat[n]]}
+     then %implies
+	  sort
+		Nat[n] < Nat
      then
           sort
 		Tuple[Space,n]={ x: Array[Space].
@@ -279,28 +265,24 @@ spec
                 __+__:  Tuple[Space,n] * Tuple[Space,n] -> Tuple[Space,n];
                 auxsum: Tuple[Space,n] * Nat[n] -> Space;
                 sum:    Tuple[Space,n] -> Space
-          forall
-               r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
-          .
-               0 ! i = 0             %(Tuple_zero_def)%
-          .
-               (r * x) ! i = r * (x ! i)             %(Elem_times_Tuple_def)%
-          .
-               (x + y) ! i = (x ! i) + (y ! i)             %(Tuple_plus_def)%
-          .
-               auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])             %(Tuple_auxsum_1)%
-          .
-               auxsum(x, suc(i) as Nat[n])=
-                auxsum(x,i) + (x ! (suc(i) as Nat[n]))             %(Tuple_auxsum_suc)%
-          .
-               sum(x) = auxsum(x, n as Nat[n])             %(Tuple_sum_def)%
+
+          forall r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
+          . 0 ! i = 0				%(Tuple_zero_def)%
+          . (r * x) ! i = r * (x ! i)		%(Elem_times_Tuple_def)%
+          . (x + y) ! i = (x ! i) + (y ! i)	%(Tuple_plus_def)%
+          . auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])
+						%(Tuple_auxsum_1)%
+          . auxsum(x, suc(i) as Nat[n])=
+		 auxsum(x,i) + (x ! (suc(i) as Nat[n]))
+						%(Tuple_auxsum_suc)%
+          . sum(x) = auxsum(x, n as Nat[n])	%(Tuple_sum_def)%
 }
      hide op auxsum
 end
 
 view
      VectorSpace_in_VectorTuple [VectorSpace [Field]]
-     [op n:Pos] given PreInt:
+     [op n:Pos] given Int:
      VectorSpace [Field] to
      VectorTuple [VectorSpace [Field]][op n:Pos]=
      sort
@@ -308,7 +290,7 @@ view
 end
 
 spec
-     ConstructVector [Field][op n: Pos] given PreInt =
+     ConstructVector [Field][op n: Pos] given Int =
 %def
      {VectorTuple [view VectorSpace_in_Field [Field]][op n: Pos] with
           sort
@@ -326,23 +308,18 @@ then
           auxprod:     Vector[Elem,n] * Nat[n] -> Elem
      pred
           perp: Vector[Elem,n] * Vector[Elem,n]
-     forall
-          x, y: Vector[Elem,n]; i, j: Nat[n]
-     .
-          auxmult(x,y) ! i = (x ! i) * (y ! i)             %(Vector_auxmult_def)%
-     .
-          <x || y> =sum(auxmult(x,y))             %(Vector_times_def)%
-     .
-          auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])             %(Vector_auxprod_1)%
-     .
-          auxprod(x, suc(i) as Nat[n]) = auxprod(x,i) * (x ! (suc(i) as 
-          Nat[n]))             %(Vector_auxprod_suc)%
-     .
-          prod(x) = auxprod(x, n as Nat[n])             %(Vector_prod_def)%
-     .
-          perp(x,y) <=> ( <x || y> =0)             %(perp_def)%
-     .
-          unitVector(i) ! j = e when i = j else 0             %(unitVector_def)%
+
+     forall x, y: Vector[Elem,n]; i, j: Nat[n]
+     . auxmult(x,y) ! i = (x ! i) * (y ! i)	%(Vector_auxmult_def)%
+     . <x || y> =sum(auxmult(x,y))		%(Vector_times_def)%
+     . auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])
+						%(Vector_auxprod_1)%
+     . auxprod(x, suc(i) as Nat[n]) = auxprod(x,i) * 
+					(x ! (suc(i) as Nat[n]))
+						%(Vector_auxprod_suc)%
+     . prod(x) = auxprod(x, n as Nat[n])	%(Vector_prod_def)%
+     . perp(x,y) <=> ( <x || y> =0)		%(perp_def)%
+     . unitVector(i) ! j = e when i = j else 0	%(unitVector_def)%
      sort
            UnitVector[Elem,n]=
            {x: Vector[Elem,n] . exists i: Nat[n]. x = unitVector(i)}
@@ -350,12 +327,9 @@ then
      hide ops auxmult,auxprod
 then
      %implies
-     forall
-          x,y: Vector[Elem,n]
-     .
-          <x || y> = <y || x>             %(scalar_prod_comm)%
-     .
-          <x || x> = 0 => x = 0             %(scalar_prod_pos)% 
+     forall x,y: Vector[Elem,n]
+     . <x || y> = <y || x>			%(scalar_prod_comm)%
+     . <x || x> = 0 => x = 0			%(scalar_prod_pos)% 
 end
 
 spec Vector [Field]=
@@ -366,13 +340,13 @@ spec Vector [Field]=
 		0 : Vector[Elem,n]
 end
 
-view VectorSpace_in_Vector [Field] given PreNat:
+view VectorSpace_in_Vector [Field] given Nat:
      VectorSpace [Field] to Vector [Field] =
      sort Space |-> Vector[Elem,n]
 end
 
 	   
-view VSWithBase_in_Vector [Field] given PreNat:
+view VSWithBase_in_Vector [Field] given Nat:
      VSWithBase [Field][sort Base] to Vector [Field] =
      sorts
           Space |-> Vector[Elem,n],
@@ -380,15 +354,13 @@ view VSWithBase_in_Vector [Field] given PreNat:
 end
 
 spec
-     SymmetricGroup [op n: Pos] given PreInt =
+     SymmetricGroup [op n: Pos] given Int =
 %def
-     Int reveal sort RUnit[Int], op __!
-then
      sort
           Nat[n] = {i: Pos . i <= n}
 then
      %def
-     Array [ops 1, n: Int fit ops min |-> 1, max |-> n]
+     Array [ops 1, n: Int fit ops min: Int |-> 1, max: Int |-> n]
 	[sort Nat[n] fit sort Elem|-> Nat[n]] 
    		with sorts Array[Nat[n]], Index |-> Nat[n]
 then
@@ -399,18 +371,15 @@ then
      ops
 	   id: Perm[n];
            __  comp  __: Perm[n] * Perm[n] -> Perm[n];
-           sign: Perm[n] -> RUnit[Int];
+           sign: Perm[n] -> Int;
            nFac: Nat = n!
-     forall
-          p,q: Perm[n]; i: Nat[n]
-     .
-	  id ! i = i             %(Perm_id_def)%
-     .
-          (p comp q) ! i = p ! (q ! i)             %(Perm_comp_def)%
-     .
-          sign(p comp q) = sign(p) * sign(q)             %(Perm_sign_homomorphic)%
-     .
-          exists r: Perm[n]. sign(r)= minus(1)             %(Perm_sign_surjective)%
+
+     forall p,q: Perm[n]; i: Nat[n]
+     . id ! i = i				%(Perm_id_def)%
+     . (p comp q) ! i = p ! (q ! i)		%(Perm_comp_def)%
+     . sign(p comp q) = sign(p) * sign(q)	%(Perm_sign_homomorphic)%
+     . abs(sign(p)) = 1				%(Perm_sign_range)%
+     . exists r: Perm[n]. sign(r)=  - 1		%(Perm_sign_surjective)%
 then
      %%cons
      sort
@@ -419,10 +388,11 @@ then
           perm: PNat[n] -> Perm[n]
      axiom
           forall p: Perm[n]. exists i: PNat[n]. perm(i) = p
+						%(Perm_num_sur)%
 end
 
 view
-     Group_in_SymmetricGroup [op n: Pos] given PreNat:
+     Group_in_SymmetricGroup [op n: Pos] given Nat:
      Group to SymmetricGroup [op n: Pos]=
      sort
           Elem |-> Perm[n],
@@ -432,7 +402,7 @@ view
 end
 
 spec
-     Matrix [Field][op n: Pos] given PreInt=
+     Matrix [Field][op n: Pos] given Int=
 %def
      VectorTuple [view VectorSpace_in_Vector [Field]]
           [op n: Pos]
@@ -450,18 +420,14 @@ then
            __ * __:    Matrix[Elem,n] * Vector[Elem,n] -> Vector[Elem,n];
            __ * __:    Matrix[Elem,n] * Matrix[Elem,n] -> Matrix[Elem,n];
            det:        Matrix[Elem,n] -> Elem
-     forall
-          a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
-     .
-          (transpose(a) ! i) ! j = (a ! j) ! i             %(transpose_def)%
-     .
-          (1 ! i) ! j = e when i = j else 0             %(Matrix_1_def)%
-     .
-          elementary(i,j) ! k = unitVector(j) when i = k else 0             %(elementary_def)%
-     .
-          (a * x) ! i = <transpose(a) ! i || x>             %(Matrix_times_Vector_def)%
-     .
-          ((a * b) ! i) = a * (b ! i)             %(Matrix_mult_def)%
+
+     forall a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
+     . (transpose(a) ! i) ! j = (a ! j) ! i	%(transpose_def)%
+     . (1 ! i) ! j = e when i = j else 0	%(Matrix_1_def)%
+     . elementary(i,j) ! k = unitVector(j) when i = k else 0
+						%(elementary_def)%
+     . (a * x) ! i = <transpose(a) ! i || x>	%(Matrix_times_Vector_def)%
+     . ((a * b) ! i) = a * (b ! i)		%(Matrix_mult_def)%
      sort
            ElemMatrix[Elem,n]=
            {x: Matrix[Elem,n]. exists i,j: Nat[n]. x = elementary(i,j)}
@@ -481,32 +447,25 @@ then
                     factors:  Matrix[Elem,n] * PNat[n] -> Vector[Elem,n]
      }
      within {
-     forall
-          a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
-     .
-          factors(a,j) ! i = (a ! i) ! (perm(j) ! i)             %(Matrix_factors_def)%
-		
-     .
-          summands(a) ! j= prod(factors(a,j)) times sign(perm(j))             %(Matrix_summands_def)%
-     .
-          det(a)=sum(summands(a))             %(Leibnitz)%
+     forall a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
+     . factors(a,j) ! i = (a ! i) ! (perm(j) ! i)
+						%(Matrix_factors_def)%
+     . summands(a) ! j= prod(factors(a,j)) times sign(perm(j))
+						%(Matrix_summands_def)%
+     . det(a)=sum(summands(a))			%(Leibnitz)%
      } 
 then
      %implies
-forall
-     a,b: Matrix[Elem,n]
-.
-     det(0) = 0             %(det_0)%
-.
-     not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)             %(det_vanishes)%
-.
-     det(1) = e             %(det_1)%
-.
-     det(a * b) = det(a) * det(b)             %(det_mult)%
+     forall a,b: Matrix[Elem,n]
+     . det(0) = 0				%(det_0)%
+     . not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)
+						%(det_vanishes)%
+     . det(1) = e				%(det_1)%
+     . det(a * b) = det(a) * det(b)		%(det_mult)%
 end
 
 view
-     Algebra_in_Matrix [Field][op n: Pos] given PreNat:
+     Algebra_in_Matrix [Field][op n: Pos] given Nat:
      Algebra [Field] to Matrix [Field][op n: Pos]=
      sort
           Space |-> Matrix[Elem,n],
@@ -515,7 +474,7 @@ view
 end
 
 view
-     VSWithBase_in_Matrix [Field][op n: Pos] given PreNat:
+     VSWithBase_in_Matrix [Field][op n: Pos] given Nat:
      VSWithBase [Field][sort Base] to Matrix [Field][op n: Pos]=
      sorts
            Space |-> Matrix[Elem,n],
@@ -528,19 +487,19 @@ spec
 end
 
 spec
-     ExtFreeAlgebra [FreeAlgebra[Field]] given PreInt=
+     ExtFreeAlgebra [FreeAlgebra[Field]] given Int=
      ExtAlgebra [FreeAlgebra[Field]]
 end
 
 view
-     FreeAlgebra_in_Polynomial [Field] given PreInt:
+     FreeAlgebra_in_Polynomial [Field] given Int:
      FreeAlgebra[Field] to Polynomial [Field]=
      sort
           Space |-> Poly[Elem]
 end
 
 view
-     Polynomial_in_ExtFreeAlgebra [Field] given PreInt:
+     Polynomial_in_ExtFreeAlgebra [FreeAlgebra [Field]] given Int:
      {Polynomial [Field]
          reveal sorts Elem, Poly[Elem], ops X, __ + __, __ * __} 
      to ExtFreeAlgebra [FreeAlgebra [Field]]=
@@ -548,3 +507,31 @@ view
           Poly[Elem] |-> Space
 end
 
+spec RichVectorSpace = 
+     ExtVectorSpace [VectorSpace [Field]]
+end
+
+spec RichVSWithBase [Field][sort Base] =
+     ExtVSWithBase [VSWithBase [Field][sort Base]]
+end
+
+spec RichAlgebra [Field]=
+     ExtAlgebra [Algebra [Field]]
+end
+
+spec RichFreeVectorSpace [Field][sort Base] =
+     ExtFreeVectorSpace [FreeVectorSpace [Field][sort Base]]
+end
+
+spec RichFreeAlgebra [Field] =
+     ExtFreeAlgebra [FreeAlgebra[Field]]
+end
+
+view
+     Polynomial_in_RichFreeAlgebra [Field] given Int:
+     {Polynomial [Field]
+         reveal sorts Elem, Poly[Elem], ops X, __ + __, __ * __} 
+     to RichFreeAlgebra [Field]=
+     sort
+          Poly[Elem] |-> Space
+end
