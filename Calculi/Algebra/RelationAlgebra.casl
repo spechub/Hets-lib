@@ -1,0 +1,126 @@
+library Calculi/Algebra/RelationAlgebra
+version 0.2
+%author: T. Mossakowski, K. Lüttich, S. Wölfl
+%date: 07-02-2005
+
+%( 
+    This library defines some basic concepts from the 
+    theory of relation algebras 
+)%
+
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__} 
+%prec {__cmps__} < {__cmpl__} 
+
+from Basic/Numbers get Nat
+from Basic/StructuredDatatypes get GenerateSet
+from Basic/StructuredDatatypes get Set
+%% from Calculi/Algebra/Auxiliary get Set
+from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl 
+from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra,RichBooleanAlgebra
+
+%( 
+    First we define the concept of a relation algebra,
+    according to Hirsch YYYY  
+)%
+
+spec RelationAlgebra  =
+     BooleanAlgebraWithCompl with sort Elem |-> Rel 
+then
+     ops
+	        id: Rel;
+	    conv__: Rel -> Rel;
+	  __cmps__: Rel * Rel -> Rel
+	
+     forall x,y,z: Rel
+     . (x cmps y) cmps z = x cmps (y cmps z)            %(cmps_assoc)%
+     . (x cup y) cmps z = (x cmps z) cup (y cmps z)	%(cmps_cup_rdistrib)%
+     . x cmps id = x					%(cmps_unit_id)%
+     . conv(conv(x)) = x				%(conv_idempot)%
+     . conv(x cup y) = conv(x) cup conv(y)		%(conv_cup)%
+     . conv(x cmps y) = conv(y) cmps conv(x)		%(conv_cmps)%
+     . conv(x) cmps (compl(x cmps y) cup compl(y)) 
+			= compl(y)			%(RelAlg)%
+end
+
+
+%(
+    If the set of base relations is JEPD, i.e., is the base relations are 
+    pairwise disjoint and jointly exhaustive, unions of base relations can be
+    represented as sets of base relations.
+)%
+
+
+spec RelationSet[sort BaseRel] = %mono
+     { Set[sort BaseRel fit Elem |-> BaseRel] 
+	    with Set[BaseRel] |-> GenRel,
+	            __union__ |-> __cup__, 
+             __intersection__ |-> __cap__ }
+then %def
+     sort BaseRel < GenRel
+     ops 
+	    0,1 : GenRel;
+	 compl__: GenRel -> GenRel; 
+
+     forall x:BaseRel; y:GenRel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . compl(y) = 1 - y
+
+then %implies
+     forall x,y:BaseRel; u,v:GenRel
+     . not x = y => x cap y = 0		
+     . u isSubsetOf 1
+     . compl(compl(u)) = u
+     . compl(0) = 1
+     . compl(1) = 0
+     . compl(u cup v) = compl(u) cap compl(v)	
+     . compl(u cap v) = compl(u) cup compl(v)	
+     . (u cup x) cap (v cup y) = 
+		  (u cap v) cup (u cap y) cup (x cap v) cup (x cap y)
+then
+     ops	 	 
+         id      : BaseRel;
+	 conv__  : BaseRel -> GenRel; 
+         __cmps__: BaseRel * BaseRel -> GenRel
+     forall x:BaseRel
+     . 	x cmps id = x
+     . 	id cmps x = x
+     .  conv(x) = x
+end
+
+
+spec GeneratedRelationAlgebra[RelationSet[sort BaseRel]] = %mono
+     ops 
+          conv__  : GenRel -> GenRel;
+	  __cmps__: GenRel * GenRel -> GenRel, assoc, unit id;       
+						 %% composition of relations
+     forall x,y:BaseRel; u,v:GenRel
+     . (u cup x) cmps (v cup y) =
+		  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
+     . conv(u cup x) = conv(u) cup conv(x)
+
+then %implies
+     { RelationAlgebra with sort Rel |-> GenRel }
+end
+
+
+spec RichGeneratedRelationAlgebra = 
+     GeneratedRelationAlgebra[RelationSet[sort BaseRel]]
+
+view  RichGeneratedRelationAlgebra_as_RelationAlgebra:
+	 RelationAlgebra to
+        { RichGeneratedRelationAlgebra  
+	reveal ops __cup__, __cap__,conv__,compl__,0,1,id}
+=
+	Rel |-> GenRel
+end 
+
+
+
+
+
+
+
