@@ -1,0 +1,96 @@
+library Calculi/Time/PointAlgebraModel
+
+version 0.1
+%author: S. Wölfl
+%date: 00-02-2005
+
+%( 
+    This library defines the model classes for the relation algebras in
+    
+	Calculi/Time/PointAlgebra
+
+)%
+
+from HasCASL/Set get Set
+from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
+	ExtRelationAlgebraByPartialOrder, RelationAlgebraWithPartialOrder,
+	AtomicRelationAlgebra
+from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTime,
+	DnsLinFlowOfTimeSEnd
+
+logic HasCASL
+
+
+spec JEPDBase =
+     Set
+then
+     {   sort Elem
+         op baseRel:Set(Set(Elem*Elem))
+       then %def
+     	  type BaseRel = {X:Set(Elem*Elem) . baseRel X }
+     } 
+then
+
+     forall x,y:Elem; r,s:BaseRel 
+     . exists r:BaseRel . (x,y) isIn r
+     . r intersection s = emptySet
+end
+
+
+spec GenerateRelationAlgebraFromBase[JEPDBase]  = %def
+
+     op genRel:Set(Set(Elem*Elem)) = \X:Set(Elem*Elem) . 
+		(exists XX:Set(Set(Elem*Elem)) . XX subset baseRel /\ bigunion XX =X)
+     type GenRel  = {X:Set(Elem*Elem) . genRel X }
+     ops
+	0,1,id:GenRel;
+        compl__,conv__:GenRel -> GenRel;
+	__cup__,__cap__,__cmps__:GenRel*GenRel -> GenRel
+
+      forall X,Y:GenRel
+      . 0 = emptySet
+      . 1 = allSet
+      . id =  \(x,y):Elem*Elem . x = y
+      . conv(X) = \(x,y):Elem*Elem . (y,x) isIn X
+      . compl(X) = 1 \\ X
+      . X cup Y = X union Y
+      . X cap Y = X intersection Y
+      . X cmps Y = \(x,y):Elem*Elem . ( exists z:Elem . (x,z) isIn X /\ (z,y) isIn Y )
+end
+
+
+spec ModelPointAlgebraLinBase = 
+     DnsLinFlowOfTimeSEnd and Set
+then %def
+     ops 
+	Pre:Set(Instant*Instant) = \(x:Instant,y:Instant) . x pre y;
+	Id:Set(Instant*Instant) = \(x:Instant,y:Instant) . x = y;
+	Suc:Set(Instant*Instant) = \(x:Instant,y:Instant) . y pre x
+     op baseRel:Set(Set(Instant*Instant)) = \X:Set(Instant*Instant) . X=Pre \/ X=Id \/ X=Suc
+     type BaseRel = {X:Set(Instant*Instant) .  baseRel X }
+end
+
+
+view ModelPointAlgebraLinBase_as_JEPDBase:
+     JEPDBase to ModelPointAlgebraLinBase
+= 
+    sort Elem |-> Instant, sort BaseRel |-> BaseRel, op baseRel |-> baseRel
+end
+
+
+spec ModelPointAlgebraLin =
+	GenerateRelationAlgebraFromBase[view ModelPointAlgebraLinBase_as_JEPDBase]
+end
+
+
+view ModelPointAlgebraLin_as_RelationAlgebra:
+     RelationAlgebra to ModelPointAlgebraLin
+=
+     Rel |-> GenRel
+end
+
+
+
+
+
+
