@@ -99,12 +99,11 @@ ops   p __, __ r, __ r2 : N -> N ;
 
   .   p (x) q when F else x r when F2(x) else x r2 = x;
 
-  .   p x when F if F2(x) else x r = x;
+  %% .   p x when F if F2(x) else x r = x;
 
-%% Bremen parser does not seem to like any of these:
-  .   p x when F else x r: S = x;
-  .   p x when F else (x r: S) = x ;
-  .   (p x when F else x r) : S = x;
+%%  .   p x when F else x r :N = x;
+%%  .   p x when F else (x r: S) = x ;
+%%  .   (p x when F else x r) : S = x;
 end
 
 spec correct_formulas3 =

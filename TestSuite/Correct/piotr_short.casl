@@ -111,7 +111,7 @@ arch spec MAIN =
     N %[  DictToListMost[ MakeDict[N][TO][MakePair[TO][N]] ][L]
        reveal Elem, List, __::__, nil, most, __<__
        
-      %[ : GOAL ]%
+       : GOAL ]%
 end
 
 %%***************************************************************************
@@ -162,100 +162,4 @@ spec ExtBinTree[sort Elem] =
 end
 
 
-%[
-spec BSTTree[TotalOrder[sort Elem]] =
-  BinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat]] then
-  
-    local
-      ExtBinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat]] then
       		
-        pred isBST(t : Tree[Pair[Elem,Nat]]) <=> 
-        	forall e : Pair[Elem,Nat]; s : Tree[Pair[Elem,Nat]] .
-        	subTree(s,t) =>
-      		  (elem(e,left(t)) => p1(e) < p1(key(t))) /\
-      		  (elem(e,right(t)) => p1(key(t)) < p1(e) );
-      		  
-      	     nonNull(t : Tree[Pair[Elem,Nat]]) <=> forall e : Pair[Elem,Nat] .
-      	     				elem(e,t) => p2(e) > 0		
-    within
-      sort BST = { t : Tree[Pair[Elem,Nat]] . isBST(t) /\ nonNull(t) }
-end
-
-
-%% specs for building 'num' (and also 'empty')
-
-spec BSTNumEmpty[TotalOrder[sort Elem]] =
-  BSTTree[TotalOrder[sort Elem]] and
-  CounterDictWith_IncNum[sort Elem] with Dict |-> Tree[Pair[Elem,Nat]]
-  			reveal num, empty then
-  			
-    op num : BST * Elem -> Nat;
-       empty : BST
-  hide num : Tree[Pair[Elem,Nat]] * Elem -> Nat ,
-       empty : Tree[Pair[Elem,Nat]]
-end
-
-unit spec AddBSTNumEmptyToTree =
-  BinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat] ] * 
-  TotalOrder[sort Elem] 
-  -> BSTNumEmpty[TotalOrder[sort Elem]]
-end
-
-arch spec MakeDict =
-  units
-    MakeBinTree : { sort Elem } -> BinTree[sort Elem];
-    N : Nat;
-    MakePair : MakePair;
-    AddBSTNumEmptyToTree : AddBSTNumEmptyToTree;
-    AddBSTIncNumToTree : AddBSTIncNumToTree;
-    AddBSTIncToIncNumTree : AddBSTIncToIncNumTree;
-    AddBSTRemoveToTree : AddBSTRemoveToTree;
-    AddBSTDecToRemoveTree : AddBSTDecToRemoveTree;
-  result
-    lambda 	N : Nat; 
-    		TO : TotalOrder[sort Elem]; 
-    		PDN : Pair[sort Elem][sort Nat]
-		.    		
-		local
-	  	  Pair = MakePair[ TO ][ Nat ];
-	  	  Tree = MakeBinTree[ Pair fit Elem |-> Pair[Elem,Nat] ];
-		  NumEmpty = AddBSTNumEmptyToTree[ Tree  ][ TO ];
-		  IncNum = AddBSTIncNumToTree[ Tree ][ TO ][ PDN ];
-		  Inc = AddBSTIncToIncNumTree[ IncNum ];
-		  Remove = AddBSTRemoveToTree[ Tree ][ TO ];
-		  Dec = AddBSTDecToRemoveTree[ Remove ];
-		within
-		  {NumEmpty and Inc and Dec
-			hide
-		  Pair[Elem,Nat]}
-		  
-	    %{ : Nat * 
-	    	 TotalOrder[sort Elem] * 
-	    	 Pair[sort Elem][sort Nat ] 
-	    	 ->
-    	    	 CounterDictWith_IncNum[sort Elem];
-            }%
-end
-
-
-%%******************************************************************************
-
-spec AddBSTNumToTree =
-  BinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat] ] and 
-  TotalOrder[sort Elem] then
-  
-    BSTTree[ Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat]  ] then
-  	
-      ops num : BST * Elem -> Nat;
-          empty : BST
-      vars e : Elem; p : Pair[Elem,Nat]; l, r : BST;
-      axioms
-        empty = emptyTree;
-        num(emptyTree as BST, e) = 0;
-        num(consTree(l,r,p) as BST, e) =  
-        	p2(p) 
-        	     when e=p1(p) else
-        	( num(l,e) when e<p1(p) else num(r,e))
-end
-
-]%

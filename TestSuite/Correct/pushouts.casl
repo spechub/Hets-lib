@@ -27,28 +27,6 @@ spec ExtField[Field] =
 ExtGroup[Field fit sort Elem |->NonZeroElem, op 0:Elem |-> 1, __+__ |-> __*__]
 end
 
-spec A = {sorts s,t} end
-
-spec B = {sort s} end
-
-spec C[A] = {ops a:s; a:t} end
-
-spec D = C[B] end  
-%[ This is no pushout, since a:s and a:t are identified,
-   while they can be mapped differently into a spec
-   while still identifying s and t  ]%
-
-
-
-spec A1 = {sorts s; ops a,b:s} end
-
-spec B1 = {sort s; op x:s} end
-
-spec C1[A1] = {ops c[a],c[b]:s} end
-
-spec D1 = C1[B1] end
-%[ This is no pushout, since c[a]:s and c[b]:s
-   are identified ]%
 
 %[
 
