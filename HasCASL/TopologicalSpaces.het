@@ -1,4 +1,4 @@
-library HasCASL/Topology
+library HasCASL/TopologicalSpaces
 
 from HasCASL/Set get Set
 
@@ -134,19 +134,23 @@ then %implies
 end
 
 
-spec RegularClosedSets =
+spec RichTopologicalSpace =
   RichTopologicalSpace_Kuratowski
 then %def
   ops regularClosed : Set(Set S) = \X:Set S . X=cls(int(X));
       regularOpen : Set(Set S) = \X:Set S . X=int(cls(X))
   types RegularClosed = {X:Set S . regularClosed X};
         RegularOpen = {X:Set S . regularOpen X}
+  op boundary : Set S -> Set S
+  forall X:Set S
+  . boundary X = cls(X) \\ int(X)
 end
+
 
 from Basic/RelationsAndOrders get BooleanAlgebra
 
 view BooleanAlgebra_in_RegularClosedSets 
-     : BooleanAlgebra to { RegularClosedSets then
+     : BooleanAlgebra to { RichTopologicalSpace then
          ops 0:RegularClosed = emptySet;
              1:RegularClosed = allSet;
              __cup__(X,Y:RegularClosed):RegularClosed =

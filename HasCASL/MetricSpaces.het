@@ -1,5 +1,7 @@
 library HasCASL/MetricSpaces
 
+from HasCASL/Set get Set
+
 logic HasCASL
 
 spec Real = %% just a fake
@@ -20,4 +22,11 @@ then
   . d(x,y) = 0 <=> x=y
   . d(x,y) = d(y,x)
   . d(x,z) <= d(x,y) + d(y,z)
+end
+
+spec RichMetricSpace =
+  MetricSpace and Set
+then
+  op disc(r:Real;x:S) : Set S = \y:S . d(x,y)<=r
+  type Discs = {X:Set S . exists r:Real;x:S . X=disc(r,x)}
 end
