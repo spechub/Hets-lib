@@ -40,20 +40,20 @@ end
 
 spec Ring =
      AbelianGroup with sort Elem, 
-		       ops __ * __ |-> __ + __,
-			   e	   |-> 0
+                       ops __ * __ |-> __ + __,
+                           e       |-> 0
 and
      Monoid with ops e, __*__
 then
      forall x,y,z:Elem
-     . (x + y) * z = (x * z) + (y * z)       	%(distr1_Ring)%
-     . z * ( x + y ) = (z * x) + (z * y)     	%(distr2_Ring)%
+     . (x + y) * z = (x * z) + (y * z)          %(distr1_Ring)%
+     . z * ( x + y ) = (z * x) + (z * y)        %(distr2_Ring)%
 end
 
 view AbelianGroup_in_Ring_add:
-     AbelianGroup to Ring =	
+     AbelianGroup to Ring =     
      ops e |-> 0,
-	 __ * __ |-> __ + __
+         __ * __ |-> __ + __
 end
 
 spec CommutativeRing =
@@ -66,8 +66,8 @@ spec IntegralDomain =
      CommutativeRing
 then
      forall x,y: Elem 
-     . ( x * y = 0 => ( x = 0 \/ y = 0 ) ) 	%(noZeroDiv)%
-     . not (e = 0)             			%(zeroNeqOne)%
+     . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
+     . not (e = 0)                              %(zeroNeqOne)%
 end
 
 spec ConstructField =
@@ -96,20 +96,20 @@ end
 spec ExtMonoid  [Monoid] given Nat = %def
      op __ ^ __: Elem * Nat -> Elem
      forall x: Elem; n: Pos
-     . x ^ 0 = e             			%(pow_0_Monoid)%
-     . x ^ suc(n) = x * (x ^ n)             	%(pow_suc_Monoid)%
+     . x ^ 0 = e                                %(pow_0_Monoid)%
+     . x ^ suc(n) = x * (x ^ n)                 %(pow_suc_Monoid)%
 then %implies
      forall x: Elem; n,m: Nat
-     . e ^ n = e             			%(pow_unit_Monoid)%
-     . x ^ (n + m)=x ^ n * x ^ m		%(pow_add_Monoid)%
-     . x ^ (n * m)=(x ^ n) ^ m             	%(pow_mult_Monoid)%
+     . e ^ n = e                                %(pow_unit_Monoid)%
+     . x ^ (n + m)=x ^ n * x ^ m                %(pow_add_Monoid)%
+     . x ^ (n * m)=(x ^ n) ^ m                  %(pow_mult_Monoid)%
 end
 
 spec ExtCommutativeMonoid  [CommutativeMonoid] given Nat = %def
      ExtMonoid [Monoid]
 then %implies
      forall x,y: Elem; n: Nat
-     . x^ n * y^ n=(x*y)^ n             	%(pow_basemult_CMonoid)%
+     . x^ n * y^ n=(x*y)^ n                     %(pow_basemult_CMonoid)%
 end
 
 spec ExtGroup [Group] given Int = %def
@@ -119,27 +119,27 @@ then
         inv:     Elem -> Elem;
         __ / __: Elem * Elem -> Elem;
      forall x,y: Elem; p: Pos
-     . inv(x) * x = e             		%(inv_def_Group)%
-     . x / y = x * inv(y)             		%(div_def_Group)%
-     . x^ (- p)=inv(x ^ p)             		%(pow_neg_Group)%
+     . inv(x) * x = e                           %(inv_def_Group)%
+     . x / y = x * inv(y)                       %(div_def_Group)%
+     . x^ (- p)=inv(x ^ p)                      %(pow_neg_Group)%
 then %implies
      forall x,y,z: Elem; n,m: Int
-     . x * inv(x) = e             		%(rightInv_Group)%
-     . x = y if z * x = z * y             	%(leftCancel_Group)%
-     . x = y if x * z = y * z             	%(rightCancel_Group)%
-     . inv(inv(x))=x             		%(invInv_Group)%
-     . inv(e)=e             			%(invUnit_Group)%
-     . inv(x*y)=inv(y)*inv(x)             	%(invMult_Group)%
-     . e ^ n = e             			%(pow_unit_Group)%
-     . x ^ (n + m)=x ^ n * x ^ m		%(pow_add_Group)%
-     . x ^ (n * m)=(x ^ n) ^ m             	%(pow_mult_Group)%
+     . x * inv(x) = e                           %(rightInv_Group)%
+     . x = y if z * x = z * y                   %(leftCancel_Group)%
+     . x = y if x * z = y * z                   %(rightCancel_Group)%
+     . inv(inv(x))=x                            %(invInv_Group)%
+     . inv(e)=e                                 %(invUnit_Group)%
+     . inv(x*y)=inv(y)*inv(x)                   %(invMult_Group)%
+     . e ^ n = e                                %(pow_unit_Group)%
+     . x ^ (n + m)=x ^ n * x ^ m                %(pow_add_Group)%
+     . x ^ (n * m)=(x ^ n) ^ m                  %(pow_mult_Group)%
 end
 
 spec ExtAbelianGroup  [AbelianGroup] given Int = %def
      ExtGroup[AbelianGroup]
 then %implies
      forall x,y: Elem; n: Int
-     . x^ n * y^ n=(x*y)^ n             	%(pow_basemult_AbGroup)%
+     . x^ n * y^ n=(x*y)^ n                     %(pow_basemult_AbGroup)%
 end
 
 
@@ -158,14 +158,14 @@ and
            Irred[Elem] = { x: Elem . isIrred(x) }
      forall x,y: Elem
      . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
-						%(isUnit_def_Ring)%
+                                                %(isUnit_def_Ring)%
      . isIrred(x) <=> (not isUnit(x) /\ 
-	forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))        
-						%(isIrred_def_Ring)% 
+        forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))        
+                                                %(isIrred_def_Ring)% 
 then %def
      ops e: RUnit[Elem];
          -__: RUnit[Elem] -> RUnit[Elem];
-	 __ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
+         __ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
 end
 
 view Group_in_ExtRing [Ring] given Int : 
@@ -181,11 +181,11 @@ then
            associated:        Elem * Elem
      forall x,y: Elem
      . hasNoZeroDivisors <=> forall x,y: Elem. (x * y = 0 => x=0 \/ y=0) 
-						%(hasNoZeroDivisors_def)%
+                                                %(hasNoZeroDivisors_def)%
      . x divides y <=> exists z: Elem. x * z = y
-						%(divides_def)%
+                                                %(divides_def)%
      . associated(x,y) <=> exists u:RUnit[Elem]. x=u*y             
-						%(associated_def)%
+                                                %(associated_def)%
 then %implies
      forall x,y:Elem
      . associated(x,y) <=> (x divides y /\ y divides x)
@@ -221,17 +221,17 @@ spec ExtField  [Field] given Int= %mono
      ExtRing [Ring]
 then
 closed
-     {	ExtAbelianGroup[view AbelianGroup_in_ConstructField]
-	with sort NonZeroElem|->NonZero[Elem],
-	     ops inv, __ / __, __ ^ __  }
+     {  ExtAbelianGroup[view AbelianGroup_in_ConstructField]
+        with sort NonZeroElem|->NonZero[Elem],
+             ops inv, __ / __, __ ^ __  }
 then
      op __ / __: Elem * Elem ->? Elem;
      forall x:Elem; n: NonZero[Elem]
-     . 0/n=0             			%(div_def1_Field)%
-     . not def x/0				%(div_def2_Field)%
+     . 0/n=0                                    %(div_def1_Field)%
+     . not def x/0                              %(div_def2_Field)%
 then %implies
      forall x,y:Elem
-     . def x/y <=> not y=0             		%(div_dom_Field)%
+     . def x/y <=> not y=0                      %(div_dom_Field)%
 end
 
 spec RichMonoid =
@@ -295,7 +295,7 @@ view CommutativeMonoid_in_Nat_Mult :
      CommutativeMonoid to Nat =
      sort Elem |-> Nat,
      ops e |-> 1,
-	 __ * __ |-> __ * __
+         __ * __ |-> __ * __
 end
 
 view CommutativeMonoid_in_Int_Mult:
@@ -308,14 +308,14 @@ end
 view AbelianGroup_in_Int_Add:
      AbelianGroup to Int =
      sort Elem |-> Int,
-     ops __ * __ |-> __ + __,
-	 e |-> 0
+     ops e |-> 0,
+         __ * __ |-> __ + __
 end
 
 view IntegralDomain_in_Int :
      IntegralDomain to Int =
-     sorts Elem |-> Int,
-     ops e |-> 1
+     sort Elem |-> Int,
+     op e |-> 1
 end
 
 view Field_in_Rat: Field to Rat =
