@@ -3,44 +3,44 @@ version 0.95
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% date: 19.06.02
 
-%left_assoc __intersection__
+%left_assoc __intersection__  %[ Should go to StructuredDatatypes ]%
 
 from Basic/StructuredDatatypes get FiniteSet, FiniteMap
 
-spec Graph[sort NodeV][sort EdgeV] =
-  FiniteSet[sort NodeV fit Elem |-> NodeV]
-  and
-  FiniteSet[sort EdgeV fit Elem |-> EdgeV]
-  and
-  FiniteMap[sort EdgeV fit S |-> EdgeV][sort NodeV fit T |-> NodeV]
-  then
+spec Graph[sort NodeLabel][sort EdgeLabel] =
+  free type Edge ::= edge(source,target:NodeLabel; label:EdgeLabel)
+then
+  FiniteSet[sort NodeLabel fit Elem |-> NodeLabel]
+and
+  FiniteSet[sort Edge fit Elem |-> Edge]
+then
   generated type Graph ::= 
-     make_graph (nodes : FinSet[NodeV];
-                 edges : FinSet[EdgeV];
-                 source, target : FiniteMap[EdgeV,NodeV])?
-  vars n:FinSet[NodeV];
-       e:FinSet[EdgeV]; 
-       s,t:FiniteMap[EdgeV,NodeV];
+     make_graph (nodes : FinSet[NodeLabel];
+                 edges : FinSet[Edge])?
+  vars nds:FinSet[NodeLabel];
+       eds:FinSet[Edge]; 
        g,g':Graph
-  . def make_graph(n,e,s,t) <=> s::e->n /\ t::e->n
-  . g=g' => nodes(g)=nodes(g') /\ edges(g)=edges(g') /\
-            source(g)=source(g') /\ target(g)=target(g')
+  . def make_graph(nds,eds) <=> 
+    forall e:Edge . e eps eds => source(e) eps nds /\ target(e) eps nds
+  . g=g' <=> nodes(g)=nodes(g') /\ edges(g)=edges(g')
 
 then %def
+  op remove_node : NodeLabel * FinSet[Edge] -> FinSet[Edge]
+  forall n,n1,n2:NodeLabel; e:EdgeLabel; eds:FinSet[Edge]
+  . edge(n1,n2,e) eps remove_node(n,eds) <=> edge(n1,n2,e) eps eds /\ not n=n1 /\ not n=n2
 
-  ops add_node (n:NodeV; g:Graph) : Graph =
-        make_graph(nodes(g)+n, edges(g), source(g), target(g));
+  ops add_node (n:NodeLabel; g:Graph) : Graph =
+        make_graph(nodes(g)+n, edges(g));
        
-      add_edge (e:EdgeV; n1,n2:NodeV; g:Graph) :? Graph =
-        make_graph(nodes(g)+n1+n2, edges(g)+e, source(g)[n1/e], target(g)[n2/e]);
+      add_edge (e:EdgeLabel; n1,n2:NodeLabel; g:Graph) :? Graph =
+        make_graph(nodes(g)+n1+n2, edges(g)+edge(n1,n2,e));
        
-      remove_node(n:NodeV; g:Graph) : Graph =
+      remove_node(n:NodeLabel; g:Graph) : Graph =
         make_graph(nodes(g)-n,
-                   edges(g) intersection dom(source(g)-n) intersection dom(target(g)-n),
-                   source(g)-n, target(g)-n);
+                   remove_node(n,edges(g)));
       
-      remove_edge(e:EdgeV; g:Graph) : Graph =
-        make_graph(nodes(g), edges(g)-e, source(g)-e, target(g)-e)
+      remove_edge(e:Edge; g:Graph) : Graph =
+        make_graph(nodes(g), edges(g)-e)
         
 end
 
