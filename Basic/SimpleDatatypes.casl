@@ -1,81 +1,68 @@
 library Basic/SimpleDatatypes
-version 0.5 
+version 0.7
+%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
+%% date: 16.3.01
 
-%prec {__OR__} < {__AND__}
+%prec {__Or__} < {__And__}
 
 
-from Basic/RelationsAndOrders version 0.5 get ExtBooleanAlgebra
-from Basic/Numbers version 0.5 get Nat
+from Basic/RelationsAndOrders version 0.7 get ExtBooleanAlgebra
+from Basic/Numbers version 0.7 get Nat
 
-spec
-     Boolean =
-     ExtBooleanAlgebra
-[
-     {
-     free type
-          Boolean ::= TRUE | FALSE
-     ops
-           NOT__ :           Boolean -> Boolean;
-           __AND__, __OR__ : Boolean * Boolean -> Boolean
-     forall
-          x,y,z:Boolean
-     .
-          NOT(FALSE)=TRUE             %(NOT_FALSE)%
-     .
-          NOT(TRUE)=FALSE             %(NOT_TRUE)%
-     .
-          FALSE AND FALSE = FALSE             %(AND_def1)%
-     .
-          FALSE AND TRUE = FALSE             %(AND_def2)%
-     .
-          TRUE  AND FALSE = FALSE             %(AND_def3)%
-     .
-          TRUE  AND TRUE = TRUE             %(AND_def4)%
-     .
-          x OR y=NOT(NOT(x) AND NOT(y))             %(OR_def)%
-}
-fit
-      sort Elem |-> Boolean,
-      ops 0 |-> FALSE,
-          1 |-> TRUE,
-          __ cap __ |-> __AND__,
-          __ cup __ |-> __OR__
-     ]
-with
-      pred __ <= __,
-      op  compl
+spec Boolean =
+
+     free type Boolean ::= True | False
+
+     ops   Not__ :           Boolean -> Boolean;
+           __And__, __Or__ : Boolean * Boolean -> Boolean
+
+     forall x,y,z:Boolean
+     . Not(False) = True                %(Not_False)%
+     . Not(True) = False                %(Not_True)%
+     . False And False = False          %(And_def1)%
+     . False And True = False           %(And_def2)%
+     . True  And False = False          %(And_def3)%
+     . True  And True = True            %(And_def4)%
+     . x Or y = Not(Not(x) And Not(y))  %(Or_def)%
 end
 
 spec
-     Char =
+     RichBoolean =
+     ExtBooleanAlgebra [Boolean fit
+                          sort Elem |-> Boolean,
+                          ops 0 |-> False,
+                              1 |-> True,
+                              __ cap __ |-> __And__,
+                              __ cup __ |-> __Or__
+                       ]
+with
+      pred __ <= __, op  compl
+end
+
+spec Char =
      Nat
 then
      sort Char 
 
-     ops
-           chr : Nat ->? Char;
+     ops   chr : Nat ->? Char;
            ord : Char -> Nat;
-     forall
-          n:Nat; c:Char
-     .
-          def chr(n) <=> n <= 255             %(chr_dom)%
-     .
-          chr(ord(c))=c             %(chr_def)%
-     .
-          ord(chr(n))=n if n <= 255             %(ord_def)%
+
+     forall n:Nat; c:Char
+     . def chr(n) <=> n <= 255    %(chr_dom)%
+     . chr(ord(c))=c              %(chr_def)%
+     . ord(chr(n))=n if n <= 255  %(ord_def)%
 
      %% definition of individual characters:
-     ops
-          '\000' : Char = chr(0);             %(slash_000)%
-          '\001' : Char = chr(1);             %(slash_001)%
-          '\002' : Char = chr(2);             %(slash_002)%
-          '\003' : Char = chr(3);             %(slash_003)%
-          '\004' : Char = chr(4);             %(slash_004)%
-          '\005' : Char = chr(5);             %(slash_005)%
-          '\006' : Char = chr(6);             %(slash_006)%
-          '\007' : Char = chr(7);             %(slash_007)%
-          '\008' : Char = chr(8);             %(slash_008)%
-          '\009' : Char = chr(9);             %(slash_009)%
+     ops  '\000' : Char = chr(0);              %(slash_000)%
+          '\001' : Char = chr(1);              %(slash_001)%
+          '\002' : Char = chr(2);              %(slash_002)%
+          '\003' : Char = chr(3);              %(slash_003)%
+          '\004' : Char = chr(4);              %(slash_004)%
+          '\005' : Char = chr(5);              %(slash_005)%
+          '\006' : Char = chr(6);              %(slash_006)%
+          '\007' : Char = chr(7);              %(slash_007)%
+          '\008' : Char = chr(8);              %(slash_008)%
+          '\009' : Char = chr(9);              %(slash_009)%
           '\010' : Char = chr(10);             %(slash_010)%
           '\011' : Char = chr(11);             %(slash_011)%
           '\012' : Char = chr(12);             %(slash_012)%
@@ -166,173 +153,172 @@ then
           '\097' : Char = chr(97);             %(slash_097)%
           '\098' : Char = chr(98);             %(slash_098)%
           '\099' : Char = chr(99);             %(slash_099)%
-          '\100' : Char = chr(100);             %(slash_100)%
-          '\101' : Char = chr(101);             %(slash_101)%
-          '\102' : Char = chr(102);             %(slash_102)%
-          '\103' : Char = chr(103);             %(slash_103)%
-          '\104' : Char = chr(104);             %(slash_104)%
-          '\105' : Char = chr(105);             %(slash_105)%
-          '\106' : Char = chr(106);             %(slash_106)%
-          '\107' : Char = chr(107);             %(slash_107)%
-          '\108' : Char = chr(108);             %(slash_108)%
-          '\109' : Char = chr(109);             %(slash_109)%
-          '\110' : Char = chr(110);             %(slash_110)%
-          '\111' : Char = chr(111);             %(slash_111)%
-          '\112' : Char = chr(112);             %(slash_112)%
-          '\113' : Char = chr(113);             %(slash_113)%
-          '\114' : Char = chr(114);             %(slash_114)%
-          '\115' : Char = chr(115);             %(slash_115)%
-          '\116' : Char = chr(116);             %(slash_116)%
-          '\117' : Char = chr(117);             %(slash_117)%
-          '\118' : Char = chr(118);             %(slash_118)%
-          '\119' : Char = chr(119);             %(slash_119)%
-          '\120' : Char = chr(120);             %(slash_120)%
-          '\121' : Char = chr(121);             %(slash_121)%
-          '\122' : Char = chr(122);             %(slash_122)%
-          '\123' : Char = chr(123);             %(slash_123)%
-          '\124' : Char = chr(124);             %(slash_124)%
-          '\125' : Char = chr(125);             %(slash_125)%
-          '\126' : Char = chr(126);             %(slash_126)%
-          '\127' : Char = chr(127);             %(slash_127)%
-          '\128' : Char = chr(128);             %(slash_128)%
-          '\129' : Char = chr(129);             %(slash_129)%
-          '\130' : Char = chr(130);             %(slash_130)%
-          '\131' : Char = chr(131);             %(slash_131)%
-          '\132' : Char = chr(132);             %(slash_132)%
-          '\133' : Char = chr(133);             %(slash_133)%
-          '\134' : Char = chr(134);             %(slash_134)%
-          '\135' : Char = chr(135);             %(slash_135)%
-          '\136' : Char = chr(136);             %(slash_136)%
-          '\137' : Char = chr(137);             %(slash_137)%
-          '\138' : Char = chr(138);             %(slash_138)%
-          '\139' : Char = chr(139);             %(slash_139)%
-          '\140' : Char = chr(140);             %(slash_140)%
-          '\141' : Char = chr(141);             %(slash_141)%
-          '\142' : Char = chr(142);             %(slash_142)%
-          '\143' : Char = chr(143);             %(slash_143)%
-          '\144' : Char = chr(144);             %(slash_144)%
-          '\145' : Char = chr(145);             %(slash_145)%
-          '\146' : Char = chr(146);             %(slash_146)%
-          '\147' : Char = chr(147);             %(slash_147)%
-          '\148' : Char = chr(148);             %(slash_148)%
-          '\149' : Char = chr(149);             %(slash_149)%
-          '\150' : Char = chr(150);             %(slash_150)%
-          '\151' : Char = chr(151);             %(slash_151)%
-          '\152' : Char = chr(152);             %(slash_152)%
-          '\153' : Char = chr(153);             %(slash_153)%
-          '\154' : Char = chr(154);             %(slash_154)%
-          '\155' : Char = chr(155);             %(slash_155)%
-          '\156' : Char = chr(156);             %(slash_156)%
-          '\157' : Char = chr(157);             %(slash_157)%
-          '\158' : Char = chr(158);             %(slash_158)%
-          '\159' : Char = chr(159);             %(slash_159)%
-          '\160' : Char = chr(160);             %(slash_160)%
-          '\161' : Char = chr(161);             %(slash_161)%
-          '\162' : Char = chr(162);             %(slash_162)%
-          '\163' : Char = chr(163);             %(slash_163)%
-          '\164' : Char = chr(164);             %(slash_164)%
-          '\165' : Char = chr(165);             %(slash_165)%
-          '\166' : Char = chr(166);             %(slash_166)%
-          '\167' : Char = chr(167);             %(slash_167)%
-          '\168' : Char = chr(168);             %(slash_168)%
-          '\169' : Char = chr(169);             %(slash_169)%
-          '\170' : Char = chr(170);             %(slash_170)%
-          '\171' : Char = chr(171);             %(slash_171)%
-          '\172' : Char = chr(172);             %(slash_172)%
-          '\173' : Char = chr(173);             %(slash_173)%
-          '\174' : Char = chr(174);             %(slash_174)%
-          '\175' : Char = chr(175);             %(slash_175)%
-          '\176' : Char = chr(176);             %(slash_176)%
-          '\177' : Char = chr(177);             %(slash_177)%
-          '\178' : Char = chr(178);             %(slash_178)%
-          '\179' : Char = chr(179);             %(slash_179)%
-          '\180' : Char = chr(180);             %(slash_180)%
-          '\181' : Char = chr(181);             %(slash_181)%
-          '\182' : Char = chr(182);             %(slash_182)%
-          '\183' : Char = chr(183);             %(slash_183)%
-          '\184' : Char = chr(184);             %(slash_184)%
-          '\185' : Char = chr(185);             %(slash_185)%
-          '\186' : Char = chr(186);             %(slash_186)%
-          '\187' : Char = chr(187);             %(slash_187)%
-          '\188' : Char = chr(188);             %(slash_188)%
-          '\189' : Char = chr(189);             %(slash_189)%
-          '\190' : Char = chr(190);             %(slash_190)%
-          '\191' : Char = chr(191);             %(slash_191)%
-          '\192' : Char = chr(192);             %(slash_192)%
-          '\193' : Char = chr(193);             %(slash_193)%
-          '\194' : Char = chr(194);             %(slash_194)%
-          '\195' : Char = chr(195);             %(slash_195)%
-          '\196' : Char = chr(196);             %(slash_196)%
-          '\197' : Char = chr(197);             %(slash_197)%
-          '\198' : Char = chr(198);             %(slash_198)%
-          '\199' : Char = chr(199);             %(slash_199)%
-          '\200' : Char = chr(200);             %(slash_200)%
-          '\201' : Char = chr(201);             %(slash_201)%
-          '\202' : Char = chr(202);             %(slash_202)%
-          '\203' : Char = chr(203);             %(slash_203)%
-          '\204' : Char = chr(204);             %(slash_204)%
-          '\205' : Char = chr(205);             %(slash_205)%
-          '\206' : Char = chr(206);             %(slash_206)%
-          '\207' : Char = chr(207);             %(slash_207)%
-          '\208' : Char = chr(208);             %(slash_208)%
-          '\209' : Char = chr(209);             %(slash_209)%
-          '\210' : Char = chr(210);             %(slash_210)%
-          '\211' : Char = chr(211);             %(slash_211)%
-          '\212' : Char = chr(212);             %(slash_212)%
-          '\213' : Char = chr(213);             %(slash_213)%
-          '\214' : Char = chr(214);             %(slash_214)%
-          '\215' : Char = chr(215);             %(slash_215)%
-          '\216' : Char = chr(216);             %(slash_216)%
-          '\217' : Char = chr(217);             %(slash_217)%
-          '\218' : Char = chr(218);             %(slash_218)%
-          '\219' : Char = chr(219);             %(slash_219)%
-          '\220' : Char = chr(220);             %(slash_220)%
-          '\221' : Char = chr(221);             %(slash_221)%
-          '\222' : Char = chr(222);             %(slash_222)%
-          '\223' : Char = chr(223);             %(slash_223)%
-          '\224' : Char = chr(224);             %(slash_224)%
-          '\225' : Char = chr(225);             %(slash_225)%
-          '\226' : Char = chr(226);             %(slash_226)%
-          '\227' : Char = chr(227);             %(slash_227)%
-          '\228' : Char = chr(228);             %(slash_228)%
-          '\229' : Char = chr(229);             %(slash_229)%
-          '\230' : Char = chr(230);             %(slash_230)%
-          '\231' : Char = chr(231);             %(slash_231)%
-          '\232' : Char = chr(232);             %(slash_232)%
-          '\233' : Char = chr(233);             %(slash_233)%
-          '\234' : Char = chr(234);             %(slash_234)%
-          '\235' : Char = chr(235);             %(slash_235)%
-          '\236' : Char = chr(236);             %(slash_236)%
-          '\237' : Char = chr(237);             %(slash_237)%
-          '\238' : Char = chr(238);             %(slash_238)%
-          '\239' : Char = chr(239);             %(slash_239)%
-          '\240' : Char = chr(240);             %(slash_240)%
-          '\241' : Char = chr(241);             %(slash_241)%
-          '\242' : Char = chr(242);             %(slash_242)%
-          '\243' : Char = chr(243);             %(slash_243)%
-          '\244' : Char = chr(244);             %(slash_244)%
-          '\245' : Char = chr(245);             %(slash_245)%
-          '\246' : Char = chr(246);             %(slash_246)%
-          '\247' : Char = chr(247);             %(slash_247)%
-          '\248' : Char = chr(248);             %(slash_248)%
-          '\249' : Char = chr(249);             %(slash_249)%
-          '\250' : Char = chr(250);             %(slash_250)%
-          '\251' : Char = chr(251);             %(slash_251)%
-          '\252' : Char = chr(252);             %(slash_252)%
-          '\253' : Char = chr(253);             %(slash_253)%
-          '\254' : Char = chr(254);             %(slash_254)%
-          '\255' : Char = chr(255);             %(slash_255)%
+          '\100' : Char = chr(100);            %(slash_100)%
+          '\101' : Char = chr(101);            %(slash_101)%
+          '\102' : Char = chr(102);            %(slash_102)%
+          '\103' : Char = chr(103);            %(slash_103)%
+          '\104' : Char = chr(104);            %(slash_104)%
+          '\105' : Char = chr(105);            %(slash_105)%
+          '\106' : Char = chr(106);            %(slash_106)%
+          '\107' : Char = chr(107);            %(slash_107)%
+          '\108' : Char = chr(108);            %(slash_108)%
+          '\109' : Char = chr(109);            %(slash_109)%
+          '\110' : Char = chr(110);            %(slash_110)%
+          '\111' : Char = chr(111);            %(slash_111)%
+          '\112' : Char = chr(112);            %(slash_112)%
+          '\113' : Char = chr(113);            %(slash_113)%
+          '\114' : Char = chr(114);            %(slash_114)%
+          '\115' : Char = chr(115);            %(slash_115)%
+          '\116' : Char = chr(116);            %(slash_116)%
+          '\117' : Char = chr(117);            %(slash_117)%
+          '\118' : Char = chr(118);            %(slash_118)%
+          '\119' : Char = chr(119);            %(slash_119)%
+          '\120' : Char = chr(120);            %(slash_120)%
+          '\121' : Char = chr(121);            %(slash_121)%
+          '\122' : Char = chr(122);            %(slash_122)%
+          '\123' : Char = chr(123);            %(slash_123)%
+          '\124' : Char = chr(124);            %(slash_124)%
+          '\125' : Char = chr(125);            %(slash_125)%
+          '\126' : Char = chr(126);            %(slash_126)%
+          '\127' : Char = chr(127);            %(slash_127)%
+          '\128' : Char = chr(128);            %(slash_128)%
+          '\129' : Char = chr(129);            %(slash_129)%
+          '\130' : Char = chr(130);            %(slash_130)%
+          '\131' : Char = chr(131);            %(slash_131)%
+          '\132' : Char = chr(132);            %(slash_132)%
+          '\133' : Char = chr(133);            %(slash_133)%
+          '\134' : Char = chr(134);            %(slash_134)%
+          '\135' : Char = chr(135);            %(slash_135)%
+          '\136' : Char = chr(136);            %(slash_136)%
+          '\137' : Char = chr(137);            %(slash_137)%
+          '\138' : Char = chr(138);            %(slash_138)%
+          '\139' : Char = chr(139);            %(slash_139)%
+          '\140' : Char = chr(140);            %(slash_140)%
+          '\141' : Char = chr(141);            %(slash_141)%
+          '\142' : Char = chr(142);            %(slash_142)%
+          '\143' : Char = chr(143);            %(slash_143)%
+          '\144' : Char = chr(144);            %(slash_144)%
+          '\145' : Char = chr(145);            %(slash_145)%
+          '\146' : Char = chr(146);            %(slash_146)%
+          '\147' : Char = chr(147);            %(slash_147)%
+          '\148' : Char = chr(148);            %(slash_148)%
+          '\149' : Char = chr(149);            %(slash_149)%
+          '\150' : Char = chr(150);            %(slash_150)%
+          '\151' : Char = chr(151);            %(slash_151)%
+          '\152' : Char = chr(152);            %(slash_152)%
+          '\153' : Char = chr(153);            %(slash_153)%
+          '\154' : Char = chr(154);            %(slash_154)%
+          '\155' : Char = chr(155);            %(slash_155)%
+          '\156' : Char = chr(156);            %(slash_156)%
+          '\157' : Char = chr(157);            %(slash_157)%
+          '\158' : Char = chr(158);            %(slash_158)%
+          '\159' : Char = chr(159);            %(slash_159)%
+          '\160' : Char = chr(160);            %(slash_160)%
+          '\161' : Char = chr(161);            %(slash_161)%
+          '\162' : Char = chr(162);            %(slash_162)%
+          '\163' : Char = chr(163);            %(slash_163)%
+          '\164' : Char = chr(164);            %(slash_164)%
+          '\165' : Char = chr(165);            %(slash_165)%
+          '\166' : Char = chr(166);            %(slash_166)%
+          '\167' : Char = chr(167);            %(slash_167)%
+          '\168' : Char = chr(168);            %(slash_168)%
+          '\169' : Char = chr(169);            %(slash_169)%
+          '\170' : Char = chr(170);            %(slash_170)%
+          '\171' : Char = chr(171);            %(slash_171)%
+          '\172' : Char = chr(172);            %(slash_172)%
+          '\173' : Char = chr(173);            %(slash_173)%
+          '\174' : Char = chr(174);            %(slash_174)%
+          '\175' : Char = chr(175);            %(slash_175)%
+          '\176' : Char = chr(176);            %(slash_176)%
+          '\177' : Char = chr(177);            %(slash_177)%
+          '\178' : Char = chr(178);            %(slash_178)%
+          '\179' : Char = chr(179);            %(slash_179)%
+          '\180' : Char = chr(180);            %(slash_180)%
+          '\181' : Char = chr(181);            %(slash_181)%
+          '\182' : Char = chr(182);            %(slash_182)%
+          '\183' : Char = chr(183);            %(slash_183)%
+          '\184' : Char = chr(184);            %(slash_184)%
+          '\185' : Char = chr(185);            %(slash_185)%
+          '\186' : Char = chr(186);            %(slash_186)%
+          '\187' : Char = chr(187);            %(slash_187)%
+          '\188' : Char = chr(188);            %(slash_188)%
+          '\189' : Char = chr(189);            %(slash_189)%
+          '\190' : Char = chr(190);            %(slash_190)%
+          '\191' : Char = chr(191);            %(slash_191)%
+          '\192' : Char = chr(192);            %(slash_192)%
+          '\193' : Char = chr(193);            %(slash_193)%
+          '\194' : Char = chr(194);            %(slash_194)%
+          '\195' : Char = chr(195);            %(slash_195)%
+          '\196' : Char = chr(196);            %(slash_196)%
+          '\197' : Char = chr(197);            %(slash_197)%
+          '\198' : Char = chr(198);            %(slash_198)%
+          '\199' : Char = chr(199);            %(slash_199)%
+          '\200' : Char = chr(200);            %(slash_200)%
+          '\201' : Char = chr(201);            %(slash_201)%
+          '\202' : Char = chr(202);            %(slash_202)%
+          '\203' : Char = chr(203);            %(slash_203)%
+          '\204' : Char = chr(204);            %(slash_204)%
+          '\205' : Char = chr(205);            %(slash_205)%
+          '\206' : Char = chr(206);            %(slash_206)%
+          '\207' : Char = chr(207);            %(slash_207)%
+          '\208' : Char = chr(208);            %(slash_208)%
+          '\209' : Char = chr(209);            %(slash_209)%
+          '\210' : Char = chr(210);            %(slash_210)%
+          '\211' : Char = chr(211);            %(slash_211)%
+          '\212' : Char = chr(212);            %(slash_212)%
+          '\213' : Char = chr(213);            %(slash_213)%
+          '\214' : Char = chr(214);            %(slash_214)%
+          '\215' : Char = chr(215);            %(slash_215)%
+          '\216' : Char = chr(216);            %(slash_216)%
+          '\217' : Char = chr(217);            %(slash_217)%
+          '\218' : Char = chr(218);            %(slash_218)%
+          '\219' : Char = chr(219);            %(slash_219)%
+          '\220' : Char = chr(220);            %(slash_220)%
+          '\221' : Char = chr(221);            %(slash_221)%
+          '\222' : Char = chr(222);            %(slash_222)%
+          '\223' : Char = chr(223);            %(slash_223)%
+          '\224' : Char = chr(224);            %(slash_224)%
+          '\225' : Char = chr(225);            %(slash_225)%
+          '\226' : Char = chr(226);            %(slash_226)%
+          '\227' : Char = chr(227);            %(slash_227)%
+          '\228' : Char = chr(228);            %(slash_228)%
+          '\229' : Char = chr(229);            %(slash_229)%
+          '\230' : Char = chr(230);            %(slash_230)%
+          '\231' : Char = chr(231);            %(slash_231)%
+          '\232' : Char = chr(232);            %(slash_232)%
+          '\233' : Char = chr(233);            %(slash_233)%
+          '\234' : Char = chr(234);            %(slash_234)%
+          '\235' : Char = chr(235);            %(slash_235)%
+          '\236' : Char = chr(236);            %(slash_236)%
+          '\237' : Char = chr(237);            %(slash_237)%
+          '\238' : Char = chr(238);            %(slash_238)%
+          '\239' : Char = chr(239);            %(slash_239)%
+          '\240' : Char = chr(240);            %(slash_240)%
+          '\241' : Char = chr(241);            %(slash_241)%
+          '\242' : Char = chr(242);            %(slash_242)%
+          '\243' : Char = chr(243);            %(slash_243)%
+          '\244' : Char = chr(244);            %(slash_244)%
+          '\245' : Char = chr(245);            %(slash_245)%
+          '\246' : Char = chr(246);            %(slash_246)%
+          '\247' : Char = chr(247);            %(slash_247)%
+          '\248' : Char = chr(248);            %(slash_248)%
+          '\249' : Char = chr(249);            %(slash_249)%
+          '\250' : Char = chr(250);            %(slash_250)%
+          '\251' : Char = chr(251);            %(slash_251)%
+          '\252' : Char = chr(252);            %(slash_252)%
+          '\253' : Char = chr(253);            %(slash_253)%
+          '\254' : Char = chr(254);            %(slash_254)%
+          '\255' : Char = chr(255);            %(slash_255)%
           
      %% definition of the printable characters:
-     ops
-          ' ' : Char = '\032';             %(printable_32)%
+     ops  ' ' : Char = '\032';             %(printable_32)%
           '!' : Char = '\033';             %(printable_33)%
-          '\"' : Char = '\034';             %(printable_34)%
+          '\"' : Char = '\034';            %(printable_34)%
           '#' : Char = '\035';             %(printable_35)%
           '$' : Char = '\036';             %(printable_36)%
           '%' : Char = '\037';             %(printable_37)%
           '&' : Char = '\038';             %(printable_38)%
-          '\'' : Char = '\039';             %(printable_39)%
+          '\'' : Char = '\039';            %(printable_39)%
           '(' : Char = '\040';             %(printable_40)%
           ')' : Char = '\041';             %(printable_41)%
           '*' : Char = '\042';             %(printable_42)%
@@ -385,7 +371,7 @@ then
           'Y' : Char = '\089';             %(printable_89)%
           'Z' : Char = '\090';             %(printable_90)%
           '[' : Char = '\091';             %(printable_91)%
-          '\\' : Char = '\092';             %(printable_92)%
+          '\\' : Char = '\092';            %(printable_92)%
           ']' : Char = '\093';             %(printable_93)%
           '^' : Char = '\094';             %(printable_94)%
           '_' : Char = '\095';             %(printable_95)%
@@ -518,18 +504,17 @@ then
           'þ' : Char = '\254' ;            %(printable_254)%
           'ÿ' : Char = '\255' ;            %(printable_255)%
 
-     preds
-          isLetter(c:Char) <=> (
-           (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
-           (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );           %(isLetter_def)% 
-          isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9');            %(isDigit_def)%
-          isPrintable(c:Char) <=> (
-           (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
-           (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )             %(isPrintable_def)%
+     preds isLetter(c:Char) <=> (
+              (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
+              (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );                   %(isLetter_def)% 
+           isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9');      %(isDigit_def)%
+           isPrintable(c:Char) <=> (
+              (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
+              (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )                    %(isPrintable_def)%
+              
      %% alternative definition of characters as '\o ppp',
      %% where p in {0,1,...,7} :
-     ops
-          '\o000' : Char = '\000';             %(slash_o000)%
+     ops  '\o000' : Char = '\000';             %(slash_o000)%
           '\o001' : Char = '\001';             %(slash_o001)%
           '\o002' : Char = '\002';             %(slash_o002)%
           '\o003' : Char = '\003';             %(slash_o003)%
@@ -1047,8 +1032,7 @@ then
           '\xFF' : Char = '\255';             %(slash_xFF)%
 
      %% special characters:
-     ops
-          NUL:Char = '\000';             %(NUL_def)%
+     ops  NUL:Char = '\000';             %(NUL_def)%
           SOH:Char = '\001';             %(SOH_def)%
           SYX:Char = '\002';             %(SYX_def)%
           ETX:Char = '\003';             %(ETX_def)%
@@ -1056,46 +1040,44 @@ then
           ENQ:Char = '\005';             %(ENQ_def)%
           ACK:Char = '\006';             %(ACK_def)%
           BEL:Char = '\007';             %(BEL_def)%
-          BS:Char = '\008';             %(BS_def)%
-          HT:Char = '\009';             %(HT_def)%
-          LF:Char = '\010' ;            %(LF_def)%
-          VT:Char = '\011' ;            %(VT_def)%
-          FF:Char = '\012' ;            %(FF_def)%
-          CR:Char = '\013' ;            %(CR_def)%
-          SO:Char = '\014' ;            %(SO_def)%
-          SI:Char = '\015' ;            %(SI_def)%
-          DLE:Char = '\016'  ;           %(DLE_def)%
-          DC1:Char = '\017'  ;           %(DC1_def)%
-          DC2:Char = '\018'  ;           %(DC2_def)%
-          DC3:Char = '\019'  ;           %(DC3_def)%
-          DC4:Char = '\020'  ;           %(DC4_def)%
-          NAK:Char = '\021'  ;           %(NAK_def)%
-          SYN:Char = '\022'  ;           %(SYN_def)%
-          ETB:Char = '\023'  ;           %(ETB_def)%
-          CAN:Char = '\024'  ;           %(CAN_def)%
-          EM:Char = '\025' ;            %(EM_def)%
-          SUB:Char = '\026'  ;           %(SUB_def)%
-          ESC:Char = '\027'  ;           %(ESC_def)%
-          FS:Char = '\028' ;            %(FS_def)%
-          GS:Char = '\029' ;            %(GS_def)%
-          RS:Char = '\030' ;            %(RS_def)%
-          US:Char = '\031' ;            %(US_def)%
-          SP:Char = '\032' ;            %(SP_def)%
-          DEL:Char = '\127'  ;           %(DEL_def)%
+          BS:Char = '\008';              %(BS_def)%
+          HT:Char = '\009';              %(HT_def)%
+          LF:Char = '\010';              %(LF_def)%
+          VT:Char = '\011';              %(VT_def)%
+          FF:Char = '\012';              %(FF_def)%
+          CR:Char = '\013';              %(CR_def)%
+          SO:Char = '\014';              %(SO_def)%
+          SI:Char = '\015';              %(SI_def)%
+          DLE:Char = '\016';             %(DLE_def)%
+          DC1:Char = '\017';             %(DC1_def)%
+          DC2:Char = '\018';             %(DC2_def)%
+          DC3:Char = '\019';             %(DC3_def)%
+          DC4:Char = '\020';             %(DC4_def)%
+          NAK:Char = '\021';             %(NAK_def)%
+          SYN:Char = '\022';             %(SYN_def)%
+          ETB:Char = '\023';             %(ETB_def)%
+          CAN:Char = '\024';             %(CAN_def)%
+          EM:Char = '\025';              %(EM_def)%
+          SUB:Char = '\026';             %(SUB_def)%
+          ESC:Char = '\027';             %(ESC_def)%
+          FS:Char = '\028';              %(FS_def)%
+          GS:Char = '\029';              %(GS_def)%
+          RS:Char = '\030';              %(RS_def)%
+          US:Char = '\031';              %(US_def)%
+          SP:Char = '\032';              %(SP_def)%
+          DEL:Char = '\127';             %(DEL_def)%
 
      %% alternative names for special charcters:
-     ops
-          NL:Char = LF;             %(NL_def)% 
-          NP:Char = FF;             %(NP_def)% 
+     ops  NL:Char = LF;                  %(NL_def)% 
+          NP:Char = FF;                  %(NP_def)% 
 
      %% character constants:
-     ops
-          '\n' : Char = NL;             %(slash_n)%
-          '\t' : Char = HT;             %(slash_t)%
-          '\v' : Char = VT;             %(slash_v)%
-          '\b' : Char = BS;             %(slash_b)%
-          '\r' : Char = CR;             %(slash_r)%
-          '\f' : Char = FF;             %(slash_f)%
+     ops  '\n' : Char = NL;              %(slash_n)%
+          '\t' : Char = HT;              %(slash_t)%
+          '\v' : Char = VT;              %(slash_v)%
+          '\b' : Char = BS;              %(slash_b)%
+          '\r' : Char = CR;              %(slash_r)%
+          '\f' : Char = FF;              %(slash_f)%
           '\a' : Char = BEL;             %(slash_a)%
           '\?' : Char = '?';             %(slash_quest)%
 end
