@@ -8,7 +8,7 @@ version 0.1
 %prec {__cup__} < {__cmps__}
 
 %( 
-	The Interval Algebra for Linear Flows of Time 
+	The RCC5 Calculus (resp. Containment Algebra) 
   
 Literature: TODO   
 )%
@@ -33,7 +33,8 @@ from HasCASL/TopologicalSpaces get
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
 	MetricSpace
-
+from HasCASL/Set get 
+	Set
 
 
 
@@ -56,19 +57,19 @@ from HasCASL/MetricSpaces get
 
 
 %(   RCC5 has 5 base relations,
-     namely, dr ("discrete"), po ("partially overlaps"), pp ("proper part"),
+     namely, dc ("disconnected"), po ("partially overlaps"), pp ("proper part"),
      ppi ("proper part inverse"), and  eq ("equals").
 )%
 
 
 
 spec BaseRelationsOfRCC5 = %mono
-     free type BaseRel ::= dr | po | pp | ppi | eq
+     free type BaseRel ::= dc | po | pp | ppi | eq
 end
 
 
 
-%(   The following spec not only contains the raw composition table of IAlin, but also
+%(   The following spec not only contains the raw composition table of RCC5, but also
      information that the 1 is the union of all base relations, and that the set of base relations is
      closed with respect to converses.
 )%
@@ -76,53 +77,46 @@ end
 
 spec CompositionTableOfRCC5 =
      sort BaseRel
-     ops dr,po,pp,ppi,eq: BaseRel
+     ops dc,po,pp,ppi,eq: BaseRel
 and 
      CompositionTable 
 then
+     . conv(dc) = dc					%(sym_dc)%
+     . conv(po) = po					%(sym_po)%
      . conv(pp) = ppi					%(conv_pp)%
      . conv(ppi) = pp					%(conv_ppi)%
-     . conv(dr) = dr					%(sym_dr)%
-     . conv(po) = po					%(sym_po)%
      . conv(eq) = eq					%(sym_eq)%
 
      . pp cmps pp  = pp					%(cmps_pppp)%	
-     . pp cmps ppi = pp cup ppi cup eq			%(cmps_ppppi)%
-     . pp cmps ec  = ec cup dc 				%(cmps_ppec)%
+     . pp cmps ppi = 1					%(cmps_ppppi)%
+     . pp cmps po  = pp cup po cup dc			%(cmps_pppo)%
      . pp cmps dc  = dc					%(cmps_ppdc)%
      . pp cmps eq  = pp					%(cmps_ppeq)%
 
-%( The following is not correct:
-     . pp cmps pp  = pp					%(cmps_pppp)%	
-     . pp cmps ppi = pp cup ppi cup eq			%(cmps_ppppi)%
-     . pp cmps ec  = ec cup dc 				%(cmps_ppec)%
-     . pp cmps dc  = dc					%(cmps_ppdc)%
-     . pp cmps eq  = pp					%(cmps_ppeq)%
-
-     . ppi cmps pp  = pp cup ppi cup eq			%(cmps_ppipp)%	
-     . ppi cmps ppi = ppi				%(cmps_ppippi)%
-     . ppi cmps ec  = ec  				%(cmps_ppiec)%
-     . ppi cmps dc  = ec cup dc				%(cmps_ppidc)%
+     . ppi cmps pp  = compl(dc)				%(cmps_ppipp)%	
+     . ppi cmps ppi = 1					%(cmps_ppippi)%
+     . ppi cmps po  = ppi cup po 			%(cmps_ppipo)%
+     . ppi cmps dc  = ppi cup po cup dc			%(cmps_ppidc)%
      . ppi cmps eq  = ppi				%(cmps_ppieq)%
 
-     . ec cmps pp  = ec					%(cmps_ecpp)%	
-     . ec cmps ppi = ec cup dc				%(cmps_ecppi)%
-     . ec cmps ec  = pp cup ppi cup eq			%(cmps_ecec)%
-     . ec cmps dc  = ppi				%(cmps_ecdc)%
-     . ec cmps eq  = ec					%(cmps_eceq)%
+     . po cmps pp  = pp cup po				%(cmps_popp)%	
+     . po cmps ppi = ppi cup po cup dc			%(cmps_poppi)%
+     . po cmps po  = 1      				%(cmps_popo)%
+     . po cmps dc  = ppi cup po cup dc			%(cmps_podc)%
+     . po cmps eq  = po					%(cmps_poeq)%
 
-     . dc cmps pp  = ec cup dc				%(cmps_dcpp)%	
+     . dc cmps pp  = pp cup po cup dc			%(cmps_dcpp)%	
      . dc cmps ppi = dc					%(cmps_dcppi)%
-     . dc cmps ec  = pp 				%(cmps_dcec)%
-     . dc cmps dc  = pp cup ppi cup eq			%(cmps_dcdc)%
+     . dc cmps po  = pp cup po cup dc			%(cmps_dcpo)%
+     . dc cmps dc  = 1					%(cmps_dcdc)%
      . dc cmps eq  = dc					%(cmps_dceq)%
 
-     . eq cmps pp  = pp					%(cmps_eqpp)%	
-     . eq cmps ppi = ppi 				%(cmps_eqppi)%
-     . eq cmps ec  = ec 				%(cmps_eqec)%
+     . eq cmps pp  = pp   				%(cmps_eqpp)%	
+     . eq cmps ppi = ppi				%(cmps_eqppi)%
+     . eq cmps po  = po					%(cmps_eqpo)%
      . eq cmps dc  = dc					%(cmps_eqdc)%
      . eq cmps eq  = eq					%(cmps_eqeq)%
-)%
+
 end
 
 
@@ -163,123 +157,50 @@ end
 
 
 
-%[
 
 %(  Part II: Semantic Level
 
-    Following we describe how models of IAlin can be constructed from 
-    Dedekind complete, dense linear flows of time without
-    endpoints. We describe two distinct methods: (1) via Allen intervals
-    and (2) via arbitrary convex subsets.
+    Following we describe how models of RCC5 can be constructed from 
+    metrical spaces. We describe only one such method, namely interpreting 
+    regions as open discs of a metrical space.
 )%
 
 
 logic HasCASL
 
 
-spec BaseRelationRegularOpenModelOfRCC5[LinFlowOfTime] = %def 
-
-     type AllenInterval = {(t,t'):Instant*Instant . t pre t'}
-     ops start,fin : AllenInterval -> Instant
-
-     forall x:AllenInterval; t,t':Instant 
-     . x = (t,t') => start(x) = t /\ fin(x) = t' 
-
+spec BaseRelationOpenDiscModelOfRCC5[MetricSpace] = 
+     Set
+then
+     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+     type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
 then 
-     Relation[sort AllenInterval] 
+     Relation[sort OpenDisc] 
 
 then %def
-     ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation 
-     type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel | 
-			biRel | miRel | oiRel | diRel | siRel | fiRel
-     forall x,y:AllenInterval
-     . (x,y) isIn rep(bRel) <=> fin(x) pre start(y)
-     . (x,y) isIn rep(mRel) <=> fin(x) = start(y)
-     . (x,y) isIn rep(oRel) <=> start(x) pre start(y) /\ start(y) pre fin(x) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(dRel) <=> start(y) pre start(x) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(sRel) <=> start(x) = start(y) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(fRel) <=> start(y) pre start(x) /\ fin(x) = fin(y)
-     . (x,y) isIn rep(eRel) <=> start(x) = start(y) /\ fin(x) = fin(y)
-     . (x,y) isIn rep(biRel) <=> fin(y) pre start(x)
-     . (x,y) isIn rep(miRel) <=> start(x) = fin(y) 
-     . (x,y) isIn rep(oiRel) <=> start(y) pre start(x) /\ start(x) pre fin(y) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(diRel) <=> start(x) pre start(y) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(siRel) <=> start(y) = start(x) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(fiRel) <=> start(x) pre start(y) /\ fin(x) = fin(y)
+     ops ppRel,ppiRel,poRel,dcRel,eqRel:Relation 
+     type BaseRel ::= ppRel | ppiRel | poRel | dcRel | eqRel 
+     forall x,y:OpenDisc
+     . (x,y) isIn rep(ppRel) <=> x subset y /\ not x = y
+     . (x,y) isIn rep(ppiRel) <=> y subset x /\ not x = y
+     . (x,y) isIn rep(poRel) <=> not x subset y /\ not y subset x /\ 
+ 				not  x intersection y = emptySet
+     . (x,y) isIn rep(dcRel) <=> x intersection y = emptySet
+     . (x,y) isIn rep(eqRel) <=> x = y
 end
 
-spec GeneratePreRegularOpenModelOfRCC5[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationRegularOpenModelOfRCC5[LinFlowOfTime]
-	fit sort Elem |-> AllenInterval]
+spec GeneratePreOpenDiscModelOfRCC5[MetricSpace] = %def
+      GenerateModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
+	fit sort Elem |-> OpenDisc]
 then %implies
-     ops  eRel: Rel;
+     ops  eqRel: Rel;
           conv: BaseRel -> BaseRel;
           conv: Rel -> Rel
 end
 
 
-spec GenerateRegularOpenModelOfRCC5[DnsLinFlowOfTimeSEnd] = %def
-     GeneratePreRegularOpenModelOfRCC5[LinFlowOfTime]
-then %implies     
-     op  __cmps__:  Rel * Rel -> Rel;
-	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
-end
-
-
-spec BaseRelationRegularClosedModelOfRCC5[LinFlowOfTime] =  
-     ExtFlowOfTimeByConvexity[LinFlowOfTime]
-and
-     ExtFlowOfTimeBySetRelations[LinFlowOfTime]
-then %def
-     type ConvexSetInterval = 
-	{X:Set(Instant) . Convex(X) /\ not X = emptySet
-		/\ (exists t,t':Instant . not t = t'/\ t isIn X /\ t' isIn X)}
-
-then %def
-     Relation[sort ConvexSetInterval] 
-
-then %def
-     ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation 
-     type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel | 
-			biRel | miRel | oiRel | diRel | siRel | fiRel
-     forall x,y:ConvexSetInterval
-     . (x,y) isIn rep(bRel) <=> exists z:ConvexSetInterval . x preE z /\ z preE y
-     . (x,y) isIn rep(mRel) <=> x preE y /\ not(exists z:ConvexSetInterval . x preE z /\ z preE y)
-     . (x,y) isIn rep(oRel) <=> exists z,z':ConvexSetInterval . z preE y /\ x preE z' 
-					/\ x union z' = x union y /\ y union z = x union y  
-     . (x,y) isIn rep(dRel) <=> exists z,z':ConvexSetInterval . z preE x /\ x pre z' 
-					/\ x union z union z' = y
-     . (x,y) isIn rep(sRel) <=> exists z:ConvexSetInterval . x preE z /\ 
-					x union z = y
-     . (x,y) isIn rep(fRel) <=> exists z:ConvexSetInterval . z preE x /\ 
-					x union z = y
-     . (x,y) isIn rep(eRel) <=> x = y
-     . (x,y) isIn rep(biRel) <=> exists z:ConvexSetInterval . y preE z /\ z preE x
-     . (x,y) isIn rep(miRel) <=> y preE x /\ not(exists z:ConvexSetInterval . y preE z /\ z preE x)
-     . (x,y) isIn rep(oiRel) <=> exists z,z':ConvexSetInterval . z preE x /\ y preE z' 
-					/\ y union z' = x union y /\ x union z = x union y  
-     . (x,y) isIn rep(diRel) <=> exists z,z':ConvexSetInterval . z preE y /\ y pre z'
-					/\ y union z union z' = z
-     . (x,y) isIn rep(siRel) <=> exists z:ConvexSetInterval . y preE z /\ 
-					y union z = x
-     . (x,y) isIn rep(fiRel) <=> exists z:ConvexSetInterval . z preE y /\ 
-					y union z = x
-end
-
-
-
-spec GeneratePreRegularClosedModelOfRCC5[LinFlowOfTime] = %def
-      GenerateModelFromBaseRelationModel[BaseRelationRegularClosedModelOfRCC5[LinFlowOfTime]
-	fit sort Elem |-> ConvexSetInterval]
-then %implies
-     ops  eRel: Rel;
-          conv: BaseRel -> BaseRel;
-          conv: Rel -> Rel
-end
-
-
-spec GenerateRegularClosedModelOfRCC5[DnsLinFlowOfTimeSEnd] = %def
-     GeneratePreRegularClosedModelOfRCC5[LinFlowOfTime]
+spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
+     GeneratePreOpenDiscModelOfRCC5[MetricSpace]
 then %implies     
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
@@ -294,64 +215,32 @@ end
 
 
 
-view BaseRelationRegularOpenModelOfRCC5_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort AllenInterval] 
+view BaseRelationOpenDiscModelOfRCC5_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort OpenDisc] 
 to 
-     BaseRelationRegularOpenModelOfRCC5[LinFlowOfTime]
+     BaseRelationOpenDiscModelOfRCC5[MetricSpace]
 end
 
 
-view DsnLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
+view MetricSpace_induces_AlgebraOfBinaryRelations :
     AlgebraOfBinaryRelations[sort Elem] 
 to 
-    GenerateRegularOpenModelOfRCC5[DnsLinFlowOfTimeSEnd]
+    GenerateOpenDiscModelOfRCC5[MetricSpace]
 =
-    sort Elem |-> AllenInterval , op id |-> eRel 
+    sort Elem |-> OpenDisc , op id |-> eqRel 
 end
 
 
 
-view DsnLinFlowOfTimeSEnd_induces_RegularOpenModelOfRCC5 :
+view MetricSpace_induces_OpenDiscModelOfRCC5 :
      { RCC5 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
 to 
-    GenerateRegularOpenModelOfRCC5[DnsLinFlowOfTimeSEnd]
+    GenerateOpenDiscModelOfRCC5[MetricSpace]
 =   
-    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
-	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
-        id |-> eRel
+    ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dc|->dcRel, eq|->eqRel, 
+        id |-> eqRel
 end
 
 
 
-
-view BaseRelationRegularClosedModelOfRCC5_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort ConvexSetInterval] 
-to 
-     BaseRelationRegularClosedModelOfRCC5[LinFlowOfTime]
-end
-
-
-view DsnLinFlowOfTimeSEnd_induces_ConvexSetAlgebraOfBinaryRelations :
-    AlgebraOfBinaryRelations[sort Elem] 
-to 
-    GenerateRegularClosedModelOfRCC5[DnsLinFlowOfTimeSEnd]
-=
-    sort Elem |-> ConvexSetInterval , op id |-> eRel 
-end
-
-
-
-view DsnLinFlowOfTimeSEnd_induces_RegularClosedModelOfRCC5 :
-     { RCC5 hide ops __+__,__-__,{},{__}    
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern,  weil wir dann zu viel Theorie verlieren
-to 
-    GenerateRegularClosedModelOfRCC5[DnsLinFlowOfTimeSEnd]
-=   
-    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
-	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
-        id|-> eRel
-end
-
-
-]%
