@@ -7,6 +7,56 @@ library Graphs
 
 logic HasCASL
 
+spec Bool = 
+  sort Bool
+  ops False, True : Bool;
+end
+
+spec Nat = 
+  sort Nat
+  ops __+__,__*__,__div__ : Nat*Nat->Nat;
+      0,1,2 : Nat
+  pred __<__ : Nat*Nat;
+end
+
+spec List =
+  free type List[Elem] ::= nil | cons(Elem; List[Elem])
+end
+
+logic HasCASL
+
+%{ Typed sets are represented by predicates over the type.
+   Set membership is just holding of the predicate: x isIn s <=> s x
+   Note that for disjoint unions and products, the type changes.  }%
+
+spec Set = Bool then
+  var S,T : Type
+  type Set S := S ->? Unit;
+  ops emptySet : Set S;
+      {__} : S -> Set S;
+      __isIn__ : S * Set S ->? Unit;
+      __subset__ :Pred( Set(S) * Set(S) );
+      __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
+      __disjoint__ : Pred( Set(S) * Set(S) );
+      __*__ : Set S -> Set T -> Set (S*T);
+      __disjointUnion__ :  Set S -> Set S -> Set (S*Bool);
+      injl,injr : S -> S*Bool;
+  forall x,x':S; y:T; s,s':Set S; t:Set(T) 
+  . not (x isIn emptySet)
+  . x isIn {x'} <=> x=x'
+  . x isIn s <=> s x
+  . s subset s' <=> forall x:S . (x isIn s) => (x isIn s')
+  . (x isIn (s union s')) <=> ((x isIn s) \/ (x isIn s'))
+  . (x isIn (s intersection s')) <=> ((x isIn s) /\ (x isIn s'))
+  . x isIn s \\ s' <=> x isIn s /\ not (x isIn s')
+  . (s disjoint s') <=> ((s intersection s') = emptySet)
+  %% . ((x,y) isIn (s * t)) <=> ((x isIn s) /\ (y isIn t))
+  . (injl x) = (x,false)
+  . (injr x) = (x,true)
+  %%. (s disjointUnion s') = ((s * {false}) union (s' * {true}))
+end
+
+
 spec DirectedGraph =
   Set
 then
@@ -152,6 +202,7 @@ end
    operations on sets, acting component wise.
    Note that we have to fix N and E here, since we need set representations for them
    in order to get the needed constructions on sets. }%
+%[
 spec GraphCoproducts [SetRepresentation with S |-> N] [SetRepresentation with S |-> E] =
   AbstractSetConstructions[SetRepresentation with S |-> N]
 and
@@ -222,3 +273,4 @@ then
      sourceMap g1 coproduct sourceMap g2,
      targetMap g1 coproduct targetMap g2)
 end
+]%

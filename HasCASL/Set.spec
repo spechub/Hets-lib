@@ -10,14 +10,12 @@ version 0.9
 
 %prec {__+__} < {__*__,__div__}
 
-%%from Basic/StructuredDatatypes get List
-%%from Basic/Numbers get Nat
 
-logic HasCASL
+logic CASL
 
 spec Bool = 
   sort Bool
-  ops false, true : Bool;
+  ops False, True : Bool;
 end
 
 spec Nat = 
@@ -27,17 +25,18 @@ spec Nat =
   pred __<__ : Nat*Nat;
 end
 
-spec List = {}
+spec List =
+  free type List[Elem] ::= nil | cons(Elem; List[Elem])
+end
 
-spec InternalLogic = {}
+logic HasCASL
 
-spec Extensionality = {}
 
 %{ Typed sets are represented by predicates over the type.
    Set membership is just holding of the predicate: x isIn s <=> s x
    Note that for disjoint unions and products, the type changes.  }%
 
-spec Set = Bool and InternalLogic and Extensionality then
+spec Set = Bool then
   var S,T : Type
   type Set S := S ->? Unit;
   ops emptySet : Set S;
