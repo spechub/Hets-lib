@@ -2,8 +2,7 @@ library Basic/Algebra_I
 version 0.5 
 
 %prec {__*__} < {__^ __}
-%prec {__ + __, __ - __, -__} < {__ / __}
-%prec {-__, __ - __} < {__ * __ }
+%prec {__ + __, __ - __, -__} < {__ / __, __ * __}
 
 
 from Basic/RelationsAndOrders version 0.5 get TotalOrder, ExtTotalOrder,
@@ -327,7 +326,6 @@ spec
 and
      Monoid with ops e, __*__
 then
-     %prec { __ + __ } < { __ * __ }
      forall
           x,y,z:Elem
      .
