@@ -6,28 +6,27 @@ logic HasCASL
 
 spec TopologicalSpace_Ngh =
   Set then
-  var S : Type
-  type TopologicalSpace S = 
-       { Ngh: S -> Set (Set S) . 
-            (forall x:S . allSet isIn Ngh(x))
-         /\ (forall x:S . forall U,V:Set S . 
-               U subset V /\ U isIn Ngh(x) => V isIn Ngh(x))
-         /\ (forall x:S . forall U:Set S . U isIn Ngh(x) => x isIn U)
-         /\ (forall x:S . forall U,V:Set S . 
-               U isIn Ngh(x) /\ V isIn Ngh(x) => U intersection V isIn Ngh(x))
-         /\ (forall x:S . forall U:Set S . U isIn Ngh(x) =>
+  sort S
+  op Ngh: S -> Set (Set S) 
+  forall x:S; U,V:Set S
+  . allSet isIn Ngh(x)
+  . U subset V /\ U isIn Ngh(x) => V isIn Ngh(x)
+  . U isIn Ngh(x) => x isIn U
+  . U isIn Ngh(x) /\ V isIn Ngh(x) => U intersection V isIn Ngh(x)
+  . U isIn Ngh(x) =>
                exists V:Set S . V isIn Ngh(x) 
-               /\ forall y:S . y isIn V => U isIN Ngh(y))
-       }
+               /\ forall y:S . y isIn V => U isIn Ngh(y)
 then %def
-  op int(X:Set S):Set S = \ x:S . X isIn Ngh(x)
-  op cls(X:Set S):Set S = 
-           \ x:S . forall Y:Set S . Y isIn Ngh(x) => not Y disjoint X 
+  ops int(X:Set S):Set S = \ x:S . X isIn Ngh(x);
+      cls(X:Set S):Set S = 
+           \ x:S . forall Y:Set S . Y isIn Ngh(x) => not Y disjoint X;
+      tau : Set(Set S) = \ X:Set S . X = int(X)
 end
 
 
 spec TopologicalSpace_Kuratowski =
   Set then
+  sort S
   op cls : Set S -> Set S
   forall X,Y:Set S
   . cls(emptySet) = emptySet
@@ -35,12 +34,35 @@ spec TopologicalSpace_Kuratowski =
   . cls(cls(X)) = cls(X)
   . cls(X union Y) = cls(X) union cls(Y)
 then %def
-  op int(X:Set S):Set S = allSet \\ cls(allSet \\ X)
+  ops int(X:Set S):Set S = allSet \\ cls(allSet \\ X);
+      Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X);
+      tau : Set(Set S) = \ X:Set S . X = int(X)
 then %implies
   forall X,Y:Set S
   . cls(X intersection Y) subset cls(X) intersection cls(Y)
   . X subset Y => cls(X) subset cls(Y)
 end
 
+spec TopologicalSpace_OpenSet =
+  Set then
+  sort S
+  op tau : Set(Set S)
+  forall X,Y:Set S; XX:Set(Set S)
+  . emptySet isIn tau
+  . allSet isIn tau
+  . X isIn tau /\ Y isIn tau => X intersection Y isIn tau
+  . XX subset tau => bigunion XX isIn tau
+then %def
+  ops int(X:Set S):Set S = bigunion (\ Y:Set S . Y isIn tau /\ Y subset X);
+      cls(X:Set S):Set S = allSet \\ int(allSet \\ X);
+      Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X) 
+end
 
-view TopologicalSpace_Kuratowski to TopologicalSpace
+view KN : TopologicalSpace_Kuratowski to TopologicalSpace_Ngh
+end
+
+view NO : TopologicalSpace_Ngh to TopologicalSpace_OpenSet
+end
+
+view OK : TopologicalSpace_OpenSet to TopologicalSpace_Kuratowski
+end
