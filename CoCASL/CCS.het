@@ -1,0 +1,87 @@
+library CoCASL/CCS
+
+logic CASL
+
+spec FinalNonDeterministicAutomaton[Action] =
+  cofree {
+    sort State 
+    then free {
+       type Set ::= {} | {__}(State) | __union__ (Set ; Set ) 
+       op __union__ : Set * Set -> Set , assoc, comm, idem, unit {} 
+     } 
+    then op next : Act * State -> Set }
+then
+  pred __eps__ : State * Set
+  forall a,b:Act; s1,s2:Set
+  . not a eps {}
+  . a eps {b} <=> a=b
+  . a eps (s1 union s2) <=> a eps s1 \/ a eps s2
+end
+
+spec Zero =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op zero : State 
+  vars a : Act
+  . next (a, zero) = {} 
+end
+
+spec ActionPrefixing =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op __-->__ : Act * State -> State
+  vars x , y : Act
+  . x = y => next (x , y -->s) = {s};
+  . not x = y => next (x , y -->s) = {} 
+end
+
+spec PairSet[sort A][sort B] =
+  Pair[sort A][sort B] and 
+  Set[sort A] and Set[sort B] and Set[sort Pair[A,B]]
+then 
+  free { ops __*__ : A * Set [B] -> Set [Pair[A,B]];
+             __*__ : Set [A] * Set [B] -> Set [Pair[A,B]];
+             __*__ : Set [A] * B -> Set [Pair[A,B]]; 
+             power[f] : Set [A] -> Set [B] 
+         vars a : A; b : B ; X : Set [A]; Y : Set [B]
+         . a * {} = {};
+         . a * {b} union Y = {(a, b)} union a * Y 
+         . {} * Y = {};
+         . ({a} union X ) * Y = (a * Y ) union (X * Y );
+       } 
+end
+
+spec Summation =
+  Zero and PairSet[sorts State][sort State] 
+then
+  ops __+__ : State * State -> State 
+      __++__ : 
+then 
+  forall a : Act; s1 , s2 ; State 
+  . power [f]({}) = {};
+  . power [f]({a} union X ) = {f (a)} union power [f](X );
+         . X * b = X * {b} 
+  . next (a, s1 + s2 ) = power[plus]((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
+end
+
+spec FinAct = Action
+
+spec Composition = FinalNonDeterministicAutomaton[FinAct] 
+then
+  ops __|__ : State * State -> State;
+      h : State * State -> Set [State * State]
+  vars a : FinACt , s1 , s2 : State
+  . h(s1 , s2 ) = next (a1 , s1 ) * next (bar (a1 ), s2 ) union . . . union next (an , s1 ) * next (bar (an ), s2 )
+  . next (a, s1 |s2 ) = next (a, s1 ) * s2 union s1 * next (a, s2 )
+  . next (t , s1 |s2 ) = next (t , s1 ) * s2 union s1 * next (t , s2 ) union h(s1 , s2 ) 
+end
+
+spec Hiding = 
+  FinalNonDeterministicAutomaton[Action]
+and Set[Action] 
+then
+  op __:__ : State * Set [Act] -> State 
+  vars a : Act , s : State, L : Set [Act]
+  . a eps L => next (a, s : L) = {};
+  . not (a eps L) => next (a, s : L) = next (a, s) 
+end
