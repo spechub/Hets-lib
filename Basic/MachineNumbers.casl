@@ -1,8 +1,7 @@
 library Basic/MachineNumbers
-version 0.95
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% Corresponding authir: T. Mossakowski, till@tzi.de
-%% date: 23.08.02
+version 0.9
+%authors: T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
+%date: 25 June 2003
 
 %{
 This library contains specifications of those subtypes
@@ -21,23 +20,30 @@ used in many programming languages.
 Operations are total here - the successor of the
 maximal positive number fitting in the word length is
 the minimal negative number.
+The Ext versions of the specifications add min and max
+operations (inherited from TotalOrder).
 }%
 
-from Basic/RelationsAndOrders version 0.95 get SigOrder
-from Basic/Numbers version 0.95 get Nat, Int
+
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
+from Basic/Numbers get Nat, Int
 
 spec CARDINAL [op Wordlength: Nat] given Nat = %mono
   Nat
 then %mono
+  %% Define CARDINAL to be isomorphic to the subset 
+  %% 0.. 2^Wordlength-1 of Nat
+  %% using a partial constructor natToCard
   type CARDINAL ::= natToCard (cardToNat : Nat)?
   forall x : Nat; c:CARDINAL
-  . def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1  %(natToCard_dom)%
-  . natToCard (cardToNat(c)) = c                     %(natToCard_def)%
+  . def natToCard(x) <=> x <= (2 ^ Wordlength) -? 1           %(natToCard_dom)%
+  . natToCard (cardToNat(c)) = c                              %(natToCard_def)%
 then %def
-  { SigOrder[sort CARDINAL]
-    then
-    forall x,y: CARDINAL . x <= y <=> cardToNat(x) <= cardToNat(y)   %(leq_CARDINAL)%
-  }
+  %% The predicates and operations are just inherited from Nat, 
+  %% but operations may become partial, since natToCard is partial
+  pred __<=__ : CARDINAL * CARDINAL
+  forall x,y: CARDINAL 
+  . x <= y <=> cardToNat(x) <= cardToNat(y)                    %(leq_CARDINAL)%
 then %def
   ops maxCardinal: Nat;
       0,1,
@@ -46,34 +52,39 @@ then %def
       __ - __,
       __ * __,
       __ div __,
-      __ mod __:   CARDINAL * CARDINAL ->? CARDINAL;
-     
-  . maxCardinal= (2 ^ Wordlength) -? 1         %(maxCardinal_Nat)%
-  . maxCardinal= natToCard(maxCardinal)        %(maxCardinal_CARDINAL)%   
+      __ mod __ : CARDINAL * CARDINAL ->? CARDINAL;
+
+  . maxCardinal = (2 ^ Wordlength) -? 1                  %(maxCardinal_Nat)%
+  . maxCardinal = natToCard(maxCardinal)            %(maxCardinal_CARDINAL)%   
   forall x,y: CARDINAL
-  . natToCard(0) = 0                                     %(def_0_CARDINAL)%
-  . natToCard(1) = 1                                     %(def_1_CARDINAL)%
-  . x + y = natToCard(cardToNat(x) + cardToNat(y))       %(add_CARDINAL)%
-  . x-y = natToCard(cardToNat(x) -? cardToNat(y))        %(sub_CARDINAL)%
-  . x*y = natToCard(cardToNat(x) * cardToNat(y))         %(mult_CARDINAL)%
-  . x div y = natToCard(cardToNat(x) div cardToNat(y))   %(div_CARDINAL)%
-  . x mod y = natToCard(cardToNat(x) mod cardToNat(y))   %(mod_CARDINAL)%
+  . natToCard(0) = 0                                      %(def_0_CARDINAL)%
+  . natToCard(1) = 1                                      %(def_1_CARDINAL)%
+  . x + y = natToCard(cardToNat(x) + cardToNat(y))          %(add_CARDINAL)%
+  . x-y = natToCard(cardToNat(x) -? cardToNat(y))           %(sub_CARDINAL)%
+  . x*y = natToCard(cardToNat(x) * cardToNat(y))           %(mult_CARDINAL)%
+  . x div y = natToCard(cardToNat(x) div cardToNat(y))      %(div_CARDINAL)%
+  . x mod y = natToCard(cardToNat(x) mod cardToNat(y))      %(mod_CARDINAL)%
 then %implies
   ops __ + __: CARDINAL * CARDINAL ->? CARDINAL,
                assoc, comm, unit 0;
       __ * __: CARDINAL * CARDINAL ->? CARDINAL,
                assoc, comm, unit 1;
   forall x,y: CARDINAL
-  . def x+y <=> cardToNat(x) + cardToNat(y) <= maxCardinal   %(add_CARDINAL_dom)%
-  . def x-y <=> x >= y                                       %(sub_CARDINAL_dom)%
-  . def x*y <=> cardToNat(x) * cardToNat(y) <= maxCardinal   %(mult_CARDINAL_dom)%
-  . def x div y <=> not y=0                                  %(div_CARDINAL_dom)%
-  . def x mod y <=> not y=0                                  %(mod_CARDINAL_dom)%
+  . def x+y <=> cardToNat(x) + cardToNat(y) <= maxCardinal   
+                                                           %(add_CARDINAL_dom)%
+  . def x-y <=> y <= x                                     %(sub_CARDINAL_dom)%
+  . def x*y <=> cardToNat(x) * cardToNat(y) <= maxCardinal 
+                                                          %(mult_CARDINAL_dom)%
+  . def x div y <=> not y=0                                %(div_CARDINAL_dom)%
+  . def x mod y <=> not y=0                                %(mod_CARDINAL_dom)%
 end
 
 spec INTEGER  [op Wordlength: Nat] given Nat = %mono
   Int
 then %mono
+  %% Define INTEGER to be isomorphic to the subset 
+  %% -2^(Wordlength-1)..2^(Wordlength-1)-1 of Int
+  %% using a partial constructor intToInteger
   type INTEGER ::= intToInteger (integerToInt: Int)?
   forall x:Int; i:INTEGER
   . def intToInteger(x) <=>
@@ -81,10 +92,11 @@ then %mono
         x <= (2 ^ (Wordlength-?1)) -1             %(intToInteger_dom)%
   . intToInteger (integerToInt(i)) = i            %(intToInteger_def)%
 then %def
-  { SigOrder[sort INTEGER]
-    then
-    forall x,y:INTEGER . x <= y <=> integerToInt(x) <= integerToInt(y)    %(leq_INTEGER)%
-  }
+  %% The predicates and operations are just inherited from Int, 
+  %% but operations may become partial, since intToInteger is partial
+  pred __<=__ : INTEGER * INTEGER
+  forall x,y:INTEGER 
+  . x <= y <=> integerToInt(x) <= integerToInt(y)      %(leq_INTEGER)%
 then %def
   ops maxInteger,
       minInteger: Int;
@@ -102,62 +114,73 @@ then %def
       __ quot __,
       __ rem__:   INTEGER * INTEGER ->? INTEGER
 
-  . maxInteger= (2 ^ (Wordlength-?1))-1          %(maxInteger_Int)%
-  . minInteger= -(2 ^ (Wordlength-?1))           %(minInteger_Int)%
-  . maxInteger=intToInteger(maxInteger)          %(maxInteger_INTEGER)%
-  . minInteger=intToInteger(minInteger)          %(minInteger_INTEGER)%
+  . maxInteger= (2 ^ (Wordlength-?1))-1                      %(maxInteger_Int)%
+  . minInteger= -(2 ^ (Wordlength-?1))                       %(minInteger_Int)%
+  . maxInteger=intToInteger(maxInteger)                  %(maxInteger_INTEGER)%
+  . minInteger=intToInteger(minInteger)                  %(minInteger_INTEGER)%
   forall x,y: INTEGER
-  . intToInteger(0) = 0                                            %(def_0_INTEGER)%
-  . intToInteger(1) = 1                                            %(def_1_INTEGER)%
-  . - x = intToInteger( - integerToInt(x) )                        %(minus_INTEGER)%
-  . abs(x) = intToInteger( abs( integerToInt(x)) )                 %(abs_INTEGER)%
-  . x + y = intToInteger( integerToInt(x) + integerToInt(y))       %(add_INTEGER)%
-  . x - y = intToInteger( integerToInt(x) - integerToInt(y))       %(sub_INTEGER)%
-  . x * y = intToInteger( integerToInt(x) * integerToInt(y))       %(mult_INTEGER)%
-  . x / y = intToInteger( integerToInt(x) /? integerToInt(y))      %(divide_INTEGER)%
-  . x div y = intToInteger (integerToInt(x) div integerToInt(y))   %(div_INTEGER)%
-  . x mod y = intToInteger( integerToInt(x) mod integerToInt(y))   %(mod_INTEGER)%
-  . x quot y = intToInteger( integerToInt(x) quot integerToInt(y)) %(quot_INTEGER)%
-  . x rem y = intToInteger( integerToInt(x) rem integerToInt(y))   %(rem_INTEGER)%
+  . intToInteger(0) = 0                                       %(def_0_INTEGER)%
+  . intToInteger(1) = 1                                       %(def_1_INTEGER)%
+  . - x = intToInteger( - integerToInt(x) )                   %(minus_INTEGER)%
+  . abs(x) = intToInteger( abs( integerToInt(x)) )              %(abs_INTEGER)%
+  . x + y = intToInteger(integerToInt(x) + integerToInt(y))     %(add_INTEGER)%
+  . x - y = intToInteger(integerToInt(x) - integerToInt(y))     %(sub_INTEGER)%
+  . x * y = intToInteger(integerToInt(x) * integerToInt(y))    %(mult_INTEGER)%
+  . x / y = intToInteger(integerToInt(x) /? integerToInt(y)) %(divide_INTEGER)%
+  . x div y = intToInteger(integerToInt(x) div integerToInt(y)) %(div_INTEGER)%
+  . x mod y = intToInteger(integerToInt(x) mod integerToInt(y)) %(mod_INTEGER)%
+  . x quot y = intToInteger(integerToInt(x) quot integerToInt(y)) 
+                                                               %(quot_INTEGER)%
+  . x rem y = intToInteger(integerToInt(x) rem integerToInt(y)) %(rem_INTEGER)%
 then %implies
   ops __ + __: INTEGER * INTEGER ->? INTEGER,
                assoc, comm, unit 0;
       __ * __: INTEGER * INTEGER ->? INTEGER,
                assoc, comm, unit 1;
   forall x,y:INTEGER
-  . def - x <=> integerToInt(x) >= minInteger + 1                       %(minus_INTEGER_dom)%
-  . def abs(x) <=> integerToInt(x) >= minInteger + 1                    %(abs_INTEGER_dom)%
+  . def - x <=> minInteger + 1 <= integerToInt(x)         %(minus_INTEGER_dom)%
+  . def abs(x) <=> minInteger + 1 <= integerToInt(x)        %(abs_INTEGER_dom)%
   . def x + y <=> minInteger <= integerToInt(x) + integerToInt(y) /\
-                      integerToInt(x) + integerToInt(y) <= maxInteger   %(add_INTEGER_dom)%
+                      integerToInt(x) + integerToInt(y) <= maxInteger   
+                                                            %(add_INTEGER_dom)%
   . def x - y <=> minInteger <= integerToInt(x) - integerToInt(y) /\
-                      integerToInt(x) - integerToInt(y) <= maxInteger   %(sub_INTEGER_dom)%
+                      integerToInt(x) - integerToInt(y) <= maxInteger   
+                                                            %(sub_INTEGER_dom)%
   . def x * y <=> minInteger <= integerToInt(x) * integerToInt(y) /\
-                      integerToInt(x) * integerToInt(y) <= maxInteger   %(mult_INTEGER_dom)%
-  . def x / y <=> def intToInteger(integerToInt(x)/?integerToInt(y))    %(divide_INTEGER_dom)%
-  . def x div y <=> not y=0                                             %(div_INTEGER_dom)%
-  . def x mod y <=> not y=0                                             %(mod_INTEGER_dom)%
-  . def x quot y <=> not y=0                                            %(quot_INTEGER_dom)%
-  . def x rem y <=> not y=0                                             %(rem_INTEGER_dom)%
+                      integerToInt(x) * integerToInt(y) <= maxInteger 
+                                                           %(mult_INTEGER_dom)%
+  . def x / y <=> def intToInteger(integerToInt(x)/?integerToInt(y))   
+                                                         %(divide_INTEGER_dom)%
+  . def x div y <=> not y=0                                 %(div_INTEGER_dom)%
+  . def x mod y <=> not y=0                                 %(mod_INTEGER_dom)%
+  . def x quot y <=> not y=0                               %(quot_INTEGER_dom)%
+  . def x rem y <=> not y=0                                 %(rem_INTEGER_dom)%
 end
 
 spec TwoComplement  [op Wordlength: Nat] given Nat = %mono
   Int
 then %mono
+  %% Define TwoComplement to be isomorphic to the subset 
+  %% -2^(Wordlength-1)..2^(Wordlength-1)-1 of Int
+  %% using a total constructor intToTC
+  %% The constructor can be total because integers are
+  %% taken modulo 2^Wordlength
   generated type TwoComplement ::= intToTC (Int)
   ops maxInteger,
       minInteger: Int;
       TCtoInt : TwoComplement -> Int
-  . maxInteger= (2 ^ (Wordlength-?1))-1          %(maxInteger_Int)%
-  . minInteger= -(2 ^ (Wordlength-?1))           %(minInteger_Int)%
+  . maxInteger= (2 ^ (Wordlength-?1))-1            %(maxInteger_Int)%
+  . minInteger= -(2 ^ (Wordlength-?1))             %(minInteger_Int)%
   forall x,y:Int; i:TwoComplement
   . intToTC(x) = intToTC(x+ 2^Wordlength)               %(cycle_max)%
   . intToTC(x) = intToTC(y) => x-y mod 2^Wordlength = 0 %(cycle_min)%
   . TCtoInt(intToTC(x)) = x if minInteger<=x /\ x<=maxInteger
 then %def
-  { SigOrder[sort TwoComplement]
-    then
-    forall x,y:TwoComplement . x <= y <=> TCtoInt(x) <= TCtoInt(y)    %(leq_TwoComplement)%
-  }
+  %% The predicates and operations are just inherited from Int.
+  %% Operations remain total, since intToTC is total
+  pred __<=__ : TwoComplement * TwoComplement
+  forall x,y:TwoComplement 
+  . x <= y <=> TCtoInt(x) <= TCtoInt(y)         %(leq_TwoComplement)%
 then %def
   ops 0,1,
       maxInteger,
@@ -173,20 +196,47 @@ then %def
       __ quot __,
       __ rem__:   TwoComplement * TwoComplement -> TwoComplement
 
-  . maxInteger=intToTC(maxInteger)          %(maxInteger_TwoComplement)%
-  . minInteger=intToTC(minInteger)          %(minInteger_TwoComplement)%
+  . maxInteger=intToTC(maxInteger)              %(maxInteger_TwoComplement)%
+  . minInteger=intToTC(minInteger)              %(minInteger_TwoComplement)%
   forall x,y: TwoComplement
-  . intToTC(0) = 0                                            %(def_0_TwoComplement)%
-  . intToTC(1) = 1                                            %(def_1_TwoComplement)%
-  . - x = intToTC( - TCtoInt(x) )                        %(minus_TwoComplement)%
-  . abs(x) = intToTC( abs( TCtoInt(x)) )                 %(abs_TwoComplement)%
-  . x + y = intToTC( TCtoInt(x) + TCtoInt(y))       %(add_TwoComplement)%
-  . x - y = intToTC( TCtoInt(x) - TCtoInt(y))       %(sub_TwoComplement)%
-  . x * y = intToTC( TCtoInt(x) * TCtoInt(y))       %(mult_TwoComplement)%
+  . intToTC(0) = 0                                   %(def_0_TwoComplement)%
+  . intToTC(1) = 1                                   %(def_1_TwoComplement)%
+  . - x = intToTC( - TCtoInt(x) )                    %(minus_TwoComplement)%
+  . abs(x) = intToTC( abs( TCtoInt(x)) )               %(abs_TwoComplement)%
+  . x + y = intToTC( TCtoInt(x) + TCtoInt(y))          %(add_TwoComplement)%
+  . x - y = intToTC( TCtoInt(x) - TCtoInt(y))          %(sub_TwoComplement)%
+  . x * y = intToTC( TCtoInt(x) * TCtoInt(y))         %(mult_TwoComplement)%
   . x / y = intToTC( TCtoInt(x) /? TCtoInt(y))      %(divide_TwoComplement)%
-  . x div y = intToTC (TCtoInt(x) div TCtoInt(y))   %(div_TwoComplement)%
-  . x mod y = intToTC( TCtoInt(x) mod TCtoInt(y))   %(mod_TwoComplement)%
-  . x quot y = intToTC( TCtoInt(x) quot TCtoInt(y)) %(quot_TwoComplement)%
-  . x rem y = intToTC( TCtoInt(x) rem TCtoInt(y))   %(rem_TwoComplement)%
+  . x div y = intToTC (TCtoInt(x) div TCtoInt(y))      %(div_TwoComplement)%
+  . x mod y = intToTC( TCtoInt(x) mod TCtoInt(y))      %(mod_TwoComplement)%
+  . x quot y = intToTC( TCtoInt(x) quot TCtoInt(y))   %(quot_TwoComplement)%
+  . x rem y = intToTC( TCtoInt(x) rem TCtoInt(y))      %(rem_TwoComplement)%
+end
+
+view TotalOrder_in_CARDINAL  [op Wordlength: Nat] given Nat : 
+       TotalOrder to CARDINAL [op Wordlength: Nat] =
+  sort Elem |-> CARDINAL
+end 
+
+view TotalOrder_in_INTEGER  [op Wordlength: Nat] given Nat :
+       TotalOrder to INTEGER [op Wordlength: Nat] =
+  sort Elem |-> INTEGER
+end 
+
+view TotalOrder_in_TwoComplement  [op Wordlength: Nat] given Nat : 
+       TotalOrder to TwoComplement [op Wordlength: Nat] =
+  sort Elem |-> TwoComplement
+end 
+
+spec ExtCARDINAL [op Wordlength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_CARDINAL[op Wordlength: Nat]]
+end
+
+spec ExtINTEGER [op Wordlength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_INTEGER[op Wordlength: Nat]]
+end
+
+spec ExtTwoComplement [op Wordlength: Nat] given Nat =
+  ExtTotalOrder[view TotalOrder_in_TwoComplement[op Wordlength: Nat]]
 end
 

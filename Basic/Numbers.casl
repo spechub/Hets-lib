@@ -1,11 +1,15 @@
 library Basic/Numbers
-version 0.91
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% date: 21.8.02
-%% corresponding author: M.Roggenbach (roba@tzi.de)
+version 0.9
+%authors M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%date 3 June 2003
 
-%display __<=__ %LATEX \leq
-%display __>=__ %LATEX \geq
+%{ This library provides specifications of naturals, integers, and
+rationals. Concerning the rationals, the specification Rat includes
+the datatype proper, while the specification DecimalFraction adds the
+notions needed to represent rationals as decimal fractions. }%
+
+%display __<=__ %LATEX __\leq__
+%display __>=__ %LATEX __\geq__
 
 %prec( 
   { __ -? __ , __ - __, __ + __ } < 
@@ -37,9 +41,10 @@ spec Nat = %mono
 
   ops   __! :                       Nat -> Nat;
         __ + __, __ * __, __ ^ __,
-        min, max:                   Nat * Nat ->  Nat;
+        min, max, __ -!__ :         Nat * Nat ->  Nat;
         __ -?__, __ /? __,
-        __ div __, __ mod __ :      Nat * Nat ->? Nat;
+        __ div __, __ mod __, 
+        gcd:                        Nat * Nat ->? Nat;
 
   %% Operations to represent natural numbers with digits:
 
@@ -71,12 +76,12 @@ spec Nat = %mono
   %% axioms concerning predicates
 
      . 0 <= n                           %(leq_def1_Nat)%
-     . not (suc(n) <= 0)                %(leq_def2_Nat)%
+     . not suc(n) <= 0                  %(leq_def2_Nat)%
      . suc(m) <= suc(n) <=> m <= n      %(leq_def3_Nat)%
 
      . m >= n <=> n <= m                %(geq_def_Nat)%
-     . m < n  <=> (m <= n /\ not (m=n)) %(less_def_Nat)%
-     . m > n  <=> m < n                 %(greater_def_Nat)%
+     . m < n  <=> (m <= n /\ not m=n)   %(less_def_Nat)%
+     . m > n  <=> n < m                 %(greater_def_Nat)%
    
      . even(0)                          %(even_0_Nat)%
      . even(suc(m)) <=> odd(m)          %(even_suc_Nat)%
@@ -99,30 +104,45 @@ spec Nat = %mono
      . min(m,n) = m when m <= n else n  %(min_def_Nat)%
      . max(m,n) = n when m <= n else m  %(max_def_Nat)%
 
+     . n -! m = 0      if m >  n        %(subTotal_def1_Nat)%
+     . n -! m = n -? m if m <= n        %(subTotal_def2_Nat)%
+
      . def(m-?n) <=> m >= n             %(sub_dom_Nat)% %implied 
      . m -? n = r <=> m = r + n         %(sub_def_Nat)%
 
      . def(m /? n) <=> 
-       not (n=0) /\ m mod n = 0             %(divide_dom_Nat)% %implied 
+       not n=0 /\ m mod n = 0               %(divide_dom_Nat)% %implied
      . not def(m /? 0)                      %(divide_0_Nat)%
      . ( m /? n = r <=> m = r * n ) if n>0  %(divide_Pos_Nat)%
 
-     . def ( m div n ) <=> not (n=0)           %(div_dom_Nat)% %implied 
+     . def ( m div n ) <=> not n=0             %(div_dom_Nat)% %implied 
      . m div n = r <=> 
        (exists s: Nat . m = n*r + s /\ s < n)  %(div_Nat)%
 
-     . def ( m mod n ) <=> not (n=0)           %(mod_dom_Nat)% %implied 
+     . def ( m mod n ) <=> not n=0             %(mod_dom_Nat)% %implied 
      . m mod n = s <=> 
        (exists r: Nat . m = n*r + s /\ s < n)  %(mod_Nat)%
+
+
+     . def ( gcd(n,m) ) <=> not n=0 /\ not m=0  
+                                               %(gcd_dom_Nat)% %implied 
+     . gcd(n,m) = r <=>
+          (n mod r = 0 /\ m mod r = 0) 
+       /\ (forall k:Nat . (n mod k = 0 /\ m mod k = 0) => k mod r = 0)
+                                               %(gcd_def_Nat)%
+
+      . gcd(n,m) = gcd(m,n)                    %(gcd_sym_Nat)% %implied
+
+      . def (gcd (n,m) ) => gcd(n,m) >= 1      %(gcd_result_Nat)% %implied 
 
   %% important laws
 
      . (r + s) * t = (r * t) + (s * t)  %(distr1_Nat)% %implied 
-     . t * (r + s) = (t * r) + (t * s)  %(distr2_Nat)% %implied 
+     . t * (r + s) = (t * r) + (t * s)  %(distr2_Nat)% %implied
 
 then %mono
      sort Pos = { p: Nat . p > 0 }
-     op    1: Pos = suc(0);             %(1_as_Pos_def)%
+     ops   1: Pos = suc(0);             %(1_as_Pos_def)%
            __*__: Pos * Pos -> Pos;
            __+__: Pos * Nat -> Pos;
            __+__: Nat * Pos -> Pos;
@@ -149,6 +169,9 @@ then %mono
 
      sort  Nat < Int	
      forall a: Nat . a = a - 0             %(Nat2Int_embedding)%
+
+     %%  a system of representatives for sort Int is
+     %%  a - 0 and 0 - p, where a: Nat and p: Pos
 
 then %def
 
@@ -180,11 +203,12 @@ then %def
 
      . m <= n <=> n - m in Nat                 %(leq_def_Int)%
      . m >= n <=> n <= m  	               %(geq_def_Int)%
-     . m < n <=> (m <= n /\ not (m=n))         %(less_def_Int)%
-     . m > n <=> m < n   	               %(greater_def_Int)%
+     . m < n <=> (m <= n /\ not m=n)           %(less_def_Int)%
+     . m > n <=> n < m   	               %(greater_def_Int)%
 
      . even(m) <=> even(abs(m))                %(even_def_Int)%
-     . odd(m)  <=> not(even(m))                %(odd_def_Int)%
+     . odd(m)  <=> not even(m)                 %(odd_def_Int)%
+     . odd(m)  <=> odd(abs(m))                 %(odd_alt_Int)%
 
   %% axioms concerning operations
 
@@ -208,17 +232,18 @@ then %def
      . m ^ a = sign(m)^a * abs(m)^a  
        if not m = -1                           %(power_others_Int)%
 
-     . m /? n = r <=> not n = 0 /\ n * r = n   %(divide_dom1_Int)% %implied 
+     . def (m /? n) <=> m mod n = 0            %(divide_dom2_Int)% %implied
+     . m /? n = r <=> not n = 0 /\ n * r = m   %(divide_alt_Int)% %implied 
      . m /? n = 
        sign(m) * sign(n) * (abs(m) /? abs(n))  %(divide_Int)%
 
-     . def ( m div n ) <=> not (n=0)           %(div_dom_Int)% %implied
+     . def ( m div n ) <=> not n=0             %(div_dom_Int)% %implied 
      . m div n = r <=> 
-       (exists s: Nat . 
-        m = n*r + s /\ s < abs(n) )            %(div_Int)%
+       (exists a: Nat . 
+        m = n*r + a /\ a < abs(n) )            %(div_Int)%
 
 
-     . def ( m quot n ) <=> not (n=0)          %(quot_dom_Int)% %implied 
+     . def ( m quot n ) <=> not n=0            %(quot_dom_Int)% %implied 
      . (m quot n = r <=> 
          (exists s: Int . 
            m = n*r + s /\  
@@ -228,9 +253,9 @@ then %def
          (exists s: Int . 
             m = n*r + s /\  
               0 <= s /\ s < abs(n) )
-       ) if m >= 0                             %(quot_others_Int)%
+       ) if m >= 0                             %(quot_nonneg_Int)%
 
-     . def ( m rem n ) <=> not (n=0)           %(rem_dom_Int)% %implied 
+     . def ( m rem n ) <=> not n=0             %(rem_dom_Int)% %implied 
      . (m rem n = s <=> 
          (exists r: Int . 
            m = n*r + s /\  
@@ -240,9 +265,9 @@ then %def
          (exists r: Int . 
             m = n*r + s /\  
               0 <= s /\ s < abs(n) )
-       ) if m >= 0                             %(rem_others_Int)%
+       ) if m >= 0                             %(rem_nonneg_Int)%
 
-     . def ( m mod n ) <=> not (n=0)           %(mod_dom_Int)% %implied 
+     . def ( m mod n ) <=> not n=0             %(mod_dom_Int)% %implied 
      . m mod n = a <=> 
        (exists r: Int . 
         m = n*r + a /\ a < abs(n))             %(mod_Int)%
@@ -258,9 +283,6 @@ then %implies
      . def(a -? b) => a -? b = a - b                %(Int_Nat_sub_compat)%
 
      . m = sign(m) * abs(m)                         %(abs_decomp_Int)%
-     . odd(m) <=> odd(abs(m))                       %(odd_alt_Int)%
-
-     . def (m /? n) <=> m mod n = 0                 %(divide_dom2_Int)%
 
      . m mod n = m mod abs(n) 			    %(mod_abs_Int)%
 
@@ -286,6 +308,10 @@ then %mono
 
      sort Int < Rat
      forall i:Int . i = i / 1                   %(Int2Rat_embedding)%
+
+     %%  a system of representatives for sort Rat is
+     %%  ( 0 / 1 ) and 
+     %%  ( i / p ), where not i=0, gcd(abs(i), p) = 1, i: Int, p: Pos.
 
 then %def
 
@@ -313,7 +339,7 @@ then %def
 
      . (i / p <= j / q <=> i * q <= j * p ) %(leq_def_Rat)%
      . x >= y <=> y <= x                    %(geq_def_Rat)%
-     . x < y <=> (x <= y /\ not (x=y))      %(less_def_Rat)%
+     . x < y <=> (x <= y /\ not x=y )       %(less_def_Rat)%
      . x > y <=> y < x                      %(greater_def_Rat)%
 
   %% axioms concerning operations
@@ -334,7 +360,7 @@ then %def
      . max(x,y) = y when x <= y else x  %(max_def_Rat)%
 
      . not def x/0                      %(divide_def1_Rat)%
-     . (x/y=z <=> z=x*y) 
+     . (x/y=z <=> x=z*y) 
        if not y = 0	              	%(divide_def2_Rat)%
 
      . x ^ 0 = 1                        %(power_0_Rat)%
@@ -343,15 +369,17 @@ then %def
 
   %% important laws
 
-     . (x + y) * z = (x * z) + (y * z)  %(distr1_Rat)% %implied 
+     . (x + y) * z = (x * z) + (y * z)  %(distr1_Rat)% %implied
      . z * (x + y) = (z * x) + (z * y)  %(distr2_Rat)% %implied 
 
 then %implies
    
-     forall i,j: Int; p,q:Pos; x:Rat
+     forall i,j: Int; p,q:Pos; x,y:Rat
      . (i / p) - (j / q) = 
        (i * q - j * p) / (p * q)        %(sub_rule_Rat)%
 
+
+     . def (x/y) <=> not y = 0          %(divide_dom_Rat)%
      . (i/p) / (j/q) =
        (i * q ) / (p * j) if not j=0    %(divide_rule_Rat)%
 
@@ -378,4 +406,3 @@ within
      %%  introduce an exponent:
      . r E i = r * (10 ^ i)                    %(exponent_DecimalFraction)%
 end
-

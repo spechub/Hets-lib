@@ -1,14 +1,13 @@
 library Basic/SimpleDatatypes
-version 0.95
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% Corresponding authir: T. Mossakowski, till@tzi.de
-%% date: 18.06.02
+version 0.9
+%authors T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
+%date 18 June 2002
 
 %{
 This library provides unstructured datatypes like Booleans
 and characters.
 The Booleans are shown to be a Boolean algebra and then
-enriched with the usal Boolean algebra operations.
+enriched with the usual Boolean algebra operations.
 The characters are defined to be the subset 0..255
 of the natural numbers, and then constants for different 
 representations (ASCII, decimal, octal, hexadecimal)
@@ -18,8 +17,8 @@ are introduced.
 %prec {__Or__} < {__And__}
 
 
-from Basic/RelationsAndOrders version 0.95 get BooleanAlgebra, ExtBooleanAlgebra
-from Basic/Numbers version 0.95 get Nat
+from Basic/RelationsAndOrders get BooleanAlgebra, ExtBooleanAlgebra
+from Basic/Numbers get Nat
 
 spec Boolean = %mono
 
@@ -47,9 +46,10 @@ view BooleanAlgebra_in_Boolean : BooleanAlgebra to Boolean =
          __ cup __ |-> __Or__
 end
 
+%{ Get derived operations for Boolean Algebras }%
 spec RichBoolean = %mono
   ExtBooleanAlgebra [view BooleanAlgebra_in_Boolean]
-  with pred __ <= __, op  compl
+  with pred __ <= __, op  compl__
 end
 
 spec Char = %mono
@@ -63,7 +63,8 @@ then %mono
   . def chr(n) <=> n <= 255    %(chr_dom)%
   . chr(ord(c))=c              %(chr_ord_inverse)%
 
-  %% definition of the printable characters:
+  %% definition of the printable characters
+  %% This relies on the character names
   ops  ' ' : Char = '\032';             %(printable_32)%
        '!' : Char = '\033';             %(printable_33)%
        '\"' : Char = '\034';            %(printable_34)%
@@ -159,7 +160,9 @@ then %mono
        '|' : Char = '\124' ;            %(printable_124)%
        '}' : Char = '\125' ;            %(printable_125)%
        '~' : Char = '\126' ;            %(printable_126)%
-          
+
+       %% Iso-Latin-1 character number 160 is displayed as space,
+       %% but internally is different from character 32 (space)
        ' ' : Char = '\160' ;            %(printable_160)%
        '¡' : Char = '\161' ;            %(printable_161)%
        '¢' : Char = '\162' ;            %(printable_162)%
@@ -260,11 +263,12 @@ then %mono
   preds 
     isLetter(c:Char) <=> (
       (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
-      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );               %(isLetter_def)% 
-    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9'); %(isDigit_def)%
+      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)% 
+    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9'); 
+                                                         %(isDigit_def)%
     isPrintable(c:Char) <=> (
       (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
-      (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )                %(isPrintable_def)%
+      (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )   %(isPrintable_def)%
                         
   %% definition of individual characters by decimal codes:
   ops  '\000' : Char = chr(0);              %(slash_000)%

@@ -1,0 +1,140 @@
+library UserManual/Chapter6
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+from UserManual/Chapter3 get
+    Generated_Set, Partial_Order, Total_Order
+
+from UserManual/Chapter4 get
+    List_Selectors, Set_Partial_Choose_2,
+    Natural_Partial_Subtraction_1
+
+spec List_Set [sort Elem] =
+    List_Selectors [sort Elem] and Generated_Set [sort Elem]
+then
+    op elements_of__ : List -> Set
+    forall e:Elem; L:List
+    . elements_of empty = empty
+    . elements_of cons(e, L) = { e } cup elements_of L
+end
+
+spec List_Choose [sort Elem] =
+    List_Selectors [sort Elem] and Set_Partial_Choose_2 [sort Elem]
+then
+    ops elements_of__ : List -> Set;
+	choose : List ->? Elem
+    forall e:Elem; L:List
+    . elements_of empty = empty
+    . elements_of cons(e, L) = { e } cup elements_of L
+    . def choose(L) <=> not L = empty
+    . choose(L) = choose(elements_of L)
+end
+
+spec Set_to_List [sort Elem] =
+    List_Set [sort Elem]
+then
+    op list_of__ : Set -> List
+    forall S:Set
+    . elements_of (list_of S) = S
+end
+
+spec Stack [sort Elem] =
+    List_Selectors [sort Elem]
+    with
+	sort List |-> Stack,
+	ops cons |-> push__onto__, head |-> top, tail |-> pop
+end
+
+spec List_Set_1 [sort Elem] =
+    List_Selectors [sort Elem] with  empty, cons
+and Generated_Set [sort Elem] with  empty, {__}, __cup__
+then
+    op elements_of__ : List -> Set
+    forall e:Elem; L:List
+    . elements_of empty = empty
+    . elements_of cons(e, L) = { e } cup elements_of L
+end
+
+spec Natural_Partial_Subtraction_3 =
+    Natural_Partial_Subtraction_1 hide  suc,  pre
+end
+
+spec Natural_Partial_Subtraction_4 =
+    Natural_Partial_Subtraction_1
+    reveal  Nat, 0, 1, __+__, __-__, __*__, __<__
+end
+
+spec Partial_Order_2 =
+    Partial_Order reveal pred __<=__
+end
+
+spec List_Order [Total_Order with sort Elem, pred __<__] =
+    List_Selectors [sort Elem]
+then
+local   op insert : Elem * List -> List
+	forall e, e':Elem; L:List
+	. insert(e, empty) = cons(e, empty)
+	. insert(e, cons(e', L)) =
+	      cons(e', insert(e, L)) when e' < e else cons(e, cons(e', L))
+within  op order : List -> List
+	forall e:Elem; L:List
+	. order(empty) = empty
+	. order(cons(e, L)) = insert(e, order(L))
+end
+
+spec List_Order_Sorted [Total_Order with sort Elem, pred __<__] =
+    List_Selectors [sort Elem]
+then
+local   pred __is_sorted : List
+	forall e, e':Elem; L:List
+	. empty is_sorted
+	. cons(e, empty) is_sorted
+	. cons(e, cons(e', L)) is_sorted <=>
+	      cons(e', L) is_sorted /\ not e' < e
+within  op order : List -> List
+	forall L:List
+	. order(L) is_sorted
+end
+
+spec Wrong_List_Order_Sorted [Total_Order
+			      with sort Elem, pred __<__] =
+    List_Selectors [sort Elem]
+then
+local   pred __is_sorted : List
+	sort SortedList = {L : List . L is_sorted}
+	forall e, e':Elem; L:List
+	. empty is_sorted
+	. cons(e, empty) is_sorted
+	. cons(e, cons(e', L)) is_sorted <=>
+	      cons(e', L) is_sorted /\ not e' < e
+within op order : List -> SortedList
+end
+
+spec List_Order_Sorted_2 [Total_Order with sort Elem, pred __<__] =
+    List_Selectors [sort Elem]
+then
+local   pred __is_sorted : List
+	forall e, e':Elem; L:List
+	. empty is_sorted
+	. cons(e, empty) is_sorted
+	. cons(e, cons(e', L)) is_sorted <=>
+	      cons(e', L) is_sorted /\ not e' < e
+within  sort SortedList = {L : List . L is_sorted}
+	op order : List -> SortedList
+end
+
+spec List_Order_Sorted_3 [Total_Order with sort Elem, pred __<__] =
+    List_Selectors [sort Elem]
+then
+{    pred __is_sorted : List
+     forall e, e':Elem; L:List
+     . empty is_sorted
+     . cons(e, empty) is_sorted
+     . cons(e, cons(e', L)) is_sorted <=>
+	   cons(e', L) is_sorted /\ not e' < e
+ then
+     sort SortedList = {L : List . L is_sorted}
+     op order : List -> SortedList
+}   hide  __is_sorted
+end

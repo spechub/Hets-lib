@@ -1,0 +1,615 @@
+library UserManual/Sbcs
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+%display __half %LATEX __/2
+%display __square %LATEX __^2
+
+
+from Basic/Numbers get Nat
+
+from Basic/StructuredDatatypes get Set
+
+from Basic/StructuredDatatypes get TotalMap
+
+spec Value =
+%% At this level we don't care about the exact specification of values.
+    Nat
+then
+    sorts Nat < Value
+    ops __+__ : Value * Value -> Value, assoc, comm, unit 0;
+	__-__ : Value * Value -> Value;
+	__*__ : Value * Value -> Value, assoc, comm, unit 1;
+	__half, __square : Value -> Value;
+	min, max : Value * Value -> Value
+    preds __<__, __<=__ : Value * Value
+end
+
+spec Basics =
+    free type PumpNumber ::= Pump1 | Pump2 | Pump3 | Pump4
+    free type PumpState ::= Open | Closed
+    free type PumpControllerState ::= Flow | NoFlow
+    free type
+	PhysicalUnit ::= Pump(PumpNumber)
+		       | PumpController(PumpNumber)
+		       | SteamOutput
+		       | WaterLevel
+    free type
+	Mode ::= Initialization
+	       | Normal
+	       | Degraded
+	       | Rescue
+	       | EmergencyStop
+end
+
+spec Messages_Sent =
+    Basics
+then
+    free type
+	S_Message ::= MODE(Mode)
+		    | PROGRAM_READY
+		    | VALVE
+		    | OPEN_PUMP(PumpNumber)
+		    | CLOSE_PUMP(PumpNumber)
+		    | FAILURE_DETECTION(PhysicalUnit)
+		    | REPAIRED_ACKNOWLEDGEMENT(PhysicalUnit)
+end
+
+spec Messages_Received =
+    Basics and Value
+then
+    free type
+	R_Message ::= STOP
+		    | STEAM_BOILER_WAITING
+		    | PHYSICAL_UNITS_READY
+		    | PUMP_STATE(PumpNumber; PumpState)
+		    | PUMP_CONTROLLER_STATE(PumpNumber; PumpControllerState)
+		    | LEVEL(Value)
+		    | STEAM(Value)
+		    | REPAIRED(PhysicalUnit)
+		    | FAILURE_ACKNOWLEDGEMENT(PhysicalUnit)
+		    | junk
+end
+
+spec Sbcs_Constants =
+    Value
+then
+    ops C, M1, M2, N1, N2, W, U1, U2, P : Value;
+	dt : Value
+	%% Time duration between two cycles (5 sec.)
+	%% These constants must verify some obvious properties:
+    . 0 < M1
+    . M1 < N1
+    . N1 < N2
+    . N2 < M2
+    . M2 < C
+    . 0 < W
+    . 0 < U1
+    . 0 < U2
+    . 0 < P
+end
+
+spec Preliminary =
+    Set [Messages_Received fit  Elem |-> R_Message]
+and Set [Messages_Sent fit  Elem |-> S_Message] and Sbcs_Constants
+end
+
+spec Sbcs_State_1 =
+    Preliminary
+then
+    sort State
+    ops mode : State -> Mode;
+	numSTOP : State -> Nat
+end
+
+spec Mode_Evolution [preds Transmission_OK : State *
+					     Set[R_Message];
+			   PU_OK : State * Set[R_Message] * PhysicalUnit;
+			   DangerousWaterLevel : State * Set[R_Message]]
+			  given Sbcs_State_1 =
+local
+    %% Auxiliary predicates to structure the specification of next_mode.
+	preds Everything_OK, AskedToStop, SystemStillControllable,
+	      Emergency : State * Set[R_Message]
+	forall s:State; msgs:Set[R_Message]
+	. Everything_OK(s, msgs) <=>
+	      Transmission_OK(s, msgs)
+	      /\ (forall pu:PhysicalUnit . PU_OK(s, msgs, pu))
+	. AskedToStop(s, msgs) <=> numSTOP(s) = 2 /\ STOP eps msgs
+	. SystemStillControllable(s, msgs) <=>
+	      PU_OK(s, msgs, SteamOutput)
+	      /\ (exists pn:PumpNumber
+		      . PU_OK(s, msgs, Pump(pn))
+			/\ PU_OK(s, msgs, PumpController(pn)))
+	. Emergency(s, msgs) <=>
+	      mode(s) = EmergencyStop
+	      \/ AskedToStop(s, msgs)
+	      \/ not Transmission_OK(s, msgs)
+	      \/ DangerousWaterLevel(s, msgs)
+	      \/ (not PU_OK(s, msgs, WaterLevel)
+		  /\ not SystemStillControllable(s, msgs))
+within  ops next_mode : State * Set[R_Message] -> Mode;
+	    next_numSTOP : State * Set[R_Message] -> Nat
+	%% Emergency stop mode:
+	forall s:State; msgs:Set[R_Message]
+	. Emergency(s, msgs) => next_mode(s, msgs) = EmergencyStop
+	%% Normal mode:
+	. not Emergency(s, msgs) /\ Everything_OK(s, msgs) =>
+	      next_mode(s, msgs) = Normal
+	%% Degraded mode:
+	. not Emergency(s, msgs)
+	  /\ not Everything_OK(s, msgs)
+	  /\ PU_OK(s, msgs, WaterLevel)
+	  /\ Transmission_OK(s, msgs) =>
+	      next_mode(s, msgs) = Degraded
+	%% Rescue mode:
+	. not Emergency(s, msgs)
+	  /\ not PU_OK(s, msgs, WaterLevel)
+	  /\ SystemStillControllable(s, msgs)
+	  /\ Transmission_OK(s, msgs) =>
+	      next_mode(s, msgs) = Rescue
+	%% next_numSTOP:
+	. next_numSTOP(s, msgs) = numSTOP(s) + 1 when STOP eps msgs else 0
+end
+
+spec Sbcs_State_2 =
+    Sbcs_State_1
+then
+    free type Status ::= OK | FailureWithoutAck | FailureWithAck
+    op status : State * PhysicalUnit -> Status
+end
+
+spec Status_Evolution [pred PU_OK : State * Set[R_Message] *
+				    PhysicalUnit]
+			    given Sbcs_State_2 =
+    op next_status : State * Set[R_Message] * PhysicalUnit -> Status
+    forall s:State; msgs:Set[R_Message]; pu:PhysicalUnit
+    . status(s, pu) = OK /\ PU_OK(s, msgs, pu) =>
+	  next_status(s, msgs, pu) = OK
+    . status(s, pu) = OK /\ not PU_OK(s, msgs, pu) =>
+	  next_status(s, msgs, pu) = FailureWithoutAck
+    . status(s, pu) = FailureWithoutAck
+      /\ FAILURE_ACKNOWLEDGEMENT(pu) eps msgs =>
+	  next_status(s, msgs, pu) = FailureWithAck
+    . status(s, pu) = FailureWithoutAck
+      /\ not FAILURE_ACKNOWLEDGEMENT(pu) eps msgs =>
+	  next_status(s, msgs, pu) = FailureWithoutAck
+    . status(s, pu) = FailureWithAck /\ REPAIRED(pu) eps msgs =>
+	  next_status(s, msgs, pu) = OK
+    . status(s, pu) = FailureWithAck /\ not REPAIRED(pu) eps msgs =>
+	  next_status(s, msgs, pu) = FailureWithAck
+end
+
+spec Message_Transmission_System_Failure =
+    Sbcs_State_2
+then
+local
+    %% Static analysis:
+	pred __is_static_OK : Set[R_Message]
+	forall msgs:Set[R_Message]
+	. msgs is_static_OK <=>
+	      not junk eps msgs
+	      /\ (exists! v:Value . LEVEL(v) eps msgs)
+	      /\ (exists! v:Value . STEAM(v) eps msgs)
+	      /\ (forall pn:PumpNumber
+		      . exists! ps:PumpState . PUMP_STATE(pn, ps) eps msgs)
+	      /\ (forall pn:PumpNumber
+		      . exists! pcs:PumpControllerState
+			    . PUMP_CONTROLLER_STATE(pn, pcs) eps msgs)
+	      /\ (forall pu:PhysicalUnit
+		      . not FAILURE_ACKNOWLEDGEMENT(pu) eps msgs
+			    /\ REPAIRED(pu) eps msgs)
+	%% Dynamic analysis:
+	pred __is_NOT_dynamic_OK_for__ : Set[R_Message] * State
+	forall s:State; msgs:Set[R_Message]
+	. msgs is_NOT_dynamic_OK_for s <=>
+	      (not mode(s) = Initialization
+	       /\ (STEAM_BOILER_WAITING eps msgs
+		   \/ PHYSICAL_UNITS_READY eps msgs))
+	      \/ (exists pu:PhysicalUnit
+		      . FAILURE_ACKNOWLEDGEMENT(pu) eps msgs
+			/\ (status(s, pu) = OK
+			    \/ status(s, pu) = FailureWithAck))
+	      \/ (exists pu:PhysicalUnit
+		      . REPAIRED(pu) eps msgs
+			/\ (status(s, pu) = OK
+			    \/ status(s, pu) = FailureWithoutAck))
+within  pred Transmission_OK : State * Set[R_Message]
+	forall s:State; msgs:Set[R_Message]
+	. Transmission_OK(s, msgs) <=>
+	      msgs is_static_OK /\ not msgs is_NOT_dynamic_OK_for s
+end
+
+spec Sbcs_State_3 =
+    Sbcs_State_2
+then
+    free type ExtendedPumpState ::= sort PumpState | Unknown_PS
+    op PS_predicted : State * PumpNumber -> ExtendedPumpState
+       %{ 
+	 status(s,Pump(pn)) = OK   <=>  
+	     not  (PS_predicted(s,pn) = Unknown_PS) }%
+end
+
+spec Pump_Failure =
+    Sbcs_State_3
+then
+    pred Pump_OK : State * Set[R_Message] * PumpNumber
+    forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+    . Pump_OK(s, msgs, pn) <=>
+	  PS_predicted(s, pn) = Unknown_PS
+	  \/ PUMP_STATE(pn, PS_predicted(s, pn) as PumpState) eps msgs
+end
+
+spec Sbcs_State_4 =
+    Sbcs_State_3
+then
+    free type
+	ExtendedPumpControllerState ::= sort PumpControllerState
+				      | SoonFlow
+				      | Unknown_PCS
+    op PCS_predicted
+	   : State * PumpNumber -> ExtendedPumpControllerState
+       %{ 
+	 status(s,PumpController(pn)) = OK   =>  
+	     not  (PCS_predicted(s,pn) = Unknown_PCS) }%
+end
+
+spec Pump_Controller_Failure =
+    Sbcs_State_4
+then
+    pred Pump_Controller_OK : State * Set[R_Message] * PumpNumber
+    forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+    . Pump_Controller_OK(s, msgs, pn) <=>
+	  PCS_predicted(s, pn) = Unknown_PCS
+	  \/ PCS_predicted(s, pn) = SoonFlow
+	  \/ PUMP_CONTROLLER_STATE(pn,
+				   PCS_predicted(s, pn) as PumpControllerState)
+	     eps msgs
+end
+
+spec Sbcs_State_5 =
+    Sbcs_State_4
+then
+    free type Valpair ::= pair(low:Value; high:Value)
+    ops steam_predicted, level_predicted : State -> Valpair
+	%{ 
+	  low(steam_predicted(s)) is the minimal steam output predicted,
+	  high(steam_predicted(s)) is the maximal steam output predicted,
+	  and similarly for level_predicted. }%
+end
+
+spec Steam_Failure =
+    Sbcs_State_5
+then
+    pred Steam_OK : State * Set[R_Message]
+    forall s:State; msgs:Set[R_Message]
+    . Steam_OK(s, msgs) <=>
+	  forall v:Value
+	      . STEAM(v) eps msgs =>
+		    low(steam_predicted(s)) <= v
+		    /\ v <= high(steam_predicted(s))
+end
+
+spec Level_Failure =
+    Sbcs_State_5
+then
+    pred Level_OK : State * Set[R_Message]
+    forall s:State; msgs:Set[R_Message]
+    . Level_OK(s, msgs) <=>
+	  forall v:Value
+	      . LEVEL(v) eps msgs =>
+		    low(level_predicted(s)) <= v
+		    /\ v <= high(level_predicted(s))
+end
+
+spec Failure_Detection =
+{    Message_Transmission_System_Failure and Pump_Failure
+ and Pump_Controller_Failure and Steam_Failure and Level_Failure
+ then
+     pred PU_OK : State * Set[R_Message] * PhysicalUnit
+     forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+     . PU_OK(s, msgs, Pump(pn)) <=> Pump_OK(s, msgs, pn)
+     . PU_OK(s, msgs, PumpController(pn)) <=>
+	   Pump_Controller_OK(s, msgs, pn)
+     . PU_OK(s, msgs, SteamOutput) <=> Steam_OK(s, msgs)
+     . PU_OK(s, msgs, WaterLevel) <=> Level_OK(s, msgs)
+}   hide op Pump_OK,  Pump_Controller_OK,  Steam_OK,  Level_OK
+end
+
+spec Steam_And_Level_Prediction =
+    Failure_Detection
+and Set [sort PumpNumber fit  Elem |-> PumpNumber 
+         %[The fitting will be omitted in future version,
+           once Hets has implemented implicit fittings
+           with imports]%
+         ]
+then
+local   ops received_steam : State * Set[R_Message] -> Value;
+	    adjusted_steam : State * Set[R_Message] -> Valpair;
+	    received_level : State * Set[R_Message] -> Value;
+	    adjusted_level : State * Set[R_Message] -> Valpair;
+	    broken_pumps : State * Set[R_Message] -> Set[PumpNumber];
+	    reliable_pumps
+		: State * Set[R_Message] * PumpState -> Set[PumpNumber]
+	%% Axioms for STEAM:
+	forall s:State; msgs:Set[R_Message]; pn:PumpNumber; ps:PumpState
+	. Transmission_OK(s, msgs) =>
+	      STEAM(received_steam(s, msgs)) eps msgs
+	. adjusted_steam(s, msgs) =
+	      pair(received_steam(s, msgs), received_steam(s, msgs))
+		  when Transmission_OK(s, msgs) /\ PU_OK(s, msgs, SteamOutput)
+		  else steam_predicted(s)
+	%% Axioms for LEVEL:
+	. Transmission_OK(s, msgs) =>
+	      LEVEL(received_level(s, msgs)) eps msgs
+	. adjusted_level(s, msgs) =
+	      pair(received_level(s, msgs), received_level(s, msgs))
+		  when Transmission_OK(s, msgs) /\ PU_OK(s, msgs, WaterLevel)
+		  else level_predicted(s)
+	%% Axioms for auxiliary pumps operations:
+	. pn eps broken_pumps(s, msgs) <=>
+	      not PU_OK(s, msgs, Pump(pn)) /\ PU_OK(s, msgs, PumpController(pn))
+	. pn eps reliable_pumps(s, msgs, ps) <=>
+	      not pn eps broken_pumps(s, msgs) /\ PUMP_STATE(pn, ps) eps msgs
+within  ops next_steam_predicted
+		: State * Set[R_Message] -> Valpair;
+	    chosen_pumps
+		: State * Set[R_Message] * PumpState -> Set[PumpNumber];
+	    minimal_pumped_water, maximal_pumped_water
+		: State * Set[R_Message] -> Value;
+	    next_level_predicted : State * Set[R_Message] -> Valpair
+	pred DangerousWaterLevel : State * Set[R_Message]
+	     %% Axioms for STEAM:
+	forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+	. low(next_steam_predicted(s, msgs)) =
+	      max(0, low(adjusted_steam(s, msgs)) - (U2 * dt))
+	. high(next_steam_predicted(s, msgs)) =
+	      min(W, high(adjusted_steam(s, msgs)) + (U1 * dt))
+	%% Axioms for PUMPS:
+	. pn eps chosen_pumps(s, msgs, Open) =>
+	      pn eps reliable_pumps(s, msgs, Closed)
+	. pn eps chosen_pumps(s, msgs, Closed) =>
+	      pn eps reliable_pumps(s, msgs, Open)
+	. minimal_pumped_water(s, msgs) =
+	      (dt * P) * # (reliable_pumps(s, msgs, Open) - chosen_pumps(s,
+									 msgs,
+									 Closed))
+	. maximal_pumped_water(s, msgs) =
+	      (dt * P) * # (((reliable_pumps(s, msgs, Open)
+			      union chosen_pumps(s, msgs, Open))
+			     union broken_pumps(s, msgs))
+			    - chosen_pumps(s, msgs, Closed))
+	%% Axioms for LEVEL:
+	. low(next_level_predicted(s, msgs)) =
+	      max(0,
+		  (low(adjusted_level(s, msgs)) + minimal_pumped_water(s, msgs))
+		  - ((dt square * U1 half) + (dt * high(adjusted_steam(s,
+								       msgs)))))
+	. high(next_level_predicted(s, msgs)) =
+	      min(C,
+		  (high(adjusted_level(s, msgs)) + maximal_pumped_water(s,
+									msgs))
+		  - ((dt square * U2 half) + (dt * low(adjusted_steam(s,
+								      msgs)))))
+	. DangerousWaterLevel(s, msgs) <=>
+	      low(next_level_predicted(s, msgs)) <= M1
+	      \/ M2 <= high(next_level_predicted(s, msgs))
+	hide op minimal_pumped_water,  maximal_pumped_water
+end
+
+spec Pump_State_Prediction =
+    Status_Evolution [Failure_Detection] and Steam_And_Level_Prediction
+then
+    op next_PS_predicted
+	   : State * Set[R_Message] * PumpNumber -> ExtendedPumpState
+    forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+    . next_PS_predicted(s, msgs, pn) =
+	  Unknown_PS
+	      when not next_status(s, msgs, Pump(pn)) = OK
+	      else Open
+		       when (PUMP_STATE(pn, Open) eps msgs
+			     /\ not pn eps chosen_pumps(s, msgs, Closed))
+			    \/ pn eps chosen_pumps(s, msgs, Open)
+		       else Closed
+end
+
+spec Pump_Controller_State_Prediction =
+    Status_Evolution [Failure_Detection] and Steam_And_Level_Prediction
+then
+    op next_PCS_predicted
+	   : State * Set[R_Message] *
+	     PumpNumber -> ExtendedPumpControllerState
+    forall s:State; msgs:Set[R_Message]; pn:PumpNumber
+    . next_PCS_predicted(s, msgs, pn) =
+	  Unknown_PCS
+	      when not next_status(s, msgs, PumpController(pn)) = OK
+		       /\ next_status(s, msgs, Pump(pn)) = OK
+	      else Flow
+		       when (PUMP_CONTROLLER_STATE(pn, Flow) eps msgs
+			     \/ (PUMP_CONTROLLER_STATE(pn, NoFlow) eps msgs
+				 /\ PCS_predicted(s, pn) = SoonFlow))
+			    /\ not pn eps chosen_pumps(s, msgs, Closed)
+		       else NoFlow
+				when pn eps chosen_pumps(s, msgs, Closed)
+				     \/ (PUMP_CONTROLLER_STATE(pn, NoFlow)
+					 eps msgs
+					 /\ not PCS_predicted(s, pn) = SoonFlow
+					 /\ not pn eps chosen_pumps(s, msgs,
+								    Open))
+				else SoonFlow
+end
+
+spec PU_Prediction =
+    Pump_State_Prediction and Pump_Controller_State_Prediction
+end
+
+spec Sbcs_Analysis =
+    Mode_Evolution [PU_Prediction]
+then
+local   ops PumpMessages, FailureDetectionMessages
+		: State * Set[R_Message] -> Set[S_Message];
+	    RepairedAcknowledgementMessages : Set[R_Message] -> Set[S_Message]
+	forall s:State; msgs:Set[R_Message]; Smsg:S_Message
+	. Smsg eps PumpMessages(s, msgs) <=>
+	      exists pn:PumpNumber
+		  . (pn eps chosen_pumps(s, msgs, Open) /\ Smsg = OPEN_PUMP(pn))
+		    \/ (pn eps chosen_pumps(s, msgs, Closed)
+			/\ Smsg = CLOSE_PUMP(pn))
+	. Smsg eps FailureDetectionMessages(s, msgs) <=>
+	      exists pu:PhysicalUnit
+		  . Smsg = FAILURE_DETECTION(pu)
+		    /\ next_status(s, msgs, pu) = FailureWithoutAck
+	. Smsg eps RepairedAcknowledgementMessages(msgs) <=>
+	      exists pu:PhysicalUnit
+		  . Smsg = REPAIRED_ACKNOWLEDGEMENT(pu)
+		    /\ next_status(s, msgs, pu) = FailureWithAck
+within  op messages_to_send
+	       : State * Set[R_Message] -> Set[S_Message]
+	forall s:State; msgs:Set[R_Message]
+	. messages_to_send(s, msgs) =
+	      ((PumpMessages(s, msgs) union FailureDetectionMessages(s, msgs))
+	       union RepairedAcknowledgementMessages(msgs))
+	      + MODE(next_mode(s, msgs))
+end
+
+spec Sbcs_State =
+    Preliminary
+then
+    sort State
+    free type Status ::= OK | FailureWithoutAck | FailureWithAck
+    free type ExtendedPumpState ::= sort PumpState | Unknown_PS
+    free type
+	ExtendedPumpControllerState ::= sort PumpControllerState
+				      | SoonFlow
+				      | Unknown_PCS
+    free type Valpair ::= pair(low:Value; high:Value)
+    ops mode : State -> Mode;
+	numSTOP : State -> Nat;
+	status : State * PhysicalUnit -> Status;
+	PS_predicted : State * PumpNumber -> ExtendedPumpState;
+	PCS_predicted : State * PumpNumber -> ExtendedPumpControllerState;
+	steam_predicted, level_predicted : State -> Valpair
+end
+
+spec Steam_Boiler_Control_System =
+    Sbcs_Analysis
+then
+    op init : State
+    pred is_step : State * Set[R_Message] * Set[S_Message] * State
+	 %% Specification of the initial state init:
+    . mode(init) = Normal \/ mode(init) = Degraded
+    %% Specification of is_step:
+    forall s, s':State; msgs:Set[R_Message]; Smsg:Set[S_Message]
+    . is_step(s, msgs, Smsg, s') <=>
+	  mode(s') = next_mode(s, msgs)
+	  /\ numSTOP(s') = next_numSTOP(s, msgs)
+	  /\ (forall pu:PhysicalUnit
+		  . status(s', pu) = next_status(s, msgs, pu))
+	  /\ (forall pn:PumpNumber
+		  . PS_predicted(s', pn) = next_PS_predicted(s, msgs, pn)
+		    /\ PCS_predicted(s', pn) = next_PCS_predicted(s, msgs, pn))
+	  /\ steam_predicted(s') = next_steam_predicted(s, msgs)
+	  /\ level_predicted(s') = next_level_predicted(s, msgs)
+	  /\ Smsg = messages_to_send(s, msgs)
+then
+%% Specification of the reachable states:
+free {pred reach : State
+      forall s, s':State; msgs:Set[R_Message]; Smsg:Set[S_Message]
+      . reach(init)
+      . reach(s) /\ is_step(s, msgs, Smsg, s') => reach(s')}
+end
+
+arch spec Arch_Sbcs =
+    units
+	P: Value -> Preliminary; S: Preliminary -> Sbcs_State;
+	A: Sbcs_State -> Sbcs_Analysis;
+	C: Sbcs_Analysis -> Steam_Boiler_Control_System
+    result lambda V : Value . C [A [S [P [V]]]]
+end
+
+arch spec Arch_Preliminary =
+    units
+	SET: {sort Elem} *  Nat -> Set [sort Elem]; B: Basics;
+	MS: Messages_Sent given B; MR: Value -> Messages_Received given B;
+	CST: Value -> Sbcs_Constants
+    result lambda
+	       V : Value
+	     . SET [MS fit  Elem |-> S_Message] [V] and
+	       SET [MR [V] fit  Elem |-> R_Message] [V] and CST [V]
+end
+
+spec Sbcs_State_Impl =
+    Preliminary
+then
+    free type Status ::= OK | FailureWithoutAck | FailureWithAck
+    free type ExtendedPumpState ::= sort PumpState | Unknown_PS
+    free type
+	ExtendedPumpControllerState ::= sort PumpControllerState
+				      | SoonFlow
+				      | Unknown_PCS
+    free type Valpair ::= pair(low:Value; high:Value)
+then
+    TotalMap [Basics fit  S |-> PhysicalUnit] [sort Status]
+and TotalMap
+	[Basics fit  S |-> PumpNumber] [sort ExtendedPumpState]
+and TotalMap
+	[Basics fit  S |-> PumpNumber] [sort ExtendedPumpControllerState]
+then
+    free type
+	State ::= mk_state(mode:Mode; numSTOP:Nat;
+			   status:TotalMap[PhysicalUnit,Status];
+			   PS_predicted:TotalMap[PumpNumber,ExtendedPumpState];
+			   PCS_predicted:TotalMap
+					 [PumpNumber,
+					  ExtendedPumpControllerState];
+			   steam_predicted, level_predicted:Valpair)
+    ops status(s :State; pu :PhysicalUnit): Status = lookup(pu,
+							  status(s));
+	PS_predicted(s :State;
+		     pn :PumpNumber): ExtendedPumpState = lookup(pn,
+							       PS_predicted(s));
+	PCS_predicted(s :State;
+		      pn :PumpNumber): ExtendedPumpControllerState = lookup(pn,
+									  PCS_predicted(s))
+end
+
+unit spec Unit_Sbcs_State = Preliminary -> Sbcs_State_Impl
+end
+
+arch spec Arch_Analysis =
+    units
+	FD: Sbcs_State -> Failure_Detection;
+	PR: Failure_Detection -> PU_Prediction;
+	ME: PU_Prediction -> Mode_Evolution [PU_Prediction];
+	MTS: Mode_Evolution [PU_Prediction] -> Sbcs_Analysis
+    result lambda S : Sbcs_State . MTS [ME [PR [FD [S]]]]
+end
+
+arch spec Arch_Failure_Detection =
+    units
+	MTSF: Sbcs_State -> Message_Transmission_System_Failure;
+	PF: Sbcs_State -> Pump_Failure;
+	PCF: Sbcs_State -> Pump_Controller_Failure;
+	SF: Sbcs_State -> Steam_Failure; LF: Sbcs_State -> Level_Failure;
+	PU: Message_Transmission_System_Failure *  Pump_Failure * 
+	Pump_Controller_Failure *  Steam_Failure * 
+    Level_Failure -> Failure_Detection
+    result lambda S : Sbcs_State
+	     . PU [MTSF [S]] [PF [S]] [PCF [S]] [SF [S]] [LF [S]]
+	       hide  Pump_OK,  Pump_Controller_OK,  Steam_OK,  Level_OK
+end
+
+arch spec Arch_Prediction =
+    units
+	SE: Failure_Detection -> Status_Evolution [Failure_Detection];
+	SLP: Failure_Detection -> Steam_And_Level_Prediction;
+	PP: Status_Evolution [Failure_Detection] * 
+	    Steam_And_Level_Prediction -> Pump_State_Prediction;
+	PCP: Status_Evolution [Failure_Detection] * 
+	     Steam_And_Level_Prediction -> Pump_Controller_State_Prediction
+    result lambda FD : Failure_Detection
+	     . local SEFD = SE [FD]; SLPFD = SLP [FD]
+	       within PP [SEFD] [SLPFD]
+	       and PCP [SEFD] [SLPFD]
+end

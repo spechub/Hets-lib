@@ -1,183 +1,44 @@
 library Basic/Algebra_I
-version 0.7
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% date: 23.3.01
+version 0.9
+%authors: M. Roggenbach, T. Mossakowski, L. Schröder <lschrode@tzi.de>
+%date: 21 May 2003
 
 %prec {__ * __} < {__ ^ __}
 %prec {__ + __, __ - __, -__} < {__ / __, __ * __}
 %left_assoc __ + __, __ * __, __ ^ __
 
-from Basic/RelationsAndOrders version 0.7 get TotalOrder, ExtTotalOrder,
+
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder,
 RichTotalOrder, PreOrder, EquivalenceRelation
 
-from Basic/Numbers version 0.7 get Nat, Int, Rat
+from Basic/Numbers get Nat, Int, Rat
 
-spec 
-     BinAlg =
-     sort
-          Elem
-     op
-          __ * __: Elem * Elem -> Elem
+spec Monoid =
+     sort Elem
+     ops  e:       Elem;
+          __ * __: Elem * Elem -> Elem, assoc, unit e
 end
 
-spec
-     Semigroup =
-     BinAlg
-then
-     op
-          __ * __: Elem * Elem -> Elem, assoc
-end
-
-spec
-     SigPowerBinAlg [sort Exponent] =
-     BinAlg
-then	
-     op __ ^ __: Elem * Exponent -> Elem
-end
-
-spec 
-     PowerTheorems [sort Exponent;
-		    ops __ + __, __ * __: Exponent * Exponent -> Exponent] =
-     SigPowerBinAlg [sort Exponent]
-then
-     forall x: Elem; n,m: Exponent
-     . x ^ (n + m)=x ^ n * x ^ m		%(add_Power)%
-     . x ^ (n * m)=(x ^ n) ^ m             	%(mult_Power)%
-end
-
-	
-
-spec 
-     CommutativeSemigroup =
-     Semigroup
-then
-     op __*__: Elem * Elem -> Elem, comm
-end
-
-spec
-     PowerTheoremsComm [sort Exponent;
-		ops __ + __, __ * __: Exponent * Exponent -> Exponent] =
-     SigPowerBinAlg [sort Exponent]
-then
-     forall x,y: Elem; n: Exponent
-     . x^ n * y^ n=(x*y)^ n             	%(mult_base_Power)%
-end
-
-view
-     CommutativeSemigroup_in_ExtTotalOrder_max [TotalOrder] :
-     CommutativeSemigroup to ExtTotalOrder [TotalOrder] =
-op
-     __ * __ |-> max
-end
-
-
-
-view
-     CommutativeSemigroup_in_ExtTotalorder_min [TotalOrder] :
-     CommutativeSemigroup to ExtTotalOrder [TotalOrder] =
-op
-     __*__ |-> min
-end
-
-
-spec
-     Monoid =
-     Semigroup
-then
-     ops
-           e:       Elem;
-           __ * __: Elem * Elem -> Elem, unit e
-end
-
-spec
-     CommutativeMonoid =
+spec CommutativeMonoid =
      Monoid
-and
-     CommutativeSemigroup
+then
+     op __ * __: Elem * Elem -> Elem, comm
 end
 
-view
-     CommutativeMonoid_in_Nat_Add:
-     CommutativeMonoid to Nat
-=
-     sort
-          Elem |-> Nat,
-     ops
-           e |-> 0,
-           __ * __ |-> __ + __
-end
-
-view
-     CommutativeMonoid_in_Nat_Mult:
-     CommutativeMonoid to Nat
-=
-     sort
-          Elem |-> Nat,
-     ops
-	  e |-> 1,
-	  __ * __ |-> __ * __
-end
-
-view
-     CommutativeMonoid_in_Int_Mult:
-     CommutativeMonoid to {Int then op 1:Int}
-=
-     sort
-          Elem |-> Int,
-     ops
-	  e |-> 1,
-	  __ * __ |-> __ * __
-end
-
-
-spec
-     Group =
+spec Group =
      Monoid
 then
      forall x: Elem
      . exists x': Elem . x' * x = e
 end
 
-
-
-
-spec
-     AbelianGroup =
-	Group 
+spec AbelianGroup =
+     Group 
 and
-	CommutativeSemigroup
+     CommutativeMonoid
 end
 
-view
-     AbelianGroup_in_Int_Add:
-     AbelianGroup to {Int then op 0:Int}
-=
-     sort
-          Elem |-> Int,
-     ops
-	  __ * __ |-> __ + __,
-	  e	  |-> 0
-end
-
-spec
-     MonoidAction [Monoid] =
-     sort
-          Space
-     op
-          __*__: Elem * Space -> Space
-     forall x: Space; a,b: Elem
-     . e * x = x	             		%(unit_MAction)%
-     . (a * b) * x = a * (b * x)             	%(assoc_MAction)%
-end
-
-spec
-     GroupAction [Group] =
-     MonoidAction [Group] %[ Actually, MonoidAction [Monoid] would do ]%
-end
-
-
-spec
-     Ring =
+spec Ring =
      AbelianGroup with sort Elem, 
 		       ops __ * __ |-> __ + __,
 			   e	   |-> 0
@@ -195,15 +56,13 @@ view AbelianGroup_in_Ring_add:
 	 __ * __ |-> __ + __
 end
 
-spec
-     CommutativeRing =
+spec CommutativeRing =
      Ring with ops 0,  __ + __, e, __ * __
 and
      CommutativeMonoid with ops e, __ * __     
 end
 
-spec
-     IntegralDomain =
+spec IntegralDomain =
      CommutativeRing
 then
      forall x,y: Elem 
@@ -211,130 +70,57 @@ then
      . not (e = 0)             			%(zeroNeqOne)%
 end
 
-spec
-     EuclidianRing =
-     IntegralDomain and {Nat reveal pred  __<__ }
-then
-     op	
-	delta: Elem ->? Nat
-     forall a,b: Elem
-     . def delta(a) if not a = 0 		%(delta_dom_ER)%
-     . (exists q,r : Elem . a = q * b + r /\
-                               (r = 0 \/ delta(r) < delta(b) )) 
-		if not b = 0             	%(div_ER)% 
-end
-
-view
-     EuclidianRing_in_Int :
-     EuclidianRing to {Int then op 1:Int}
-=
-     sorts
-          Elem |-> Int,
-     ops
-          delta |-> abs,
-	  e |-> 1
-end
-
-spec
-     ConstructField =
+spec ConstructField =
      CommutativeRing
 then
      . not e = 0
-     sort
-          NonZeroElem = { x: Elem . not x = 0 }
+     sort NonZeroElem = { x: Elem . not x = 0 }
 and
      {Group with sort Elem |-> NonZeroElem, ops e, __*__}
 end
 
 %% an obvious view which helps to write the specification ExtField:
 
-view
-     AbelianGroup_in_ConstructField :
-     AbelianGroup to ConstructField 
-=
-     sort
-          Elem |-> NonZeroElem
+view AbelianGroup_in_ConstructField :
+     AbelianGroup to ConstructField =
+     sort Elem |-> NonZeroElem
 end
 
-spec
-     Field =
+spec Field =
      ConstructField hide sort NonZeroElem
 end
 
-view
-     Field_in_Rat: Field to {Rat then op 1:Rat}
-=
-     sort Elem |-> Rat,
-     op e |-> 1
+view IntegralDomain_in_Field : IntegralDomain to Field 
 end
 
-spec
-     ExtSemigroup[Semigroup] given Nat =
-%def
-     SigPowerBinAlg [sort Pos]
-then
+spec ExtMonoid  [Monoid] given Nat = %def
+     op __ ^ __: Elem * Nat -> Elem
      forall x: Elem; n: Pos
-     . x ^ 1 = x             			%(pow_1_SGroup)%
-     . x ^ suc(n) = x * (x ^ n)             	%(pow_suc_SGroup)%
-then
-     %implies
-     PowerTheorems [Nat fit sort Exponent |-> Pos]
-end
-
-
-spec 
-     ExtCommutativeSemigroup [CommutativeSemigroup] given Nat =
-%def
-     ExtSemigroup [Semigroup]
-then
-     %implies
-     PowerTheoremsComm [Nat fit sort Exponent |-> Pos]
-end
-
-
-spec
-     ExtMonoid  [Monoid] given Nat =
-%def
-     ExtSemigroup [Semigroup]
-then 
-     SigPowerBinAlg [sort Nat]
-then
-     forall x: Elem
-     . x ^ 0 = e             			%(pow_0_EMonoid)%
+     . x ^ 0 = e             			%(pow_0_Monoid)%
+     . x ^ suc(n) = x * (x ^ n)             	%(pow_suc_Monoid)%
 then %implies
-     forall n: Nat
-     . e ^ n = e             			%(pow_unit_EMonoid)%
-and
-     PowerTheorems [Nat fit sort Exponent |-> Nat] 
+     forall x: Elem; n,m: Nat
+     . e ^ n = e             			%(pow_unit_Monoid)%
+     . x ^ (n + m)=x ^ n * x ^ m		%(pow_add_Monoid)%
+     . x ^ (n * m)=(x ^ n) ^ m             	%(pow_mult_Monoid)%
 end
 
-spec
-     ExtCommutativeMonoid  [CommutativeMonoid]
-     given Nat =
-%def
+spec ExtCommutativeMonoid  [CommutativeMonoid] given Nat = %def
      ExtMonoid [Monoid]
-and
-     ExtCommutativeSemigroup [CommutativeSemigroup]
-then
-     %implies
-     PowerTheoremsComm [Nat fit sort Exponent |-> Nat] 
+then %implies
+     forall x,y: Elem; n: Nat
+     . x^ n * y^ n=(x*y)^ n             	%(pow_basemult_CMonoid)%
 end
 
-spec
-     ExtGroup [Group] given Int =
-%def
+spec ExtGroup [Group] given Int = %def
      ExtMonoid [Monoid] 
 then
-     ops
-           inv: Elem -> Elem;
-           __ / __: Elem * Elem -> Elem;
-     forall x,y: Elem
+     ops __ ^ __: Elem * Int -> Elem;
+        inv:     Elem -> Elem;
+        __ / __: Elem * Elem -> Elem;
+     forall x,y: Elem; p: Pos
      . inv(x) * x = e             		%(inv_def_Group)%
      . x / y = x * inv(y)             		%(div_def_Group)%
-then
-     SigPowerBinAlg [sort Int]
-then
-     forall x: Elem; p: Pos
      . x^ (- p)=inv(x ^ p)             		%(pow_neg_Group)%
 then %implies
      forall x,y,z: Elem; n,m: Int
@@ -344,71 +130,30 @@ then %implies
      . inv(inv(x))=x             		%(invInv_Group)%
      . inv(e)=e             			%(invUnit_Group)%
      . inv(x*y)=inv(y)*inv(x)             	%(invMult_Group)%
-and
-     PowerTheorems [Int fit sort Exponent |-> Int]
+     . e ^ n = e             			%(pow_unit_Group)%
+     . x ^ (n + m)=x ^ n * x ^ m		%(pow_add_Group)%
+     . x ^ (n * m)=(x ^ n) ^ m             	%(pow_mult_Group)%
 end
 
-spec ExtAbelianGroup  [AbelianGroup] given Int =
-%def
+spec ExtAbelianGroup  [AbelianGroup] given Int = %def
      ExtGroup[AbelianGroup]
-and
-     ExtCommutativeMonoid[AbelianGroup]
-end
-
-spec
-     ExtMonoidAction [MonoidAction [Monoid]] given Nat =
-%def
-     ExtMonoid [Monoid]
-then 
-     pred connected: Space * Space
-     forall x,y: Space
-     . connected(x,y) <=> exists a: Elem . a * x = y     
-						%(connected_def_EMAction)%
-end
-
-view PreOrder_in_ExtMonoidAction [MonoidAction [Monoid]] given Nat:
-     PreOrder to ExtMonoidAction [MonoidAction [Monoid]] =
-     sort Elem |-> Space,
-     pred __ <= __ |-> connected
+then %implies
+     forall x,y: Elem; n: Int
+     . x^ n * y^ n=(x*y)^ n             	%(pow_basemult_AbGroup)%
 end
 
 
-spec
-     ExtGroupAction [GroupAction [Group]] given Int =
-%def
-     ExtMonoidAction [GroupAction [Group]]
-and
-     ExtGroup [Group]
-then
-     %implies
-     forall a,b:Elem; x,y: Space
-     . x = y if a * x = a * y             	%(inj_EGAction)%
-     . exists z: Space . a * z = x             	%(surj_EGAction)%
-
-end
-
-view EqRel_in_ExtGroupAction [GroupAction [Group]] given Int:
-     EquivalenceRelation to ExtGroupAction [GroupAction [Group]] =
-     sort Elem |-> Space,
-     pred __ ~ __ |-> connected
-end
-
-
-spec
-     ExtRing  [Ring ] given Int =
-%%mono
+spec ExtRing  [Ring ] given Int = %mono
      ExtAbelianGroup [view AbelianGroup_in_Ring_add]
-     with ops   inv     |-> -__,
-		__ / __ |-> __ - __,
-		__ ^ __ |-> __ times __
+     with ops inv     |-> -__,
+              __ / __ |-> __ - __,
+              __ ^ __ |-> __ times __
 and
      ExtMonoid[Monoid]
      with op  __ ^ __
 and
-     preds
-          isIrred, isUnit: Elem
-     sorts
-           NonZero[Elem] = { x: Elem . not x = 0 };
+     preds isIrred, isUnit: Elem
+     sorts NonZero[Elem] = { x: Elem . not x = 0 };
            RUnit[Elem] = { x: Elem . isUnit(x) };
            Irred[Elem] = { x: Elem . isIrred(x) }
      forall x,y: Elem
@@ -417,27 +162,21 @@ and
      . isIrred(x) <=> (not isUnit(x) /\ 
 	forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))        
 						%(isIrred_def_Ring)% 
-then
-%def
-     ops 
-	e: RUnit[Elem];
-        -__: RUnit[Elem] -> RUnit[Elem];
-	__ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
+then %def
+     ops e: RUnit[Elem];
+         -__: RUnit[Elem] -> RUnit[Elem];
+	 __ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
 end
 
-view Group_in_ExtRing [Ring] given Int: 
-     Group to 
-     ExtRing[Ring] =
+view Group_in_ExtRing [Ring] given Int : 
+     Group to ExtRing[Ring] =
      sort Elem |-> RUnit[Elem]
 end
 
-spec
-     ExtCommutativeRing  [CommutativeRing] given Int =
-%%mono
+spec ExtCommutativeRing  [CommutativeRing] given Int = %mono
      ExtRing[Ring]
 then
-     preds
-           hasNoZeroDivisors: ();
+     preds hasNoZeroDivisors: ();
            __ divides __ :    Elem * Elem;
            associated:        Elem * Elem
      forall x,y: Elem
@@ -447,83 +186,52 @@ then
 						%(divides_def)%
      . associated(x,y) <=> exists u:RUnit[Elem]. x=u*y             
 						%(associated_def)%
-then
-     %implies
+then %implies
      forall x,y:Elem
      . associated(x,y) <=> (x divides y /\ y divides x)
 end
 
-view
-     PreOrder_in_ExtCRing  [CommutativeRing] given Int:
-     PreOrder to
-     ExtCommutativeRing[CommutativeRing] =
-     pred
-          __ <= __ |-> __ divides __
+view PreOrder_in_ExtCRing  [CommutativeRing] given Int:
+     PreOrder to ExtCommutativeRing[CommutativeRing] =
+     pred __ <= __ |-> __ divides __
 end
 
 view 
-     AbelianGroup_in_ExtCRing [CommutativeRing] given Int:
-     AbelianGroup to
-     ExtCommutativeRing [CommutativeRing] =
-     sort
-          Elem |-> RUnit[Elem]
+     AbelianGroup_in_ExtCRing [CommutativeRing] given Int :
+     AbelianGroup to ExtCommutativeRing [CommutativeRing] =
+     sort Elem |-> RUnit[Elem]
 end
 
-view
-     EqRel_in_ExtCRing  [CommutativeRing] given Int:
+view EqRel_in_ExtCRing  [CommutativeRing] given Int:
      EquivalenceRelation to
-     ExtCommutativeRing[CommutativeRing]=
-     pred
-          __ ~ __ |-> associated
+     ExtCommutativeRing[CommutativeRing] =
+     pred __ ~ __ |-> associated
 end
 
-spec
-     ExtIntegralDomain  [IntegralDomain] given Int =
-%%mono
+spec ExtIntegralDomain  [IntegralDomain] given Int = %mono
      ExtCommutativeRing [CommutativeRing]
 then
      op __ * __:  NonZero[Elem] * NonZero[Elem] -> NonZero[Elem]
-then
-     %implies
-     axiom hasNoZeroDivisors
+then %implies
+     . hasNoZeroDivisors
 end
 
-spec
-     ExtEuclidianRing  [EuclidianRing] given Int=
-%%mono
-     ExtIntegralDomain [IntegralDomain]
-end
 
-spec
-     ExtField  [Field] given Int=
-%%mono 
+spec ExtField  [Field] given Int= %mono 
      ExtRing [Ring]
 then
 closed
-     {
-	ExtAbelianGroup[view AbelianGroup_in_ConstructField]
+     {	ExtAbelianGroup[view AbelianGroup_in_ConstructField]
 	with sort NonZeroElem|->NonZero[Elem],
-	     ops inv, __ / __, __ ^ __}
+	     ops inv, __ / __, __ ^ __  }
 then
-     op
-           __ / __: Elem * Elem ->? Elem;
+     op __ / __: Elem * Elem ->? Elem;
      forall x:Elem; n: NonZero[Elem]
      . 0/n=0             			%(div_def1_Field)%
      . not def x/0				%(div_def2_Field)%
-then
-     %implies
+then %implies
      forall x,y:Elem
      . def x/y <=> not y=0             		%(div_dom_Field)%
-end
-
-
-
-spec RichSemigroup =
-     ExtSemigroup [Semigroup]
-end
-
-spec RichCommutativeSemigroup =
-     ExtCommutativeSemigroup [CommutativeSemigroup]
 end
 
 spec RichMonoid =
@@ -542,54 +250,34 @@ spec RichAbelianGroup =
      ExtAbelianGroup [AbelianGroup]
 end
 
-spec RichMonoidAction [Monoid] =
-     ExtMonoidAction [MonoidAction [Monoid]]
-end
-
-view PreOrder_in_RichMonoidAction [Monoid]:
-     PreOrder to RichMonoidAction [Monoid]=
-     sort Elem |-> Space,
-     pred __ <= __ |-> connected
-end
-
-spec RichGroupAction [Group] =
-     ExtGroupAction [GroupAction [Group]]
-end
-
-view EqRel_in_RichGroupAction [Group]:
-     EquivalenceRelation to RichGroupAction [Group]=
-     sort Elem |-> Space,
-     pred __ ~ __ |-> connected
-end
-
 spec RichRing =
      ExtRing [Ring]
+end
+
+view Group_in_RichRing : Group to RichRing =
+     sort Elem |-> RUnit[Elem]
 end
 
 spec RichCommutativeRing =
      ExtCommutativeRing [CommutativeRing]
 end
 
-view
-     PreOrder_in_RichCRing:
-     PreOrder to RichCommutativeRing =
-     pred
-          __ <= __ |-> __ divides __
+view PreOrder_in_RichCRing : PreOrder to RichCommutativeRing =
+     pred __ <= __ |-> __ divides __
 end
 
-view
-     EqRel_in_RichCRing:
+view EqRel_in_RichCRing :
      EquivalenceRelation to RichCommutativeRing =
-     pred
-          __ ~ __ |-> associated
+     pred __ ~ __ |-> associated
+end
+
+view AbelianGroup_in_RichCRing :
+     AbelianGroup to RichCommutativeRing =
+     sort Elem |-> RUnit[Elem]
 end
 
 spec RichIntegralDomain =
      ExtIntegralDomain [IntegralDomain]
-end
-
-spec RichEuclidianRing =
-     ExtEuclidianRing [EuclidianRing]
 end
 
 spec RichField =
@@ -597,22 +285,40 @@ spec RichField =
 end
 
 
-view
-     CommutativeSemigroup_in_RichTotalOrder:
-     CommutativeSemigroup to RichTotalOrder =
-op
-     __ * __ |-> max
-end 
-
-view
-     CommutativeSemigroup_in_RichTotalOrder :
-     CommutativeSemigroup to RichTotalOrder =
-op
-     __*__ |-> min
+view CommutativeMonoid_in_Nat_Add : CommutativeMonoid to Nat =
+     sort Elem |-> Nat,
+     ops e |-> 0,
+         __ * __ |-> __ + __
 end
 
+view CommutativeMonoid_in_Nat_Mult :
+     CommutativeMonoid to Nat =
+     sort Elem |-> Nat,
+     ops e |-> 1,
+	 __ * __ |-> __ * __
+end
 
+view CommutativeMonoid_in_Int_Mult:
+     CommutativeMonoid to {Int then op 1:Int} =
+     sort Elem |-> Int,
+     ops e |-> 1,
+         __ * __ |-> __ * __
+end
 
+view AbelianGroup_in_Int_Add:
+     AbelianGroup to {Int then op 0:Int} =
+     sort Elem |-> Int,
+     ops __ * __ |-> __ + __,
+	 e |-> 0
+end
 
+view IntegralDomain_in_Int :
+     IntegralDomain to {Int then op 1:Int} =
+     sorts Elem |-> Int,
+     ops e |-> 1
+end
 
-
+view Field_in_Rat: Field to {Rat then op 1:Rat} =
+     sort Elem |-> Rat,
+     op e |-> 1
+end

@@ -1,0 +1,314 @@
+library UserManual/Chapter3
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+%display __<=__ %LATEX __ \leq __
+%display __Rplus__ %LATEX __R^+__
+
+
+spec Strict_Partial_Order =
+%% Let's start with a simple example !
+    sort Elem
+    pred __<__ : Elem * Elem
+	 %% pred abbreviates predicate
+    forall x, y, z:Elem
+    . not (x < x) %(strict)%
+    . (x < y) => not (y < x) %(asymmetric)%
+    . (x < y) /\ (y < z) => (x < z) %(transitive)%
+    %{ Note that there may exist x, y such that
+       neither x < y nor y < x. }%
+end
+
+spec Total_Order =
+    Strict_Partial_Order
+then
+    forall x, y:Elem
+    . (x < y) \/ (y < x) \/ x = y %(total)%
+end
+
+spec Total_Order_With_MinMax =
+    Total_Order
+then
+    ops min(x, y :Elem): Elem = x when x < y else y;
+	max(x, y :Elem): Elem = y when min (x, y) = x else x
+end
+
+spec Variant_Of_Total_Order_With_MinMax =
+    Total_Order
+then
+    vars x, y:Elem
+    op min : Elem * Elem -> Elem
+    . (x < y) => min (x, y) = x
+    . not (x < y) => min (x, y) = y
+    op max : Elem * Elem -> Elem
+    . (x < y) => max (x, y) = y
+    . not (x < y) => max (x, y) = x
+end
+
+spec Partial_Order =
+    Strict_Partial_Order
+then
+    pred __<=__(x, y :Elem) <=> (x < y) \/ x = y
+end
+
+spec Partial_Order_1 =
+    Partial_Order
+then %implies
+    forall x, y, z:Elem
+    . (x <= y) /\ (y <= z) => (x <= z) %(transitive)%
+end
+
+spec Implies_Does_Not_Hold =
+    Partial_Order
+then %implies
+    forall x, y:Elem
+    . (x < y) \/ (y < x) \/ x = y %(total)%
+end
+
+spec Monoid =
+    sort Monoid
+    ops 1 : Monoid;
+	__*__ : Monoid * Monoid -> Monoid, assoc, unit 1
+end
+
+spec Generic_Monoid [sort Elem] =
+    sort Monoid
+    ops inj : Elem -> Monoid;
+	1 : Monoid;
+	__*__ : Monoid * Monoid -> Monoid, assoc, unit 1
+    forall x, y:Elem
+    . inj (x) = inj (y) => x = y
+end
+
+spec Non_Generic_Monoid =
+    sort Elem
+then
+    sort Monoid
+    ops inj : Elem -> Monoid;
+	1 : Monoid;
+	__*__ : Monoid * Monoid -> Monoid, assoc, unit 1
+    forall x, y:Elem
+    . inj (x) = inj (y) => x = y
+end
+
+spec Generic_Commutative_Monoid [sort Elem] =
+    Generic_Monoid [sort Elem]
+then
+    forall x, y:Monoid
+    . x * y = y * x
+end
+
+spec Generic_Commutative_Monoid_1 [sort Elem] =
+    Generic_Monoid [sort Elem]
+then
+    op __*__ : Monoid * Monoid -> Monoid, comm
+end
+
+spec Container [sort Elem] =
+    type Container ::= empty | insert(Elem; Container)
+    pred __is_in__ : Elem * Container
+    forall e, e':Elem; C:Container
+    . not (e is_in empty)
+    . (e is_in insert (e', C)) <=> e = e' \/ (e is_in C)
+end
+
+spec Marking_Container [sort Elem] =
+    Container [sort Elem]
+then
+    type Container ::= mark_insert(Elem; Container)
+    pred __is_marked_in__ : Elem * Container
+    forall e, e':Elem; C:Container
+    . (e is_in mark_insert (e', C)) <=> e = e' \/ (e is_in C)
+    . not (e is_marked_in empty)
+    . (e is_marked_in insert (e', C)) <=> (e is_marked_in C)
+    . (e is_marked_in mark_insert (e', C)) <=>
+	  e = e' \/ (e is_marked_in C)
+end
+
+spec Generated_Container [sort Elem] =
+    generated type Container ::= empty | insert(Elem; Container)
+    pred __is_in__ : Elem * Container
+    forall e, e':Elem; C:Container
+    . not (e is_in empty)
+    . (e is_in insert (e', C)) <=> e = e' \/ (e is_in C)
+end
+
+spec Generated_Container_Merge [sort Elem] =
+    Generated_Container [sort Elem]
+then
+    op __merge__ : Container * Container -> Container
+    forall e:Elem; C, C':Container
+    . (e is_in (C merge C')) <=> (e is_in C) \/ (e is_in C')
+end
+
+spec Generated_Set [sort Elem] =
+    generated type Set ::= empty | insert(Elem; Set)
+    pred __is_in__ : Elem * Set
+    ops {__}(e :Elem): Set = insert (e, empty);
+	__cup__ : Set * Set -> Set;
+	remove : Elem * Set -> Set
+    forall e, e':Elem; S, S':Set
+    . not (e is_in empty)
+    . (e is_in insert (e', S)) <=> e = e' \/ (e is_in S)
+    . S = S' <=> forall x:Elem . (x is_in S) <=> (x is_in S')
+                                                   %(equal_sets)%
+    . (e is_in (S cup S')) <=> (e is_in S) \/ (e is_in S')
+    . (e is_in remove (e', S)) <=> not e = e' /\ (e is_in S)
+then %implies
+    forall e, e':Elem; S:Set
+    . insert (e, insert (e, S)) = insert (e, S)
+    . insert (e, insert (e', S)) = insert (e', insert (e, S))
+    generated type Set ::= empty | {__}(Elem) | __cup__(Set; Set)
+    op __cup__ : Set * Set -> Set, assoc, comm, idem, unit empty
+end
+
+spec Natural =
+    free type Nat ::= 0 | suc(Nat)
+end
+
+spec Color =
+    free type RGB ::= Red | Green | Blue
+    free type CMYK ::= Cyan | Magenta | Yellow | Black
+end
+
+spec Integer =
+free {type Int ::= 0 | suc(Int) | pre(Int)
+      forall x:Int
+      . suc (pre (x)) = x
+      . pre (suc (x)) = x}
+end
+
+spec Natural_Order =
+    Natural
+then
+free {pred __<__ : Nat * Nat
+      forall x, y:Nat
+      . 0 < suc (x)
+      . (x < y) => (suc (x) < suc (y))}
+end
+
+spec Natural_Arithmetic =
+    Natural_Order
+then
+    ops 1: Nat = suc (0);
+	__+__ : Nat * Nat -> Nat, assoc, comm, unit 0;
+	__*__ : Nat * Nat -> Nat, assoc, comm, unit 1
+    forall x, y:Nat
+    . x + suc (y) = suc (x + y)
+    . x * 0 = 0
+    . x * suc (y) = (x * y) + x
+end
+
+spec Integer_Arithmetic =
+    Integer
+then
+    ops 1: Int = suc (0);
+	__+__ : Int * Int -> Int, assoc, comm, unit 0;
+	__-__ : Int * Int -> Int;
+	__*__ : Int * Int -> Int, assoc, comm, unit 1
+    forall x, y:Int
+    . x + suc (y) = suc (x + y)
+    . x + pre (y) = pre (x + y)
+    . x - 0 = x
+    . x - suc (y) = pre (x - y)
+    . x - pre (y) = suc (x - y)
+    . x * 0 = 0
+    . x * suc (y) = (x * y) + x
+    . x * pre (y) = (x * y) - x
+end
+
+spec Integer_Arithmetic_Order =
+    Integer_Arithmetic
+then
+    preds __<=__, __>=__, __<__, __>__ : Int * Int
+    forall x, y:Int
+    . 0 <= 0
+    . not (0 <= pre (0))
+    . (0 <= x) => (0 <= suc (x))
+    . not (0 <= x) => not (0 <= pre (x))
+    . (suc (x) <= y) <=> (x <= pre (y))
+    . (pre (x) <= y) <=> (x <= suc (y))
+    . (x >= y) <=> (y <= x)
+    . (x < y) <=> (x <= y) /\ not x = y
+    . (x > y) <=> (y < x)
+end
+
+spec List [sort Elem] =
+    free type List ::= empty | cons(Elem; List)
+end
+
+spec Set [sort Elem] =
+free {type Set ::= empty | insert(Elem; Set)
+      pred __is_in__ : Elem * Set
+      forall e, e':Elem; S:Set
+      . insert (e, insert (e, S)) = insert (e, S)
+      . insert (e, insert (e', S)) = insert (e', insert (e, S))
+      . not (e is_in empty)
+      . e is_in insert (e, S)
+      . (e is_in S) => (e is_in insert (e', S))}
+end
+
+spec Transitive_Closure [sort Elem
+			 pred __R__ : Elem * Elem] =
+free {pred __Rplus__ : Elem * Elem
+      forall x, y, z:Elem
+      . (x R y) => (x Rplus y)
+      . (x Rplus y) /\ (y Rplus z) => (x Rplus z)}
+end
+
+spec Natural_With_Bound =
+    Natural_Arithmetic
+then
+    op max_size : Nat
+    . 0 < max_size
+end
+
+spec Set_Choose [sort Elem] =
+    Set [sort Elem]
+then
+    op choose : Set -> Elem
+    forall S:Set
+    . not S = empty => (choose (S) is_in S)
+end
+
+spec Set_Generated [sort Elem] =
+    generated type Set ::= empty | insert(Elem; Set)
+    pred __is_in__ : Elem * Set
+    forall e, e':Elem; S, S':Set
+    . not (e is_in empty)
+    . (e is_in insert (e', S)) <=> e = e' \/ (e is_in S)
+    . S = S' <=> forall x:Elem . (x is_in S) <=> (x is_in S')
+end
+
+spec Set_Union [sort Elem] =
+    Set [sort Elem]
+then %def
+    ops __cup__ : Set * Set -> Set, assoc, comm, idem, unit empty;
+	remove : Elem * Set -> Set
+    forall e, e':Elem; S, S':Set
+    . S cup insert (e', S') = insert (e', S cup S')
+    . remove (e, empty) = empty
+    . remove (e, insert (e, S)) = remove (e, S)
+    . not e = e' =>
+	  remove (e, insert (e', S)) = insert (e', remove (e, S))
+end
+
+spec Set_Union_1 [sort Elem] =
+    Set_Generated [sort Elem]
+then %def
+    ops __cup__ : Set * Set -> Set, assoc, comm, idem, unit empty;
+	remove : Elem * Set -> Set
+    forall e, e':Elem; S, S':Set
+    . (e is_in (S cup S')) <=> (e is_in S) \/ (e is_in S')
+    . (e is_in remove (e', S)) <=> not e = e' /\ (e is_in S)
+end
+
+spec UnNatural =
+free {type UnNat ::= 0 | suc(UnNat)
+      op __+__ : UnNat * UnNat -> UnNat, assoc, comm, unit 0
+      forall x, y:UnNat
+      . x + suc (y) = suc (x + y)
+      forall x:UnNat
+      . exists y:UnNat . x + y = 0}
+end

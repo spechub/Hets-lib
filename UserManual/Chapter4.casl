@@ -1,0 +1,131 @@
+library UserManual/Chapter4
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+from UserManual/Chapter3 get
+    Generated_Set, Natural_With_Bound, Natural_Arithmetic, List
+
+spec Set_Partial_Choose [sort Elem] =
+    Generated_Set [sort Elem]
+then
+    op choose : Set ->? Elem
+end
+
+spec Set_Partial_Choose_1 [sort Elem] =
+    Set_Partial_Choose [sort Elem]
+then
+    . not def choose(empty)
+    forall S:Set
+    . def choose(S) => choose(S) is_in S
+end
+
+spec Set_Partial_Choose_2 [sort Elem] =
+    Set_Partial_Choose [sort Elem]
+then
+    forall S:Set
+    . def choose(S) <=> not S = empty
+    forall S:Set
+    . def choose(S) => choose(S) is_in S
+end
+
+spec Natural_With_Bound_And_Addition =
+    Natural_With_Bound
+then
+    op __+?__ : Nat * Nat ->? Nat
+    forall x, y:Nat
+    . (x + y) < max_size => def x +? y
+    %{ x+y < max_size implies both
+       x < max_size and y < max_size }%
+    . def x +? y => x +? y = x + y
+end
+
+spec Set_Partial_Choose_3 [sort Elem] =
+    Set_Partial_Choose [sort Elem]
+then
+    . not def choose(empty)
+    forall S:Set
+    . not S = empty => choose(S) is_in S
+end
+
+spec Natural_Partial_Pre =
+    Natural_Arithmetic
+then
+    op pre : Nat ->? Nat
+    . not def pre(0)
+    forall x:Nat
+    . pre(suc(x)) = x
+end
+
+spec Natural_Partial_Subtraction_1 =
+    Natural_Partial_Pre
+then
+    op __-__ : Nat * Nat ->? Nat
+    forall x, y:Nat
+    . x - 0 = x
+    . x - suc(y) = pre(x - y)
+end
+
+spec Natural_Partial_Subtraction =
+    Natural_Partial_Pre
+then
+    op __-__ : Nat * Nat ->? Nat
+    forall x, y:Nat
+    . def x - y <=> y < x \/ y = x
+    . x - 0 = x
+    . x - suc(y) = pre(x - y)
+end
+
+spec List_Selectors_1 [sort Elem] =
+    List [sort Elem]
+then
+free {ops head : List ->? Elem;
+	  tail : List ->? List
+      forall e:Elem; L:List
+      . head(cons(e, L)) = e
+      . tail(cons(e, L)) = L}
+end
+
+spec List_Selectors_2 [sort Elem] =
+    List [sort Elem]
+then
+    ops head : List ->? Elem;
+	tail : List ->? List
+    forall e:Elem; L:List
+    . not def head(empty)
+    . not def tail(empty)
+    . head(cons(e, L)) = e
+    . tail(cons(e, L)) = L
+end
+
+spec List_Selectors [sort Elem] =
+    free type List ::= empty | cons(head:?Elem; tail:?List)
+end
+
+spec Natural_Suc_Pre =
+    free type Nat ::= 0 | suc(pre:?Nat)
+end
+
+spec Pair_1 [sorts Elem1, Elem2] =
+    free type Pair ::= pair(first:Elem1; second:Elem2)
+end
+
+spec Part_Container [sort Elem] =
+    generated type P_Container ::= empty | insert(Elem; P_Container)?
+    pred addable : Elem * P_Container
+    vars e, e':Elem; C:P_Container
+    . def insert(e, C) <=> addable(e, C)
+    pred __is_in__ : Elem * P_Container
+    . not e is_in empty
+    . addable(e', C) => (e is_in insert(e', C) <=> e = e' \/ e is_in C)
+end
+
+spec Natural_Partial_Subtraction_2 =
+    Natural_Partial_Subtraction_1
+then
+    forall x, y, z:Nat
+    . y - x =e= z - x => y = z
+    %{ y - x = z - x   =>  y = z would be wrong,
+       def (y-x)   /\  def (z-x)   /\  y - x = z - x   =>  y = z
+       is correct, but better abbreviated in the above axiom }%
+end

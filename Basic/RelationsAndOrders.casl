@@ -1,17 +1,40 @@
 library Basic/RelationsAndOrders
 version 0.9
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% date: 2.9.02
-%% corresponding author: M.Roggenbach (roba@tzi.de)
+%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%date: 3 November 2003
 
-%display __~__    %LATEX \sim
-%display __cup __ %LATEX \sqcup
-%display __cap __ %LATEX \sqcap
+%{ 
+
+This library provides 
+
+- specifications of binary relations of different sort, 
+- views stating that the numbers specified in the
+   Library Basic/Numbers are totally ordered, and
+- a specification of Boolean Algebras.
+
+Then, the different concepts specified are enriched with additional
+operations and predicates: In case of partial orders, the specification
+ExtPartialOrder provides the notions of inf, sup; the specification
+ExtTotalOrder adds the functions min and max to total orders;
+ExtBooleanAlgebra defines a complement operation as well as a
+less-or-equal relation for boolean algebras.
+
+Finally, the library provides non parameterized variants of these
+enriched specifications.
+
+}%
+
+%display __~__    %LATEX __\sim__
+%display __<=__    %LATEX __\leq__
+%display __>=__    %LATEX __\geq__
+%display __cup __ %LATEX __\sqcup__
+%display __cap __ %LATEX __\sqcap__
 %display compl__  %LATEX __^{-1}
 
 %prec { __ cup __ } < { __ cap __}
 
-from Basic/Numbers version 0.9 get Nat, Int, Rat
+from Basic/Numbers version 1.0 get Nat, Int, Rat
+
 
 spec Relation =
      sort Elem
@@ -22,13 +45,32 @@ spec ReflexiveRelation =
      Relation
 then
      forall x:Elem
-     . x ~ x                       %(refl)%
+     . x ~ x                        %(refl)%
+end
+
+spec IrreflexiveRelation =
+     Relation
+then
+     forall x:Elem
+     . not x ~ x                  %(irrefl)%
 end
 
 spec SymmetricRelation =
      Relation
 then forall x,y:Elem
-     . x ~ y if y ~ x              %(sym)%
+     . x ~ y if y ~ x                %(sym)%
+end
+
+spec AsymmetricRelation =
+     Relation
+then forall x,y:Elem
+     . not x ~ y if y ~ x           %(asym)%
+end
+
+spec AntisymmetricRelation =
+     Relation
+then forall x,y:Elem
+     . x = y if x ~ y /\ y ~ x %(antisym)%
 end
 
 spec TransitiveRelation =
@@ -49,43 +91,46 @@ spec EquivalenceRelation =
      ReflexiveRelation and PartialEquivalenceRelation
 end
 
-%% to be removed in the next version:
-spec SigOrder[sort Elem] =
-     preds __ <= __, __ < __,
-           __ >= __, __ > __: Elem * Elem;
-     forall x,y:Elem
-     . x >= y <=> y <= x                   %(geq_def_SigOrder)%
-     . x < y <=> (x <= y /\ not (x=y))     %(less_def_SigOrder)%
-     . x > y <=> y < x                     %(greater_def_SigOrder)%
-end
-
 spec PreOrder =
      {ReflexiveRelation and TransitiveRelation}
      with pred __ ~ __ |-> __ <= __
 end
 
+spec StrictOrder =
+     { {IrreflexiveRelation and TransitiveRelation}
+       then %implies
+             AsymmetricRelation }
+     with pred __ ~ __ |-> __ < __
+end
+
 spec PartialOrder =
-     PreOrder
-then forall x,y:Elem
-     . x = y if x <= y /\ y <= x           %(antisym_PartialOrder)%
+     PreOrder 
+and  AntisymmetricRelation with pred __ ~ __ |-> __ <= __
 end
 
 spec TotalOrder =
      PartialOrder
 then forall x,y:Elem
-     . x <= y \/ y <= x                    %(comparability_TotalOrder)%
+     . x <= y \/ y <= x                    %(dichotomy_TotalOrder)%
 end
 
-view TotalOrder_in_Nat: TotalOrder to Nat =
-     sort Elem |-> Nat
+spec StrictTotalOrder =
+     StrictOrder
+then forall x,y:Elem
+     . x < y \/ y < x \/ x=y        %(trichotomy_StrictTotalOrder)%
 end
 
-view TotalOrder_in_Int: TotalOrder to Int =
-     sort Elem |-> Int
+spec RightUniqueRelation =
+     sorts S, T
+     pred __ R __: S * T
+     forall s:S; t1,t2:T
+     . s R t1 /\ s R t2 => t1=t2
 end
 
-view TotalOrder_in_Rat: TotalOrder to Rat =
-     sort Elem |-> Rat
+spec LeftTotalRelation =
+     sorts S, T
+     pred __ R __: S * T
+     forall s:S . exists t:T . s R t
 end
 
 spec BooleanAlgebra =
@@ -159,7 +204,7 @@ then %implies
      . max(x,y)=sup(x,y)             %(max_sup_relation)%
 end
 
-spec ExtBooleanAlgebra  [BooleanAlgebra] = %def
+spec ExtBooleanAlgebra [BooleanAlgebra] = %def
      {   preds __ <= __, __ < __,
                __ >= __, __ > __: Elem * Elem;
          forall x,y:Elem
@@ -169,7 +214,7 @@ spec ExtBooleanAlgebra  [BooleanAlgebra] = %def
          . x > y <=> y < x                  %(greater_def_ExtBooleanAlgebr)%
      }
 and
-     { op compl: Elem -> Elem
+     { op compl__: Elem -> Elem
        forall x,y:Elem
        . compl(x)=y <=> x cup y = 1 /\ x cap y = 0    
                                             %(compl_def_ExtBooleanAlgebra)%
@@ -183,12 +228,24 @@ and
      }
 end
 
-view PartialOrder_in_ExtBooleanAlgebra  [BooleanAlgebra]:
-   PartialOrder to ExtBooleanAlgebra[BooleanAlgebra] 
+spec RichPartialOrder   = ExtPartialOrder   [PartialOrder]
+spec RichTotalOrder     = ExtTotalOrder     [TotalOrder]
+spec RichBooleanAlgebra = ExtBooleanAlgebra [BooleanAlgebra]
+
+
+
+view TotalOrder_in_Nat: TotalOrder to Nat =
+     sort Elem |-> Nat
 end
 
-spec RichPartialOrder = ExtPartialOrder  [PartialOrder]
-spec RichTotalOrder = ExtTotalOrder  [TotalOrder]
-spec RichBooleanAlgebra = ExtBooleanAlgebra  [BooleanAlgebra]
+view TotalOrder_in_Int: TotalOrder to Int =
+     sort Elem |-> Int
+end
 
+view TotalOrder_in_Rat: TotalOrder to Rat =
+     sort Elem |-> Rat
+end
 
+view PartialOrder_in_ExtBooleanAlgebra [BooleanAlgebra]:
+   PartialOrder to ExtBooleanAlgebra[BooleanAlgebra] 
+end
