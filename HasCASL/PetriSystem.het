@@ -1,7 +1,7 @@
 library HasCASL/PetriSystem
 
 %%from HasCASL/Set get SetRepresentation, AbstractSetConstructions
-from HasCASL/MultiSet get MultiSet
+from HasCASL/MultiSet get MapMultiSet
 from HasCASL/Petri get PetriNet, PetriNetCategory
 from HasCASL/Categories get Category
 
@@ -9,33 +9,58 @@ from HasCASL/Categories get Category
 logic HasCASL
 
 spec PetriSystem = 
-  MultiSet and PetriNet 
+  MapMultiSet and PetriNet
 then
   type Marking := MultiSet P
   type System = {(n,m) : Net * Marking 
                           . let (p,pre1,post1) = n 
-                            in forall x:P . x isIn m => x isIn p }
-
+		          in forall x:P . x isIn m => x isIn p }
   ops  marking   : System -> Marking;
        net       : System -> Net;
        empty     : Marking;
-        __|<__>  : System * T -> System; 
-       __union__ : System * System -> System
-
-  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T
+       __|<__>   : System * T -> System; 
+       __|<__>   : System * MultiSet T ->? System;
+  forall sys,sys1,sys2:System; n:Net; m:Marking; t:T; v: MultiSet T 
   . empty = {}
   . net sys = let (n,m) = sys in n
   . marking sys = let (n,m) = sys in m
-%[
-  . def sys|<t> <=> (t isIn dom pre 
-      /\ forall x:P . x isIn pre(t) => x isIn marking(sys))
-  . def sys|<t> => sys|<t> = (net(sys), 
-       marking(sys) - setToMultiSet(pre(t)) + setToMultiSet(post(t))) 
-           as System
-  . sys1 union sys2 = 
-      (net(sys1) union net(sys2), marking(sys1) + marking(sys2)) as System
-end 
+  . def sys|<t> <=> t isIn (dom (preMap(net(sys)))) /\  preMap(net(sys))  t <= marking(sys)
+  . def sys|<t> => sys|<t> = (net(sys), (marking(sys) -  preMap(net(sys)) t) + postMap(net(sys)) t)
+  . def sys|<v> <=> forall t:T . t isIn v /\ t isIn (dom (preMap(net(sys)))) /\ linMap (preMap(net(sys))) v <= marking(sys)
+  . def sys|<v> => 
+    sys|<v> = (net(sys), (marking(sys) - linMap (preMap(net(sys))) v) + linMap (postMap(net(sys))) v )
+end
 
+spec PetriSystemCategory = 
+  PetriSystem and PetriNetCategory
+then
+  type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
+                  ((net(sys1), hp, ht, net(sys2)) in HomNet )
+       /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
+  ops  dom : HomSys  -> System;
+       cod : HomSys  -> System;
+       placesMap : HomSys  -> (P->?P);
+       transitionsMap : HomSys  -> (T->?T);
+       id : System ->? HomSys;
+       __o__ : HomSys  * HomSys  ->? HomSys 
+  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys; v: MultiSet T 
+  . let h=(sys1,hp,ht,sys2) in dom (h) = sys1
+  . let h=(sys1,hp,ht,sys2) in cod (h) = sys2
+  . let h=(sys1,hp,ht,sys2) in placesMap (h) = hp
+  . let h=(sys1,hp,ht,sys2) in transitionsMap (h) = ht
+  . def (h2 o h1) <=> cod h1 = dom h2
+  . def (h2 o h1) => h2 o h1 = 
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
+      as HomSys
+end
+
+view CategoryofPetriSystems : Category to PetriSystemCategory =
+     Ob |-> System, Mor |-> HomSys, __o__, dom, cod, id
+end
+
+
+
+%[
 spec WorkflowNet [SetRepresentation with S |-> P]
                  [SetRepresentation with S |-> T] = 
   PetriSystem
@@ -75,47 +100,3 @@ then
 end
 ]%
 
-
-spec PetriSystemCategory = 
-  PetriNetCategory and MultiSet
-then
-  type Marking := MultiSet P
-  type System = {(n,m) : Net * Marking 
-                          . let (p,pre1,post1) = n 
-		          in forall x:P . x isIn m => x isIn p }
-  ops  marking   : System -> Marking;
-       net       : System -> Net;
-  type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
-                  ((net(sys1), hp, ht, net(sys2)) in HomNet )
-       /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
-  ops  empty     : Marking;
-        __|<__>    : System * T -> System; 
-        __|<__>    : System * MultiSet T ->? System;
-       dom : HomSys  -> System;
-       cod : HomSys  -> System;
-       placesMap : HomSys  -> (P->?P);
-       transitionsMap : HomSys  -> (T->?T);
-       id : System ->? HomSys;
-       __o__ : HomSys  * HomSys  ->? HomSys 
-  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys; v: MultiSet T 
-  . empty = {}
-  . net sys = let (n,m) = sys in n
-  . marking sys = let (n,m) = sys in m
-  . def sys|<t> <=> t isIn (dom (preMap(net(sys)))) /\  preMap(net(sys))  t <= marking(sys)
-  . def sys|<t> => sys|<t> = (net(sys), (marking(sys) -  preMap(net(sys)) t) + postMap(net(sys)) t)
-  . def sys|<v> <=> forall t:T . t isIn v /\ t isIn (dom (preMap(net(sys)))) /\ linMap (preMap(net(sys))) v <= marking(sys)
-  . def sys|<v> => 
-    sys|<v> = (net(sys), (marking(sys) - linMap (preMap(net(sys))) v) + linMap (postMap(net(sys))) v )
-  . let h=(sys1,hp,ht,sys2) in dom (h) = sys1
-  . let h=(sys1,hp,ht,sys2) in cod (h) = sys2
-  . let h=(sys1,hp,ht,sys2) in placesMap (h) = hp
-  . let h=(sys1,hp,ht,sys2) in transitionsMap (h) = ht
-  . def (h2 o h1) <=> cod h1 = dom h2
-  . def (h2 o h1) => h2 o h1 = 
-     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
-      as HomSys
-end
-
-view CategoryofPetriSystems : Category to PetriSystemCategory =
-     Ob |-> System, Mor |-> HomSys, __o__, dom, cod, id
-end
