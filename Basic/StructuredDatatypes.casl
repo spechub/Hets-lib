@@ -135,7 +135,7 @@ view BooleanAlgebra_in_FinitePowerSet
 end
 
 spec GenerateList  [sort Elem] =
-  free types 
+  free type
   List[Elem] ::=  [] |  __ :: __ (first:? Elem; rest:? List[Elem])
 end
 
@@ -205,7 +205,7 @@ then %implies
 
      . def first(L) <=> not isEmpty(L)          %(first_domain)%
      . def last(L) <=> not isEmpty(L)           %(last_domain)%
-     . def rest(L) <=> not isEmpty(L)           %(front_domain)%
+     . def front(L) <=> not isEmpty(L)          %(front_domain)%
      . def rest(L) <=> not isEmpty(L)           %(rest_domain)%
 
      . def take(n,L) <=> # L >= n               %(take_dom)%
