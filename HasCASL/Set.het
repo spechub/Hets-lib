@@ -211,12 +211,11 @@ then
        in (((s1,inl,copr),(s2,inr,copr)), med)
 end
 
-
-view SetHasCoproducts [SetRepresentation] given Map : 
+%[view SetHasCoproducts [SetRepresentation] given Map : 
         Coproduct[Category] to SetCoproduct[SetRepresentation] =
      Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coproduct__
 end     
-
+]%
 
 %{ Given a set representation, we now can define coequalizers,
    while staying within the same type of sets.
@@ -240,7 +239,7 @@ then
 end
 
 
-view SetHasCoequalizers [SetRepresentation] given Map : 
+%[view SetHasCoequalizers [SetRepresentation] given Map : 
         Coequalizer[Category] to SetCoequalizer[SetRepresentation] =
      Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coequalizer__
 end     
@@ -249,3 +248,4 @@ spec SetPushOut [SetRepresentation] =
   PushoutAsCoequalizerOfCoproduct[view SetHasCoproducts]
   [view SetHasCoequalizers]
 end
+]%
