@@ -131,16 +131,21 @@ view Symmetric_as_Undirected[sort NodeLabel][sort EdgeLabel] :
 end
 
 view Undirected_as_Symmetric[sort NodeLabel][sort EdgeLabel] : 
-  { UndirectedGraph[sort NodeLabel][sort EdgeLabel] hide Graph} to
-  SymmetricGraph[sort NodeLabel][sort EdgeLabel] =
+  { SymmetricGraph[sort NodeLabel][sort EdgeLabel] hide Graph } to
+  UndirectedGraph[sort NodeLabel][sort EdgeLabel] =
   sort SymmetricGraph |-> Graph,
   op addEdgeSym |-> addEdge
 end
+
 
 spec SimpleAbstractGraph[sort NodeLabel] =
   free type Unit ::= *
 then
   AbstractGraph[sort NodeLabel][sort Unit]
+then
+  pred __-->__isin__ : NodeLabel * NodeLabel * Graph
+  forall n1,n2:NodeLabel; g:Graph
+  . n1-->n2 isin g <=> * :: n1-->n2 isin g
 end
 
 spec LoopFreeAbstractGraph[sort NodeLabel][sort EdgeLabel] =
@@ -149,25 +154,34 @@ then
   forall g:Graph . loopFree(g)
 end
 
+spec SymmetricClosure[sort NodeLabel][sort EdgeLabel] =
+  RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
+then
+  op sc : Graph -> Graph
+  forall n,n1,n2:NodeLabel; e:EdgeLabel; g:Graph
+  . n eps sc(g) <=> n eps g
+  . e::n1-->n2 isin sc(g) <=> (e::n1-->n2 isin g \/ e::n2-->n1 isin g)
+end
+
 spec TransitiveClosure[sort NodeLabel][sort EdgeLabel] =
   RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
 and
-  List[sort EdgeLabel]
+  List[sort EdgeLabel fit Elem |-> EdgeLabel]
 and
-  RichAbstractGraph[sort NodeLabel][sort List[EdgeLabel]]
+  SymmetricClosure[sort NodeLabel][sort List[EdgeLabel]]
   with Graph |-> PathGraph
 then
   ops tc,stc : Graph -> PathGraph
   preds __pathSubgraphOf__ : Graph * PathGraph;
         pathTransitive : PathGraph
-  forall n,n1,n2:NodeLabel; e,e1,e2:EdgeLabel; g:Graph; g':PathGraph
+  forall n,n1,n2:NodeLabel; e:EdgeLabel; g:Graph; g':PathGraph
   . g pathSubgraphOf g' <=>
       (forall n:NodeLabel . n eps g <=> n eps g') /\
       (forall n1,n2:NodeLabel; e:EdgeLabel .
           e::n1-->n2 isin g <=> (e::[])::n1-->n2 isin g') 
                                                 %(pathSubgraphOf_def)%
   . pathTransitive(g') <=>
-      forall n1,n2,n3:NodeLabel; e1,e2:EdgeLabel . 
+      forall n1,n2,n3:NodeLabel; e1,e2:List[EdgeLabel] . 
         e1::n1-->n2 isin g' /\ e2::n2-->n3 isin g' =>
            (e1++e2)::n1-->n3 isin g'            %(pathTransitive_def)%
 
@@ -175,4 +189,78 @@ then
   . g pathSubgraphOf tc(g)                                 %(tc_def2)%
   . g pathSubgraphOf g' /\ pathTransitive(g') =>
       tc(g) subgraphOf g'                                  %(tc_def3)%
+
+  . stc(g) = sc(tc(g))                                     %(stc_def)%
+end
+
+spec GraphHomomorphism[sort N1][sort E1][sort N2][sort E2] =
+  AbstractGraph[sort N1][sort E1] with Graph |-> Graph1
+and
+  AbstractGraph[sort N2][sort E2] with Graph |-> Graph2
+and
+  FiniteMap[sort N1 fit S |-> N1][sort N2 fit T |-> N2]
+and
+  FiniteMap[sort E1 fit S |-> E1][sort E2 fit T |-> E2]
+then
+  free type PreHom ::= preHom(source : Graph1;
+                              target : Graph2;
+                              nodeMap : FiniteMap[N1,N2];
+                              edgeMap : FiniteMap[E1,E2])
+  sort Hom = {h:PreHom .
+        forall n,n':N1; e:E1 .
+          e::n-->n' isin source(h) =>
+            eval(e,edgeMap(h))::
+              eval(n,nodeMap(h))-->eval(n',nodeMap(h))
+                 isin target(h)   }
+end
+
+spec Minor[sort N1][sort E1][sort N2][sort E2] =
+  TransitiveClosure[sort N2][sort E2] with Graph |-> Graph2
+and
+  GraphHomomorphism[sort N1][sort E1][sort N2][sort List[E2]]
+  with Graph2 |-> PathGraph 
+then
+  pred __minorOf__ : Graph1 * Graph2
+  forall g1:Graph1; g2:Graph2
+  . g1 minorOf g2 <=> 
+     exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)
+end
+
+spec K5 =
+  free type Five ::= 1 | 2 | 3 | 4 | 5
+then
+  SimpleAbstractGraph[sort Five] with Graph |-> K5
+then
+  op k5 : K5
+  forall n,n1,n2 : Five
+  . n eps k5
+  . n1 --> n2 isin k5
+end
+
+spec K3_3 =
+  free type Three ::= 1 | 2 | 3
+  free type Three2 ::= left(Three) | right(Three)
+then
+  SimpleAbstractGraph[sort Three2] with Graph |-> K3_3
+then
+  op k3_3 : K3_3
+  forall n,n1,n2 : Three
+  . left(n) eps k3_3
+  . right(n) eps k3_3
+  . left(n1) --> right(n2) isin k3_3
+end
+
+%% planar graphs defined using the Kuratowski charaterization
+spec Planar[sort NodeLabel][sort EdgeLabel] =
+  K5 and K3_3
+and
+  Minor[sort Five][sort Unit][sort NodeLabel][sort EdgeLabel]
+  with Graph1 |-> K5, Graph2 |-> Graph
+and
+  Minor[sort Three2][sort Unit][sort NodeLabel][sort EdgeLabel]
+  with Graph1 |-> K3_3, Graph2 |-> Graph
+then
+  pred planar : Graph
+  forall g:Graph
+  . planar(g) <=> not k5 minorOf g /\ not k3_3 minorOf g
 end
