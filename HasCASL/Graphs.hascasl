@@ -8,7 +8,11 @@ version 0.9
 
 from Basic/StructuredDatatypes get List
 
-spec Set = InternalLogic and Extensionality
+%{ Typed sets are represented by predicates over the type.
+   Set membership is just holding of the predicate: x isIn s <=> s x
+   Note that for disjoint unions and products, the type changes.  }%
+
+spec Set = InternalLogic and Extensionality then
   var S,T : Type
   type Set S = Pred S
   ops emptySet : Set S;
@@ -20,22 +24,22 @@ spec Set = InternalLogic and Extensionality
       __*__ : Set S -> Set T -> Set (S*T)
       __disjointUnion__ :  Set S -> Set S -> Set (S*Bool);
       inl,inr : S -> S*Bool;
-  forall s,s':Set(S); x,x':S; y:T
+  forall x,x':S; y:T; s,s:Set(S); t:Set(T) 
   . not x isIn emptySet
   . x isIn {x'} <=> x=x'
   . x isIn s <=> s x
-  . s subset s' <=> (forall x:S . x isIn s <=> x isIn s')
+  . s subset s' <=> (forall x:S . x isIn s => x isIn s')
   . x isIn (s union s') <=> x isIn s \/ x isIn s'
   . x isIn (s intersection s') <=> x isIn s /\ x isIn s'
   . x isIn (s \\ s') <=> x isIn s /\ not x isIn s'
   . s disjoint s' <=> s intersection s' = emptySet
   . (x,y) isIn s * t <=> x isIn s /\ y isIn t
-  . inl s = (s,false)
-  . inr s = (s,true)
+  . inl x = (x,false)
+  . inr x = (x,true)
   . s disjointUnion s' = (s * {false}) union (s' * {true})
 end
 
-
+%{ Relations and partial equivalence relations (PERs) }%
 spec Relation =
   Set
 then
@@ -47,11 +51,11 @@ then
   . transitive r <=> forall x,y,z:S . r(x,y) /\ r(y,z) => r(x,y)
   type PER S = { r : Set(S*S) . symmetric r /\ transitive r }
   op dom : PER S -> S
-  var S : Type
-  forall r: PER S
+  forall x:S; r: PER S
   . x isIn dom r <=> (x,x) isIn r  
 end
-  
+
+%{ Partial maps and endomaps }%  
 spec Map =
   Set then
   var S,T,U : Type
@@ -66,7 +70,8 @@ spec Map =
       __ intersection __, __union__ : (S->?T) * (S->?T) -> (S->?T)
       __o__ : (T->?U) * (S->?T) -> (S->?U)
       __||__ : (S->?T) -> Set S -> (S->?T)
-      ker :: (S->?T) -> Pred (S*S)
+      ker : (S->?T) -> Pred (S*S)
+      injective : Pred(S->?T)
   forall f,g:S->?T; h:T->?U s,s':Set S; t:Set T; x,x':S; y:T
   . x isIn dom f <=> def f x
   . y isIn range f <=> exists x:S . f x = y
@@ -80,29 +85,80 @@ spec Map =
   . def f union g => f union g x = if def f x  then f x else g x
   . (h o g) x = h(g(x))
   . (f || s) x = if x isIn s then f x else undef()
-  . (x,x') isIn ker f <=> f x = f x'
+  %% the kernel is a PER with same domain as the function, hence the existential equation
+  . (x,x') isIn ker f <=> f x =e= f x'
+  %% injectivity only for values in the domain, hence the existential equation
+  . injective f <=> (forall x,y:s . f x =e= f y => x=y)
 end
 
+%{ If we want to iterate the constructions product, disjoint union
+   and quotients on sets, we need to circumvent the problem that
+   the type of the sets changes with each construction.
+   This means that we need a specific type S which comes with
+   the possibility to represent the result of the above mentioned
+   operations again in S.
+   The following specification states the abstract requirement that
+   such representations exists for a given type S. }%
 spec SetRepresentation =
   Map
 then
-  var S : Type;
-  ops pair : S*S->S;
-      inl,inr : S->S;
-      coeq: PER S -> Map S;
-  forall r:PER S; x:S
+  type S;
+  ops pair : S*S->S;   %% represent S*S in S
+      inl,inr : S->S;  %% represent S disjointUnion S in S, with left and right injection
+      %% represent quotient by a PER, yields the quotient map
+      %% the quotient is then the image of the quotient map
+      coeq: PER S -> Map S; 
   . injective pair
+  . injective inl
+  . injective inr
   . (range inl) disjoint (range inr)
+  forall r:PER S
   . ker (coeq r) = r 
 end
 
-spec AbstractSetOperations[SetRepresentation] given Map = %def
-  var S : Type
+%{ Some sample set representation for the natural numbers ... }%
+spec Nat_SetRepresentation =
+  Map and Nat
+then
+  ops pair : Nat*Nat->Nat;   
+      inl,inr : Nat->Nat; 
+      coeq: PER Nat -> Map Nat; 
+      min : Pred Nat ->? Nat
+  forall r:PER Nat; m,n:Nat
+  %% Use Cantor's diagonalization for pairs of natural numbers
+  . pair(m,n) = ((m+n)*(m+n+1)+2*m) div 2
+  %% Use even and odd numbers as two copies of the natural numbers
+  . inl m = 2*m
+  . inr m = 2*m+1
+  %% choose the minimal element as representative of an equivalence class
+  . min p = n <=> (p n /\ forall m:Nat . m<n => not p m) 
+  . coeq r n = min (\ m . (m,n) isIn r) 
+end
+
+%{ ... and the statement that this is indeed a set representation }%
+view SetRepresentation to Nat_SetRepresentation = S |-> Nat
+end
+
+%{ Given a set representation, we now can define products, coproducts,
+   coequalizers and pushouts, while staying within the same type of sets.
+   Note that __*__ is now overloaded: for two given S-sets,
+   it delivers either an (S*S)-set, as defined in the specification
+   Set above, or an S-Set, as defined here.
+   We also specify the mediating morphisms that exist by the
+   respective (co)universal properties of the constructions. }%
+spec AbstractSetConstructions[SetRepresentation] given Map = %def
   ops __*__,__coproduct__ : Set S * Set S -> Set S;
+      %% the mediating morphisms for (co)products depend on two morphisms
+      %% going into the factors (out of the summands)
       <__! __>, [__! __] : Map S -> Map S -> Map S;
+      %% the product projections (coproduct injections already come from SetRepresentation)
       pi1,pi2 : S ->? S;
+      %% given a PER, yield the resulting quotient set (=coequalizer)
+      %% then we have coeq r :: dom r --> factor r
       factor : PER S -> Set S;
-      mediate : PER S -> Map S -> Map S
+      %% the mediating morphism for coequalizers
+      %% if we have another h :: dom r --> A, it factors through coeq r via the mediating morphism
+      mediate : PER S -> Map S ->? Map S
   forall x,y:S; s,s1,s2,t:Set S; f,g,h : Map S; r:PER S
   . pi1 (pair (x,y)) = x
   . pi2 (pair (x,y)) = y
@@ -112,9 +168,9 @@ spec AbstractSetOperations[SetRepresentation] given Map = %def
   . [f!g] (inl x) = f x
   . [f!g] (inr x) = g x
   . factor r = range (coeq r)
-  . mediate r f (coeq x) = f x 
+  . f :: dom r --> t /\ ker f subset r => mediate r f (coeq x) = f x 
 then %implies
-  . pi1 :: s1 * s2 --> s1  implied
+  . pi1 :: s1 * s2 --> s1 
   . pi2 :: s1 * s2 --> s2  
   . inl :: s1 --> s1 coproduct s2  
   . inr :: s2 --> s1 coproduct s2  
@@ -127,33 +183,54 @@ then %implies
     [f!g] o inl || s1 coproduct s2 = f || s1 coproduct s2 /\
     [f!g] o inr || s1 coproduct s2 = g || s1 coproduct s2
   . coeq r :: dom r --> factor r
-  . f :: dom r --> t /\ r subset ker f => 
+  . f :: dom r --> t /\ ker f subset r => 
     mediate r f :: (factor r) --> t /\ 
     mediate r f o coeq r || dom r = f || dom r
 then %def
   var S : Type
+  %% pushout mediators
+  %% the mediating morphism for pushouts depends on a cocone,
+  %% which is given by an object and two morphisms (ending in that object) 
   type Med Ob Mor = Ob * Mor * Mor ->? Mor
+  %% (co)product of maps
   ops __*__,__coproduct__ : Map S * Map S -> Map S
-      pushout : Set S * Map S * S * Map S * S -> 
-                (S * Map S * Map S * Med S (S->?S))
+  %% the pushout operation takes a diagram (three objects and two morphisms)
+  %% and yields a colimiting cocone (an object and two morphisms)
+  %% plus a mediator
+      pushout : Set S * Map S * Set S * Map S * Set S -> 
+                (Set S * Map S * Map S * Med (Set S) (S->?S))
   forall x,y:S; s,s1,s2,s3,t:Set S; f,g,h : Map S; r:Pred(S*S)
-  f*g = <f o pi1 ! g o pi2>
-  f corpoduct g = [inl o f ! inr o g]
-  pushout (s1,f,s2,g,s3) = 
-  let s = s2 coproduct s3;
-      r = \(x,y):S*S . exists z:S . z isIn s1 /\ f z =x /\ g z = y
-          as PER S
-      q = coeq r
-  in
-  (factor r,q o inl,q o inr,
-   \(d,h,k):Map S * Map S . 
-     if h :: s2 --> d /\ k :: s3 --> d /\
-        h o f || s1 = k o g || s1
-        then mediate r [h!k] else undef())
+  . f*g = <f o pi1 ! g o pi2>
+  . f copoduct g = [inl o f ! inr o g]
+  . def pushout (s1,f,s2,g,s3) <=> f :: s1 --> s2 /\ g :: s1 --> s3
+  %% pushouts are coequalizers of coproducts
+  . def pushout (s1,f,s2,g,s3) =>
+    pushout (s1,f,s2,g,s3) = 
+          %% first take the coproduct ...
+      let s = s2 coproduct s3;
+          %% r is the PER identifying those elements of s coming from elements of s1
+          r = \(x,y):S*S . exists z:S . z isIn s1 /\ inl (f z) =x /\ inr (g z) = y
+              as PER S
+          %% ... and then the coequalizer
+          q = coeq r
+      in
+      %% the pushout object is the quotient, the cocone is the composition of the cocones
+      (factor r,q o inl,q o inr,
+      %% the mediator first takes the coproduct mediator [h!k]
+      %% and then the coequalizer mediator (mediate r [h!k])
+       \(d,h,k):Med (Set S) (S->?S) . 
+         if h :: s2 --> d /\ k :: s3 --> d /\
+            h o f || s1 = k o g || s1
+            then mediate r [h!k] else undef())
 then %implies
   %% pushout properties
 end
 
+
+%{ Directed graphs over some arbitrary but fixed node and edge types,
+   given by node set and source and target maps.
+   Note that the node set may be larger than the range of these maps
+   in case that there are isolated nodes. }%
 spec DirectedGraph =
   Set
 then
@@ -163,6 +240,8 @@ then
                       /\ source :: dom source --> n 
                       /\ target :: dom target --> n }
 end
+
+%{ Some useful operations on directed graphs. }%
 
 spec RichDirectedGraph =
   RichDirectedGraph
@@ -292,20 +371,26 @@ then
      (dom h1, nodemap h2 o nodemap h1, edgemap h2 o edgemap h1,cod h2)
       as Hom N1 E1 N2 E2
 end
- 
-spec DirectedGraphCombinations =
-  GraphHomomorphism
+
+%{ Constructions on directed graphs, defined in terms of the corresponding
+   operations on sets, usually acting component wise.
+   Note that we have to fix N and E here, since we need set representations for them
+   in order to get the needed constructions on sets. }%
+spec DirectedGraphConstructions [SetRepresentation with S |-> N] [SetRepresentation with S |-> E]=
+  AbstractSetConstructions[SetRepresentation with S |-> N]
+and
+  AbstractSetConstructions[SetRepresentation with S |-> E]
+and GraphHomomorphism
 then
-  var N, E : Type
-  type Congruence N E = {(g,rn,re) : Graph N E * PER N * PER E
+  type Congruence = {(g,rn,re) : Graph N E * PER N * PER E
                           . nodes g = dom rn /\ edges g = dom re /\
                             forall e1,e2:E . (e1,e2) isIn re =>
                                (sourceMap g e1,sourceMap g e2) isIn rn /\
                                (targetMap g e1,targetMap g e2) isIn rn }
-  ops graph : Congruence N E -> Graph N E;
-      nodeRel : Congruence N E -> PER N;
-      edgeRel : Congruence N E -> PER E;
-      factor : Congruence N E ->? Graph N E;
+  ops graph : Congruence -> Graph N E;
+      nodeRel : Congruence -> PER N;
+      edgeRel : Congruence -> PER E;
+      factor : Congruence ->? Graph N E;
       __coproduct__ : Graph N E * Graph N E -> Graph N E;
       pushout : HomHom N E -> HomHom N E ->? 
                 HomHom N E * HomHom N E * Med (Graph N E) (HomHom N E)
@@ -313,12 +398,12 @@ then
 
   forall g,g1,g2: Graph N E; h1,h2:HomHom N E; r:Relation N E
 
-  . (g,rn,re) in Congruence N E
-    => graph ((g,rn,re) as Congruence N E) = g
-  . (g,rn,re) in Congruence N E
-    => nodeRel ((g,rn,re) as Congruence N E) = rn
-  . (g,rn,re) in Congruence N E
-    => edgeRel ((g,rn,re) as Congruence N E) = re
+  . (g,rn,re) in Congruence
+    => graph ((g,rn,re) as Congruence) = g
+  . (g,rn,re) in Congruence
+    => nodeRel ((g,rn,re) as Congruence) = rn
+  . (g,rn,re) in Congruence
+    => edgeRel ((g,rn,re) as Congruence) = re
 
   . factor c =
     (factor (graph c) (nodeRel c),
