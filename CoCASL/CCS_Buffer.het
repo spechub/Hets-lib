@@ -38,4 +38,11 @@ CCS then
   . definitionOf(C_10 ) = bar(output(0)) -> C_1;
   . definitionOf(C_11 ) = bar(output(1)) -> C_1
 
+
+  forall a,b:Elem
+  . [next(input(a))] <next*> <next(bar(output(a)))> true
+  . <next*> <next(input(a))> <next(input(b))> true
+
 end
+
+
