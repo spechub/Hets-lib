@@ -84,8 +84,7 @@ then
   . (reflexive r) <=> (forall x:S . r(x,x))
   . (symmetric r) <=> forall x,y:S . (r(x,y)) => (r(y,x))
   . (transitive r) <=> forall x,y,z:S . ((r(x,y)) /\ (r(y,z))) => (r(x,y))
-  type PER S := Set(S*S)
-     %% = { r : Set(S*S) . (symmetric r) /\ (transitive r) }    %% Christian!
+  type PER S = { r : Set(S*S) . (symmetric r) /\ (transitive r) }
   op dom : PER S -> Set S
   forall x:S; r: PER S
    . (x isIn (dom r)) <=> ((x,x) isIn r)
@@ -122,7 +121,8 @@ spec Map =
   . def (f unionMap g) => (f unionMap g) x = if def (f x) then f x else (g x)
   . (h o g) x = h(g(x))
   . (f || s) x = if x isIn s then f x else undef()
-  %% the kernel is a PER with same domain as the function, hence the existential equation
+  %{ the kernel is a PER with same domain as the function, 
+     hence the existential equation}%
   . (x,x') isIn ker f <=> f x =e= f x'
   %% injectivity only for values in the domain, hence the existential equation
   . injective f <=> (forall x,y:S . f x =e= f y => x=y)
@@ -134,7 +134,6 @@ then
   type S : Type		
   type SetS := Set S
   type MapS := Set S * Map S * Set S
-  %% Überlagerung klappt noch nicht
   ops dom (a : Set S; f : Map S; b: Set S): Set S = a;
       cod (a : Set S; f : Map S; b: Set S): Set S = b;
       func (a : Set S; f : Map S; b: Set S): Map S = f;
@@ -162,7 +161,8 @@ spec SetRepresentation =
 then
   type S : Type;
   ops pair : S*S->S;   %% represent S*S in S
-      inl,inr : S->S;  %% represent S disjointUnion S in S, with left and right injection
+      inl,inr : S->S;  %{ represent S disjointUnion S in S, 
+                          with left and right injection }%
       %% represent quotient by a PER, yields the quotient map
       %% the quotient is then the image of the quotient map
       coeq: PER S -> Map S; 
@@ -204,8 +204,7 @@ end
 spec SetCoproduct[SetRepresentation] given Map = %def
   SetCategory and UniqueChoice[sort S]
 then
-  %% type CPCocone = {(h,k) : MapS * MapS . cod h = cod k}
-  type CPCocone := MapS * MapS
+  type CPCocone = {(h,k) : MapS * MapS . cod h = cod k}
   ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? MapS));
   forall s1,s2:SetS
   . (s1 coproduct s2) = 
@@ -254,5 +253,6 @@ view SetHasCoequalizers [SetRepresentation] given Map :
 end     
 
 spec SetPushOut [SetRepresentation] =
-  PushoutAsCoequalizerOfCoproduct[view SetHasCoproducts][view SetHasCoequalizers]
+  PushoutAsCoequalizerOfCoproduct[view SetHasCoproducts]
+  [view SetHasCoequalizers]
 end

@@ -59,8 +59,7 @@ spec CoproductShape =
   Category
 then
   type CPDiagram := Ob * Ob;
-       %% CPCocone = {(h,k) : Mor * Mor . cod h = cod k}
-       CPCocone := Mor * Mor
+       CPCocone = {(h,k) : Mor * Mor . cod h = cod k}
   pred __isCoconeFor__ : CPCocone * CPDiagram
   forall h,k : Mor; a,b : Ob
   . ((h,k) as CPCocone) isCoconeFor (a,b)
@@ -71,8 +70,7 @@ spec PushoutShape =
   Category
 then
   type PODiagram = {(f,g) : Mor * Mor . dom f = dom g};
-       %% POCocone = {(h,k) : Mor * Mor . cod h = cod k}
-       POCocone := Mor * Mor
+       POCocone = {(h,k) : Mor * Mor . cod h = cod k}
   pred __isCoconeFor__ : POCocone * PODiagram
   forall f,g,h,k : Mor
   . ((h,k) as POCocone) isCoconeFor ((f,g) as PODiagram)

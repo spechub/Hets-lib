@@ -1,8 +1,8 @@
 library HasCASL/Graphs
 
 %left_assoc __union__
-%prec( {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __o__,__o'__,
-                 __union__, __intersection__,
+%prec( {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __o__,
+                 __union__, __intersection__, __::__-->__,
                  __unionMap__, __intersectionMap__, __maxCliqueOf__})%
 
 from HasCASL/Set get Set
@@ -17,17 +17,13 @@ logic HasCASL
 
 
 spec DirectedGraph =
-  Set
+  Map
 then
   var N,E : Type
-  %[ type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
+  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
                       dom source=dom target 
-                      /\ (source : dom source --> n)
-                      /\ (target : dom target --> n) }
-  ]%
-  type Graph N E := Set N * (E->?N) * (E->?N) 
-%%  op source (n: Set N; s,t : (E->?N)) : (E->?N) = s  		 
-%%  op target (n: Set N; s,t : (E->?N)) : (E->?N) = t  		 
+                      /\ (source :: dom source --> n)
+                      /\ (target :: dom target --> n) }
 end
 
 %{ Some useful operations on directed graphs. }%
@@ -125,28 +121,23 @@ end
 spec SimpleGraph =
   RichDirectedGraph
 then
-%[  type SimpleGraph N E = {(nn,source,target):Graph N E .
+  type SimpleGraph N E = {(nn,source,target):Graph N E .
                           forall e1,e2:E . source e1 = source e2
                                           /\ target e1 = target e2 => e1=e2 }
   type LoopFreeGraph N E = {g:Graph N E . loopFree g}
-]%
-  type SimpleGraph N E := Graph N E
-  type  LoopFreeGraph N E := Graph N E
 end
 
 
 spec GraphHomomorphism =
-  DirectedGraph and Map
+  RichDirectedGraph and Map
 then
   var N1, E1, N2, E2, N3, E3 : Type
-  %[type Hom N1 E1 N2 E2 = 
+  type Hom N1 E1 N2 E2 = 
      {(g1,hn,he,g2) : Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2 .
        hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
-       /\ forall e:E1 . e isIn edges e =>
-          (   hn(source g1 e) = source g2 (he e)
-           /\ hn(target g1 e) = target g2 (he e) ) } 
-  ]%
-  type Hom N1 E1 N2 E2 := Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2
+       /\ forall e:E1 . e isIn edges g1 =>
+          (   hn(sourceMap g1 e) = sourceMap g2 (he e)
+           /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
   type HomHom E N := Hom E N E N
   ops dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
       cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
@@ -168,7 +159,8 @@ end
 
 %{ Coproducts of directed graphs, defined in terms of the corresponding
    operations on sets, acting component wise.
-   Note that we have to fix N and E here, since we need set representations for them
+   Note that we have to fix N and E here, since we need 
+   set representations for them
    in order to get the needed constructions on sets. }%
 %[
 spec GraphCoproducts [SetRepresentation with S |-> N] [SetRepresentation with S |-> E] =
