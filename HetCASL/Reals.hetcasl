@@ -13,8 +13,8 @@ Explicit translations
 logic HasCASL
 
 spec DefineHigherOrderReal1 = 
-   logic CASL Nat with logic --> HasCASL
-and logic CASL OrderedField with logic --> HasCASL with Elem |-> Real 
+   logic CASL Nat with logic -> HasCASL
+and logic CASL OrderedField with logic -> HasCASL with Elem |-> Real 
 then ...
 
  %% Scope of "logic CASL" is just the following GROUP-SPEC
@@ -35,7 +35,7 @@ with versus hide
 spec Real =
   logic CASL : Nat with logic -> HasCASL
   then ... %%definition of reals
-  hide logic --> CASL  %% projection back to CASL
+  hide logic -> CASL  %% projection back to CASL
 end
 
 Named translations
@@ -119,14 +119,14 @@ spec DefineHigherOrderReal1 =
   Nat
 and OrderedField with Elem |-> Real 
 then
-  ops  __ < __ : pred(Real * pred(Real)); 
-       __ < __ : pred(pred(Real) * Real); 
-       isBounded : pred(pred(Real)); 
-       __ < __ : pred(Real * (Nat -> Real)); 
-       __ < __ :  pred((Nat -> Real * Real); 
-       isBounded : pred(Nat -> Real) 
+  ops  __ < __ : Pred(Real * Pred(Real)); 
+       __ < __ : Pred(Pred(Real) * Real); 
+       isBounded : Pred(Pred(Real)); 
+       __ < __ : Pred(Real * (Nat -> Real)); 
+       __ < __ :  Pred((Nat -> Real * Real); 
+       isBounded : Pred(Nat -> Real) 
 
-  forall r,s:Real; M:pred(Real); a:Nat -> Real 
+  forall r,s:Real; M:Pred(Real); a:Nat -> Real 
   . M < r <=> forall s:Real . M(s) => s < r 
   . r < M <=> forall s:Real . M(s) => r < s 
   . isBounded(M) <=> exists ub,lb:Real . lb < M /\ M < ub 
@@ -142,8 +142,8 @@ then
   . partialSums(a)(succ(n)) = partialSums(a)(n) + a(succ(n)) 
   %% Convergence, infinite sums, and Cauchy sequences: 
   ops lim,sum : Nat -> Real ->? Real 
-  ops __ -> __ : pred ((Nat -> Real) * Real); 
-      converges,cauchy : pred(Nat -> Real) 
+  ops __ -> __ : Pred ((Nat -> Real) * Real); 
+      converges,cauchy : Pred(Nat -> Real) 
   forall r:Real; a:Nat -> Real 
   %% Convergence of a sequence: 
   .  a->r <=> 
@@ -169,11 +169,11 @@ end
 spec DefineHigherOrderReal2 = 
   OrderedField with Elem |-> Real 
 then
-  ops __ < __ : pred(Real * pred(Real)); 
-      __ < __ : pred(pred(Real) * Real); 
-      isBounded : pred(pred(Real)); 
-      inf,sup : pred(Real) ->? Real 
-  forall r,s:Real; M:pred(Real) 
+  ops __ < __ : Pred(Real * Pred(Real)); 
+      __ < __ : Pred(Pred(Real) * Real); 
+      isBounded : Pred(Pred(Real)); 
+      inf,sup : Pred(Real) ->? Real 
+  forall r,s:Real; M:Pred(Real) 
   . M < r <=> forall s:Real . M(s) => s < r 
   . r < M <=> forall s:Real . M(s) => r < s 
   . inf(M)=r <=> r < M /\ forall s:Real . s < M => s < r 
