@@ -1,6 +1,6 @@
 library Basic/StructuredDatatypes
 version 0.99
-%% authors M. Roggenbach <csmarkus@swansea.ak.uc>, T. Mossakowski, L. Schröder
+%% authors M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
 %% date 18 December 2003
 
 %left_assoc __ + __, __ - __, __ ++ __
@@ -532,11 +532,12 @@ then
 end
 
 spec GenerateBinTree2 [sort Elem] = %mono
-  free type NonEmptyBinTree2[Elem] 
-    ::= leaf (entry:? Elem)
-      | binTree (left :? NonEmptyBinTree2[Elem]; 
-                 right:? NonEmptyBinTree2[Elem])
-  free type BinTree2[Elem] ::= nil | sort NonEmptyBinTree2[Elem]
+  free types 
+    NonEmptyBinTree2[Elem] 
+      ::= leaf (entry:? Elem)
+        | binTree (left :? NonEmptyBinTree2[Elem]; 
+                   right:? NonEmptyBinTree2[Elem]);
+    BinTree2[Elem] ::= nil | sort NonEmptyBinTree2[Elem]
 end
 
 spec BinTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
@@ -588,104 +589,22 @@ then %def
    
 end
 
-spec GenerateKTree 
- [op k:Int axiom k >= 1 %(Cond_nonEmptyBranching)%]
- [sort Elem] 
- given Int 
-= %mono
-  Array [{ops 1:Int; k:Int} 
-         fit 
-         ops min: Int |-> 1, 
-             max: Int |-> k]
-        [sort KTree[k,Elem] fit sort Elem |-> KTree[k,Elem]]
-then 
-  free type KTree[k,Elem] ::= 
-    nil
-  | kTree(entry:? Elem; branches:? Array[KTree[k,Elem]])
-end
-
-spec KTree 
- [op k:Int axiom k >= 1 %(Cond_nonEmptyBranching)%] 
- [sort Elem] 
- given Int, Set[sort Elem] 
-= %mono
-    GenerateKTree [op k:Int] [sort Elem]  
-  and 
-    Set[sort Elem]
-then %def
-  preds isEmpty,
-        isLeaf:  KTree[k,Elem];
-        isCompoundTree: KTree[k,Elem];
-        __eps__ : Elem * KTree[k,Elem];
-
-  ops   height: KTree[k,Elem] -> Nat;
-        maxHeight: Index * Array[KTree[k,Elem]] -> Nat;
-        leaves: KTree[k,Elem] -> Set[Elem];
-        allLeaves: Index * Array[KTree[k,Elem]] -> Set[Elem]
-
-  forall x,y: Elem; 
-         i: Index;
-         T: KTree[k,Elem];
-         A: Array[KTree[k,Elem]]
-
-  %% axioms concerning predicates
-
-  . isEmpty(T) <=> T = nil                 %(isEmpty_def_KTree)%
-
-  . not isLeaf(nil)                        %(isLeaf_nil_KTree)%
-  . isLeaf(kTree(x,A)) <=>  
-      forall i: Index . A!i=nil            %(isLeaf_kTree)%
-
-  . not isCompoundTree(nil)                   %(isCompoundTree_nil_KTree)%
-  . isCompoundTree(kTree(x,A)) <=> 
-      not isLeaf(kTree(x,A))               %(isCompoundTree_kTree)%
-
-  . not (x eps nil)                        %(eps_nil_KTree)%
-  . x eps kTree(y,A) <=>
-      (x = y \/ 
-      exists i: Index. x eps (A!i))        %(eps_kTree)%
-
-  %% axioms concerning operations
-
-  . height(nil) = 0                        %(height_nil_KTree)%   
-  . height(kTree(x,A)) = 
-      maxHeight(k as Index,A) + 1          %(height_kTree)%
-
-  . maxHeight(1 as Index,A) = 
-      height(A!1 as Index)                 %(maxHeight_1)%
-  . maxHeight(i,A) = 
-     max( maxHeight((i-1) as Index,A), 
-          height(A!i))   
-     if 1 < i                              %(maxHeight_suc)%
-
-  . leaves(nil) = {}                        %(leaves_nil_KTree)%
-
-  . leaves(kTree(x,A)) 
-    = {x} when isLeaf(kTree(x,A)) else
-      allLeaves(k as Index,A)               %(leaves_kTree)%
-
-  . allLeaves(1 as Index,A) = 
-      leaves(A!1 as Index)                  %(allLeaves_1)%
-  . allLeaves(i,A) =
-       allLeaves((i-1) as Index,A) 
-     union
-       leaves(A!i)
-    if 1 < i                               %(allLeaves_suc)%
-
-end
-
-spec GenerateNTree [sort Elem] =
-  List[sort NTree[Elem] fit sort Elem |-> NTree[Elem]]
-then
-  free type NTree[Elem] 
-  ::=   nil
-      | nTree(entry:? Elem; branches:? List[NTree[Elem]])
+spec GenerateNTree [sort Elem] =  
+  free types
+    List[NTree[Elem]]
+     ::= [] 
+       |  __ :: __ (first:? NTree[Elem]; rest:? List[NTree[Elem]]);
+    NTree[Elem] 
+     ::= nil
+       | nTree(entry:? Elem; branches:? List[NTree[Elem]])
 end
 
 spec NTree [sort Elem] given Nat, Set[sort Elem] =
     GenerateNTree[sort Elem]
   and
     Set[sort Elem]
+  and
+    List[sort NTree[Elem] fit sort Elem |-> NTree[Elem]]
 then
   preds isEmpty,
         isLeaf:  NTree[Elem];
@@ -739,5 +658,104 @@ then
        allLeaves(L) 
      union
        leaves(T)                            %(allLeaves_nonEmptyList)%
+end
+
+spec GenerateNTree2 [sort Elem] = %mono
+
+  free types 
+
+    NonEmptyList[NonEmptyNTree2[Elem]] ::=
+      __ :: __ (first: NonEmptyNTree2[Elem]; 
+                rest:  List[NonEmptyNTree2[Elem]]);
+
+    List[NonEmptyNTree2[Elem]]
+     ::= [] 
+       |  sort NonEmptyList[NonEmptyNTree2[Elem]];
+     
+    NonEmptyNTree2[Elem] 
+      ::= leaf (entry:? Elem)
+        | nTree(branches:? NonEmptyList[NonEmptyNTree2[Elem]]);
+
+    NTree2[Elem] ::= nil | sort NonEmptyNTree2[Elem]
 
 end
+
+spec NTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
+    GenerateNTree2[sort Elem]  
+  and 
+    Set[sort Elem]
+  and
+    List[sort NonEmptyNTree2[Elem] fit sort Elem |-> NonEmptyNTree2[Elem]]
+then %def
+  preds isEmpty,
+        isLeaf:  NTree2[Elem];
+        isCompoundTree: NTree2[Elem];
+        __eps__ : Elem * NTree2[Elem];
+
+  ops   branches: NTree2[Elem] -> NonEmptyList[NonEmptyNTree2[Elem]];
+        h: List[NonEmptyNTree2[Elem]] * Nat -> Nat;  %%	helps defining height
+        height: NTree2[Elem] -> Nat;
+        l: List[NonEmptyNTree2[Elem]] -> Set[Elem];  %%	helps defining leaves
+        leaves: NTree2[Elem] -> Set[Elem]
+
+  forall x,y: Elem; 
+         n: Nat;
+         T: NTree2[Elem];
+         NT: NonEmptyNTree2[Elem];
+         L: NonEmptyList[NonEmptyNTree2[Elem]];
+         K: List[NonEmptyNTree2[Elem]]
+
+  %% axioms concerning predicates
+
+  . isEmpty(T) <=> T = nil                 %(isEmpty_def_NTree2)%
+
+  . isLeaf(leaf(x))                        %(isLeaf_leaf_NTree2)%
+  . not isLeaf(nTree(L))                   %(isLeaf_nTree_NTree2)%
+  . not isLeaf(nil)                        %(isLeaf_nil_NTree2)%
+
+  . not isCompoundTree(leaf(x))            %(isCompoundTree_leaf_NTree2)%
+  . isCompoundTree(nTree(L))               %(isCompoundTree_nTree_NTree2)%
+  . not isCompoundTree(nil)                %(isCompoundTree_nil_NTree2)%
+
+  . x eps leaf(y) <=> x=y                  %(eps_leaf_NTree2)%
+  . x eps nTree(L) <=>
+      exists T: NonEmptyNTree2[Elem]. 
+        T eps L /\ x eps T                 %(eps_nTree_NTree2)%
+
+  %% axioms concerning operations
+
+  . not def branches(nil)                  %(branches_nil_nTree2)%
+
+  . h([],n)  = n                           %(h_nil_nTree2)%
+  . h(NT::K,n) = max(height(NT), h(K,n))   %(n_cons_nTree2)%
+
+  . height(leaf(x)) = 1                    %(height_leaf_nTree2)%
+  . height(nTree(L))= h(L,0) + 1           %(height_nTree_nTree2)%
+  . height(nil) = 0                        %(height_nil_nTree2)%   
+
+  . l([])  = {}                            %(l_nil_nTree2)%
+  . l(NT::K) = leaves(NT) union l(K)       %(l_cons_nTree2)%
+
+  . leaves(leaf(x)) = {x}                  %(leaves_leaf_nTree2)%
+  . leaves(nTree(L)) = l(L)                %(leaves_nTree_nTree2)%
+  . leaves(nil) = {}                       %(leaves_nil_nTree2)%
+   
+end
+
+spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  
+  NTree [sort Elem]
+then
+  sort KTree[Elem] = { nTree: NTree[Elem] .
+                       nTree = nil \/ # branches(nTree) = k }
+end
+
+spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  
+  NTree2 [sort Elem]
+then
+  sort KTree2[Elem] = { t: NTree2[Elem] .
+                          exists e:Elem. t=leaf(e) \/
+                          # branches(t) = k        \/
+                          t = nil 
+                      }
+end
+
