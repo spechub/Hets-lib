@@ -1,6 +1,10 @@
 library CoCASL/Examples
 
-%display  __union__        %LATEX __\cup__
+%display  __union__          %LATEX __\cup__
+%display  __setMinus__       %LATEX __\setminus__
+%display  __disjointUnion__  %LATEX __\cup__
+%display  __member__         %LATEX __\epsilon__
+%display  __inCap__          %LATEX __in__
 
 logic CoCASL
 
@@ -10,7 +14,15 @@ free {
     type Set[Elem] ::= {} | {__}(Elem) | __union__(Set[Elem]; Set[Elem])
     op __union__ : Set[Elem] * Set[Elem] -> Set[Elem], 
                 assoc, comm, idem, unit {} }
-
+    then
+    pred __member__: Elem * Set[Elem]
+    forall x,y: Elem; M,N: Set[Elem]
+    . not x member {}                                
+    . x member {y} <=> x=y 
+    . x member M union N <=> x member M \/ x member N
+    then
+    op __setMinus__, __disjointUnion__ : Set[Elem] * Set[Elem] -> Set[Elem]
+    
 spec FinalLTS =
     sort Label 
     then cofree {
@@ -22,21 +34,22 @@ spec FinalLTS =
         then cotype State ::= (next : Label -> Set) }
 end   
 
-spec ExtendedFinalLTS[sorts Action, HAction, Name] =
+spec ACDomain[sort Name] =
 cofree {
     sort State
-    sort Cap          
-    free type CapNameState ::= CapNameState(Cap; Name; State) | 
-                               NameState(Name; State)
-    free type StatePair ::= StatePair(CapNameState; State)
-    then Set[sort State] and Set[sort StatePair] and Set[sort Name]
+    free type Cap ::= inCap | out | open         
+    free type HCap ::= sort Cap | enter | coenter | exit | coopen
+    free type Action ::= tau | action(Cap; Name)
+    free type HAction ::= phi | haction(HCap; Name)
+    free type Prime ::= prefix(Cap; Name; State) | ambient(Name; State)
+    free type Concretion ::= conc(prime : Prime; residue : State)
+    then Set[sort State] and Set[sort Name] and Set[sort Concretion]
     then cotype State ::= (next : Action -> Set[State];
-                           harden : HAction -> Set[StatePair]; 
+                           harden : HAction -> Set[Concretion]; 
                            freenames : Set[Name]) }
 end
 
-spec Zero[sorts Action, HAction, Name]
-        = ExtendedFinalLTS[sorts Action, HAction, Name]
+spec Zero[sorts Name] = ACDomain[sort Name]
 then op zero : State
      vars a : Action; b : HAction
          . next(a, zero) = {}
@@ -44,16 +57,26 @@ then op zero : State
          . freenames(zero) = {}
 end
 
-spec CapabilityPrefixing[sorts Action, HAction, Name]
-      = Zero[sorts Action, HAction, Name]
+spec CapabilityPrefixing[sorts Name] = Zero[sorts Name]
 then op cap : Cap * Name * State -> State
      vars a : Action; b : HAction; c : Cap; n : Name; p: State
-     . next(a, cap(c, n, p)) = { p } if a = a
-     . harden(b, cap(c, n, p)) = { StatePair(CapNameState(c, n, p), zero) }
+     . next(a, cap(c, n, p)) = { p } when a = action(c, n) else {}
+     . harden(b, cap(c, n, p)) = { conc(prefix(c, n, p), zero) } 
+                        when b = phi else {}
      . freenames(cap(c, n, p)) = { n } union freenames(p)
 end
 
-%% spec NameRestriction[sorts Action, HAction, Name] = 
-
-
+spec NameRestriction[sorts Name] = ACDomain[sort Name]
+then op res : Name * State -> State
+     vars a : Action; b : HAction; n : Name; p, q : State; c : Concretion 
+     . q member next(a, res(n, p)) <=> 
+        exists r : State . q = res(n, r) /\ r member next(a, p)
+%[     . c member harden(b, res(n, p)) <=>
+        (exists r : Prime; s : State . c = conc(r, res(n, s)) /\ 
+                        conc(r, s) member harden(b, p) /\ 
+                        not n member freenames(r)) \/
+        (exists r, s : State; m : Name . c = conc(ambient(m, res(n, r)), s) /\ 
+                        conc(ambient(m, r), s) member harden(b, p) /\ 
+                        not n member freenames(r))
+]%
 
