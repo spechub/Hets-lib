@@ -10,7 +10,8 @@ library HasCASL/Set
 %prec {__+__} < {__*__,__div__}
 %prec {__=__} < {__o__,__<__}
 
-from HasCASL/Categories get Category, Coproduct
+from HasCASL/Categories get Category, Coproduct, Coequalizer, 
+                            PushoutAsCoequalizerOfCoproduct
 
 logic HasCASL
 
@@ -208,10 +209,11 @@ then
   forall s1,s2:SetS
   . (s1 coproduct s2) = 
        let copr: SetS = (image inl s1) union (image inr s2);
-           med = \c :CPCocone . 
+           med = \c:CPCocone . 
 	      let ((sf,f,tf), (sg,g,tg)) = c; 
-                  medfun = \(y:S) . choice (\z . (exists x:S . y = inl x /\ z = f x)
-                                        \/ (exists x:S . y = inr x /\ z = g x))
+                  medfun = \y:S . choice (\z . 
+			 (exists x:S . y = inl x /\ z = f x)
+			 \/ (exists x:S . y = inr x /\ z = g x))
               in (copr,medfun,tf)
        in (((s1,inl,copr),(s2,inr,copr)), med)
 end
@@ -236,9 +238,10 @@ then
   forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
   . (f,g) as CEDiagram= d =>
     coequalizer d = 
-       let r = \(x,y) . exists z:S . func f z = x /\ func g z = y;
-           c = coeq r;
-           med h = (cod' h,\x:S . choice(\y:S . exists z:S . func h z = x /\ c z = y),range c)
+       let r:PER S = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
+           c:Map S = coeq r;
+           med = \h:MapS . (cod' h,\x:S . choice(\y:S . 
+	       exists z:S . func h z = x /\ c z = y),range c)
        in
        ((cod' f, c, range c),med)
 end
