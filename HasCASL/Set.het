@@ -1,5 +1,4 @@
 library Set
-version 0.9
 
 %left_assoc __intersection__  %[ Should go to StructuredDatatypes ]%
 %left_assoc __+__
@@ -10,8 +9,9 @@ version 0.9
 
 %prec {__+__} < {__*__,__div__}
 
+from HasCASL/Categories get Category
 
-logic CASL
+logic HasCASL
 
 spec Bool = 
   sort Bool
@@ -26,10 +26,10 @@ spec Nat =
 end
 
 spec List =
-  free type List[Elem] ::= nil | cons(Elem; List[Elem])
+  var Elem: Type+
+  free type List Elem ::= nil | cons(Elem; List Elem)
 end
 
-logic HasCASL
 
 
 %{ Typed sets are represented by predicates over the type.
@@ -58,8 +58,8 @@ spec Set = Bool then
   . x isIn s \\ s' <=> x isIn s /\ not (x isIn s')
   . (s disjoint s') <=> ((s intersection s') = emptySet)
   %% . ((x,y) isIn (s * t)) <=> ((x isIn s) /\ (y isIn t))
-  . (injl x) = (x,false)
-  . (injr x) = (x,true)
+  . (injl x) = (x,False)
+  . (injr x) = (x,True)
   %%. (s disjointUnion s') = ((s * {false}) union (s' * {true}))
 end
 
@@ -76,8 +76,8 @@ then
   type PER S := Set(S*S)
   %% = { r : Set(S*S) . (symmetric r) /\ (transitive r) }    %% Christian!
   op dom : PER S -> Set S
-  %%forall x:S; r: PER S
-  %%. (x isIn (dom r)) <=> ((x,x) isIn r)
+  forall x:S; r: PER S
+   . (x isIn (dom r)) <=> ((x,x) isIn r)
 end
 
 %{ Partial maps and endomaps }%  
@@ -119,17 +119,19 @@ end
 spec SetCategory =
   Map
 then
+  type S : Type		
   type SetS := Set S
   type MapS := Set S * Map S * Set S
-  ops dom (a,f,b):MapS = a
-      cod (a,f,b):MapS = b
-      __o__ : MapS * MapS ->? MapS
-  forall a,b,c : SetS; f,g : MapS
-  . def f o g <=> cod g = dom f
-  . (b,g,c) o (a,f,b) = (a,g o f,c)
+  %% Überlagerung klappt noch nicht
+  ops dom' (a : Set S; f : Map S; b: Set S): Set S = a;
+      cod' (a : Set S; f : Map S; b: Set S): Set S = b;
+      __o'__ : MapS * MapS ->? MapS
+  forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
+  . def (f o' g) <=> cod' g = dom' f
+  . ((b,g',c) o' (a,f',b)) = (a,g' o f',c)
 end
 
-view CategoryofSets : Category -> SetCategory =
+view CategoryofSets : Category to SetCategory =
      Ob |-> SetS, Mor |-> MapS, __o__, dom, cod
 end
 
@@ -190,20 +192,20 @@ end
 spec SetCoproduct[SetRepresentation] given Map = %def
   SetCategory
 then
-  type CPCocone := {(h,k) : MapS * MapS . cod h = cod k}
+  type CPCocone = {(h,k) : MapS * MapS . cod h = cod k}
   ops __coproduct__ : SetS * SetS -> (CPCoconce * (CPCocone ->? MapS));
-  forall ,s1,s2:SetS
+  forall s1,s2:SetS
   . s1 coproduct s2 = 
        let copr = (image inl s1) union (image inr s2)
            med c = let (f,g) = c 
-                   in \y -> case y of (inl x) -> f x
-                                      (inr x) -> g x
+                   in \y . case y of (inl x) -> f x
+                                   | (inr x) -> g x
        in (((s1,inl,copr),(s2,inr,copr)),med)
 end
 
 
 view SetHasCoproducts [SetRepresentation] given Map : 
-        Coproduct[Category] -> SetCoproduct[SetRepresentation] =
+        Coproduct[Category] to SetCoproduct[SetRepresentation] =
      Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coproduct__
 end     
 
@@ -223,14 +225,14 @@ then
        let (f,g) = d
            r = \x:S . f x = g x
            c = coeq r 
-           med h = (dom h,\x:S . h(@y . coeq y = x),range c)
+           med h = (dom h,\x:S . h(\y . coeq y = x),range c)
        in
        ((cod f, c, range c),med)
 end
 
 
 view SetHasCoequalizers [SetRepresentation] given Map : 
-        Coequalizer[Category] -> SetCoequalizer[SetRepresentation] =
+        Coequalizer[Category] to SetCoequalizer[SetRepresentation] =
      Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coequalizer__
 end     
 
