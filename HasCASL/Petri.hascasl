@@ -10,13 +10,19 @@ then
   op __union__ : Net * Net -> Net
   forall p1,p2:Set P; pre1,pre2,post1,post2:T ->? Mon P
   . (p1,pre1,post1) union (p2,pre2,post2) = 
-    (p1 union p2, \t . pre1 + pre2, \t . post1 + post2) 
+    (p1 union p2,
+     \t . if def pre1(t) then if def pre2(t) then pre1(t) + pre2(t)
+                                             else pre1(t)
+                         else pre2(t),
+     \t . if def post1(t) then if def post2(t) then post1(t) + post2(t)
+                                               else post1(t)
+                         else post2(t)) as Net
 end
 
 spec PetriSystem = 
   PetriNet 
 then
-  type Sys = {((p,pre,post),m) : Net P T  *  Mon P  
+  type Sys = {((p,pre,post),m) : Net * Mon P  
                           . m isIn mon p}
 
   ops  marking   : Sys ->  Mon P;
