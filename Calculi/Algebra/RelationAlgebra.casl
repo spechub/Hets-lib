@@ -201,6 +201,19 @@ to
 end 
 
 
+spec CompositionTable =
+     sorts BaseRel < GenRel
+     ops
+         id:BaseRel;
+         0,1:GenRel;
+         conv__:   BaseRel -> BaseRel;
+         compl__:   GenRel -> GenRel;
+         __cmps__: BaseRel * BaseRel -> GenRel;
+         __cup__:  GenRel * GenRel -> GenRel, assoc, comm, unit 1;
+         __cap__:  GenRel * GenRel -> GenRel, assoc, comm, unit 0;
+end
+
+
 
 
 
