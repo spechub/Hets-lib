@@ -1,7 +1,8 @@
 library Basic/Graphs 
-version 0.9
+version 0.99
 %authors: T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
 %date: 8 July 2003
+%% with contributions from Klaus Luettich
 
 %{ We construct directed graphs inductively by successively adding
    nodes and edges.
@@ -114,6 +115,7 @@ end
 spec GraphToSet[sort NodeId][sort EdgeId] =
   Graph[sort NodeId][sort EdgeId] 
 and
+  %% The following also imports Set[EdgeId] and Set[NodeId]
   Map[sort EdgeId fit S |-> EdgeId]
         [sort NodeId fit T |-> NodeId]
 then %def
@@ -123,6 +125,23 @@ then %def
   . n eps nodeSet(g) <=> n isIn g                        %(nodeSet_def)%
   . [n/e] eps sourceMap(g) <=> source(e,g)=n           %(sourceMap_def)%
   . [n/e] eps targetMap(g) <=> target(e,g)=n           %(targetMap_def)%
+then %def
+   ops edgeSet : Graph -> Set[EdgeId];
+       successors, predeccessors: NodeId * Graph -> Set[NodeId];
+       inEdges,outEdges: NodeId * Graph -> Set[EdgeId];
+       inDegree,outDegree: NodeId * Graph -> Nat
+   forall n,n1,n2: NodeId; e : EdgeId; g: Graph
+   . e eps edgeSet(g) <=> e isIn g                       %(edgeSet_def)%
+   . n2 eps successors(n1,g) <=> 
+     (exists e : EdgeId . e :: n1 --> n2 isIn g)      %(successors_def)%
+   . n1 eps predeccessors(n2,g) <=> 
+     (exists e : EdgeId . e :: n1 --> n2 isIn g)   %(predeccessors_def)%
+   . e eps inEdges(n1,g) <=>
+     (exists n2 : NodeId . e :: n2 --> n1 isIn g)        %(inEdges_def)%
+   . e eps outEdges(n1,g) <=>
+     (exists n2 : NodeId . e :: n1 --> n2 isIn g)       %(outEdges_def)%
+   . inDegree(n,g) = # inEdges(n,g)                     %(inDegree_def)%
+   . outDegree(n,g) = # outEdges(n,g)                  %(outDegree_def)%
 end
 
 %% The subsort of symmetric (= undirected) graphs
@@ -362,3 +381,27 @@ then
                                                         %(planar_def)%
 end
 
+
+%% Graphs with edge labels that need not be unique
+%% The trick is to make them unique by adding the source and target node
+spec NonUniqueEdgesGraph[sort NodeId][sort EdgeLabel] =
+     free type EdgeId ::= EI (NodeId; EdgeLabel; NodeId)
+then
+     RichGraph [sort NodeId] [sort EdgeId]
+then
+     ops addEdge : NodeId * NodeId * EdgeLabel * Graph -> Graph;
+         removeEdgeLabel :  EdgeLabel * Graph -> Graph
+     preds __isIn__ : EdgeLabel * Graph;
+           __::__-->__ isIn__ : EdgeLabel * NodeId * NodeId * Graph
+     forall n,n1,n2: NodeId; el,el': EdgeLabel; g: Graph 
+     . addEdge(n1,n2,el,g) = addEdge(n1,n2,EI(n1,el,n2),g)
+                                                     %(addEdgeNU_def)%
+     . el' isIn removeEdgeLabel(el,g) <=>
+       (el' isIn g /\ not el=el')             %(removeEdgeLabel_def1)%
+     . n isIn removeEdgeLabel(el,g) <=> n isIn g
+                                              %(removeEdgeLabel_def2)%
+     . el isIn g <=> exists n1,n2: NodeId . EI(n1,el,n2) isIn g
+                                                       %(isInNU1_def)%
+     . el :: n1 --> n2 isIn g <=> EI(n1,el,n2) isIn g
+                                                       %(isInNU2_def)%
+end
