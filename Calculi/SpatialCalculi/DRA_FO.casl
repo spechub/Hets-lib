@@ -1,10 +1,12 @@
 library DRA_FO
 version 0.1
 %author: T. Soller
-%date: 25-10-04
-%% Dipol Calculus DRAfp -- First order theory
+%date: 05-11-04
+%% Dipol Calculi DRAx(x) -- First order theory
 
-spec BasicDRA_FO = 
+
+
+spec BasicDRAc_FO = 
 
 sorts Point, Dipol
 
@@ -15,50 +17,346 @@ ops
 preds
 	__r__ : Dipol * Point; %(point right of dipol)%
 	__l__ : Dipol * Point; %(point left of dipol)%
+	__e__ : Dipol * Point; %(point endpoint of dipol)%
+	__s__ : Dipol * Point; %(point startpoint of dipol)%
+
+	%% 14 basic relations
+	__rrrr__, __rrrl__, __rrlr__, __rrll__, __rlrr__, __rllr__, __rlll__,
+	__lrrr__, __lrrl__, __lrll__, __llrr__, __llrl__, __lllr__, 
+	__llll__ : Dipol * Dipol;  
+	
+	%% 10 relations for algebra
+	__ells__, __errs__, __lere__, __rele__, __slsr__, __srsl__, __lsel__,
+	__rser__, __sese__, __eses__ : Dipol * Dipol;
+
+then %def
+	
+forall A,B : Dipol
+
+. A rrrr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A rrrl B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A rrlr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A rrll B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B l startP(A)) /\ (B l endP(A))
+. A rlrr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A rllr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A)) 
+. A rlll B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+	        (B l startP(A)) /\ (B l endP(A))
+. A lrrr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A lrrl B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A lrll B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A llrr B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A llrl B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A lllr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B r endP(A))
+. A llll B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+	        (B l startP(A)) /\ (B l endP(A))
+	
+. A ells B <=> (A e startP(B)) /\ (A l endP(B)) /\ 
+	        (B l startP(A)) /\ (B s endP(A))
+. A errs B <=> (A e startP(B)) /\ (A r endP(B)) /\ 
+	        (B r startP(A)) /\ (B s endP(A))
+. A lere B <=> (A l startP(B)) /\ (A e endP(B)) /\ 
+	        (B r startP(A)) /\ (B e endP(A))
+. A rele B <=> (A r startP(B)) /\ (A e endP(B)) /\ 
+	        (B l startP(A)) /\ (B e endP(A))
+. A slsr B <=> (A s startP(B)) /\ (A l endP(B)) /\ 
+	        (B s startP(A)) /\ (B r endP(A))
+. A srsl B <=> (A s startP(B)) /\ (A r endP(B)) /\ 
+	        (B s startP(A)) /\ (B l endP(A))
+. A lsel B <=> (A l startP(B)) /\ (A s endP(B)) /\ 
+	        (B e startP(A)) /\ (B l endP(A))
+. A rser B <=> (A r startP(B)) /\ (A s endP(B)) /\ 
+	        (B e startP(A)) /\ (B r endP(A))
+. A sese B <=> (A s startP(B)) /\ (A e endP(B)) /\ 
+	        (B s startP(A)) /\ (B e endP(A))
+. A eses B <=> (A e startP(B)) /\ (A s endP(B)) /\ 
+	        (B e startP(A)) /\ (B s endP(A))
+
+end
+
+
+spec DRAc_FO =
+
+     BasicDRAc_FO
+
+then %implies
+
+forall A,B,C : Dipol
+
+%% reflexive
+. A sese A
+
+%% symmetric relations
+. A rrrr B <=> B rrrr A
+. A llll B <=> B llll A
+
+. A sese B <=> B sese A
+. A eses B <=> B eses A
+
+%% converses
+. A rrll B <=> B llrr A
+. A rlrr B <=> B rrrl A
+. A lrrr B <=> B rrlr A 
+. A lrrl B <=> B rllr A
+. A llrl B <=> B rlll A
+. A lllr B <=> B lrll A
+
+. A lsel B <=> B ells A
+. A rser B <=> B errs A
+. A rele B <=> B lere A
+. A srsl B <=> B slsr A
+
+%% transitive relations
+. (A sese B /\ B sese C) => A sese C
+
+end
+
+
+
+spec BasicDRAf_FO =
+
+     BasicDRAc_FO
+
+then
+
+preds
 	__b__ : Dipol * Point; %(point in line back of dipol)%
 	__i__ : Dipol * Point; %(point in line interior of dipol)%
 	__f__ : Dipol * Point; %(point in line front of dipol)%
-	__e__ : Dipol * Point; %(point endpoint of dipol)%
-	__s__ : Dipol * Point; %(point startpoint of dipol)%
+
+	%% DRAf Relations: same line and same direction -> Allen's calculus
+	__ffbb__, __efbs__, __ifbi__, __bfii__, __sfsi__, __beie__, __bbff__,
+	__bsef__, __biif__, __iibf__, __sisf__, __iebe__ : Dipol * Dipol;
 	
+	%% Coverses
+	__ffff__, __fefe__, __fifi__, __fbii__, __fsei__, __ebis__, __iifb__,
+	__eifs__, __iseb__, __bbbb__, __sbsb__, __ibib__ : Dipol * Dipol;
+	
+	%% further relations DRAf
+	__lllb__, __llfl__, __llbr__, __llrf__, __lirl__, __lfrr__, __lril__,
+	__lrri__, __blrr__, __irrl__, __frrr__, __rbrr__ : Dipol * Dipol;
+	
+	%% Converses
+	__lbll__, __flll__, __brll__, __rfll__, __rlli__, __rrlf__, __illr__,
+	__rilr__, __rrbl__, __rlir__, __rrfr__, __rrrb__ : Dipol * Dipol
+
+then %def
+	
+forall A,B : Dipol
+	
+. A ffbb B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
+	        (B b startP(A)) /\ (B b endP(A))
+. A efbs B <=> (A e startP(B)) /\ (A f endP(B)) /\ 
+	        (B b startP(A)) /\ (B s endP(A))
+. A ifbi B <=> (A i startP(B)) /\ (A f endP(B)) /\ 
+	        (B b startP(A)) /\ (B i endP(A))
+. A bfii B <=> (A b startP(B)) /\ (A f endP(B)) /\ 
+	        (B i startP(A)) /\ (B i endP(A))
+. A sfsi B <=> (A s startP(B)) /\ (A f endP(B)) /\ 
+	        (B s startP(A)) /\ (B i endP(A))
+. A beie B <=> (A b startP(B)) /\ (A e endP(B)) /\ 
+	        (B i startP(A)) /\ (B e endP(A))
+. A bbff B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
+	        (B f startP(A)) /\ (B f endP(A))
+. A bsef B <=> (A b startP(B)) /\ (A s endP(B)) /\ 
+	        (B e startP(A)) /\ (B f endP(A))
+. A biif B <=> (A b startP(B)) /\ (A i endP(B)) /\ 
+	        (B i startP(A)) /\ (B f endP(A))
+. A iibf B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
+	        (B b startP(A)) /\ (B f endP(A))
+. A sisf B <=> (A s startP(B)) /\ (A i endP(B)) /\ 
+	        (B s startP(A)) /\ (B f endP(A))
+. A iebe B <=> (A i startP(B)) /\ (A e endP(B)) /\ 
+	        (B b startP(A)) /\ (B e endP(A))
+	
+. A ffff B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
+	        (B f startP(A)) /\ (B f endP(A))
+. A fefe B <=> (A f startP(B)) /\ (A e endP(B)) /\ 
+	        (B f startP(A)) /\ (B e endP(A))
+. A fifi B <=> (A f startP(B)) /\ (A i endP(B)) /\
+	        (B f startP(A)) /\ (B i endP(A))
+. A fbii B <=> (A f startP(B)) /\ (A b endP(B)) /\ 
+	        (B i startP(A)) /\ (B i endP(A))
+. A fsei B <=> (A f startP(B)) /\ (A s endP(B)) /\ 
+	        (B e startP(A)) /\ (B i endP(A))
+. A ebis B <=> (A e startP(B)) /\ (A b endP(B)) /\ 
+		(B i startP(A)) /\ (B s endP(A))
+. A iifb B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
+		(B f startP(A)) /\ (B b endP(A))
+. A eifs B <=> (A e startP(B)) /\ (A i endP(B)) /\ 
+		(B f startP(A)) /\ (B s endP(A))
+. A iseb B <=> (A i startP(B)) /\ (A s endP(B)) /\ 
+		(B e startP(A)) /\ (B b endP(A))
+. A bbbb B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
+		(B b startP(A)) /\ (B b endP(A))
+. A sbsb B <=> (A s startP(B)) /\ (A b endP(B)) /\ 
+		(B s startP(A)) /\ (B b endP(A))
+. A ibib B <=> (A i startP(B)) /\ (A b endP(B)) /\ 
+		(B i startP(A)) /\ (B b endP(A))
+	
+. A lllb B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B b endP(A))
+. A llfl B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B f startP(A)) /\ (B l endP(A))
+. A llbr B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B b startP(A)) /\ (B r endP(A))
+. A llrf B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B f endP(A))
+. A lirl B <=> (A l startP(B)) /\ (A i endP(B)) /\ 
+		(B r startP(A)) /\ (B l endP(A))
+. A lfrr B <=> (A l startP(B)) /\ (A f endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A lril B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
+		(B i startP(A)) /\ (B l endP(A))
+. A lrri B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B i endP(A))
+. A blrr B <=> (A b startP(B)) /\ (A l endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A irrl B <=> (A i startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B l endP(A))
+. A frrr B <=> (A f startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+. A rbrr B <=> (A r startP(B)) /\ (A b endP(B)) /\ 
+		(B r startP(A)) /\ (B r endP(A))
+	
+. A lbll B <=> (A l startP(B)) /\ (A b endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A flll B <=> (A f startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A brll B <=> (A b startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A rfll B <=> (A r startP(B)) /\ (A f endP(B)) /\ 
+		(B l startP(A)) /\ (B l endP(A))
+. A rlli B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B i endP(A))
+. A rrlf B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B l startP(A)) /\ (B f endP(A))
+. A illr B <=> (A i startP(B)) /\ (A l endP(B)) /\ 
+		(B l startP(A)) /\ (B r endP(A))
+. A rilr B <=> (A r startP(B)) /\ (A i endP(B)) /\ 
+		(B l startP(A)) /\ (B r endP(A))
+. A rrbl B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B b startP(A)) /\ (B l endP(A))
+. A rlir B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
+		(B i startP(A)) /\ (B r endP(A))
+. A rrfr B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B f startP(A)) /\ (B r endP(A))
+. A rrrb B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
+		(B r startP(A)) /\ (B b endP(A))
+	
+end
+
+
+spec DRAf_FO =
+
+     BasicDRAf_FO and DRAc_FO
+
+then %implies
+
+forall A,B,C : Dipol
+
+%% symmetric relations
+. A ffff B <=> B ffff B
+. A fefe B <=> B fefe A
+. A fifi B <=> B fifi A
+. A bbbb B <=> B bbbb A
+. A sbsb B <=> B sbsb A
+. A ibib B <=> B ibib A 
+
+%% coverses
+. A ffbb B <=> B bbff A
+. A efbs B <=> B bsef A
+. A ifbi B <=> B biif A
+. A bfii B <=> B iibf A
+. A sfsi B <=> B sisf A
+. A beie B <=> B iebe A
+. A fbii B <=> B iifb A
+. A fsei B <=> B eifs A
+. A ebis B <=> B iseb A
+
+. A lllb B <=> B lbll A
+. A llfl B <=> B flll A
+. A llbr B <=> B brll A
+. A llrf B <=> B rfll A
+. A lirl B <=> B rlli A
+. A lfrr B <=> B rrlf A
+. A lril B <=> B illr A
+. A lrri B <=> B rilr A
+. A blrr B <=> B rrbl A
+. A irrl B <=> B rlir A
+. A frrr B <=> B rrfr A
+. A rbrr B <=> B rrrb A
+
+%% transitive relations
+. (A ffbb B /\ B ffbb C) => A ffbb C
+. (A bbff B /\ B bbff C) => A bbff C
+
+end
+
+
+	
+spec DRAfp_FO =
+
+     DRAf_FO
+	hide preds __rrrr__, __rrll__, __llrr__, __llll__ : Dipol * Dipol  
+	with preds __rrrl__|->__rrrln__, __rrlr__|->__rrlrp__,
+		   __rlrr__|->__rlrrp__, __rllr__|->__rllrp__,
+		   __rlll__|->__rlllp__, __lrrr__|->__lrrrn__,
+		   __lrrl__|->__lrrln__, __lrll__|->__lrlln__,
+		   __llrl__|->__llrln__, __lllr__|->__lllrp__,
+		   __ells__|->__ellsp__, __errs__|->__errsn__,
+		   __lere__|->__leren__, __rele__|->__relep__,
+		   __slsr__|->__slsrp__, __srsl__|->__srsln__,
+		   __lsel__|->__lseln__, __rser__|->__rserp__,
+		   __sese__|->__seseP__, __eses__|->__esesA__,
+		   __ffbb__|->__ffbbP__, __efbs__|->__efbsP__,
+		   __ifbi__|->__ifbiP__, __bfii__|->__bfiiP__,
+		   __sfsi__|->__sfsiP__, __beie__|->__beieP__,
+		   __bbff__|->__bbffP__, __bsef__|->__bsefP__,
+		   __biif__|->__biifP__, __iibf__|->__iibfP__,
+		   __sisf__|->__sisfP__, __iebe__|->__iebeP__,
+		   __ffff__|->__ffffA__, __fefe__|->__fefeA__,
+		   __fifi__|->__fifiA__, __fbii__|->__fbiiA__,
+		   __fsei__|->__fseiA__, __ebis__|->__ebisA__,
+		   __iifb__|->__iifbA__, __eifs__|->__eifsA__,
+		   __iseb__|->__isebA__, __bbbb__|->__bbbbA__,
+		   __sbsb__|->__sbsbA__, __ibib__|->__ibibA__,
+		   __lllb__|->__lllbp__, __llfl__|->__llfln__,
+		   __llbr__|->__llbrp__, __llrf__|->__llrfn__,
+		   __lirl__|->__lirlp__, __lfrr__|->__lfrrn__,
+		   __lril__|->__lriln__, __lrri__|->__lrrip__,
+		   __blrr__|->__blrrn__, __irrl__|->__irrln__,
+		   __frrr__|->__frrrp__, __rbrr__|->__rbrrp__,
+		   __lbll__|->__lblln__, __flll__|->__flllp__,
+		   __brll__|->__brlln__, __rfll__|->__rfllp__,
+		   __rlli__|->__rllin__, __rrlf__|->__rrlfp__,
+		   __illr__|->__illrp__, __rilr__|->__rilrn__,
+		   __rrbl__|->__rrblp__, __rlir__|->__rlirp__,
+		   __rrfr__|->__rrfrn__, __rrrb__|->__rrrbn__
+
+then
+
+preds
 	__angleA__ : Dipol * Dipol; %(antiparallel)%
 	__angleP__ : Dipol * Dipol; %(parallel)%
 	__anglep__ : Dipol * Dipol; %(positive = counterclockwise)%
 	__anglen__ : Dipol * Dipol; %(negative = clockwise)%
 
-	%% 14 basic relations: the 4 expanded relations
+	%% the 4 expanded relations
 	__rrrrp__, __rrrrA__, __rrrrn__, __rrllp__, __rrllP__, __rrlln__, 
 	__llrrp__, __llrrP__, __llrrn__, __llllp__, __llllA__, 
 	__lllln__ : Dipol * Dipol;
-	
-	%% 14 basic relations: 10 further relations
-	__rrrln__, __rrlrp__, __rlrrp__, __rllrp__, __rlllp__, __lrrrn__,
-	__lrrln__, __lrlln__, __llrln__, __lllrp__ : Dipol * Dipol;
-	
-	%% 10 relations DRAc for algebra
-	__ellsp__, __errsn__, __leren__, __relep__, __slsrp__, __srsln__,
-	__lseln__, __rserp__, __seseP__, __esesA__ : Dipol * Dipol;
-
-	%% DRAf Relations: same line and same direction -> Allen's calculus
-	__ffbbP__, __efbsP__, __ifbiP__, __bfiiP__, __sfsiP__, __beieP__,
-	__bbffP__, __bsefP__, __biifP__, __iibfP__, __sisfP__, 
-	__iebeP__ : Dipol * Dipol;
-	
-	%% Coverses
-	__ffffA__, __fefeA__, __fifiA__, __fbiiA__, __fseiA__, __ebisA__,
-	__iifbA__, __eifsA__, __isebA__, __bbbbA__, __sbsbA__, 
-	__ibibA__ : Dipol * Dipol;
-	
-	%% further relations DRAf
-	__lllbp__, __llfln__, __llbrp__, __llrfn__, __lirlp__, __lfrrn__,
-	__lriln__, __lrrip__, __blrrn__, __irrln__, __frrrp__, 
-	__rbrrp__ : Dipol * Dipol;
-	
-	%% Converses
-	__lblln__, __flllp__, __brlln__, __rfllp__, __rllin__, __rrlfp__,
-	__illrp__, __rilrn__, __rrblp__, __rlirp__, __rrfrn__, 
-	__rrrbn__ : Dipol * Dipol
-
 	
 then %def
 	
@@ -90,158 +388,6 @@ forall A,B : Dipol
 		(B l startP(A)) /\ (B l endP(A)) /\ (A angleA B)
 . A lllln B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
 		(B l startP(A)) /\ (B l endP(A)) /\ (A anglen B)
-
-%% the definition of the relations with implicit angle
-
-. A rrrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A rrlrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A rlrrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A rllrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A rlllp B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B l endP(A))
-. A lrrrn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A lrrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A lrlln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A llrln B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A lllrp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-	
-. A ellsp B <=> (A e startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B s endP(A))
-. A errsn B <=> (A e startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B s endP(A))
-. A leren B <=> (A l startP(B)) /\ (A e endP(B)) /\ 
-		(B r startP(A)) /\ (B e endP(A))
-. A relep B <=> (A r startP(B)) /\ (A e endP(B)) /\ 
-		(B l startP(A)) /\ (B e endP(A))
-. A slsrp B <=> (A s startP(B)) /\ (A l endP(B)) /\ 
-		(B s startP(A)) /\ (B r endP(A))
-. A srsln B <=> (A s startP(B)) /\ (A r endP(B)) /\ 
-		(B s startP(A)) /\ (B l endP(A))
-. A lseln B <=> (A l startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B l endP(A))
-. A rserp B <=> (A r startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B r endP(A))
-. A seseP B <=> (A s startP(B)) /\ (A e endP(B)) /\ 
-		(B s startP(A)) /\ (B e endP(A))
-. A esesA B <=> (A e startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B s endP(A))
-	
-. A ffbbP B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
-		(B b startP(A)) /\ (B b endP(A))
-. A efbsP B <=> (A e startP(B)) /\ (A f endP(B)) /\ 
-		(B b startP(A)) /\ (B s endP(A))
-. A ifbiP B <=> (A i startP(B)) /\ (A f endP(B)) /\ 
-		(B b startP(A)) /\ (B i endP(A))
-. A bfiiP B <=> (A b startP(B)) /\ (A f endP(B)) /\ 
-		(B i startP(A)) /\ (B i endP(A))
-. A sfsiP B <=> (A s startP(B)) /\ (A f endP(B)) /\ 
-		(B s startP(A)) /\ (B i endP(A))
-. A beieP B <=> (A b startP(B)) /\ (A e endP(B)) /\ 
-		(B i startP(A)) /\ (B e endP(A))
-. A bbffP B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
-		(B f startP(A)) /\ (B f endP(A))
-. A bsefP B <=> (A b startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B f endP(A))
-. A biifP B <=> (A b startP(B)) /\ (A i endP(B)) /\ 
-		(B i startP(A)) /\ (B f endP(A))
-. A iibfP B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
-		(B b startP(A)) /\ (B f endP(A))
-. A sisfP B <=> (A s startP(B)) /\ (A i endP(B)) /\ 
-		(B s startP(A)) /\ (B f endP(A))
-. A iebeP B <=> (A i startP(B)) /\ (A e endP(B)) /\ 
-		(B b startP(A)) /\ (B e endP(A))
-	
-. A ffffA B <=> (A f startP(B)) /\ (A f endP(B)) /\ 
-		(B f startP(A)) /\ (B f endP(A))
-. A fefeA B <=> (A f startP(B)) /\ (A e endP(B)) /\ 
-		(B f startP(A)) /\ (B e endP(A))
-. A fifiA B <=> (A f startP(B)) /\ (A i endP(B)) /\ 
-		(B f startP(A)) /\ (B i endP(A))
-. A fbiiA B <=> (A f startP(B)) /\ (A b endP(B)) /\ 
-		(B i startP(A)) /\ (B i endP(A))
-. A fseiA B <=> (A f startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B i endP(A))
-. A ebisA B <=> (A e startP(B)) /\ (A b endP(B)) /\ 
-		(B i startP(A)) /\ (B s endP(A))
-. A iifbA B <=> (A i startP(B)) /\ (A i endP(B)) /\ 
-		(B f startP(A)) /\ (B b endP(A))
-. A eifsA B <=> (A e startP(B)) /\ (A i endP(B)) /\ 
-		(B f startP(A)) /\ (B s endP(A))
-. A isebA B <=> (A i startP(B)) /\ (A s endP(B)) /\ 
-		(B e startP(A)) /\ (B b endP(A))
-. A bbbbA B <=> (A b startP(B)) /\ (A b endP(B)) /\ 
-		(B b startP(A)) /\ (B b endP(A))
-. A sbsbA B <=> (A s startP(B)) /\ (A b endP(B)) /\ 
-		(B s startP(A)) /\ (B b endP(A))
-. A ibibA B <=> (A i startP(B)) /\ (A b endP(B)) /\ 
-		(B i startP(A)) /\ (B b endP(A))
-	
-. A lllbp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B b endP(A))
-. A llfln B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
-		(B f startP(A)) /\ (B l endP(A))
-. A llbrp B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
-		(B b startP(A)) /\ (B r endP(A))
-. A llrfn B <=> (A l startP(B)) /\ (A l endP(B)) /\ 
-		(B r startP(A)) /\ (B f endP(A))
-. A lirlp B <=> (A l startP(B)) /\ (A i endP(B)) /\ 
-		(B r startP(A)) /\ (B l endP(A))
-. A lfrrn B <=> (A l startP(B)) /\ (A f endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A lriln B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
-		(B i startP(A)) /\ (B l endP(A))
-. A lrrip B <=> (A l startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B i endP(A))
-. A blrrn B <=> (A b startP(B)) /\ (A l endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A irrln B <=> (A i startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B l endP(A))
-. A frrrp B <=> (A f startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-. A rbrrp B <=> (A r startP(B)) /\ (A b endP(B)) /\ 
-		(B r startP(A)) /\ (B r endP(A))
-	
-. A lblln B <=> (A l startP(B)) /\ (A b endP(B)) /\ 
-		(B l startP(A)) /\ (B l endP(A))
-. A flllp B <=> (A f startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B l endP(A))
-. A brlln B <=> (A b startP(B)) /\ (A r endP(B)) /\ 
-		(B l startP(A)) /\ (B l endP(A))
-. A rfllp B <=> (A r startP(B)) /\ (A f endP(B)) /\ 
-		(B l startP(A)) /\ (B l endP(A))
-. A rllin B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B i endP(A))
-. A rrlfp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B l startP(A)) /\ (B f endP(A))
-. A illrp B <=> (A i startP(B)) /\ (A l endP(B)) /\ 
-		(B l startP(A)) /\ (B r endP(A))
-. A rilrn B <=> (A r startP(B)) /\ (A i endP(B)) /\ 
-		(B l startP(A)) /\ (B r endP(A))
-. A rrblp B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B b startP(A)) /\ (B l endP(A))
-. A rlirp B <=> (A r startP(B)) /\ (A l endP(B)) /\ 
-		(B i startP(A)) /\ (B r endP(A))
-. A rrfrn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B f startP(A)) /\ (B r endP(A))
-. A rrrbn B <=> (A r startP(B)) /\ (A r endP(B)) /\ 
-		(B r startP(A)) /\ (B b endP(A))
-
-
-end
-
-
-spec DRA_FO =
-
-     BasicDRA_FO
 
 then %implies
 
@@ -320,22 +466,9 @@ forall A,B,C : Dipol
 %%...
 %% 80 times => 80 LONG lines (or 80*20 shorter ones): too hard to write in FOL ;-)
 
-%% reflexive
-. A seseP A
-
 %% symmetric relations
-. A seseP B <=> B seseP A
-. A esesA B <=> B esesA A
-
 . A rrrrA B <=> B rrrrA A
 . A llllA B <=> B llllA A
-
-. A ffffA B <=> B ffffA B
-. A fefeA B <=> B fefeA A
-. A fifiA B <=> B fifiA A
-. A bbbbA B <=> B bbbbA A
-. A sbsbA B <=> B sbsbA A
-. A ibibA B <=> B ibibA A 
 
 %% converses
 . A rrrrp B <=> B rrrrn A
@@ -344,45 +477,7 @@ forall A,B,C : Dipol
 . A llrrp B <=> B rrlln A
 . A llllp B <=> B lllln A
 
-. A rlrrp B <=> B rrrln A
-. A lrrrn B <=> B rrlrp A 
-. A lrrln B <=> B rllrp A
-. A llrln B <=> B rlllp A
-. A lllrp B <=> B lrlln A
-
-. A lseln B <=> B ellsp A
-. A rserp B <=> B errsn A
-. A relep B <=> B leren A
-. A srsln B <=> B slsrp A
-
-. A ffbbP B <=> B bbffP A
-. A efbsP B <=> B bsefP A
-. A ifbiP B <=> B biifP A
-. A bfiiP B <=> B iibfP A
-. A sfsiP B <=> B sisfP A
-. A beieP B <=> B iebeP A
-
-. A fbiiA B <=> B iifbA A
-. A fseiA B <=> B eifsA A
-. A ebisA B <=> B isebA A
-
-. A lllbp B <=> B lblln A
-. A llfln B <=> B flllp A
-. A llbrp B <=> B brlln A
-. A llrfn B <=> B rfllp A
-. A lirlp B <=> B rllin A
-. A lfrrn B <=> B rrlfp A
-. A lriln B <=> B illrp A
-. A lrrip B <=> B rilrn A
-. A blrrn B <=> B rrblp A
-. A irrln B <=> B rlirp A
-. A frrrp B <=> B rrfrn A
-. A rbrrp B <=> B rrrbn A
-
 %% transitive relations
-. (A seseP B /\ B seseP C) => A seseP C 
-. (A ffbbP B /\ B ffbbP C) => A ffbbP C
-. (A bbffP B /\ B bbffP C) => A bbffP C
 . (A rrllP B /\ B rrllP C) => A rrllP C
 . (A llrrP B /\ B llrrP C) => A llrrP C
 
@@ -395,5 +490,5 @@ forall A,B,C : Dipol
 %%. (A rrrrA B /\ B seseP C) => A rrrrA C
 %% ... for 79 relations: too hard to write in FOL ;-)
 
-
 end
+
