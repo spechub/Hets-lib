@@ -1,0 +1,169 @@
+library HasCASL/Morphisms
+
+from Basic/Numbers get Nat
+
+from HasCASL/Set get Set, Map
+
+from HasCASL/Petri get MultiSet 
+
+from HasCASL/Categories get Category
+
+logic HasCASL
+
+spec GraphCategory=
+  Set and Map
+then
+  sorts N,E 
+  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
+                      dom source=dom target 
+                      /\ (source :: dom source --> n)
+                      /\ (target :: dom target --> n) }
+  type HomGraph = 
+     {(g1,hn,he,g2) : Graph  * (N->?N) * (E->?E) * Graph .
+       hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
+       /\ forall e:E . e isIn edges g1 =>
+          (   hn(sourceMap g1 e) = sourceMap g2 (he e)
+           /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
+   ops nodes : Graph  -> Set N;
+       edges : Graph  -> Set E;
+       sourceMap, targetMap : Graph  -> (E->?N);
+       dom : HomGraph  -> Graph;
+       cod : HomGraph  -> Graph;
+       nodeMap : HomGraph  -> (N->?N);
+       edgeMap : HomGraph  -> (E->?E);
+       id : Graph ->? HomGraph;
+       __o__ : HomGraph  * HomGraph  ->? HomGraph
+   forall g, g1, g2 : Graph; n : Set N; s, t : E->?N; hn:N->?N; he:E->?E; h, h1, h2:HomGraph 
+   . let g=(n,s,t) in nodes g = n
+   . let g=(n,s,t) in edges g = dom s
+   . let g=(n,s,t) in sourceMap = s
+   . let g=(n,s,t) in targetMap = s
+   . let h=(g1,hn,he,g2) in dom (h) = g1
+   . let h=(g1,hn,he,g2) in cod (h) = g2
+   . let h=(g1,hn,he,g2) in nodeMap (h) = hn
+   . let h=(g1,hn,he,g2) in edgeMap (h) = he
+   . def (h2 o h1) <=> cod h1 = dom h2
+   . def (h2 o h1) => h2 o h1 = 
+     (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
+      as HomGraph
+end
+
+
+view CategoryofGraphs : Category to GraphCategory =
+     Ob |-> Graphs, Mor |-> HomGraph, __o__, dom, cod, id
+end
+
+
+spec RichMultiSet = 
+  MultiSet 
+then
+ op   MultiSetToSet : MultiSet Elem -> Set Elem
+ forall B:MultiSet Elem; S: Set Elem
+     . let MultiSetToSet(B) = S in 
+        forall x: Elem. x isIn S <=> freq(x,B) > 0
+end
+
+
+spec MapMultiSet=
+  RichMultiSet
+then
+  var Elem : Type
+  type  MapMultiSet Elem := MultiSet Elem ->? MultiSet Elem
+then %def
+  var Elem, S, T : Type
+  ops __ :: __ --> __ : Pred ( (S->? MultiSet T) * Set S * Set T);
+      freeMap__ : Map Elem -> MapMultiSet Elem;
+      linMap__ : (S->? MultiSet T) -> (MultiSet S->? MultiSet T)
+forall x1, x2: Elem; x3, x4: S; s: Set S; t: Set T;  f: Map Elem; h: S->? MultiSet T
+   . h :: s --> t <=> forall x:S . x isIn s => MultiSetToSet(h x) subset t
+   . freeMap f {} = {};
+   . freeMap f ({x1}+{x2}) = {f x1} + {f x2} 
+   . linMap h {} = {};
+   . linMap h ({x3}+{x4}) = h x3  + h x4 ; 
+
+
+spec PetriNetCategory = 
+  Set and Map 
+then
+  sorts P,T 
+  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)                        	. dom pre=dom post /\
+                     	pre :: dom  pre --> p /\
+                     	post :: dom post --> p }
+  type HomNet = 
+     {(n1,hp,ht,n2) : PetriNet  * (P->?P) * (T->?T) * PetriNet .
+       hp :: places n1 --> places n2 /\ ht :: trans n1 --> trans n2 
+       /\ forall t:T . t isIn trans n1 =>
+          (   freeMap hp (preMap n1 t) = preMap n2 (ht t)
+           /\ freeMap hp (postMap n1 t) = postMap n2 (ht t) ) } 
+   ops places : Net  -> Set P;
+       transitions : Net  -> Set T;
+       preMap, postMap : Net  -> (T ->? Multiset P);
+       dom : HomNet  -> Net;
+       cod : HomNet  -> Net;
+       placesMap : HomNet  -> (P->?P);
+       transitionsMap : HomNet  -> (T->?T);
+       id : Net ->? HomNet;
+       __o__ : HomNet  * HomNet  ->? HomNet 
+   forall n, n1,n2 : Net; p : Set P; pre, post : T ->? Multiset P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
+   . let n=(p,pre,post) in places n  p
+   . let n=(p,pre,post) in transitions n = dom pre
+   . let n=(p,pre,post) in preMap = pre
+   . let n=(p,pre,post) in postMap = post
+   . let h=(n1,hp,ht,n2) in dom (h) = n1
+   . let h=(n1,hp,ht,n2)  in cod (h) = n2
+   . let h=(n1,hp,ht,n2)  in placesMap (h) = hp
+   . let h=(n1,hp,ht,n2)  in transitionsMap (h) = ht
+   . def (h2 o h1) <=> cod h1 = dom h2
+   . def (h2 o h1) => h2 o h1 = 
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitonsMap h1,cod h2)
+      as HomNet
+end
+
+
+view CategoryofPetriNets : Category to PetriNetCategory =
+     Ob |-> Net, Mor |-> HomNet, __o__, dom, cod, id
+end
+
+spec PetriSystemCategory = 
+  PetriNet 
+then
+  type Marking := MultiSet P
+  type System = {(n,m) : Net * Marking 
+                          . let (p,pre1,post1) = n 
+		          in forall x:P . x isIn m => x isIn p }
+  type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
+                  (net(sys1), hp, ht, net(sys2)) as HomNet 
+       /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
+  ops  marking   : System -> Marking;
+       net       : System -> Net;
+       empty     : Marking;
+        __|<__>    : System * T -> System; 
+        __|<__>    : System * MultiSet T ->? System;
+       dom : HomSys  -> Net;
+       cod : HomSys  -> Net;
+       placesMap : HomSys  -> (P->?P);
+       transitionsMap : HomSys  -> (T->?T);
+       id : System ->? HomSys;
+       __o__ : Hom  * HomSys  ->? HomSys 
+  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys 
+  . empty = {}
+  . net sys = let (n,m) = sys in n
+  . marking sys = let (n,m) = sys in m
+  . def sys|<t> <=> t isIn dom preMap(net(sys)) /\  preMap(net(sys))  t <= marking(sys)
+  . def sys|<t> => sys|<t> = (net(sys), marking(sys) -  preMap(net(sys)) t + postMap(net(sys)) t)
+  . def sys|<v> <=> forall t:T . t isIn v /\ t isIn dom preMap(net(sys)) /\ linMap preMap(net(sys)) v <= marking(sys)
+  . def sys|<v> => 
+    sys|<v> = (net(sys), marking(sys) - linMap preMap(net(sys)) v + linMap postMap(net(sys)) v )
+  . let h=(sys1,hp,ht,sys2) in dom (h) = sys1
+  . let h=(sys1,hp,ht,sys2)  in cod (h) = sys2
+  . let h=(sys1,hp,ht,sys2)  in placesMap (h) = hp
+  . let h=(sys1,hp,ht,sys2)  in transitionsMap (h) = ht
+  . def (h2 o h1) <=> cod h1 = dom h2
+  . def (h2 o h1) => h2 o h1 = 
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitonsMap h1,cod h2)
+      as HomSys
+end
+
+view CategoryofPetriSystems : Category to PetriSystemCategory =
+     Ob |-> System, Mor |-> HomSys, __o__, dom, cod, id
+end
