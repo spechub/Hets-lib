@@ -2,7 +2,7 @@ library Calculi/Time/PointAlgebraModel
 
 version 0.1
 %author: S. Wölfl
-%date: 00-02-2005
+%date: 15-02-2005
 
 %( 
     This library defines the model classes for the relation algebras in
@@ -11,158 +11,50 @@ version 0.1
 
 )%
 
-from HasCASL/Set get Set
-from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
-	ExtRelationAlgebraByPartialOrder, RelationAlgebraWithPartialOrder,
-	AtomicRelationAlgebra,CompositionTable
-from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl
-from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTime,
-	DnsLinFlowOfTimeSEnd
 
-
+from Calculi/Algebra/RelationAlgebraModel get  JEPDBase,Relation,
+	GenerateRelationAlgebraModel,AlgebraOfBinaryRelations
+from Calculi/Time/LinearFlowOfTime get LinFlowOfTime,DnsLinFlowOfTimeSEnd
+from Calculi/Time/PointAlgebra get CompositionTableOfPointAlgebraLin
 
 logic HasCASL
 
-spec Relation[sort Elem] = 
-     Set	
-then
-     type Relation ::= abs(int:Set(Elem*Elem))
-end
 
-spec JEPDBase[sort Elem] =
-     Relation[sort Elem]
-then
-     type BaseRel < Relation
-     forall x,y:Elem; r,s:BaseRel
-     . not int(r) = emptySet
-     . exists r:BaseRel . (x,y) isIn int(r)			%(JointlyExhaustive)%
-     . not r = s => int(r) intersection int(s) = emptySet	%(PairwiseDisjoint)%
+spec RelationBaseOfPointAlgebraLin[LinFlowOfTime] = %def 
+     Relation[sort Instant] %% 
+then 
+     ops preRel,idRel,sucRel:Relation 
+     type BaseRel ::= preRel | idRel | sucRel
+     forall x,y:Instant
+     . (x,y) isIn rep(preRel) <=> x pre y
+     . (x,y) isIn rep(idRel) <=> x = y
+     . (x,y) isIn rep(sucRel) <=> y pre x
 end
 
 
-spec FullRelationAlgebra[sort Elem] =
-     Relation[sort Elem]
-then %def
-     ops
-	 0,1,id:Relation;
-         __cup__,__cap__,__cmps__:  Relation * Relation -> Relation;
-         compl__,conv__:Relation -> Relation;
+view RelationBaseOfPointAlgebraLin_as_JEPDBase:
+     JEPDBase[sort Elem] to RelationBaseOfPointAlgebraLin[LinFlowOfTime]
+=
+     sort Elem |-> Instant
+end
 
-     forall r,s:Relation; x,y:Elem
-     . int(0) = emptySet:Set(Elem*Elem)
-     . int(1) = allSet:Set(Elem*Elem)
-     . int(r cup s) = int(r) union int(s)
-     . int(r cap s) = int(r) intersection int(s)
-     . int(compl(r)) = int(1) \\ int(r)
-     . (x,y) isIn int(r cmps s) <=> exists z:Elem . (x,z) isIn int(r) /\ (z,y) isIn int(s) 
-     . (x,y) isIn int(conv(r)) <=> (y,x) isIn int(r)
-     . (x,y) isIn int(id) <=> x = y
 
+spec ModelOfPointAlgebraLin[LinFlowOfTime] =
+      GenerateRelationAlgebraModel[RelationBaseOfPointAlgebraLin[LinFlowOfTime]
+	fit sort Elem |-> Instant]
 then %implies 
-     ops
-         __cup__:  Relation * Relation -> Relation, assoc, comm, idem, unit 1;
-	 __cap__:  Relation * Relation -> Relation, assoc, comm, idem, unit 0;  
-         __cmps__: Relation * Relation -> Relation, assoc, unit id;
-     forall x:Relation
-     . compl(compl(x)) = x 
-     . conv(conv(x)) = x 
+      {	CompositionTableOfPointAlgebraLin with ops < |-> preRel, i |-> idRel, > |-> sucRel  }
 end
 
 
-spec AlgebraOfBinaryRelation[sort Elem] =
-	FullRelationAlgebra[sort Elem]
-then
-     type Rel < Relation
-     ops
-	 0,1,id:Rel; 
-	__cup__,__cap__,cmps__:  Rel * Rel -> Rel;
-        compl__,conv__:Rel -> Rel;
-then %implies
-     ops	
-	__cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1:Rel;
- 	__cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;  
-        __cmps__: Rel * Rel -> Rel, assoc, unit id;
-     forall x,y:Rel
-     . compl(compl(x)) = x 
-     . conv(conv(x)) = x 
-     . exists y:Relation . x = y
-end
-   
-
-  
-view AlgebraOfBinaryRelation_as_BoolenAlgebra:
-     BooleanAlgebraWithCompl to AlgebraOfBinaryRelation[sort Elem]
+view ModelOfPointAlgebraLin_as_AlgebraOfBinaryRelations:
+     AlgebraOfBinaryRelations[sort Elem] to ModelOfPointAlgebraLin[DnsLinFlowOfTimeSEnd]
 =
-     sort Elem |-> Rel 
+    sorts Elem |-> Instant, Rel |-> GenRel
 end
 
 
 
-%(
-
-
-
-spec AlgebraOfBinaryRelationWithComposition[sort Elem] = 
-     Set then 
-      type Rel < Set(Elem*Elem) 	
-     ops
-	0,1,id:Rel; 
-        conv__:Rel -> Rel;         
-	__cmps__:  Rel * Rel -> Rel
-      . 0 as Rel = emptySet as Set(Elem*Elem)
-end 
-
-%(
-     forall r,s:Rel
-     . id =  \(x,y):Elem*Elem . x = y
-     . r cmps s = \(x,y):Elem*Elem . ( exists z:Elem . (x,z) isIn r /\ (z,y) isIn s )
-     . conv(r) = \(x,y):Elem*Elem . (y,x) isIn r
-
-then %implies
-     ops
-          __cmps__: Rel * Rel -> Rel, assoc, unit id;
-     forall x:Rel
-     . conv(conv(x)) = x
-    . conv(id) = id
-end
-
-
-
-
-spec ModelPointAlgebraLinBase = 
-     DnsLinFlowOfTimeSEnd and Set
-then %def
-     ops 
-	Pre:Set(Instant*Instant) = \(x:Instant,y:Instant) . x pre y;
-	Id:Set(Instant*Instant) = \(x:Instant,y:Instant) . x = y;
-	Suc:Set(Instant*Instant) = \(x:Instant,y:Instant) . y pre x
-     op baseRel:Set(Set(Instant*Instant)) = \X:Set(Instant*Instant) . X=Pre \/ X=Id \/ X=Suc
-     type BaseRel = {X:Set(Instant*Instant) .  baseRel X }
-end
-
-
-view ModelPointAlgebraLinBase_as_JEPDBase:
-     JEPDBase to ModelPointAlgebraLinBase
-= 
-    sort Elem |-> Instant, sort BaseRel |-> BaseRel, op baseRel |-> baseRel
-end
-
-
-spec ModelPointAlgebraLin =
-	GenerateRelationAlgebraFromBase[view ModelPointAlgebraLinBase_as_JEPDBase]
-end
-
-spec ModelPointAlgebraLinV =
-	GenerateRelationAlgebraFromBase[JEPDBase fit Elem |-> Instant]
-end
-
-
-view ModelPointAlgebraLin_as_RelationAlgebra:
-     RelationAlgebra to ModelPointAlgebraLin
-=
-     Rel |-> GenRel
-end
-)%
 
 
 

@@ -13,18 +13,22 @@ version 0.2
 %prec {__cup__} < {__cmps__} 
 %prec {__cmps__} < {__cmpl__} 
 
+
 from Basic/Numbers get Nat
-from Basic/StructuredDatatypes get GenerateSet
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Auxiliary get Set
 from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
 		ExtBooleanAlgebraByPartialOrder,AtomicBooleanAlgebra 
 from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra,RichBooleanAlgebra
 
+
 %( 
     First we define the concept of a relation algebra,
     according to I. Hodkinson, Atom structures of relation algebras, 1995.  
 )%
+
+
+
 
 spec RelationAlgebra  =
      BooleanAlgebraWithCompl with sort Elem |-> Rel 
@@ -61,7 +65,6 @@ then %implies
     . x <= x' /\ y <= y' => x cmps y <= x' cmps y'    		%(cmps_monotonic)%
     . x <= id => conv(x) = x					%(conv_below_id)%
     . conv(id) = id						%(conv_id)%
-
 end
 
 
@@ -77,12 +80,14 @@ then %implies
      . x cmps y = 0 => x=0 \/ y = 0
 end
 
+
 spec SymmetricRelationAlgebra =
      RelationAlgebra
 then 
      forall x:Rel
      . conv(x) = x
 end
+
 
 spec CommutativeRelationAlgebra =
      RelationAlgebra
@@ -92,13 +97,12 @@ then
 end
 
 	
+
 spec AtomicRelationAlgebra = 
-     RelationAlgebraWithPartialOrder
+     { RelationAlgebraWithPartialOrder hide pred Atom }
 and
      AtomicBooleanAlgebra with sort Elem |-> Rel, Atom |-> AtomRel
 end
-
-
 
 
 
@@ -109,32 +113,32 @@ end
 )%
 
 
-spec RelationSet[sort BaseRel] = %mono
+spec RelationRep[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
-	    with Set[BaseRel] |-> GenRel,
+	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
              __intersection__ |-> __cap__ }
 then %def
-     sort BaseRel < GenRel
+     sort BaseRel < Rel
      ops 
-	    0,1 : GenRel;
-	 compl__: GenRel -> GenRel; 
+	    0,1 : Rel;
+	 compl__: Rel -> Rel; 
 
-     forall x:BaseRel; y:GenRel
+     forall x:BaseRel; y:Rel
      . x = {x}
      . x eps 1
      . not x eps 0
      . compl(y) = 1 - y
 
 then %implies
-     forall x,y:BaseRel; r:GenRel
+     forall x,y:BaseRel; r:Rel
      . not x = y => x cap y = 0		
      . r isSubsetOf 1
 then
      ops	 	 
          id      : BaseRel;
 	 conv__  : BaseRel -> BaseRel; 
-         __cmps__: BaseRel * BaseRel -> GenRel
+         __cmps__: BaseRel * BaseRel -> Rel
      forall x:BaseRel
      . x cmps id = x
      . id cmps x = x
@@ -143,20 +147,22 @@ then
 end
 
 
-view RelationSet_as_BoolenAlgebraWithCompl:
-     BooleanAlgebraWithCompl to RelationSet[sort BaseRel]
+
+view RelationRep_as_BoolenAlgebraWithCompl:
+     BooleanAlgebraWithCompl to RelationRep[sort BaseRel]
 = 
-     Elem |-> GenRel
+     Elem |-> Rel
 end
 
 
-spec GenerateRelationAlgebra[RelationSet[sort BaseRel]] = %mono
+
+spec GenerateRelationAlgebra[RelationRep[sort BaseRel]] = %mono
      ops 
-	  id	  : GenRel;
-          conv__  : GenRel -> GenRel;
-	  __cmps__: GenRel * GenRel -> GenRel, assoc, unit id;       
+    %%      id      : Rel;
+          conv__  : Rel -> Rel;
+	  __cmps__: Rel * Rel -> Rel, assoc, unit id;       
 						 %% composition of relations
-     forall x,y:BaseRel; u,v:GenRel
+     forall x,y:BaseRel; u,v:Rel
      . (u cup x) cmps (v cup y) =
 	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
      . conv(u cup x) = conv(u) cup conv(x)
@@ -164,13 +170,11 @@ end
 
 
 spec GeneratedRelationAlgebra = 
-     GenerateRelationAlgebra[RelationSet[sort BaseRel]]
+     GenerateRelationAlgebra[RelationRep[sort BaseRel]]
 
 
 view GeneratedRelationAlgebra_as_RelationAlgebra:
      RelationAlgebra to GeneratedRelationAlgebra 
-=
-     sort Rel |-> GenRel
 end 
 
 
@@ -180,32 +184,28 @@ to
      { GeneratedRelationAlgebra  
 	then %def
 	preds 
-		Baserel:GenRel;
-		__<__,__<=__,__>__,__>=__:GenRel*GenRel
-	forall x,y:GenRel
-	. Baserel(x) <=> (exists y:BaseRel . x = {y})
+		__<__,__<=__,__>__,__>=__:Rel*Rel
+	forall x,y:Rel
 	. x < y  <=> x isSubsetOf y /\ not x = y
 	. x <= y <=> x isSubsetOf y
 	. x > y  <=> y isSubsetOf x /\ not x = y
 	. x >= y <=> y isSubsetOf x
      }
 =
-     sort Rel |-> GenRel, sort AtomRel |-> BaseRel,
-     pred Atom |-> Baserel
+     sort Rel |-> Rel, sort AtomRel |-> BaseRel
 end 
 
 
 
 spec CompositionTable =
-     sorts BaseRel < GenRel
+     sorts BaseRel < Rel
      ops 
-	 id:BaseRel;
-	 0,1:GenRel;
-	 conv__:   BaseRel -> BaseRel;
-         compl__:   GenRel -> GenRel;
-	 __cmps__: BaseRel * BaseRel -> GenRel;
-	 __cup__:  GenRel * GenRel -> GenRel, assoc, idem, comm, unit 1;
-	 __cap__:  GenRel * GenRel -> GenRel, assoc, idem, comm, unit 0;  
+	 id,0,1:Rel;
+	 conv__:   BaseRel -> Rel;
+         compl__:   Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;
+	 __cup__:  Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+	 __cap__:  Rel * Rel -> Rel, assoc, idem, comm, unit 0;  
 end
 
 

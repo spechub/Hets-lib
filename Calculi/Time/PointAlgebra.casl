@@ -7,114 +7,45 @@ version 0.1
 %left_assoc __cup__,__cap__
 %prec {__cup__} < {__cmps__}
 
-from Calculi/Algebra/RelationAlgebra get RelationSet,
+from Calculi/Algebra/RelationAlgebra get RelationRep,
      GenerateRelationAlgebra,CompositionTable
+from Calculi/Time/PointAlgebraCompositionTables get 
+	CompositionTableOfPointAlgebraLin, 
+	CompositionTableOfPointAlgebraBr
 
 
 %( 
 	The Point Algebra for linear flows of time 
      
      The Point Algebra for linear flows of time has three base relations,
-     namely, < ("earlier"), > ("later"), and i ("identical").
+     namely, pre ("earlier"), suc ("later"), and id ("identical").
 )%
 
 
 
 
-spec PointAlgebraLinCompositionTable =
-     sort BaseRel
-     ops <,>,i: BaseRel
-and 
-     CompositionTable with op id |-> i
-then
-     . < cmps < = <              	%(cmps_11)%
-     . < cmps > = < cup i cup >     	%(cmps_12)%
-     . > cmps < = < cup i cup >  	%(cmps_21)%
-     . > cmps > = >			%(cmps_22)%
-
-     . conv(i) = i 			%(sym_i)%
-     . conv(<) = >			%(conv_earlier)%
-     . conv(>) = <			%(conv_later)%
-
-then %implies
-     . < cmps i = <		       	%(cmps_13)%
-     . > cmps i = >			%(cmps_23)%
-     . i cmps < = < 			%(cmps_31)%
-     . i cmps > = >			%(cmps_32)%
-     . i cmps i = i			%(cmps_33)%
-end
-
-
-
-spec PointAlgebraLinBase = %mono
-     { RelationSet[free type BaseRel ::= 
-			< | i | >] 
-	with  op id |-> i
-	}
+spec BaseOfPointAlgebraLin = %mono
+     	{ RelationRep[free type BaseRel ::= preRel | idRel | sucRel] with op id |-> idRel }
 and  
-     PointAlgebraLinCompositionTable
+     CompositionTableOfPointAlgebraLin with  ops < |-> preRel, > |-> sucRel, i |-> idRel 
 end 
 
      
 spec PointAlgebraLin = %def
-     GenerateRelationAlgebra [PointAlgebraLinBase] with op id |-> i 
+     GenerateRelationAlgebra [BaseOfPointAlgebraLin]  
 end
 
 
 
-%( 
-	The Point Algebra for branching flows of time 
-     
-     The Point Algebra for branching flows of time has four base relations,
-     namely, < ("earlier"), > ("later"), u ("unrelated"), and 
-     i ("identical").
-)%
-
-
-
-spec PointAlgebraBrCompositionTable =
-     sort BaseRel
-     ops <,>,i,u: BaseRel
-and 
-     CompositionTable with op id |-> i
-then
-     . < cmps < = i                 	%(cmps_11)%
-     . < cmps > = < cup > cup i     	%(cmps_12)%
-     . < cmps u = < cup u	     	%(cmps_13)%
-     . > cmps < = < cup > cup u cup i  	%(cmps_21)%
-     . > cmps > = >			%(cmps_22)%
-     . > cmps u = u			%(cmps_23)%
-     . u cmps < = u        		%(cmps_31)%
-     . u cmps > = > cup u		%(cmps_32)%
-     . u cmps u = < cup > cup u cup i	%(cmps_33)%
-  
-     . conv(<) = >			%(conv_earlier)%
-     . conv(>) = <			%(conv_later)%
-     . conv(u) = u			%(sym_unrelated)%
-
-then %implies
-     . < cmps i = <		       	%(cmps_14)%
-     . > cmps i = >			%(cmps_24)%
-     . u cmps i = >			%(cmps_34)%
-     . i cmps < = < 			%(cmps_41)%
-     . i cmps > = >			%(cmps_42)%
-     . i cmps u = u			%(cmps_43)%
-     . i cmps i = i			%(cmps_44)%
-end
-
-
-spec PointAlgebraBrBase = %mono
-     { RelationSet[free type BaseRel ::= 
-			< | i | > | u] 
-	with  op id |-> i
-	}
+spec BaseOfPointAlgebraBr = %mono
+     RelationRep[free type BaseRel ::= preR | idR | sucR | unR] 
 and  
-     PointAlgebraBrCompositionTable
+     { CompositionTableOfPointAlgebraBr with ops < |-> preR, > |-> sucR, i |-> idR , u |-> unR }
 end 
 
 
 spec PointAlgebraBr = %def
-     GenerateRelationAlgebra [PointAlgebraBrBase] 
+     GenerateRelationAlgebra [BaseOfPointAlgebraBr] 
 end
 
 

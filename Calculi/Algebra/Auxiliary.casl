@@ -38,30 +38,29 @@ spec BooleanAlgebraWithCompl = ExtBooleanAlgebraByCompl[BooleanAlgebra]
 
 spec ExtBooleanAlgebraByPartialOrder[BooleanAlgebra] = %def
 
-     preds __ <= __, __ < __,  __ >= __, __ > __: Elem * Elem;
-	  Atom:Elem
-
+     preds 
+	   __ <= __, __ < __,  __ >= __, __ > __: Elem * Elem;
+	   Atom: Elem
      forall x,y:Elem
      . x <= y <=> x cap y = x           %(leq_def_ExtBooleanAlgebra)%
      . x >= y <=> y <= x                %(geq_def_ExtBooleanAlgebra)%
      . x < y <=> (x <= y /\ not (x=y))  %(less_def_ExtBooleanAlgebra)%
-     . x > y <=> y < x                  %(greater_def_ExtBooleanAlgebr)%
-     . Atom(x) <=> not x = 0 /\ 
-		   ( forall y:Elem . y < x => y = 0)
-					%(Atom_def)%  
+     . x > y <=> y < x                  %(greater_def_ExtBooleanAlgebra)%
+     . Atom(x) <=> not x = 0 /\ (forall y:Elem . y < x => y = 0) %(def_Atom)%
 end
+
 
 spec BooleanAlgebraWithPartialOrder = 
 	ExtBooleanAlgebraByPartialOrder[BooleanAlgebra]
 end
 
+
 spec AtomicBooleanAlgebra =
-     BooleanAlgebraWithPartialOrder
+     { BooleanAlgebraWithPartialOrder hide pred Atom }
 then
+     sort Atom = {x: Elem . not x = 0 /\ (forall y:Elem . y < x => y = 0)}
      forall x:Elem
-     . not x = 0 => (exists y:Elem . Atom(y) /\ y <= x) 	
-then %def
-     sort Atom = { x:Elem . Atom(x) }
+     . not x = 0 => (exists y:Atom . y <= x) 	
 end
 
 
@@ -80,8 +79,8 @@ then %def
      %% implied operation attributes
 
      ops
-         __ union __ : Set[Elem] * Set[Elem] -> Set[Elem],
-                assoc, comm, idem, unit {}; %implied
+         __ union __ : Set[Elem] * Set[Elem] -> Set[Elem], 
+			assoc, comm, idem, unit {}; %implied
          __ intersection __ : Set[Elem] * Set[Elem] -> Set[Elem],
                        assoc, comm, idem;   %implied
      forall x,y: Elem; M,N,O: Set[Elem]
@@ -116,6 +115,9 @@ then %implies
      . M isSubsetOf (M union N)                 %(union_isSubsetOf)%
       . (M intersection N) isSubsetOf M         %(intersection_isSubsetOf)%
 end
+
+
+
 
 view Set_as_PartialOrder  [sort Elem] :
      PartialOrder to Set [sort Elem] 
