@@ -27,15 +27,17 @@ then
   . let (l,r) = p 
     in
     def transform(p,g1) <=>
-        exists g2,g3,c1,c2 : Mor . POcomplement (l,g1,dom c1)
-    /\ (forall o1,o2 : Ob . POcomplement (l,g1,o1) /\ POcomplement (l,g1,o2)
+        exists g2,g3,c1,c2 : Mor . POComplement (l,g1,dom c1)
+    /\ (forall o1,o2 : Ob . POComplement (l,g1,o1) /\ POComplement (l,g1,o2)
          => o1 = o2)
     /\ ((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
-    /\ ((g3,c2) as POCocone) isCoconeFor ((r,g2) as PODiagram))
+    /\ ((g3,c2) as POCocone) isCoconeFor ((r,g2) as PODiagram)
   
+%[   
    . let (l,r) = p;
         ((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
     in
     def transform(p,g1) => transform(p,g1) = r objPushout g2
+]%
 end
 
