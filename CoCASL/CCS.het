@@ -8,6 +8,7 @@ logic CASL
 
 spec Action =
   sort Act
+  op tau:Act
 end
 
 spec Set[sort Elem] =
@@ -53,13 +54,15 @@ then
 end
 
 spec PairSet[sort A][sort B] =
-  Pair[sort A][sort B] and 
-  Set[sort A] and Set[sort B] and Set[sort Pair[A,B]]
+    Set[sort A] with sort Set[A] |-> SetA
+and Set[sort B] with sort Set[B] |-> SetB
+and Set[sort Pair[A,B]]
+and Pair[sort A][sort B] 
 then 
-  ops __*__ : A * Set [B] -> Set [Pair[A,B]];
-      __*__ : Set [A] * Set [B] -> Set [Pair[A,B]];
-      __*__ : Set [A] * B -> Set [Pair[A,B]]; 
-  forall a : A; b : B ; U,X : Set [A]; Y,Z : Set [B]
+  ops __*__ : A * SetB -> Set [Pair[A,B]];
+      __*__ : SetA * SetB -> Set [Pair[A,B]];
+      __*__ : SetA * B -> Set [Pair[A,B]]; 
+  forall a : A; b : B ; U,X : SetA; Y,Z : SetB
   . a * {} = {}
   . a * {b} = {pair(a, b)}
   . a * (Y union Z) = (a * Y) union (a * Z)
@@ -70,13 +73,15 @@ then
 end
 
 spec Summation =
-  Zero and PairSet[sorts State][sort State] 
+  Zero 
+and { PairSet[sorts State][sort State] 
+      with SetA |-> Set[State], SetB |-> Set[State] }
 then
   ops __+__ : State * State -> State;
       pplus : Set[Pair[State,State]] -> Set[State]
   forall a : Act; s1 , s2 : State; s: Set[Pair[State,State]]
   . pplus({}) = {}
-  . pplus({pair(s1,s2)} union s) = {s1+s2} union ppplus(s)
+  . pplus({pair(s1,s2)} union s) = {s1+s2} union pplus(s)
   . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
 end
 
@@ -87,18 +92,20 @@ then
 end
 
 spec Composition = 
-  FinalNonDeterministicAutomaton[FinAct]
+  FinAct
+then
+  FinalNonDeterministicAutomaton[Action]
 and
-  ExtSet[State]
+  ExtSet[sort State]
 then
   ops __|__ : State * State -> State;
       h : State * State * Set[Act] -> Set[State]
-  vars a : Act; s1, s2 : State; set1, set2 : Set[State]
+  vars a : Act; s1, s2 : State; set1, set2 : Set[Act]
   . h(s1 , s2, {}) = {}
   . h(s1, s2, {a}) = next (a1 , s1 ) intersection next (bar (a1 ), s2 )
   . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
   . next (a, s1 | s2) = next (a, s1 ) * s2 union s1 * next (a, s2)
-  . next (t, s1 | s2) = next (t, s1 ) * s2 union s1 * next (t, s2) union h(s1, s2, actions) 
+  . next (tau, s1 | s2) = next (tau, s1 ) * s2 union s1 * next (tau, s2) union h(s1, s2, actions) 
 end
 
 spec Hiding = 
