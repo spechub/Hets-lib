@@ -1,7 +1,7 @@
 library Basic/PreNumbers
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% copyright 5.5.00
+version 0.5 
+
+%left_assoc __ + __, __ * __
 
 from Basic/RelationsAndOrders version 0.5
 get SigOrder, TotalOrder
@@ -12,7 +12,7 @@ spec
 then
      ops
            0:                Elem;
-           __ + __, __ * __: Elem × Elem -> Elem %left assoc;
+           __ + __, __ * __ : Elem * Elem -> Elem;
            abs:              Elem -> NonNeg;
      %prec { __ + __ } < { __ * __ }
 end
@@ -33,33 +33,33 @@ and
 then
      %def
      op
-          %[PreNat_1_def] 1: Pos = suc(0);
-          1 : Nat
+          1: Pos = suc(0)             %(PreNat_1_def)%  %% Till
+     op   1 : Nat
 then
      vars
           m,n: Nat; p: Pos
      .
-          %[Nat_leq_def1] 0 <= n
+          0 <= n             %(Nat_leq_def1)%
      .
-          %[Nat_leq_def2] not (p <= 0)
+          not (p <= 0)             %(Nat_leq_def2)%
      .
-          %[Nat_leq_def3] suc(m) <= suc(n) <=> m <= n
+          suc(m) <= suc(n) <=> m <= n             %(Nat_leq_def3)%
      .
-          %[Nat_add__0] 0 + m = m
+          0 + m = m             %(Nat_add_0)%
      .
-          %[Nat_add_suc] suc(n) + m = suc(n + m)
+          suc(n) + m = suc(n + m)             %(Nat_add_suc)%
      .
-          %[Nat_mult_0] 0 * m = 0
+          0 * m = 0             %(Nat_mult_0)%
      .
-          %[Nat_mult_suc] suc(n) * m = (n * m) + m
+          suc(n) * m = (n * m) + m             %(Nat_mult_suc)%
      .
-          %[PreNat_abs] abs(m)=m
+          abs(m)=m             %(PreNat_abs)%
 then
      %def
      ops
-           __*__: Pos × Pos -> Pos;
-           __+__: Pos × Nat -> Pos;
-           __+__: Nat × Pos -> Pos;
+           __*__: Pos * Pos -> Pos;
+           __+__: Pos * Nat -> Pos;
+           __+__: Nat * Pos -> Pos;
            abs :  Pos -> Pos 
 end
 
@@ -83,13 +83,13 @@ then
      var
           p:Pos
      .
-          %[Int_suc_minus_one] suc(minus(suc(0))) = 0
+          suc(minus(suc(0))) = 0             %(Int_suc_minus_one)%
      .
-          %[Int_suc_Neg] suc(minus(suc(p))) = minus(p)
+          suc(minus(suc(p))) = minus(p)             %(Int_suc_Neg)%
      .
-          %[Int_pre_def1] pre(0) = minus(suc(0))
+          pre(0) = minus(suc(0))             %(Int_pre_def1)%
      .
-          %[Int_pre_def2] pre(minus(p)) = minus(suc(p))
+          pre(minus(p)) = minus(suc(p))             %(Int_pre_def2)%
 end
 
 spec
@@ -103,36 +103,36 @@ then
      vars
           m,n: Nat; p,q: Pos
      .
-          %[Int_leq_def1] minus(p) <= n
+          minus(p) <= n             %(Int_leq_def1)%
      .
-          %[Int_leq_def2] not (m <= minus(p))
+          not (m <= minus(p))             %(Int_leq_def2)%
      .
-          %[Int_leq_def3] minus(p) <= minus(q) <=> q <= p
+          minus(p) <= minus(q) <=> q <= p             %(Int_leq_def3)%
      .
-          %[Int_add_def1] m + minus(p) = minus(p) + m
+          m + minus(p) = minus(p) + m             %(Int_add_def1)%
      .
-          %[Int_add_def2] minus(p) + 0 = minus(p)
+          minus(p) + 0 = minus(p)             %(Int_add_def2)%
      .
-          %[Int_add_def3] minus(p) + suc(m) = suc(minus(p)) + m
+          minus(p) + suc(m) = suc(minus(p)) + m             %(Int_add_def3)%
      .
-          %[Int_add_def4] minus(p) + minus(q) = minus(p + q)
+          minus(p) + minus(q) = minus(p + q)             %(Int_add_def4)%
      .
-          %[Int_mult_def1] m * minus(p) = minus(p) * m
+          m * minus(p) = minus(p) * m             %(Int_mult_def1)%
      .
-          %[Int_mult_def2] minus(p) * 0 = 0
+          minus(p) * 0 = 0             %(Int_mult_def2)%
      .
-          %[Int_mult_def3] minus(p) * q = minus(p * q)
+          minus(p) * q = minus(p * q)             %(Int_mult_def3)%
      .
-          %[Int_mult_def4] minus(p) * minus(q) = p * q
+          minus(p) * minus(q) = p * q             %(Int_mult_def4)%
      .
-          %[PreInt_abs_Neg] abs(minus(p))=p
+          abs(minus(p))=p             %(PreInt_abs_Neg)%
 then
      %def
      ops
-           __*__: Neg × Neg -> Pos;
-           __*__: Neg × Pos -> Neg;
-           __*__: Pos × Neg -> Neg;
-           __+__: Neg × Neg -> Neg;
+           __*__: Neg * Neg -> Pos;
+           __*__: Neg * Pos -> Neg;
+           __*__: Pos * Neg -> Neg;
+           __+__: Neg * Neg -> Neg;
            abs :  Neg -> Pos
 end
 
@@ -151,7 +151,7 @@ then
      vars
           i,j: Int; p,q: Pos
      .
-          %[Rat_equality] i frac p = j frac q <=> i*q = j*p
+          i frac p = j frac q <=> i*q = j*p             %(Rat_equality)%
 end
 
 spec
@@ -169,20 +169,20 @@ then
      var
           i:Int
      .
-          %[embeddingIntToRat] i frac 1 = i
+          i frac 1 = i             %(embeddingIntToRat)%
 then
      %prec {__ + __} < { __ frac __}
      vars
           n,m: Int; p,q:Pos
      .
-          %[Rat_leq_def] (n frac p <= m frac q <=> n * q <= m * p )
+          (n frac p <= m frac q <=> n * q <= m * p )             %(Rat_leq_def)%
      .
-          %[Rat_add_def] n frac p + m frac q =	
-		(n * q + m * p) frac (p * q)
+          n frac p + m frac q =	
+		(n * q + m * p) frac (p * q)             %(Rat_add_def)%
      .
-          %[Rat_mult_def] (n frac p) * (m frac q) = (n * m) frac (p * q)
+          (n frac p) * (m frac q) = (n * m) frac (p * q)             %(Rat_mult_def)%
      .
-          %[Rat_abs_def] abs(n frac p)=abs(n) frac p
+          abs(n frac p)=abs(n) frac p             %(Rat_abs_def)%
 then
      %def
      op   1 : Rat

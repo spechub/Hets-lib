@@ -1,7 +1,8 @@
 library Basic/RelationsAndOrders
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% copyright: 5.5.00
+version 0.5 
+
+%prec { __ cup __ } < { __ cap __}
+
 
 spec
      Relation =
@@ -18,7 +19,7 @@ then
      var
           x:Elem
      .
-          %[refl] x ~ x
+          x ~ x             %(refl)%
 end
 
 spec
@@ -28,7 +29,7 @@ then
      vars
           x,y:Elem
      .
-          %[sym] x ~ y if y ~ x
+          x ~ y if y ~ x             %(sym)%
 end
 
 spec
@@ -38,7 +39,7 @@ then
      vars
           x,y,z:Elem
      .
-          %[trans] x ~ z if x ~ y /\ y ~ z
+          x ~ z if x ~ y /\ y ~ z             %(trans)%
 end
 
 spec
@@ -64,11 +65,11 @@ spec
      vars
           x,y:Elem
      .
-          %[SigOrder_geq_def] x >= y <=> y <= x
+          x >= y <=> y <= x             %(SigOrder_geq_def)%
      .
-          %[SigOrder_less_def] x < y <=> (x <= y /\ not (x=y))
+          x < y <=> (x <= y /\ not (x=y))             %(SigOrder_less_def)%
      .
-          %[SigOrder_greater_def] x > y <=> y < x
+          x > y <=> y < x             %(SigOrder_greater_def)%
 end
 
 spec
@@ -84,7 +85,7 @@ then
      vars
           x,y:Elem
      .
-          %[POrder_antisym] x = y if x <= y /\ y <= x
+          x = y if x <= y /\ y <= x             %(POrder_antisym)%
 end
 
 spec
@@ -95,21 +96,21 @@ spec
 and
 {
           ops
-                inf,sup : Elem × Elem ->? Elem
+                inf,sup : Elem * Elem ->? Elem
           vars
                x,y,z: Elem
           .
-               %[inf_def] inf(x,y) = z <=>
+               inf(x,y) = z <=>
                 z <= x /\ z <= y /\ (forall t: Elem . t <= x /\ t <= y => t
-                <= z)
+                <= z)             %(inf_def)%
           .
-               %[sup_def] sup(x,y) = z <=>
+               sup(x,y) = z <=>
                 x <= z /\ y <= z /\ (forall t: Elem . x <= t /\ y <= t => z
-                <= t)
+                <= t)             %(sup_def)%
      then
           %implies
           ops
-               inf,sup : Elem × Elem ->? Elem, comm
+               inf,sup : Elem * Elem ->? Elem, comm
 }
 end
 
@@ -120,7 +121,7 @@ then
      vars
           x,y:Elem
      .
-          %[TOrder_comparability] x <= y \/ y <= x
+          x <= y \/ y <= x             %(TOrder_comparability)%
 end
 
 spec
@@ -131,17 +132,17 @@ spec
 and
 {
           ops
-               min, max: Elem × Elem -> Elem
+               min, max: Elem * Elem -> Elem
           vars
                x,y: Elem
           .
-               %[min_def] min(x,y) = x when x <= y else y
+               min(x,y) = x when x <= y else y             %(min_def)%
           .
-               %[max_def] max(x,y) = y when x <= y else x
+               max(x,y) = y when x <= y else x             %(max_def)%
      then
           %implies
           ops
-                min, max: Elem × Elem -> Elem,
+                min, max: Elem * Elem -> Elem,
                           comm, assoc
 }
 then
@@ -149,9 +150,9 @@ then
      vars
           x,y: Elem
      .
-          %[min_inf_relation] min(x,y)=inf(x,y)
+          min(x,y)=inf(x,y)             %(min_inf_relation)%
      .
-          %[max_sup_relation] max(x,y)=sup(x,y)
+          max(x,y)=sup(x,y)             %(max_sup_relation)%
 end
 
 spec
@@ -162,25 +163,22 @@ spec
            0,1:       Elem;
            __ cap __: Elem * Elem -> Elem, assoc, comm, unit 1;
            __ cup __: Elem * Elem -> Elem, assoc, comm, unit 0;
-     %prec
-          { __ cup __ } < { __ cap __}
      vars
           x,y,z:Elem
      .
-          %[absorption_def1] x cap ( x cup y) = x
+          x cap ( x cup y) = x             %(absorption_def1)%
      .
-          %[absorption_def2] x cup ( x cap y) = x
+          x cup ( x cap y) = x             %(absorption_def2)%
      .
-          %[zeroAndCap] x cap 0 = 0
+          x cap 0 = 0             %(zeroAndCap)%
      .
-          %[oneAndCup] x cup 1 = 1
+          x cup 1 = 1             %(oneAndCup)%
      .
-          %[BA_distr_def1] x cap ( y cup z) = (x cap y) cup ( x cap z)
+          x cap ( y cup z) = (x cap y) cup ( x cap z)             %(BA_distr_def1)%
      .
-          %[BA_distr_def2] x cup ( y cap z) = (x cup y) cap ( x cup z)
+          x cup ( y cap z) = (x cup y) cap ( x cup z)             %(BA_distr_def2)%
      .
-          %[BA_inverse_def]
-          exists x': Elem . x cup x' = 1 /\ x cap x' = 0
+          exists x': Elem . x cup x' = 1 /\ x cap x' = 0             %(BA_inverse_def)%
 then
      %implies
      op
@@ -188,8 +186,8 @@ then
      var
           x: Elem
      .
-          %[BA_uniqueComplement] exists! x': Elem . x cup x' = 1 /\ x cap
-          x' = 0
+          exists! x': Elem . x cup x' = 1 /\ x cap
+          x' = 0             %(BA_uniqueComplement)%
 end
 
 spec
@@ -199,24 +197,24 @@ spec
      {
           SigOrder [sort Elem]
           then vars x,y:Elem
-          . %[BA_po_def] x <= y <=> x cap y = x
+          . x <= y <=> x cap y = x             %(BA_po_def)%
      }
      and
      {
           op compl: Elem -> Elem
           vars x,y:Elem
-          . %[BA_compl_def] compl(x)=y <=> x cup y = 1 /\ x cap y = 0
+          . compl(x)=y <=> x cup y = 1 /\ x cap y = 0             %(BA_compl_def)%
      }
 then
      %implies
      vars
           x,y: Elem
      .
-          %[de_Morgan1] compl(x cap y) = compl(x) cup compl(y)
+          compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%
      .
-          %[de_Morgan2] compl(x cup y) = compl(x) cap compl(y)
+          compl(x cup y) = compl(x) cap compl(y)             %(de_Morgan2)%
      .
-          %[BA_involution_compl] compl(compl(x)) = x
+          compl(compl(x)) = x             %(BA_involution_compl)%
 end
 
 view

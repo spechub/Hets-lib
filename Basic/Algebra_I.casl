@@ -1,7 +1,9 @@
 library Basic/Algebra_I
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% copyright 5.5.00
+version 0.5 
+
+%prec {__*__} < {__^ __}
+%prec {__ + __, __ - __, -__} < {__ / __}
+
 
 from Basic/RelationsAndOrders version 0.5 get TotalOrder, ExtTotalOrder,
 PreOrder, EquivalenceRelation
@@ -43,7 +45,6 @@ spec
      BinAlg
 then	
      op __ ^ __: Elem * Exponent -> Elem
-     %prec {__*__} < {__^ __}
 end
 
 spec 
@@ -52,8 +53,8 @@ spec
      SigPowerBinAlg [sort Exponent]
 then
      vars x: Elem; n,m: Exponent
-     .    %[Power_add] x ^ (n + m)=x ^ n * x ^ m
-     .    %[Power_mult] x ^ (n * m)=(x ^ n) ^ m
+     .    x ^ (n + m)=x ^ n * x ^ m             %(Power_add)%
+     .    x ^ (n * m)=(x ^ n) ^ m             %(Power_mult)%
 end
 
 	
@@ -65,9 +66,9 @@ then
      vars
           x: Elem; n: Pos
      .
-          %[SemiGroup_power_1] x ^ 1 = x
+          x ^ 1 = x             %(SemiGroup_power_1)%
      .
-          %[SemiGroup_power_suc] x ^ suc(n) = x * x ^ n
+          x ^ suc(n) = x * x ^ n             %(SemiGroup_power_suc)%
 then
      %implies
      PowerTheorems [PreNat fit sort Exponent |-> Pos]
@@ -87,7 +88,7 @@ spec
 then
      vars x,y: Elem; n: Exponent
      .
-          %[Power_basemult] x^ n * y^ n=(x*y)^ n
+          x^ n * y^ n=(x*y)^ n             %(Power_basemult)%
 end
 
 spec 
@@ -118,13 +119,13 @@ then
      var
           x: Elem
      .
-          %[Monoid_power_0] x ^ 0 = e
+          x ^ 0 = e             %(Monoid_power_0)%
 then
      %implies
      {vars
           x: Elem; n,m: Nat
      .    
-	  %[Monoid_power_unit] e ^ n = e
+	  e ^ n = e             %(Monoid_power_unit)%
      then
 	  PowerTheorems [PreNat fit sort Exponent |-> Nat] 
      }
@@ -203,31 +204,31 @@ then
      vars
           x,y: Elem
      .
-          %[Group_inverse_def] inv(x) * x = e
+          inv(x) * x = e             %(Group_inverse_def)%
      .
-          %[Group_div_def] x / y = x * inv(y)
+          x / y = x * inv(y)             %(Group_div_def)%
 then
      SigPowerBinAlg [sort Int]
 then
      vars
           x: Elem; p: Pos
      .
-          %[ExtGroup_power_neg] x^ minus(p)=inv(x ^ p)
+          x^ minus(p)=inv(x ^ p)             %(ExtGroup_power_neg)%
 then
      %implies
      {vars x,y,z: Elem; n,m: Int
      .
-	  %[Group_right_inv] x * inv(x) = e
+	  x * inv(x) = e             %(Group_right_inv)%
      .
-	  %[Group_left_cancellation] x = y if z * x = z * y
+	  x = y if z * x = z * y             %(Group_left_cancellation)%
      .
-	  %[Group_right_cancellation] x = y if x * z = y * z
+	  x = y if x * z = y * z             %(Group_right_cancellation)%
      .
-          %[Group_inv_inv] inv(inv(x))=x
+          inv(inv(x))=x             %(Group_inv_inv)%
      .
-          %[Group_inv_e] inv(e)=e
+          inv(e)=e             %(Group_inv_e)%
      .
-          %[Group_inv_prod] inv(x*y)=inv(y)*inv(x)
+          inv(x*y)=inv(y)*inv(x)             %(Group_inv_prod)%
      then
 	  PowerTheorems [PreInt fit sort Exponent |-> Int]
      }
@@ -267,9 +268,9 @@ spec
      vars
           x: Space; a,b: Elem
      .
-          %[MonoidAction_unit] e * x = x
+          e * x = x             %(MonoidAction_unit)%
      .
-          %[MonoidAction_assoc] (a * b) * x = a * (b * x)
+          (a * b) * x = a * (b * x)             %(MonoidAction_assoc)%
 end
 
 spec
@@ -280,8 +281,8 @@ then
      pred connected: Space * Space
      var x,y: Space
      .
-	  %[Action_connected_def] connected(x,y) <=> 
-		exists a: Elem . a * x = y
+	  connected(x,y) <=> 
+		exists a: Elem . a * x = y             %(Action_connected_def)%
 end
 
 view PreOrder_in_ExtMonoidAction:
@@ -305,9 +306,9 @@ then
      %implies
      var a,b:Elem; x,y: Space
      .
-	%[GroupAct_inj] x = y if a * x = a * y
+	x = y if a * x = a * y             %(GroupAct_inj)%
      .
-	%[GroupAct_surj] exists z: Space . a * z = x
+	exists z: Space . a * z = x             %(GroupAct_surj)%
 
 end
 
@@ -329,9 +330,9 @@ then
      vars
           x,y,z:Elem
      .
-          %[Ring_distr1] (x + y) * z = (x * z) + (y * z)
+          (x + y) * z = (x * z) + (y * z)             %(Ring_distr1)%
      .
-          %[Ring_distr2] z * ( x + y ) = (z * x) + (z * y)
+          z * ( x + y ) = (z * x) + (z * y)             %(Ring_distr2)%
 end
 
 view AbelianGroup_in_Ring_add:
@@ -360,16 +361,15 @@ and
      vars
           x,y: Elem
      .
-          %[Ring_isUnit_def] isUnit(x) <=> 
-		exists y: Elem . x * y = e /\ y * x = e
+          isUnit(x) <=> 
+		exists y: Elem . x * y = e /\ y * x = e             %(Ring_isUnit_def)%
      .
-          %[Ring_isIrred_def]
-           isIrred(x) <=> (not isUnit(x) /\
+          isIrred(x) <=> (not isUnit(x) /\
                           forall y, z: Elem . (x = y * z => (isUnit(z) \/
-                          isUnit(z))))
+                          isUnit(z))))             %(Ring_isIrred_def)%
 then
      %prec {-__, __ - __} < {__ * __ }
-then %def
+%def
      ops 
 	e: RUnit[Elem];
         -__: RUnit[Elem] -> RUnit[Elem];
@@ -395,12 +395,11 @@ then
      vars
           x,y: Elem
      .
-          %[hasNoZeroDivisors_def]
-          hasNoZeroDivisors <=> forall x,y: Elem . (x * y = 0 => x=0 \/ y=0)
+          hasNoZeroDivisors <=> forall x,y: Elem . (x * y = 0 => x=0 \/ y=0)             %(hasNoZeroDivisors_def)%
      .
-          %[divides_def] x divides y <=> exists z: Elem. x * z = y
+          x divides y <=> exists z: Elem. x * z = y             %(divides_def)%
      .
-          %[associated_def] associated(x,y) <=> exists u:RUnit[Elem]. x=u*y
+          associated(x,y) <=> exists u:RUnit[Elem]. x=u*y             %(associated_def)%
 then
      %implies
      vars
@@ -429,11 +428,12 @@ end
 spec
      IntegralDomain =
      CommutativeRing
-then
-     axioms
-      %[zeroNotEqualOne] not (e = 0);
-      %[noZeroDivisors] forall x,y: Elem . ( x * y = 0 => 
-				( x = 0 \/ y = 0 ) )
+%% Pascal
+%%then
+%%     axioms
+%%       not (e = 0)             %(zeroNotEqualOne)%;
+%%       forall x,y: Elem . ( x * y = 0 => 
+%%				( x = 0 \/ y = 0 ) )             %(noZeroDivisors)%
 end
 
 spec
@@ -441,7 +441,7 @@ spec
 %def
      ExtCommutativeRing [CommutativeRing]
 then
-     op __ * __:  NonZero[Elem] × NonZero[Elem] -> NonZero[Elem]
+     op __ * __:  NonZero[Elem] * NonZero[Elem] -> NonZero[Elem]
 then
      %implies
      axiom hasNoZeroDivisors
@@ -456,12 +456,11 @@ then
      vars
           a,b: Elem
      .
-          %[ER_delta_dom] def delta(a) if not a = 0
+          def delta(a) if not a = 0             %(ER_delta_dom)%
      .
-          %[ER_div_with_remainder]
-           (exists q,r : Elem . a = q * b + r /\
+          (exists q,r : Elem . a = q * b + r /\
                                (r = 0 \/ delta(r) < delta(b) )) 
-		if not b = 0 
+		if not b = 0             %(ER_div_with_remainder)% 
 end
 
 view
@@ -532,23 +531,21 @@ closed
 	with sort NonZeroElem|->NonZero[Elem],
 	     ops inv, __ / __, __ ^ __}
 then
-     %prec {__ + __, __ - __, -__} < {__ / __}
-then
      op
-           __ / __: Elem × Elem ->? Elem;
-           __ / __: Elem × NonZero[Elem] -> Elem
+           __ / __: Elem * Elem ->? Elem;
+           __ / __: Elem * NonZero[Elem] -> Elem
      vars
           x:Elem; n: NonZero[Elem]
      .
-          %[ExtField_div_def1] 0/n=0
+          0/n=0             %(ExtField_div_def1)%
      .
-          %[ExtField_div_def2] not def x/0
+          not def x/0             %(ExtField_div_def2)%
 then
      %implies
      vars
           x,y:Elem
      .
-          %[ExtField_div_dom] def x/y <=> not y=0
+          def x/y <=> not y=0             %(ExtField_div_dom)%
 end
 
 

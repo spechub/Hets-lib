@@ -1,7 +1,7 @@
 library Basic/LinearAlgebra
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, L. Schröder
-%% copyright: 15.03.2000
+version 0.5 
+
+
 
 from
      Basic/Algebra_I version 0.5 get
@@ -31,9 +31,9 @@ then
      vars
           x,y: Space; a,b: Elem
      .
-          %[VS_distr1] (a + b) * x = a * x + b * x
+          (a + b) * x = a * x + b * x             %(VS_distr1)%
      .
-          %[VS_distr2] a * (x + y) = a * x + a * y
+          a * (x + y) = a * x + a * y             %(VS_distr2)%
 end
 
 view AbelianGroup_in_VectorSpace [Field]:
@@ -90,19 +90,18 @@ then
      vars
           x: Space; r: Elem; l:LC[Space,Elem]
      .
-          %[eval_empty] eval([])=0
+          eval([])=0             %(eval_empty)%
      .
-          %[eval_add] [r/x]eps l => eval(l)=r*x+eval(l-[r/x])
+          [r/x]eps l => eval(l)=r*x+eval(l-[r/x])             %(eval_add)%
      .
-          %[isZero_def]
-          isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)
+          isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)             %(isZero_def)%
 end
 
 spec
      ConstructVSWithBase [Field][sort Base] given PreInt=
      ExtVectorSpace [VectorSpace [Field]]
 then
-     %cons
+     %%cons
 {
      sort
           Base < Space
@@ -117,9 +116,9 @@ then
      var
           l:LC[Base,Elem]
      .
-          %[generating] forall y:Space. exists k:LC[Base,Elem]. y=eval(k)
+          forall y:Space. exists k:LC[Base,Elem]. y=eval(k)             %(generating)%
      .
-          %[independent] eval(l)=0 => isZero(l)
+          eval(l)=0 => isZero(l)             %(independent)%
 }
 end
 
@@ -144,7 +143,7 @@ then
      vars
           l,k: LC[Base,Elem]
      .
-          %[unique_representation] eval(l)=eval(k) => l=k
+          eval(l)=eval(k) => l=k             %(unique_representation)%
 then
      %def
      op
@@ -152,13 +151,13 @@ then
      var
           x:Space
      .
-          %[coefficients_def] eval(coefficients(x))=x
+          eval(coefficients(x))=x             %(coefficients_def)%
 then
      %implies
      var
           l:LC[Base,Elem]
      .
-          %[recover_coefficients] coefficients(eval(l))=l
+          coefficients(eval(l))=l             %(recover_coefficients)%
 end
 
 view
@@ -190,9 +189,9 @@ then
      vars
           r: Elem; x, y: Space
      .
-          %[Algebra_left_linear] (r * x) * y = r * (x * y)
+          (r * x) * y = r * (x * y)             %(Algebra_left_linear)%
      .
-          %[Algebra_right_linear] x * (r * y) = r  * (x * y)
+          x * (r * y) = r  * (x * y)             %(Algebra_right_linear)%
 end
 
 spec
@@ -211,9 +210,9 @@ then
      vars
           a: Elem; p: Poly[Elem]; x: Space
      .
-          %[eval_poly_0] eval(0,x) = 0
+          eval(0,x) = 0             %(eval_poly_0)%
      .
-          %[eval_poly_cons] eval(a:::p, x) = a + eval(p,x) * x
+          eval(a:::p, x) = a + eval(p,x) * x             %(eval_poly_cons)%
 end
 
 spec
@@ -242,7 +241,7 @@ view
           var
                x:Base
           .
-               %[VSWB_inject_def] inject(x) = x
+               inject(x) = x             %(VSWB_inject_def)%
      }
 end
 
@@ -255,7 +254,7 @@ view
 	   sort Base < Space
 	   var x: Base
 	   .
-		%[FVS_embed_def] x = inject(x)
+		x = inject(x)             %(FVS_embed_def)%
      }
 end
 
@@ -283,20 +282,18 @@ spec
           vars
                r: Elem; x,y: Tuple[Space,n]; i: Nat[n]
           .
-               %[Tuple_zero_def] 0 ! i = 0
+               0 ! i = 0             %(Tuple_zero_def)%
           .
-               %[Elem_times_Tuple_def] (r * x) ! i = r * (x ! i)
+               (r * x) ! i = r * (x ! i)             %(Elem_times_Tuple_def)%
           .
-               %[Tuple_plus_def] (x + y) ! i = (x ! i) + (y ! i)
+               (x + y) ! i = (x ! i) + (y ! i)             %(Tuple_plus_def)%
           .
-               %[Tuple_auxsum_1]
-               auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])
+               auxsum(x, 1 as Nat[n]) = x ! (1 as Nat[n])             %(Tuple_auxsum_1)%
           .
-               %[Tuple_auxsum_suc]
-                auxsum(x, suc(i) as Nat[n])=
-                auxsum(x,i) + (x ! (suc(i) as Nat[n]))
+               auxsum(x, suc(i) as Nat[n])=
+                auxsum(x,i) + (x ! (suc(i) as Nat[n]))             %(Tuple_auxsum_suc)%
           .
-               %[Tuple_sum_def] sum(x) = auxsum(x, n as Nat[n])
+               sum(x) = auxsum(x, n as Nat[n])             %(Tuple_sum_def)%
 }
      hide op auxsum
 end
@@ -332,22 +329,20 @@ then
      vars
           x, y: Vector[Elem,n]; i, j: Nat[n]
      .
-          %[Vector_auxmult_def] auxmult(x,y) ! i = (x ! i) * (y ! i)
+          auxmult(x,y) ! i = (x ! i) * (y ! i)             %(Vector_auxmult_def)%
      .
-          %[Vector_times_def] <x || y> =sum(auxmult(x,y))
+          <x || y> =sum(auxmult(x,y))             %(Vector_times_def)%
      .
-          %[Vector_auxprod_1]
-          auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])
+          auxprod(x, 1 as Nat[n])=x ! (1 as Nat[n])             %(Vector_auxprod_1)%
      .
-          %[Vector_auxprod_suc]
           auxprod(x, suc(i) as Nat[n]) = auxprod(x,i) * (x ! (suc(i) as 
-          Nat[n]))
+          Nat[n]))             %(Vector_auxprod_suc)%
      .
-          %[Vector_prod_def] prod(x) = auxprod(x, n as Nat[n])
+          prod(x) = auxprod(x, n as Nat[n])             %(Vector_prod_def)%
      .
-          %[perp_def] perp(x,y) <=> ( <x || y> =0)
+          perp(x,y) <=> ( <x || y> =0)             %(perp_def)%
      .
-          %[unitVector_def] unitVector(i) ! j = e when i = j else 0
+          unitVector(i) ! j = e when i = j else 0             %(unitVector_def)%
      sort
            UnitVector[Elem,n]=
            {x: Vector[Elem,n] . exists i: Nat[n]. x = unitVector(i)}
@@ -358,9 +353,9 @@ then
      vars
           x,y: Vector[Elem,n]
      .
-          %[scalar_prod_comm] <x || y> = <y || x>
+          <x || y> = <y || x>             %(scalar_prod_comm)%
      .
-          %[scalar_prod_pos] <x || x> = 0 => x = 0 
+          <x || x> = 0 => x = 0             %(scalar_prod_pos)% 
 end
 
 spec Vector [Field]=
@@ -409,15 +404,15 @@ then
      var
           p,q: Perm[n]; i: Nat[n]
      .
-	  %[Perm_id_def] id ! i = i
+	  id ! i = i             %(Perm_id_def)%
      .
-          %[Perm_comp_def] (p comp q) ! i = p ! (q ! i)
+          (p comp q) ! i = p ! (q ! i)             %(Perm_comp_def)%
      .
-          %[Perm_sign_homomorphic] sign(p comp q) = sign(p) * sign(q)
+          sign(p comp q) = sign(p) * sign(q)             %(Perm_sign_homomorphic)%
      .
-          %[Perm_sign_surjective] exists r: Perm[n]. sign(r)= minus(1)
+          exists r: Perm[n]. sign(r)= minus(1)             %(Perm_sign_surjective)%
 then
-     %cons
+     %%cons
      sort
           PNat[n] = {i: Pos. i <= nFac}
      op
@@ -458,16 +453,15 @@ then
      vars
           a,b: Matrix[Elem,n]; x: Vector[Elem,n]; i,j,k: Nat[n]
      .
-          %[transpose_def] (transpose(a) ! i) ! j = (a ! j) ! i
+          (transpose(a) ! i) ! j = (a ! j) ! i             %(transpose_def)%
      .
-          %[Matrix_1_def] (1 ! i) ! j = e when i = j else 0
+          (1 ! i) ! j = e when i = j else 0             %(Matrix_1_def)%
      .
-          %[elementary_def]
-          elementary(i,j) ! k = unitVector(j) when i = k else 0
+          elementary(i,j) ! k = unitVector(j) when i = k else 0             %(elementary_def)%
      .
-          %[Matrix_times_Vector_def](a * x) ! i = <transpose(a) ! i || x>
+          (a * x) ! i = <transpose(a) ! i || x>             %(Matrix_times_Vector_def)%
      .
-          %[Matrix_mult_def] ((a * b) ! i) = a * (b ! i)
+          ((a * b) ! i) = a * (b ! i)             %(Matrix_mult_def)%
      sort
            ElemMatrix[Elem,n]=
            {x: Matrix[Elem,n]. exists i,j: Nat[n]. x = elementary(i,j)}
@@ -490,27 +484,25 @@ then
      vars
           a: Matrix[Elem,n]; i: Nat[n]; j: PNat[n]
      .
-          %[Matrix_factors_def]  factors(a,j) ! i = (a ! i) ! (perm(j) ! i)
+          factors(a,j) ! i = (a ! i) ! (perm(j) ! i)             %(Matrix_factors_def)%
 		
      .
-          %[Matrix_summands_def]
-          summands(a) ! j= prod(factors(a,j)) times sign(perm(j))
+          summands(a) ! j= prod(factors(a,j)) times sign(perm(j))             %(Matrix_summands_def)%
      .
-          %[Leibnitz] det(a)=sum(summands(a))
+          det(a)=sum(summands(a))             %(Leibnitz)%
      } 
 then
      %implies
 vars
      a,b: Matrix[Elem,n]
 .
-     %[det_0] det(0) = 0
+     det(0) = 0             %(det_0)%
 .
-     %[det_vanishes]
-     not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)
+     not det(a) = 0 <=> forall x: Vector[Elem,n]. (a * x = 0 => x = 0)             %(det_vanishes)%
 .
-     %[det_1] det(1) = e
+     det(1) = e             %(det_1)%
 .
-     %[det_mult] det(a * b) = det(a) * det(b)
+     det(a * b) = det(a) * det(b)             %(det_mult)%
 end
 
 view

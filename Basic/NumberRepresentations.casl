@@ -1,7 +1,9 @@
 library Basic/NumberRepresentations
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, Lutz Schröder
-%% copyright: 15.3.00
+version 0.5 
+
+%prec { __ E __ } < { __ ::: __ }
+%floating __:::__, __E__
+
 
 from
      Basic/RelationsAndOrders version 0.5 get SigOrder
@@ -17,11 +19,8 @@ spec
 then
      %%   operations for a representation of Rat as a decimal fraction:
      ops
-           __ ::: __ : Nat × Nat -> Rat;
-           __ E __ :   Rat × Int -> Rat
-     %prec { __ E __ } < { __ ::: __ }
-     %floating
-          __:::__, __E__
+           __ ::: __ : Nat * Nat -> Rat;
+           __ E __ :   Rat * Int -> Rat
 then
      local
      op
@@ -30,27 +29,26 @@ then
           n,m: Nat
      %%   tenPower(n):= min { 10k | k in N \{0}, 10k > n }:
      .
-          %[tenPower_digit] tenPower(n)=10 if n < 10
+          tenPower(n)=10 if n < 10             %(tenPower_digit)%
      .
-          %[tenPower_number]
-          tenPower(n)= 10 * tenPower(n div 10) if n >= 10
+          tenPower(n)= 10 * tenPower(n div 10) if n >= 10             %(tenPower_number)%
 within
      vars
           r:Rat; n,m: Nat; p: Pos; i:Int
      %%   represent the decimal fraction n.m as rational:
      .
-          %[decfract_def] n:::m = n + (m/tenPower(m))
+          n:::m = n + (m/tenPower(m))             %(decfract_def)%
      %%   introduce an exponent:
      .
-          %[exponent_Rat] r E i = r* (10 ^ i)
+          r E i = r* (10 ^ i)             %(exponent_Rat)%
 end
 
 spec
      ExactFixedPointNumber
      [
       op    L:List[Nat]
-      axioms %[EFPN_Param_Cond1] forall n:Nat · n eps L => n>1;
-             %[EFPN_Param_Cond2] not isEmpty(L)
+      axioms forall n:Nat . n eps L => n>1             %(EFPN_Param_Cond1)%
+      axioms     not isEmpty(L)             %(EFPN_Param_Cond2)%  %% Till
      ]
 
 given  List [Nat fit sort Elem |-> Nat ]
@@ -60,7 +58,7 @@ given  List [Nat fit sort Elem |-> Nat ]
            m:Nat = #(L); %% number of moduli
            n:Nat = m+1 %% number of components of an efp-number
 sort
-     IndexModulus = {i : Nat · 1<=i /\ i<=m }
+     IndexModulus = {i : Nat . 1<=i /\ i<=m }
 then
      Array
      [ op n:Int fit ops min |-> 1, max |-> n ]
@@ -94,18 +92,18 @@ then
 		 /\ forall i:IndexEfpn . number(p)!i=0 ) }
      preds
            isZero, isPos, isNeg: Efpn;
-           __ < __ :             Efpn × Efpn;
+           __ < __ :             Efpn * Efpn;
      ops
            1: Sign;
            -__: Sign -> Sign;
            0, 1 :               Efpn;
-           proj:                IndexEfpn × Efpn -> Nat;
+           proj:                IndexEfpn * Efpn -> Nat;
            sgn:                 Efpn -> Sign; 
-           make:                IndexEfpn × Nat ->? Efpn;
+           make:                IndexEfpn * Nat ->? Efpn;
            -__:                 Efpn -> Efpn;
-           __ + __, __ - __ :   Efpn × Efpn -> Efpn;
-           __ * __:             Int × Efpn -> Efpn;
-           __ * __:             Efpn × Int -> Efpn;
+           __ + __, __ - __ :   Efpn * Efpn -> Efpn;
+           __ * __:             Int * Efpn -> Efpn;
+           __ * __:             Efpn * Int -> Efpn;
      %prec { __+__, __-__, __*__, __div__, __mod__ } < {__!__}
      then
           local
@@ -116,19 +114,17 @@ then
                 prod:      Nat ->? Int;
                            %% computes PRODi=1k L!(k asIndexModulus)
 
-                sum:       Efpn × Nat ->? Int;
+                sum:       Efpn * Nat ->? Int;
                            %% computes SUMi=1k zi * prod(i-1)
 
           vars
                z: Int; x:Efpn; i: Nat
           .
-               %[prod_0] prod(0) = 1
+               prod(0) = 1             %(prod_0)%
           .
-               %[prod_Pos]
-                prod(i)= prod(i -? 1) * L!(i as IndexModulus) if i>0
+               prod(i)= prod(i -? 1) * L!(i as IndexModulus) if i>0             %(prod_Pos)%
           .
-               %[intToEfpn_def]
-                intToEfpn(z)=x <=>
+               intToEfpn(z)=x <=>
                 (
                   ( z >= 0 => sgn(x)=1 ) /\
                   ( z < 0 => sgn(x)= -1 )/\
@@ -136,74 +132,70 @@ then
                   ( (forall k:IndexModulus .
                     ( number(x)!k = (abs(z) div prod(k -? 1)) mod L!k))
                   )
-                )                
+                )             %(intToEfpn_def)%                
 
           .
-               %[sum_0] sum(x,0) = 0
+               sum(x,0) = 0             %(sum_0)%
           .
-               %[sum_Pos]
-                sum(x,i) = sum(x,i -? 1) +
+               sum(x,i) = sum(x,i -? 1) +
                            (number(x)!(i as IndexEfpn) * prod(i -? 1))
-                if i>0
+                if i>0             %(sum_Pos)%
           .
-               %[efpnToInt_def]
-               efpnToInt(x)=  sgn(x) * sum(x,n)
+               efpnToInt(x)=  sgn(x) * sum(x,n)             %(efpnToInt_def)%
      then
           %implies
           vars
                z: Int; x:Efpn; i: Nat
           .
-               %[prod_domain] def prod(i) <=> i <= m
+               def prod(i) <=> i <= m             %(prod_domain)%
           .
-               %[sum_domain] def sum(x,i) <=> i <= n
+               def sum(x,i) <=> i <= n             %(sum_domain)%
           .
-               %[EfpnInt_bij1] efpnToInt(intToEfpn(z)) = z
+               efpnToInt(intToEfpn(z)) = z             %(EfpnInt_bij1)%
           .
-               %[EfpnInt_bij2] intToEfpn(efpnToInt(x)) = x
+               intToEfpn(efpnToInt(x)) = x             %(EfpnInt_bij2)%
      }
      within
           vars
                x,y:Efpn
           .
-               %[isZeroEfpn_def] isZero(x) <=> efpnToInt(x) = 0
+               isZero(x) <=> efpnToInt(x) = 0             %(isZeroEfpn_def)%
           .
-               %[isPosEfpn_def] isPos(x) <=> efpnToInt(x) > 0
+               isPos(x) <=> efpnToInt(x) > 0             %(isPosEfpn_def)%
           .
-               %[isNegEfpn_def] isNeg(x) <=> efpnToInt(x) < 0
+               isNeg(x) <=> efpnToInt(x) < 0             %(isNegEfpn_def)%
           .
-               %[isLessEfpn_def] x < y <=> efpnToInt(x) < efpnToInt(y)
+               x < y <=> efpnToInt(x) < efpnToInt(y)             %(isLessEfpn_def)%
           axioms
-                %[ZeroEfpn_def] 0 = efpnToInt(0);
-                %[OneEfpn_def] 1 = efpnToInt(1)
+                0 = efpnToInt(0)             %(ZeroEfpn_def)%
+            axioms    1 = efpnToInt(1)             %(OneEfpn_def)%  %% Till
           vars
                x,y:Efpn; i:IndexEfpn; k:Nat; z:Int
           .
-               %[proj_def] proj(i,x) = number(x)!i
+               proj(i,x) = number(x)!i             %(proj_def)%
           .
-               %[makeEfpn_def]
-                make(i,k)=x <=> ( sgn(x)=1 /\ forall l:IndexEfpn .
+               make(i,k)=x <=> ( sgn(x)=1 /\ forall l:IndexEfpn .
                                 (( not i=l => proj(i,x)=0) /\
-                                ( i=l => proj(i,x)=k)))
+                                ( i=l => proj(i,x)=k)))             %(makeEfpn_def)%
           .
-               %[MinusEpfn_def] - x = intToEfpn( - efpnToInt(x))
+               - x = intToEfpn( - efpnToInt(x))             %(MinusEpfn_def)%
           .
-               %[AddEfpn_def] x + y = intToEfpn( efpnToInt(x) + efpnToInt(y)
-               )
+               x + y = intToEfpn( efpnToInt(x) + efpnToInt(y)
+               )             %(AddEfpn_def)%
           .
-               %[SubEfpn_def] x - y = intToEfpn( efpnToInt(x) - efpnToInt(y)
-               )
+               x - y = intToEfpn( efpnToInt(x) - efpnToInt(y)
+               )             %(SubEfpn_def)%
           .
-               %[MultEfpn_def1] z * x = intToEfpn( z * efpnToInt(x) )
+               z * x = intToEfpn( z * efpnToInt(x) )             %(MultEfpn_def1)%
           .
-               %[MultEfpn_def2] x * z = z * x
+               x * z = z * x             %(MultEfpn_def2)%
      then
           %implies
           vars
                i:IndexEfpn; k:Nat; z:Int
           .
-               %[makeEfpn_domain]
                def make(i,k) <=>
-               i=n \/ (i<n => k < L!(i as IndexModulus))
+               i=n \/ (i<n => k < L!(i as IndexModulus))             %(makeEfpn_domain)%
 then
      SigOrder[sort Efpn]
      with preds __<__, __>__, __ <= __, __ >= __

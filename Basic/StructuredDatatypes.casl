@@ -1,7 +1,11 @@
 library Basic/StructuredDatatypes
-version 0.5
-%% authors: M.Roggenbach, T.Mossakowski, L.Schröder
-%% copyright: 5.5.00
+version 0.5 
+
+%left_assoc __ + __, __ - __, __ ++ __
+%right_assoc __ :: __
+%list [__], [], __::__
+%prec {__ ++ __} < {__ :: __}
+%string [], __::__
 
 from
      Basic/RelationsAndOrders version 0.5
@@ -41,10 +45,8 @@ then
            __ eps__:         Elem * FinSet[Elem];
            __ isSubsetOf __: FinSet[Elem] * FinSet[Elem]
      ops
-           __ + __ :                  Elem * FinSet[Elem] -> FinSet[Elem]
-                                      %left assoc;
-           __ + __, __ - __ :         FinSet[Elem] * Elem -> FinSet[Elem]
-                                      %left assoc;
+           __ + __ : Elem * FinSet[Elem] -> FinSet[Elem];
+           __ + __, __ - __ : FinSet[Elem] * Elem -> FinSet[Elem];
            __ intersection __, __ -
            __,
            __ symmDiff __:            FinSet[Elem] * FinSet[Elem] ->
@@ -53,57 +55,57 @@ then
      vars
           x,y : Elem; S,T,U,V:FinSet[Elem]
      .
-          %[isNonEmpty_def] isNonEmpty(S) <=> not S = {}
+          isNonEmpty(S) <=> not S = {}             %(isNonEmpty_def)%
      .
-          %[elemOf_empty] not x eps {}
+          not x eps {}             %(elemOf_empty)%
      .
-          %[elemOf_set] x eps {y} <=> (x=y)
+          x eps {y} <=> (x=y)             %(elemOf_set)%
      .
-          %[elemOf_union] x eps (S union T) <=> (x eps S) \/ (x eps T)
+          x eps (S union T) <=> (x eps S) \/ (x eps T)             %(elemOf_union)%
      .
-          %[subset_empty] {} isSubsetOf S
+          {} isSubsetOf S             %(subset_empty)%
      .
-          %[subset_set] {x} isSubsetOf S <=> x eps S
+          {x} isSubsetOf S <=> x eps S             %(subset_set)%
      .
-          %[subset_union] (S union T) isSubsetOf U <=> S isSubsetOf U /\ T
-          isSubsetOf U
+          (S union T) isSubsetOf U <=> S isSubsetOf U /\ T
+          isSubsetOf U             %(subset_union)%
      .
-          %[FinSet_add_def1] x + S = {x} union S
+          x + S = {x} union S             %(FinSet_add_def1)%
      .
-          %[FinSet_add_def2] S + x = x + S
+          S + x = x + S             %(FinSet_add_def2)%
      .
-          %[FinSet_sub_empty] {} - x = {}
+          {} - x = {}             %(FinSet_sub_empty)%
      .
-          %[FinSet_sub_set1] {y} - x = {y} if not x = y
+          {y} - x = {y} if not x = y             %(FinSet_sub_set1)%
      .
-          %[FinSet_sub_set2] {y} - x = {} if x = y
+          {y} - x = {} if x = y             %(FinSet_sub_set2)%
      .
-          %[FinSet_sub_union] (S union T) - x = (S - x) union (T - x)
+          (S union T) - x = (S - x) union (T - x)             %(FinSet_sub_union)%
      .
-          %[intersect_empty] {} intersection S = {}
+          {} intersection S = {}             %(intersect_empty)%
      .
-          %[intersect_set1] {x} intersection S = {} if not x eps S
+          {x} intersection S = {} if not x eps S             %(intersect_set1)%
      .
-          %[intersect_set2] {x} intersection S = {x} if x eps S
+          {x} intersection S = {x} if x eps S             %(intersect_set2)%
      .
-          %[intersect_union] (S union T) intersection U = ( S intersection U
-          ) union (T intersection U)
+          (S union T) intersection U = ( S intersection U
+          ) union (T intersection U)             %(intersect_union)%
      .
-          %[diff_empty] {} - S = {}
+          {} - S = {}             %(diff_empty)%
      .
-          %[diff_set1] {x} - S = {x} if not x eps S
+          {x} - S = {x} if not x eps S             %(diff_set1)%
      .
-          %[diff_set2] {x} - S = {} if x eps S
+          {x} - S = {} if x eps S             %(diff_set2)%
      .
-          %[diff_union] (S union T) - U = (S - U ) union (T - U)
+          (S union T) - U = (S - U ) union (T - U)             %(diff_union)%
      .
-          %[symmDiff_def] S symmDiff T = (S - T) union (T - S)
+          S symmDiff T = (S - T) union (T - S)             %(symmDiff_def)%
      .
-          %[FinSet_numberOf_empty] #{} = 0
+          #{} = 0             %(FinSet_numberOf_empty)%
      .
-          %[numberOf_FinSet_set] #{x} = 1
+          #{x} = 1             %(numberOf_FinSet_set)%
      .
-          %[numberOf_FinSet_union] #(S union T) = #S + #(T-S)
+          #(S union T) = #S + #(T-S)             %(numberOf_FinSet_union)%
 then
      %implies
      ops
@@ -114,8 +116,7 @@ then
      vars
           x: Elem; S,T: FinSet[Elem]
      .
-          %[subset_characterization]
-          S isSubsetOf T <=> ( forall x: Elem . x eps S => x eps T )
+          S isSubsetOf T <=> ( forall x: Elem . x eps S => x eps T )             %(subset_characterization)%
 end
 
 view
@@ -143,11 +144,9 @@ spec
      ops
            {}, X :                      FinPS[X];
            {__} :                       Elem[X] -> FinPS[X];
-           __ union __:                 FinPS[X] × FinPS[X] -> FinPS[X];
-           __ + __ :                    Elem[X] * FinPS[X] -> FinPS[X]
-                                        %left assoc;
-           __ + __, __ - __ :           FinPS[X] * Elem[X] -> FinPS[X]
-                                        %left assoc;
+           __ union __:                 FinPS[X] * FinPS[X] -> FinPS[X];
+           __ + __ : Elem[X] * FinPS[X] -> FinPS[X];
+           __ + __, __ - __ : FinPS[X] * Elem[X] -> FinPS[X];
            __ intersection __, __ - __,
            __ symmDiff __:              FinPS[X] * FinPS[X] -> FinPS[X];
            #__:                         FinPS[X] -> Nat;
@@ -184,78 +183,73 @@ spec
 then
      type
           List[Elem]::= [] | __ ::__ (Elem; List[Elem])
-     %list
-          [__], [], __::__
      pred
            isEmpty: List[Elem];
-           __eps__: Elem × List[Elem]
+           __eps__: Elem * List[Elem]
      ops
-           __ :: __:    Elem × List[Elem] -> NeList[Elem] %right assoc;
-           __ + __ :    List[Elem] × Elem -> List[Elem] %left assoc;
+           __ :: __ : Elem * List[Elem] -> NeList[Elem];
+           __ + __ : List[Elem] * Elem -> List[Elem];
            first, last: List[Elem] ->? Elem;
            first, last: NeList[Elem] -> Elem;
            front, rest: List[Elem] ->? List[Elem];
            front, rest: NeList[Elem] -> List[Elem];
            #__:         List[Elem] -> Nat;
-           __ ++ __ :  List[Elem] × List[Elem] -> List[Elem] %left assoc;
-           __ ++ __ :  NeList[Elem] × List[Elem] -> NeList[Elem];
-           __ ++ __ :  List[Elem] × NeList[Elem] -> NeList[Elem];
+           __ ++ __ : List[Elem] * List[Elem] -> List[Elem];
+           __ ++ __ :  NeList[Elem] * List[Elem] -> NeList[Elem];
+           __ ++ __ :  List[Elem] * NeList[Elem] -> NeList[Elem];
            reverse:     List[Elem] -> List[Elem];
-           __ ! __:     List[Elem] × Nat ->? Elem;
-           take,drop:   Nat × List[Elem] ->? List[Elem]
-     %prec {__ ++ __} < {__ :: __}
+           __ ! __:     List[Elem] * Nat ->? Elem;
+           take,drop:   Nat * List[Elem] ->? List[Elem]
      vars
           x,y: Elem; n: Nat; p: Pos; L,K: List[Elem]; N: NeList[Elem]
      .
-          %[isEmpty_def] isEmpty(L) <=> L=[]
+          isEmpty(L) <=> L=[]             %(isEmpty_def)%
      .
-          %[List_elemOf_nil] not x eps []
+          not x eps []             %(List_elemOf_nil)%
      .
-          %[List_elemOf_NeList1] x eps (x::L)
+          x eps (x::L)             %(List_elemOf_NeList1)%
      .
-          %[List_elemOf_NeList1] (x eps (y::L) <=> x eps L) if not x=y
+          (x eps (y::L) <=> x eps L) if not x=y             %(List_elemOf_NeList1)%
      .
-          %[append_def] L + x = L ++ (x::[])
+          L + x = L ++ (x::[])             %(append_def)%
      .
-          %[first_partial_nil] not def first([])
+          not def first([])             %(first_partial_nil)%
      .
-          %[last_partial_nil] not def last([])
+          not def last([])             %(last_partial_nil)%
      .
-          %[last_partial_NeList1] last (x :: L) = x if isEmpty(L)
+          last (x :: L) = x if isEmpty(L)             %(last_partial_NeList1)%
      .
-          %[last_partial_NeList2] last (x :: L) = last(L) if not isEmpty(L)
+          last (x :: L) = last(L) if not isEmpty(L)             %(last_partial_NeList2)%
      .
-          %[front_partial_nil] not def front([])
+          not def front([])             %(front_partial_nil)%
      .
-          %[front_partial_NeList] front (L + x )= L
+          front (L + x )= L             %(front_partial_NeList)%
      .
-          %[rest_partial_nil] not def first([])
+          not def first([])             %(rest_partial_nil)%
      .
-          %[numberOf_List_nil] # [] = 0
+          # [] = 0             %(numberOf_List_nil)%
      .
-          %[numberOf_List_NeList] # (x :: L) = suc( # L )
+          # (x :: L) = suc( # L )             %(numberOf_List_NeList)%
      .
-          %[concat_nil_List] [] ++ K = K
+          [] ++ K = K             %(concat_nil_List)%
      .
-          %[concat_NeList_List] (x::L) ++ K = x :: (L ++ K)
+          (x::L) ++ K = x :: (L ++ K)             %(concat_NeList_List)%
      .
-          %[reverse_nil] reverse([])=[]
+          reverse([])=[]             %(reverse_nil)%
      .
-          %[reverse_NeList] reverse(x::L) = reverse(L) ++ (x::[])
+          reverse(x::L) = reverse(L) ++ (x::[])             %(reverse_NeList)%
      .
-          %[index_nil] not def[]!n
+          not def[]!n             %(index_nil)%
      .
-          %[index_0] not def L!0
+          not def L!0             %(index_0)%
      .
-          %[index_1] (x :: L)!1 = x
+          (x :: L)!1 = x             %(index_1)%
      .
-          %[index_suc] (x :: L)!suc(p) = L!p
+          (x :: L)!suc(p) = L!p             %(index_suc)%
      .
-          %[take_def]
-          take (n,L) = K <=> exists S: List[Elem] . K ++ S = L /\ # K = n
+          take (n,L) = K <=> exists S: List[Elem] . K ++ S = L /\ # K = n             %(take_def)%
      .
-          %[drop_def]
-          drop (n,L) = K <=> exists S: List[Elem] . S ++ K = L /\ # S = n
+          drop (n,L) = K <=> exists S: List[Elem] . S ++ K = L /\ # S = n             %(drop_def)%
 then
      %implies
      free
@@ -268,21 +262,21 @@ then
      vars
           n: Nat; L: List[Elem]; N:NeList[Elem]
      .
-          %[first_rest] first(N)::rest(N) = N
+          first(N)::rest(N) = N             %(first_rest)%
      .
-          %[front_last] front(N)+last(N) = N
+          front(N)+last(N) = N             %(front_last)%
      .
-          %[first_domain] def first(L) <=> not isEmpty(L)
+          def first(L) <=> not isEmpty(L)             %(first_domain)%
      .
-          %[last_domain] def last(L) <=> not isEmpty(L)
+          def last(L) <=> not isEmpty(L)             %(last_domain)%
      .
-          %[front_domain] def rest(L) <=> not isEmpty(L)
+          def rest(L) <=> not isEmpty(L)             %(front_domain)%
      .
-          %[rest_domain] def rest(L) <=> not isEmpty(L)
+          def rest(L) <=> not isEmpty(L)             %(rest_domain)%
      .
-          %[take_dom] def take(n,L) <=> # L >= n
+          def take(n,L) <=> # L >= n             %(take_dom)%
      .
-          %[drop_dom] def drop(n,L) <=> # L >= n
+          def drop(n,L) <=> # L >= n             %(drop_dom)%
 end
 
 view
@@ -302,8 +296,6 @@ spec
     with
       sorts List[Char] |-> String,
             NeList[Char] |-> NonEmptyString
-then
-     %string [], __::__
 end
 
 spec
@@ -313,14 +305,13 @@ free
      type
            FiniteMap[S,T] ::= [] | __[__/__] (FiniteMap[S,T];T;S)
      op
-           __[__/__]: FiniteMap[S,T] × T × S -> FiniteMap[S,T]
+           __[__/__]: FiniteMap[S,T] * T * S -> FiniteMap[S,T]
      vars
           M:FiniteMap[S,T];s,s1,s2:S; t1,t2:T
      .
-          %[FM_overwrite] M[t1/s][t2/s] = M[t2/s]
+          M[t1/s][t2/s] = M[t2/s]             %(FM_overwrite)%
      .
-          %[FM_comm]
-          M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2
+          M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2             %(FM_comm)%
      }
 end
 
@@ -335,65 +326,60 @@ then
            type Entry[S,T]::=[__/__] (target:T;source:S)
      preds
            isEmpty:    FiniteMap[S,T];
-           __eps__:    Entry[S,T] × FiniteMap[S,T];
+           __eps__:    Entry[S,T] * FiniteMap[S,T];
            __::__->__: FiniteMap[S,T] * FinSet[S] * FinSet[T]
      ops
            __+__,
-           __-__: FiniteMap[S,T] × Entry[S,T] -> FiniteMap[S,T];
-           __-__: FiniteMap[S,T] × S -> FiniteMap[S,T];
-           __-__: FiniteMap[S,T] × T -> FiniteMap[S,T];
+           __-__: FiniteMap[S,T] * Entry[S,T] -> FiniteMap[S,T];
+           __-__: FiniteMap[S,T] * S -> FiniteMap[S,T];
+           __-__: FiniteMap[S,T] * T -> FiniteMap[S,T];
            dom:   FiniteMap[S,T] -> FinSet[S];
            range: FiniteMap[S,T] -> FinSet[T];
-           eval:  S × FiniteMap[S,T] ->? T;
-           __ union __: FiniteMap[S,T] × FiniteMap[S,T] ->? FiniteMap[S,T]
+           eval:  S * FiniteMap[S,T] ->? T;
+           __ union __: FiniteMap[S,T] * FiniteMap[S,T] ->? FiniteMap[S,T]
      vars
            M,N,O: FiniteMap[S,T]; s,s1:S; t,t1: T; e: Entry[S,T];
            X: FinSet[S]; Y: FinSet[T]
      .
-          %[FM_isEmpty_def] isEmpty(M) <=> M=[]
+          isEmpty(M) <=> M=[]             %(FM_isEmpty_def)%
      .
-          %[FM_elemOf_empty] not [t/s] eps []
+          not [t/s] eps []             %(FM_elemOf_empty)%
      .
-          %[FM_elemOf_nonEmpty]
-          [t/s] eps M[t1/s1] <=> ( [t/s]=[t1/s1] \/ [t/s] eps M)
+          [t/s] eps M[t1/s1] <=> ( [t/s]=[t1/s1] \/ [t/s] eps M)             %(FM_elemOf_nonEmpty)%
      .
-          %[FM_arrow_def]
-          M::X->Y <=> dom(M)=X /\ range(M) isSubsetOf Y
+          M::X->Y <=> dom(M)=X /\ range(M) isSubsetOf Y             %(FM_arrow_def)%
      .
-          %[FM_overwrite2_def] M+[t/s]=M[t/s]
+          M+[t/s]=M[t/s]             %(FM_overwrite2_def)%
      .
-          %[FM_minus_empty] []-[t/s] = []
+          []-[t/s] = []             %(FM_minus_empty)%
      .
-          %[FM_minus_nonEmpty]
-           (M+[t/s])-[t1/s1] = M-[t1/s1] when [t/s]=[t1/s1] else
-                               (M-[t1/s1])+[t/s]
+          (M+[t/s])-[t1/s1] = M-[t1/s1] when [t/s]=[t1/s1] else
+                               (M-[t1/s1])+[t/s]             %(FM_minus_nonEmpty)%
      .
-          %[FM_minus_Source_empty] []-s=[]
+          []-s=[]             %(FM_minus_Source_empty)%
      .
-          %[FM_minus_Source_nonEmpty]
-          (M+e)-s=M-s when exists t:T . e=[t/s] else (M-s)+e
+          (M+e)-s=M-s when exists t:T . e=[t/s] else (M-s)+e             %(FM_minus_Source_nonEmpty)%
      .
-          %[FM_minus_Target_empty] []-t=[]
+          []-t=[]             %(FM_minus_Target_empty)%
      .
-          %[FM_minus_Target_nonEmpty]
-          (M+e)-t=M-t when exists s:S . e=[t/s] else (M-t)+e
+          (M+e)-t=M-t when exists s:S . e=[t/s] else (M-t)+e             %(FM_minus_Target_nonEmpty)%
      .
-          %[FM_dom_def] s eps dom(M) <=> exists t:T . [t/s] eps M
+          s eps dom(M) <=> exists t:T . [t/s] eps M             %(FM_dom_def)%
      .
-          %[FM_range_def] t eps range(M) <=> exists s:S . [t/s] eps M
+          t eps range(M) <=> exists s:S . [t/s] eps M             %(FM_range_def)%
      .
-          %[FM_eval_empty] not def eval(s,[])
+          not def eval(s,[])             %(FM_eval_empty)%
      .
-          %[FM_eval_nonEmpty] eval(s, M + [t1/s1]) = t1 when s=s1								else eval(s,M)
+          eval(s, M + [t1/s1]) = t1 when s=s1								else eval(s,M)             %(FM_eval_nonEmpty)%
      .
-          %[FM_union_def] M union N = O <=>
-          ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )
+          M union N = O <=>
+          ( forall e: Entry[S,T] . e eps O <=> ( e eps M \/ e eps N) )             %(FM_union_def)%
 then
      %implies
      vars 
           s: S; M: FiniteMap[S,T]
      .
-          %[eval_dom] def eval(s,M) <=> s eps dom(M)
+          def eval(s,M) <=> s eps dom(M)             %(eval_dom)%
 end
 
 spec
@@ -424,54 +410,51 @@ then
            __ eps__:         Elem * Bag[Elem];
            __ isSubsetOf __: Bag[Elem] * Bag[Elem]
      ops
-           __ + __ :                    Elem * Bag[Elem] -> Bag[Elem] %left
-                                        assoc;
-           __ + __, __ - __ :           Bag[Elem] * Elem -> Bag[Elem] %left
-                                        assoc;
+           __ + __ : Elem * Bag[Elem] -> Bag[Elem];
+           __ + __, __ - __ : Bag[Elem] * Elem -> Bag[Elem];
            __ intersection __, __ - __: Bag[Elem] * Bag[Elem] -> Bag[Elem];
-           freq:                        Elem × Bag[Elem] -> Nat;
+           freq:                        Elem * Bag[Elem] -> Nat;
      vars
           x,y : Elem; B,C,D,E:Bag[Elem]
      .
-          %[freq_empty] freq(x,{}) = 0
+          freq(x,{}) = 0             %(freq_empty)%
      .
-          %[freq_set1] freq(x,{y}) = 0 if not (x=y)
+          freq(x,{y}) = 0 if not (x=y)             %(freq_set1)%
      .
-          %[freq_set2] freq(x,{y}) = 1 if (x=y)
+          freq(x,{y}) = 1 if (x=y)             %(freq_set2)%
      .
-          %[freq_union] freq(x,B union C) = freq(x,B) + freq(x,C)
+          freq(x,B union C) = freq(x,B) + freq(x,C)             %(freq_union)%
      .
-          %[isNonEmpty_def] isNonEmpty(B) <=> not B = {}
+          isNonEmpty(B) <=> not B = {}             %(isNonEmpty_def)%
      .
-          %[Bag_elemOf_empty] not x eps {}
+          not x eps {}             %(Bag_elemOf_empty)%
      .
-          %[Bag_elemOf_set] x eps {y} <=> (x=y)
+          x eps {y} <=> (x=y)             %(Bag_elemOf_set)%
      .
-          %[Bag_elemOf_union] x eps (B union C) <=> (x eps B) \/ (x eps C)
+          x eps (B union C) <=> (x eps B) \/ (x eps C)             %(Bag_elemOf_union)%
      .
-          %[Bag_subseteq] B isSubsetOf C <=> forall x: Elem . freq(x,B) <=
-          freq(x,C)
+          B isSubsetOf C <=> forall x: Elem . freq(x,B) <=
+          freq(x,C)             %(Bag_subseteq)%
      .
-          %[Bag_add_def1] x + B = {x} union B
+          x + B = {x} union B             %(Bag_add_def1)%
      .
-          %[Bag_add_def2] B + x = x + B
+          B + x = x + B             %(Bag_add_def2)%
      .
-          %[Bag_sub_def1] B - x = B if not x eps B
+          B - x = B if not x eps B             %(Bag_sub_def1)%
      .
-          %[Bag_sub_def2] ( B - x = C <=>
+          ( B - x = C <=>
            ( forall y: Elem . ( not y = x => freq (y,B) = freq(y,C)) /\
                               ( y = x => freq (y,B) = freq (y,C) + 1)) ) if
-                              x eps B
+                              x eps B             %(Bag_sub_def2)%
      .
-          %[Bag_cap]
           B intersection C = D <=> forall x: Elem . freq(x,D) = min (
-          freq(x,B), freq(x,C) )
+          freq(x,B), freq(x,C) )             %(Bag_cap)%
      .
-          %[Bag_diff] B - C = D <=>
+          B - C = D <=>
            forall x: Elem .
            ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
            /\
-           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )
+           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )             %(Bag_diff)%
 then
      %implies
      ops
@@ -497,7 +480,7 @@ end
 
 spec
      Array
-     [ops min, max: Int axiom %[Cond_nonEmptyIndex] min <= max]
+     [ops min, max: Int axiom min <= max             %(Cond_nonEmptyIndex)%]
      [sort Elem]
      given PreInt
 =
@@ -514,14 +497,14 @@ then
 
      then
           ops
-                __!__:=__ : Array[Elem] × Index ×Elem -> Array[Elem];
-                __!__ :     Array[Elem] × Index ->? Elem
+                __!__:=__ : Array[Elem] * Index *Elem -> Array[Elem];
+                __!__ :     Array[Elem] * Index ->? Elem
           vars
                A: Array[Elem]; i: Index; e:Elem
           .
-               %[assignment_def] A!i:=e = A[e/i]
+               A!i:=e = A[e/i]             %(assignment_def)%
           .
-               %[evaluate_def] A!i = eval(i,A)
+               A!i = eval(i,A)             %(evaluate_def)%
      }
           reveal
            sort Array[Elem],
@@ -531,12 +514,12 @@ then
      vars
           A: Array[Elem]; i,j: Index; e,f: Elem
      .
-          %[evaluate_Array_domain1] not def init!i
+          not def init!i             %(evaluate_Array_domain1)%
      .
-          %[evaluate_Array_domain2] def (A!i:=e)!i
+          def (A!i:=e)!i             %(evaluate_Array_domain2)%
      .
-          %[evaluate_Array_assignment1] (A!i:=e)!j = e if i=j
+          (A!i:=e)!j = e if i=j             %(evaluate_Array_assignment1)%
      .
-          %[evaluate_Array_assignment2] (A!i:=e)!j = A!j if not (i=j)
+          (A!i:=e)!j = A!j if not (i=j)             %(evaluate_Array_assignment2)%
 end
 
