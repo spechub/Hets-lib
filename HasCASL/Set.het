@@ -87,7 +87,8 @@ spec Map =
       undef__ : S ->?T;
       ker : (S->?T) -> Pred (S*S);
       injective : Pred(S->?T);
-      __intersectionMap__, __unionMap__ : (S->?T) * (S->?T) -> (S->?T)
+      __intersectionMap__, __unionMap__ : (S->?T) * (S->?T) -> (S->?T);
+      __restrict__ : (S->?T) * Set S -> (S->?T)
   forall f,g:S->?T; h:T->?U; s,s':Set S; t:Set T; x,x':S; y:T
   . x isIn dom f <=> def f x
   . y isIn range f <=> exists x:S . f x = y
@@ -106,6 +107,8 @@ spec Map =
   . (x,x') isIn ker f <=> f x =e= f x'
   %% injectivity only for values in the domain, hence the existential equation
   . injective f <=> forall x,y:S . f x =e= f y => x=y
+  . dom (f restrict s) = dom f intersection s
+  . def (f restrict s) x => (f restrict s) x = f x
 end
 
 spec FinSet = 
@@ -121,17 +124,23 @@ then
 end
 
 spec SumNatSet =
-  Map and Nat
+  FinSet
 then
+  var a:Type
   ops sumN : (Nat->?Nat) -> Nat -> Nat;
-      sum : Set Nat ->? Nat
-  forall f:Nat->?Nat; s:Set Nat; n,x:Nat
+      sumSet : Set Nat ->? Nat;
+      sum : (a->?Nat) -> Pred a ->? Nat
+  forall f:Nat->?Nat; s:Set Nat; n,x:Nat; m:a->?Nat; p: Pred a
   . sumN f 0 = 0
   . sumN f (suc(n)) = sumN f n + if def f (suc n) then f (suc n) else 0
-  . sum s = x <=> 
+  . sumSet s = x <=> 
       exists f:Nat->?Nat; n:Nat . 
          (forall m:Nat . def f m => m<n) /\ range f subset s /\ injective f 
          /\ sumN f n = x 
+  . sum m p = x <=>
+      exists g:Nat ->? a; n:Nat .
+        injective g /\ range g subset p /\ sumN (m o g) n = x  
+        /\ forall y:a . m y > 0 /\ p y => y isIn (range g)
 end
 
 spec SetCategory =

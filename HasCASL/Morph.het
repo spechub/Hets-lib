@@ -4,7 +4,7 @@ from Basic/Numbers get Nat
 
 from HasCASL/Set get Set, Map, SumNatSet
 
-from HasCASL/Petri get MultiSet 
+from HasCASL/Petri get MultiSet, PetriNet
 
 from HasCASL/Categories get Category
 
@@ -50,45 +50,45 @@ then %def
   forall x1, x2, y: Elem; x3, x4: S; m:MultiSet Elem; s: Set S; t: Set T;  
          f: Map Elem; h: S->? MultiSet T
    . h :: s --> t <=> forall x:S . x isIn s => MultiSetToSet(h x) subset t
-   . freeMap f m y = sum (image m (\x:Elem . y = f x))
+   . freeMap f m y = sum m (\x:Elem . y = f x)
    . linMap h {} = {}
    . linMap h ({x3}+{x4}) = h x3  + h x4 ; 
 
 
 spec PetriNetCategory = 
-  Set and Map 
+  MapMultiSet
 then
   sorts P,T 
-  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)                        	. dom pre=dom post /\
-                     	pre :: dom  pre --> p /\
-                     	post :: dom post --> p }
+  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)                                . dom pre=dom post /\
+                      pre :: dom  pre --> p /\
+                      post :: dom post --> p }
+  ops places : Net  -> Set P;
+      transitions : Net  -> Set T;
+      preMap, postMap : Net  -> (T ->? MultiSet P);
   type HomNet = 
-     {(n1,hp,ht,n2) : PetriNet  * (P->?P) * (T->?T) * PetriNet .
-       hp :: places n1 --> places n2 /\ ht :: trans n1 --> trans n2 
-       /\ forall t:T . t isIn trans n1 =>
+     {(n1,hp,ht,n2) : Net  * (P->?P) * (T->?T) * Net .
+       hp :: places n1 --> places n2 /\ ht :: transitions n1 --> transitions n2 
+       /\ forall t:T . t isIn transitions n1 =>
           (   freeMap hp (preMap n1 t) = preMap n2 (ht t)
            /\ freeMap hp (postMap n1 t) = postMap n2 (ht t) ) } 
-   ops places : Net  -> Set P;
-       transitions : Net  -> Set T;
-       preMap, postMap : Net  -> (T ->? Multiset P);
-       dom : HomNet  -> Net;
-       cod : HomNet  -> Net;
-       placesMap : HomNet  -> (P->?P);
-       transitionsMap : HomNet  -> (T->?T);
-       id : Net ->? HomNet;
-       __o__ : HomNet  * HomNet  ->? HomNet 
-   forall n, n1,n2 : Net; p : Set P; pre, post : T ->? Multiset P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
-   . let n=(p,pre,post) in places n  p
+  ops dom : HomNet  -> Net;
+      cod : HomNet  -> Net;
+      placesMap : HomNet  -> (P->?P);
+      transitionsMap : HomNet  -> (T->?T);
+      id : Net ->? HomNet;
+      __o__ : HomNet  * HomNet  ->? HomNet 
+   forall n, n1,n2 : Net; p : Set P; pre, post : T ->? MultiSet P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
+   . let n=(p,pre,post) in places n = p
    . let n=(p,pre,post) in transitions n = dom pre
-   . let n=(p,pre,post) in preMap = pre
-   . let n=(p,pre,post) in postMap = post
+   . let n=(p,pre,post) in preMap n = pre
+   . let n=(p,pre,post) in postMap n = post
    . let h=(n1,hp,ht,n2) in dom (h) = n1
    . let h=(n1,hp,ht,n2)  in cod (h) = n2
    . let h=(n1,hp,ht,n2)  in placesMap (h) = hp
    . let h=(n1,hp,ht,n2)  in transitionsMap (h) = ht
    . def (h2 o h1) <=> cod h1 = dom h2
    . def (h2 o h1) => h2 o h1 = 
-     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitonsMap h1,cod h2)
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
       as HomNet
 end
 
@@ -98,18 +98,18 @@ view CategoryofPetriNets : Category to PetriNetCategory =
 end
 
 spec PetriSystemCategory = 
-  PetriNet 
+  PetriNetCategory and MultiSet
 then
   type Marking := MultiSet P
   type System = {(n,m) : Net * Marking 
                           . let (p,pre1,post1) = n 
 		          in forall x:P . x isIn m => x isIn p }
-  type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
-                  (net(sys1), hp, ht, net(sys2)) as HomNet 
-       /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
   ops  marking   : System -> Marking;
        net       : System -> Net;
-       empty     : Marking;
+  type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
+                  (net(sys1), hp, ht, net(sys2)) in HomNet 
+       /\ forall p: P. freq(p, marking(sys1)) <= freq(hp p, marking(sys2))} 
+  ops  empty     : Marking;
         __|<__>    : System * T -> System; 
         __|<__>    : System * MultiSet T ->? System;
        dom : HomSys  -> Net;
