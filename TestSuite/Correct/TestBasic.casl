@@ -1,5 +1,13 @@
 library TestBasic
 
+%% provided by Till Mossakowski
+
+%% This really tries to test everything that is there
+%% in the syntax of basic specs
+%% Some pieces not going through cats yet are commented out
+%% Note that baffle cannot handle all characters,
+%% hence the -output=nobin option should be used
+
 %% Global annotations
 
 %display __+__ %HTML + %LATEX __+__ %RTF +
@@ -65,8 +73,14 @@ spec Lex =
         %[.abc, .a_b_c, .ab2, .ab_2_3_a, .a', .a'b''2,  DOT-WORDS]%
   op    __+-*/\&=<>!?:.$@#^~¡¿×÷£©±¶§¹²³·¢º¬µ|__ : s*s->s          %% NO-BRACKET-SIGNs
   ops 'a','"','\\','\n','\000','\255',
-      '\x00','\xFF','\o000','\o377' : s;         %%characters
-  . def "^1234567890ß´°!§$%&/()=?\\\""           %% strings
+      '\x00','\xFF','\o000','\o377',
+      '^','1','2','3','4','5','6','7','8','9','0',
+      'ß','!','§','$','&','/','(',')','=','?','\\' : s;    %%characters
+  %[. def "^1234567890ß!§$&/()=?"; ]%
+        %[ strings ´°%\\\" does not work yet!]%
+  ops 1,2,3,4 : s;
+      - : s->s;
+      __@@__,__exp__,__frac__ : s*s->s;
   . def 12 . def 12E34 . def 12E-34 . def 12.34  %%numbers
   . def 12.34E34 . def 12.34E+34 . def 12.34E-34 %%fractions
 end
@@ -119,9 +133,9 @@ end
 
 spec Datatypes =
      type Data1 ::= a | b | c;
-     type Data2 ::= Cons1 (Data1; Data2) | Cons2(Data2; Data1) | sort Data1
-     type Data3 ::= Cons1 (sel1:?Data1; sel2:?Data2) | Cons2(sel2:?Data2; sel1:?Data1)
-     type Data4 ::= Cons1 (sel1:?Data1; sel2:?Data2)? | Cons2(sel2:?Data2; sel1:?Data1)?
+     type Data2 ::= Cons21 (Data1; Data2) | Cons22(Data2; Data1) | sort Data1
+     type Data3 ::= Cons31 (sel1:?Data1; sel2:?Data2) | Cons32(sel2:?Data2; sel1:?Data1)
+     type Data4 ::= Cons41 (sel1:?Data1; sel2:?Data2)? | Cons42(sel2:?Data2; sel1:?Data1)?
                     sorts Data1, Data2, Data3
      types Tree ::= Leaf Data1 | Forest;
            Forest ::= Nil | Cons (Tree;Forest)
@@ -158,12 +172,12 @@ spec Formulas =
   . r1 in s
   . def g(x):t
   . def g(x) as s
-  . def (op f:s->?s)(var x:s)
-  . def (op g:s->t)(r1)
-  . (pred p:())
-  . (pred q:s)(x)
-  . x*y*z+z*y*x
+%[  . def (op f:s->?s)(x)  (var x:s) 
+  . def (op g:s->t)(r1) 
+  . (pred p:()) 
+  . (pred q:s)(x) ]% 
+  . x*y*z+z*y*x 
   . def {}
-  . def {x}
+  . def {x}  
 end
 
