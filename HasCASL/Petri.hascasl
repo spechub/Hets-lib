@@ -1,14 +1,76 @@
+spec MultiSet =
+  var Elem : Type
+  %% MutiSets are given by the free commutative monoid
+then free {
+  type  MultiSet Elem::=    {}   |  {__} (Elem)
+                             |  __ + __ (MultiSet Elem;MultiSet Elem)
+  op __ + __: MultiSet Elem * MultiSet Elem -> MultiSet Elem,
+                  assoc, comm, unit {}
+ }
+end
+
+spec RichMultiSet =
+  MultiSet
+then %def
+  preds    isNonEmpty:       MultiSet Elem;
+           __ isIn__:         Elem * MultiSet Elem;
+           __ <= __: MultiSet Elem * MultiSet Elem
+ ops       __ + __ : Elem * MultiSet Elem -> MultiSet Elem;
+           __ + __, __ - __ : MultiSet Elem * Elem -> MultiSet Elem;
+           __ intersection __, __ - __: MultiSet Elem * MultiSet Elem -> MultiSet Elem;
+           freq:                        Elem * MultiSet Elem -> Nat;
+ forall x,y : Elem; B,C,D,E:MultiSet Elem
+
+     . freq(x,{}) = 0                             %(freq_empty)%
+     . freq(x,{y}) = 0 if not (x=y)               %(freq_set1)%
+     . freq(x,{y}) = 1 if (x=y)                   %(freq_set2)%
+     . freq(x,B + C) = freq(x,B) + freq(x,C)      %(freq_union)%
+
+     . isNonEmpty(B) <=> not B = {}               %(isNonEmpty_def)%
+
+     . not x isIn {}                                    %(MultiSet_elemOf_empty)%
+     . x isIn {y} <=> (x=y)                             %(MultiSet_elemOf_set)%
+     . x isIn (B + C) <=> (x isIn B) \/ (x isIn C)    %(MultiSet_elemOf_union)%
+
+     . B <= C <=> 
+       forall x: Elem . freq(x,B) <= freq(x,C)         %(MultiSet_subseteq)%
+
+     . x + B = {x} + B             %(MultiSet_add_def1)%
+     . B + x = x + B                   %(MultiSet_add_def2)%
+
+     . B - x = B if not x isIn B        %(MultiSet_sub_def1)%
+     . ( B - x = C <=>
+           ( forall y: Elem . ( not y = x => freq (y,B) = freq(y,C)) /\
+                              ( y = x => freq (y,B) = freq (y,C) + 1)) ) if
+                              x isIn B             %(MultiSet_sub_def2)%
+
+     . B intersection C = D <=> 
+       forall x: Elem . freq(x,D) = min (freq(x,B), freq(x,C))
+                                                  %(MultiSet_cap)%
+     . B - C = D <=>
+           forall x: Elem .
+           ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
+           /\
+           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )             
+       %(MultiSet_diff)%
+then %implies
+  ops __ intersection __: MultiSet Elem * MultiSet Elem -> MultiSet Elem,
+                          assoc, comm, idem
+end
+
 spec PetriNet = 
-  Monoid and Map 
+  MultiSet and Map 
 then
-  sorts P,T 
-  type Net = {(p,pre,post) : Set P  *  (T ->? Mon P) * (T ->? Mon P)  
+  op multi : Set Elem -> Set (MultiSet Elem);
+  forall s:Set Elem; m:MultiSet Elem
+  . m isIn multi s <=> (forall e:Elem . e isIn m => e isIn s)
+  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)  
                       	. dom pre=dom post /\
-                     	pre :: dom  pre  -> mon p /\
-                     	post :: dom post  -> mon p }
+                     	pre :: dom  pre  -> multi p /\
+                     	post :: dom post  -> multi p }
 
   op __union__ : Net * Net -> Net
-  forall p1,p2:Set P; pre1,pre2,post1,post2:T ->? Mon P
+  forall p1,p2:Set P; pre1,pre2,post1,post2:T ->? MultiSet P
   . (p1,pre1,post1) union (p2,pre2,post2) = 
     (p1 union p2,
      \t . if def pre1(t) then if def pre2(t) then pre1(t) + pre2(t)
@@ -22,17 +84,17 @@ end
 spec PetriSystem = 
   PetriNet 
 then
-  type Sys = {((p,pre,post),m) : Net * Mon P  
-                          . m isIn mon p}
+  type Sys = {((p,pre,post),m) : Net * MultiSet P  
+                          . m isIn multi p}
 
-  ops  marking   : Sys ->  Mon P;
+  ops  marking   : Sys ->  MultiSet P;
        net       : Sys -> Net; 
         __[__>   : Sys * T -> Sys; 
        __union__ : Sys * Sys -> Sys
 
-  forall sys,sys1,sys2:Sys; n:Net; m:Mon P; t:T
+  forall sys,sys1,sys2:Sys; n:Net; m:MultiSet P; t:T
   . marking ((n,m) as Sys P T) = m
-  . def sys[t> <=> t isIn dom pre  /\ pre(t) < marking(sys)
+  . def sys[t> <=> t isIn dom pre  /\ pre(t) <= marking(sys)
   . def sys[t> => sys[t> = (net(sys), marking(sys) - pre(t) + post(t)) as Sys
   . union (sys1,sys2) = 
     (net(sys1) union net(sys2), marking(sys1) + marking(sys2)) as Sys

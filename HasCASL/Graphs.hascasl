@@ -235,7 +235,7 @@ spec DirectedGraph =
   Set
 then
   var N,E : Type
-  type Graph N E = {(n,source,target):Pred(N) * E->?N * E->?N  .
+  type Graph N E = {(n,source,target):Set N * E->?N * E->?N  .
                       dom source=dom target 
                       /\ source :: dom source --> n 
                       /\ target :: dom target --> n }
@@ -244,7 +244,7 @@ end
 %{ Some useful operations on directed graphs. }%
 
 spec RichDirectedGraph =
-  RichDirectedGraph
+  DirectedGraph
 then %def
   var N,E : Type
   ops emptyGraph : Graph N E
@@ -255,7 +255,7 @@ then %def
       addEdge : E * N * N -> Graph N E -> Graph N E;
       removeEdge : E -> Graph N E -> Graph N E;
       symmetric, transitive, loopFree, complete : Graph N E;
-      __subgraph__, __cliqueOf__, __maxCliqueOf__ : Pred(Graph N E * Graph N E;
+      __subgraph__, __cliqueOf__, __maxCliqueOf__ : Pred(Graph N E * Graph N E);
       __union__, __intersection__ : Graph N E * Graph N E -> Graph N E
 
   forall n,n1,n2:N; e,e1,e2:E; g,g':Graph N E;
@@ -376,7 +376,7 @@ end
    operations on sets, usually acting component wise.
    Note that we have to fix N and E here, since we need set representations for them
    in order to get the needed constructions on sets. }%
-spec DirectedGraphConstructions [SetRepresentation with S |-> N] [SetRepresentation with S |-> E]=
+spec DirectedGraphConstructions [SetRepresentation with S |-> N] [SetRepresentation with S |-> E] =
   AbstractSetConstructions[SetRepresentation with S |-> N]
 and
   AbstractSetConstructions[SetRepresentation with S |-> E]
