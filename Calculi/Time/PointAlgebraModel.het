@@ -58,9 +58,8 @@ then %def
 
 then %implies 
      ops
-         __cup__:  Rel * Rel -> Rel, assoc, comm, unit 1;
-	 __cap__:  Rel * Rel -> Rel, assoc, comm, unit 0;  
-        conv__:Rel -> Rel, idem ;
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;  
 end
 
 
@@ -88,8 +87,10 @@ then %def
 
 then %implies
      ops
-         conv__:Rel -> Rel, idem ;
-         __cmps__: Rel * Rel -> Rel, assoc, unit id;
+          __cmps__: Rel * Rel -> Rel, assoc, unit id;
+     forall x:Rel
+     . conv(conv(x)) = x
+    . conv(id) = id
 end
 
 
