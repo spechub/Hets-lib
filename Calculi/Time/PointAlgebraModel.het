@@ -37,7 +37,44 @@ then
 end
 
 
+
+spec FullRelationAlgebra[sort Elem] =
+     Set
+then %def
+     sort RelElem = {X:Set(Elem*Elem) . X =X}
+     ops
+	 0,1,id:RelElem;
+         __cup__,__cap__,__cmps__:  RelElem * RelElem -> RelElem;
+         compl__,conv__:RelElem -> RelElem;
+
+      forall r,s:RelElem; x,y:Elem
+      . 0 = emptySet
+      . 1 = allSet
+      . compl(r) = 1 \\ r
+      . r cup s = r union s
+      . r cap s = r intersection s
+     . (x,y) isIn id <=> x = y
+     . (x,y) isIn r cmps s <=> exists z:Elem . (x,z) isIn r /\ (z,y) isIn s 
+     . (x,y) isIn conv(r) <=> (y,x) isIn r
+
+then %implies 
+     ops
+         __cup__:  RelElem * RelElem -> RelElem, assoc, comm, idem, unit 1;
+	 __cap__:  RelElem * RelElem -> RelElem, assoc, comm, idem, unit 0;  
+         __cmps__: RelElem * RelElem -> RelElem, assoc, unit id;
+     forall x:RelElem
+     . compl(compl(x)) = x 
+     . conv(conv(x)) = x 
+end
+
+
 spec AlgebraOfBinaryRelation[sort Elem] =
+	FullRelationAlgebra[sort Elem] 
+then 
+     
+
+
+spec AlgebraOfBinaryRelationOld[sort Elem] =
      Set
 then 
      op rel:Set(Set(Elem*Elem))
@@ -70,7 +107,7 @@ view AlgebraOfBinaryRelation_as_BoolenAlgebra:
 end
 
 
-
+	
 
 spec AlgebraOfBinaryRelationWithComposition[sort Elem] = %def
       AlgebraOfBinaryRelation[sort Elem]
