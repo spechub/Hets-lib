@@ -62,7 +62,7 @@ then
 end
 
 
-spec Ext_LinFlowOfTime [LinFlowOfTime] = 
+spec Ext_LinFlowOfTime [LinFlowOfTime] = %def 
 	Ext_FlowOfTime [FlowOfTime]
 then %implies
      forall x,z: Instant
@@ -72,6 +72,7 @@ then %implies
 	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_sucpre_elim)%
 end
 
+
 spec Rich_LinFlowOfTime = Ext_LinFlowOfTime [LinFlowOfTime]
 
 
@@ -79,7 +80,7 @@ spec DnsLinFlowOfTime =
      LinFlowOfTime and DnsFlowOfTime 
 
 
-spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = 
+spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = %def 
 	Ext_FlowOfTime [FlowOfTime]
 
 
@@ -91,21 +92,22 @@ spec LinFlowOfTimeSMax =
      LinFlowOfTime and FlowOfTimeSMax
 
 
-spec Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax] = 
+spec Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax] = %def
 	Ext_FlowOfTime [FlowOfTime]
 
 
 spec Rich_LinFlowOfTimeSMax = 
 	Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax]
 
+
 spec DnsLinFlowOfTimeSMax =
-     LinFlowOfTime and FlowOfTimeSMax
+     DnsLinFlowOfTime and FlowOfTimeSMax
 then %implies
      DnsFlowOfTimeSMax
 end
 
 
-spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = 
+spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = %def 
 	Ext_FlowOfTime [FlowOfTime]
 
 
@@ -123,13 +125,13 @@ spec Rich_LinFlowOfTimeSMin =
 	Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin]
 
 
-spec DnsLinFlowOfTimeSMin =
-     LinFlowOfTime and FlowOfTimeSMin
+spec DnsLinFlowOfTimeSMin = %def
+     DnsLinFlowOfTime and FlowOfTimeSMin
 then %implies
      DnsFlowOfTimeSMin
 end
 
-spec Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin] = 
+spec Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin] = %def
 	Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_DnsLinFlowOfTimeSMin = 
@@ -139,7 +141,7 @@ spec Rich_DnsLinFlowOfTimeSMin =
 spec LinFlowOfTimeSEnd =
      LinFlowOfTime and FlowOfTimeSEnd
 
-spec Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd] = 
+spec Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd] = %def
 	Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_LinFlowOfTimeSEnd = 
@@ -147,14 +149,14 @@ spec Rich_LinFlowOfTimeSEnd =
 
 
 spec DnsLinFlowOfTimeSEnd =
-     LinFlowOfTime and FlowOfTimeSEnd
+     DnsLinFlowOfTime and FlowOfTimeSEnd
 then %implies
       { DnsLinFlowOfTime and DnsFlowOfTimeSEnd
 	and LinFlowOfTimeSEnd }
 end
 
 
-spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = 
+spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = %def 
 	Ext_FlowOfTime [FlowOfTime]
 then %implies
      forall x,z: Instant
@@ -204,4 +206,46 @@ end
 
 
 
+logic HasCASL
 
+%%from HasCASL/Set get Set
+
+spec DedekindComplLinFlowOfTime = 
+      Rich_DnsLinFlowOfTime 
+then %def 
+    preds __preE__ : Instant * Pred(Instant);
+          __preE__ : Pred(Instant) * Instant;
+         isUpperBounded : Pred(Instant);
+         isLowerBounded : Pred(Instant);
+         isBounded : Pred(Instant);
+         __isIn__  : Instant * Pred(Instant)
+    ops
+        inf,sup :   Pred(Instant) ->? Instant
+
+    forall x,y:Instant; X:Pred(Instant)
+    . x isIn X <=> X(x)
+    . X preE x <=> forall y:Instant . y isIn X => y preE x
+    . x preE X <=> forall y:Instant . y isIn X => x preE y
+    . inf(X)=y <=> y preE X /\ forall x':Instant . x' preE X => x' preE x
+    . sup(X)=y <=> X preE y /\ forall x':Instant . X preE x' => x preE x'
+   . isUpperBounded(X) <=> exists x:Instant . X preE x
+   . isLowerBounded(X) <=> exists x:Instant . x preE X
+   . isBounded(X) <=> isUpperBounded(X) /\ isLowerBounded(X)
+then
+   forall X:Pred(Instant)
+   . isUpperBounded(X) => def sup(X)        %(completeness)%
+ then %implies
+   forall X:Pred(Instant)
+   . isLowerBounded(X) => def inf(X)  
+end
+
+
+from HasCASL/Real get Real
+
+%[Comment: This specification is incorrect ]%
+
+view FlowOfTime_in_Real : 
+     DedekindComplLinFlowOfTime to Real 
+=
+     sort Instant |-> Real, preds __pre__ |-> __<__, __preE__ |-> __<__
+end
