@@ -32,7 +32,6 @@ spec List =
 end
 
 
-
 %{ Typed sets are represented by predicates over the type.
    Set membership is just holding of the predicate: x isIn s <=> s x
    Note that for disjoint unions and products, the type changes.  }%
@@ -63,6 +62,16 @@ spec Set = Bool then
   . (injr x) = (x,True)
   %%. (s disjointUnion s') = ((s * {false}) union (s' * {true}))
 end
+
+%{ Unique choice only holds in toposes, not in general pcccs }%
+
+spec UniqueChoice [sort S] given Set =
+  op choice : Set S ->? S
+  forall x:S; s: Set S
+  . def (choice(s)) <=> exists x:S . s = {x}
+  . choice({x}) = x
+end
+
 
 %{ Relations and partial equivalence relations (PERs) }%
 spec Relation =
@@ -199,13 +208,12 @@ end
 view v : SetRepresentation to Nat_SetRepresentation = S |-> Nat
 end
 
-%{ Given a set representation, we now can define coproducts,
+%{ Given a set representation and unique choice, we now can define coproducts,
    while staying within the same type of sets.
-   Note that __*__ is now overloaded: for two given S-sets,
    We also specify the mediating morphisms that exist by the
    respective (co)universal properties of the constructions. }%
 spec SetCoproduct[SetRepresentation] given Map = %def
-  SetCategory
+  SetCategory and UniqueChoice[sort S]
 then
   %% type CPCocone = {(h,k) : MapS * MapS . cod' h = cod' k}
   type CPCocone := MapS * MapS
@@ -214,8 +222,8 @@ then
   . (s1 coproduct s2) = 
        let copr = (image inl s1) union (image inr s2);
            med = \ (c : CPCocone) . let (f,g) = c 
-                   in \y . case y of (inl x) -> f x
-                                   | (inr x) -> g x
+                   in \y . choice (\z . (exists x:SetS . y = inl x /\ z = f x)
+                                        \/ (exists x:SetS . y = inr x /\ z = g x) )
        in (((s1,inl,copr),(s2,inr,copr)),med)
 end
 
