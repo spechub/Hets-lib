@@ -10,7 +10,7 @@ library HasCASL/Set
 %prec {__+__} < {__*__,__div__}
 %prec {__=__} < {__o__,__<__}
 
-from HasCASL/Categories get Category
+from HasCASL/Categories get Category, Coproduct
 
 logic HasCASL
 
@@ -84,7 +84,7 @@ then
   . (symmetric r) <=> forall x,y:S . (r(x,y)) => (r(y,x))
   . (transitive r) <=> forall x,y,z:S . ((r(x,y)) /\ (r(y,z))) => (r(x,y))
   type PER S := Set(S*S)
-  %% = { r : Set(S*S) . (symmetric r) /\ (transitive r) }    %% Christian!
+     %% = { r : Set(S*S) . (symmetric r) /\ (transitive r) }    %% Christian!
   op dom : PER S -> Set S
   forall x:S; r: PER S
    . (x isIn (dom r)) <=> ((x,x) isIn r)
@@ -135,6 +135,7 @@ then
   %% Überlagerung klappt noch nicht
   ops dom' (a : Set S; f : Map S; b: Set S): Set S = a;
       cod' (a : Set S; f : Map S; b: Set S): Set S = b;
+      func (a : Set S; f : Map S; b: Set S): Map S = f;
       __o'__ : MapS * MapS ->? MapS
   forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
   . def (f o' g) <=> cod' g = dom' f
@@ -203,14 +204,15 @@ spec SetCoproduct[SetRepresentation] given Map = %def
 then
   %% type CPCocone = {(h,k) : MapS * MapS . cod' h = cod' k}
   type CPCocone := MapS * MapS
-  ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? Map S));
+  ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? MapS));
   forall s1,s2:SetS
   . (s1 coproduct s2) = 
        let copr: SetS = (image inl s1) union (image inr s2);
            med = \c :CPCocone . 
-	      let ((sf,f,tf), (sg,g,tg)) = c 
-              in \(y:S) . choice (\z . (exists x:S . y = inl x /\ z = f x)
+	      let ((sf,f,tf), (sg,g,tg)) = c; 
+                  medfun = \(y:S) . choice (\z . (exists x:S . y = inl x /\ z = f x)
                                         \/ (exists x:S . y = inr x /\ z = g x))
+              in (copr,medfun,tf)
        in (((s1,inl,copr),(s2,inr,copr)), med)
 end
 
@@ -227,18 +229,18 @@ end
    We also specify the mediating morphisms that exist by the
    respective (co)universal properties of the constructions. }%
 spec SetCoequalizer[SetRepresentation] given Map = %def
-  SetCategory
+  SetCategory and UniqueChoice [sort S]
 then
-  type CEDiagram = {(f,g) : Mor * Mor . dom f = dom g /\ cod f = cod g};
+  type CEDiagram = {(f,g) : MapS * MapS . dom' f = dom' g /\ cod' f = cod' g};
   ops coequalizer : CEDiagram -> (MapS * (MapS -> MapS))
-  forall s1,s2,t:SetS; f,g,h : MapS
-  . coequalizer d = 
-       let (f,g) = d
-           r = \x:S . f x = g x
-           c = coeq r 
-           med h = (dom h,\x:S . h(\y . coeq y = x),range c)
+  forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
+  . (f,g) as CEDiagram= d =>
+    coequalizer d = 
+       let r = \(x,y) . exists z:S . func f z = x /\ func g z = y;
+           c = coeq r;
+           med h = (cod' h,\x:S . choice(\y:S . exists z:S . func h z = x /\ c z = y),range c)
        in
-       ((cod f, c, range c),med)
+       ((cod' f, c, range c),med)
 end
 
 
