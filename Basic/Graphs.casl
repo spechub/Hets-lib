@@ -2,7 +2,7 @@ library Basic/Graphs
 version 1.0
 %authors: T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
 %date: 18 December 2003
-%% with contributions from Klaus Luettich
+%% with contributions from Klaus Lüttich
 
 %{ We construct directed graphs inductively by successively adding
    nodes and edges.
@@ -328,8 +328,8 @@ and
   GraphHomomorphism[sort N1][sort E1][sort N2][sort List[E2]]
   with Graph2 |-> PathGraph 
 then
-  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           %(minorOf_def)%
-    exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)
+  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           
+    exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)   %(minorOf_def)%
 end
 
 %% The complete graph over five nodes
