@@ -1,5 +1,5 @@
 library Basic/Numbers
-version 0.9
+version 0.91
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% date: 21.8.02
 %% corresponding author: M.Roggenbach (roba@tzi.de)
@@ -19,9 +19,13 @@ version 0.9
 
 %prec( {-__} <> {__ ^ __} )%
 
+%prec { __ E __ } < { __ ::: __ }
+
 %left_assoc __ + __, __ * __, __ @@ __
 
 %number __@@__
+
+%floating __:::__, __E__
 
 spec Nat = %mono
 
@@ -355,4 +359,23 @@ then %implies
 
 end
 
+spec DecimalFraction = %mono
+     Rat
+then %def
+local
+     op   tenPower: Nat -> Nat
+     forall n,m: Nat
+     %% tenPower(n):= min { 10^k | k in N \{0}, 10^k > n }:
+     . tenPower(n)= 10 when n < 10 else
+                    10 * tenPower(n div 10)    %(tenPower_def)%
+within
+     %% operations to represent a rational as a decimal fraction:
+     ops   __ ::: __ : Nat * Nat -> Rat;
+           __ E __ :   Rat * Int -> Rat
+     forall r:Rat; n,m: Nat; p: Pos; i:Int
+     %%  represent the decimal fraction n.m as rational:
+     . n:::m = n + (m/tenPower(m))             %(decfract_def)%
+     %%  introduce an exponent:
+     . r E i = r * (10 ^ i)                    %(exponent_DecimalFraction)%
+end
 
