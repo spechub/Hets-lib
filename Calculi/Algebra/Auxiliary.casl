@@ -17,9 +17,47 @@ from Basic/RelationsAndOrders version 0.7 get  PartialOrder,
 	BooleanAlgebra, RichBooleanAlgebra
 
 
-spec BooleanAlgebraWithCompl = %def
-     { RichBooleanAlgebra 
-	    reveal ops __cup__,__cap__,compl__,0,1 }
+spec ExtBooleanAlgebraByCompl[BooleanAlgebra] = %def
+ 
+     op compl__: Elem -> Elem
+
+     forall x,y:Elem
+     . compl(x)=y <=> x cup y = 1 /\ x cap y = 0    
+                                            %(compl_def_ExtBooleanAlgebra)%
+then %implies
+     forall x,y: Elem
+     . compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%
+     . compl(x cup y) = compl(x) cap compl(y)             %(de_Morgan2)%
+     . compl(compl(x)) = x        %(involution_compl_ExtBooleanAlgebra)%
+end
+
+spec BooleanAlgebraWithCompl = ExtBooleanAlgebraByCompl[BooleanAlgebra]
+
+
+spec ExtBooleanAlgebraByPartialOrder[BooleanAlgebra] = %def
+
+     preds __ <= __, __ < __,  __ >= __, __ > __: Elem * Elem;
+	  Atom:Elem
+
+     forall x,y:Elem
+     . x <= y <=> x cap y = x           %(leq_def_ExtBooleanAlgebra)%
+     . x >= y <=> y <= x                %(geq_def_ExtBooleanAlgebra)%
+     . x < y <=> (x <= y /\ not (x=y))  %(less_def_ExtBooleanAlgebra)%
+     . x > y <=> y < x                  %(greater_def_ExtBooleanAlgebr)%
+     . Atom(x) <=> not x = 0 /\ 
+		   ( forall y:Elem . y < x => y = 0)
+					%(Atom_def)%  
+end
+
+spec BooleanAlgebraWithPartialOrder = 
+	ExtBooleanAlgebraByPartialOrder[BooleanAlgebra]
+end
+
+spec AtomicBooleanAlgebra =
+     BooleanAlgebraWithPartialOrder
+then
+     forall x:Elem
+     . not x = 0 => (exists y:Elem . Atom(y) /\ y <= x) 	
 end
 
 
