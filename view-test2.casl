@@ -1,0 +1,16 @@
+library viewtest2
+
+%% The theorem link is not provable with global subsumption,
+%% but with the generalized local subsumption
+
+spec sp1 =
+  sort s
+end
+
+spec sp2 =
+  sp1
+then
+ sort t
+end
+
+view v1 : sp1 to sp2 = s |-> t end

@@ -97,6 +97,7 @@ within  op order : List -> List
 	. order(L) is_sorted
 end
 
+%[
 spec Wrong_List_Order_Sorted [Total_Order
 			      with sort Elem, pred __<__] =
     List_Selectors [sort Elem]
@@ -110,6 +111,7 @@ local   pred __is_sorted : List
 	      cons(e', L) is_sorted /\ not e' < e
 within op order : List -> SortedList
 end
+]%
 
 spec List_Order_Sorted_2 [Total_Order with sort Elem, pred __<__] =
     List_Selectors [sort Elem]
