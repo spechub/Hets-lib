@@ -92,7 +92,7 @@ spec GenerateRelationAlgebra[RelationBase[sort BaseRel]] = %mono
 end
 
 
-%(
+%[
 spec GeneratedRelationAlgebra = 
      GenerateRelationAlgebra[RelationBase[sort BaseRel]]
 
@@ -118,18 +118,17 @@ to
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 
-)%
+]%
 
 
 spec CompositionTable =
      sorts BaseRel < Rel
      ops 
-        id,0,1:Rel;
-	  conv:   BaseRel -> BaseRel;
-         compl:   Rel -> Rel;
+        1:Rel;
+	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+            compl: Rel -> Rel;
+	     conv: BaseRel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;
-	 __cup__:  Rel * Rel -> Rel, assoc, idem, comm, unit 1;
-	 __cap__:  Rel * Rel -> Rel, assoc, idem, comm, unit 0;  
 end
 
 
@@ -142,7 +141,7 @@ end
 
 
 spec BaseRelationsOfCalculus =
-     type BaseRel ::= relation1 | relation2
+     free type BaseRel ::= relation1 | relation2
 end
 
 

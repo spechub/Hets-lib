@@ -66,7 +66,7 @@ end
 
 
 
-%(   We following spec not only contains the raw composition table of IAlin, but also
+%(   The following spec not only contains the raw composition table of IAlin, but also
      information that the 1 is the union of all base relations, and that the set of base relations is
      closed with respect to converses.
 )%
@@ -76,7 +76,7 @@ spec CompositionTableOfIntervalAlgebraLin =
      sort BaseRel
      ops b,m,o,d,s,f,e,bi,mi,oi,di,si,fi: BaseRel
 and 
-     CompositionTable with op id |-> e
+     CompositionTable %% with op id |-> e
 then
      . 1 = b cup m cup o cup d cup s cup f cup e cup 	
 		bi cup mi cup oi cup di cup si cup fi   %(def_1)%
@@ -280,7 +280,7 @@ end
 
 
 
-spec RelationBaseOfIntervalAlgebraLin = %mono 
+spec RelationBaseOfIntervalAlgebraLin =  
      SetRepresentationOfRelations[BaseRelationsOfIntervalAlgebraLin]
 and
      CompositionTableOfIntervalAlgebraLin 
@@ -296,7 +296,7 @@ spec IntervalAlgebraLin =
      GenerateRelationAlgebra [RelationBaseOfIntervalAlgebraLin]  
 end
 
-
+%[
 view IntervalAlgebraLin_as_AtomicRelationAlgebra :
      AtomicRelationAlgebra to 
      { IntervalAlgebraLin	then %def
@@ -319,9 +319,10 @@ end
 
 %(  Part II: Semantic Level
 
-    Following we describe how models of IAlin can be constructed from Dedekind complete, dense 
-    linear flows of time without endpoints. We describe two distinct methods: (1) via Allen intervals and 
-    (2) via arbitrary convex subsets.
+    Following we describe how models of IAlin can be constructed from 
+    Dedekind complete, dense linear flows of time without
+    endpoints. We describe two distinct methods: (1) via Allen intervals
+    and (2) via arbitrary convex subsets.
 )%
 
 
@@ -397,19 +398,26 @@ then %def
 			biRel | miRel | oiRel | diRel | siRel | fiRel
      forall x,y:ConvexSetInterval
      . (x,y) isIn rep(bRel) <=> exists z:ConvexSetInterval . x preE z /\ z preE y
-%(     . (x,y) isIn rep(mRel) <=> fin(x) = start(y)
-     . (x,y) isIn rep(oRel) <=> start(x) pre start(y) /\ start(y) pre fin(x) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(dRel) <=> start(y) pre start(x) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(sRel) <=> start(x) = start(y) /\ fin(x) pre fin(y)
-     . (x,y) isIn rep(fRel) <=> start(y) pre start(x) /\ fin(x) = fin(y)
-     . (x,y) isIn rep(eRel) <=> start(x) = start(y) /\ fin(x) = fin(y)
-     . (x,y) isIn rep(biRel) <=> fin(y) pre start(x)
-     . (x,y) isIn rep(miRel) <=> start(x) = fin(y) 
-     . (x,y) isIn rep(oiRel) <=> start(y) pre start(x) /\ start(x) pre fin(y) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(diRel) <=> start(x) pre start(y) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(siRel) <=> start(y) = start(x) /\ fin(y) pre fin(x)
-     . (x,y) isIn rep(fiRel) <=> start(x) pre start(y) /\ fin(x) = fin(y)
-)%
+     . (x,y) isIn rep(mRel) <=> x preE y /\ not(exists z:ConvexSetInterval . x preE z /\ z preE y)
+     . (x,y) isIn rep(oRel) <=> exists z,z':ConvexSetInterval . z preE y /\ x preE z' 
+					/\ x union z' = x union y /\ y union z = x union y  
+     . (x,y) isIn rep(dRel) <=> exists z,z':ConvexSetInterval . z preE x /\ x pre z' 
+					/\ x union z union z' = y
+     . (x,y) isIn rep(sRel) <=> exists z:ConvexSetInterval . x preE z /\ 
+					x union z = y
+     . (x,y) isIn rep(fRel) <=> exists z:ConvexSetInterval . z preE x /\ 
+					x union z = y
+     . (x,y) isIn rep(eRel) <=> x = y
+     . (x,y) isIn rep(biRel) <=> exists z:ConvexSetInterval . y preE z /\ z preE x
+     . (x,y) isIn rep(miRel) <=> y preE x /\ not(exists z:ConvexSetInterval . y preE z /\ z preE x)
+     . (x,y) isIn rep(oiRel) <=> exists z,z':ConvexSetInterval . z preE x /\ y preE z' 
+					/\ y union z' = x union y /\ x union z = x union y  
+     . (x,y) isIn rep(diRel) <=> exists z,z':ConvexSetInterval . z preE y /\ y pre z'
+					/\ y union z union z' = z
+     . (x,y) isIn rep(siRel) <=> exists z:ConvexSetInterval . y preE z /\ 
+					y union z = x
+     . (x,y) isIn rep(fiRel) <=> exists z:ConvexSetInterval . z preE y /\ 
+					y union z = x
 end
 
 
@@ -496,3 +504,4 @@ to
 end
 
 
+]%
