@@ -6,6 +6,8 @@ library CoCASL/Examples
 %display  __member__         %LATEX __\epsilon__
 %display  __inCap__          %LATEX __in__
 
+%left_assoc __||__
+
 logic CoCASL
 
 spec Set[sort Elem] =
@@ -22,6 +24,7 @@ free {
     . x member M union N <=> x member M \/ x member N
     then
     op __setMinus__, __disjointUnion__ : Set[Elem] * Set[Elem] -> Set[Elem]
+    op __-__ : Set[Elem] * Elem -> Set[Elem]
     
 spec FinalLTS =
     sort Label 
@@ -34,7 +37,7 @@ spec FinalLTS =
         then cotype State ::= (next : Label -> Set) }
 end   
 
-spec ACDomain[sort Name] =
+spec ACDomain[sort Name] = Set[sort Name] then
 cofree {
     sort State
     free type Cap ::= inCap | out | open         
@@ -42,14 +45,19 @@ cofree {
     free type Action ::= tau | action(Cap; Name)
     free type HAction ::= phi | haction(HCap; Name)
     free type Prime ::= prefix(Cap; Name; State) | ambient(Name; State)
-    free type Concretion ::= conc(prime : Prime; residue : State)
-    then Set[sort State] and Set[sort Name] and Set[sort Concretion]
+    free type Concretion ::= conc(Prime; State; Set[Name])
+    then Set[sort State] and Set[sort Concretion]
     then cotype State ::= (next : Action -> Set[State];
                            harden : HAction -> Set[Concretion]; 
                            freenames : Set[Name]) }
+   then %def
+   op freenames: Prime -> Set[Name]
+   vars c : Cap; p : State; n : Name
+   . freenames(prefix(c, n, p)) = freenames(p)
+   . freenames(ambient(n, p)) = freenames(p)
 end
 
-spec Zero[sorts Name] = ACDomain[sort Name]
+spec Zero = ACDomain[sort Name]
 then op zero : State
      vars a : Action; b : HAction
          . next(a, zero) = {}
@@ -57,26 +65,46 @@ then op zero : State
          . freenames(zero) = {}
 end
 
-spec CapabilityPrefixing[sorts Name] = Zero[sorts Name]
+spec CapabilityPrefixing = Zero
 then op cap : Cap * Name * State -> State
      vars a : Action; b : HAction; c : Cap; n : Name; p: State
      . next(a, cap(c, n, p)) = { p } when a = action(c, n) else {}
-     . harden(b, cap(c, n, p)) = { conc(prefix(c, n, p), zero) } 
+     . harden(b, cap(c, n, p)) = { conc(prefix(c, n, p), zero, {}) } 
                         when b = phi else {}
      . freenames(cap(c, n, p)) = { n } union freenames(p)
 end
 
-spec NameRestriction[sorts Name] = ACDomain[sort Name]
+spec NameRestriction = ACDomain[sort Name]
 then op res : Name * State -> State
      vars a : Action; b : HAction; n : Name; p, q : State; c : Concretion 
      . q member next(a, res(n, p)) <=> 
         exists r : State . q = res(n, r) /\ r member next(a, p)
-%[     . c member harden(b, res(n, p)) <=>
-        (exists r : Prime; s : State . c = conc(r, res(n, s)) /\ 
-                        conc(r, s) member harden(b, p) /\ 
-                        not n member freenames(r)) \/
-        (exists r, s : State; m : Name . c = conc(ambient(m, res(n, r)), s) /\ 
-                        conc(ambient(m, r), s) member harden(b, p) /\ 
-                        not n member freenames(r))
-]%
+     . c member harden(b, res(n, p)) <=>
+        (exists r : Prime; s : State; f : Set[Name] 
+         . c = conc(r, res(n, s), f - n) 
+           /\ conc(r, s, f) member harden(b, p) 
+           /\ not n member freenames(r)) \/
+        (exists r, s : State; f: Set[Name]; m : Name 
+         . c = conc(ambient(m, res(n, r)), s, f - n) 
+           /\ conc(ambient(m, r), s, f) member harden(b, p) 
+           /\ not n member freenames(r)) \/
+        (exists r : Prime; s : State; f : Set[Name] 
+         . c = conc(r, s, f - n) 
+           /\ conc(r, s, f) member harden(b, p) 
+           /\ not n member freenames(s)
+           /\ not n member freenames(r))
 
+spec ParallelComposition = ACDomain[sort Name]
+then op __||__ : State * State -> State, assoc
+    vars a : Action; b : HAction; n : Name; p, q, r : State
+    . r member next(a, p || q) <=>
+       (exists p',q2' : State; q1' : Prime; f : Set[Name]
+        . r = p' || q2' 
+          /\ p' member next(action(open, n), p)
+          /\ conc(q1', q2', f) member harden(haction(coopen, n), q)) 
+%[ \/
+        (exists p2',q2' : State; p1', q1' : Prime; f1, f2 : Set[Name]
+        . r = p' || q2' 
+          /\ p' member next(action(open, n), p)
+          /\ conc(q1', q2', f) member harden(haction(coopen, n), q)) \/
+]%   
