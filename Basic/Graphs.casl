@@ -3,6 +3,8 @@ version 0.95
 %% authors: M.Roggenbach, T.Mossakowski, L.Schröder
 %% date: 19.06.02
 
+%left_assoc __intersection__
+
 from Basic/StructuredDatatypes get FiniteSet, FiniteMap
 
 spec Graph[sort NodeV][sort EdgeV] =
@@ -34,8 +36,8 @@ then %def
        
       remove_node(n:NodeV; g:Graph) : Graph =
         make_graph(nodes(g)-n,
-                   edges(g) intersection dom(source(g)--n) intersection dom(target(g)--n),
-                   source(g)--n, target(g)--n);
+                   edges(g) intersection dom(source(g)-n) intersection dom(target(g)-n),
+                   source(g)-n, target(g)-n);
       
       remove_edge(e:EdgeV; g:Graph) : Graph =
         make_graph(nodes(g), edges(g)-e, source(g)-e, target(g)-e)
