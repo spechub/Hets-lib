@@ -26,11 +26,13 @@ end
 spec Functor =
   Category and {ExtCategory[Category] with Ob |-> Ob', Mor |-> Mor'}
 then
-  type Functor = {(fob,fmor) : (Ob -> Ob') * (Mor -> Mor') .
-                       forall a:Ob . fob(id(a))=id(fob(a))
+  type Functor = {(fob,fmor) : (Ob -> Ob') * (Mor -> Mor') . 
+                     forall a:Ob . fob(a)=fob(a) }
+%[                       forall a:Ob . fob(id(a))=id(fob(a))
                     /\ forall f:Mor . fmor(f)::fob(dom f) --> fob(cod f)
                     /\ forall f,g:Mor . def (f o g) =>
                                fmor(f o g) = fmor f o fmor g }
+]%
 end
 
 spec Shape =
@@ -95,13 +97,16 @@ spec Coproduct[Category] =
   and CoproductShape
 then %def
   ops __objCoproduct__ : Ob * Ob -> Ob;
+      __coproduct__ :  Mor * Mor -> Mor;
+      __coproduct__ :  Ob * Ob -> (CPCocone * (CPCocone ->? Mor))
+  %% the last one should come in automatically
   forall a,b: Ob; f,g:Mor
   . (a objCoproduct b) =
-    let (c,med) = (a coproduct b) as CPDiagram;
-        (h,k) = c as CPCocone
+    let (c,med) = a coproduct b;
+        (h,k) = c
     in cod h
   . (f coproduct g) =
-      let (c,med) = (dom f coproduct dom g) as CPDiagram;
+      let (c,med) = (dom f) coproduct (dom g);
           (inl,inr) = c as CPCocone
       in (med as CPCocone ->? Mor)(inl o f, inr o g)
 end
@@ -125,18 +130,18 @@ then %def
   ops __objPushout__ : Mor * Mor -> Ob
   forall a,b: Ob; f,g:Mor
   . (f objPushout g) =
-    let (c,med) = colimit (f, g) as Diagram;
-        (h,k) = c as POCocone
+    let (c,med) = colimit (f, g);
+        (h,k) = c
     in cod h
 end
 
 spec PushoutAsCoequalizerOfCoproduct
   [Coproduct[Category]] [Coequalizer[Category]] = 
-  {} %% construction of pushouts from coquealizers + coproducts
+  Pushout[Category]
+  %% construction of pushouts from coquealizers + coproducts
 end
 
 view v_PushoutAsCoequalizerOfCoproduct :
-  Pushout[Category] to
-  PushoutAsCoequalizerOfCoproduct[Coproduct[Category]]
+  Pushout[Category] to  PushoutAsCoequalizerOfCoproduct[Coproduct[Category]]
   [Coequalizer[Category]]
 end
