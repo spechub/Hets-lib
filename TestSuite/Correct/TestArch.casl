@@ -2,11 +2,35 @@ library TestArch
 
 %% Provided by Till Mossakowski
 
+spec SP =
+  sort s
+end
+
+spec SP1 =
+  sorts s,t
+end
+
+spec SP2 = 
+  sorts s,t,u
+end
+
+unit spec PSP = SP * SP1 -> SP2
+end
+
 arch spec A =
   units
-    un1 : arch spec {
+    u  : SP;
+    u1 : SP1;
+    p1 : SP * SP1 -> SP2;
+    p2 : PSP;
+    i : SP2 given u, u1;
+    u2 : arch spec {
             units un2 : {sort s}
-            result un2}
+            result un2};
+    u3 = p2[u][u fit t |-> s];
+    u4 = local u5 = u and u1 within p2[u][u5];
   result
-    un1
+    lambda x:SP; y:SP1 . { p2[x][y] and u } with s|-> u reveal u hide u
+                         and y
 end
+
