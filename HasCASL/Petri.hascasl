@@ -6,6 +6,11 @@ then
                       	. dom pre=dom post /\
                      	pre :: dom  pre  -> mon p /\
                      	post :: dom post  -> mon p }
+
+  op __union__ : Net * Net -> Net
+  forall p1,p2:Set P; pre1,pre2,post1,post2:T ->? Mon P
+  . (p1,pre1,post1) union (p2,pre2,post2) = 
+    (p1 union p2, \t . pre1 + pre2, \t . post1 + post2) 
 end
 
 spec PetriSystem = 
@@ -14,11 +19,15 @@ then
   type Sys = {((p,pre,post),m) : Net P T  *  Mon P  
                           . m isIn mon p}
 
-  ops  marking  : Sys  P T  ->  Mon P;
-        __[__>  : Sys  P T  *  T - > Sys  P T
+  ops  marking   : Sys ->  Mon P;
+       net       : Sys -> Net; 
+        __[__>   : Sys * T -> Sys; 
+       __union__ : Sys * Sys -> Sys
 
-  forall sys:Sys P T; n:Net P T; m:Mon P; t:T
+  forall sys,sys1,sys2:Sys; n:Net; m:Mon P; t:T
   . marking ((n,m) as Sys P T) = m
   . def sys[t> <=> t isIn dom pre  /\ pre(t) < marking(sys)
-  . def sys[t> => sys[t> = (net(sys), marking(sys) - pre(t) + post(t))
+  . def sys[t> => sys[t> = (net(sys), marking(sys) - pre(t) + post(t)) as Sys
+  . union (sys1,sys2) = 
+    (net(sys1) union net(sys2), marking(sys1) + marking(sys2)) as Sys
 end 
