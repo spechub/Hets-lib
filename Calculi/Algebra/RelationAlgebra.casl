@@ -50,7 +50,7 @@ then %implies
      forall x,y,z: Rel
      . (x cup y) cmps z = (x cmps z) cup (y cmps z)		%(cmps_cup_rdistrib)%
      . z cmps (x cup y) = (z cmps x) cup (z cmps y)	  	%(cmps_cup_ldistrib)%
-     . conv(x) cmps (compl(x cmps y) cup compl(y)) = compl(y)   %(RelAlg)%
+     . (conv(x) cmps compl(x cmps y)) cap y = 0                 %(RelAlg)%
      . (x cmps y) cap z = 0 => (conv(x) cmps z) cap y = 0 	%(lPeircean)%
      . (x cmps y) cap z = 0 => (z cmps conv(y)) cap x = 0 	%(rPeircean)%
 end
@@ -67,7 +67,8 @@ then %implies
 end
 
 
-spec RelationAlgebraWithPartialOrder = ExtRelationAlgebraByPartialOrder[RelationAlgebra]
+spec RelationAlgebraWithPartialOrder = 
+     ExtRelationAlgebraByPartialOrder[RelationAlgebra]
 
 
 spec IntegralRelationAlgebra =
