@@ -7,13 +7,13 @@ from Basic/RelationsAndOrders version 0.4
 get SigOrder, TotalOrder
 
 spec
-     SigPreNumbers[sort Elem] =
+     SigPreNumbers[sort Elem][sort NonNeg] =
      SigOrder [sort Elem]
 then
      ops
            0:                Elem;
            __ + __, __ * __: Elem × Elem -> Elem %left assoc;
-           abs:              Elem -> Elem;
+           abs:              Elem -> NonNeg;
      %prec { __ + __ } < { __ * __ }
 end
 
@@ -29,7 +29,7 @@ spec
      PreNat =
      GenerateNat
 and
-     SigPreNumbers [sort Nat fit sort Elem |-> Nat]
+     SigPreNumbers [sort Nat][sort Nat]
 then
      %def
      op
@@ -96,7 +96,7 @@ spec
      PreInt =
      GenerateInt and PreNat
 and
-     SigPreNumbers [sort Int fit sort Elem |-> Int]
+     SigPreNumbers [sort Int][sort Nat]
 then
      %def
      op 1:Int = suc(0)
@@ -158,8 +158,12 @@ end
 spec
      PreRat =
      GenerateRat
-and
+then
+     sort NonNeg[Rat] < Rat
+     generated type NonNeg[Rat]::= __ frac __ (Nat;Pos)
+then
      SigPreNumbers [sort Rat fit sort Elem |-> Rat]
+	[sort Rat fit sort NonNeg |-> NonNeg[Rat]]
 then
      %def
      sort

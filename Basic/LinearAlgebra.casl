@@ -75,8 +75,7 @@ and
 and
      ExtMonoidAction [MonoidAction [Monoid]]
 and
-     {FiniteMap[sort Space fit sort S|->Space]
-		[sort Elem fit sort T|->Elem]
+     {FiniteMap[sort Space][sort Elem]
           with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]}
 	  hide sorts FinSet[Space], FinSet[Elem],
 		     NonEmptySet[Space], NonEmptySet[Elem]
@@ -108,8 +107,7 @@ then
           Base < Space
 then
      %def
-     FiniteMap [sort Base fit sort S|-> Base]
-		[sort Elem fit sort T|-> Elem]
+     FiniteMap [sort Base][sort Elem]
          with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
 then
      sort
@@ -263,8 +261,7 @@ spec
      VectorTuple [VectorSpace[Field]][op n: Pos] given PreInt =
 %def
 {
-     {{Array [ops 1,n: Int fit ops min: Int |-> 1, max: Int |-> n] 
-           [sort Space fit sort Elem |-> Space]
+     {{Array [ops 1,n: Int fit ops min |-> 1, max |-> n][sort Space]
           with sorts
            Index |-> Index[n], Array[Space]}
 	  hide sorts FinSet[Space], FinSet[Index[n]],
@@ -393,8 +390,7 @@ then
           Nat[n] = {i: Pos . i <= n}
 then
      %def
-     Array [ops 1, n: Int fit ops min |-> 1, max |-> n]
-		[sort Nat[n] fit sort Elem |-> Nat[n]]
+     Array [ops 1, n: Int fit ops min |-> 1, max |-> n][sort Nat[n]]
           with sorts Array[Nat[n]], Index |-> Nat[n]
 then
      %def
@@ -474,7 +470,7 @@ then
                SymmetricGroup [op n: Pos] with
                     sorts Perm[n], PNat[n], ops sign, perm, nFac
           then
-               closed{ConstructVector [Field][op nFac: Pos fit op n|->nFac]}
+               closed{ConstructVector [Field][op nFac: Pos]}
 		with sort Vector[Elem,nFac]
           then
                sorts

@@ -21,8 +21,8 @@ ExtEuclidianRing, EuclidianRing_in_PreInt,
 Field, ExtField, Field_in_PreRat
 
 spec
-     SigNumbers[sort Elem][sort Exponent] =
-     SigPreNumbers[sort Elem]
+     SigNumbers[sort Elem][sort NonNeg][sort Exponent] =
+     SigPreNumbers[sort Elem][sort NonNeg]
 then
      SigPowerBinAlg[sort Exponent]
 then
@@ -36,7 +36,6 @@ then
      var   x: Elem
      .
           %[plus_def] + x = x
-    
 end
 
 spec
@@ -54,7 +53,7 @@ and
      with
       ops min, max
 and
-     SigNumbers[sort Nat][sort Nat]
+     SigNumbers[sort Nat][sort Nat][sort Nat]
 then
      sorts
           NonZero[Nat]=Pos;
@@ -159,27 +158,25 @@ end
 
 spec
      Int =
-     { PreInt
-       and 
        ExtEuclidianRing [view EuclidianRing_in_PreInt]
-     }
      with
       sorts Int, Nat, Pos, Neg, NonZero[Int],
       preds __ <= __, __ >= __, __ < __, __ > __,
       ops  suc, pre, __+__, __*__, abs,
            __-__, -__, __ ^ __
-%(
 and
-     ExtTotalOrder [PreInt reveal sort Int, pred __<=__ 
-		fit sort Elem |-> Int]
+     ExtTotalOrder [PreInt reveal sort Int, pred __<=__
+	fit sort Elem |-> Int]
      with
      ops min, max
+
 then 
      %def
      Nat
 and
      SigNumbers[sort Int fit sort Elem |-> Int]
-		[sort Nat fit sort Exponent |-> Nat]
+	[sort Nat fit sort NonNeg |-> Nat]
+	[sort Nat fit sort Exponent |-> Nat]
 then 
      %def
      sort Pos = Pos[Int]
@@ -193,49 +190,33 @@ then
 	   __ rem __ : Int × NonZero[Int] -> Int;
 	   sign: Int -> Int
      %prec { __ * __ } <> { __ /? __, __ div __, __ mod __, __ quot __, __ rem __ }
-     op -__ : Int -> Int;
      vars
           m,n,s: Nat; p,q: Pos; x,y,r,z: Int
      .
-          %[Int_divide_zero] not def(x /? y) if y=0
+          %[Int_divide] x /? y = z <=> ( x = z * y /\ not y=0)
      .
-          %[Int_divide_nonzero] ( x /? y = z <=> x = z * y ) if not y=0
+          %[Int_even_def] even(minus(p)) <=> even(p)
      .
-          %[Int_even_def] even(-p) <=> even(p)
+          %[Int_odd_def] odd(minus(p)) <=> odd(p)
      .
-          %[Int_odd_def] odd(-p) <=> odd(p)
+          %[Int_div_partial1] minus(p) div n = 
+	    minus (p div n) when p mod n = 0 else minus (p div n) + 1
      .
-          %[Int_div_partial1] m div -q = - (m div q)
+          %[Int_div_partial2] x div minus(q) = minus (x div q)
      .
-          %[Int_div_partial2] -p div n = - (-p div -n)
+	  %[Int_mod_partial] x mod y = x - y * (x div y)
      .
-          %[Int_div_partial3]
-           -p div -q = r <=> (exists s: Nat . -p = -q * r + s /\ s < q)
+          %[Int_quot_partial1] minus(p) quot n = minus (p quot n)
      .
-          %[Int_mod_partial1] m mod -q = m mod q
+          %[Int_quot_partial2] x quot minus(q) = minus (x quot q)
      .
-          %[Int_mod_partial2] -p mod n = -p mod -n
-     .
-          %[Int_mod_partial3]
-           -p mod -q = s <=> (exists r: Int . -p = -q*r + s /\ s < q)
-     .
-          %[Int_quot_partial1] m quot -q = - (m quot q)
-     .
-          %[Int_quot_partial2] -p quot n = - (p quot n)
-     .
-          %[Int_quot_partial3] -p quot -q = p quot q
-     .
-          %[Int_rem_partial1] m rem -q = m rem q
-     .
-          %[Int_rem_partial2] -p rem n = - (p rem n)
-     .
-          %[Int_rem_partial3] -p rem -q = - (p rem q)
+          %[Int_rem_partial] x rem y = x - y * (x quot y)
      . 
 	  %[Int_sign_pos] sign(p) = 1
      .
 	  %[Int_sign_zero] sign(0) = 0
      .
-	  %[Int_sign_neg] sign(-p) = -1
+	  %[Int_sign_neg] sign(minus(p)) = minus(1)
 then
      %implies
      vars
@@ -280,7 +261,7 @@ spec
      Rat =
      ExtField [view Field_in_PreRat] 
      with
-      sorts Rat, NonZero[Rat],
+      sorts Rat, NonZero[Rat], NonNeg[Rat],
       preds __ <= __, __ >= __, __ < __, __ > __,
       ops  __+__, __*__, abs,
            __ ^ __, -__, __ - __,
@@ -290,14 +271,15 @@ then
       %prec { __ - __, -__ } < { __ frac __ }
 then %def
      ExtTotalOrder [PreRat reveal sort Rat, pred __ <= __
-			fit sort Elem |-> Rat]
+	fit sort Elem |-> Rat]
      with
       ops min, max
 and
      Int
 and
      SigNumbers[sort Rat fit sort Elem |-> Rat]
-		[sort Int fit sort Exponent |-> Int]
+	[sort NonNeg[Rat] fit sort NonNeg |-> NonNeg[Rat]]
+	[sort Int fit sort Exponent |-> Int]
 then
      %def
      sort NonZero[Int] < NonZero[Rat]
@@ -308,18 +290,17 @@ then
      %implies
      var
           r,s: Rat; n,m: Int; p,q: Pos; u: NonZero[Int]
-%%     .
-%%	  %[Rat_frac] n frac p = n / p
+     .
+	  %[Rat_frac] n frac p = n / p
      .
           %[Rat_neg] - n frac p = (-n) frac p
      .
           %[Rat_sub] n frac p - m frac q = 
 		(n * q - m * p) frac (p * q)
-%%     .
-%%          %[Rat_div_total] (n frac p) / (u frac q)
-%%           = (n * q * sign (u)) frac (p * abs(u) as Pos)
+     .
+          %[Rat_div_total] (n frac p) / (u frac q)
+           = (n * q * sign (u)) frac (p * abs(u) as Pos)
 end
 
 
 
-%)

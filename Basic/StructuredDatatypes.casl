@@ -298,7 +298,7 @@ end
 
 %%spec
 %%     String =
-%%    List [Char fit Elem |-> Char]
+%%    List [Char]
 %%    with
 %%      sorts List[Char] |-> String,
 %%            NeList[Char] |-> NonEmptyString
@@ -328,7 +328,7 @@ spec
      FiniteMap  [sort S][sort T] given PreNat=
      GenerateFiniteMap [sort S][sort T]
 and
-     FiniteSet [sort S fit Elem |-> S ] and FiniteSet [sort T fit Elem |-> T ]
+     FiniteSet [sort S] and FiniteSet [sort T]
 then
 
      free
@@ -506,8 +506,7 @@ spec
 then
      {
 
-           FiniteMap [sort Index fit S |-> Index]
-                     [sort Elem fit T |-> Elem]
+           FiniteMap [sort Index][sort Elem]
            with
            sort FiniteMap[Index,Elem] |-> Array[Elem],
            ops  [] |-> init
