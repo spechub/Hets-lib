@@ -610,6 +610,6 @@ arch spec Arch_Prediction =
 	     Steam_And_Level_Prediction -> Pump_Controller_State_Prediction
     result lambda FD : Failure_Detection
 	     . local SEFD = SE [FD]; SLPFD = SLP [FD]
-	       within PP [SEFD] [SLPFD]
-	       and PCP [SEFD] [SLPFD]
+               within {PP [SEFD] [SLPFD]
+                       and PCP [SEFD] [SLPFD]}
 end
