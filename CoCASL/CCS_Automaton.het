@@ -46,7 +46,6 @@ end
 spec FinalNonDeterministicAutomaton[Action] =
   cofree {
     Set[sort State]
-%%    then op next : Act * State -> Set[State]   }
     then cotype State ::= (next : Act -> Set[State])   }
 end
 
