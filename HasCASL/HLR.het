@@ -8,7 +8,9 @@ logic HasCASL
 spec Transformation[Category] =
   Pushout[Category]
 then
-  type Rules = { (l,r): Mor * Mor . dom l = dom r }
+  sort M < Mor
+  type Rules = { (l,r): M * M
+                      . dom l = dom r}
 
   ops transform: Rules * Mor ->? Ob;
   
