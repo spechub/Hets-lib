@@ -166,7 +166,7 @@ from HasCASL/MetricSpaces get MetricSpace
 
 view MetricInducesTopology : TopologicalSpace_Ngh to 
      { MetricSpace and Set then
-       op Ngh(x:S):Set(Set S) = \X : Set . 
+       op Ngh(x:S):Set(Set S) = \X : Set S . 
           exists epsilon:Real . epsilon > 0 
             /\ forall y:S . d(x,y)<epsilon => y isIn X
      } 
