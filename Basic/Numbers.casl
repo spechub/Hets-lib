@@ -96,7 +96,6 @@ spec Nat = %mono
 
      . 0 * m = 0                        %(mult_0_Nat)%
      . suc(n) * m = (n * m) + m         %(mult_suc_Nat)%
-
      . m ^ 0 = 1                        %(power_0_Nat)%
      . m ^ suc(n)  = m * m ^ n          %(power_suc_Nat)%
 
@@ -156,7 +155,6 @@ then %mono
 
      sort  Nat < Int	
      forall a: Nat . a = a - 0             %(Nat2Int_embedding)%
-
 then %def
 
      preds __ <= __, __ >= __,
@@ -170,7 +168,8 @@ then %def
           __ ^ __:                           Int * Nat -> Int;
           __ /? __, 
           __ div __, __ quot __, __ rem __ : Int * Int ->? Int;
-	  __ mod __:                         Int * Int ->? Nat
+	  __ mod __:                         Int * Int ->? Nat;
+	  0,1,2,3,4,5,6,7,8,9:               Int
         
   %% implied operation attributes :
 
@@ -303,6 +302,7 @@ then %def
          min,max:                   Rat * Rat -> Rat;
          __ / __ :                  Rat * Rat ->? Rat;
          __ ^ __:                   Rat * Int -> Rat;
+	 0,1,2,3,4,5,6,7,8,9:       Rat
 
   %% implied operation attributes :
 

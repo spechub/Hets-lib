@@ -101,7 +101,7 @@ view TotalOrder_in_IntInfinity :
      sort Elem |-> IntInfty
 end
 
-spec ConstructPolynomial [CommutativeRing] given {Int then op 0:Int} =
+spec ConstructPolynomial [CommutativeRing] given Int =
 %mono
      IntInfinity 
 then
@@ -115,7 +115,7 @@ within
           sort 	Poly[Elem] = { l: List[Elem] . not last(l) = 0 }
      then
           sort Elem < Poly[Elem]
-          ops X: Poly[Elem];
+          ops 0,e,X: Poly[Elem];
               degree: Poly[Elem] -> IntInfty;
               __ ::: __: Elem * Poly[Elem] -> Poly[Elem];
               __ + __, __ * __:   
@@ -266,7 +266,7 @@ view FactorialRing_in_RichEuclidianRing :
 end
 
 view EuclidianRing_in_Int :
-     EuclidianRing to {Int then op 1:Int} =
+     EuclidianRing to Int =
      sorts Elem |-> Int,
      ops delta |-> abs,
 	 e |-> 1

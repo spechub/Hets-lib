@@ -299,26 +299,26 @@ view CommutativeMonoid_in_Nat_Mult :
 end
 
 view CommutativeMonoid_in_Int_Mult:
-     CommutativeMonoid to {Int then op 1:Int} =
+     CommutativeMonoid to Int=
      sort Elem |-> Int,
      ops e |-> 1,
          __ * __ |-> __ * __
 end
 
 view AbelianGroup_in_Int_Add:
-     AbelianGroup to {Int then op 0:Int} =
+     AbelianGroup to Int =
      sort Elem |-> Int,
      ops __ * __ |-> __ + __,
 	 e |-> 0
 end
 
 view IntegralDomain_in_Int :
-     IntegralDomain to {Int then op 1:Int} =
+     IntegralDomain to Int =
      sorts Elem |-> Int,
      ops e |-> 1
 end
 
-view Field_in_Rat: Field to {Rat then op 1:Rat} =
+view Field_in_Rat: Field to Rat =
      sort Elem |-> Rat,
      op e |-> 1
 end
