@@ -3,6 +3,10 @@ version 0.7
 %% authors: L.Schröder, M.Roggenbach, T.Mossakowski
 %% date: 23.3.01
 
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __, -__} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __, __ ^ __
+
 
 from
      Basic/Algebra_I version 0.7 get
@@ -20,10 +24,6 @@ from
      Basic/StructuredDatatypes version 0.7 get
      Array, FiniteMap
 
-
-%prec {__ * __} < {__ ^ __}
-%prec {__ + __, __ - __, -__} < {__ / __, __ * __}
-%left_assoc __ + __, __ * __, __ ^ __
 
 spec
      VectorSpace [Field]=
@@ -48,10 +48,14 @@ end
 view GroupAction_in_VectorSpace [Field]:
      GroupAction [Group] to
      {
-	VectorSpace [Field]
-	then %%mono
-	   sort NonZero[Elem] = {x: Elem. not x = 0}
-	   op __ * __: NonZero[Elem] * Space -> Space} =
+	VectorSpace 
+		[RichField 
+		    reveal 
+	       		sorts Elem, NonZero[Elem],
+			ops  e, 0, __ + __, __ * __]
+           then 
+	       op __ * __: NonZero[Elem] * Space -> Space
+      } =
      sort Elem |-> NonZero[Elem]
 end
 
@@ -62,113 +66,12 @@ view VectorSpace_in_Field [Field]:
 end
 	
 spec
-     ExtVectorSpace [VectorSpace [Field]] given Int =
-%def
-     RichField
-and
-     ExtAbelianGroup [view AbelianGroup_in_VectorSpace [Field]]
-     with 
-	ops
-	  inv	  |-> -__,
-	  __ ^ __ |-> __ times __, 
-	  __ / __ |-> __ - __
-and
-     RichMonoidAction [Monoid]
-and
-     {FiniteMap[sort Space fit sort S |-> Space]
-		[sort Elem fit sort T |-> Elem]
-          with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]}
-	  hide sorts FinSet[Space], FinSet[Elem],
-		     NonEmptySet[Space], NonEmptySet[Elem]
-then
-     ExtGroupAction [view GroupAction_in_VectorSpace [Field]]
-then
-     op
-          eval: LC[Space,Elem] -> Space
-     pred
-          isZero: LC[Space,Elem]
-
-     forall x: Space; r: Elem; l:LC[Space,Elem]
-     . eval([])=0				%(eval_empty_EVS)%
-     . [r/x]eps l => eval(l)=r*x+eval(l-[r/x])	%(eval_add_EVS)%
-     . isZero(l) <=> forall y: Space. (def eval(y,l) => eval(y,l)=0)
-						%(isZero_def_EVS)%
-end
-
-spec
-     ConstructVSWithBase [Field][sort Base] given Int=
-     ExtVectorSpace [VectorSpace [Field]]
-then
-{
-     sort
-          Base < Space
-then
-     %def
-     FiniteMap [sort Base fit sort S|-> Base]
-	[sort Elem fit sort T |-> Elem]
-         with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
-     hide sorts FinSet[Base], FinSet[Elem],
-		     NonEmptySet[Base], NonEmptySet[Elem]
-then
-     sort
-          LC[Base,Elem]<LC[Space,Elem]
-	
-     forall l:LC[Base,Elem]
-     . forall y:Space. exists k:LC[Base,Elem]. y=eval(k)
-						%(generating_CVSB)%
-     . eval(l)=0 => isZero(l)			%(independent_CVSB)%
+     FreeVectorSpace [Field][sort Base]= %%mono
+free
+     {VectorSpace [Field]
+     then
+          op inject: Base -> Space
 }
-end
-
-spec
-     VSWithBase [Field][sort Base]=
-    { ConstructVSWithBase [Field][sort Base]
-          reveal sort Space, 
-		 ops __ + __: Space * Space -> Space, 
-	    	     __ * __: Elem * Space -> Space,
-		     0	    : Space}
-end
-
-spec
-     ExtVSWithBase [VSWithBase [Field][sort Base]] given Int =
-%def
-     ExtVectorSpace [VSWithBase [Field][sort Base]]
-and
-     ConstructVSWithBase [Field][sort Base]
-	with sort LC[Base,Elem]
-then
-     %implies
-     forall l,k: LC[Base,Elem]
-     . eval(l)=eval(k) => l=k			%(uniqueRepres_EVSB)%
-then
-     %def
-     op
-          coefficients: Space -> LC[Base,Elem]
-
-     forall x:Space
-     . eval(coefficients(x))=x			%(coefficients_def_EVSB)%
-then
-     %implies
-     forall l:LC[Base,Elem]
-     . coefficients(eval(l))=l			%(recoverCoeff_EVSB)%
-end
-
-view
-     VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
-     VSWithBase [Field][sort Base] to
-     {Field then sort Singleton[a] = {x: Elem. x = a} } =
-     sorts
-          Space |-> Elem, Base |-> Singleton[a],
-     op   __ * __: Elem * Space -> Space |->
-		          __ * __: Elem * Elem -> Elem
-end
-
-%% The following view expresses that every vector space has a base.
-%% This holds because the CASL semantics uses ZFC.
-view
-     VSWithBase_in_VectorSpace [Field] given Int:
-     {VSWithBase [Field][sort Base] hide sort Base} to
-     VectorSpace [Field]
 end
 
 spec
@@ -188,36 +91,114 @@ then
 end
 
 spec
-     ExtAlgebra [Algebra [Field]] given Int =
-%def
-     RichField
-and
-     ExtVectorSpace [VectorSpace [Field]]
-and
-     ExtRing [Algebra [Field] fit sort Elem |-> Space]
-and
-     Polynomial [Field]
-then
-     op
-          eval: Poly[Elem] * Space -> Space
-	
-     forall a: Elem; p: Poly[Elem]; x: Space
-     . eval(0,x) = 0				%(eval_0_EAlgebra)%
-     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_cons_EAlgebra)%
+     FreeAlgebra [Field] =
+     free
+	{Algebra [Field] 
+	 then 
+	     op X: Space}
+end
+
+view
+     FreeAlgebra_in_Polynomial [Field] given Int:
+     FreeAlgebra[Field] to Polynomial [Field]=
+     sort
+          Space |-> Poly[Elem]
+end
+
+view
+     Polynomial_in_FreeAlgebra [Field]:
+     {Polynomial [Field]
+         reveal 
+	      sorts Elem, Poly[Elem], 
+              ops __ + __: Elem * Elem -> Elem, 
+                  __ * __: Elem * Elem -> Elem, 
+		  0: Elem, 
+                  __ + __: Poly[Elem] * Poly[Elem] -> Poly[Elem],
+                  __ * __: Poly[Elem] * Poly[Elem] -> Poly[Elem], 
+		  0: Poly[Elem], 
+                  e, X
+     } 
+     to FreeAlgebra [Field] =
+     sort
+          Poly[Elem] |-> Space,
+          Elem |-> Elem
 end
 
 spec
-     FreeVectorSpace [Field][sort Base]= %%mono
-free
-     {VectorSpace [Field]
-     then
-          op inject: Base -> Space
+     VectorSpaceLC [VectorSpace [Field]] =
+%%mono 
+{
+     FiniteMap [sort Space fit sort S |-> Space]
+	       [sort Elem fit sort T |-> Elem]
+          with sort FiniteMap[Space,Elem] |-> LC[Space,Elem]
+}
+hide 
+    sorts FinSet[Space], FinSet[Elem], 
+    NonEmptySet[Space], NonEmptySet[Elem]
+then
+     op
+          eval: LC[Space,Elem] -> Space
+     pred
+          isZero: LC[Space,Elem]
+
+     forall x: Space; r: Elem; l:LC[Space,Elem]
+     . eval([]) = 0				%(eval_empty_EVS)%
+     . eval(x, l) = r => eval(l) = r * x + eval(l - [r/x])	
+						%(eval_add_EVS)%
+     . isZero(l) <=> forall y: Space. (def eval(y, l) => eval(y, l) = 0)
+						%(isZero_def_EVS)%
+end
+
+spec
+     ConstructVSWithBase [Field][sort Base] given Int= 
+%mono
+     VectorSpaceLC [VectorSpace [Field]] 
+then
+{
+     sort
+          Base < Space
+then
+     FiniteMap [sort Base fit sort S|-> Base]
+	[sort Elem fit sort T |-> Elem]
+         with sort FiniteMap[Base,Elem] |-> LC[Base,Elem]
+     hide sorts FinSet[Base], FinSet[Elem],
+		     NonEmptySet[Base], NonEmptySet[Elem]
+then
+     sort
+          LC[Base,Elem] < LC[Space,Elem]
+	
+     forall l: LC[Base,Elem]
+     . forall y: Space. exists k: LC[Base,Elem]. y = eval(k)
+						%(generating_CVSB)%
+     . eval(l) = 0 => isZero(l)			%(independent_CVSB)%
 }
 end
 
 spec
-     ExtFreeVectorSpace [FreeVectorSpace[Field][sort Base]] given Int =
-     ExtVectorSpace [FreeVectorSpace [Field][sort Base]]
+     VSWithBase [Field][sort Base]=
+    { ConstructVSWithBase [Field][sort Base]
+          reveal sort Space, 
+		 ops __ + __: Space * Space -> Space, 
+	    	     __ * __: Elem * Space -> Space,
+		     0	    : Space}
+end
+
+view
+     VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
+     VSWithBase [Field][sort Base] to
+     {Field then sort Singleton[a] = {x: Elem. x = a} } =
+     sorts
+          Space |-> Elem, Base |-> Singleton[a],
+     op   __ * __: Elem * Space -> Space |->
+		          __ * __: Elem * Elem -> Elem
+end
+
+%% The following view expresses that every vector space has a base.
+%% This holds because the CASL semantics uses ZFC.
+view
+     VSWithBase_in_VectorSpace [Field] given Int:
+     {VSWithBase [Field][sort Base] hide sort Base} to
+     VectorSpace [Field]
 end
 
 view
@@ -244,6 +225,83 @@ view
 	   . x = inject(x)			%(embed_def_FVS)%
      }
 end
+
+spec
+     ExtVectorSpace [VectorSpace [Field]] given Int =
+%%mono
+     RichField
+and
+     ExtAbelianGroup [view AbelianGroup_in_VectorSpace [Field]]
+     with 
+	ops
+	  inv	  |-> -__,
+	  __ ^ __ |-> __ times __, 
+	  __ / __ |-> __ - __
+and
+     RichMonoidAction [Monoid]
+and
+     ExtGroupAction [view GroupAction_in_VectorSpace [Field]]
+and
+     VectorSpaceLC [VectorSpace [Field]]
+end
+
+
+spec
+     ExtFreeVectorSpace [FreeVectorSpace[Field][sort Base]] given Int =
+     ExtVectorSpace [FreeVectorSpace [Field][sort Base]]
+end
+
+
+spec
+     ExtAlgebra [Algebra [Field]] given Int =
+%%mono
+     RichField
+and
+     ExtVectorSpace [VectorSpace [Field]]
+and
+     ExtRing [Algebra [Field] fit sort Elem |-> Space]
+and
+     Polynomial [Field]
+then
+     op
+          eval: Poly[Elem] * Space -> Space
+	
+     forall a: Elem; p: Poly[Elem]; x: Space
+     . eval(0,x) = 0				%(eval_0_EAlgebra)%
+     . eval(a:::p, x) = a + eval(p,x) * x	%(eval_cons_EAlgebra)%
+end
+
+
+spec
+     ExtFreeAlgebra [Field] given Int=
+     ExtAlgebra [FreeAlgebra[Field]]
+end
+
+
+spec
+     ExtVSWithBase [VSWithBase [Field][sort Base]] given Int =
+%%mono
+     ExtVectorSpace [VSWithBase [Field][sort Base]]
+and
+     ConstructVSWithBase [Field][sort Base]
+	with sort LC[Base,Elem]
+then
+     %implies
+     forall l,k: LC[Base,Elem]
+     . eval(l)=eval(k) => l=k			%(uniqueRepres_EVSB)%
+then
+     %def
+     op
+          coefficients: Space -> LC[Base,Elem]
+
+     forall x:Space
+     . eval(coefficients(x))=x			%(coefficients_def_EVSB)%
+then
+     %implies
+     forall l:LC[Base,Elem]
+     . coefficients(eval(l))=l			%(recoverCoeff_EVSB)%
+end
+
 
 spec
      VectorTuple [VectorSpace[Field]][op n: Pos] given Int =
@@ -336,7 +394,7 @@ then
      . <x || x> = 0 => x = 0			%(scpPos_CVector)% 
 end
 
-spec Vector [Field][op n: Pos]=
+spec Vector [Field][op n: Pos] given Int =
      ConstructVector [Field][op n: Pos] 
      reveal sorts Vector[Elem,n], UnitVector[Elem,n],
 	    ops __ + __: Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n],
@@ -359,17 +417,15 @@ end
 
 spec
      SymmetricGroup [op n: Pos] given Int =
-%def
+%%mono
      sort
 
           Nat[n] = {i: Pos . i <= n}
 then
-     %def
      Array [ops 1, n: Int fit ops min: Int |-> 1, max: Int |-> n]
 	[sort Nat[n] fit sort Elem|-> Nat[n]] 
    		with sorts Array[Nat[n]], Index |-> Nat[n]
 then
-     %def
      sort
           Perm[n]={p: Array[Nat[n]] . forall i: Nat[n] . 
 					exists j: Nat[n] . p ! j = i}
@@ -486,34 +542,7 @@ view
            Base |-> ElemMatrix[Elem,n]
 end
 
-spec
-     FreeAlgebra [Field] =
-     free
-	{Algebra [Field] 
-	 then 
-	     op X: Space}
-end
 
-spec
-     ExtFreeAlgebra [FreeAlgebra[Field]] given Int=
-     ExtAlgebra [FreeAlgebra[Field]]
-end
-
-view
-     FreeAlgebra_in_Polynomial [Field] given Int:
-     FreeAlgebra[Field] to Polynomial [Field]=
-     sort
-          Space |-> Poly[Elem]
-end
-
-view
-     Polynomial_in_ExtFreeAlgebra [FreeAlgebra [Field]] given Int:
-     {Polynomial [Field]
-         reveal sorts Elem, Poly[Elem], ops X, __ + __, __ * __} 
-     to ExtFreeAlgebra [FreeAlgebra [Field]]=
-     sort
-          Poly[Elem] |-> Space
-end
 
 spec RichVectorSpace = 
      ExtVectorSpace [VectorSpace [Field]]
@@ -532,14 +561,9 @@ spec RichFreeVectorSpace [Field][sort Base] =
 end
 
 spec RichFreeAlgebra [Field] =
-     ExtFreeAlgebra [FreeAlgebra[Field]]
+     ExtFreeAlgebra [Field]
 end
 
-view
-     Polynomial_in_RichFreeAlgebra [Field] given Int:
-     {Polynomial [Field]
-         reveal sorts Elem, Poly[Elem], ops X, __ + __, __ * __} 
-     to RichFreeAlgebra [Field]=
-     sort
-          Poly[Elem] |-> Space
-end
+
+
+

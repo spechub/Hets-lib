@@ -10,20 +10,22 @@ version 0.7
 
 from
      Basic/RelationsAndOrders version 0.7 get
-     PartialOrder, ExtPartialOrder, TotalOrder
+     SigOrder, TotalOrder
 from
      Basic/Algebra_I version 0.7 get
-     CommutativeRing, RichCommutativeRing, RichIntegralDomain,
-     Field, ExtField, EuclidianRing, ExtEuclidianRing,
-     RichEuclidianRing
+     CommutativeRing, RichIntegralDomain,
+     Field, EuclidianRing, ExtEuclidianRing,
+     RichEuclidianRing, ExtCommutativeRing
 from
      Basic/Numbers version 0.7 get Int
 from
      Basic/StructuredDatatypes version 0.7 get List, Bag
 
+
 spec
      IntInfinity = Int
 then
+ {
      free type 
            IntInfty ::= sort Int | infty | negInfty
      ops
@@ -52,6 +54,9 @@ then
      . (- m) * k = -(m * k)			%(mult_def3_II)%
 
      . m - k = m + (- k)			%(sub_def_II)%
+ }
+hide 
+     negInfty
 end
 
 view
@@ -113,7 +118,7 @@ end
 
 spec
      ConstructPolynomial [CommutativeRing] given Int =
-%%mono
+%mono
      IntInfinity 
 then
      local List[sort Elem] %[ [a_0,...,a_n] is a_n * x^n + ... + a_0 ]%
@@ -137,7 +142,7 @@ within
 
           . X = 0 :: e :: []             	%(X_def_Poly)%
           . a ::: p = a when p = 0 else a :: p	%(cons_def_Poly)%
-          . degree(p) = minus(infty) when p = 0 else pre(#p)
+          . degree(p) = - infty when p = 0 else pre(#p)
 						%(degree_def_Poly)%
 
           . p + 0 = p				%(add_zero1_Poly)%
@@ -158,13 +163,13 @@ end
 
 view 
      CRing_in_CPolynomial [CommutativeRing] given Int:
-     CommutativeRing to ConstructPolynomial =
+     CommutativeRing to ConstructPolynomial [CommutativeRing] =
      sort Elem |-> Poly[Elem]
 end
 
 spec
      Polynomial [CommutativeRing] given Int =
-     ExtCommutativeRing [CRing_in_CPolynomial] 
+     ExtCommutativeRing [view CRing_in_CPolynomial [CommutativeRing]] 
 then
      %implies
      forall p,q:Poly[Elem]
