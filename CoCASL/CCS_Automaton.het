@@ -50,7 +50,7 @@ spec FinalNonDeterministicAutomaton[Action] =
     then cotype State ::= (next : Act -> Set[State])   }
 end
 
-%[
+
 spec Zero =
   FinalNonDeterministicAutomaton[Action] 
 then
@@ -150,7 +150,7 @@ then
   op rel : State * Relabelling -> State
   forall l:Label; s : State; f : Relabelling
   . next(l,rel(s,f)) = next(eval(f,l),s)
-  . next(tau,ref(s,f)) = next(tau,s)
+  . next(tau,rel(s,f)) = next(tau,s)
 end
 
 spec CCS_Coalgebraic_Semantics =
@@ -205,4 +205,3 @@ then %implies
   . isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2) =>
     (E1 - a -> E2 <=> {{E2}}env eps next(a,{{E1}}env))
 end
-]%
