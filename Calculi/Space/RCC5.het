@@ -192,7 +192,7 @@ end
 spec GeneratePreOpenDiscModelOfRCC5[MetricSpace] = %def
       GenerateModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
 	fit sort Elem |-> OpenDisc]
-then %implies
+then %cons
      ops  eqRel: Rel;
           conv: BaseRel -> BaseRel;
           conv: Rel -> Rel
@@ -201,7 +201,7 @@ end
 
 spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
      GeneratePreOpenDiscModelOfRCC5[MetricSpace]
-then %implies     
+then %cons
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
