@@ -1,18 +1,21 @@
 library piotr_short
 %% Example provided by Piotr Hoffman
 
-spec Nat =
-  free type Nat ::= 0 | suc(Nat)
-end
+
+
 
 spec TotalOrder[sort Elem] =
-  pred __<__ : Elem * Elem
+  preds __<__, __>__ : Elem * Elem
   forall x,y,z : Elem
   . not x<x
   . x<y /\ y<z => x<z
   . x<y \/ y<x
 end
 
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+  then TotalOrder[sort Nat]
+end
 spec List[sort Elem] =
   free type List ::= nil | __::__(Elem;List)
 end
@@ -113,15 +116,21 @@ end
 
 %%***************************************************************************
 
+unit spec EnlargeSort = {sort Elem} -> {sorts Elem; Enlarged}
+
+spec EnlargeSort1[sort Elem] = {}
+
 arch spec DictToListMost =
   units
+    N : Nat;
+
     EnlargeSort : EnlargeSort;
 
     MakePair : MakePair;
 
     ExtDictToListMost : CounterDictWith_IncNum[sort Elem] *
     			List[sort Elem] *
-  			EnlargeSort[sort Elem] * 
+  			EnlargeSort1[sort Elem] * 
   			Pair[sort Enlarged][sort Nat]
 			->
 			ListWithMost[sort Elem]
@@ -146,8 +155,14 @@ end
 spec BinTree[sort Elem] =
   free type Tree[Elem] ::= emptyTree | 
   			consTree( left, right :? Tree[Elem]; key :? Elem)
+end 
+
+spec ExtBinTree[sort Elem] =
+   BinTree[sort Elem]
 end
 
+
+%[
 spec BSTTree[TotalOrder[sort Elem]] =
   BinTree[Pair[sort Elem][Nat] fit Elem |-> Pair[Elem,Nat]] then
   
@@ -214,12 +229,12 @@ arch spec MakeDict =
 			hide
 		  Pair[Elem,Nat]}
 		  
-	    %[ : Nat * 
+	    %{ : Nat * 
 	    	 TotalOrder[sort Elem] * 
 	    	 Pair[sort Elem][sort Nat ] 
 	    	 ->
     	    	 CounterDictWith_IncNum[sort Elem];
-            ]%
+            }%
 end
 
 
@@ -243,3 +258,4 @@ spec AddBSTNumToTree =
         	( num(l,e) when e<p1(p) else num(r,e))
 end
 
+]%
