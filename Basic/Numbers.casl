@@ -1,7 +1,7 @@
 library Basic/Numbers
 version 0.9
-%authors M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
-%date 3 June 2003
+%% authors M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%% date 17 December 2003
 
 %{ This library provides specifications of naturals, integers, and
 rationals. Concerning the rationals, the specification Rat includes
@@ -43,8 +43,7 @@ spec Nat = %mono
         __ + __, __ * __, __ ^ __,
         min, max, __ -!__ :         Nat * Nat ->  Nat;
         __ -?__, __ /? __,
-        __ div __, __ mod __, 
-        gcd:                        Nat * Nat ->? Nat;
+        __ div __, __ mod __:       Nat * Nat ->? Nat;
 
   %% Operations to represent natural numbers with digits:
 
@@ -123,18 +122,6 @@ spec Nat = %mono
      . m mod n = s <=> 
        (exists r: Nat . m = n*r + s /\ s < n)  %(mod_Nat)%
 
-
-     . def ( gcd(n,m) ) <=> not n=0 /\ not m=0  
-                                               %(gcd_dom_Nat)% %implied 
-     . gcd(n,m) = r <=>
-          (n mod r = 0 /\ m mod r = 0) 
-       /\ (forall k:Nat . (n mod k = 0 /\ m mod k = 0) => k mod r = 0)
-                                               %(gcd_def_Nat)%
-
-      . gcd(n,m) = gcd(m,n)                    %(gcd_sym_Nat)% %implied
-
-      . def (gcd (n,m) ) => gcd(n,m) >= 1      %(gcd_result_Nat)% %implied 
-
   %% important laws
 
      . (r + s) * t = (r * t) + (s * t)  %(distr1_Nat)% %implied 
@@ -169,9 +156,6 @@ then %mono
 
      sort  Nat < Int	
      forall a: Nat . a = a - 0             %(Nat2Int_embedding)%
-
-     %%  a system of representatives for sort Int is
-     %%  a - 0 and 0 - p, where a: Nat and p: Pos
 
 then %def
 
@@ -308,10 +292,6 @@ then %mono
 
      sort Int < Rat
      forall i:Int . i = i / 1                   %(Int2Rat_embedding)%
-
-     %%  a system of representatives for sort Rat is
-     %%  ( 0 / 1 ) and 
-     %%  ( i / p ), where not i=0, gcd(abs(i), p) = 1, i: Int, p: Pos.
 
 then %def
 

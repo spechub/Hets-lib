@@ -1,7 +1,7 @@
 library Basic/StructuredDatatypes
 version 0.9
-%authors M. Roggenbach <csmarkus@swansea.ak.uc>, T. Mossakowski, L. Schröder
-%date 23 June 2003
+%% authors M. Roggenbach <csmarkus@swansea.ak.uc>, T. Mossakowski, L. Schröder
+%% date 17 December 2003
 
 %left_assoc __ + __, __ - __, __ ++ __
 %left_assoc __union__, __intersection__
@@ -23,12 +23,11 @@ version 0.9
 %display  __union__        %LATEX __\cup__
 %display  #__              %LATEX \sharp__
 
+from Basic/Numbers version 0.9 get Nat, Int
 
-from Basic/Numbers version 1.0 get Nat, Int
-
-from Basic/RelationsAndOrders version 1.0 get PartialOrder, BooleanAlgebra
-from Basic/Algebra_I version 1.0 get Monoid, CommutativeMonoid
-from Basic/SimpleDatatypes version 1.0 get Char
+from Basic/RelationsAndOrders version 0.9 get PartialOrder, BooleanAlgebra
+from Basic/Algebra_I version 0.9 get Monoid, CommutativeMonoid
+from Basic/SimpleDatatypes version 0.9 get Char
 
 spec Maybe [sort S] = %mono
   free type Maybe[S] ::= nothing | sort S
@@ -45,13 +44,6 @@ spec GenerateSet [sort Elem] = %mono
   . not x eps {}                                   %(elemOf_empty_Set)%
   . x eps M+y <=> x=y \/ x eps M                   %(elemOf_NonEmpty_Set)%
   . M = N <=> (forall x: Elem . x eps M <=> x eps N)  %(equality_Set)%
-
-  %% a system of representatives for sort Set[Elem] is
-  %%
-  %% {} and {} + x_1 + x_2 + ... + x_n
-  %%
-  %% where x_1 < x_2 < ... < x_n, n >= 1, x_i of type Elem,
-  %% for an arbitrary total order __<=__ on Elem.
 
 end
 
