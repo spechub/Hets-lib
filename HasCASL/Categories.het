@@ -23,9 +23,8 @@ spec ExtCategory[Category] =
   . (f :: a --> b) <=> dom f = a /\ cod f = b
 end
 
-%[ renaming does not work yet
 spec Functor =
-  Category and {Category with Ob |-> Ob', Mor |-> Mor'}
+  Category and {ExtCategory[Category] with Ob |-> Ob', Mor |-> Mor'}
 then
   type Functor = {(fob,fmor) : (Ob -> Ob') * (Mor -> Mor') .
                        forall a:Ob . fob(id(a))=id(fob(a))
@@ -33,25 +32,24 @@ then
                     /\ forall f,g:Mor . def (f o g) =>
                                fmor(f o g) = fmor f o fmor g }
 end
-]%
 
 spec Shape =
   sorts Diagram, Cocone, Mor
   preds __isCoconeFor__ : Cocone * Diagram;
-        mediates : Mor * Cocone * Cocone
+%%        mediates : Mor * Cocone * Cocone
+%% is missing in CoproductShape for the view CPShape
 end
 
-%% parameter sorten werden nicht propagiert 
 spec Colimit[Category][Shape] =
-  ExtCategory[Category] and Shape %% added: and Shape 
+  ExtCategory[Category]
 then
   op colimit : Diagram -> (Cocone * (Cocone ->? Mor))
   forall d:Diagram
   . let (c,m) = colimit d
     in c isCoconeFor d
        /\ forall c':Cocone . c' isCoconeFor d <=> def (m c')
-       /\ def (m c') => mediates(m c',c,c')
-       /\ forall mor:Mor . mediates(mor,c,c') => mor=m c'
+ %%      /\ def (m c') => mediates(m c',c,c')
+ %%      /\ forall mor:Mor . mediates(mor,c,c') => mor=m c'
 end
 
 
@@ -89,28 +87,27 @@ then
 end
 
 view CPShape : Shape to CoproductShape =
-  Diagram |-> CPDiagram, CoCone |-> CPCocone
+  Diagram |-> CPDiagram, Cocone |-> CPCocone
 end
 
 spec Coproduct[Category] = 
-  Colimit[Category][view CPShape] %% with colimit |-> __coproduct__
+  Colimit[Category][view CPShape] with colimit |-> __coproduct__
   and CoproductShape
 then %def
   ops __objCoproduct__ : Ob * Ob -> Ob;
-      __coproduct__ : Mor * Mor -> Mor;
   forall a,b: Ob; f,g:Mor
   . (a objCoproduct b) =
-    let (c,med) = colimit (a, b) as Diagram;
+    let (c,med) = (a coproduct b) as CPDiagram;
         (h,k) = c as CPCocone
     in cod h
   . (f coproduct g) =
-      let (c,med) = colimit (dom f, dom g) as Diagram;
+      let (c,med) = (dom f coproduct dom g) as CPDiagram;
           (inl,inr) = c as CPCocone
       in (med as CPCocone ->? Mor)(inl o f, inr o g)
 end
 
 view CEShape : Shape to CoequalizerShape =
-  Diagram |-> CEDiagram, CoCone |-> CECocone
+  Diagram |-> CEDiagram, Cocone |-> CECocone
 end
 
 spec Coequalizer[Category] =
@@ -118,7 +115,7 @@ spec Coequalizer[Category] =
 end
 
 view POShape : Shape to PushoutShape =
-  Diagram |-> PODiagram, CoCone |-> POCocone
+  Diagram |-> PODiagram, Cocone |-> POCocone
 end
 
 spec Pushout[Category] =
