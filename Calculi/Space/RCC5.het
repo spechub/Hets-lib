@@ -57,14 +57,14 @@ from HasCASL/Set get
 
 
 %(   RCC5 has 5 base relations,
-     namely, dc ("disconnected"), po ("partially overlaps"), pp ("proper part"),
+     namely, dr ("disconnected"), po ("partially overlaps"), pp ("proper part"),
      ppi ("proper part inverse"), and  eq ("equals").
 )%
 
 
 
 spec BaseRelationsOfRCC5 = %mono
-     free type BaseRel ::= dc | po | pp | ppi | eq
+     free type BaseRel ::= dr | po | pp | ppi | eq
 end
 
 
@@ -77,11 +77,11 @@ end
 
 spec CompositionTableOfRCC5 =
      sort BaseRel
-     ops dc,po,pp,ppi,eq: BaseRel
+     ops dr,po,pp,ppi,eq: BaseRel
 and 
      CompositionTable 
 then
-     . conv(dc) = dc					%(sym_dc)%
+     . conv(dr) = dr					%(sym_dr)%
      . conv(po) = po					%(sym_po)%
      . conv(pp) = ppi					%(conv_pp)%
      . conv(ppi) = pp					%(conv_ppi)%
@@ -89,32 +89,32 @@ then
 
      . pp cmps pp  = pp					%(cmps_pppp)%	
      . pp cmps ppi = 1					%(cmps_ppppi)%
-     . pp cmps po  = pp cup po cup dc			%(cmps_pppo)%
-     . pp cmps dc  = dc					%(cmps_ppdc)%
+     . pp cmps po  = pp cup po cup dr			%(cmps_pppo)%
+     . pp cmps dr  = dr					%(cmps_ppdr)%
      . pp cmps eq  = pp					%(cmps_ppeq)%
 
-     . ppi cmps pp  = compl(dc)				%(cmps_ppipp)%	
+     . ppi cmps pp  = compl(dr)				%(cmps_ppipp)%	
      . ppi cmps ppi = 1					%(cmps_ppippi)%
      . ppi cmps po  = ppi cup po 			%(cmps_ppipo)%
-     . ppi cmps dc  = ppi cup po cup dc			%(cmps_ppidc)%
+     . ppi cmps dr  = ppi cup po cup dr			%(cmps_ppidr)%
      . ppi cmps eq  = ppi				%(cmps_ppieq)%
 
      . po cmps pp  = pp cup po				%(cmps_popp)%	
-     . po cmps ppi = ppi cup po cup dc			%(cmps_poppi)%
+     . po cmps ppi = ppi cup po cup dr			%(cmps_poppi)%
      . po cmps po  = 1      				%(cmps_popo)%
-     . po cmps dc  = ppi cup po cup dc			%(cmps_podc)%
+     . po cmps dr  = ppi cup po cup dr			%(cmps_podr)%
      . po cmps eq  = po					%(cmps_poeq)%
 
-     . dc cmps pp  = pp cup po cup dc			%(cmps_dcpp)%	
-     . dc cmps ppi = dc					%(cmps_dcppi)%
-     . dc cmps po  = pp cup po cup dc			%(cmps_dcpo)%
-     . dc cmps dc  = 1					%(cmps_dcdc)%
-     . dc cmps eq  = dc					%(cmps_dceq)%
+     . dr cmps pp  = pp cup po cup dr			%(cmps_drpp)%	
+     . dr cmps ppi = dr					%(cmps_drppi)%
+     . dr cmps po  = pp cup po cup dr			%(cmps_drpo)%
+     . dr cmps dr  = 1					%(cmps_drdr)%
+     . dr cmps eq  = dr					%(cmps_dreq)%
 
      . eq cmps pp  = pp   				%(cmps_eqpp)%	
      . eq cmps ppi = ppi				%(cmps_eqppi)%
      . eq cmps po  = po					%(cmps_eqpo)%
-     . eq cmps dc  = dc					%(cmps_eqdc)%
+     . eq cmps dr  = dr					%(cmps_eqdr)%
      . eq cmps eq  = eq					%(cmps_eqeq)%
 
 end
@@ -178,14 +178,14 @@ then
      Relation[sort OpenDisc] 
 
 then %def
-     ops ppRel,ppiRel,poRel,dcRel,eqRel:Relation 
-     type BaseRel ::= ppRel | ppiRel | poRel | dcRel | eqRel 
+     ops ppRel,ppiRel,poRel,drRel,eqRel:Relation 
+     type BaseRel ::= ppRel | ppiRel | poRel | drRel | eqRel 
      forall x,y:OpenDisc
      . (x,y) isIn rep(ppRel) <=> x subset y /\ not x = y
      . (x,y) isIn rep(ppiRel) <=> y subset x /\ not x = y
      . (x,y) isIn rep(poRel) <=> not x subset y /\ not y subset x /\ 
  				not  x intersection y = emptySet
-     . (x,y) isIn rep(dcRel) <=> x intersection y = emptySet
+     . (x,y) isIn rep(drRel) <=> x intersection y = emptySet
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
@@ -238,7 +238,7 @@ view MetricSpace_induces_OpenDiscModelOfRCC5 :
 to 
     GenerateOpenDiscModelOfRCC5[MetricSpace]
 =   
-    ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dc|->dcRel, eq|->eqRel, 
+    ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel, 
         id |-> eqRel
 end
 
