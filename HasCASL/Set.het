@@ -46,8 +46,8 @@ spec Set = Bool then
       __subset__ :Pred( Set(S) * Set(S) );
       __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
-      __*__ : Set S -> Set T -> Set (S*T);
-      __disjointUnion__ :  Set S -> Set S -> Set (S*Bool);
+      __*__ : Set S * Set T -> Set (S*T);
+      __disjointUnion__ :  Set S * Set S -> Set (S*Bool);
       injl,injr : S -> S*Bool;
   forall x,x':S; y:T; s,s':Set S; t:Set(T) 
   . not (x isIn emptySet)
@@ -58,10 +58,10 @@ spec Set = Bool then
   . (x isIn (s intersection s')) <=> ((x isIn s) /\ (x isIn s'))
   . x isIn s \\ s' <=> x isIn s /\ not (x isIn s')
   . (s disjoint s') <=> ((s intersection s') = emptySet)
-  %% . ((x,y) isIn (s * t)) <=> ((x isIn s) /\ (y isIn t))
+  . ((x,y) isIn (s * t)) <=> ((x isIn s) /\ (y isIn t))
   . (injl x) = (x,False)
   . (injr x) = (x,True)
-  %%. (s disjointUnion s') = ((s * {false}) union (s' * {true}))
+  . (s disjointUnion s') = ((s * {False}) union (s' * {True}))
 end
 
 %{ Unique choice only holds in toposes, not in general pcccs }%
