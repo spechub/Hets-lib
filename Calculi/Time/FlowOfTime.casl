@@ -49,15 +49,21 @@ version 0.2
 %display __ uncmp __  %LATEX __\sqcap__
 
 
+from Calculi/Algebra/Auxiliary get 
+	StrictPartialOrder,
+	ExtStrictPartialOrderByRelations,
+	ExtStrictPartialOrderBySetRelations,
+	ExtStrictPartialOrderByConvexity
+
 
 spec FlowOfTime =
-
-     sort Instant
-     pred __ pre __: Instant * Instant
-     
-     forall x,y,z:Instant
-     . not x pre x			                %(irreflexive)%
-     . x pre y /\ y pre z => x pre z			%(transitive)%
+     StrictPartialOrder with sort Elem |-> Instant, pred __<__ |-> __pre__ 
+%%     sort Instant
+%%     pred __ pre __: Instant * Instant
+%%     
+%%     forall x,y,z:Instant
+%%     . not x pre x			                %(irreflexive)%
+%%     . x pre y /\ y pre z => x pre z			%(transitive)%
 end
 
 
@@ -279,4 +285,27 @@ spec Rich_FDisFlowOfTime = Ext_FDisFlowOfTime [FDisFlowOfTime]
 spec Rich_PDisFlowOfTime = Ext_PDisFlowOfTime [PDisFlowOfTime]
 spec Rich_DisFlowOfTime  = Ext_DisFlowOfTime [DisFlowOfTime]
 
+
+
+%(   Following we describe different interval concepts for arbitrary flows of time.
+
+)%
+
+
+logic HasCASL
+
+from HasCASL/Set get Set
+
+
+spec ExtFlowOfTimeByConvexity[FlowOfTime] =
+     ExtStrictPartialOrderByConvexity[StrictPartialOrder]  
+	with sort Elem |-> Instant, pred __<__ |-> __pre__ 
+end
+
+spec ExtFlowOfTimeBySetRelations[FlowOfTime] =
+     ExtStrictPartialOrderBySetRelations[StrictPartialOrder]  
+	with sort Elem |-> Instant, 
+	preds __<__|->__pre__, __>__|->__suc__, 
+		__<=__ |-> __preE__, __>=__ |-> __sucE__ 
+end
 
