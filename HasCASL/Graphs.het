@@ -1,7 +1,9 @@
 library HasCASL/Graphs
 
 %left_assoc __union__
-%prec {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __intersection__}
+%prec( {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __o__,__o'__,
+                 __union__, __intersection__,
+                 __unionMap__, __intersectionMap__, __maxCliqueOf__})%
 
 from HasCASL/Set get Set
 %{ Directed graphs over some arbitrary but fixed node and edge types,
@@ -43,7 +45,7 @@ then %def
       removeEdge : E -> Graph N E -> Graph N E;
   preds symmetric, transitive, loopFree, complete : Graph N E;
          __subgraph__, __cliqueOf__, __maxCliqueOf__ : Graph N E * Graph N E;
-  ops  __uniong__, __intersection__ : Graph N E * Graph N E -> Graph N E
+  ops  __union__, __intersection__ : Graph N E * Graph N E -> Graph N E
 
   forall n,n1,n2:N; e,e1,e2:E; g1,g2,g,g':Graph N E;
          nn : Set N; s, t, source, target : E->?N
@@ -58,7 +60,7 @@ then %def
   . targetMap (nn,source,target) = target
 
   . addNode n (nn,source,target) =
-    (nn union {n}, source, target) as Graph N E            %(addNode)%
+    (nn union {n}, source, target) %% as Graph N E            %(addNode)%
 
   . removeNode n (nn,source,target) =
     (nn \\ {n}, source, target) as Graph N E             %(removeNode)%
@@ -92,8 +94,8 @@ then %def
   . g1 subgraph g2 <=>
     (forall n:N . n isIn nodes g1 => n isIn nodes g2) /\
     (forall e:E . e isIn edges g1 => e isIn edges g2) /\
-    sourceMap g1 = sourceMap g1 intersection sourceMap g2
-    targetMap g1 = targetMap g1 intersection targetMap g2
+    sourceMap g1 = sourceMap g1 intersectionMap sourceMap g2 /\
+    targetMap g1 = targetMap g1 intersectionMap targetMap g2
                                                               %(subgraph_def)%
 
   . complete (nn,source,target) <=>
@@ -108,55 +110,60 @@ then %def
     /\ forall g3:Graph N E . 
         g1 subgraph g3 /\ g3 cliqueOf g2 => g1=g3         %(max_cliqueOf_def)%
 
-  . g union g' = 
+  . (g:Graph N E) union g' = 
     (nodes g union nodes g',
-     sourceMap g union sourceMap g',
-     targetMap g union targetMap g') as Graph N E
+     sourceMap g unionMap sourceMap g',
+     targetMap g unionMap targetMap g') %% as Graph N E
 
-  . g intersection g' = 
+  . (g:Graph N E) intersection g' = 
     (nodes g intersection nodes g',
-     sourceMap g intersection sourceMap g',
-     targetMap g intersection targetMap g') as Graph N E
+     sourceMap g intersectionMap sourceMap g',
+     targetMap g intersectionMap targetMap g') %% as Graph N E
 end
 
 
 spec SimpleGraph =
   RichDirectedGraph
 then
-  type SimpleGraph N E = {(nn,source,target):Graph N E .
+%[  type SimpleGraph N E = {(nn,source,target):Graph N E .
                           forall e1,e2:E . source e1 = source e2
                                           /\ target e1 = target e2 => e1=e2 }
   type LoopFreeGraph N E = {g:Graph N E . loopFree g}
+]%
+  type SimpleGraph N E := Graph N E
+  type  LoopFreeGraph N E := Graph N E
 end
 
 
 spec GraphHomomorphism =
-  DirectedGraph
+  DirectedGraph and Map
 then
   var N1, E1, N2, E2, N3, E3 : Type
-  type Hom N1 E1 N2 E2 = 
+  %[type Hom N1 E1 N2 E2 = 
      {(g1,hn,he,g2) : Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2 .
        hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
        /\ forall e:E1 . e isIn edges e =>
           (   hn(source g1 e) = source g2 (he e)
            /\ hn(target g1 e) = target g2 (he e) ) } 
-  type HomHom E N = Hom E N E N
+  ]%
+  type Hom N1 E1 N2 E2 := Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2
+  type HomHom E N := Hom E N E N
   ops dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
       cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
       nodeMap : Hom N1 E1 N2 E2 -> (N1->?N2);
       edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
-      __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
+      __o'__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
   forall g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
          h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
   . dom ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g1
   . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
   . nodeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = hn
   . edgeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = he
-  . def h2 o h1 <=> cod h1 = dom h2
-  . def h2 o h1 => 
-    h2 o h1 = 
-     (dom h1, nodemap h2 o nodemap h1, edgemap h2 o edgemap h1,cod h2)
-      as Hom N1 E1 N2 E2
+  . def (h2 o' h1) %% <=> cod h1 = dom h2
+  . def (h2 o' h1) => 
+    h2 o' h1 = 
+     (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
+      %% as Hom N1 E1 N2 E2
 end
 
 %{ Coproducts of directed graphs, defined in terms of the corresponding

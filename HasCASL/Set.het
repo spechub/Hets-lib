@@ -107,7 +107,8 @@ spec Map =
       __||__ : (S->?T) * Set S -> (S->?T);
       undef__ : S ->?T;
       ker : (S->?T) -> Pred (S*S);
-      injective : Pred(S->?T)
+      injective : Pred(S->?T);
+      __intersectionMap__, __unionMap__ : (S->?T) * (S->?T) -> (S->?T)
   forall f,g:S->?T; h:T->?U; s,s':Set S; t:Set T; x,x':S; y:T
   . x isIn dom f <=> def (f x)
   . y isIn range f <=> exists x:S . f x = y
@@ -116,9 +117,9 @@ spec Map =
   . f :: s --> t <=> (forall x:S . x isIn s => f x isIn t) 
   . f[x/y] x' = if x=x' then y else (f x)
   . (f - x) x' = if x=x' then undef() else (f x)
-  . (s intersection s') x = if s x = s' x then s x else undef()
-  . def (s union s') <=> (forall x:S. def (s x) /\ def (s' x) => s x = s' x)
-  . def (s union s') => (s union s') x = if def (s x) then s x else (s' x)
+  . (f intersectionMap g) x = if f x = g x then f x else undef()
+  . def (f unionMap g) <=> (forall x:S. def (f x) /\ def (g x) => f x = g x)
+  . def (f unionMap g) => (f unionMap g) x = if def (f x) then f x else (g x)
   . (h o g) x = h(g(x))
   . (f || s) x = if x isIn s then f x else undef()
   %% the kernel is a PER with same domain as the function, hence the existential equation
