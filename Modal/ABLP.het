@@ -16,3 +16,12 @@ spec ABLP =
     forall A,B : Principal . A==>B => [A] s => [B] s
   }
 end
+
+spec test =
+  ABLP then
+  op P,Q:Principal
+  pred p,q:()
+  . [P] p => [Q] q
+  . <P> p => <Q> q
+  . [P|Q] p <=> [Q|P] p
+end
