@@ -91,18 +91,18 @@ view CPShape : Shape to CoproductShape =
 end
 
 spec Coproduct[Category] = 
-  Colimit[Category][view CPShape] %% with colimit |-> __coproduct__
+  Colimit[Category][view CPShape] with colimit |-> __coproduct__
   and CoproductShape
 then %def
   ops __objCoproduct__ : Ob * Ob -> Ob;
       __coproduct__ :  Mor * Mor -> Mor;
   forall a,b: Ob; f,g:Mor
   . (a objCoproduct b) =
-    let (c,med) = colimit (a, b);
+    let (c,med) = a coproduct b;
         (h,k) = c
     in cod h
   . (f coproduct g) =
-      let (c,med) = colimit(dom f, dom g);
+      let (c,med) = dom f coproduct dom g;
           (inl,inr) = c as CPCocone
       in (med as CPCocone ->? Mor)(inl o f, inr o g)
 end
@@ -112,7 +112,7 @@ view CEShape : Shape to CoequalizerShape =
 end
 
 spec Coequalizer[Category] =
-  Colimit[Category][view CEShape] %% with colimit |-> __coequalizer__
+  Colimit[Category][view CEShape] with colimit |-> __coequalizer__
 end
 
 view POShape : Shape to PushoutShape =
