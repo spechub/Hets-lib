@@ -146,23 +146,15 @@ spec RCC_FirstOrder_RelFunc
 	
 end
 
+from  HasCASL/Topology get RegularClosedSets
 
+logic HasCASL
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+view RCC_in_Topology : 
+  { RCC_FirstOrder reveal __C__ }
+  to 
+  { RegularClosedSets then
+    pred __C__ (X,Y:RegularClosed) <=> not X disjoint Y
+  } =
+  Reg |-> RegularClosed
+end
