@@ -123,6 +123,7 @@ fun force_finish_fun thm = let val n=no_subgoals thm val thms = ((instantiate_ta
                                   | Some (x,_) => if n=no_subgoals x then Seq.empty else (pop_coinduction();thms) end  
 
 fun exI_fun thm = SUBGOAL (fn (sub,_) => res_inst_tac [("x",(get_exI_varname(sub)))] exI 1 ) 1 thm
+fun exI_fun2 thm = SUBGOAL (fn (sub,_) => raise (error (get_exI_varname(sub)))) 1 thm
 
 fun xy_exI_fun thm = let val thms = ((res_inst_tac [("x","x")] exI 1) THEN (res_inst_tac [("x","y")] exI 1))
                              thm in thms end
@@ -146,11 +147,12 @@ fun coinduction_fun thm =
   SUBGOAL (fn (sub,_) => 
       let val (co_ax,tn,eq) = get_coinduction_data sub
           val step =  "(%x. %y. "^eq^")"
+          (*val step =  "(%x. %y. (x :: "^tn^") =y | ("^eq^"))"*)
           (* filter out special Isar characters *)
           val trial = implode (filter (fn c => not (ord c mem [232,236])) (explode step)) 
           (* put new values of trans and step on the stack *)
           val _ = push_coinduction (tn,trial)
-      in  res_inst_tac [("R","?Rzero_"^top_type ())] co_ax 1
+      in  res_inst_tac [("R","?Rzero_"^tn)] co_ax 1
           THEN (instantiate_Rzero_fun) 
           THEN (step_fun)
       end) 1 thm   
@@ -163,7 +165,7 @@ fun coinduction_test_fun thm =
           val trial = implode (filter (fn c => not (ord c mem [232,236])) (explode step)) 
           (* put new values of type and step on the stack *)
           val _ = push_coinduction (tn,trial)
-      in  res_inst_tac [("R","?Rzero_"^top_type ())] co_ax 1
+      in res_inst_tac [("R","?Rzero_"^top_type ()^"1" )] co_ax 1
          (* THEN (instantiate_Rzero_fun) 
           THEN (step_fun)*)
       end) 1 thm

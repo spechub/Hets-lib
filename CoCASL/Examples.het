@@ -10,9 +10,9 @@ spec Stream1 [sort Elem] =
       merge : Stream*Stream -> Stream
   forall s,s1,s2:Stream
   . hd(odd(s)) = hd(s)
-  . tl(odd(s)) = tl(tl(odd(s)))
+  . tl(odd(s)) = odd(tl(tl(s)))
   . hd(even(s)) = hd(tl(s))
-  . tl(even(s)) = tl(tl(even(s)))
+  . tl(even(s)) = even(tl(tl(s)))
   . hd(merge(s1,s2)) = hd(s1)
   . tl(merge(s1,s2)) = merge(s2,tl(s1))
 then %implies

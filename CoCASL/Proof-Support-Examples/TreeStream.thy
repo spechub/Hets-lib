@@ -57,8 +57,15 @@ axioms
   ga_selector_hd: "! X1 :: BinTree . ! X2 :: Stream . (hd (cons X1 X2)) = X1"
   ga_selector_tl: "! X1 :: BinTree . ! X2 :: Stream . (tl (cons X1 X2)) = X2"
 
-(*
-theorem Tree_mirror: "!! b :: BinTree . mirror(mirror b) = b"
+
+(*theorem Tree_mirror: "!! b :: BinTree . mirror(mirror b) = b & x y=x y & x= z"
+apply(rule conjI)
+defer
+apply(rule conjI)
+defer
+defer
+apply(rule ga_cogenerated_BinTree)
+apply(coinduction_test)
 apply(circular_coinduction)
 done
 

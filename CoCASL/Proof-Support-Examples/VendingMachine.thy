@@ -25,6 +25,7 @@ consts
 "zero" :: "Nat"
 "succ" :: "Nat => Nat"
 "add" :: "Nat => Nat => Nat"
+"double" :: "Nat => Nat"
 
 
 consts
@@ -52,10 +53,16 @@ coffee_gc [simp] : "!! n :: Nat . !! v :: VendingMachine . get_current v = succ 
 coffee_q1 [simp] : "!! v :: VendingMachine . coffee (quarter (quarter (quarter (quarter (quarter (quarter v)))))) = v"
 coffee_q2 [simp] : "!! v :: VendingMachine . coffee (quarter (quarter (dollar v))) = v"
 coffee_q3 [simp] : "!! v :: VendingMachine . coffee (dollar (dollar v)) = quarter (quarter v)"
+coffee_init1 [simp] : "coffee (dollar initial) = dollar initial"
+coffee_init2 [simp] : "coffee (quarter (dollar initial)) = quarter (dollar initial)"
+coffee_init3 [simp] : "coffee (quarter (quarter (quarter (quarter initial)))) = quarter (quarter (quarter (quarter initial)))"
+coffee_init4 [simp] : "coffee (quarter (quarter (quarter (quarter (quarter initial))))) = quarter (quarter (quarter (quarter (quarter initial))))"
+
+quarter_dollar [simp] : "!! v . quarter(dollar v)=dollar(quarter v)"
 
 Nat1 [simp] : "!! n1 :: Nat . add zero n1 = n1"
 Nat2 [simp]: "!! n1 :: Nat . !! n2 :: Nat . add (succ n1) n2 = (succ (add n1 n2))"
-NatCom [simp]: "!! n1 :: Nat . !! n2 :: Nat . add n1 n2 = add n2 n1"
+NatCom: "!! n1 :: Nat . !! n2 :: Nat . add n1 n2 = add n2 n1"
 double1 [simp] : "double zero = zero"
 double2 [simp] : "!! n1 :: Nat . double (succ n1) = (add (succ n1) (succ n1))"
 AddDouble [simp]: "!! n1 :: Nat . (add n1 n1) = (double n1) "
@@ -67,12 +74,40 @@ ga_cogenerated_VendingMachine: "!! R :: VendingMachine => VendingMachine => bool
 theorem qqqqd: "!! v :: VendingMachine .  quarter (quarter (quarter (quarter v))) = dollar v"
 apply(coinduction)
 apply(init)
-apply(breakup)
+ML"set show_types"
+ML"reset trace_simp"
+apply(simp (no_asm_use))
+(*apply(breakup)*)
+apply(erule disjE)
+apply(simp)
+apply(erule disjE)
+apply(erule exE)
 
 apply(rule conjI)
+apply(simp)
+apply(rule conjI)
+apply(rule disjI2)
+apply(rule disjI1)
+apply(rule_tac x="quarter v" in exI)
+apply(simp)
+
+apply(rule conjI)
+apply(rule disjI2)
+apply(rule disjI1)
+apply(rule_tac x="dollar v" in exI)
+apply(simp)
+
+apply(rule conjI)
+apply(rule disjI1)
+apply(simp)
+
+apply(rule disjI1)
+apply(simp)
+apply(case_tac v)
+
 apply(erule exE)
-apply(simp only: quarter_gc)
-apply(simp only: dollar_gc)
+ML"set trace_simp";
+apply(simp)
 
 apply(rule conjI)
 apply(rule disjI1)
