@@ -8,7 +8,16 @@ version 0.9
 
 from Basic/StructuredDatatypes get List
 
+
 logic HasCASL
+
+spec Nat = {} end
+
+spec InternalLogic = {}
+end
+
+spec Extensionality = {}
+end
 
 %{ Typed sets are represented by predicates over the type.
    Set membership is just holding of the predicate: x isIn s <=> s x
@@ -23,7 +32,7 @@ spec Set = InternalLogic and Extensionality then
       __subset__ :Pred( Set(S) * Set(S) );
       __union__, __intersection__, __\\__  : Set S -> Set S -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
-      __*__ : Set S -> Set T -> Set (S*T)
+      __*__ : Set S -> Set T -> Set (S*T);
       __disjointUnion__ :  Set S -> Set S -> Set (S*Bool);
       inl,inr : S -> S*Bool;
   forall x,x':S; y:T; s,s:Set(S); t:Set(T) 
@@ -65,16 +74,16 @@ spec Map =
   ops dom : (S->?T) -> Set S;
       range : (S->?T) -> Set T; 
       image : (S->?T) -> Set S -> Set T;
-      emptyMap : (S->?T)
-      __ :: __ --> __ : Pred ( S->?T * Pred(S) * Pred(T) )
-      __ [__/__] : (S->?T) * S * T -> (S->?T)
-      __ - __ : (S->?T) * S -> (S->?T)
-      __ intersection __, __union__ : (S->?T) * (S->?T) -> (S->?T)
-      __o__ : (T->?U) * (S->?T) -> (S->?U)
-      __||__ : (S->?T) -> Set S -> (S->?T)
-      ker : (S->?T) -> Pred (S*S)
+      emptyMap : (S->?T);
+      __ :: __ --> __ : Pred ( S->?T * Pred(S) * Pred(T) );
+      __ [__/__] : (S->?T) * S * T -> (S->?T);
+      __ - __ : (S->?T) * S -> (S->?T);
+      __ intersection __, __union__ : (S->?T) * (S->?T) -> (S->?T);
+      __o__ : (T->?U) * (S->?T) -> (S->?U);
+      __||__ : (S->?T) -> Set S -> (S->?T);
+      ker : (S->?T) -> Pred (S*S);
       injective : Pred(S->?T)
-  forall f,g:S->?T; h:T->?U s,s':Set S; t:Set T; x,x':S; y:T
+  forall f,g:S->?T; h:T->?U; s,s':Set S; t:Set T; x,x':S; y:T
   . x isIn dom f <=> def f x
   . y isIn range f <=> exists x:S . f x = y
   . y isIn image f s <=> exists x:S . x isIn s /\ f x = y
@@ -134,12 +143,13 @@ then
   . inr m = 2*m+1
   %% choose the minimal element as representative of an equivalence class
   . min p = n <=> (p n /\ forall m:Nat . m<n => not p m) 
-  . coeq r n = min (\ m . (m,n) isIn r) 
+  . coeq r n = min (\ m:Nat . (m,n) isIn r) 
 end
 
 %{ ... and the statement that this is indeed a set representation }%
-view SetRepresentation to Nat_SetRepresentation = S |-> Nat
+view v : SetRepresentation to Nat_SetRepresentation = S |-> Nat
 end
+
 
 %{ Given a set representation, we now can define products, coproducts,
    coequalizers and pushouts, while staying within the same type of sets.
@@ -148,8 +158,8 @@ end
    Set above, or an S-Set, as defined here.
    We also specify the mediating morphisms that exist by the
    respective (co)universal properties of the constructions. }%
-spec AbstractSetConstructions[SetRepresentation] given Map = %def
-  ops __*__,__coproduct__ : Set S * Set S -> Set S;
+spec AbstractSetConstructions[SetRepresentation] given Map = %%def 
+ops __*__,__coproduct__ : Set S * Set S -> Set S;
       %% the mediating morphisms for (co)products depend on two morphisms
       %% going into the factors (out of the summands)
       <__! __>, [__! __] : Map S -> Map S -> Map S;
@@ -177,7 +187,7 @@ spec AbstractSetConstructions[SetRepresentation] given Map = %def
   . right (inr x) = x
   . factor r = range (coeq r)
   . f :: dom r --> t /\ ker f subset r => mediate r f (coeq x) = f x 
-then %implies
+then %%implies
   . pi1 :: s1 * s2 --> s1 
   . pi2 :: s1 * s2 --> s2  
   . inl :: s1 --> s1 coproduct s2  
@@ -194,14 +204,14 @@ then %implies
   . f :: dom r --> t /\ ker f subset r => 
     mediate r f :: (factor r) --> t /\ 
     mediate r f o coeq r || dom r = f || dom r
-then %def
+then %%def
   var S : Type
   %% pushout mediators
   %% the mediating morphism for pushouts depends on a cocone,
   %% which is given by an object and two morphisms (ending in that object) 
   type Med Ob Mor = Ob * Mor * Mor ->? Mor
   %% (co)product of maps
-  ops __*__,__coproduct__ : Map S * Map S -> Map S
+  ops __*__,__coproduct__ : Map S * Map S -> Map S;
   %% the pushout operation takes a diagram (three objects and two morphisms)
   %% and yields a colimiting cocone (an object and two morphisms)
   %% plus a mediator
@@ -212,13 +222,13 @@ then %def
   . f copoduct g = [inl o f ! inr o g]
   . def pushout (s1,f,s2,g,s3) <=> f :: s1 --> s2 /\ g :: s1 --> s3
   %% pushouts are coequalizers of coproducts
-  . def pushout (s1,f,s2,g,s3) =>
+  %[. def pushout (s1,f,s2,g,s3) =>
     pushout (s1,f,s2,g,s3) = 
           %% first take the coproduct ...
       let s = s2 coproduct s3;
           %% r is the PER identifying those elements of s coming from elements of s1
-          r = \(x,y):S*S . exists z:S . z isIn s1 /\ inl (f z) =x /\ inr (g z) = y
-              as PER S
+          %% r = \(x,y) : S*S . exists z:S . z isIn s1 /\ inl (f z) =x /\ inr (g z) = y
+          %%    as PER S
           %% ... and then the coequalizer
           q = coeq r
       in
@@ -443,6 +453,8 @@ then
        nmed (nodeMap h,nodeMap k),
        emed (edgeMap h,edgemap k),
        g  ) as HomHom N E  )
+]%
+
 end
   
 
@@ -459,6 +471,7 @@ then
       (e::n1-->n2 isIn g \/ e::n2-->n1 isIn g)           %(sc_def_2)%
 end
 
+
 spec TransitiveClosure[sort NodeLabel][sort EdgeLabel] =
   RichAbstractGraph[sort NodeLabel][sort EdgeLabel]
 and
@@ -466,6 +479,8 @@ and
 and
   SymmetricClosure[sort NodeLabel][sort List[EdgeLabel]]
   with Graph |-> PathGraph
+
+%[
 then
   ops tc,stc : Graph -> PathGraph
   preds __pathSubgraphOf__ : Graph * PathGraph;
@@ -537,3 +552,4 @@ then
                                                         %(planar_def)%
 end
 
+]%
