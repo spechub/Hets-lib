@@ -3,7 +3,7 @@ library HasCASL/PetriSystem
 %%from HasCASL/Set get SetRepresentation, AbstractSetConstructions
 from HasCASL/MultiSet get MapMultiSet
 from HasCASL/Petri get PetriNet, PetriNetCategory
-from HasCASL/Categories get Category
+from HasCASL/HLR get HLRCategory
 
 
 logic HasCASL
@@ -32,7 +32,7 @@ then
 end
 
 spec PetriSystemCategory = 
-  PetriSystem and PetriNetCategory
+  PetriSystem and PetriNetCategory hide M
 then
   type HomSys  = {(sys1,hp,ht,sys2) : System  * (P->?P) * (T->?T) * System .  
                   ((net(sys1), hp, ht, net(sys2)) in HomNet )
@@ -43,6 +43,7 @@ then
        transitionsMap : HomSys  -> (T->?T);
        id : System ->? HomSys;
        __o__ : HomSys  * HomSys  ->? HomSys 
+  pred injective : HomSys
   forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys; v: MultiSet T 
   . let h=(sys1,hp,ht,sys2) in dom (h) = sys1
   . let h=(sys1,hp,ht,sys2) in cod (h) = sys2
@@ -52,10 +53,12 @@ then
   . def (h2 o h1) => h2 o h1 = 
      (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
       as HomSys
+  . injective h <=> injective(placesMap h) /\ injective(transitionsMap h)
+  sort M = {h:HomSys . injective h}
 end
 
-view CategoryofPetriSystems : Category to PetriSystemCategory =
-     Ob |-> System, Mor |-> HomSys, __o__, dom, cod, id
+view CategoryofPetriSystems : HLRCategory to PetriSystemCategory =
+     Ob |-> System, Mor |-> HomSys, __o__, dom, cod, id, M
 end
 
 

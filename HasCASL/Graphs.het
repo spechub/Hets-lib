@@ -12,7 +12,7 @@ from HasCASL/Set get Set
    in case that there are isolated nodes. }%
 
 from HasCASL/Set get Map, SetRepresentation
-from HasCASL/Categories get Category
+from HasCASL/HLR get HLRCategory
 
 logic HasCASL
 
@@ -147,8 +147,9 @@ then
       edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
       id : Graph N1 E1 -> Hom N1 E1 N1 E1;
       __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
+  pred injective : Hom N1 E1 N2 E2
   forall g,g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
-         h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
+         h,h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
   . not def undefined
   . dom ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g1
   . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
@@ -162,6 +163,7 @@ then
     h2 o h1 = 
      (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
       %% as Hom N1 E1 N2 E2
+  . injective h <=> injective(nodeMap h) /\ injective(edgeMap h)
 end
 
 %[ %% AbstractSetConstruction is missing, case is wrong
@@ -256,10 +258,11 @@ and
   GraphHomomorphism
 then
   types G := Graph N E;
-        H := HomHom N E
+        H := HomHom N E;
+        M = {h:H . injective h}
 end
 
-view CategoryofGraphs : Category to GraphCategory =
-     Ob |-> G, Mor |-> H, __o__, dom, cod, id
+view CategoryofGraphs : HLRCategory to GraphCategory =
+     Ob |-> G, Mor |-> H, __o__, dom, cod, id, M
 end
 
