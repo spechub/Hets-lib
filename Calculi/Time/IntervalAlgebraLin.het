@@ -1,21 +1,71 @@
+library Calculi/Time/IntervalAlgebraLin
+version 0.1
+%% author: S. Wölfl
+%% date: 18-02-2005
+%% 
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__}
+
+%( 
+	The Interval Algebra for linear flows of time 
+     
+)%
+
+
+from Calculi/Algebra/RelationAlgebra get 
+	AtomicRelationAlgebra
+from Calculi/Algebra/RelationAlgebraSymbolic get 
+	SetRepresentationOfRelations,
+	RelationBase,
+     	GenerateRelationAlgebra,
+	CompositionTable
+from Calculi/Algebra/RelationAlgebraModel get 
+	JEPDBaseRelationModel,
+	AlgebraOfBinaryRelations
+from Calculi/Time/LinearFlowOfTime get 
+	LinFlowOfTime,
+	DnsLinFlowOfTimeSEnd
+
+
+%(
+     The Interval Algebra for linear flows of time has 13 base relations,
+     namely, b ("before"), m ("meets"), o ("overlaps"),
+     d ("during"), s ("starts"), f ("finishes"), e ("equals"),
+     and the inverses of b, m, o, d, s, and f (denoted by bi, mi, oi, di, 
+     si, and fi).
+)%
+
+
+
+spec BaseRelationsOfIntervalAlgebraLin = 
+     free type BaseRel ::= b | m | o | d | s | f | e | 
+			bi | mi | oi | di | si | fi
+end
 
 
 
 
+%(  Part I Symbolic 
+    We start by describing the symbolic level of the relation algebra 
+)%
 
 
 
+%( The Composition Table
+)%
 
 
 
-
-
-spec IntervalAlgebraLinCompositionTable =
+spec CompositionTableOfIntervalAlgebraLin =
      sort BaseRel
      ops b,m,o,d,s,f,e,bi,mi,oi,di,si,fi: BaseRel
 and 
      CompositionTable with op id |-> e
 then
+     . 1 = b cup m cup o cup d cup s cup f cup e cup 	
+		bi cup mi cup oi cup di cup si cup fi   %(def_1)%
+
      . b cmps b  = b 					%(cmps_bb)%	
      . b cmps bi = 1					%(cmps_bbi)%
      . b cmps d  = b cup o cup m cup d cup s		%(cmps_bd)%
@@ -28,6 +78,7 @@ then
      . b cmps si = b 					%(cmps_bsi)%
      . b cmps f  = b cup o cup m cup d cup s		%(cmps_bf)%
      . b cmps fi = b					%(cmps_bfi)%	
+     . b cmps e  = b 				 	%(cmps_be)%	
 
      . bi cmps b  = 1 					%(cmps_bib)%	
      . bi cmps bi = bi					%(cmps_bibi)%
@@ -41,6 +92,7 @@ then
      . bi cmps si = bi 					%(cmps_bisi)%
      . bi cmps f  = bi					%(cmps_bif)%
      . bi cmps fi = bi					%(cmps_bifi)%	
+     . bi cmps e = bi 					%(cmps_bie)%
 
      . d cmps b  = b 					%(cmps_db)%	
      . d cmps bi = bi					%(cmps_dbi)%
@@ -54,6 +106,7 @@ then
      . d cmps si = bi cup oi cup mi cup d cup f 	%(cmps_dsi)%
      . d cmps f  = d					%(cmps_df)%
      . d cmps fi = b cup o cup m cup d cup s 		%(cmps_dfi)%	
+     . d cmps e  = d					%(cmps_de)%
 
      . di cmps b  = b cup o cup m cup di cup fi 	%(cmps_dib)%	
      . di cmps bi = bi cup oi cup mi cup di cup si	%(cmps_dibi)%
@@ -67,6 +120,7 @@ then
      . di cmps si = di				 	%(cmps_disi)%
      . di cmps f  = oi cup di cup si			%(cmps_dif)%
      . di cmps fi = di			 		%(cmps_difi)%	
+     . di cmps e = di 					%(cmps_die)%
 
      . o cmps b  = b 					%(cmps_ob)%	
      . o cmps bi = bi cup oi cup mi cup di cup si	%(cmps_obi)%
@@ -80,6 +134,7 @@ then
      . o cmps si = di cup fi cup o		 	%(cmps_osi)%
      . o cmps f  = d cup s cup o			%(cmps_of)%
      . o cmps fi = b cup o cup m	 		%(cmps_ofi)%	
+     . o cmps e  = o 				      	%(cmps_oe)%
 
      . oi cmps b  = b cup o cup m cup di cup fi 	%(cmps_oib)%	
      . oi cmps bi = bi					%(cmps_oibi)%
@@ -93,6 +148,7 @@ then
      . oi cmps si = bi cup oi cup mi		 	%(cmps_oisi)%
      . oi cmps f  = oi 					%(cmps_oif)%
      . oi cmps fi = oi cup di cup si	 		%(cmps_oifi)%	
+     . oi cmps e = oi 					%(cmps_oie)%
 
      . m cmps b  = b 					%(cmps_mb)%	
      . m cmps bi = bi cup oi cup mi cup di cup si	%(cmps_mbi)%
@@ -106,6 +162,7 @@ then
      . m cmps si = m				 	%(cmps_msi)%
      . m cmps f  = d cup s cup o			%(cmps_mf)%
      . m cmps fi = b			 		%(cmps_mfi)%	
+     . m cmps e  = m		 		  	%(cmps_me)%
 
      . mi cmps b  = b cup o cup m cup di cup fi 	%(cmps_mib)%	
      . mi cmps bi = bi					%(cmps_mibi)%
@@ -119,6 +176,7 @@ then
      . mi cmps si = bi				 	%(cmps_misi)%
      . mi cmps f  = mi 					%(cmps_mif)%
      . mi cmps fi = mi 			 		%(cmps_mifi)%	
+     . mi cmps e = mi					%(cmps_mie)%
 
      . s cmps b  = b 					%(cmps_sb)%	
      . s cmps bi = bi 					%(cmps_sbi)%
@@ -132,6 +190,7 @@ then
      . s cmps si = s cup si cup e		 	%(cmps_ssi)%
      . s cmps f  = d 					%(cmps_sf)%
      . s cmps fi = b cup m cup o	 		%(cmps_sfi)%	
+     . s cmps e  = s					%(cmps_se)%
 
      . si cmps b  = b cup o cup m cup di cup fi 	%(cmps_sib)%	
      . si cmps bi = bi					%(cmps_sibi)%
@@ -145,6 +204,7 @@ then
      . si cmps si = si				 	%(cmps_sisi)%
      . si cmps f  = oi 					%(cmps_sif)%
      . si cmps fi = di 			 		%(cmps_sifi)%	
+     . si cmps e = si				 	%(cmps_sie)%
 
      . f cmps b  = b 					%(cmps_fb)%	
      . f cmps bi = bi 					%(cmps_fbi)%
@@ -158,6 +218,7 @@ then
      . f cmps si = bi cup oi cup mi		 	%(cmps_fsi)%
      . f cmps f  = f 					%(cmps_ff)%
      . f cmps fi = f cup fi cup e	 		%(cmps_ffi)%	
+     . f cmps e  = f				 	%(cmps_fe)%
 
      . fi cmps b  = b 				 	%(cmps_fib)%	
      . fi cmps bi = bi cup oi cup mi cup di cup si	%(cmps_fibi)%
@@ -171,35 +232,7 @@ then
      . fi cmps si = di				 	%(cmps_fisi)%
      . fi cmps f  = f cup fi cup e			%(cmps_fif)%
      . fi cmps fi = fi 			 		%(cmps_fifi)%	
-
-     . conv(b) = bi					%(conv_b)%
-     . conv(bi) = b					%(conv_bi)%
-     . conv(m) = mi					%(conv_m)%
-     . conv(mi) = m					%(conv_mi)%
-     . conv(o) = oi					%(conv_o)%
-     . conv(oi) = o					%(conv_oi)%
-     . conv(d) = di					%(conv_d)%
-     . conv(di) = d					%(conv_di)%
-     . conv(s) = si					%(conv_s)%
-     . conv(si) = s					%(conv_si)%
-     . conv(f) = fi					%(conv_f)%
-     . conv(fi) = f					%(conv_fi)%
-     . conv(e) = e					%(sym_e)%
-
-then %implies
-     . b cmps e  = b 				 	%(cmps_be)%	
-     . bi cmps e = bi 					%(cmps_bie)%
-     . d cmps e  = d					%(cmps_de)%
-     . di cmps e = di 					%(cmps_die)%
-     . o cmps e  = o 				      	%(cmps_oe)%
-     . oi cmps e = oi 					%(cmps_oie)%
-     . m cmps e  = m		 		  	%(cmps_me)%
-     . mi cmps e = mi					%(cmps_mie)%
-     . s cmps e  = s					%(cmps_se)%
-     . si cmps e = si				 	%(cmps_sie)%
-     . f cmps e  = f				 	%(cmps_fe)%
      . fi cmps e  = fi 					%(cmps_fie)%
-     . e cmps e = e 			 		%(cmps_ee)%	
 
      . e cmps b  = b 				 	%(cmps_eb)%	
      . e cmps bi = bi 					%(cmps_ebi)%
@@ -214,6 +247,137 @@ then %implies
      . e cmps f  = f 					%(cmps_ef)%
      . e cmps fi = fi 			 		%(cmps_efi)%	
      . e cmps e  = e 			 		%(cmps_ee)%	
+
+     . conv(b) = bi					%(conv_b)%
+     . conv(bi) = b					%(conv_bi)%
+     . conv(m) = mi					%(conv_m)%
+     . conv(mi) = m					%(conv_mi)%
+     . conv(o) = oi					%(conv_o)%
+     . conv(oi) = o					%(conv_oi)%
+     . conv(d) = di					%(conv_d)%
+     . conv(di) = d					%(conv_di)%
+     . conv(s) = si					%(conv_s)%
+     . conv(si) = s					%(conv_si)%
+     . conv(f) = fi					%(conv_f)%
+     . conv(fi) = f					%(conv_fi)%
+     . conv(e) = e					%(sym_e)%
+end
+
+
+
+spec RelationBaseOfIntervalAlgebraLin = %mono 
+     SetRepresentationOfRelations[BaseRelationsOfIntervalAlgebraLin]
+and
+     CompositionTableOfIntervalAlgebraLin %% to be done with  ops < |-> pre, > |-> suc, i |-> id
+end 
+
+
+view RelationBaseOfIntervalAlgebraLin_as_RelationBase[BaseRelationsOfIntervalAlgebraLin] :
+     RelationBase[sort BaseRel] to RelationBaseOfIntervalAlgebraLin
+end
+
+
+spec IntervalAlgebraLin = 
+     GenerateRelationAlgebra [RelationBaseOfIntervalAlgebraLin]  
+end
+
+
+view IntervalAlgebraLin_as_AtomicRelationAlgebra :
+     AtomicRelationAlgebra to 
+     { IntervalAlgebraLin	then %def
+	preds 
+		__<__,__<=__,__>__,__>=__:Rel*Rel
+	forall x,y:Rel
+	. x < y  <=> x isSubsetOf y /\ not x = y
+	. x <= y <=> x isSubsetOf y
+	. x > y  <=> y isSubsetOf x /\ not x = y
+	. x >= y <=> y isSubsetOf x
+     }
+=
+     Rel |-> Rel , AtomRel |-> BaseRel
+end
+
+
+
+
+logic HasCASL
+
+%( Part II
+    This library defines the model classes for the relation algebras defined previously
+)%
+
+
+from Calculi/Algebra/RelationAlgebraModel get Relation,
+	GenerateModelFromBaseRelationModel
+
+
+logic HasCASL
+
+
+spec BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime] = %def 
+     Relation[sort Instant] %% 
+then 
+     ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation 
+     type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel | 
+			biRel | miRel | oiRel | diRel | siRel | fiRel
+     forall x,y:Instant
+     . (x,y) isIn rep(bRel) <=> x pre y
+     . (x,y) isIn rep(mRel) <=> x = y
+     . (x,y) isIn rep(oRel) <=> y pre x
+    %%% unvollstaendig
+end
+
+
+spec GeneratePreModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
+      GenerateModelFromBaseRelationModel[BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime]
+	fit sort Elem |-> Instant]
+then %implies
+     ops  eRel: Rel;
+          conv: BaseRel -> BaseRel;
+          conv: Rel -> Rel
+end
+
+
+spec GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd] = %def
+     GeneratePreModelOfIntervalAlgebraLin[LinFlowOfTime]
+then %implies     
+     op  __cmps__:  Rel * Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
+end
+
+
+
+
+
+%( Part III: Views
+)%
+
+
+view BaseRelationModelOfIntervalAlgebraLin_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort Instant] 
+to 
+     BaseRelationModelOfIntervalAlgebraLin[LinFlowOfTime]
+end
+
+
+view DsnLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
+    AlgebraOfBinaryRelations[sort Elem] 
+to 
+    GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+=
+    sort Elem |-> Instant , op id |-> eRel 
+end
+
+
+
+view DsnLinFlowOfTimeSEnd_induces_ModelOfIntervalAlgebraLin :
+     { IntervalAlgebraLin hide ops __+__,__-__,{},{__}    %% <- Das muss man verbessern, 
+	hide preds __eps__,__isSubsetOf__,isNonEmpty } %%    weil wir dann zu viel Theorie verlieren
+to 
+    GenerateModelOfIntervalAlgebraLin[DnsLinFlowOfTimeSEnd]
+=   
+    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
+	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel
 end
 
 
