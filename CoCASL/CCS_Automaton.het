@@ -61,9 +61,9 @@ end
 spec ActionPrefixing =
   FinalNonDeterministicAutomaton[Action] 
 then
-  op __-->__ : Act * State -> State
+  op __->__ : Act * State -> State
   forall x, y : Act; s : State
-  . next (x , y -->s) = {s} when x=y else {} 
+  . next (x , y ->s) = {s} when x=y else {} 
 end
 
 spec BinRel[sort S] =
@@ -186,18 +186,18 @@ then
   . {{X}}env = lookup(X,env)
   . {{C}}env = {{definitionOf(C)}}env
   . {{0}}env = zero
-  . {{a->E}}env = a-->{{E}}env
+  . {{a->E}}env = a->{{E}}env
   . {{E1+E2}}env = {{E1}}env + {{E2}}env
   . {{E1||E2}} env = {{E1}}env || {{E2}}env
   . {{E-set}}env = {{E}}env - set
   . {{rel(E,f)}}env = rel({{E}}env,f)
   . isWeaklyGuarded(E) =>
-    {{fix(X,E)}}env = {{E}}env[{{fix(X,E)}}env/X]
+    {{fix(X,E)}}env =e= {{E}}env[{{fix(X,E)}}env/X]
   . not isWeaklyGuarded(E) => not def {{fix(X,E)}}env
 
 then %implies
-  forall a:Act; env:Env; E,E1,E2:AgentExpression; X:AgentVariable
-  . isWeaklyGuarded(E) => def {{fix(X,E)}}env
+  forall a:Act; env:Env; E,E1,E2:AgentExpression; X:AgentVariable; s:State
+  . isWeaklyGuarded(E) => s = {{E}}env[s/X] => s={{fix(X,E)}}env  %(uniqueFinxedPoint)%
   . isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2) =>
     (E1 - a -> E2 <=> {{E2}}env eps next(a,{{E1}}env))
 end
