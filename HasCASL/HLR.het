@@ -1,20 +1,28 @@
+library HasCASL/HLR
+
+from Categories get Category, PushoutShape, Pushout
+
+logic HasCASL
+
+
 spec Rules =
   Category
 then
-  type Rules = { (l,r): Mor * Mor .
-	             dom l = dom r
-		  /\ l injective
-		  /\ r injective }
+  type Rules = { (l,r): Mor * Mor . dom l = dom r }
 end
 
 spec Transformation =
-  Rules and Pushout[Category]
+  Rules and PushoutShape and Pushout[Category]
 then
   ops transform: Rules * Mor ->? Ob;
-  forall (l,r): Rules; g1:Mor
-  . def (transform((l,r),g1)) => codom l = dom g1
-  . (((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
+  forall r1 : Rules; g1,g2,g3,c1,c2 : Mor
+  . let (l,r) = r1 
+    in
+    def (transform(r1,g1)) => cod l = dom g1
+  . let (l,r) = r1 
+    in
+    (((g1,c1) as POCocone) isCoconeFor ((l,g2) as PODiagram)
     /\ ((c2,g3) as POCocone) isCoconeFor ((g2,r) as PODiagram))
-     => transform((l,r),g1)= r objPushout g2
+     => transform(r1,g1) = r objPushout g2
 end
 
