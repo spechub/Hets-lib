@@ -1,0 +1,183 @@
+library RefinementExamples
+
+spec Monoid =sort Elem
+
+ops 0 : Elem;__+__ : Elem * Elem -> Elem
+
+, assoc, unit 0
+
+spec NatWithSuc =
+
+free type Nat ::= 0 | suc(Nat)
+op __+__ : Nat * Nat -> Nat
+
+, unit 0 forall x , y : Num . x + suc(y) = suc(x + y)
+
+spec Nat =
+
+NatWithSuc hide suc
+end
+
+refinement R1 =
+
+Monoid refined via Elem |-> Nat to Nat
+
+spec NatBin =generated type Bin ::= 0 | 1 | __0(Bin) | __1(Bin)
+
+ops __+__ , __++__ : Bin * Bin -> Bin forall x
+
+, y : Bin .  0 0 = 0  .  0 1 = 1
+
+ .  not  (0 = 1)  .  x 0 = y 0 => x = y .  not  (x 0 = y 1)  .  x 1 = y 1 => x = y
+
+ .  0 + 0 = 0  .  0 ++ 0 = 1 .  x 0 + y 0 = (x + y) 0  .  x 0 ++ y 0 = (x + y) 1
+
+ .  x 0 + y 1 = (x + y) 1  .  x 0 ++ y 1 = (x ++ y) 0 .  x 1 + y 0 = (x + y) 1  .  x 1 ++ y 0 = (x ++ y) 0
+
+ .  x 1 + y 1 = (x ++ y) 0  .  x 1 ++ y 1 = (x ++ y) 1 
+
+refinement R2 =
+
+Nat refined via Nat |-> Bin to NatBin
+
+refinement R3 =
+
+Monoid refined via Elem |-> Nat to
+
+Nat refined via Nat |-> Bin to NatBin
+
+refinement R3' =
+
+Monoid refined via Elem |-> Nat to R2
+
+refinement R3'' =
+
+Monoid refined via Elem |-> Nat to Nat then R2
+
+refinement R3''' = R1 then R2 
+
+arch spec Addition_First = units N :
+
+Nat;M : {
+
+op suc(n : Nat) : Nat = n + 1 } given N result  M
+
+
+arch spec Addition_First_Generic = units N :
+
+Nat;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+
+result M
+
+refinement R4 =
+
+NatWithSuc refined to arch spec Addition_First
+
+arch spec Addition_First_With_Bin = units N :
+
+Nat refined via Nat |-> Bin to NatBin;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+
+result M
+
+arch spec Addition_First_With_Bin' =
+
+units N : R2;F :
+
+Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+
+result M
+
+
+arch spec asp1 =
+
+unit K : SP' -> SP refined to USP result K
+
+refinement R5 =SP refined to
+
+arch spec { units
+
+K : SP' -> SP refined to USP;
+A' : SP'
+
+refined to arch spec { units
+
+K' : SP'' -> SP' refined to USP';
+A'' : SP'' result K'[A''] }
+result K [A']
+}
+
+arch spec Addition_First_With_Bin' =
+
+units N : R2;F :
+
+Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+
+result M
+
+refinement R =arch spec
+
+Addition_First_Generic then {N to R2}
+
+refinement R5' =SP
+
+refined to arch spec { units K : SP' -> SP;
+
+A' : SP' result K [A']} then  {K to USP ,A' to arch spec { units K' : SP'' -> SP';
+
+A'' : SP'' result K'[A'']} then  {K' to USP'}}
+
+
+refinement R5'' =SP
+
+refined to arch spec units K : SP' -> SP
+
+A' : SP' result K (A') then  {K to USP ,A' to arch spec units K' : SP'' -> SP'
+
+A'' : SP'' result K'(A'') then  {A' to {K' to USP'}}
+
+arch spec Arch Sbcs =
+
+units P : Value -> Preliminary
+S :
+
+Preliminary -> Sbcs_State
+A : Sbcs_State -> Sbcs_Analysis
+C : Sbcs_Analysis -> Steam_Boiler_Control_System result lambda V : Value  .  C [A [S [P [V ]]]]
+
+%% We may record this initial refinement now:
+
+refinement Ref_Sbcs =
+
+Steam_Boiler_Control_System to Arch_Sbcs
+
+refinement Ref_Sbcs' =
+
+Ref_Sbcs then {P to arch spec Arch_Preliminary,S to
+
+Unit_Sbcs_State,A to arch spec Arch_Analysis,C
+
+to Unit_Sbcs System }
+
+unit spec Unit_Sbcs_State =
+
+Preliminary -> Sbcs_State_Impl
+
+arch spec Arch_Analysis =
+
+units FD : Sbcs_State -> Failure_Detection
+PR :
+
+Failure_Detection -> PU_Prediction
+ME : PU_Prediction -> Mode_Evolution [ PU_Prediction ]
+MTS : Mode_Evolution [ PU_Prediction ] -> Sbcs_Analysis 
+result lambda S : Sbcs_State . MTS [ME [PR [FD [S ]]]]
+
+refinement Ref_Arch_Analysis ={FD
+
+to arch spec Arch_Failure_Detection,PR to arch spec
+
+Arch_Prediction} 
+
+refinement Ref_Sbcs'' =
+
+Ref_Sbcs' then {A to Ref_Arch_Analysis} 
