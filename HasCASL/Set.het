@@ -259,7 +259,7 @@ then
     coequalizer d = 
        let r:PER S = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
            c:Map S = coeq r;
-           med = \h:MapS . (cod h,\x:S . choice(\y:S . 
+           med = \h:MapS .! (cod h,\x:S . choice(\y:S . 
 	       exists z:S . func h z = x /\ c z = y),range c)
        in
        ((cod f, c, range c),med)
