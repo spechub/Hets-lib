@@ -1,27 +1,14 @@
 library HasCASL/Set
 
-%left_assoc __intersection__  %[ Should go to StructuredDatatypes ]%
-%left_assoc __+__
-
 %prec({__isIn__, __subset__, __disjoint__,__ :: __ --> __} 
 		 < {__union__, __intersection__, __\\__,
 		    __disjointUnion__} )%
 %prec {__union__} < {__*__}
 
-%prec {__+__} < {__*__,__div__}
-%prec {__=__} < {__o__,__<__}
-
-logic CASL
-
-spec Bool = 
-  sort Bool
-  ops False, True : Bool;
-end
-
 from Basic/Numbers get Nat
+from Basic/SimpleDatatypes get Boolean
 
 logic HasCASL
-
 
 from HasCASL/Categories get Category, Coproduct, Coequalizer, 
                             PushoutAsCoequalizerOfCoproduct
@@ -30,7 +17,7 @@ from HasCASL/Categories get Category, Coproduct, Coequalizer,
    Set membership is just holding of the predicate: x isIn s <=> s x
    Note that for disjoint unions and products, the type changes.  }%
 
-spec Set = Bool then
+spec Set = Boolean then
   var S,T : Type
   type Set S := S ->? Unit;
   ops emptySet : Set S;
@@ -40,8 +27,8 @@ spec Set = Bool then
       __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S * Set T -> Set (S*T);
-      __disjointUnion__ :  Set S * Set S -> Set (S*Bool);
-      injl,injr : S -> S*Bool;
+      __disjointUnion__ :  Set S * Set S -> Set (S*Boolean);
+      injl,injr : S -> S*Boolean;
   forall x,x':S; y:T; s,s':Set S; t:Set(T) 
   . not (x isIn emptySet)
   . x isIn {x'} <=> x=x'
