@@ -126,20 +126,6 @@ spec Map =
   . injective f <=> (forall x,y:S . f x =e= f y => x=y)
 end
 
-spec Category =
-  sorts Ob, Mor
-  ops dom__,cod__ : Mor -> Ob;
-      id__ : Ob -> Mor;
-      __o__ : Mor*Mor ->? Mor;
-  forall f,g,h : Mor; a,b:Ob
-  . def (f o g) <=> cod g = dom f
-  . def (f o g) => dom (f o g) = dom g
-  . def (f o g) => cod (f o g) = cod f
-  . f o (g o h) = (f o g) o h
-  . f o id(dom f) = f
-  . id(cod f) o f = f
-end
-
 spec SetCategory =
   Map
 then
@@ -171,7 +157,7 @@ end
 spec SetRepresentation =
   Map and Relation
 then
-  type S;
+  type S : Type;
   ops pair : S*S->S;   %% represent S*S in S
       inl,inr : S->S;  %% represent S disjointUnion S in S, with left and right injection
       %% represent quotient by a PER, yields the quotient map
@@ -217,14 +203,15 @@ spec SetCoproduct[SetRepresentation] given Map = %def
 then
   %% type CPCocone = {(h,k) : MapS * MapS . cod' h = cod' k}
   type CPCocone := MapS * MapS
-  ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? MapS));
+  ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? Map S));
   forall s1,s2:SetS
   . (s1 coproduct s2) = 
-       let copr = (image inl s1) union (image inr s2);
-           med = \ (c : CPCocone) . let (f,g) = c 
-                   in \y . choice (\z . (exists x:SetS . y = inl x /\ z = f x)
-                                        \/ (exists x:SetS . y = inr x /\ z = g x) )
-       in (((s1,inl,copr),(s2,inr,copr)),med)
+       let copr: SetS = (image inl s1) union (image inr s2);
+           med = \c :CPCocone . 
+	      let ((sf,f,tf), (sg,g,tg)) = c 
+              in \(y:S) . choice (\z . (exists x:S . y = inl x /\ z = f x)
+                                        \/ (exists x:S . y = inr x /\ z = g x))
+       in (((s1,inl,copr),(s2,inr,copr)), med)
 end
 
 
