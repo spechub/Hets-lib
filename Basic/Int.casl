@@ -11,7 +11,7 @@ then
         	__ >= __, __ > __: Int * Int;
           	odd, even: Int
 
-	ops	__ + __, __ * __: Int * Int -> Int %left assoc;
+	ops	__ + __, __ * __: Int * Int -> Int; %left_assoc
 	        __ ^ __: Int * Int -> Int;
 		- __: Int -> Int;
         	min, max: Int * Int ->  Int;
@@ -24,10 +24,10 @@ then
 						Int × Int ->? Int;
 		__ mod __: Int × Int ->? Nat
 
-     %prec { __ - __ , __ + __ } < 
-           { __*__, __ /? __, __div__, __mod__, __ quot __, __rem__ }
-     %prec { __*__, __ /? __, __div__, __mod__, __ quot __, __rem__ } 
-           < { __ ^ __}
+     %prec( { __ - __ , __ + __ } < 
+           { __*__, __ /? __, __div__, __mod__, __ quot __, __rem__ } )%
+     %prec( { __*__, __ /? __, __div__, __mod__, __ quot __, __rem__ } 
+           < { __ ^ __} )%
      %prec {+__} <> {__ ^ __}
 
 	vars m,n,r,s: Int; a,b,c,d: Nat
