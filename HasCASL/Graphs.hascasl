@@ -153,6 +153,8 @@ spec AbstractSetConstructions[SetRepresentation] given Map = %def
       <__! __>, [__! __] : Map S -> Map S -> Map S;
       %% the product projections (coproduct injections already come from SetRepresentation)
       pi1,pi2 : S ->? S;
+      %% partial inverses of the coproduct injections
+      left, rigt : S ->? S;
       %% given a PER, yield the resulting quotient set (=coequalizer)
       %% then we have coeq r :: dom r --> factor r
       factor : PER S -> Set S;
@@ -167,6 +169,10 @@ spec AbstractSetConstructions[SetRepresentation] given Map = %def
   . s1 coproduct s2 = (image inl s1) union (image inr s2)
   . [f!g] (inl x) = f x
   . [f!g] (inr x) = g x
+  . def left x <=> x isIn range inl
+  . def right x <=> x isIn range inr
+  . left (inl x) = x
+  . right (inr x) = x
   . factor r = range (coeq r)
   . f :: dom r --> t /\ ker f subset r => mediate r f (coeq x) = f x 
 then %implies
