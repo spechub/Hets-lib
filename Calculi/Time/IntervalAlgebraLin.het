@@ -318,7 +318,7 @@ view IntervalAlgebraLin_as_AtomicRelationAlgebra :
 end
 
 
-%[ Das folgende ist dasselbe wie in ../Algebra/RelataionAlgebraSymboli, liefert jedoch eine andere Theore?
+%[ Das folgende ist dasselbe wie in ../Algebra/RelataionAlgebraSymboli, liefert jedoch eine andere (kleinere) Theorie?
 spec BaseRelationsOfCalculus = %mono
      free type BaseRel ::= relation1 | relation2
 end
@@ -422,6 +422,7 @@ then %def
      . (x,y) isIn rep(siRel) <=> start(y) = start(x) /\ fin(y) pre fin(x)
      . (x,y) isIn rep(fiRel) <=> start(x) pre start(y) /\ fin(x) = fin(y)
 end
+
 
 spec GeneratePreAllenModelOfIntervalAlgebraLin[LinFlowOfTime] = %def
       GenerateModelFromBaseRelationModel[BaseRelationAllenModelOfIntervalAlgebraLin[LinFlowOfTime]

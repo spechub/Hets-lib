@@ -266,6 +266,8 @@ spec DisFlowOfTime =
 
 spec Ext_FDisFlowOfTime [FDisFlowOfTime] =
 	Ext_FlowOfTime [FlowOfTime]
+
+%[
 then
      op suc: Instant * Instant ->? Instant
 
@@ -273,6 +275,7 @@ then
      . suc(x,y) = y <=>  z pre y /\ 
 	 		(x pre z \/ x = z) /\
 			not(exists u:Instant . z pre u /\ u pre y)  
+]%
 end
 
 spec Ext_PDisFlowOfTime [PDisFlowOfTime] =
@@ -287,8 +290,8 @@ spec Rich_DisFlowOfTime  = Ext_DisFlowOfTime [DisFlowOfTime]
 
 
 
-%(   Following we describe different interval concepts for arbitrary flows of time.
-
+%(   
+ 	Following we describe different interval concepts for arbitrary flows of time.
 )%
 
 
