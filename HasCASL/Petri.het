@@ -1,66 +1,25 @@
 library HasCASL/Petri
 
 from Basic/Numbers get Nat
-from Basic/SimpleDatatypes get Boolean
 
 from HasCASL/Set get Set, Map
+from HasCASL/MultiSet get RichMultiSet, MapMultiSet
+from HasCASL/Categories get Category
+
 
 logic HasCASL
 
-spec MultiSet = Nat and Set then
-  var Elem : Type
-  type  MultiSet Elem := Elem ->? Nat
-then %def
-  var Elem : Type
-  ops __ isIn__ : Pred (Elem * MultiSet Elem);
-      __ <= __ : Pred (MultiSet Elem * MultiSet Elem);
-      {} : MultiSet Elem;
-      {__} : Elem -> MultiSet Elem;
-      __ + __, __ - __, __intersection__: 
-		    MultiSet Elem * MultiSet Elem -> MultiSet Elem;
-      freq : Elem * MultiSet Elem -> Nat;
-      setToMultiSet : Set Elem -> MultiSet Elem
-
- forall x,y : Elem; B,C,D,E:MultiSet Elem; S: Set Elem
-
-     . freq(x,B) = if def B x then B x else 0     %(freq_def)%
-     . freq(x,B + C) = freq(x,B) + freq(x,C)      %(freq_union)%
-
-     . x isIn B <=> freq(x,B) > 0                     %(MultiSet_isIn)%
-
-     . B <= C <=> 
-       forall x: Elem . freq(x,B) <= freq(x,C)         %(MultiSet_subseteq)%
-
-     . freq (x,setToMultiSet S) = if x isIn S then 1 else 0
-
-     . B intersection C = D <=> 
-       forall x: Elem . freq(x,D) = min (freq(x,B), freq(x,C))
-                                                  %(MultiSet_cap)%
-     . B - C = D <=>
-           forall x: Elem .
-           ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
-           /\
-           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )             
-       %(MultiSet_diff)%
-then %implies
-  var Elem : Type
-  ops __ intersection __: MultiSet Elem * MultiSet Elem -> MultiSet Elem,
-                          assoc, comm, idem
-end
-
-
-spec PetriNet = 
-  Set and Map 
+spec SimplePetriNet = 
+  Map 
 then
   sorts P,T 
-  type Net = {(p,pre,post) : Set P  *  (T ->? Set P) * (T ->? Set P)  
+  type SimpleNet = {(p,pre,post) : Set P  *  (T ->? Set P) * (T ->? Set P)  
                       	. dom pre=dom post /\
-                     	pre :: dom  pre --> {p} /\
-                     	post :: dom post --> {p} }
+                     	(forall p1:Set P . p1 isIn range pre => p1 subset p)
+                     	/\ (forall p1:Set P . p1 isIn range post => p1 subset p) }
+  op __union__ : SimpleNet * SimpleNet -> SimpleNet
 
-  op __union__ : Net * Net -> Net
-
-  forall n1,n2:Net
+  forall n1,n2:SimpleNet
   . n1 union n2 =
     let (p1,pre1,post1) = n1;
         (p2,pre2,post2) = n2
@@ -71,72 +30,56 @@ then
         \(t:T) . if def post1(t) then if def post2(t) then post1(t) union post2(t)
                                                   else post1(t)
                             else post2(t)) 
-        as Net
+        as SimpleNet
 end
 
-spec PetriSystem = 
-  MultiSet and PetriNet 
+
+spec PetriNet =
+  Map and RichMultiSet 
 then
-  type Marking := MultiSet P
-  type System = {(n,m) : Net * Marking 
-                          . let (p,pre1,post1) = n 
-                            in forall x:P . x isIn m => x isIn p }
-
-  ops  marking   : System -> Marking;
-       net       : System -> Net;
-       empty     : Marking;
-        __|<__>  : System * T -> System; 
-       __union__ : System * System -> System
-
-  forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T
-  . empty = {}
-  . net sys = let (n,m) = sys in n
-  . marking sys = let (n,m) = sys in m
-%[
-  . def sys|<t> <=> (t isIn dom pre 
-      /\ forall x:P . x isIn pre(t) => x isIn marking(sys))
-  . def sys|<t> => sys|<t> = (net(sys), 
-       marking(sys) - setToMultiSet(pre(t)) + setToMultiSet(post(t))) 
-           as System
-  . sys1 union sys2 = 
-      (net(sys1) union net(sys2), marking(sys1) + marking(sys2)) as System
-end 
-
-spec WorkflowNet [SetRepresentation with S |-> P]
-                 [SetRepresentation with S |-> T] = 
-  PetriSystem
-and AbstractSetConstructions[SetRepresentation with S |-> P fit S |-> P]
-and AbstractSetConstructions[SetRepresentation with T |-> P fit T |-> P]
-then
-  type WNet={(sys,i,o): System x P x P .
-                 let ((p,pre,post),m) = sys in
-                   i isIn p
-                /\ o isIn p
-                /\ not i isIn range(post)
-                /\ not o isIn range(pre) }
-
-  ops input, output : WorkflowNet -> P;
-      system : WorkflowNet -> System;
-      __union__ : WorkflowNet * WorkflowNet -> WorkflowNet
-
-  forall w,w1,w2:WorkflowNet; sys:System; i,o:P
-  . system w = let (sys,i,o) = w in sys
-  . input w = let (sys,i,o) = w in i
-  . output w = let (sys,i,o) = w in o
-  . w1~ union w2 =
-    let (((p1,pre1,post1),m1),i1,o1) = w1;
-        (((p2,pre2,post2),m2),i2,o2) = w2;
-        r = \ (x,y) . x=y \/ (x=inl o1 /\ y=inr i2) \/ (y=inl o1 /\ x=inr i2);
-        p = (p1 coproduct p2) factor r;
-        q = coeq r;
-        t = (dom pre1)~ coproduct~ (dom pre2);
-        pre t = if def left t then image~ (q o inl)~ (pre1 (left t))
-                else if def right t then image~ (q o inr)~ (pre2 (right t))
-                else undefined;
-        post t = if def left t then image~ (q o inl)~ (post1 (left t))
-                else if def right t then image~ (q o inr)~ (post2 (right t))
-                else undefined;
-        m = map~ (q o inl)~ m1~ +~ map~ (q o inr)~ m2
-    in (((p,pre,post),m),i1,o2)~ as WNet
+  sorts P,T 
+  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)                                . dom pre=dom post /\
+            (forall p1:MultiSet P . p1 isIn range pre => MultiSetToSet p1 subset p)
+            /\ (forall p1:MultiSet P . p1 isIn range pre => MultiSetToSet p1 subset p) }
+  ops places : Net  -> Set P;
+      transitions : Net  -> Set T;
+      preMap, postMap : Net  -> (T ->? MultiSet P);
+   forall n : Net; p : Set P; pre, post : T ->? MultiSet P
+   . let n=(p,pre,post) in places n = p
+   . let n=(p,pre,post) in transitions n = dom pre
+   . let n=(p,pre,post) in preMap n = pre
+   . let n=(p,pre,post) in postMap n = post
 end
-]%
+
+
+spec PetriNetCategory = 
+  PetriNet and MapMultiSet
+then
+  sorts P,T 
+  type HomNet = 
+     {(n1,hp,ht,n2) : Net  * (P->?P) * (T->?T) * Net .
+       hp :: places n1 --> places n2 /\ ht :: transitions n1 --> transitions n2 
+       /\ forall t:T . t isIn transitions n1 =>
+          (   freeMap hp (preMap n1 t) = preMap n2 (ht t)
+           /\ freeMap hp (postMap n1 t) = postMap n2 (ht t) ) } 
+  ops dom : HomNet  -> Net;
+      cod : HomNet  -> Net;
+      placesMap : HomNet  -> (P->?P);
+      transitionsMap : HomNet  -> (T->?T);
+      id : Net ->? HomNet;
+      __o__ : HomNet  * HomNet  ->? HomNet 
+   forall n, n1,n2 : Net; p : Set P; pre, post : T ->? MultiSet P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
+   . let h=(n1,hp,ht,n2) in dom (h) = n1
+   . let h=(n1,hp,ht,n2)  in cod (h) = n2
+   . let h=(n1,hp,ht,n2)  in placesMap (h) = hp
+   . let h=(n1,hp,ht,n2)  in transitionsMap (h) = ht
+   . def (h2 o h1) <=> cod h1 = dom h2
+   . def (h2 o h1) => h2 o h1 = 
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
+      as HomNet
+end
+
+
+view CategoryofPetriNets : Category to PetriNetCategory =
+     Ob |-> Net, Mor |-> HomNet, __o__, dom, cod, id
+end

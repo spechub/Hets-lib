@@ -1,0 +1,77 @@
+library HasCASL/MultiSet
+
+from Basic/Numbers get Nat
+from HasCASL/Set get Set, Map, SumNatSet
+
+logic HasCASL
+
+spec MultiSet = Nat and Set then
+  var Elem : Type
+  type  MultiSet Elem := Elem ->? Nat
+then %def
+  var Elem : Type
+  ops __ isIn__ : Pred (Elem * MultiSet Elem);
+      __ <= __ : Pred (MultiSet Elem * MultiSet Elem);
+      {} : MultiSet Elem;
+      {__} : Elem -> MultiSet Elem;
+      __ + __, __ - __, __intersection__: 
+		    MultiSet Elem * MultiSet Elem -> MultiSet Elem;
+      freq : Elem * MultiSet Elem -> Nat;
+      setToMultiSet : Set Elem -> MultiSet Elem
+
+ forall x,y : Elem; B,C,D,E:MultiSet Elem; S: Set Elem
+
+     . freq(x,B) = if def B x then B x else 0     %(freq_def)%
+     . freq(x,B + C) = freq(x,B) + freq(x,C)      %(freq_union)%
+
+     . x isIn B <=> freq(x,B) > 0                     %(MultiSet_isIn)%
+
+     . B <= C <=> 
+       forall x: Elem . freq(x,B) <= freq(x,C)         %(MultiSet_subseteq)%
+
+     . freq (x,setToMultiSet S) = if x isIn S then 1 else 0
+
+     . B intersection C = D <=> 
+       forall x: Elem . freq(x,D) = min (freq(x,B), freq(x,C))
+                                                  %(MultiSet_cap)%
+     . B - C = D <=>
+           forall x: Elem .
+           ( freq(x,B) >= freq(x,C) => freq(x,B) = freq(x,D) + freq(x,C) )
+           /\
+           ( freq(x,B) <= freq(x,C) => freq(x,D) = 0 )             
+       %(MultiSet_diff)%
+then %implies
+  var Elem : Type
+  ops __ intersection __: MultiSet Elem * MultiSet Elem -> MultiSet Elem,
+                          assoc, comm, idem
+end
+
+
+
+spec RichMultiSet = 
+  MultiSet 
+then
+  var Elem : Type
+ op   MultiSetToSet : MultiSet Elem -> Set Elem
+ forall B:MultiSet Elem; S: Set Elem
+     . let S = MultiSetToSet(B) in 
+        forall x: Elem. x isIn S <=> freq(x,B) > 0
+end
+
+
+spec MapMultiSet=
+  RichMultiSet and SumNatSet
+then
+  var S : Type
+  type  MapMultiSet S := MultiSet S ->? MultiSet S
+then %def
+  var S, T : Type
+  ops __ :: __ --> __ : Pred ( (S->? MultiSet T) * Set S * Set T);
+      freeMap : Map S -> MapMultiSet S;
+      linMap : (S->? MultiSet T) -> (MultiSet S->? MultiSet T)
+  forall x1, x2, y: S; x3, x4: S; z:T; m:MultiSet S; s: Set S; t: Set T;  
+         f: Map S; h: S->? MultiSet T
+   . h :: s --> t <=> forall x:S . x isIn s => MultiSetToSet(h x) subset t
+   . freeMap f m y = sum m (\x:S . y = f x)
+   . linMap h m z = sum (\x:S . m x * h x z) (\x:S . true) 
+end

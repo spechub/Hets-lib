@@ -12,6 +12,7 @@ from HasCASL/Set get Set
    in case that there are isolated nodes. }%
 
 from HasCASL/Set get Map, SetRepresentation
+from HasCASL/Categories get Category
 
 logic HasCASL
 
@@ -247,3 +248,18 @@ then
      targetMap g1 coproduct targetMap g2)
 end
 ]%
+
+
+spec GraphCategory =
+  sorts N,E 
+and 
+  GraphHomomorphism
+then
+  types G := Graph N E;
+        H := HomHom N E
+end
+
+view CategoryofGraphs : Category to GraphCategory =
+     Ob |-> G, Mor |-> H, __o__, dom, cod, id
+end
+
