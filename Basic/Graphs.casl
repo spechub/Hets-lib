@@ -7,8 +7,15 @@ version 0.95
 
 from Basic/StructuredDatatypes get FiniteSet, FiniteMap
 
-spec Graph[sort NodeLabel][sort EdgeLabel] =
-  free type Edge ::= edge(source,target:NodeLabel; label:EdgeLabel)
+
+%[ Labelled (un)directed graphs; labels of nodes must be unique
+   Labels of edges between to given nodes must be unique as well
+   If necessary, take a product sort (e.g. OldLabel x Int) as labels
+   If you do not need labels, instantiate them with a singleton sort ]%
+
+spec AbstractGraph[sort NodeLabel][sort EdgeLabel] =
+  generated type Edge ::= edge(source,target:NodeLabel; label:EdgeLabel)
+  %% Equality on edges is left unspecified
 then
   FiniteSet[sort NodeLabel fit Elem |-> NodeLabel]
 and
@@ -44,4 +51,18 @@ then %def
         
 end
 
+spec DirectedGraph[sort NodeLabel][sort EdgeLabel] =
+  AbstractGraph[sort NodeLabel][sort EdgeLabel]
+then
+  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel
+  . edge(s1,t1,e1)=edge(s2,t2,e2) <=> e1=e2 /\ s1=s2 /\ t1=t2 
+end
+
+spec UndirectedGraph[sort NodeLabel][sort EdgeLabel] =
+  AbstractGraph[sort NodeLabel][sort EdgeLabel]
+then
+  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel
+  . edge(s1,t1,e1)=edge(s2,t2,e2) <=> 
+    e1=e2 /\ ((s1=s2 /\ t1=t2) \/ (s1=t2 /\ s2=t1))
+end
 
