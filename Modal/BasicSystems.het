@@ -1,0 +1,25 @@
+library Modal/BasicSystems
+
+logic Modal
+
+spec K =     
+     modality empty { [] true; [](p => q) => ([]p => []q) }
+end
+
+spec M =
+     K
+then
+     modality empty { []p => p }
+end
+
+spec S4 =
+     M
+then
+     modality empty { []A => [][]A }
+end
+
+spec S5 =
+     M
+then
+     modality empty {<>A => []<>A}
+end

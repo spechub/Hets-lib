@@ -1,0 +1,23 @@
+library Dynamic
+
+logic Modal
+
+spec Dynamic =
+  sort Prog
+  ops __seq__, __union__ : Prog * Prog -> Prog;
+      __* : Prog -> Prog;
+      skip, stop : Prog  %% p? is expressed as "if p then skip else stop"
+  term modality Prog {
+    forall x:Prog . [x](p=>q) => [x]p => [x]q;
+    forall x,y:Prog . [x seq y]p <=> [x][y]p;
+    forall x,y:Prog . [x union y]p <=> [x]p /\ [y]p;
+    forall x:Prog . [x*]p => p /\ [x]p;
+    forall x:Prog . [x*]p => [x*][x*]p;
+    forall x:Prog . [x*](p=>[x]p) => (p=>[x*]p);
+    [skip when p else stop]q <=> (p=>q);
+    p <=> [skip]p;
+    [stop] false
+  }
+end
+
+    
