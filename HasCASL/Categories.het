@@ -27,12 +27,10 @@ spec Functor =
   Category and {ExtCategory[Category] with Ob |-> Ob', Mor |-> Mor'}
 then
   type Functor = {(fob,fmor) : (Ob -> Ob') * (Mor -> Mor') . 
-                     forall a:Ob . fob(a)=fob(a) }
-%[                       forall a:Ob . fob(id(a))=id(fob(a))
-                    /\ forall f:Mor . fmor(f)::fob(dom f) --> fob(cod f)
+                       forall a:Ob . fmor(id(a))=id(fob(a))
+                    /\ forall f:Mor . fmor f:: fob(dom f) --> fob(cod f)
                     /\ forall f,g:Mor . def (f o g) =>
                                fmor(f o g) = fmor f o fmor g }
-]%
 end
 
 spec Shape =
