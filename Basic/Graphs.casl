@@ -14,35 +14,30 @@ from Basic/StructuredDatatypes get FiniteSet, FiniteMap
    If you do not need labels, instantiate them with a singleton sort ]%
 
 spec AbstractGraph[sort NodeLabel][sort EdgeLabel] =
-  generated type Edge ::= edge(source,target:NodeLabel; label:EdgeLabel)
-  %% Equality on edges is left unspecified
-then
-  FiniteSet[sort NodeLabel fit Elem |-> NodeLabel]
-and
-  FiniteSet[sort Edge fit Elem |-> Edge]
-then
-  generated type Graph ::= 
-     make_graph (nodes : FinSet[NodeLabel];
-                 edges : FinSet[Edge])?
-  vars nds:FinSet[NodeLabel];
-       eds:FinSet[Edge]; 
-       g,g':Graph
-  . def make_graph(nds,eds) <=> 
-    forall e:Edge . e eps eds => source(e) eps nds /\ target(e) eps nds
-  . g=g' <=> nodes(g)=nodes(g') /\ edges(g)=edges(g')
+  generated type Graph ::= emptyGraph
+                         | addnode(node :? NodeLabel; graph :? Graph)
+                         | addedge(source,target :? NodeLabel; edge :? EdgeLabel; graph :? Graph)
+  preds __eps__ : NodeLabel * Graph;
+        has_edge : NodeLabel * NodeLabel * EdgeLabel * Graph
+  forall n,n1,s,t,s1,t1,s2,t2:NodeLabel; e,e1,e2:EdgeLabel; g,g':Graph
+  . not n eps emptyGraph
+  . n eps addnode(n1,g) <=> n=n1 \/ n eps g
+  . n eps addedge(s,t,e,g) <=> n=s \/ n=t \/ n eps g
+  . not has_edge(s,t,e,emptyGraph)
+  . has_edge(s,t,e,addnode(n,g)) <=> has_edge(s,t,e,g)
+  %% has_edge is left underspecified
+  %% This allows a refinement into both directed and undirected graphs
+  . has_edge(s1,t1,e1,addedge(s1,t1,e1,g))
+  . has_edge(s1,t1,e1,addedge(s2,t2,e2,g)) if has_edge(s1,t1,e1,g)
 
+  . g=g' <=> (forall n:NodeLabel . n eps g <=> n eps g')
+         /\ (forall s,t:NodeLabel; e:EdgeLabel . has_edge(s,t,e,g) <=> has_edge(s,t,e,g'))
+end
+
+%[
 then %def
-  op remove_node : NodeLabel * FinSet[Edge] -> FinSet[Edge]
-  forall n,n1,n2:NodeLabel; e:EdgeLabel; eds:FinSet[Edge]
-  . edge(n1,n2,e) eps remove_node(n,eds) <=> edge(n1,n2,e) eps eds /\ not n=n1 /\ not n=n2
 
-  ops add_node (n:NodeLabel; g:Graph) : Graph =
-        make_graph(nodes(g)+n, edges(g));
-       
-      add_edge (e:EdgeLabel; n1,n2:NodeLabel; g:Graph) :? Graph =
-        make_graph(nodes(g)+n1+n2, edges(g)+edge(n1,n2,e));
-       
-      remove_node(n:NodeLabel; g:Graph) : Graph =
+  ops  remove_node(n:NodeLabel; g:Graph) : Graph =
         make_graph(nodes(g)-n,
                    remove_node(n,edges(g)));
       
@@ -50,19 +45,45 @@ then %def
         make_graph(nodes(g), edges(g)-e)
         
 end
+]%
 
 spec DirectedGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
-  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel
-  . edge(s1,t1,e1)=edge(s2,t2,e2) <=> e1=e2 /\ s1=s2 /\ t1=t2 
+  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel; g:Graph
+  . has_edge(s1,t1,e1,addedge(s2,t2,e2,g)) <=> (s1=s2 /\ t1=t2 /\ e1=e2) \/ has_edge(s1,t1,e1,g)
 end
 
 spec UndirectedGraph[sort NodeLabel][sort EdgeLabel] =
   AbstractGraph[sort NodeLabel][sort EdgeLabel]
 then
-  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel
-  . edge(s1,t1,e1)=edge(s2,t2,e2) <=> 
-    e1=e2 /\ ((s1=s2 /\ t1=t2) \/ (s1=t2 /\ s2=t1))
+  forall s1,s2,t1,t2:NodeLabel; e1,e2:EdgeLabel; g:Graph
+  . has_edge(s1,t1,e1,addedge(s2,t2,e2,g)) <=> 
+    (s1=s2 /\ t1=t2 /\ e1=e2) \/ 
+    (s1=t2 /\ t1=s2 /\ e1=e2) \/ 
+    has_edge(s1,t1,e1,g)
+end
+
+spec SymmetricGraph[sort NodeLabel][sort EdgeLabel] =
+  DirectedGraph[sort NodeLabel][sort EdgeLabel]
+then
+  sort SymmetricGraph =
+       {g:Graph . forall s,t:NodeLabel; e:EdgeLabel . 
+                    has_edge(s,t,e,g) <=> has_edge(t,s,e,g)}
+  type SymmetricGraph ::= emptyGraph
+                         | addnode(node :? NodeLabel; graph :? SymmetricGraph)
+                         | addedge_sym(source,target :? NodeLabel; edge :? EdgeLabel; graph :? SymmetricGraph)
+  preds __eps__ : NodeLabel * SymmetricGraph;
+        has_edge : NodeLabel * NodeLabel * EdgeLabel * SymmetricGraph
+  forall s,t:NodeLabel; e:EdgeLabel; g:SymmetricGraph
+  . addedge_sym(s,t,e,g) = addedge(s,t,e,addedge(t,s,e,g)) as SymmetricGraph
+  %% the other operations and predicates are determined by the overloading relations
+end
+
+view Symmetric_as_Undirected[sort NodeLabel][sort EdgeLabel] : 
+     UndirectedGraph[sort NodeLabel][sort EdgeLabel]
+  to SymmetricGraph[sort NodeLabel][sort EdgeLabel] =
+  sort Graph |-> SymmetricGraph,
+  op addedge |-> addedge_sym
 end
 
