@@ -1,0 +1,68 @@
+library SortingWithOutHiding
+
+%right_assoc __::__
+
+spec Elem = 
+  sort Elem
+end
+
+spec TotalOrder =
+  sort Elem
+  pred __<=__ : Elem * Elem
+  forall x,y,z : Elem
+  . x <= x                         %(reflexive)%
+  . x <= z if x <= y /\ y <= z     %(transitive)%
+  . x = y if x <= y /\ y <= x      %(antisymmetric)%
+  . x <= y \/ y <= x               %(dichotomous)%
+end
+
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+end
+
+spec List[Elem] given Nat = 
+  free type List[Elem] ::= [] | __::__(Elem; List[Elem])
+  op count : Elem * List[Elem] -> Nat
+  forall x,y : Elem; L : List[Elem]
+  . count(x,[]) = 0
+  . count(x,x :: L) = suc(count(x,L))
+  . count(x,y :: L) = count(x,L) if not x=y
+end
+
+spec Sorting[TotalOrder] =
+{
+  List[Elem]
+then
+  preds is_ordered : List[Elem];
+        permutation : List[Elem] * List[Elem]
+  vars x,y:Elem; L,L1,L2:List[Elem]
+  . is_ordered([])
+  . is_ordered(x::[])
+  . is_ordered(x::y::L) <=> x<=y /\ is_ordered(y::L)
+  . permutation(L1,L2) <=> (forall x:Elem . count(x,L1) = count(x,L2))
+ then
+  op sorter : List[Elem]->List[Elem]
+  var L:List[Elem]
+  . is_ordered(sorter(L))
+  . permutation(L,sorter(L))
+}
+%% hide is_ordered, permutation
+end
+
+spec InsertSort[TotalOrder] = 
+  Sorting[TotalOrder]
+then
+  ops insert : Elem*List[Elem] -> List[Elem];
+      insert_sort : List[Elem]->List[Elem]
+  vars x,y:Elem; L:List[Elem]
+  . insert(x,[]) = x::[]
+  . insert(x,y::L) = x::insert(y,L) when x<=y else y::insert(x,L)
+  . insert_sort([]) = []
+  . insert_sort(x::L) = insert(x,insert_sort(L))
+%% hide insert
+end
+
+view InsertSortCorrectness[TotalOrder] : 
+     Sorting[TotalOrder] to InsertSort[TotalOrder] =
+    sorter |-> insert_sort
+end
