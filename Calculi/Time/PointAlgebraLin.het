@@ -1,0 +1,228 @@
+library Calculi/Time/PointAlgebraLin
+version 0.2
+%% author: S. Wölfl
+%% date: 11-05-2005
+%% 
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__} 
+
+from Calculi/Algebra/Auxiliary get 
+	BooleanAlgebraWithCompl,
+	ExtBooleanAlgebraByPartialOrder,
+	AtomicBooleanAlgebra 
+from Calculi/Algebra/RelationAlgebra get 
+	AtomicRelationAlgebra,
+	IntegralRelationAlgebra,
+	SymmetricRelationAlgebra
+from Calculi/Algebra/RelationAlgebraSymbolic get 
+	CompositionTable,	
+	ConversesTable,
+	GenerateRelations,		
+	GenerateRelationAlgebra,
+	ExtGeneratedRelationAlgebra
+from Calculi/Algebra/RelationAlgebraModel get 
+	AlgebraOfBinaryRelations,
+	GeneratePreModelFromBaseRelationModel,
+	JEPDBaseRelationModel,
+	Relation
+from Calculi/Time/LinearFlowOfTime get 
+	DnsLinFlowOfTimeSEnd,
+	LinFlowOfTime
+from Calculi/Time/FlowOfTime get 
+	ExtFlowOfTimeByConvexity,
+	ExtFlowOfTimeBySetRelations
+
+
+%(  Part I: Symbolic Level
+
+    We start by describing the symbolic level of the point algebra
+    of linear time (abbrev. by PAlin), i.e., the set of base relations 
+    and the composition table. Arbitrary relations of PAlin are 
+    represented as sets of base relations. In turn base relations are 
+    represented by their respective singleton sets. The spec
+    RelationBaseOfPintAlgebraLin builds this set of all relations, 
+    which obviously forms an atomic boolean algebra. Via the composition 
+    table we then define a relation algebra on the set of all relations. 
+    This provides us with a specification of PAlin, namely spec 
+    PAlin.
+)%
+
+%( 
+     The Point Algebra for linear flows of time has three base relations,
+     namely, p ("precedes"), pi ("precedes inverse"), and e ("equals").
+)%
+
+
+spec PAlinBaseRelations = %mono
+     free type BaseRel ::= p | pi | e
+end
+
+%(   The following specs encode the composition table of PAlin as well as 
+     the information on inverses of base relations.
+)%
+
+
+spec PAlinCompositionTable =
+     sort BaseRel
+     ops p,pi,e: BaseRel
+and 
+     CompositionTable with op id |-> e
+then
+     . p cmps p  = p 					%(cmps_pp)%	
+     . p cmps pi = 1					%(cmps_ppi)%
+     . p cmps e  = p					%(cmps_pe)%
+     . pi cmps p  = 1 					%(cmps_pip)%	
+     . pi cmps pi = pi					%(cmps_pipi)%
+     . pi cmps e  = p					%(cmps_pie)%
+     . e cmps p  = p 					%(cmps_ep)%	
+     . e cmps pi = pi					%(cmps_epi)%
+     . e cmps e  = e					%(cmps_ee)%
+end
+
+
+spec PAlinConversesTable =
+     sort BaseRel
+     ops p,pi,e: BaseRel
+and 
+     ConversesTable with op id |-> e
+then
+     . conv(p) = pi					%(conv_p)%
+     . conv(pi) = p					%(conv_pi)%
+     . conv(e) = e					%(sym_e)%
+end
+
+spec BooleanAlgebraOfPAlinRelations = 
+     GenerateRelations[PAlinBaseRelations] 
+end
+
+view BooleanAlgebraOfPAlinRelations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to BooleanAlgebraOfPAlinRelations
+= 
+     Elem |-> Rel, AtomElem |-> BaseRel
+end
+
+
+spec PAlin = 
+     GenerateRelationAlgebra[BooleanAlgebraOfPAlinRelations]
+	[PAlinCompositionTable fit op id:BaseRel |-> e]
+	[PAlinConversesTable fit op id:BaseRel |-> e]
+end
+
+
+spec RichPAlin =
+     ExtGeneratedRelationAlgebra[PAlin fit op id:BaseRel |-> e]
+end	
+
+
+view PAlin_as_AtomicRelationAlgebra :
+     AtomicRelationAlgebra to 
+     RichPAlin 
+=
+     AtomRel |-> BaseRel
+end
+
+
+view PAlin_as_IntegralRelationAlgebra :
+     IntegralRelationAlgebra to RichPAlin
+end
+
+
+view PAlin_as_SymmetricRelationAlgebra :
+     SymmetricRelationAlgebra to RichPAlin
+end
+
+
+
+
+
+
+
+%(  Part II: Semantic Level
+
+    Following we describe how models of PAlin can be constructed from 
+    dense linear flows of time without endpoints. 
+)%
+
+%[
+
+logic HasCASL
+
+
+
+spec PAlinBaseRelationModel[LinFlowOfTime] = %def 
+     Relation[sort Instant] 
+then %def
+     ops pRel,eRel,piRel:Relation 
+     type BaseRel ::= pRel | eRel | piRel 
+
+     forall x,y:Instant
+     . (x,y) isIn rep(pRel)  <=> x pre y
+     . (x,y) isIn rep(eRel)  <=> x = y
+     . (x,y) isIn rep(piRel) <=> y pre x
+end
+
+
+view PAlinBaseRelationModel_as_JEPDBAseRelationModel :
+     
+
+
+spec GenerateBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
+      GeneratePreModelFromBaseRelationModel[BaseRelationAllenModelOfPAlin[LinFlowOfTime]
+	fit sort Elem |-> AllenPoint]
+then %cons
+     ops  eRel: Rel;
+          conv: BaseRel -> BaseRel;
+          conv: Rel -> Rel
+end
+
+
+spec GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd] = %def
+     GeneratePreAllenModelOfPAlin[LinFlowOfTime]
+then %cons     
+     op  __cmps__:  Rel * Rel -> Rel;
+	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
+end
+
+
+
+%(  Part III: Views
+)%
+
+
+
+
+view BaseRelationAllenModelOfPAlin_as_JEPDBaseRelationModel:
+     JEPDBaseRelationModel[sort AllenPoint] 
+to 
+     BaseRelationAllenModelOfPAlin[LinFlowOfTime]
+end
+
+
+view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
+    AlgebraOfBinaryRelations[sort Elem] 
+to 
+    GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd]
+=
+    sort Elem |-> AllenPoint , op id |-> eRel 
+end
+
+
+
+view DnsLinFlowOfTimeSEnd_induces_AllenModelOfPAlin :
+     { PAlin hide ops __+__,__-__,{},{__}    
+	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
+to 
+    GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd]
+=   
+    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
+	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
+        id |-> eRel
+end
+
+
+
+]%
+
+
