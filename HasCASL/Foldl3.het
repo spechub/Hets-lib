@@ -1,0 +1,36 @@
+library HasCASL/Foldl3
+
+
+logic HasCASL
+
+spec FoldlReq =
+var a: Type
+free type List a ::= nil | cons a (List a)
+op snoc: List a  -> a -> List a
+forall x,y:a; l:List a
+. snoc nil x = cons x nil
+. snoc (cons y l) x = cons y (snoc l x)
+var b: Type
+op foldl: b -> (b -> a ->? b) -> List a ->? b
+forall z:b; f: b -> a ->? b;x:a; l:List a
+. foldl z f nil = z
+. foldl z f (snoc l x) = f (foldl z f l) x
+
+spec FoldlImpl = 
+var a: Type
+free type List a ::= nil | cons (a) (List a) 
+op snoc: List a  -> a -> List a
+forall x,y:a; l:List a
+. snoc nil x = cons x nil
+. snoc (cons y l) x = cons y (snoc l x)
+var b: Type
+op foldl: b -> (b -> a ->? b) -> List a ->? b
+vars z: b; f: b -> a ->? b; x: a; l: List a
+. foldl z f nil = z
+. foldl z f (cons x l) = foldl (f z x) f l
+
+
+view ImplementFoldl: FoldlReq to FoldlImpl
+
+%% Prove (use Fold3_FoldlImpl_Proof.thy)
+%% Encapsulated Proof in Fold3_FoldlImpl_Proofs2.thy

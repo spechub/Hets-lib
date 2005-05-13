@@ -1,0 +1,35 @@
+library HasCASL/Foldl
+
+from HasCASL/Recursion get Recursion
+
+logic HasCASL
+
+spec FoldlReq =
+var a: Type
+free type List a ::= nil | cons (a) (List a)
+op snoc: List a -> a -> List a
+vars x,y:a; l:List a
+. snoc nil x = cons x nil
+. snoc (cons y l) x = cons y (snoc l x)
+var b: Type
+op foldl: b -> (b -> a -> b) -> List a -> b
+vars z:b; f: b -> a -> b
+. foldl z f nil = z
+. foldl z f (snoc l x) = f (foldl z f l) x
+hide snoc
+
+spec FoldlImpl = Recursion then
+var a: Cpo
+free type List a ::= nil | cons (a) (List a) deriving Cpo
+var b: Cppo; z: b; f: b --> a --> b; x: a; l: List a
+op foldl: b --> (b --> a --> b) --> List a --> b
+program
+ foldl z f nil = z;
+ foldl z f (cons x l) = foldl (f z x) f l
+
+
+view ImplementFoldl: FoldlReq to FoldlImpl
+
+%%Translate to Haskell (inc CASL-lib/HasCASL)
+%%Demo term: foldl 10 (-)  (A__cons 3 (A__cons 4 (A__cons 5 A__nil)))
+%%On to Foldl2.het
