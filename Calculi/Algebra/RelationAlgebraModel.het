@@ -11,7 +11,7 @@ version 0.1
 )%
 
 from HasCASL/Set get Set
-from Basic/RelationsAndOrders get BooleanAlgebra
+%%from Basic/RelationsAndOrders get BooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
 	ExtRelationAlgebraByPartialOrder, RelationAlgebraWithPartialOrder,
 	AtomicRelationAlgebra
@@ -20,6 +20,11 @@ from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl
 
 
 logic HasCASL
+
+
+
+%( Part I: Representation Concepts of Relation Algebras
+)% 
 
 
 spec RepresentationOfRelationAlgebra [RelationAlgebra] =
@@ -56,6 +61,9 @@ view CompleteRepresentationOfRelationAlgebra_as_AtomicRelationAlgebra :
 end
 
 
+%( Part II: Set Algebras of Binary Relations and Algebras of Binary Relations
+)% 
+
 spec Relation[sort Elem] = 
      Set	
 then 
@@ -63,55 +71,65 @@ then
 end
 
 
-spec SetAlgebraOfBinaryRelations[sort Elem] =
+spec FullAlgebraOfBinaryRelations[sort Elem] =
 	Relation[sort Elem]
 then
-     type Rel < Relation
      ops
-	 0,1:Rel;
-         __cup__,__cap__:  Rel * Rel -> Rel;
-         compl: Rel -> Rel
-     forall r,s:Rel; x,y:Elem
+	 0,1,id:Relation;
+         __cup__,__cap__,__cmps__:  Relation * Relation -> Relation;
+         compl,conv: Relation -> Relation
+
+     forall r,s:Relation; x,y:Elem
      . rep(0) = emptySet
      . rep(1) = allSet
      . rep(r cup s) = rep(r) union rep(s)
      . rep(r cap s) = rep(r) intersection rep(s)
      . rep(compl(r)) = rep(1) \\ rep(r)
-then %implies 
-     ops
-         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
-	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0  
-end
-
-
-spec AlgebraOfBinaryRelations[sort Elem] =
-     SetAlgebraOfBinaryRelations[sort Elem]
-then
-     ops
-	 id:Rel;
-         __cmps__:  Rel * Rel -> Rel;
-         conv: Rel -> Rel
-     forall r,s:Rel; x,y:Elem
      . (x,y) isIn rep(id) <=> x = y
      . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) 
      . (x,y) isIn rep(conv(r)) <=> (y,x) isIn rep(r)
 then %implies 
-     op
-         __cmps__: Rel * Rel -> Rel, assoc, unit id;
-     forall x:Rel
+     ops
+         __cup__:  Relation * Relation -> Relation, assoc, comm, idem, unit 1;
+	 __cap__:  Relation * Relation -> Relation, assoc, comm, idem, unit 0;  
+         __cmps__: Relation * Relation -> Relation, assoc, unit id;
+
+     forall x:Relation
      . compl(compl(x)) = x 
      . conv(conv(x)) = x 
      . conv(id) = id
 end
 
 
-spec FullRelationAlgebra[sort Elem] = 
-     { AlgebraOfBinaryRelations[sort Elem] with type Rel |-> Relation }
+
+spec SetAlgebraOfBinaryRelations[sort Elem] =
+     FullAlgebraOfBinaryRelations[sort Elem] 
+then  
+     type Rel < Relation
+     ops
+	 0,1:Rel;
+         __cup__,__cap__:  Rel * Rel -> Rel;
+         compl: Rel -> Rel
+%% hide sort Relation 
 end
 
 
-view AlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl:
-     BooleanAlgebraWithCompl to AlgebraOfBinaryRelations[sort Elem]
+spec AlgebraOfBinaryRelations[sort Elem] =
+     FullAlgebraOfBinaryRelations[sort Elem] 
+then  
+     type Rel < Relation
+then
+     ops
+	 0,1,id:Rel;
+         __cup__,__cap__,__cmps__:  Rel * Rel -> Rel;
+         compl,conv: Rel -> Rel
+hide sort Relation
+end
+
+
+
+view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl:
+     BooleanAlgebraWithCompl to SetAlgebraOfBinaryRelations[sort Elem]
 =
      sort Elem |-> Rel 
 end
@@ -122,16 +140,21 @@ view AlgebraOfBinaryRelations_as_RelationAlgebra:
 end
 
 
-spec BaseRelationModel[sort Elem] = 
+%( Part III: Models of Syntatic (Abstract) Relation Algebras 
+)%
+
+
+
+spec BaseRelationModel =
      Relation[sort Elem]       
 then 
      type BaseRel < Relation   
-%%     forall r:BaseRel . not rep(r) = emptySet
+%%    forall r:BaseRel . not rep(r) = emptySet
 end
 
 
-spec JEPDBaseRelationModel[sort Elem] =
-     BaseRelationModel[sort Elem]
+spec JEPDBaseRelationModel =
+     BaseRelationModel
 then
      forall x,y:Elem; r,s:BaseRel
      . exists r:BaseRel . (x,y) isIn rep(r)			%(JointlyExhaustive)%
@@ -139,25 +162,43 @@ then
 end
 
 
-spec GeneratePreModelFromBaseRelationModel[BaseRelationModel[sort Elem]] = %def
+spec GenerateBooleanAlgebraModel[JEPDBaseRelationModel] = %def
      type Rel = {x:Relation . exists X:Set(BaseRel) .  
 			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
 		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
 and
      SetAlgebraOfBinaryRelations[sort Elem]
+
+then %implies
+     type BaseRel < Rel
+end
+
+
+spec GenerateRelationAlgebraModel[JEPDBaseRelationModel] = 
+     GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
+then
+     ops
+         id:Rel;
+	 conv: Rel -> Rel;
+	 __cmps__: Rel * Rel -> Rel
+
+     forall r,s:Rel; x,y:Elem
+     . (x,y) isIn rep(id)  <=> x = y
+     . (x,y) isIn rep(conv(r)) <=> (y,x) isIn rep(r)
+     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
+end
+
+
+
+
+%[
+spec GenerateWeakRelationAlgebraModel[JEPDBaseRelationModel] = 
+     GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
 then %def
      ops
          id:Relation;
 	 conv: Rel -> Relation;
 	 __cmps__: Rel * Rel -> Relation
-
-%%	 conv: Rel ->? Rel;
-%%	 __cmps__: Rel * Rel ->? Rel
-
-%%   conv und cmps sollen spaeter genauer bestimmt (ueberladen) werden zu:
-%%   	 conv: Rel -> Rel;
-%%	 __cmps__: Rel * Rel -> Rel
-%%   Was ist besser?
 
      forall r,s:Rel; x,y:Elem
      . (x,y) isIn rep(id)  <=> x = y
@@ -166,72 +207,7 @@ then %def
 then %implies
      type BaseRel < Rel
 end
-
-
-
-
-%[ Following a  variant of the specifications above. Which one is better?
-
-spec Relation[sort Elem] = 
-     Set	
-then 
-     type Relation := Set(Elem*Elem)
-end
-
-
-spec AlgebraOfBinaryRelations[sort Elem] =
-	Relation[sort Elem]
-then
-     pred DefiniensOfRel:Relation
-     type Rel = {r:Relation . DefiniensOfRel r}
-     ops
-	 0,1,id:Rel;
-         __cup__,__cap__,__cmps__:  Rel * Rel -> Rel;
-         compl,conv:Rel -> Rel;
-
-     forall r,s:Rel; x,y:Elem
-     . 0 = emptySet:Set(Elem*Elem)
-     . 1 = allSet:Set(Elem*Elem)
-     . r cup s = r union s
-     . r cap s = r intersection s
-     . compl(r) = 1 \\ r
-     . (x,y) isIn r cmps s <=> exists z:Elem . (x,z) isIn r /\ (z,y) isIn s 
-     . (x,y) isIn conv(r) <=> (y,x) isIn r
-     . (x,y) isIn id <=> x = y
-
-then %implies 
-     ops
-         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
-	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;  
-         __cmps__: Rel * Rel -> Rel, assoc, unit id;
-     forall x:Rel
-     . compl(compl(x)) = x 
-     . conv(conv(x)) = x 
-end
-
-
-
-spec JEPDBase[sort Elem] =
-     Relation[sort Elem]
-then
-     pred DefiniensOfBaseRel:Relation
-     type BaseRel = {r:Relation . DefiniensOfBaseRel r}
-     forall x,y:Elem; r,s:BaseRel
-     . not r = emptySet
-     . exists r:BaseRel . (x,y) isIn r				%(JointlyExhaustive)%
-     . not r = s => r intersection s = emptySet			%(PairwiseDisjoint)%
-end
-
-
-spec GenerateRelationAlgebraModel[JEPDBase[sort Elem]] = %def
-     pred DefiniensOfRel:Relation
-     forall x:Relation
-     . DefiniensOfRel x <=> exists X:Set(BaseRel) .  
-			(forall y,z:Elem . (y,z) isIn x <=> 
-		(exists r:BaseRel . r isIn X /\ (y,z) isIn r))
-and
-     AlgebraOfBinaryRelations[sort Elem] 
-end
-     
-
 ]%
+
+
+

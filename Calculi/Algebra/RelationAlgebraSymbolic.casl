@@ -1,7 +1,7 @@
 library Calculi/Algebra/RelationAlgebraSymbolic
-version 0.1
+version 0.2
 %author: T. Mossakowski, K. Lüttich, S. Wölfl
-%date: 07-02-2005
+%date: 12-05-2005
 
 %( 
     This library contains specifications that describe how a relation
@@ -18,8 +18,10 @@ version 0.1
 from Basic/Numbers get Nat
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Auxiliary get Set
-from Calculi/Algebra/Auxiliary get AtomicBooleanAlgebra 
-from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra,RelationAlgebra
+from Calculi/Algebra/Auxiliary get BooleanAlgebra,
+	AtomicBooleanAlgebra, 	
+	ExtBooleanAlgebraByPartialOrder
+from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
 
 
 
@@ -36,7 +38,7 @@ spec SetRepresentationOfRelations[sort BaseRel] = %mono
 	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
              __intersection__ |-> __cap__ }
-then %def
+then %mono
      sort BaseRel < Rel
      ops 
 	    0,1 : Rel;
@@ -60,38 +62,65 @@ then %implies
 end
 
 
-view SetRepresentationOfRelations_as_AtomicBooleanAlgebra :
-     AtomicBooleanAlgebra to SetRepresentationOfRelations[sort BaseRel]
+
+spec BaseRelations =
+     sort BaseRel
+end
+
+
+spec GenerateRelations[BaseRelations] = %mono
+     SetRepresentationOfRelations[sort BaseRel]
+end
+
+
+spec BooleanAlgebraOfRelations =  
+     GenerateRelations[BaseRelations]
+end
+
+
+view BooleanAlgebraOfRelations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to BooleanAlgebraOfRelations
 = 
-     Elem |-> Rel, Atom |-> BaseRel
+     Elem |-> Rel, AtomElem |-> BaseRel
 end
 
 
 
-spec RelationBase[sort BaseRel] = 
-     SetRepresentationOfRelations[sort BaseRel]
-then
-     ops
+spec CompositionTable =
+     sorts BaseRel < Rel
+     ops 
          id	 : BaseRel;	 	 
-	 conv    : BaseRel -> BaseRel; 
+          1      : Rel;
+	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
          __cmps__: BaseRel * BaseRel -> Rel
      forall x:BaseRel
      . x cmps id = x
      . id cmps x = x
+end
+
+
+spec ConversesTable =
+     sorts BaseRel < Rel
+     ops 
+          id     : BaseRel;
+	  conv   : BaseRel -> BaseRel
+     forall x:BaseRel
      . conv(id) = id
      . conv(conv(x)) = x
 end
 
 
 
-spec GenerateRelationAlgebra[RelationBase[sort BaseRel]] = %mono
+spec GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][ConversesTable] = %mono
      ops 
 	  id	  : Rel;
           conv    : Rel -> Rel;
 	  __cmps__: Rel * Rel -> Rel       
 
      forall x,y:BaseRel; u,v:Rel
+     . conv(0) = 0
      . conv(u cup x) = conv(u) cup conv(x)
+     . x cmps 0 = 0 /\ 0 cmps x = 0
      . (u cup x) cmps (v cup y) =
 	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
 
@@ -102,100 +131,39 @@ end
 
 
 spec GeneratedRelationAlgebra = 
-     GenerateRelationAlgebra[RelationBase[sort BaseRel]]
+     GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][ConversesTable]
+end
+
+
+spec ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra] = %def
+     ExtBooleanAlgebraByPartialOrder[BooleanAlgebra with sort Elem |-> Rel]
+%%     preds 
+%%	__<__,__<=__,__>__,__>=__:Rel*Rel
+%%     forall x,y:Rel
+%%     . x < y  <=> x isSubsetOf y /\ not x = y
+%%     . x <= y <=> x isSubsetOf y
+%%     . x > y  <=> y isSubsetOf x /\ not x = y
+%%     . x >= y <=> y isSubsetOf x		
+end
+
+
+spec RichGeneratedRelationAlgebra = 
+     ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra]
+end
 
 
 view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
      AtomicRelationAlgebra 
 to
-     { GeneratedRelationAlgebra  
-	then %def
-	preds 
-		__<__,__<=__,__>__,__>=__:Rel*Rel
-	forall x,y:Rel
-	. x < y  <=> x isSubsetOf y /\ not x = y
-	. x <= y <=> x isSubsetOf y
-	. x > y  <=> y isSubsetOf x /\ not x = y
-	. x >= y <=> y isSubsetOf x
-     }
+     RichGeneratedRelationAlgebra  
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 
 
 
 
-spec CompositionTable =
-     sorts BaseRel < Rel
-     ops 
-          1      : Rel;
-	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
-            compl: Rel -> Rel;
-	     conv: BaseRel -> BaseRel;
-	 __cmps__: BaseRel * BaseRel -> Rel;
-end
 
 
 
-
-%(
-     Following one finds a template of how to specify a relation calculus
-     based on a set of base relations and a composition table.
-)%
-
-
-spec BaseRelationsOfCalculus = %mono
-     free type BaseRel ::= relation1 | relation2
-end
-
-
-spec CompositionTableOfCalculus =
-     sort BaseRel
-     ops relation1,relation2: BaseRel    
-and
-     CompositionTable 
-then
-     . conv(relation1) = relation1
-     . conv(relation2) = relation2
-     . relation1 cmps relation1 = relation1
-     . relation1 cmps relation2 = relation2
-     . relation2 cmps relation1 = relation2
-     . relation2 cmps relation2 = relation2
-end
-
-
-spec RelationBaseOfCalculus = 
-     SetRepresentationOfRelations[BaseRelationsOfCalculus] 
-and
-     CompositionTableOfCalculus
-end
-
-
-
-view RelationBaseOfCalculus_as_RelationBase[BaseRelationsOfCalculus] :
-     RelationBase[sort BaseRel] to RelationBaseOfCalculus
-=
-     op id:BaseRel |-> relation1
-end
-
-
-spec Calculus = 
-     GenerateRelationAlgebra [RelationBaseOfCalculus fit op id:BaseRel |-> relation1]
-end
-
-
-view Calculus_as_AtomicRelationAlgebra :
-     AtomicRelationAlgebra to 
-     { Calculus	then %def
-	preds 
-		__<__,__<=__,__>__,__>=__:Rel*Rel
-	forall x,y:Rel
-	. x < y  <=> x isSubsetOf y /\ not x = y
-	. x <= y <=> x isSubsetOf y
-	. x > y  <=> y isSubsetOf x /\ not x = y
-	. x >= y <=> y isSubsetOf x
-     }
-=
-     Rel |-> Rel , AtomRel |-> BaseRel
-end
 
 

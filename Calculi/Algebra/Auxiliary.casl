@@ -16,7 +16,9 @@ from Basic/StructuredDatatypes get GenerateSet
 from Basic/RelationsAndOrders version 0.7 get  
 	PartialOrder,StrictOrder, 
 	BooleanAlgebra, RichBooleanAlgebra
-
+from Basic/Algebra_I version 1.0 get  
+	Monoid
+	
 
 spec ExtBooleanAlgebraByCompl[BooleanAlgebra] = %def
  
@@ -59,14 +61,16 @@ end
 spec AtomicBooleanAlgebra =
      { BooleanAlgebraWithPartialOrder hide pred Atom }
 then
-     sort Atom = {x: Elem . not x = 0 /\ (forall y:Elem . y < x => y = 0)}
+     sort AtomElem = {x: Elem . not x = 0 /\ (forall y:Elem . y < x => y = 0)}
      forall x:Elem
-     . not x = 0 => (exists y:Atom . y <= x) 	
+     . not x = 0 => (exists y:AtomElem . y <= x) 	
 end
 
 
 spec Set [sort Elem] = %mono
      GenerateSet [sort Elem]
+then
+     GenerateSet [sort Set[Elem]]
 then %def
      preds  isNonEmpty:       Set[Elem];
           __ isSubsetOf __: Set[Elem] * Set[Elem]
@@ -76,6 +80,7 @@ then %def
          __ intersection __, 
          __ union__,
          __ - __:  Set[Elem] * Set[Elem] -> Set[Elem];
+         Union: Set[Set[Elem]] -> Set[Elem]
 
      %% implied operation attributes
 
@@ -84,7 +89,7 @@ then %def
 			assoc, comm, idem, unit {}; %implied
          __ intersection __ : Set[Elem] * Set[Elem] -> Set[Elem],
                        assoc, comm, idem;   %implied
-     forall x,y: Elem; M,N,O: Set[Elem]
+     forall x,y: Elem; M,N,O: Set[Elem]; X:Set[Set[Elem]]
      %% axioms concerning predicates
      . isNonEmpty(M) <=> not M = {}             %(isNonEmpty_def)%
      . M isSubsetOf N <=> 
@@ -111,6 +116,7 @@ then %def
      . O intersection (M union N) = 
          (O intersection M) union (O intersection N)
                                                 %(distr2_Set)% %implied
+     . x eps Union(X) <=> exists M:Set[Elem]. M eps X /\ x eps M 
 then %implies
      forall x,y: Elem; M,N:Set[Elem]
      . M isSubsetOf (M union N)                 %(union_isSubsetOf)%
@@ -128,6 +134,36 @@ view Set_as_PartialOrder  [sort Elem] :
 end
 
 
+
+spec PowerSet [Set[sort Elem] then op X: Set[Elem]] = %mono
+     sorts PowerSet[X]= { Y: Set[Elem] . Y isSubsetOf X };
+           Elem[X] = { x : Elem . x eps X }
+     preds __ eps__:         Elem[X] * PowerSet[X];
+           __ isSubsetOf __: PowerSet[X] * PowerSet[X];
+           isNonEmpty: PowerSet[X]
+     ops   {}, X :           PowerSet[X];
+      %%     #__:              PowerSet[X] -> Nat;
+           __ + __ : Elem[X] * PowerSet[X] -> PowerSet[X];
+           __ - __ : PowerSet[X] * Elem[X] -> PowerSet[X];
+           __ intersection __, 
+           __ union__,
+           __ - __,
+           __ symDiff __:  PowerSet[X] * PowerSet[X] ->   PowerSet[X];
+
+     %% implied operation attributes
+
+     ops  __ union __ : PowerSet[X] * PowerSet[X] -> PowerSet[X],
+                        assoc, comm, idem, unit {}; %implied
+          __ intersection __ : PowerSet[X] * PowerSet[X] -> PowerSet[X],
+                              assoc, comm, idem;    %implied
+     %% important laws
+     
+     forall M,N,O: PowerSet[X]
+     . (M union N) intersection O = 
+       (M intersection O) union (N intersection O) %(distr1_PowerSet)% %implied
+     . O intersection (M union N) = 
+      (O intersection M) union (O intersection N) %(distr2_PowerSet)% %implied
+end
 
 
 
@@ -181,6 +217,7 @@ then %implies
      . Convex(convexhull(X)) 
 end 
 
+logic HasCASL
 
 spec ExtStrictPartialOrderBySetRelations[StrictPartialOrder] = 
      ExtStrictPartialOrderByRelations[StrictPartialOrder]
@@ -210,6 +247,34 @@ then %def
 end
 
 
+
+logic CASL
+
+spec SemiGroup =
+     sort Elem
+     op  __ * __: Elem * Elem -> Elem, assoc
+end
+
+
+spec InvolutedSemiGroup =
+     SemiGroup
+then 
+     op inv:Elem -> Elem
+     forall x,y:Elem
+     . inv(x * y) = inv(y) * inv(x) 
+     . inv(inv(x)) = x
+end
+
+
+spec InvolutedMonoid =
+     Monoid
+then 
+     op inv:Elem -> Elem
+     forall x,y:Elem
+     . inv(x * y) = inv(y) * inv(x) 
+     . inv(inv(x)) = x
+     . inv(e) = e
+end
 
 
 

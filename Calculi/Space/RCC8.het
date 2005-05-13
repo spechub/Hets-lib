@@ -18,7 +18,7 @@ from Calculi/Algebra/RelationAlgebra get
 	AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-     	GenerateRelationAlgebra,
+	GenerateRelationAlgebra,
 	RelationBase,
 	SetRepresentationOfRelations
 from Calculi/Algebra/RelationAlgebraModel get 
@@ -80,7 +80,7 @@ end
 
 spec CompositionTableOfRCC8 =
      sort BaseRel
-     ops dc,ec,po,tpp,ntpp,tppi,ntppi,eq: BaseRel
+     ops dc ,ec ,po ,tpp ,ntpp ,tppi ,ntppi ,eq: BaseRel
 and 
      CompositionTable 
 then
@@ -137,8 +137,8 @@ end
 
 view RelationBaseOfRCC8_as_RelationBase[BaseRelationsOfRCC8] :
      RelationBase[sort BaseRel] to RelationBaseOfRCC8
-=
-     op id:BaseRel |-> eq
+=		
+	op id : BaseRel |-> eq
 end
 
 
@@ -204,9 +204,9 @@ spec GeneratePreOpenDiscModelOfRCC8[MetricSpace] = %def
       GeneratePreModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC8[MetricSpace]
 	fit sort Elem |-> OpenDisc]
 then %cons  
-     ops  eqRel: Rel;
-          conv: BaseRel -> BaseRel;
-          conv: Rel -> Rel
+     ops eqRel: Rel;
+	conv: BaseRel -> BaseRel;
+	conv: Rel -> Rel
 end
 
 
@@ -249,7 +249,7 @@ view MetricSpace_induces_OpenDiscModelOfRCC8 :
 to 
     GenerateOpenDiscModelOfRCC8[MetricSpace]
 =   
-    ops dc|->dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel, 
+    ops dc |-> dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel, 
 	tppi|->tppiRel, ntppi|->ntppiRel, eq|->eqRel, 
         id |-> eqRel
 end

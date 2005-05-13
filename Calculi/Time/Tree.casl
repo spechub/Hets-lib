@@ -177,16 +177,17 @@ end
 
 
 spec DnsTreeSEnd = 
-     { DnsTree and TreeSEnd 
-	then %implies
-     DnsFlowOfTimeSEnd }
-
+     { DnsTree and TreeSEnd }
 then %implies
      forall x,y:Node			      
     . x uncmp y => (exists z:Node. x uncmp z /\ z suc y)
 							%(help_4)%
 end
 
+
+view DnsTreeSEnd_as_DnsFlowOfTimeSEnd:
+	DnsFlowOfTimeSEnd to DnsTreeSEnd
+end
 
 
 spec BranchingDnsTreeSEnd = 

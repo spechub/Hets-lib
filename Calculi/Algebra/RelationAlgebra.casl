@@ -1,7 +1,7 @@
 library Calculi/Algebra/RelationAlgebra
-version 0.2
+version 0.3
 %author: T. Mossakowski, K. Lüttich, S. Wölfl
-%date: 07-02-2005
+%date: 11-05-2005
 
 %( 
     This library defines some basic concepts from the 
@@ -9,17 +9,122 @@ version 0.2
 )%
 
 
-%left_assoc __cup__,__cap__
+%left_assoc __cup__,__cap__,__cmps__
 %prec {__cup__} < {__cmps__} 
 %prec {__cmps__} < {__cmpl__} 
 
 
 from Basic/Numbers get Nat
-from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra
+%% from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra
 %% from Basic/StructuredDatatypes get Set
-from Calculi/Algebra/Auxiliary get Set
-from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
-		ExtBooleanAlgebraByPartialOrder,AtomicBooleanAlgebra 
+%% from Calculi/Algebra/Auxiliary get Set
+%% from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
+%%	ExtBooleanAlgebraByPartialOrder,
+%%	AtomicBooleanAlgebra,
+%%	InvolutedSemiGroup,
+	%% InvolutedMonoid	 
+
+
+%(
+Das folgende ist nur hier, um wirklich alle Axiome und Theoreme zu haben.
+)%
+
+spec BooleanAlgebra =
+
+     sort Elem
+
+     ops 0,1:       Elem;
+         __ cap __: Elem * Elem -> Elem, assoc, comm, unit 1;
+         __ cup __: Elem * Elem -> Elem, assoc, comm, unit 0;
+
+     forall x,y,z:Elem
+
+     . x cap ( x cup y) = x             %(absorption_def1)%
+     . x cup ( x cap y) = x             %(absorption_def2)%
+
+     . x cap 0 = 0                      %(zeroAndCap)%
+     . x cup 1 = 1                      %(oneAndCup)%
+
+     . x cap ( y cup z) = (x cap y) cup ( x cap z)             
+                                        %(distr1_BooleanAlgebra)%
+     . x cup ( y cap z) = (x cup y) cap ( x cup z)             
+                                        %(distr2_BooleanAlgebra)%
+
+     . exists x': Elem . x cup x' = 1 /\ x cap x' = 0             
+                                        %(inverse_BooleanAlgebra)%
+
+then %implies
+
+     op __ cup __, __ cap __ : Elem * Elem -> Elem , idem
+
+     forall x: Elem
+     . exists! x': Elem . 
+         x cup x' = 1 /\ x cap x' = 0   %(uniqueComplement_BooleanAlgebra)%
+end
+
+
+spec ExtBooleanAlgebraByCompl[BooleanAlgebra] = %def
+ 
+     op compl: Elem -> Elem
+
+     forall x,y:Elem
+     . compl(x)=y <=> x cup y = 1 /\ x cap y = 0    
+                                            %(compl_def_ExtBooleanAlgebra)%
+then %implies
+     forall x,y: Elem
+     . compl(0) = 1
+     . compl(1) = 0
+     . compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%
+     . compl(x cup y) = compl(x) cap compl(y)             %(de_Morgan2)%
+     . compl(compl(x)) = x        %(involution_compl_ExtBooleanAlgebra)%
+end
+
+spec BooleanAlgebraWithCompl = ExtBooleanAlgebraByCompl[BooleanAlgebra]
+
+
+spec ExtBooleanAlgebraByPartialOrder[BooleanAlgebra] = %def
+
+     preds 
+	   __ <= __, __ < __,  __ >= __, __ > __: Elem * Elem;
+	   Atom: Elem
+     forall x,y:Elem
+     . x <= y <=> x cap y = x           %(leq_def_ExtBooleanAlgebra)%
+     . x >= y <=> y <= x                %(geq_def_ExtBooleanAlgebra)%
+     . x < y <=> (x <= y /\ not (x=y))  %(less_def_ExtBooleanAlgebra)%
+     . x > y <=> y < x                  %(greater_def_ExtBooleanAlgebra)%
+     . Atom(x) <=> not x = 0 /\ (forall y:Elem . y < x => y = 0) %(def_Atom)%
+end
+
+
+spec BooleanAlgebraWithPartialOrder = 
+	ExtBooleanAlgebraByPartialOrder[BooleanAlgebra]
+end
+
+
+spec AtomicBooleanAlgebra =
+     { BooleanAlgebraWithPartialOrder hide pred Atom }
+then
+     sort AtomElem = {x: Elem . not x = 0 /\ (forall y:Elem . y < x => y = 0)}
+     forall x:Elem
+     . not x = 0 => (exists y:AtomElem . y <= x) 	
+end
+
+
+spec Monoid =
+     sort Elem
+     ops  e:       Elem;
+          __ * __: Elem * Elem -> Elem, assoc, unit e
+end
+
+spec InvolutedMonoid =
+     Monoid
+then 
+     op inv:Elem -> Elem
+     forall x,y:Elem
+     . inv(x * y) = inv(y) * inv(x) 
+     . inv(inv(x)) = x
+     . inv(e) = e
+end
 
 
 
@@ -33,26 +138,35 @@ from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
 
 spec RelationAlgebra  =
      BooleanAlgebraWithCompl with sort Elem |-> Rel 
-then
-     ops
-	        id: Rel;
-	      conv: Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel, assoc, unit id;
-	
-     forall x,y,z: Rel
-     . conv(conv(x)) = x					%(conv_idempot)%
-     . conv(x cup y) = conv(x) cup conv(y)			%(conv_cup)%
-     . conv(compl(x)) = compl(conv(x))				%(conv_compl)%
-     . conv(x cmps y) = conv(y) cmps conv(x)			%(conv_cmps)%
-     . (x cmps y) cap conv(z) = 0 => (y cmps z) cap conv(x) = 0 %(triangle)% 
+and
+     InvolutedMonoid with sort Elem |-> Rel, 
+			   ops __*__ |-> __cmps__, 
+				 inv |-> inv, 
+                                   e |-> id
 
-then %implies
-     forall x,y,z: Rel
+then 
+     forall x,y,z:Rel
      . (x cup y) cmps z = (x cmps z) cup (y cmps z)		%(cmps_cup_rdistrib)%
+     . inv(x cup y) = inv(x) cup inv(y)				%(inv_cup)%
+     . inv(0) = 0						%(inv_0)%
+     . 0 cmps x = 0						%(rcmps_0)%
+     . inv(compl(x)) = compl(inv(x))				%(inv_compl)%
+     . x cup (1 cmps x) = 1 cmps x				%(compl_cl_1)%
+     . compl(1 cmps x) = 1 cmps compl(1 cmps x)		        %(compl_cl_2)%
+     
+
+
+then %implies 
+     forall x,y,z:Rel
+     . x cmps 0 = 0						%(lcmps_0)%
      . z cmps (x cup y) = (z cmps x) cup (z cmps y)	  	%(cmps_cup_ldistrib)%
-     . (conv(x) cmps compl(x cmps y)) cap y = 0                 %(RelAlg)%
-     . (x cmps y) cap z = 0 => (conv(x) cmps z) cap y = 0 	%(lPeircean)%
-     . (x cmps y) cap z = 0 => (z cmps conv(y)) cap x = 0 	%(rPeircean)%
+	%% Das folgende muesste schon als Axiom vorhanden sein:
+     . inv(x cmps y) = inv(y) cmps inv(x)			%(inv_cmps)%
+     . (x cmps y) cap inv(z) = 0 => (y cmps z) cap inv(x) = 0 	%(triangle)% 
+     . (inv(x) cmps compl(x cmps y)) cap y = 0                 	%(RelAlg)%
+     . (x cmps y) cap z = 0 => (inv(x) cmps z) cap y = 0 	%(lPeircean)%
+     . (x cmps y) cap z = 0 => (z cmps inv(y)) cap x = 0 	%(rPeircean)%
+     
 end
 
 
@@ -62,8 +176,19 @@ spec ExtRelationAlgebraByPartialOrder[RelationAlgebra] = %def
 then %implies
     forall x,y,z,x',y': Rel
     . x <= x' /\ y <= y' => x cmps y <= x' cmps y'    		%(cmps_monotonic)%
-    . x <= id => conv(x) = x					%(conv_below_id)%
-    . conv(id) = id						%(conv_id)%
+    . x <= id => inv(x) = x					%(inv_below_id)%
+	%% Das folgende muesste schon als Axiom vorhanden sein:
+    . inv(id) = id						%(inv_id)%
+    . x cmps y <= z => inv(x) cmps compl(z) <= compl(y)		%(schreoeder_1)%
+    . inv(x) cmps compl(z) <= compl(y)  =>  compl(z) cmps inv(y) <= compl(x)
+								%(schreoeder_2)%
+    . compl(z) cmps inv(y) <= compl(x)  => x cmps y <= z  	%(schreoeder_3)%
+    . (x cmps y) cap z <= (x cap (z cmps inv(y))) cmps (y cap (inv(x) cmps z))
+								%(dedekind)%
+    . x cmps (y cap z) <= (x cmps y) cap (x cmps z)		%(cmps_cap_lsubdistrib)%
+    . (y cap z) cmps x <= (y cmps x) cap (z cmps x)		%(cmps_cap_rsubdistrib)%
+	%% Das folgende gilt vermutlich nicht:
+    . not x = 0 => 1 cmps x cmps 1 = 1				%(tarski)%
 end
 
 
@@ -85,7 +210,7 @@ spec SymmetricRelationAlgebra =
      RelationAlgebra
 then 
      forall x:Rel
-     . conv(x) = x
+     . inv(x) = x
 end
 
 
@@ -101,7 +226,7 @@ end
 spec AtomicRelationAlgebra = 
      { RelationAlgebraWithPartialOrder hide pred Atom }
 and
-     AtomicBooleanAlgebra with sort Elem |-> Rel, Atom |-> AtomRel
+     AtomicBooleanAlgebra with sort Elem |-> Rel, AtomElem |-> AtomRel
 end
 
 
