@@ -1,7 +1,7 @@
 library FlipFlop_FO
-version 0.1
+version 0.3
 %author: T. Soller
-%date: 18-11-04
+%date: 20-04-05
 %%Calculi Flip-Flop and Extension -- First order theory
 
 
@@ -13,13 +13,13 @@ sort Point
 %% some ternary relations in infix notation
 
 preds
-	__ __so__ : Point * Point * Point; %(referent same as origin)%
-	__ __sr__ : Point * Point * Point; %(referent same as relatum)%
-	__ __bo__ : Point * Point * Point; %(referent behind origin)%
-	__ __fr__ : Point * Point * Point; %(referent front)%
-	__ __ba__ : Point * Point * Point; %(referent back)%
-	__ __ri__ : Point * Point * Point; %(referent right)%
-	__ __le__ : Point * Point * Point  %(referent left)%
+	__ __so__ : Point * Point * Point; %{referent same as origin}%
+	__ __sr__ : Point * Point * Point; %{referent same as relatum}%
+	__ __bo__ : Point * Point * Point; %{referent behind origin}%
+	__ __fr__ : Point * Point * Point; %{referent front}%
+	__ __ba__ : Point * Point * Point; %{referent back}%
+	__ __ri__ : Point * Point * Point; %{referent right}%
+	__ __le__ : Point * Point * Point  %{referent left}%
 
 then %def
 
@@ -28,12 +28,11 @@ forall x,y,z : Point
 . x y so z <=> (x = z) /\ not (x = y)
 . x y sr z <=> (y = z) /\ not (x = y)
 
-
 then %implies
 
 forall x,y,z,w : Point
 
-%% transformations (generalize the converses of binary relations)
+%% transformations (generalize the converses concept of binary relations)
 
 . x y so z <=> y x sr z
 . x y so z <=> y z sr x 
@@ -73,12 +72,10 @@ forall x,y,z,w : Point
 . x y bo z <=> z x ba y
 . x y bo z <=> z y fr x
 
-
 %% composition:  x y R1 w /\ w y R2 z => x y R3 z
 
-. x y ri w /\ w y ri z => x y ri z \/ x y le z \/ x y ba z
-. x y ri w /\ w y le z => x y ri z \/ x y le z \/ x y fr z \/ x y bo z \/ 
-			   x y so z
+. x y ri z \/ x y le z \/ x y ba z <=> (exists w1 : Point . x y ri w1 /\ w1 y ri z)
+. x y ri w /\ w y le z => x y ri z \/ x y le z \/ x y fr z \/ x y bo z \/ x y so z
 . x y ri w /\ w y ba z => x y le z
 . x y ri w /\ w y fr z => x y ri z
 . x y ri w /\ w y bo z => x y ri z
@@ -134,7 +131,6 @@ forall x,y,z,w : Point
 . x y sr w /\ w y so z => false
 . x y sr w /\ w y sr z => false
 
-
 end
 
 
@@ -148,8 +144,8 @@ then
 %% additional base relations
 
 preds
-	__ __tri__ : Point * Point * Point; %(origin=relatum=referent)%
-	__ __dou__ : Point * Point * Point; %(origin=relatum, referent diff.)%
+	__ __tri__ : Point * Point * Point; %{origin=relatum=referent}%
+	__ __dou__ : Point * Point * Point; %{origin=relatum, referent diff.}%
 
 then %def
 
@@ -158,7 +154,6 @@ forall x,y,z : Point
 . x y tri z <=> (x = y) /\ (y = z)
 . x y dou z <=> (x = y) /\ not (y = z)
 
-
 then %implies
 
 forall x,y,z,w : Point
@@ -166,7 +161,6 @@ forall x,y,z,w : Point
 %% 'reflexive'
 
 . x x tri x
-
 
 %% additional transformations
 
@@ -187,7 +181,6 @@ forall x,y,z,w : Point
 
 . x y sr z <=> y z dou x 
 . x y sr z <=> z y dou x
-
 
 %% additional compositions
 
@@ -213,13 +206,13 @@ forall x,y,z,w : Point
 			    x y bo z \/ x y so z 
 . x y sr w /\ w y tri z => x y sr z
 
-. x y dou w /\ w y ri z => x y ri z
-. x y dou w /\ w y le z => x y ri z
-. x y dou w /\ w y ba z => x y ri z
-. x y dou w /\ w y fr z => x y le z
-. x y dou w /\ w y bo z => x y le z
-. x y dou w /\ w y so z => x y le z
-. x y dou w /\ w y sr z => x y sr z
+. x y dou w /\ w y ri z => x y dou z
+. x y dou w /\ w y le z => x y dou z
+. x y dou w /\ w y ba z => x y dou z
+. x y dou w /\ w y fr z => x y dou z
+. x y dou w /\ w y bo z => x y dou z
+. x y dou w /\ w y so z => x y dou z
+. x y dou w /\ w y sr z => x y tri z
 . x y dou w /\ w y dou z => false
 . x y dou w /\ w y tri z => false
 
@@ -232,6 +225,5 @@ forall x,y,z,w : Point
 . x y tri w /\ w y sr z => false
 . x y tri w /\ w y dou z => x y dou z
 . x y tri w /\ w y tri z => x y tri z
-
 
 end
