@@ -1,7 +1,7 @@
 library FlipFlop
-version 0.3
+version 0.5
 %author: T. Soller
-%date: 20-03-05
+%date: 20-04-05
 %%Calculus Flip-Flop and Extension
 
 
@@ -20,7 +20,7 @@ spec Set1[sort BaseRel] given Nat =
       __union__ |-> __cup__, __intersection__ |-> __cap__
 then
   sort BaseRel < GenRel
-   ops id : GenRel;
+   ops id : BaseRel;
        1  : GenRel;
        0  : GenRel = {};
        trans132, trans213, trans231, trans312, trans321 : BaseRel -> BaseRel;
@@ -32,6 +32,12 @@ then
   . x eps 1
   . not x eps 0
   . compl(r) = 1 - r
+
+  . trans132(id) = id
+  . trans213(id) = id
+  . trans231(id) = id 
+  . trans312(id) = id
+  . trans321(id) = id
 
   . trans132(trans132(x)) = x
   . trans213(trans213(x)) = x
@@ -47,23 +53,11 @@ spec GenerateRelationAlgebra
      [Set1[sort BaseRel]] = %mono 
 
   ops trans132, trans213, trans231, trans312, trans321 : GenRel -> GenRel;
-      __ cmps __: GenRel * GenRel -> GenRel, assoc, unit id; 
-      
-					                                     
+      __ cmps __: GenRel * GenRel -> GenRel, assoc; 
+      				                                     
   forall x,y:BaseRel; u,v:GenRel
-
-  . x cmps id = x
-  . id cmps x = x
-
-  . trans132(id) = id
-  . trans213(id) = id
-  . trans231(id) = id 
-  . trans312(id) = id
-  . trans321(id) = id
-
   . (x cup u) cmps (y cup v) = (((x cmps y cup (x cmps v)) cup (u cmps y)) cup
 			       (u cmps v))  			      
-
   . trans132(x cup u) = trans132(x) cup trans132(u)
   . trans213(x cup u) = trans213(x) cup trans213(u)
   . trans231(x cup u) = trans231(x) cup trans231(u)
@@ -81,8 +75,6 @@ spec FlipFlopBase =
 then
 
 . 1 = tri cup dou cup so cup sr cup bo cup fr cup ba cup ri cup le 
-
-. id = (tri cup so)
 
 %% transformations
 
@@ -236,8 +228,8 @@ then
 
 end
  
-spec FlipFlop = GenerateRelationAlgebra [FlipFlopBase]
-then
+spec FlipFlop = GenerateRelationAlgebra [FlipFlopBase fit op id : BaseRel |-> tri]
+then %implies
   forall x,y:BaseRel     
   . not x = y => x cap y = 0 %(PairwiseDisjoint)%
 
