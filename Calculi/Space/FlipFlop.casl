@@ -1,7 +1,7 @@
-library FlipFlop
-version 0.5
+library Calculi/Space/FlipFlop
+version 0.6
 %author: T. Soller
-%date: 20-04-05
+%date: 20-05-05
 %%Calculus Flip-Flop and Extension
 
 
@@ -14,30 +14,24 @@ from Basic/StructuredDatatypes get Set
 from Basic/Numbers get Nat
 
 
-
 spec Set1[sort BaseRel] given Nat =
   Set[sort BaseRel fit Elem |-> BaseRel] with Set[BaseRel] |-> GenRel,
       __union__ |-> __cup__, __intersection__ |-> __cap__
 then
   sort BaseRel < GenRel
-   ops id : BaseRel;
+
+  ops id : GenRel;
        1  : GenRel;
        0  : GenRel = {};
        trans132, trans213, trans231, trans312, trans321 : BaseRel -> BaseRel;
        __cmps__ : BaseRel * BaseRel -> GenRel;
        compl : GenRel -> GenRel
 
-  forall x:BaseRel; r:GenRel
+  forall x:BaseRel; u:GenRel
   . x = {x}
   . x eps 1
   . not x eps 0
-  . compl(r) = 1 - r
-
-  . trans132(id) = id
-  . trans213(id) = id
-  . trans231(id) = id 
-  . trans312(id) = id
-  . trans321(id) = id
+  . compl(u) = 1 - u
 
   . trans132(trans132(x)) = x
   . trans213(trans213(x)) = x
@@ -53,11 +47,16 @@ spec GenerateRelationAlgebra
      [Set1[sort BaseRel]] = %mono 
 
   ops trans132, trans213, trans231, trans312, trans321 : GenRel -> GenRel;
-      __ cmps __: GenRel * GenRel -> GenRel, assoc; 
-      				                                     
+      __cmps__: GenRel * GenRel -> GenRel, assoc, unit id;
+
+      		                                     
   forall x,y:BaseRel; u,v:GenRel
+
+  . trans321(id) = id
+
   . (x cup u) cmps (y cup v) = (((x cmps y cup (x cmps v)) cup (u cmps y)) cup
 			       (u cmps v))  			      
+
   . trans132(x cup u) = trans132(x) cup trans132(u)
   . trans213(x cup u) = trans213(x) cup trans213(u)
   . trans231(x cup u) = trans231(x) cup trans231(u)
@@ -75,6 +74,9 @@ spec FlipFlopBase =
 then
 
 . 1 = tri cup dou cup so cup sr cup bo cup fr cup ba cup ri cup le 
+
+%% id relation for 3x1 composition and 321-transformation
+. id = tri cup so
 
 %% transformations
 
@@ -133,7 +135,7 @@ then
 . trans321(tri) = tri
 
 
-%% composition table
+%% composition table 3x1-composition
 
 . ri cmps ri = ri cup le cup ba 
 . ri cmps le = ri cup le cup fr cup bo cup so 
@@ -228,7 +230,8 @@ then
 
 end
  
-spec FlipFlop = GenerateRelationAlgebra [FlipFlopBase fit op id : BaseRel |-> tri]
+spec FlipFlop = GenerateRelationAlgebra [FlipFlopBase]
+
 then %implies
   forall x,y:BaseRel     
   . not x = y => x cap y = 0 %(PairwiseDisjoint)%
