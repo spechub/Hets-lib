@@ -52,8 +52,8 @@ then %mono
 
 then %implies
      ops
-	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
-          __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+          __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
  
      forall x,y:BaseRel; r:Rel
      . not x = y => x cap y = 0		
@@ -99,6 +99,7 @@ spec CompositionTable =
 end
 
 
+
 spec ConversesTable =
      sorts BaseRel < Rel
      ops 
@@ -137,13 +138,14 @@ end
 
 spec ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra] = %def
      ExtBooleanAlgebraByPartialOrder[BooleanAlgebra with sort Elem |-> Rel]
-%%     preds 
-%%	__<__,__<=__,__>__,__>=__:Rel*Rel
-%%     forall x,y:Rel
-%%     . x < y  <=> x isSubsetOf y /\ not x = y
-%%     . x <= y <=> x isSubsetOf y
-%%     . x > y  <=> y isSubsetOf x /\ not x = y
-%%     . x >= y <=> y isSubsetOf x		
+then %def
+     preds 
+	__<__,__<=__,__>__,__>=__:Rel*Rel
+     forall x,y:Rel
+     . x < y  <=> x isSubsetOf y /\ not x = y
+     . x <= y <=> x isSubsetOf y
+     . x > y  <=> y isSubsetOf x /\ not x = y
+     . x >= y <=> y isSubsetOf x		
 end
 
 
@@ -159,11 +161,4 @@ to
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 
-
-
-
-
-
-
-
 
