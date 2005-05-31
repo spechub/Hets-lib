@@ -1,11 +1,12 @@
 library Calculi/Space/TopologicalCalculi
 
 
-from Calculi/Space/RCC5 get RCC5,GenerateOpenDiscModelOfRCC5
-from Calculi/Space/RCC8 get RCC8,GenerateOpenDiscModelOfRCC8
-from HasCASL/MetricSpaces get MetricSpace
+from Calculi/Space/RCC5 get RCC5,GenerateOpenDiscModelOfRCC5 |-> OpenDiscModelOfRCC5
+from Calculi/Space/RCC8 get RCC8,GenerateOpenDiscModelOfRCC8 |-> OpenDiscModelOfRCC8
+from HasCASL/MetricSpaces get MetricSpace |-> EuclideanPlane
+from HasCASL/TopologicalSpaces get TopologicalSpace_Kuratowski |-> TopologicalSpace
 from Calculi/Time/IntervalAlgebraLin get IntervalAlgebraLin |-> AllenIA
-from Calculi/Time/IntervalAlgebraLin get GenerateAllenModelOfIntervalAlgebraLin |-> GenerateAllenModelOfIA
+from Calculi/Time/IntervalAlgebraLin get GenerateAllenModelOfIntervalAlgebraLin |-> AllenModelOfIA
 from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
 
 view RCC5_to_RCC8 :
@@ -20,6 +21,7 @@ to   { RCC8
 =    sort BaseRel |-> Rel 
 end
 
+%( Nicht korrekt:
 view RCC8_to_AllenIA :
      RCC8 
 to   { AllenIA then %def
@@ -35,26 +37,40 @@ to   { AllenIA then %def
 	}
 =    sort BaseRel |-> Rel 
 end
+)%
 
+
+view RCC5_to_AllenIA :
+     RCC5 
+to   { AllenIA then %def
+       ops dr,po,pp,ppi,eq: Rel
+       . dr = b cup bi cup m cup mi
+       . po = o cup oi
+       . pp = s cup f cup d
+       . ppi = si cup fi cup di
+       . eq = e 
+	}
+=    sort BaseRel |-> Rel 
+end
 
 logic HasCASL
 
-view MetricSpace_induces_OpenDiscModelOfRCC5 :
+view EuclideanPlane_induces_OpenDiscModelOfRCC5 :
      { RCC5 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } 
 to 
-    GenerateOpenDiscModelOfRCC5[MetricSpace]
+    OpenDiscModelOfRCC5[EuclideanPlane]
 =   
     ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel, 
         id |-> eqRel
 end
 
 
-view MetricSpace_induces_OpenDiscModelOfRCC8 :
+view EuclideanPlane_induces_OpenDiscModelOfRCC8 :
      { RCC8 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
 to 
-    GenerateOpenDiscModelOfRCC8[MetricSpace]
+    OpenDiscModelOfRCC8[EuclideanPlane]
 =   
     ops dc|->dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel, 
 	tppi|->tppiRel, ntppi|->ntppiRel, eq|->eqRel, 
@@ -65,7 +81,7 @@ view DnsLinFlowOfTimeSEnd_induces_AllenModelOfIntervalAlgebraLin :
      { AllenIA hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } 
 to 
-    GenerateAllenModelOfIA[DnsLinFlowOfTimeSEnd]
+    AllenModelOfIA[DnsLinFlowOfTimeSEnd]
 =   
     ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
 	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
