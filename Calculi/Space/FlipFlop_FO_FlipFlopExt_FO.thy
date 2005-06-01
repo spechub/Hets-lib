@@ -224,9 +224,8 @@ proof -
 qed
 
 
-declare X85 [simp del]
 declare X18 [simp del]
-declare X42 [simp del]
+
 
 theorem assumes an: "((sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)) & ((le p21 p22 p31 & le p21 p22 p32) & (le p31 p32 p21 & le p31 p32 p22))" shows "(ri p11 p12 p31 & ri p11 p12 p32) & (le p31 p32 p11 & le p31 p32 p12)"
 proof
@@ -667,9 +666,9 @@ proof -
 
   from d1 d3 have "(bo p31 p11 p21 | ba p31 p11 p21 | dou p31 p11 p21) & fr p21 p11 p12" ..
   then have "(bo p31 p11 p21 & fr p21 p11 p12) | (ba p31 p11 p21 & fr p21 p11 p12) | (dou p31 p11 p21 & fr p21 p11 p12)" by (auto)
-  with X64 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p21 & fr p21 p11 p12) | (dou p31 p11 p21 & fr p21 p11 p12)" by (auto)
-  with X50 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p21 & fr p21 p11 p12)" by (auto)
-  with X116 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p12)" by (auto)
+  with X64 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p21 & fr p21 p11 p12) | (dou p31 p11 p21 & fr p21 p11 p12)" by (fast)
+  with X50 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p21 & fr p21 p11 p12)" by (fast)
+  with X116 have "(fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p12)" by (fast)
   then have "((ba p11 p12 p31 | bo p31 p11 p12) | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p12)" by (simp add : X25 ) -- "trans231"
   then have "((ba p11 p12 p31 | fr p11 p12 p31) | so p31 p11 p12) | (ba p31 p11 p12) | (dou p31 p11 p12)" by (simp add : X30 ) -- "trans231"
   then have "((ba p11 p12 p31 | fr p11 p12 p31) | sr p11 p12 p31) | (ba p31 p11 p12) | (dou p31 p11 p12)" by (simp add : X3 ) -- "trans231"
@@ -688,9 +687,9 @@ proof -
   from d5 d7 have "(ba p11 p31 p21 | bo p11 p31 p21 | dou p11 p31 p21) & (bo p21 p31 p32)" by (rule conjI)
   then have "(ba p11 p31 p21 & bo p21 p31 p32) | (bo p11 p31 p21 & bo p21 p31 p32) | (dou p11 p31 p21 & bo p21 p31 p32)" by (auto)
 
-  with X51 have "(ba p11 p31 p32) | (bo p11 p31 p21 & bo p21 p31 p32) | (dou p11 p31 p21 & bo p21 p31 p32)" by (auto)
-  with X117 have "(ba p11 p31 p32) | (bo p11 p31 p21 & bo p21 p31 p32) | (dou p11 p31 p32)" by (auto)
-  with X65 have "(ba p11 p31 p32) | (bo p11 p31 p32) | (dou p11 p31 p32)" sorry -- "hangs up here"
+  with X51 have "(ba p11 p31 p32) | (bo p11 p31 p21 & bo p21 p31 p32) | (dou p11 p31 p21 & bo p21 p31 p32)" by (fast)
+  with X117 have "(ba p11 p31 p32) | (bo p11 p31 p21 & bo p21 p31 p32) | (dou p11 p31 p32)" by (fast)
+  with X65 have "(ba p11 p31 p32) | (bo p11 p31 p32) | (dou p11 p31 p32)" by (fast)
 
   then have "bo p31 p32 p11 | (bo p11 p31 p32) | (dou p11 p31 p32)" by (simp add : X20 ) -- "trans231"
   then have "bo p31 p32 p11 | (fr p31 p32 p11) | (dou p11 p31 p32)" by (simp add : X30 ) -- "trans231"
@@ -706,9 +705,9 @@ proof -
   from a8 have d12: "ba p32 p22 p31" by (simp add : X25 ) -- "trans231"
   from c1 d11 have "(fr p11 p21 p31 | bo p11 p21 p31 | so p11 p21 p31) & (ba p31 p21 p32)" ..
   then have "(fr p11 p21 p31 & ba p31 p21 p32) | (bo p11 p21 p31 & ba p31 p21 p32) | (so p11 p21 p31 & ba p31 p21 p32)" by (auto)
-  with X56 have "ba p11 p21 p32 | (bo p11 p21 p31 & ba p31 p21 p32) | (so p11 p21 p31 & ba p31 p21 p32)" by (auto)
-  with X63 have "ba p11 p21 p32 | ba p11 p21 p32 | (so p11 p21 p31 & ba p31 p21 p32)" by (auto)
-  with X70 have "ba p11 p21 p32 | ba p11 p21 p32 | ba p11 p21 p32" by (auto)
+  with X56 have "ba p11 p21 p32 | (bo p11 p21 p31 & ba p31 p21 p32) | (so p11 p21 p31 & ba p31 p21 p32)" by (fast)
+  with X63 have "ba p11 p21 p32 | ba p11 p21 p32 | (so p11 p21 p31 & ba p31 p21 p32)" by (fast)
+  with X70 have "ba p11 p21 p32 | ba p11 p21 p32 | ba p11 p21 p32" by (fast)
   then have "ba p11 p21 p32" by (auto)
   then have e1: "fr p32 p11 p21" by (simp add : X21 ) -- "trans312"
   from c2 d12 have "fr p12 p22 p31 | bo p12 p22 p31 | so p12 p22 p31" by (rule X49 [OF conjI])
@@ -721,9 +720,9 @@ proof -
   then have z12: "ba p11 p12 p32" by (simp add : X25 ) -- "trans231"
   from e2 e4 have "(bo p31 p12 p22 | ba p31 p12 p22 | dou p31 p12 p22) & (ba p22 p12 p11)" ..
   then have "(bo p31 p12 p22 & ba p22 p12 p11) | (ba p31 p12 p22 & ba p22 p12 p11) | (dou p31 p12 p22 & ba p22 p12 p11)" by (auto)
-  with X63 have "ba p31 p12 p11 | (ba p31 p12 p22 & ba p22 p12 p11) | (dou p31 p12 p22 & ba p22 p12 p11)" by (auto)
-  with X49 have "ba p31 p12 p11 | (fr p31 p12 p11 | bo p31 p12 p11 | so p31 p12 p11) | (dou p31 p12 p22 & ba p22 p12 p11)" by (auto)
-  with X115 have "ba p31 p12 p11 | (fr p31 p12 p11 | bo p31 p12 p11 | so p31 p12 p11) | dou p31 p12 p11" by (auto)
+  with X63 have "ba p31 p12 p11 | (ba p31 p12 p22 & ba p22 p12 p11) | (dou p31 p12 p22 & ba p22 p12 p11)" by (fast)
+  with X49 have "ba p31 p12 p11 | (fr p31 p12 p11 | bo p31 p12 p11 | so p31 p12 p11) | (dou p31 p12 p22 & ba p22 p12 p11)" by (fast)
+  with X115 have "ba p31 p12 p11 | (fr p31 p12 p11 | bo p31 p12 p11 | so p31 p12 p11) | dou p31 p12 p11" by (fast)
   then have "ba p11 p12 p31 | (fr p31 p12 p11 | bo p31 p12 p11 | so p31 p12 p11) | dou p31 p12 p11" by (simp add : X22 ) -- "trans321"
   then have "ba p11 p12 p31 | (bo p11 p12 p31 | bo p31 p12 p11 | so p31 p12 p11) | dou p31 p12 p11" by (simp add : X27 ) -- "trans321"
   then have "ba p11 p12 p31 | (bo p11 p12 p31 | fr p11 p12 p31 | so p31 p12 p11) | dou p31 p12 p11" by (simp add : X32 ) -- "trans321"
@@ -740,9 +739,9 @@ proof -
   from a2 have d18 : "bo p12 p22 p11" by (simp add : X20 ) -- "trans231"
   from d15 d17 have "(bo p31 p21 p11 | fr p31 p21 p11 | so p31 p21 p11) & (fr p11 p21 p12)" ..
   then have "(bo p31 p21 p11 & fr p11 p21 p12) | (fr p31 p21 p11 & fr p11 p21 p12) | (so p31 p21 p11 & fr p11 p21 p12)" by (auto)
-  with X64 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p11 & fr p11 p21 p12) | (so p31 p21 p11 & fr p11 p21 p12)" by (auto)
-  with X71 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p11 & fr p11 p21 p12) | (fr p31 p21 p12)" by (auto)
-  with X57 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p12) | (fr p31 p21 p12)" sorry
+  with X64 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p11 & fr p11 p21 p12) | (so p31 p21 p11 & fr p11 p21 p12)" by (fast)
+  with X71 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p11 & fr p11 p21 p12) | (fr p31 p21 p12)" by (fast)
+  with X57 have "(fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12) | (fr p31 p21 p12) | (fr p31 p21 p12)" by (fast)
   then have "fr p31 p21 p12 | bo p31 p21 p12 | so p31 p21 p12" by (auto)
   then have "bo p12 p31 p21 | bo p31 p21 p12 | so p31 p21 p12" by (simp add : X26 ) -- "trans312"
   then have "bo p12 p31 p21 | ba p12 p31 p21 | so p31 p21 p12" by (simp add : X31 ) -- "trans312"
@@ -754,9 +753,9 @@ proof -
   from a8 have e8 : "bo p22 p32 p31" by (simp add : X27 ) -- "trans321"
   from e5 e7 have "(bo p12 p31 p21 | ba p12 p31 p21 | dou p12 p31 p21) & (bo p21 p31 p32)" .. 
   then have "(bo p12 p31 p21 & bo p21 p31 p32) | (ba p12 p31 p21 & bo p21 p31 p32) | (dou p12 p31 p21 & bo p21 p31 p32)" by (auto)
-  with X65 have "(bo p12 p31 p32) | (ba p12 p31 p21 & bo p21 p31 p32) | (dou p12 p31 p21 & bo p21 p31 p32)" sorry
-  with X51 have "(bo p12 p31 p32) | (ba p12 p31 p32) | (dou p12 p31 p21 & bo p21 p31 p32)" by (auto)
-  with X117 have "(bo p12 p31 p32) | (ba p12 p31 p32) | (dou p12 p31 p32)" by (auto)
+  with X65 have "(bo p12 p31 p32) | (ba p12 p31 p21 & bo p21 p31 p32) | (dou p12 p31 p21 & bo p21 p31 p32)" by (fast)
+  with X51 have "(bo p12 p31 p32) | (ba p12 p31 p32) | (dou p12 p31 p21 & bo p21 p31 p32)" by (fast)
+  with X117 have "(bo p12 p31 p32) | (ba p12 p31 p32) | (dou p12 p31 p32)" by (fast)
   then have "(fr p31 p32 p12) | (ba p12 p31 p32) | (dou p12 p31 p32)" by (simp add : X30 ) -- "trans231"
   then have "(fr p31 p32 p12) | (bo p31 p32 p12) | (dou p12 p31 p32)" by (simp add : X20 ) -- "trans231"
   then have z14: "(fr p31 p32 p12) | (bo p31 p32 p12) | (so p31 p32 p12)" by (simp add : X92 ) -- "trans231"
@@ -789,7 +788,7 @@ proof -
 ((fr p11 p12 p31 & ba p11 p12 p32) & ((bo p31 p32 p11 & bo p31 p32 p12) | (bo p31 p32 p11 & fr p31 p32 p12) | (bo p31 p32 p11 & so p31 p32 p12) | (fr p31 p32 p11 & bo p31 p32 p12) | (fr p31 p32 p11 & fr p31 p32 p12) | (fr p31 p32 p11 & so p31 p32 p12) | (so p31 p32 p11 & bo p31 p32 p12) | (so p31 p32 p11 & fr p31 p32 p12) | (so p31 p32 p11 & so p31 p32 p12))) | 
 ((sr p11 p12 p31 & ba p11 p12 p32) & ((bo p31 p32 p11 & bo p31 p32 p12) | (bo p31 p32 p11 & fr p31 p32 p12) | (bo p31 p32 p11 & so p31 p32 p12) | (fr p31 p32 p11 & bo p31 p32 p12) | (fr p31 p32 p11 & fr p31 p32 p12) | (fr p31 p32 p11 & so p31 p32 p12) | (so p31 p32 p11 & bo p31 p32 p12) | (so p31 p32 p11 & fr p31 p32 p12) | (so p31 p32 p11 & so p31 p32 p12))) | 
 ((bo p11 p12 p31 & ba p11 p12 p32) & ((bo p31 p32 p11 & bo p31 p32 p12) | (bo p31 p32 p11 & fr p31 p32 p12) | (bo p31 p32 p11 & so p31 p32 p12) | (fr p31 p32 p11 & bo p31 p32 p12) | (fr p31 p32 p11 & fr p31 p32 p12) | (fr p31 p32 p11 & so p31 p32 p12) | (so p31 p32 p11 & bo p31 p32 p12) | (so p31 p32 p11 & fr p31 p32 p12) | (so p31 p32 p11 & so p31 p32 p12))) | 
-((so p11 p12 p31 & ba p11 p12 p32) & ((bo p31 p32 p11 & bo p31 p32 p12) | (bo p31 p32 p11 & fr p31 p32 p12) | (bo p31 p32 p11 & so p31 p32 p12) | (fr p31 p32 p11 & bo p31 p32 p12) | (fr p31 p32 p11 & fr p31 p32 p12) | (fr p31 p32 p11 & so p31 p32 p12) | (so p31 p32 p11 & bo p31 p32 p12) | (so p31 p32 p11 & fr p31 p32 p12) | (so p31 p32 p11 & so p31 p32 p12)))" by (auto)
+((so p11 p12 p31 & ba p11 p12 p32) & ((bo p31 p32 p11 & bo p31 p32 p12) | (bo p31 p32 p11 & fr p31 p32 p12) | (bo p31 p32 p11 & so p31 p32 p12) | (fr p31 p32 p11 & bo p31 p32 p12) | (fr p31 p32 p11 & fr p31 p32 p12) | (fr p31 p32 p11 & so p31 p32 p12) | (so p31 p32 p11 & bo p31 p32 p12) | (so p31 p32 p11 & fr p31 p32 p12) | (so p31 p32 p11 & so p31 p32 p12)))" by (fast)
   
   then have "(ba p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) | 
     (ba p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & fr p31 p32 p12) | 
@@ -836,7 +835,7 @@ proof -
     (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & bo p31 p32 p12) |
     (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & fr p31 p32 p12) |
     (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & so p31 p32 p12)" sorry
-
+-- {* Distributivgesetze fuer langen Ausdruck *}
   then have "((ba p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) |
     (fr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & fr p31 p32 p12) |
     (sr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & so p31 p32 p12) |
@@ -990,7 +989,7 @@ proof -
     (so p11 p12 p31 & ba p11 p12 p32 & fr p31 p32 p11 & fr p31 p32 p12) |
     (so p11 p12 p31 & ba p11 p12 p32 & fr p31 p32 p11 & so p31 p32 p12) |
     (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & bo p31 p32 p12) |
-    (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & so p31 p32 p12)" show ?thesis sorry
+    (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & so p31 p32 p12)" show ?thesis sorry -- {* diese inkonsistenten Konfigurationen muessen alle ausgeschlossen werden *}
     qed
   qed
   then show ?thesis .
@@ -1011,10 +1010,72 @@ shows "((ri p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
   (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) | 
   (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) | 
   (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) | 
-  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12))" 
-  -- {* alle 14 realisierbaren r*l Kombinationen und noch weitere ...*}
+  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (sr p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & so p31 p32 p12) |
+  (sr p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & so p31 p32 p12) |
+  (le p11 p12 p31 & sr p11 p12 p32 & ri p31 p32 p11 & sr p31 p32 p12) |
+  (ri p11 p12 p31 & sr p11 p12 p32 & le p31 p32 p11 & sr p31 p32 p12) |
+  (so p11 p12 p31 & le p11 p12 p32 & so p31 p32 p11 & ri p31 p32 p12) |
+  (so p11 p12 p31 & ri p11 p12 p32 & so p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & ri p31 p32 p12) |
+  (so p11 p12 p31 & sr p11 p12 p32 & so p31 p32 p11 & sr p31 p32 p12) |
+  (sr p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & so p31 p32 p12) |
 
-proof
+  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & bo p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & ba p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & bo p31 p32 p11 & ri p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ba p31 p32 p12) |
+  (le p11 p12 p31 & fr p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & ba p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (le p11 p12 p31 & ri p11 p12 p32 & fr p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (fr p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) |
+  (ba p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & bo p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+
+  (le p11 p12 p31 & bo p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ba p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (bo p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & ba p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & fr p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & fr p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & bo p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & le p11 p12 p32 & fr p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & ba p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & bo p31 p32 p12) |
+
+  (ba p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) |
+  (sr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & ba p11 p12 p32 & fr p31 p32 p11 & fr p31 p32 p12) |
+  (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & sr p11 p12 p32 & fr p31 p32 p11 & sr p31 p32 p12) |
+  (bo p11 p12 p31 & bo p11 p12 p32 & ba p31 p32 p11 & ba p31 p32 p12) |
+  (bo p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & ba p31 p32 p12) |
+  (bo p11 p12 p31 & fr p11 p12 p32 & fr p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & fr p11 p12 p32 & bo p31 p32 p11 & ba p31 p32 p12) |
+  (so p11 p12 p31 & fr p11 p12 p32 & so p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & sr p11 p12 p32 & bo p31 p32 p11 & sr p31 p32 p12) |
+
+  (ba p11 p12 p31 & ba p11 p12 p32 & ba p31 p32 p11 & ba p31 p32 p12) |
+  (ba p11 p12 p31 & sr p11 p12 p32 & ba p31 p32 p11 & sr p31 p32 p12) |
+  (ba p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & fr p31 p32 p12) |
+  (ba p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & fr p31 p32 p12) |
+  (ba p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & fr p31 p32 p12) |
+  (sr p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & bo p31 p32 p12) |
+  (sr p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & bo p31 p32 p12) |
+  (bo p11 p12 p31 & bo p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) |
+  (so p11 p12 p31 & bo p11 p12 p32 & so p31 p32 p11 & bo p31 p32 p12) |
+  (fr p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & bo p31 p32 p12))" 
+  -- {* alle realisierbaren Kombinationen = alle Basisrelationen von DRAf *}
+
+proof -
   -- "Annahme zerlegen:"
   from an have a1: "?a1" by (auto)
   from an have a2: "?a2" by (auto) 
@@ -1051,13 +1112,13 @@ proof
   
   from d1 d3 have "(ri p31 p11 p21 | le p31 p11 p21 | bo p31 p11 p21 | ba p31 p11 p21 | dou p31 p11 p21) & (ri p21 p11 p12)" ..
   then have "(ri p31 p11 p21 & ri p21 p11 p12) | (le p31 p11 p21 & ri p21 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
-  with X33 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12) | (le p31 p11 p21 & ri p21 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
-  with X40 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12) | (ri p31 p11 p12 | le p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
+  with X33 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12) | (le p31 p11 p21 & ri p21 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (fast)
+  with X40 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12) | (ri p31 p11 p12 | le p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (fast)
   then have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (bo p31 p11 p21 & ri p21 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
-  with X61 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ri p31 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
-  with X47 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ri p31 p11 p12) | (le p31 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
+  with X61 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ri p31 p11 p12) | (ba p31 p11 p21 & ri p21 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (fast)
+  with X47 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (ri p31 p11 p12) | (le p31 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (fast)
   then have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (dou p31 p11 p21 & ri p21 p11 p12)" by (auto)
-  with X113 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (dou p31 p11 p12)" by (auto)
+  with X113 have "(ri p31 p11 p12 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12) | (dou p31 p11 p12)" by (fast)
   then have "ri p11 p12 p31 | le p31 p11 p12 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12 | dou p31 p11 p12" by (simp add : X10 ) -- "trans231"
   then have "ri p11 p12 p31 | le p11 p12 p31 | ba p31 p11 p12 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12 | dou p31 p11 p12" by (simp add : X15 ) -- "trans231"
   then have "ri p11 p12 p31 | le p11 p12 p31 | bo p11 p12 p31 | fr p31 p11 p12 | bo p31 p11 p12 | so p31 p11 p12 | dou p31 p11 p12" by (simp add : X20 ) -- "trans231"
@@ -1067,59 +1128,136 @@ proof
   then have z1: "ri p11 p12 p31 | le p11 p12 p31 | bo p11 p12 p31 | ba p11 p12 p31 | fr p11 p12 p31 | sr p11 p12 p31 | so p11 p12 p31" by (simp add : X92 ) -- "trans231"
 -- {* fuer die erste der vier Relationen sind also alle 7 Relationen moeglich, die auch in DRAf repraesentiert sind, was nach der kompositionstabelle auch notwendig ist. dou & tri sind jedoch ausgeschlossen. *}
 
-  from d2 d4 have " p32 p12 p11" by (rule X [OF conjI])
-  then have z2: " p11 p12 p32" by (simp add : X ) -- "trans321"
+  from d2 d4 have "(ri p32 p12 p22 | le p32 p12 p22 | bo p32 p12 p22 | ba p32 p12 p22 | dou p32 p12 p22) & (le p22 p12 p11)" ..
+  then have "(ri p32 p12 p22 & le p22 p12 p11) | (le p32 p12 p22 & le p22 p12 p11) | (bo p32 p12 p22 & le p22 p12 p11) | (ba p32 p12 p22 & le p22 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (auto)
+  with X34 have "(ri p32 p12 p11 | le p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (le p32 p12 p22 & le p22 p12 p11) | (bo p32 p12 p22 & le p22 p12 p11) | (ba p32 p12 p22 & le p22 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (fast)
+  with X41 have "(ri p32 p12 p11 | le p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11) | (bo p32 p12 p22 & le p22 p12 p11) | (ba p32 p12 p22 & le p22 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (fast)
+  then have "(ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (bo p32 p12 p22 & le p22 p12 p11) | (ba p32 p12 p22 & le p22 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (auto)
+  with X62 have "(ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (le p32 p12 p11) | (ba p32 p12 p22 & le p22 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (fast)
+  with X48 have  "(ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (le p32 p12 p11) | (ri p32 p12 p11) | (dou p32 p12 p22 & le p22 p12 p11)" by (fast)
+  with X114 have "(ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11) | (le p32 p12 p11) | (ri p32 p12 p11) | (dou p32 p12 p11)" by (fast)
+  then have "ri p32 p12 p11 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11 | dou p32 p12 p11" by (auto)
+  then have "le p11 p12 p32 | le p32 p12 p11 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11 | dou p32 p12 p11" by (simp add : X12) 
+  then have "le p11 p12 p32 | ri p11 p12 p32 | ba p32 p12 p11 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11 | dou p32 p12 p11" by (simp add : X17)
+  then have "le p11 p12 p32 | ri p11 p12 p32 | ba p11 p12 p32 | fr p32 p12 p11 | bo p32 p12 p11 | so p32 p12 p11 | dou p32 p12 p11" by (simp add : X22)
+  then have "le p11 p12 p32 | ri p11 p12 p32 | ba p11 p12 p32 | bo p11 p12 p32 | bo p32 p12 p11 | so p32 p12 p11 | dou p32 p12 p11" by (simp add : X27)
+  then have "le p11 p12 p32 | ri p11 p12 p32 | ba p11 p12 p32 | bo p11 p12 p32 | fr p11 p12 p32 | so p32 p12 p11 | dou p32 p12 p11" by (simp add : X32)
+  then have "le p11 p12 p32 | ri p11 p12 p32 | ba p11 p12 p32 | bo p11 p12 p32 | fr p11 p12 p32 | so p11 p12 p32 | dou p32 p12 p11" by (simp add : X4)
+  then have z2: "le p11 p12 p32 | ri p11 p12 p32 | ba p11 p12 p32 | bo p11 p12 p32 | fr p11 p12 p32 | so p11 p12 p32 | sr p11 p12 p32" by (simp add : X94 ) -- "trans321"
 
   -- "z3 z4 kurzer Weg ueber a7 a8"
-  from c1 have d5 : " p11 p31 p21" by (simp add : X ) -- "trans132"
-  from c2 have d6 : " p12 p32 p22" by (simp add : X ) -- "trans132"
-  from a7 have d7 : " p21 p31 p32" by (simp add : X ) -- "trans312"
-  from a8 have d8 : " p22 p32 p31" by (simp add : X ) -- "trans321"
+  from c1 have "le p11 p31 p21 | le p11 p21 p31 | fr p11 p21 p31 | bo p11 p21 p31 | so p11 p21 p31" by (simp add : X9 ) -- "trans132"
+  then have "le p11 p31 p21 | ri p11 p31 p21 | fr p11 p21 p31 | bo p11 p21 p31 | so p11 p21 p31" by (simp add : X14 ) -- "trans132"
+  then have "le p11 p31 p21 | ri p11 p31 p21 | ba p11 p31 p21 | bo p11 p21 p31 | so p11 p21 p31" by (simp add : X24 ) -- "trans132"
+  then have "le p11 p31 p21 | ri p11 p31 p21 | ba p11 p31 p21 | bo p11 p31 p21 | so p11 p21 p31" by (simp add : X29 ) -- "trans132"
+  then have d5 : "le p11 p31 p21 | ri p11 p31 p21 | ba p11 p31 p21 | bo p11 p31 p21 | dou p11 p31 p21" by (simp add : X95 ) -- "trans132"
 
-  from d5 d7 have " p11 p31 p32" by (rule X [OF conjI])
-  then have z3: " p31 p32 p11" by (simp add : X ) -- "trans231"
+  from c2 have "le p12 p32 p22 | le p12 p22 p32 | fr p12 p22 p32 | bo p12 p22 p32 | so p12 p22 p32" by (simp add : X9 ) -- "trans132"
+  then have "le p12 p32 p22 | ri p12 p32 p22 | fr p12 p22 p32 | bo p12 p22 p32 | so p12 p22 p32" by (simp add : X14 ) -- "trans132"
+  then have "le p12 p32 p22 | ri p12 p32 p22 | ba p12 p32 p22 | bo p12 p22 p32 | so p12 p22 p32" by (simp add : X24 ) -- "trans132"
+  then have "le p12 p32 p22 | ri p12 p32 p22 | ba p12 p32 p22 | bo p12 p32 p22 | so p12 p22 p32" by (simp add : X29 ) -- "trans132"
+  then have d6 : "le p12 p32 p22 | ri p12 p32 p22 | ba p12 p32 p22 | bo p12 p32 p22 | dou p12 p32 p22" by (simp add : X95 ) -- "trans132"
 
-  from d6 d8 have " p12 p32 p31" by (rule X [OF conjI])
-  then have z4: " p31 p32 p12" by (simp add : X ) -- "trans321"
+  from a7 have d7 : "ri p21 p31 p32" by (simp add : X11 ) -- "trans312"
+  from a8 have d8 : "le p22 p32 p31" by (simp add : X12 ) -- "trans321"
 
-  -- "z11 z12 langer Weg ueber a7 a8 und a1 a2"
-  from a7 have d11: " p31 p21 p32" by (simp add : X ) -- "trans132"
-  from a8 have d12: " p32 p22 p31" by (simp add : X ) -- "trans231"
-  from c1 d11 have " p11 p21 p32" by (rule X [OF conjI])
-  then have e1: " p32 p11 p21" by (simp add : X ) -- "trans312"
-  from c2 d12 have " p12 p22 p31" by (rule X [OF conjI])
-  then have e2: " p31 p12 p22" by (simp add : X ) -- "trans312"
-  from a1 have e3: " p21 p11 p12" by (simp add : X ) -- "trans312"
-  from a2 have e4: " p22 p12 p11" by (simp add : X ) -- "trans321"
-  from e1 e3 have " p32 p11 p12" by (rule X [OF conjI])
-  then have z12: " p11 p12 p32" by (simp add : X ) -- "trans231"
-  from e2 e4 have " p31 p12 p11" by (rule X [OF conjI])
-  then have z11: " p11 p12 p31" by (simp add : X ) -- "trans321"
+  from d5 d7 have "(le p11 p31 p21 | ri p11 p31 p21 | ba p11 p31 p21 | bo p11 p31 p21 | dou p11 p31 p21) & (ri p21 p31 p32)" ..
+  then have "(le p11 p31 p21 & ri p21 p31 p32) | (ri p11 p31 p21 & ri p21 p31 p32) | (ba p11 p31 p21 & ri p21 p31 p32) | (bo p11 p31 p21 & ri p21 p31 p32) | (dou p11 p31 p21 & ri p21 p31 p32)" by (auto)
+  with X40 have "(ri p11 p31 p32 | le p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32) | (ri p11 p31 p21 & ri p21 p31 p32) | (ba p11 p31 p21 & ri p21 p31 p32) | (bo p11 p31 p21 & ri p21 p31 p32) | (dou p11 p31 p21 & ri p21 p31 p32)" by (fast)
+  with X33 have "(ri p11 p31 p32 | le p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32) | (ri p11 p31 p32 | le p11 p31 p32 | ba p11 p31 p32) | (ba p11 p31 p21 & ri p21 p31 p32) | (bo p11 p31 p21 & ri p21 p31 p32) | (dou p11 p31 p21 & ri p21 p31 p32)" by (fast)
+  with X47 have "(ri p11 p31 p32 | le p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32) | (ri p11 p31 p32 | le p11 p31 p32 | ba p11 p31 p32) | (le p11 p31 p32) | (bo p11 p31 p21 & ri p21 p31 p32) | (dou p11 p31 p21 & ri p21 p31 p32)" by (fast)
+  with X61 have "(ri p11 p31 p32 | le p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32) | (ri p11 p31 p32 | le p11 p31 p32 | ba p11 p31 p32) | (le p11 p31 p32) | (ri p11 p31 p32) | (dou p11 p31 p21 & ri p21 p31 p32)" by (fast)
+  with X113 have "(ri p11 p31 p32 | le p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32) | (ri p11 p31 p32 | le p11 p31 p32 | ba p11 p31 p32) | (le p11 p31 p32) | (ri p11 p31 p32) | (dou p11 p31 p32)" by (fast)
+  then have "ri p11 p31 p32 | le p11 p31 p32 | ba p11 p31 p32 | fr p11 p31 p32 | bo p11 p31 p32 | so p11 p31 p32 | dou p11 p31 p32" by (auto)
 
-  -- "z13 z14 langer Weg ueber a1 a2 und a7 a8"
-  from c1 have d15 : " p31 p21 p11" by (simp add : X ) -- "trans321"
-  from c2 have d16 : " p32 p22 p12" by (simp add : X ) -- "trans321"
-  from a1 have d17 : " p11 p21 p12" by (simp add : X ) -- "trans132"
-  from a2 have d18 : " p12 p22 p11" by (simp add : X ) -- "trans231"
-  from d15 d17 have " p31 p21 p12" by (rule X [OF conjI])
-  then have e5 : " p12 p31 p21" by (simp add : X ) -- "trans312"
-  from d16 d18 have " p32 p22 p11" by (rule X [OF conjI])
-  then have e6 : " p11 p32 p22" by (simp add : X ) -- "trans312"
-  from a7 have e7 : " p21 p31 p32" by (simp add : X ) -- "trans312"
-  from a8 have e8 : " p22 p32 p31" by (simp add : X ) -- "trans321"
-  from e5 e7 have " p12 p31 p32" by (rule X [OF conjI])
-  then have z14: " p31 p32 p12" by (simp add : X ) -- "trans231"
-  from e6 e8 have " p11 p32 p31" by (rule X [OF conjI])
-  then have z13: " p31 p32 p11" by (simp add : X ) -- "trans321"
+  then have z3: "ri p31 p32 p11 | le p31 p32 p11 | bo p31 p32 p11 | ba p31 p32 p11 | fr p31 p32 p11 | sr p31 p32 p11 | so p31 p32 p11" sorry
+
+  -- {*from d6 d8 have " p12 p32 p31" by (rule X [OF conjI])*}
+  then have z4: " ri p31 p32 p12 | le p31 p32 p12 | bo p31 p32 p12 | ba p31 p32 p12 | fr p31 p32 p12 | sr p31 p32 p12 | so p31 p32 p12" sorry -- "trans321"
 
   -- "Zusammenfasung"
-  from z1(z11) z2(z12) z3(z13) z4(z14) show ?thesis by (auto) 
+  from z1 z2 z3 z4 have q : "(ri p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) | 
+  (ri p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) | 
+  (ri p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) | 
+  (ri p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) | 
+  (le p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) | 
+  (le p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) | 
+  (le p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) | 
+  (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) | 
+  (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) | 
+  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) | 
+  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) | 
+  (sr p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & so p31 p32 p12) |
+  (sr p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & so p31 p32 p12) |
+  (le p11 p12 p31 & sr p11 p12 p32 & ri p31 p32 p11 & sr p31 p32 p12) |
+  (ri p11 p12 p31 & sr p11 p12 p32 & le p31 p32 p11 & sr p31 p32 p12) |
+  (so p11 p12 p31 & le p11 p12 p32 & so p31 p32 p11 & ri p31 p32 p12) |
+  (so p11 p12 p31 & ri p11 p12 p32 & so p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & ri p31 p32 p12) |
+  (so p11 p12 p31 & sr p11 p12 p32 & so p31 p32 p11 & sr p31 p32 p12) |
+  (sr p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & so p31 p32 p12) |
+
+  (le p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & bo p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & ba p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & bo p31 p32 p11 & ri p31 p32 p12) |
+  (le p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ba p31 p32 p12) |
+  (le p11 p12 p31 & fr p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & ba p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (le p11 p12 p31 & ri p11 p12 p32 & fr p31 p32 p11 & le p31 p32 p12) |
+  (le p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & le p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (fr p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & le p31 p32 p12) |
+  (ba p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & bo p11 p12 p32 & ri p31 p32 p11 & ri p31 p32 p12) |
+
+  (le p11 p12 p31 & bo p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ba p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (bo p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & ba p11 p12 p32 & le p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & fr p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & le p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & le p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & fr p11 p12 p32 & le p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & bo p31 p32 p11 & le p31 p32 p12) |
+  (ri p11 p12 p31 & le p11 p12 p32 & fr p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & ba p31 p32 p11 & ri p31 p32 p12) |
+  (ri p11 p12 p31 & ri p11 p12 p32 & ri p31 p32 p11 & bo p31 p32 p12) |
+
+  (ba p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) |
+  (sr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & ba p11 p12 p32 & bo p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & ba p11 p12 p32 & fr p31 p32 p11 & fr p31 p32 p12) |
+  (so p11 p12 p31 & ba p11 p12 p32 & so p31 p32 p11 & fr p31 p32 p12) |
+  (bo p11 p12 p31 & sr p11 p12 p32 & fr p31 p32 p11 & sr p31 p32 p12) |
+  (bo p11 p12 p31 & bo p11 p12 p32 & ba p31 p32 p11 & ba p31 p32 p12) |
+  (bo p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & ba p31 p32 p12) |
+  (bo p11 p12 p31 & fr p11 p12 p32 & fr p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & fr p11 p12 p32 & bo p31 p32 p11 & ba p31 p32 p12) |
+  (so p11 p12 p31 & fr p11 p12 p32 & so p31 p32 p11 & ba p31 p32 p12) |
+  (fr p11 p12 p31 & sr p11 p12 p32 & bo p31 p32 p11 & sr p31 p32 p12) |
+
+  (ba p11 p12 p31 & ba p11 p12 p32 & ba p31 p32 p11 & ba p31 p32 p12) |
+  (ba p11 p12 p31 & sr p11 p12 p32 & ba p31 p32 p11 & sr p31 p32 p12) |
+  (ba p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & fr p31 p32 p12) |
+  (ba p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & fr p31 p32 p12) |
+  (ba p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & fr p31 p32 p12) |
+  (sr p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & bo p31 p32 p12) |
+  (sr p11 p12 p31 & fr p11 p12 p32 & ba p31 p32 p11 & so p31 p32 p12) |
+  (fr p11 p12 p31 & so p11 p12 p32 & sr p31 p32 p11 & bo p31 p32 p12) |
+  (bo p11 p12 p31 & bo p11 p12 p32 & bo p31 p32 p11 & bo p31 p32 p12) |
+  (so p11 p12 p31 & bo p11 p12 p32 & so p31 p32 p11 & bo p31 p32 p12) |
+  (fr p11 p12 p31 & bo p11 p12 p32 & fr p31 p32 p11 & bo p31 p32 p12)" sorry
+-- {* Hier muessen noch alle inkonsistenten Konfigurationen ausgeschlossen werden, d.h. 7 hoch 4 minus 72 nicht realisierbare Konfigurationen, die im DRAf-Kaluel bereits syntaktisch ausgeschlossen werden *}
+  from q show ?thesis .
 qed -- "rrrr cmps rrrr = ..."
 
-end
-
 -- {* Beweisschema *}
-theorem assumes an: "( p11 p12 p21 &  p11 p12 p22 &  p21 p22 p11 &  p21 p22 p12 & ( p21 p22 p31 &  p21 p22 p32 &  p31 p32 p21 &  p31 p32 p22)" (is "?a1 & ?a2 & ?a3 & ?a4 &?a5 & ?a6 & ?a7 & ?a8") shows " p11 p12 p31 &  p11 p12 p32 &  p31 p32 p11 &  p31 p32 p12"
+-- {* theorem assumes an: "( p11 p12 p21 &  p11 p12 p22 &  p21 p22 p11 &  p21 p22 p12 & ( p21 p22 p31 &  p21 p22 p32 &  p31 p32 p21 &  p31 p32 p22)" (is "?a1 & ?a2 & ?a3 & ?a4 &?a5 & ?a6 & ?a7 & ?a8") shows " p11 p12 p31 &  p11 p12 p32 &  p31 p32 p11 &  p31 p32 p12"
 proof
   -- "Annahme zerlegen:"
   from an have a1: "?a1" by (auto)
@@ -1196,5 +1334,5 @@ proof
   -- "Zusammenfasung"
   from z1(z11) z2(z12) z3(z13) z4(z14) show ?thesis by (auto) 
 
-qed
+qed *}
 
