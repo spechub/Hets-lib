@@ -1,7 +1,7 @@
 library DRA
-version 0.3
+version 0.5
 %author: T. Soller, some fundamental parts by T. Mossakowski / S. Woerfl
-%date: 20-03-05
+%date: 20-05-05
 %% Dipol Calculi DRAx(y)
 
 %left_assoc __cup__
@@ -33,8 +33,15 @@ then
 
   . x cmps id = x
   . id cmps x = x
+
   . conv(id) = id
   . conv(conv(x)) = x
+
+then %implies
+
+  forall x,y:BaseRel; u:GenRel
+  . not x = y => x cap y = 0	%(PairwiseDisjoint)%
+  . exists z:BaseRel . z eps u	%(JointlyExhaustive)%
 
 end
 
@@ -47,15 +54,15 @@ spec GenerateRelationAlgebra
        __ cmps __: GenRel * GenRel -> GenRel, assoc, unit id;
                                    
   forall x,y:BaseRel; u,v:GenRel
-
-  . not x = y => x cap y = 0
-
-  . (x cup u) cmps (y cup v) = (((x cmps y cup (x cmps v)) cup (u cmps y)) cup
-			       (u cmps v))  			      
+  . conv(0) = 0
   . conv(x cup u) = conv(x) cup conv(u)
 
-end		     
+  . x cmps 0 = 0
+  . 0 cmps x = 0
+  . (x cup u) cmps (y cup v) = (((x cmps y cup (x cmps v)) cup (u cmps y)) cup
+			       (u cmps v))  			      
 
+end		     
 
 
 spec DRAcBase =
@@ -198,8 +205,8 @@ then
 
 %% compostion table - external from semantics!
 
-. (rrrr cmps rrrr) = ((((((((((((((((((((((((((((((((((((((((((((((((((((llll
-		     cup rrrl) cup rrlr) cup rrll) cup rlrr) cup rllr) cup
+. (rrrr cmps rrrr) = ((((((((((((((((((((((((((((((((((((((((((((((((((((rrrr
+		     cup rrrl) cup rrlr) cup rrll) cup rlrr) cup rllr) cup 
 		     rlll) cup lrrr) cup lrrl) cup lrll) cup llrr) cup llrl)
 		     cup lllr) cup llll) cup rfll) cup flll) cup rele) cup
 		     rlli) cup ells) cup rilr) cup illr) cup rser) cup rlir)
