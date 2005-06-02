@@ -13,15 +13,19 @@ version 0.4
 %prec {__cup__} < {__cmps__} 
 %prec {__cmps__} < {__cmpl__} 
 
-%% from Basic/Numbers get Nat
-from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra
-%% from Basic/RelationsAndOrders version 0.7 get RichPartialOrder
-%% from Basic/StructuredDatatypes get Set
-from Calculi/Algebra/Auxiliary get Set
-from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,InvolutedMonoid,
-	ExtBooleanAlgebraByPartialOrder,AtomicBooleanAlgebra
 
-%[
+
+%% from Basic/Numbers get Nat
+from Calculi/Algebra/Set get Set
+from Calculi/Algebra/BooleanAlgebra get 
+	BooleanAlgebra,
+	BooleanAlgebraWithCompl,
+	ExtBooleanAlgebraByOrderRelations, 
+	AtomicBooleanAlgebra
+from Calculi/Algebra/Algebra get 
+	InvolutedSemiGroup, 
+	InvolutedMonoid	 
+
 
 
 %( 
@@ -37,7 +41,7 @@ spec RelationAlgebra  =
 and
      InvolutedMonoid with sort Elem |-> Rel, 
 			   ops __*__ |-> __cmps__, 
-				 inv |-> inv, 
+			       inv__ |-> inv__, 
                                    e |-> id
 then 
      forall x,y,z:Rel
@@ -63,16 +67,18 @@ then %implies
     . not x = 0 => 1 cmps x cmps 1 = 1				%(tarski)%
 %% Sicher  aber:
     . x cmps 1 = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1 		%(tarski1)%
-%% sowie ????
+%% sowie
     . 1 cmps compl(x) = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1	%(tarski2)%
     . x = 0 <=> inv(x) cmps x = 0				%(nnull)%
-     
+%% sowie 
+    . 1 cmps compl(x) = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1	%(tarski2)%
+    . x = 0 <=> inv(x) cmps x = 0				%(nnull)%
 end
 
 
 
-spec ExtRelationAlgebraByPartialOrder[RelationAlgebra] = %def
-     ExtBooleanAlgebraByPartialOrder[BooleanAlgebra] with sort Elem |-> Rel
+spec ExtRelationAlgebraByOrderRelations[RelationAlgebra] = %def
+     ExtBooleanAlgebraByOrderRelations[BooleanAlgebra] with sort Elem |-> Rel
 
 then %implies
     forall x,y,z,x',y': Rel
@@ -92,12 +98,12 @@ then %implies
 end
 
 
-spec RelationAlgebraWithPartialOrder = 
-     ExtRelationAlgebraByPartialOrder[RelationAlgebra]
+spec RelationAlgebraWithOrderRelations = 
+     ExtRelationAlgebraByOrderRelations[RelationAlgebra]
 
 
 spec IntegralRelationAlgebra =
-     RelationAlgebraWithPartialOrder
+     RelationAlgebraWithOrderRelations
 then 
      . Atom(id)
 then %implies
@@ -124,7 +130,7 @@ end
 	
 
 spec AtomicRelationAlgebra = 
-     { RelationAlgebraWithPartialOrder hide pred Atom }
+     { RelationAlgebraWithOrderRelations hide pred Atom }
 and
      AtomicBooleanAlgebra with sort Elem |-> Rel, AtomElem |-> AtomRel
 end
@@ -139,8 +145,8 @@ spec RelationAlgebraF = %def
 	ops __cap__  |-> __capF__,
 	    __cup__  |-> __cupF__,
 	    __cmps__ |-> __cmpsF__,
-	       compl |-> complF,
-		inv  |-> invF,
+	     compl__ |-> complF__,
+	      inv__  |-> invF__,
 	           0 |-> zF,
 		   1 |-> oF,
 		  id |-> idF
@@ -152,8 +158,8 @@ spec RelationAlgebraS = %def
 	ops __cap__  |-> __capS__,
 	    __cup__  |-> __cupS__,
 	    __cmps__ |-> __cmpsS__,
-	       compl |-> complS,
-		inv  |-> invS,
+	     compl__ |-> complS__,
+	      inv__  |-> invS__,
 	           0 |-> zS,
 		   1 |-> oS,
 		  id |-> idS
@@ -169,7 +175,7 @@ spec CartProdRelationAlgebras [RelationAlgebraF][RelationAlgebraS] =
      
 then %def
      ops __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
-	 compl,inv: Rel -> Rel;
+	 compl__,inv__: Rel -> Rel;
          0,1,id:Rel
      forall x,y:Rel
      . x cup y = (first(x) cupF first(y))-(second(x) cupS second(y))    
@@ -188,12 +194,63 @@ view CartProdRelationAlgebras_as_RelationAlgebra:
      CartProdRelationAlgebras[RelationAlgebraF][RelationAlgebraS] 
 end
 
-]%
 
 
 
 
 
+spec NonAssocRelationAlgebra  =
+     BooleanAlgebraWithCompl with sort Elem |-> Rel 
+then
+     ops      id:Rel; 
+	__cmps__: Rel*Rel -> Rel, unit id;
+           inv__: Rel -> Rel;
+
+
+     forall x,y,z:Rel
+     . inv(inv(x)) = x
+%%     . id cpms x = x /\ x cmps id = x
+     . x cmps (y cup z) = (x cmps y) cup (x cmps z)
+     . inv(x cup y) = inv(x) cup inv(y)
+     . inv(compl(x)) = compl(inv(x))
+     . inv(x cmps y) = inv(y) cmps inv(x)
+     . (x cmps y) cap inv(z) = 0 <=> (y cmps z) cap inv(x) = 0
+end
+
+
+
+spec SemiAssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     forall x:Rel
+     . (x cmps 1) cmps 1 = x cmps 1
+end
+
+%% WeaklyAssocRelationAlgebra
+
+
+spec AssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     ops __cmps__: Rel*Rel -> Rel, assoc
+end
+
+
+view AssocImpliesSemiAssoc:
+     SemiAssocRelationAlgebra to AssocRelationAlgebra
+end
+
+
+view AssocRelationAlgebra_as_RelationAlgebra:
+     RelationAlgebra to AssocRelationAlgebra
+end
+
+
+view RelationAlgebra_as_AssocRelationAlgebra:
+     AssocRelationAlgebra to RelationAlgebra
+end
+
+    
 
 
 

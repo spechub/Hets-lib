@@ -17,11 +17,13 @@ version 0.2
 
 from Basic/Numbers get Nat
 %% from Basic/StructuredDatatypes get Set
-from Calculi/Algebra/Auxiliary get Set
-from Calculi/Algebra/Auxiliary get BooleanAlgebra,
+from Calculi/Algebra/Set get Set
+from Calculi/Algebra/BooleanAlgebra get 
+	BooleanAlgebra,
 	AtomicBooleanAlgebra, 	
-	ExtBooleanAlgebraByPartialOrder
-from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
+	ExtBooleanAlgebraByOrderRelations
+from Calculi/Algebra/RelationAlgebra get 
+	AtomicRelationAlgebra
 
 
 
@@ -33,7 +35,12 @@ from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
 
 
 
-spec SetRepresentationOfRelations[sort BaseRel] = %mono
+spec BaseRelations =
+     sort BaseRel
+end
+
+
+spec SetRepresentationOfRelations[BaseRelations] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
@@ -56,25 +63,21 @@ then %implies
           __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
  
      forall x,y:BaseRel; r:Rel
-     . not x = y => x cap y = 0		
+	     . not x = y => x cap y = 0		
      . exists z:BaseRel . z eps r
      . r isSubsetOf 1
 end
 
 
 
-spec BaseRelations =
-     sort BaseRel
-end
-
-
+%[
 spec GenerateRelations[BaseRelations] = %mono
-     SetRepresentationOfRelations[sort BaseRel]
+     SetRepresentationOfRelations[BaseRelations]
 end
-
+]%
 
 spec BooleanAlgebraOfRelations =  
-     GenerateRelations[BaseRelations]
+     SetRepresentationOfRelations[BaseRelations]
 end
 
 
@@ -100,27 +103,27 @@ end
 
 
 
-spec ConversesTable =
+spec InvolutionTable =
      sorts BaseRel < Rel
      ops 
           id     : BaseRel;
-	  conv   : BaseRel -> BaseRel
+	  inv__ : BaseRel -> BaseRel
      forall x:BaseRel
-     . conv(id) = id
-     . conv(conv(x)) = x
+     . inv(id) = id
+     . inv(inv(x)) = x
 end
 
 
 
-spec GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][ConversesTable] = %mono
+spec GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][InvolutionTable] = %mono
      ops 
 	  id	  : Rel;
-          conv    : Rel -> Rel;
+          inv__  : Rel -> Rel;
 	  __cmps__: Rel * Rel -> Rel       
 
      forall x,y:BaseRel; u,v:Rel
-     . conv(0) = 0
-     . conv(u cup x) = conv(u) cup conv(x)
+     . inv(0) = 0
+     . inv(u cup x) = inv(u) cup inv(x)
      . x cmps 0 = 0 /\ 0 cmps x = 0
      . (u cup x) cmps (v cup y) =
 	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
@@ -132,15 +135,13 @@ end
 
 
 spec GeneratedRelationAlgebra = 
-     GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][ConversesTable]
+     GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][InvolutionTable]
 end
 
 
 spec ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra] = %def
-     ExtBooleanAlgebraByPartialOrder[BooleanAlgebra with sort Elem |-> Rel]
-then %def
-     preds 
-	__<__,__<=__,__>__,__>=__:Rel*Rel
+     ExtBooleanAlgebraByOrderRelations[BooleanAlgebra with sort Elem |-> Rel]
+then %implies
      forall x,y:Rel
      . x < y  <=> x isSubsetOf y /\ not x = y
      . x <= y <=> x isSubsetOf y
@@ -149,8 +150,7 @@ then %def
 end
 
 
-spec RichGeneratedRelationAlgebra = 
-     ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra]
+spec RichGeneratedRelationAlgebra =  ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra]
 end
 
 

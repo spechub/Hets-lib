@@ -1,0 +1,109 @@
+library Calculi/Algebra/Set
+version 0.1
+%author: S. Wölfl
+%date: 02-02-05
+
+%( This library is just there to remove some "junk" from other libraries, 
+   namely
+	Basic/StructuredDatatypes#Set
+    Sorry, but that's sometimes helpful for a clear look on 
+    signatures, morphisms, etc.
+)%
+
+
+from Basic/StructuredDatatypes get GenerateSet
+from Basic/StructuredDatatypes get Set |-> SetFromBasicStructuredDatatypes 
+from Basic/RelationsAndOrders version 0.7 get PartialOrder
+
+	
+
+
+spec Set [sort Elem] = 
+     SetFromBasicStructuredDatatypes[sort Elem] 
+	hide sorts Nat, Pos, op __symDiff__, pred isNonEmpty
+then
+     GenerateSet [sort Set[Elem]]
+then %def
+     op Union: Set[Set[Elem]] -> Set[Elem]
+
+     forall x: Elem; X:Set[Set[Elem]]
+     . x eps Union(X) <=> exists M:Set[Elem]. M eps X /\ x eps M 
+end 
+
+
+
+view Set_as_PartialOrder  [sort Elem] :
+     PartialOrder to Set [sort Elem] 
+=
+     sort Elem     |-> Set[Elem] ,
+     pred __ <= __ |-> __ isSubsetOf __
+end
+
+
+
+%[
+spec Set [sort Elem] = %mono
+     GenerateSet [sort Elem]
+then
+     GenerateSet [sort Set[Elem]]
+then %def
+     preds  isNonEmpty:       Set[Elem];
+          __ isSubsetOf __: Set[Elem] * Set[Elem]
+     ops    {__}: Elem -> Set[Elem];
+         __ + __ : Elem * Set[Elem] -> Set[Elem];
+         __ - __ : Set[Elem] * Elem -> Set[Elem];
+         __ intersection __, 
+         __ union__,
+         __ - __:  Set[Elem] * Set[Elem] -> Set[Elem];
+         Union: Set[Set[Elem]] -> Set[Elem]
+
+     %% implied operation attributes
+
+     ops
+         __ union __ : Set[Elem] * Set[Elem] -> Set[Elem], 
+			assoc, comm, idem, unit {}; %implied
+         __ intersection __ : Set[Elem] * Set[Elem] -> Set[Elem],
+                       assoc, comm, idem;   %implied
+     forall x,y: Elem; M,N,O: Set[Elem]; X:Set[Set[Elem]]
+     %% axioms concerning predicates
+     . isNonEmpty(M) <=> not M = {}             %(isNonEmpty_def)%
+     . M isSubsetOf N <=> 
+     forall x: Elem. x eps M => x eps N         %(isSubsetOf_def)%
+     %% axioms concerning operations
+     . { x } = {} + x                           %(singletonSet_def)%
+     . x + M = M + x                            %(addElem_def_Set)%
+     . {}      - y  = {}                        %(remElem_EmptySet)%
+     . (M + x) - y  =  M-y   when x=y else
+                   (M-y) + x                    %(remElem_NonEmptySet)%
+     . M intersection {}    = {}                %(intersection_Emptyset)%
+     . M intersection (N+x) = 
+      (M intersection N) + x when x eps M else
+       M intersection N                         %(intersection_NonEmptySet)%
+     . M union {}    =  M                       %(union_EmptySet)%
+     . M union (N+x) =  M union N      when x eps M else
+                    (M union N) + x             %(union_NonEmptySet)%
+     . M - {} = M                               %(dif_Emptyset)%
+     . M - (N+x) = (M - N) - x                  %(dif_Emptyset)%
+     %% important laws
+     . (M union N) intersection O = 
+        (M intersection O) union (N intersection O)
+                                                %(distr1_Set)% %implied
+     . O intersection (M union N) = 
+         (O intersection M) union (O intersection N)
+                                                %(distr2_Set)% %implied
+     . x eps Union(X) <=> exists M:Set[Elem]. M eps X /\ x eps M 
+then %implies
+     forall x,y: Elem; M,N:Set[Elem]
+     . M isSubsetOf (M union N)                 %(union_isSubsetOf)%
+      . (M intersection N) isSubsetOf M         %(intersection_isSubsetOf)%
+end
+  ]%     
+
+
+
+
+
+
+
+
+

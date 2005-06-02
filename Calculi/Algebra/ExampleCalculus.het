@@ -1,0 +1,97 @@
+library Calculi/Algebra/ExampleCalculus
+version 0.1
+%author: S. Wölfl
+%date: 12-05-2005
+
+
+%( 
+    This library contains specifications that describe how a relation
+    algebra can be built from a finite set of base relations and a composition 
+    table.
+)%
+
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__} 
+%prec {__cmps__} < {__cmpl__} 
+
+
+
+from Calculi/Algebra/BooleanAlgebra get AtomicBooleanAlgebra 
+from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
+from Calculi/Algebra/RelationAlgebraSymbolic get 
+	CompositionTable,
+	InvolutionTable,
+	GenerateSetAlgebra,		
+	GenerateRelationAlgebra
+
+
+
+%(
+     Following one finds a template of how to specify a sample
+     relation calculus, referred to as ExCalc,	
+     based on its set of base relations, its composition table, and its involution table.
+)%
+
+
+
+
+spec ExCalcBaseRelations = %mono
+     free type BaseRel ::= relation1 | relation2
+end
+
+
+spec ExCalcCompositionTable =
+     sort BaseRel
+     ops relation1,relation2: BaseRel    
+and
+     CompositionTable with op id |-> relation1 
+then
+     . relation1 cmps relation1 = relation1
+     . relation1 cmps relation2 = relation2
+     . relation2 cmps relation1 = relation2
+     . relation2 cmps relation2 = relation2
+end
+
+
+spec ExCalcInvolutionTable =
+     sort BaseRel
+     ops relation1,relation2: BaseRel    
+and
+     ConversesTable with op id |-> relation1
+then
+     . inv(relation1) = relation1
+     . inv(relation2) = relation2
+end
+
+
+spec BooleanAlgebraOfExCalcRelations = 
+     GenerateRelations[ExCalcBaseRelations] 
+end
+
+view BooleanAlgebraOfExCalcRelations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to BooleanAlgebraOfExCalcRelations
+= 
+     Elem |-> Rel, AtomElem |-> BaseRel
+end
+
+
+spec ExCalc = 
+     GenerateRelationAlgebra[BooleanAlgebraOfExCalcRelations]
+	[ExCalcCompositionTable fit op id:BaseRel |-> relation1]
+	[ExCalcInvolutionTable fit op id:BaseRel |-> relation1]
+end
+
+
+%% spec RichExCalc =
+%%     ExtGeneratedRelationAlgebra[ExCalc fit op id:BaseRel |-> relation1]
+%% end	
+
+
+view ExCalc_as_AtomicRelationAlgebra :
+     AtomicRelationAlgebra to 
+     ExCalc 
+=
+     Rel |-> Rel , AtomRel |-> BaseRel
+end
+
