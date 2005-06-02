@@ -15,7 +15,7 @@ version 0.1
 from Basic/StructuredDatatypes get GenerateSet
 from Basic/StructuredDatatypes get Set |-> SetFromBasicStructuredDatatypes 
 from Basic/RelationsAndOrders version 0.7 get  
-	PartialOrder,StrictOrder, 
+	PartialOrder,StrictOrder,RichPartialOrder,
 	BooleanAlgebra, RichBooleanAlgebra
 from Basic/Algebra_I version 1.0 get  
 	Monoid
@@ -43,8 +43,9 @@ spec BooleanAlgebraWithCompl = ExtBooleanAlgebraByCompl[BooleanAlgebra]
 spec ExtBooleanAlgebraByPartialOrder[BooleanAlgebra] = %def
 
      preds 
-	   __ <= __, __ < __,  __ >= __, __ > __: Elem * Elem;
+	   __<=__, __<__, __>=__, __>__: Elem * Elem;
 	   Atom: Elem
+
      forall x,y:Elem
      . x <= y <=> x cap y = x           %(leq_def_ExtBooleanAlgebra)%
      . x >= y <=> y <= x                %(geq_def_ExtBooleanAlgebra)%
@@ -58,6 +59,12 @@ spec BooleanAlgebraWithPartialOrder =
 	ExtBooleanAlgebraByPartialOrder[BooleanAlgebra]
 end
 
+view BooleanAlgebraWithPartialOrder_as_PartialOrder : 
+     { RichPartialOrder hide ops sup,inf } to 
+	BooleanAlgebraWithPartialOrder
+end
+
+
 
 spec AtomicBooleanAlgebra =
      { BooleanAlgebraWithPartialOrder hide pred Atom }
@@ -67,12 +74,12 @@ then
      . not x = 0 => (exists y:AtomElem . y <= x) 	
 end
 
-
+%[
 spec SetNew [sort Elem] = 
      SetFromBasicStructuredDatatypes[sort Elem] 
 	hide sorts Nat, Pos, op symDiff
 end 
-       
+  ]%     
 
 
 spec Set [sort Elem] = %mono
@@ -276,11 +283,9 @@ end
 
 spec InvolutedMonoid =
      Monoid
+and  InvolutedSemiGroup
 then 
-     op inv:Elem -> Elem
-     forall x,y:Elem
-     . inv(x * y) = inv(y) * inv(x) 
-     . inv(inv(x)) = x
+     forall x:Elem
      . inv(e) = e
 end
 

@@ -13,16 +13,15 @@ version 0.4
 %prec {__cup__} < {__cmps__} 
 %prec {__cmps__} < {__cmpl__} 
 
-
-from Basic/Numbers get Nat
+%% from Basic/Numbers get Nat
 from Basic/RelationsAndOrders version 0.7 get BooleanAlgebra
+%% from Basic/RelationsAndOrders version 0.7 get RichPartialOrder
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Auxiliary get Set
-from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByPartialOrder,
-	AtomicBooleanAlgebra,
-	InvolutedSemiGroup,
-	InvolutedMonoid	 
+from Calculi/Algebra/Auxiliary get BooleanAlgebraWithCompl,InvolutedMonoid,
+	ExtBooleanAlgebraByPartialOrder,AtomicBooleanAlgebra
+
+%[
 
 
 %( 
@@ -87,7 +86,7 @@ then %implies
     . compl(z) cmps inv(y) <= compl(x)  => x cmps y <= z  	%(schreoeder_3)%
     . (x cmps y) cap z <= 
 	(x cap (z cmps inv(y))) cmps (y cap (inv(x) cmps z))    %(dedekind)%
-    . x cmps (y cap z) <= (x cmps y) cap (x cmps z)		%(cmps_cap_lsuistrib)%
+    . x cmps (y cap z) <= (x cmps y) cap (x cmps z)		%(cmps_cap_lsubdistrib)%
     . (y cap z) cmps x <= (y cmps x) cap (z cmps x)		%(cmps_cap_rsubdistrib)%
 
 end
@@ -189,7 +188,7 @@ view CartProdRelationAlgebras_as_RelationAlgebra:
      CartProdRelationAlgebras[RelationAlgebraF][RelationAlgebraS] 
 end
 
-
+]%
 
 
 
