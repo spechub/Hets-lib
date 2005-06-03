@@ -226,37 +226,11 @@ end
 
 %( New relation algebras from others )%
 
-spec RelationAlgebraF = %def
-      RelationAlgebra with 
-	sort Rel |-> RelF,
-	ops __cap__  |-> __capF__,
-	    __cup__  |-> __cupF__,
-	    __cmps__ |-> __cmpsF__,
-	     compl__ |-> complF__,
-	      inv__  |-> invF__,
-	           0 |-> zF,
-		   1 |-> oF,
-		  id |-> idF
-end   		     
-
-spec RelationAlgebraS = %def
-      RelationAlgebra with 
-	sort Rel |-> RelS,
-	ops __cap__  |-> __capS__,
-	    __cup__  |-> __cupS__,
-	    __cmps__ |-> __cmpsS__,
-	     compl__ |-> complS__,
-	      inv__  |-> invS__,
-	           0 |-> zS,
-		   1 |-> oS,
-		  id |-> idS
-end   		     
 
 
-spec CartProdRelationAlgebras [RelationAlgebraF][RelationAlgebraS] =
-     generated type Rel ::= __-__ (first:RelF;second:RelS) 
-     forall xF,yF:RelF; uS,vS:RelS
-     . xF-uS = yF-vS <=> xF = yF /\ uS = vS	
+
+spec CartProdRelationAlgebras [RelationAlgebra with Rel |-> RelF][RelationAlgebra with Rel |-> RelS] = %mono
+     free type Rel ::= __-__ (first:RelF;second:RelS) 
      forall x,y:Rel
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
      
@@ -265,23 +239,36 @@ then %def
 	 compl__,inv__: Rel -> Rel;
          0,1,id:Rel
      forall x,y:Rel
-     . x cup y = (first(x) cupF first(y))-(second(x) cupS second(y))    
-     . x cap y = (first(x) capF first(y))-(second(x) capS second(y))    
-     . x cmps y = (first(x) cmpsF first(y))-(second(x) cmpsS second(y))    
-     . compl(x) = complF(first(x))-complS(second(x))
-     . inv(x) = invF(first(x))-invS(second(x))
-     . 0 = zF-zS
-     . 1 = oF-oS
-     . id = idF-idS
+     . x cup y = (first(x) cup first(y))-(second(x) cup second(y))    
+     . x cap y = (first(x) cap first(y))-(second(x) cap second(y))    
+     . x cmps y = (first(x) cmps first(y))-(second(x) cmps second(y))    
+     . compl(x) = compl(first(x))-compl(second(x))
+     . inv(x) = inv(first(x))-inv(second(x))
+     . 0 = 0-0
+     . 1 = 1-1
+     . id = id-id
 end
-
 
 view CartProdRelationAlgebras_as_RelationAlgebra:
      RelationAlgebra to 
-     CartProdRelationAlgebras[RelationAlgebraF][RelationAlgebraS] 
+     CartProdRelationAlgebras[RelationAlgebra with Rel |-> RelF][RelationAlgebra with Rel |-> RelS]
 end
 
 
+
+
+spec SelfCartProdRelationAlgebra [RelationAlgebra] =
+     generated type PRel ::= __-__ (first:Rel;second:Rel) 
+     forall x,y,u,v:Rel
+     . x-u = y-v <=> x = y /\ u = v	
+     forall x,y:PRel
+     . x = y <=> first(x) = first(y) /\ second(x) = second(y)
+     
+then %def
+     ops __cup__,__cap__,__cmps__: PRel * PRel -> PRel;
+	 compl__,inv__: PRel -> PRel;
+         0,1,id:PRel
+end
 
 
 
