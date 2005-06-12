@@ -35,12 +35,11 @@ from Calculi/Algebra/RelationAlgebra get
 
 
 
-spec BaseRelations =
-     sort BaseRel
-end
+%( GenerateBooleanAlgebra introduces relations as sets of base relations.
+   The result is atomic Boolean Algebra.
+)%
 
-
-spec SetRepresentationOfRelations[BaseRelations] = %mono
+spec GenerateBooleanAlgebra[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
@@ -70,23 +69,19 @@ end
 
 
 
-%[
-spec GenerateRelations[BaseRelations] = %mono
-     SetRepresentationOfRelations[BaseRelations]
-end
-]%
-
-spec BooleanAlgebraOfRelations =  
-     SetRepresentationOfRelations[BaseRelations]
-end
-
-
-view BooleanAlgebraOfRelations_as_AtomicBooleanAlgebra :
-     AtomicBooleanAlgebra to BooleanAlgebraOfRelations
+view AtomicBooleanAlgebra_from_GenerateBooleanAlgebra[sort BaseRel] :
+     AtomicBooleanAlgebra to 
+	GenerateBooleanAlgebra[sort BaseRel]
 = 
      Elem |-> Rel, AtomElem |-> BaseRel
 end
 
+
+%(
+    Spec CompositionTable provides the signature of composition tables,
+    and introduces some operations that may be helpful for specifyng	
+    new algebras.  
+)%
 
 
 spec CompositionTable =
@@ -94,53 +89,66 @@ spec CompositionTable =
      ops 
          id	 : BaseRel;	 	 
           1      : Rel;
+   	   inv__ : BaseRel -> BaseRel;
 	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
-         __cmps__: BaseRel * BaseRel -> Rel
+         __cmps__: BaseRel * BaseRel -> Rel;
+	  compl__: Rel -> Rel		
      forall x:BaseRel
      . x cmps id = x
      . id cmps x = x
-end
-
-
-
-spec InvolutionTable =
-     sorts BaseRel < Rel
-     ops 
-          id     : BaseRel;
-	  inv__ : BaseRel -> BaseRel
-     forall x:BaseRel
      . inv(id) = id
-     . inv(inv(x)) = x
+end
+
+
+%( Not each composition table is suitable for building an abstract relation algebra.
+   The axioms that need to be fullfilled are specified in GroundingCompositionTable.
+)%
+
+
+spec GroundingCompositionTable =
+     sort BaseRel
+and  CompositionTable
+then local  GenerateBooleanAlgebra[sort BaseRel]
+
+within
+     forall x,y,z:BaseRel
+     . inv(x) eps (y cmps z) <=> inv(z) eps (x cmps y)
 end
 
 
 
-spec GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][InvolutionTable] = %mono
+
+spec GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     GenerateBooleanAlgebra[sort BaseRel]
+then %def
      ops 
 	  id	  : Rel;
-          inv__  : Rel -> Rel;
+          inv__   : Rel -> Rel;
 	  __cmps__: Rel * Rel -> Rel       
 
-     forall x,y:BaseRel; u,v:Rel
-     . inv(0) = 0
-     . inv(u cup x) = inv(u) cup inv(x)
-     . x cmps 0 = 0 /\ 0 cmps x = 0
-     . (u cup x) cmps (v cup y) =
-	  (u cmps v) cup (u cmps y) cup (x cmps v) cup (x cmps y)      
+     forall x,y:BaseRel; r,s:Rel
+     . x eps inv(r) <=> inv(x) eps r
+     . x eps (r cmps s) <=> 
+	  exists y,z:BaseRel .y eps r /\ z eps s /\ x eps (y cmps z) 
 
 then %implies
-     op __cmps__: Rel * Rel -> Rel, assoc, unit id;       
+     op __cmps__: Rel * Rel -> Rel, unit id;       
+     forall x,y,z:BaseRel; r,s:Rel
+     . inv(0) = 0
+     . inv(r cup x) = inv(r) cup inv(x)
+     . inv(inv(r)) = r
+     . r cmps 0 = 0 /\ 0 cmps r = 0
+     . (r cup x) cmps (s cup y) =
+	  (r cmps s) cup (r cmps y) cup (x cmps s) cup (x cmps y)
 end
 
 
 
-spec GeneratedRelationAlgebra = 
-     GenerateRelationAlgebra[BooleanAlgebraOfRelations][CompositionTable][InvolutionTable]
-end
-
-
-spec ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra] = %def
+spec GenerateExtPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable] 
+and
      ExtBooleanAlgebraByOrderRelations[BooleanAlgebra with sort Elem |-> Rel]
+
 then %implies
      forall x,y:Rel
      . x < y  <=> x isSubsetOf y /\ not x = y
@@ -150,14 +158,14 @@ then %implies
 end
 
 
-spec RichGeneratedRelationAlgebra =  ExtGeneratedRelationAlgebra[GeneratedRelationAlgebra]
-end
+spec RichGeneratedPseudoRelationAlgebra =  
+     GenerateExtPseudoRelationAlgebra[sort BaseRel][CompositionTable]
 
 
-view GeneratedRelationAlgebra_as_AtomicRelationAlgebra:
+view PseudoRelationAlgebra_as_AtomicRelationAlgebra[sort BaseRel][GroundingCompositionTable]:
      AtomicRelationAlgebra 
 to
-     RichGeneratedRelationAlgebra  
+     GenerateExtPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 

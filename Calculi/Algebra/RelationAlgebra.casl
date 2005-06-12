@@ -136,7 +136,7 @@ end
 
 
 
-spec ExtRelationAlgebraLikeByOrderRelations[NonAssocRelationAlgebra] = %def
+spec ExtPseudoRelationAlgebraByOrderRelations[NonAssocRelationAlgebra] = %def
      ExtBooleanAlgebraByOrderRelations[BooleanAlgebra] with sort Elem |-> Rel
 
 then %implies
@@ -158,10 +158,10 @@ end
 
 
 spec RelationAlgebraWithOrderRelations = 
-     ExtRelationAlgebraLikeByOrderRelations[RelationAlgebra]
+     ExtPseudoRelationAlgebraByOrderRelations[RelationAlgebra]
 
 spec NonAssocRelationAlgebraWithOrderRelations = 
-     ExtRelationAlgebraLikeByOrderRelations[NonAssocRelationAlgebra]
+     ExtPseudoRelationAlgebraByOrderRelations[NonAssocRelationAlgebra]
 
 
 spec IntegralNonAssocRelationAlgebra =
@@ -227,9 +227,9 @@ end
 %( New relation algebras from others )%
 
 
-
-
-spec CartProdRelationAlgebras [RelationAlgebra with Rel |-> RelF][RelationAlgebra with Rel |-> RelS] = %mono
+spec CartProdRelationAlgebras [RelationAlgebra with Rel |-> RelF]
+		[RelationAlgebra with Rel |-> RelS] 
+= %mono
      free type Rel ::= __-__ (first:RelF;second:RelS) 
      forall x,y:Rel
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
@@ -251,7 +251,8 @@ end
 
 view CartProdRelationAlgebras_as_RelationAlgebra:
      RelationAlgebra to 
-     CartProdRelationAlgebras[RelationAlgebra with Rel |-> RelF][RelationAlgebra with Rel |-> RelS]
+     CartProdRelationAlgebras[RelationAlgebra with sort Rel |-> RelF]
+	[RelationAlgebra with sort Rel |-> RelS] 
 end
 
 

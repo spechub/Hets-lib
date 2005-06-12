@@ -1,13 +1,13 @@
 library Calculi/Space/TopologicalCalculi
 
 
-from Calculi/Space/RCC5 get RCC5,GenerateOpenDiscModelOfRCC5 |-> OpenDiscModelOfRCC5
-from Calculi/Space/RCC8 get RCC8,GenerateOpenDiscModelOfRCC8 |-> OpenDiscModelOfRCC8
+from Calculi/Space/RCC5 get RCC5, OpenDiscModelOfRCC5
+from Calculi/Space/RCC8 get RCC8, OpenDiscModelOfRCC8
 from HasCASL/MetricSpaces get MetricSpace |-> EuclideanPlane
 from HasCASL/TopologicalSpaces get TopologicalSpace_Kuratowski |-> TopologicalSpace
-from Calculi/Time/IntervalAlgebraLin get IntervalAlgebraLin |-> AllenIA
-from Calculi/Time/IntervalAlgebraLin get GenerateAllenModelOfIntervalAlgebraLin |-> AllenModelOfIA
-from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
+%from Calculi/Time/IntervalAlgebraLin get IntervalAlgebraLin |-> AllenIA
+%from Calculi/Time/IntervalAlgebraLin get GenerateAllenModelOfIntervalAlgebraLin |-> AllenModelOfIA
+%from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
 
 view RCC5_to_RCC8 :
      RCC5 
@@ -18,7 +18,7 @@ to   { RCC8
      	. pp = tpp cup ntpp
      	. ppi = tppi cup ntppi
       }
-=    sort BaseRel |-> Rel 
+=    sort BaseRel |-> Rel
 end
 
 %( Nicht korrekt:
@@ -40,6 +40,7 @@ end
 )%
 
 
+%(
 view RCC5_to_AllenIA :
      RCC5 
 to   { AllenIA then %def
@@ -52,6 +53,7 @@ to   { AllenIA then %def
 	}
 =    sort BaseRel |-> Rel 
 end
+)%
 
 logic HasCASL
 

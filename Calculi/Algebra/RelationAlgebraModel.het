@@ -12,7 +12,7 @@ version 0.2
 
 from HasCASL/Set get Set
 from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
-	ExtRelationAlgebraByOrderRelations, RelationAlgebraWithOrderRelations,
+	ExtPseudoRelationAlgebraByOrderRelations, RelationAlgebraWithOrderRelations,
 	AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get CompositionTable
 from Calculi/Algebra/BooleanAlgebra get BooleanAlgebraWithCompl
@@ -34,34 +34,31 @@ then
 end
 
 
-     
-
-
-spec FullAlgebraOfBinaryRelations[sort DomElem] =
-	BinaryRelations[sort DomElem] with sort Relation |-> DomRelation
+spec FullAlgebraOfBinaryRelations[sort Elem] =
+	BinaryRelations[sort Elem] with sort Relation |-> Relation
 then %def
      ops
-	 0,1,id:DomRelation;
-         __cup__,__cap__,__cmps__: DomRelation * DomRelation -> DomRelation;
-         compl__,inv__: DomRelation -> DomRelation
+	 0,1,id:Relation;
+         __cup__,__cap__,__cmps__: Relation * Relation -> Relation;
+         compl__,inv__: Relation -> Relation
 
-     forall r,s:DomRelation; x,y:DomElem
+     forall r,s:Relation; x,y:Elem
      . rep(0) = emptySet
      . rep(1) = allSet
      . rep(r cup s) = rep(r) union rep(s)
      . rep(r cap s) = rep(r) intersection rep(s)
      . rep(compl(r)) = rep(1) \\ rep(r)
      . (x,y) isIn rep(id) <=> x = y
-     . (x,y) isIn rep(r cmps s) <=> exists z:DomElem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) 
+     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) 
      . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
 
 then %implies 
      ops
-         __cup__:  DomRelation * DomRelation -> DomRelation, assoc, comm, idem, unit 0;
-	 __cap__:  DomRelation * DomRelation -> DomRelation, assoc, comm, idem, unit 1;
-         __cmps__: DomRelation * DomRelation -> DomRelation, assoc, unit id;
+         __cup__:  Relation * Relation -> Relation, assoc, comm, idem, unit 0;
+	 __cap__:  Relation * Relation -> Relation, assoc, comm, idem, unit 1;
+         __cmps__: Relation * Relation -> Relation, assoc, unit id;
 
-     forall x:DomRelation
+     forall x:Relation
      . compl(compl(x)) = x 
      . inv(inv(x)) = x 
      . inv(id) = id
@@ -69,46 +66,46 @@ end
 
 
 
-spec SetAlgebraOfBinaryRelations[sort DomElem] =
-     FullAlgebraOfBinaryRelations[sort DomElem] 
+spec SetAlgebraOfBinaryRelations[sort Elem] =
+     FullAlgebraOfBinaryRelations[sort Elem] 
 then 
-     sort DomRel < DomRelation
+     sort Rel < Relation
      ops
-	 0,1:DomRel;
-         __cup__,__cap__: DomRel * DomRel -> DomRel;
-         compl__: DomRel -> DomRel
+	 0,1:Rel;
+         __cup__,__cap__: Rel * Rel -> Rel;
+         compl__: Rel -> Rel
 	%% hide sort Relation 
 then %implies 
      ops
-         __cup__:  DomRel * DomRel -> DomRel, assoc, comm, idem, unit 0;
-	 __cap__:  DomRel * DomRel -> DomRel, assoc, comm, idem, unit 1;
-     forall x:DomRel
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+     forall x:Rel
      . compl(compl(x)) = x 
 end
 
 
 
-spec AlgebraOfBinaryRelations[sort DomElem] =
-     SetAlgebraOfBinaryRelations[sort DomElem] 
+spec AlgebraOfBinaryRelations[sort Elem] =
+     SetAlgebraOfBinaryRelations[sort Elem] 
 then  
      ops
-	 id:DomRel;
-         __cmps__:  DomRel * DomRel -> DomRel;
-         inv__: DomRel -> DomRel
+	 id:Rel;
+         __cmps__:  Rel * Rel -> Rel;
+         inv__: Rel -> Rel
 end
 
 
 view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl:
-     BooleanAlgebraWithCompl to SetAlgebraOfBinaryRelations[sort DomElem]
+     BooleanAlgebraWithCompl to SetAlgebraOfBinaryRelations[sort Elem]
 =
-     sort Elem |-> DomRel 
+     sort Elem |-> Rel 
 end
 
 
 view AlgebraOfBinaryRelations_as_RelationAlgebra:
-     RelationAlgebra to AlgebraOfBinaryRelations[sort DomElem]
+     RelationAlgebra to AlgebraOfBinaryRelations[sort Elem]
 =
-     sort Rel |-> DomRel
+     sort Rel |-> Rel
 end
 
 
@@ -117,9 +114,9 @@ end
 
 
 spec BaseRelationModel =
-     BinaryRelations[sort DomElem] with sort Relation |-> DomRelation      
+     BinaryRelations[sort Elem] with sort Relation |-> Relation      
 then 
-     type DomBaseRel < DomRelation   
+     type BaseRel < Relation   
 %%    forall r:BaseRel . not rep(r) = emptySet
 end
 
@@ -127,37 +124,37 @@ end
 spec JEPDBaseRelationModel =
      BaseRelationModel
 then
-     forall x,y:DomElem; r,s:DomBaseRel
-     . exists r:DomBaseRel . (x,y) isIn rep(r)			%(JointlyExhaustive)%
+     forall x,y:Elem; r,s:BaseRel
+     . exists r:BaseRel . (x,y) isIn rep(r)			%(JointlyExhaustive)%
      . not r = s => rep(r) intersection rep(s) = emptySet	%(PairwiseDisjoint)%
 end
 
 
 
 spec GenerateBooleanAlgebraModel[JEPDBaseRelationModel] = %def
-     type DomRel = {x:DomRelation . exists X:Set(DomBaseRel) .  
-			(forall y,z:DomElem . (y,z) isIn rep(x) <=> 
-		(exists r:DomBaseRel . r isIn X /\ (y,z) isIn rep(r)))}
+     type Rel = {x:Relation . exists X:Set(BaseRel) .  
+			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
+		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
 and
      SetAlgebraOfBinaryRelations[sort Elem]
 
 then %implies
-     type DomBaseRel < DomRel
+     type BaseRel < Rel
 end
 
 
-spec GenerateRelationAlgebraModel[JEPDBaseRelationModel] = 
+spec GenerateModelFromBaseRelationModel[JEPDBaseRelationModel] = %def
      GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
-then
+then %def
      ops
-         id:DomRel;
-	 inv__: DomRel -> DomRel;
-	 __cmps__: DomRel * DomRel -> DomRel
+         id:Rel;
+	 inv__: Rel -> Rel;
+	 __cmps__: Rel * Rel -> Rel
 
-     forall r,s:DomRel; x,y:DomElem
+     forall r,s:Rel; x,y:Elem
      . (x,y) isIn rep(id)  <=> x = y
      . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
-     . (x,y) isIn rep(r cmps s) <=> exists z:DomElem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
+     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
 end
 
 
@@ -165,14 +162,14 @@ spec GenerateWeakRelationAlgebraModel[JEPDBaseRelationModel] =
      GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
 then
      ops
-         id:DomRel;
-	 inv__: DomRel -> DomRel;
-	 __wcmps__: DomRel * DomRel -> DomRel
+         id:Rel;
+	 inv__: Rel -> Rel;
+	 __wcmps__: Rel * Rel -> Rel
 
-     forall r,s:DomRel; x,y:DomElem
+     forall r,s:Rel; x,y:Elem
      . (x,y) isIn rep(id)  <=> x = y
      . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
-     . exists z:DomElem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) => (x,y) isIn rep(r cmps s)  
+     . exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) => (x,y) isIn rep(r cmps s)  
 end
 
 

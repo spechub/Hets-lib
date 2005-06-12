@@ -18,17 +18,16 @@ from Calculi/Algebra/RelationAlgebra get
 	AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-     	GenerateRelationAlgebra,
-	RelationBase,
-	SetRepresentationOfRelations
+     	GeneratePseudoRelationAlgebra,
+	GenerateRelations
 from Calculi/Algebra/RelationAlgebraModel get 
 	AlgebraOfBinaryRelations,
-	GeneratePreModelFromBaseRelationModel,
+	GenerateModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	Relation
-from Calculi/Time/LinearFlowOfTime get 
-	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime
+	BinaryRelations
+%%from Calculi/Time/LinearFlowOfTime get 
+%%	DnsLinFlowOfTimeSEnd,
+%%	LinFlowOfTime
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
@@ -63,7 +62,7 @@ from HasCASL/Set get
 
 
 
-spec BaseRelationsOfRCC5 = %mono
+spec RCC5BaseRelations = %mono
      free type BaseRel ::= dr | po | pp | ppi | eq
 end
 
@@ -75,17 +74,17 @@ end
 )%
 
 
-spec CompositionTableOfRCC5 =
+spec RCC5CompositionTable =
      sort BaseRel
      ops dr,po,pp,ppi,eq: BaseRel
 and 
      CompositionTable 
 then
-     . conv(dr) = dr					%(sym_dr)%
-     . conv(po) = po					%(sym_po)%
-     . conv(pp) = ppi					%(conv_pp)%
-     . conv(ppi) = pp					%(conv_ppi)%
-     . conv(eq) = eq					%(sym_eq)%
+     . inv(dr) = dr					%(sym_dr)%
+     . inv(po) = po					%(sym_po)%
+     . inv(pp) = ppi					%(inv_pp)%
+     . inv(ppi) = pp					%(inv_ppi)%
+     . inv(eq) = eq					%(sym_eq)%
 
      . pp cmps pp  = pp					%(cmps_pppp)%	
      . pp cmps ppi = 1					%(cmps_ppppi)%
@@ -121,23 +120,35 @@ end
 
 
 
-spec RelationBaseOfRCC5 =  
-     SetRepresentationOfRelations[BaseRelationsOfRCC5]
+spec RCC5Relations =  
+     GenerateRelations[RCC5BaseRelations]
 and
-     CompositionTableOfRCC5 
+     RCC5CompositionTable 
 end 
 
 
-view RelationBaseOfRCC5_as_RelationBase[BaseRelationsOfRCC5] :
+%(
+view RCC5RelationsRCC5_as_RelationBase[BaseRelationsOfRCC5] :
      RelationBase[sort BaseRel] to RelationBaseOfRCC5
 =
      op id:BaseRel |-> eq
 end
-
+)%
 
 spec RCC5 = 
-     GenerateRelationAlgebra[RelationBaseOfRCC5 fit op id:BaseRel |-> eq:BaseRel] 
+     GeneratePseudoRelationAlgebra[RCC5Relations]
+	[RCC5CompositionTable fit op id:BaseRel |-> eq:BaseRel] 
 end
+
+
+%( TBD:
+view RCC5CompositionTableIsGrounding:
+     GroundingCompositionTable to RCC5CompositionTable
+=    
+     op  id: BaseRel |-> eq
+end
+)%
+	
 
 
 view RCC5_as_AtomicRelationAlgebra :
@@ -169,13 +180,13 @@ end
 logic HasCASL
 
 
-spec BaseRelationOpenDiscModelOfRCC5[MetricSpace] = 
+spec OpenDiscModelOfRCC5BaseRelations[MetricSpace] = 
      Set
 then
      op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
      type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
 then 
-     Relation[sort OpenDisc] 
+     BinaryRelations[sort OpenDisc] 
 
 then %def
      ops ppRel,ppiRel,poRel,drRel,eqRel:Relation 
@@ -189,23 +200,23 @@ then %def
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
-spec GeneratePreOpenDiscModelOfRCC5[MetricSpace] = %def
-      GeneratePreModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC5[MetricSpace]
+spec OpenDiscModelOfRCC5[MetricSpace] = %def
+      GenerateModelFromBaseRelationModel[OpenDiscModelOfRCC5BaseRelations[MetricSpace]
 	fit sort Elem |-> OpenDisc]
 then %cons  
      ops  eqRel: Rel;
-          conv: BaseRel -> BaseRel;
-          conv: Rel -> Rel
+          inv: BaseRel -> BaseRel;
+          inv: Rel -> Rel
 end
 
-
+%(
 spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
      GeneratePreOpenDiscModelOfRCC5[MetricSpace]
 then %cons 
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
-
+)%
 
 
 
@@ -214,11 +225,11 @@ end
 
 
 
-
+%( TBD
 view BaseRelationOpenDiscModelOfRCC5_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort OpenDisc] 
+     JEPDBaseRelationModel
 to 
-     BaseRelationOpenDiscModelOfRCC5[MetricSpace]
+     OpenDiscModelOfRCC5BaseRelations[MetricSpace]
 end
 
 
@@ -236,11 +247,11 @@ view MetricSpace_induces_OpenDiscModelOfRCC5 :
      { RCC5 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
 to 
-    GenerateOpenDiscModelOfRCC5[MetricSpace]
+  OpenDiscModelOfRCC5[MetricSpace]
 =   
     ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel, 
         id |-> eqRel
 end
-
+)%
 
 

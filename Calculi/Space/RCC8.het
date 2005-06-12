@@ -18,17 +18,16 @@ from Calculi/Algebra/RelationAlgebra get
 	AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-	GenerateRelationAlgebra,
-	RelationBase,
-	SetRepresentationOfRelations
+	GeneratePseudoRelationAlgebra,
+	GenerateRelations
 from Calculi/Algebra/RelationAlgebraModel get 
 	AlgebraOfBinaryRelations,
-	GeneratePreModelFromBaseRelationModel,
+	GenerateModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	Relation
-from Calculi/Time/LinearFlowOfTime get 
-	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime
+	BinaryRelations
+%%from Calculi/Time/LinearFlowOfTime get 
+%%	DnsLinFlowOfTimeSEnd,
+%%	LinFlowOfTime
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
@@ -66,7 +65,7 @@ from HasCASL/Set get
 
 
 
-spec BaseRelationsOfRCC8 = %mono
+spec RCC8BaseRelations = %mono
      free type BaseRel ::= dc | ec | po | tpp | ntpp | tppi | ntppi | eq
 end
 
@@ -78,20 +77,20 @@ end
 )%
 
 
-spec CompositionTableOfRCC8 =
+spec RCC8CompositionTable =
      sort BaseRel
      ops dc ,ec ,po ,tpp ,ntpp ,tppi ,ntppi ,eq: BaseRel
 and 
      CompositionTable 
 then
-     . conv(dc) = dc					%(sym_dc)%
-     . conv(ec) = ec					%(sym_dc)%
-     . conv(po) = po					%(sym_po)%
-     . conv(tpp) = tppi					%(conv_tpp)%
-     . conv(tppi) = tpp					%(conv_tppi)%
-     . conv(ntpp) = ntppi				%(conv_ntpp)%
-     . conv(ntppi) = ntpp				%(conv_ntppi)%
-     . conv(eq) = eq					%(sym_eq)%
+     . inv(dc) = dc					%(sym_dc)%
+     . inv(ec) = ec					%(sym_dc)%
+     . inv(po) = po					%(sym_po)%
+     . inv(tpp) = tppi					%(inv_tpp)%
+     . inv(tppi) = tpp					%(inv_tppi)%
+     . inv(ntpp) = ntppi				%(inv_ntpp)%
+     . inv(ntppi) = ntpp				%(inv_ntppi)%
+     . inv(eq) = eq					%(sym_eq)%
 
 %[
      . pp cmps pp  = pp					%(cmps_pppp)%	
@@ -128,22 +127,23 @@ end
 
 
 
-spec RelationBaseOfRCC8 =  
-     SetRepresentationOfRelations[BaseRelationsOfRCC8]
+spec RCC8Relations =  
+     GenerateRelations[RCC8BaseRelations]
 and
-     CompositionTableOfRCC8 
+     RCC8CompositionTable 
 end 
 
-
+%(
 view RelationBaseOfRCC8_as_RelationBase[BaseRelationsOfRCC8] :
      RelationBase[sort BaseRel] to RelationBaseOfRCC8
 =		
 	op id : BaseRel |-> eq
 end
-
+)%
 
 spec RCC8 = 
-     GenerateRelationAlgebra[RelationBaseOfRCC8 fit op id:BaseRel |-> eq:BaseRel] 
+     GeneratePseudoRelationAlgebra[RCC8Relations]
+	[RCC8CompositionTable fit op id:BaseRel |-> eq:BaseRel] 
 end
 
 
@@ -176,13 +176,13 @@ end
 logic HasCASL
 
 
-spec BaseRelationOpenDiscModelOfRCC8[MetricSpace] = 
+spec OpenDiscModelOfRCC8BaseRelations[MetricSpace] = 
      Set
 then
      op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
      type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
 then 
-     Relation[sort OpenDisc] 
+     BinaryRelations[sort OpenDisc] 
 
 then %def
      ops dcRel,ecRel,poRel,tppRel,ntppRel,tppiRel,ntppiRel,eqRel:Relation 
@@ -200,23 +200,24 @@ then %def
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
-spec GeneratePreOpenDiscModelOfRCC8[MetricSpace] = %def
-      GeneratePreModelFromBaseRelationModel[BaseRelationOpenDiscModelOfRCC8[MetricSpace]
+spec OpenDiscModelOfRCC8[MetricSpace] = %def
+      GenerateModelFromBaseRelationModel[OpenDiscModelOfRCC8BaseRelations[MetricSpace]
 	fit sort Elem |-> OpenDisc]
 then %cons  
      ops eqRel: Rel;
-	conv: BaseRel -> BaseRel;
-	conv: Rel -> Rel
+	inv: BaseRel -> BaseRel;
+	inv: Rel -> Rel
 end
 
 
+%(
 spec GenerateOpenDiscModelOfRCC8[MetricSpace] = %def
      GeneratePreOpenDiscModelOfRCC8[MetricSpace]
 then %cons 
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
-
+)%
 
 
 
@@ -225,7 +226,7 @@ end
 
 
 
-
+%( TBD
 view BaseRelationOpenDiscModelOfRCC8_as_JEPDBaseRelationModel:
      JEPDBaseRelationModel[sort OpenDisc] 
 to 
@@ -254,5 +255,5 @@ to
         id |-> eqRel
 end
 
-
+)%
 

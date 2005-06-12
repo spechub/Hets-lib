@@ -21,9 +21,8 @@ from Calculi/Algebra/BooleanAlgebra get AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-	InvolutionTable,
-	GenerateSetAlgebra,		
-	GenerateRelationAlgebra
+	GenerateBooleanAlgebra,		
+	GeneratePseudoRelationAlgebra
 
 
 
@@ -47,6 +46,8 @@ spec ExCalcCompositionTable =
 and
      CompositionTable with op id |-> relation1 
 then
+     . inv(relation1) = relation1
+     . inv(relation2) = relation2
      . relation1 cmps relation1 = relation1
      . relation1 cmps relation2 = relation2
      . relation2 cmps relation1 = relation2
@@ -54,38 +55,24 @@ then
 end
 
 
-spec ExCalcInvolutionTable =
-     sort BaseRel
-     ops relation1,relation2: BaseRel    
-and
-     ConversesTable with op id |-> relation1
-then
-     . inv(relation1) = relation1
-     . inv(relation2) = relation2
+
+
+spec ExCalcBooleanAlgebra = 
+     GenerateBooleanAlgebra[ExCalcBaseRelations] 
 end
 
 
-spec BooleanAlgebraOfExCalcRelations = 
-     GenerateRelations[ExCalcBaseRelations] 
-end
-
-view BooleanAlgebraOfExCalcRelations_as_AtomicBooleanAlgebra :
-     AtomicBooleanAlgebra to BooleanAlgebraOfExCalcRelations
+view ExCalcBooleanAlgebra_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to ExCalcBooleanAlgebra
 = 
      Elem |-> Rel, AtomElem |-> BaseRel
 end
 
 
 spec ExCalc = 
-     GenerateRelationAlgebra[BooleanAlgebraOfExCalcRelations]
+     GeneratePseudoRelationAlgebra[ExCalcBaseRelations]
 	[ExCalcCompositionTable fit op id:BaseRel |-> relation1]
-	[ExCalcInvolutionTable fit op id:BaseRel |-> relation1]
 end
-
-
-%% spec RichExCalc =
-%%     ExtGeneratedRelationAlgebra[ExCalc fit op id:BaseRel |-> relation1]
-%% end	
 
 
 view ExCalc_as_AtomicRelationAlgebra :
