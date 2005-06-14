@@ -113,6 +113,7 @@ then local  GenerateBooleanAlgebra[sort BaseRel]
 within
      forall x,y,z:BaseRel
      . inv(x) eps (y cmps z) <=> inv(z) eps (x cmps y)
+%% etc.
 end
 
 
@@ -143,6 +144,9 @@ then %implies
 end
 
 
+spec GeneratedPseudoRelationAlgebra =  
+     GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable]
+
 
 spec GenerateExtPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
      GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable] 
@@ -170,3 +174,53 @@ to
      Rel |-> Rel, AtomRel |-> BaseRel
 end 
 
+
+
+
+%(  Combinations Of Syntactically Defined  Relation Algebras)%
+
+
+spec BaseRelOfProdOfGeneratedPseudoRelationAlgebras
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+= %mono
+     free type BaseRelP ::= __-__ (first:BaseRel1;second:BaseRel2)
+     forall x,y:BaseRelP
+     . x = y <=> first(x) = first(y) /\ second(x) = second(y)
+end
+
+
+spec CompositionTableOfProdOfGeneratedPseudoRelationAlgebras
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+= %def
+     BaseRelOfProdOfGeneratedPseudoRelationAlgebras
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+then %mono
+     GenerateBooleanAlgebra[sort BaseRelP] with sort Rel |-> RelP
+then %def
+     ops 
+         id	 : BaseRelP;	 	 
+   	   inv__ : BaseRelP -> BaseRelP;
+         __cmps__: BaseRelP * BaseRelP -> RelP
+     forall x,y,z:BaseRelP
+     . id = (id:BaseRel1)-(id:BaseRel2)
+     . inv(x)=inv(first(x))-inv(second(x))
+     . x eps (y cmps z) <=> first(x) eps (first(y) cmps first(z)) /\ second(x) eps (second(y) cmps second(z))
+end
+
+
+spec ProdOfGeneratedPseudoRelationAlgebras
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+= %def
+     GeneratePseudoRelationAlgebra
+	[BaseRelOfProdOfGeneratedPseudoRelationAlgebras
+		[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+		[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] ]
+        [CompositionTableOfProdOfGeneratedPseudoRelationAlgebras
+		[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+		[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+		with sort BaseRel |-> BaseRelP, Rel |-> RelP ]
+end 

@@ -157,11 +157,12 @@ then %implies
 end
 
 
-spec RelationAlgebraWithOrderRelations = 
-     ExtPseudoRelationAlgebraByOrderRelations[RelationAlgebra]
-
 spec NonAssocRelationAlgebraWithOrderRelations = 
      ExtPseudoRelationAlgebraByOrderRelations[NonAssocRelationAlgebra]
+
+
+spec RelationAlgebraWithOrderRelations = 
+     ExtPseudoRelationAlgebraByOrderRelations[RelationAlgebra]
 
 
 spec IntegralNonAssocRelationAlgebra =
@@ -176,7 +177,7 @@ end
 
 spec IntegralRelationAlgebra =
      RelationAlgebra
-and  NonAssocRelationAlgebraWithOrderRelations
+and  IntegralNonAssocRelationAlgebra
 end
 
 
@@ -197,7 +198,7 @@ spec CommutativeNonAssocRelationAlgebra =
      NonAssocRelationAlgebra
 then 
      op
-	  __cmps__: Rel * Rel -> Rel, comm, unit id
+	 __cmps__: Rel * Rel -> Rel, comm, unit id
 end
 
 
@@ -227,18 +228,18 @@ end
 %( New relation algebras from others )%
 
 
-spec CartProdRelationAlgebras [RelationAlgebra with Rel |-> RelF]
-		[RelationAlgebra with Rel |-> RelS] 
+spec CartProdRelationAlgebras [RelationAlgebra with Rel |-> Rel1]
+		[RelationAlgebra with Rel |-> Rel2] 
 = %mono
-     free type Rel ::= __-__ (first:RelF;second:RelS) 
-     forall x,y:Rel
+     free type RelP ::= __-__ (first:Rel1;second:Rel2) 
+     forall x,y:RelP
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
      
 then %def
-     ops __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
-	 compl__,inv__: Rel -> Rel;
-         0,1,id:Rel
-     forall x,y:Rel
+     ops __cup__,__cap__,__cmps__: RelP * RelP -> RelP;
+	 compl__,inv__: RelP -> RelP;
+         0,1,id:RelP
+     forall x,y:RelP
      . x cup y = (first(x) cup first(y))-(second(x) cup second(y))    
      . x cap y = (first(x) cap first(y))-(second(x) cap second(y))    
      . x cmps y = (first(x) cmps first(y))-(second(x) cmps second(y))    
@@ -249,31 +250,35 @@ then %def
      . id = id-id
 end
 
+
 view CartProdRelationAlgebras_as_RelationAlgebra:
      RelationAlgebra to 
-     CartProdRelationAlgebras[RelationAlgebra with sort Rel |-> RelF]
-	[RelationAlgebra with sort Rel |-> RelS] 
+     CartProdRelationAlgebras[RelationAlgebra with sort Rel |-> Rel1]
+	[RelationAlgebra with sort Rel |-> Rel2] 
+= 
+     sort Rel |-> RelP
 end
 
 
 
-
+%(
 spec SelfCartProdRelationAlgebra [RelationAlgebra] =
-     generated type PRel ::= __-__ (first:Rel;second:Rel) 
-     forall x,y,u,v:Rel
+     generated type RelP ::= __-__ (first:Rel;second:Rel) 
+     forall x,y,u,v:RelP
      . x-u = y-v <=> x = y /\ u = v	
-     forall x,y:PRel
+     forall x,y:RelP
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
      
 then %def
-     ops __cup__,__cap__,__cmps__: PRel * PRel -> PRel;
-	 compl__,inv__: PRel -> PRel;
-         0,1,id:PRel
+     ops __cup__,__cap__,__cmps__: RelP * RelP -> RelP;
+	 compl__,inv__: RelP -> RelP;
+         0,1,id:RelP
 end
+)%
 
 
-
-    
-
-
+spec SelfCartProdRelationAlgebra1 [RelationAlgebra] =
+     CartProdRelationAlgebras [RelationAlgebra]
+	[RelationAlgebra] 
+end
 
