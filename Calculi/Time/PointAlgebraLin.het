@@ -8,25 +8,27 @@ version 0.2
 %prec {__cup__} < {__cmps__}
 %prec {__cmps__} < {__cmpl__} 
 
-from Calculi/Algebra/Auxiliary get 
+from Calculi/Algebra/BooleanAlgebra get 
 	BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByPartialOrder,
+	ExtBooleanAlgebraByOrderRelations,
 	AtomicBooleanAlgebra 
 from Calculi/Algebra/RelationAlgebra get 
 	AtomicRelationAlgebra,
 	IntegralRelationAlgebra,
 	SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
-	CompositionTable,	
-	ConversesTable,
-	GenerateRelations,		
-	GenerateRelationAlgebra,
-	ExtGeneratedRelationAlgebra
+	CompositionTable,
+	GroundingCompositionTable,	
+	GenerateBooleanAlgebra,		
+	GeneratePseudoRelationAlgebra,
+	GenerateExtPseudoRelationAlgebra,
+	GenerateProductOfBaseRelations,
+	ProdOfGeneratedPseudoRelationAlgebras
 from Calculi/Algebra/RelationAlgebraModel get 
-	AlgebraOfBinaryRelations,
-	GeneratePreModelFromBaseRelationModel,
-	JEPDBaseRelationModel,
-	Relation
+	AlgebraOfBinaryRelations
+%%	GeneratePreModelFromBaseRelationModel,
+%%	JEPDBaseRelationModel,
+%%	Relation
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
 	LinFlowOfTime
@@ -70,6 +72,9 @@ spec PAlinCompositionTable =
 and 
      CompositionTable with op id |-> e
 then
+     . inv(p) = pi					%(inv_p)%
+     . inv(pi) = p					%(inv_pi)%
+     . inv(e) = e					%(sym_e)%
      . p cmps p  = p 					%(cmps_pp)%	
      . p cmps pi = 1					%(cmps_ppi)%
      . p cmps e  = p					%(cmps_pe)%
@@ -82,19 +87,8 @@ then
 end
 
 
-spec PAlinConversesTable =
-     sort BaseRel
-     ops p,pi,e: BaseRel
-and 
-     ConversesTable with op id |-> e
-then
-     . conv(p) = pi					%(conv_p)%
-     . conv(pi) = p					%(conv_pi)%
-     . conv(e) = e					%(sym_e)%
-end
-
 spec BooleanAlgebraOfPAlinRelations = 
-     GenerateRelations[PAlinBaseRelations] 
+     GenerateBooleanAlgebra[PAlinBaseRelations] 
 end
 
 view BooleanAlgebraOfPAlinRelations_as_AtomicBooleanAlgebra :
@@ -105,14 +99,14 @@ end
 
 
 spec PAlin = 
-     GenerateRelationAlgebra[BooleanAlgebraOfPAlinRelations]
+     GeneratePseudoRelationAlgebra[PAlinBaseRelations]
 	[PAlinCompositionTable fit op id:BaseRel |-> e]
-	[PAlinConversesTable fit op id:BaseRel |-> e]
 end
 
 
 spec RichPAlin =
-     ExtGeneratedRelationAlgebra[PAlin fit op id:BaseRel |-> e]
+     GenerateExtPseudoRelationAlgebra[PAlinBaseRelations]
+	[PAlinCompositionTable fit op id:BaseRel |-> e]
 end	
 
 
@@ -134,8 +128,11 @@ view PAlin_as_SymmetricRelationAlgebra :
 end
 
 
-
-
+spec PA2BaseRelations = 
+     GenerateProductOfBaseRelations
+	[PAlinBaseRelations with BaseRel |-> BaseRel1]
+	[PAlinBaseRelations with BaseRel |-> BaseRel2] 
+end
 
 
 
@@ -173,8 +170,8 @@ spec GenerateBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
 	fit sort Elem |-> AllenPoint]
 then %cons
      ops  eRel: Rel;
-          conv: BaseRel -> BaseRel;
-          conv: Rel -> Rel
+          inv: BaseRel -> BaseRel;
+          inv: Rel -> Rel
 end
 
 
