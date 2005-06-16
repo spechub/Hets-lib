@@ -23,6 +23,8 @@ from Calculi/Algebra/BooleanAlgebra get
 	AtomicBooleanAlgebra, 	
 	ExtBooleanAlgebraByOrderRelations
 from Calculi/Algebra/RelationAlgebra get 
+	NonAssocRelationAlgebra,
+	RelationAlgebra,
 	AtomicRelationAlgebra,
 	AtomicNonAssocRelationAlgebra
 
@@ -38,98 +40,73 @@ from Calculi/Algebra/RelationAlgebraSymbolic get
 
 
 
+%( New relation algebras from others )%
 
 
-
-%(  Combinations Of Syntactically Defined  Relation Algebras)%
-
-
-
-spec GenerateProductOfBaseRelations
-	[sort BaseRel1][sort BaseRel2]
+spec CartProdOfPseudoRelationAlgebras [NonAssocRelationAlgebra with Rel |-> Rel1]
+		[NonAssocRelationAlgebra with Rel |-> Rel2] 
 = %mono
-     free type BaseRel ::= <__-__> (first:BaseRel1;second:BaseRel2)
-     forall x,y:BaseRel
+     free type Rel ::= <__-__> (first:Rel1;second:Rel2) 
+     forall x,y:Rel
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
+     
+then %def
+     ops __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
+	 compl__,inv__: Rel -> Rel;
+         0,1,id:Rel
+     forall x,y:Rel
+     . x cup y = <(first(x) cup first(y))-(second(x) cup second(y))>    
+     . x cap y = <(first(x) cap first(y))-(second(x) cap second(y))>    
+     . x cmps y = <(first(x) cmps first(y))-(second(x) cmps second(y))>    
+     . compl(x) = <compl(first(x))-compl(second(x))>
+     . inv(x) = <inv(first(x))-inv(second(x))>
+     . 0 = <0-0>
+     . 1 = <1-1>
+     . id = <id-id>
 end
 
 
-spec GenerateProductOfCompositionTables
-	[CompositionTable  with BaseRel |-> BaseRel1, Rel |-> Rel1]
-	[CompositionTable  with BaseRel |-> BaseRel2, Rel |-> Rel2]
-= %def 
-     GenerateProductOfBaseRelations
-	[sort BaseRel1][sort BaseRel2] 
-then CompositionTable 
-then local
-     { GenerateBooleanAlgebra[sort BaseRel] }
-      and
-      closed { GenerateBooleanAlgebra[sort BaseRel1] with sort Rel |-> Rel1 }
-      and
-      closed { GenerateBooleanAlgebra[sort BaseRel2] with sort Rel |-> Rel2 } 		
-within
-     forall x,y,z:BaseRel
-     . id = <id - id>
-     . inv(x) = <inv(first(x)) - inv(second(x))>
-     . x eps (y cmps z) <=> first(x) eps (first(y) cmps first(z)) /\ 
-			second(x) eps (second(y) cmps second(z))
+view NonAssocRelationAlgebra_from_CartProdOfPseudoRelationAlgebras
+	[NonAssocRelationAlgebra with sort Rel |-> Rel1]
+	[NonAssocRelationAlgebra with sort Rel |-> Rel2] :
+     NonAssocRelationAlgebra 
+to   CartProdOfPseudoRelationAlgebras
+	[NonAssocRelationAlgebra with sort Rel |-> Rel1]
+	[NonAssocRelationAlgebra with sort Rel |-> Rel2] 
 end
 
 
-
-
-spec GenerateProductOfPseudoRelationAlgebras
-     	[sort BaseRel1][CompositionTable  with BaseRel |-> BaseRel1, Rel |-> Rel1]
-     	[sort BaseRel2][CompositionTable  with BaseRel |-> BaseRel2, Rel |-> Rel2]
-= %def
-     GeneratePseudoRelationAlgebra
-	[GenerateProductOfBaseRelations
-		[sort BaseRel1][sort BaseRel2]]
-	[GenerateProductOfCompositionTables
-		[sorts BaseRel1	< Rel1
-		 ops  id : BaseRel1;  inv__ : BaseRel1 -> BaseRel1;  __cmps__:BaseRel1 * BaseRel1 -> Rel1; 
-          		0,1  : Rel1;  __cup__: Rel1 * Rel1 -> Rel1;  compl__: Rel1 -> Rel1]
-		[sorts BaseRel2	< Rel2
-		 ops  id : BaseRel2;  inv__ : BaseRel2 -> BaseRel2;  __cmps__:BaseRel2 * BaseRel2 -> Rel2; 
-          		0,1  : Rel2;  __cup__: Rel2 * Rel2 -> Rel2;  compl__: Rel2 -> Rel2]]
+spec SelfCartProdOfPseudoRelationAlgebra [NonAssocRelationAlgebra with Rel |-> Rel0] =
+     CartProdOfPseudoRelationAlgebras 
+	[NonAssocRelationAlgebra with Rel |-> Rel0]
+	[NonAssocRelationAlgebra with Rel |-> Rel0] 
 end
 
 
+view NonAssocRelationAlgebra_from_SelfCartProdOfPseudoRelationAlgebra
+	[NonAssocRelationAlgebra with sort Rel |-> Rel0] :
+     NonAssocRelationAlgebra 
+to   SelfCartProdOfPseudoRelationAlgebra
+	[NonAssocRelationAlgebra with sort Rel |-> Rel0]
+end
 
 
-%( Second, more compact version )%
-
-
-
-spec ProdOfGeneratedPseudoRelationAlgebras
-	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
-	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
-= %mono
-     free type BaseRelP ::= __-__ (first:BaseRel1;second:BaseRel2)
-     forall x,y:BaseRelP
+%(
+spec SelfCartProdRelationAlgebra [RelationAlgebra] =
+     generated type RelP ::= __-__ (first:Rel;second:Rel) 
+     forall x,y,u,v:RelP
+     . x-u = y-v <=> x = y /\ u = v	
+     forall x,y:RelP
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
+     
 then %def
-     GenerateBooleanAlgebra[sort BaseRelP] with sort Rel |-> RelP
-then %def
-     ops 
-         id	 : BaseRelP;	 	 
-   	   inv__ : BaseRelP -> BaseRelP;
-         __cmps__: BaseRelP * BaseRelP -> RelP
-     forall x,y,z:BaseRelP
-     . id = (id:BaseRel1)-(id:BaseRel2)
-     . inv(x)=inv(first(x))-inv(second(x))
-     . x eps (y cmps z) <=> first(x) eps (first(y) cmps first(z)) /\ 
-			second(x) eps (second(y) cmps second(z))
-then %def
-     GeneratePseudoRelationAlgebra[sort BaseRelP][
-	sorts BaseRelP < RelP
-	ops 
-	  id : BaseRelP;
-	  inv__ : BaseRelP -> BaseRelP; 
-	__cmps__:BaseRelP * BaseRelP -> RelP; 
-          0,1      : RelP;
-	  __cup__: RelP * RelP -> RelP;
-	  compl__: RelP -> RelP	
-	] 
+     ops __cup__,__cap__,__cmps__: RelP * RelP -> RelP;
+	 compl__,inv__: RelP -> RelP;
+         0,1,id:RelP
 end
+)%
+
+
+
+
 
