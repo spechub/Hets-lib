@@ -11,9 +11,13 @@ version 0.2
 )%
 
 from HasCASL/Set get Set
-from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
-	ExtPseudoRelationAlgebraByOrderRelations, RelationAlgebraWithOrderRelations,
-	AtomicRelationAlgebra
+from Calculi/Algebra/RelationAlgebra get 
+	RelationAlgebra,
+	NonAssocRelationAlgebra,
+	ExtPseudoRelationAlgebraByOrderRelations, 
+	RelationAlgebraWithOrderRelations,
+	AtomicRelationAlgebra,
+	AtomicNonAssocRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get CompositionTable
 from Calculi/Algebra/BooleanAlgebra get BooleanAlgebraWithCompl
 
@@ -35,7 +39,7 @@ end
 
 
 spec FullAlgebraOfBinaryRelations[sort Elem] =
-	BinaryRelations[sort Elem] with sort Relation |-> Relation
+	BinaryRelations[sort Elem] 
 then %def
      ops
 	 0,1,id:Relation;
@@ -68,7 +72,7 @@ end
 
 spec SetAlgebraOfBinaryRelations[sort Elem] =
      FullAlgebraOfBinaryRelations[sort Elem] 
-then 
+then
      sort Rel < Relation
      ops
 	 0,1:Rel;
@@ -95,35 +99,42 @@ then
 end
 
 
-view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl:
+view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl[sort Elem]:
      BooleanAlgebraWithCompl to SetAlgebraOfBinaryRelations[sort Elem]
 =
      sort Elem |-> Rel 
 end
 
 
-view AlgebraOfBinaryRelations_as_RelationAlgebra:
+view AlgebraOfBinaryRelations_as_RelationAlgebra[sort Elem]:
      RelationAlgebra to AlgebraOfBinaryRelations[sort Elem]
 =
      sort Rel |-> Rel
 end
 
 
+
 %( Part II: Models of Syntatic (Abstract) Relation Algebras 
 )%
 
 
-spec BaseRelationModel =
-     BinaryRelations[sort Elem] with sort Relation |-> Relation      
-then 
-     type BaseRel < Relation   
-%%    forall r:BaseRel . not rep(r) = emptySet
+spec ElemStructure =
+     sort Elem
 end
 
 
-spec JEPDBaseRelationModel =
-     BaseRelationModel
-then
+spec BaseRelationModel[ElemStrucutre] =
+     BinaryRelations[sort Elem]
+then 
+     type BaseRel < Relation   
+     forall r:BaseRel 
+     . not rep(r) = emptySet
+end
+
+
+spec JEPDBaseRelationModel[ElemStructure] =
+     BaseRelationModel[ElemStructure] 
+then 
      forall x,y:Elem; r,s:BaseRel
      . exists r:BaseRel . (x,y) isIn rep(r)			%(JointlyExhaustive)%
      . not r = s => rep(r) intersection rep(s) = emptySet	%(PairwiseDisjoint)%
@@ -157,20 +168,6 @@ then %def
      . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
 end
 
-
-spec GenerateWeakRelationAlgebraModel[JEPDBaseRelationModel] = 
-     GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
-then
-     ops
-         id:Rel;
-	 inv__: Rel -> Rel;
-	 __wcmps__: Rel * Rel -> Rel
-
-     forall r,s:Rel; x,y:Elem
-     . (x,y) isIn rep(id)  <=> x = y
-     . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
-     . exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s) => (x,y) isIn rep(r cmps s)  
-end
 
 
 
