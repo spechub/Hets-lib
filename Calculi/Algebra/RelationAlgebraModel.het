@@ -1,8 +1,8 @@
 library Calculi/Algebra/RelationAlgebraModel
 
-version 0.2
+version 0.4
 %author: S. Wölfl
-%date: 03-06-2005
+%date: 20-06-2005
 
 %( 
     This library defines some basic higher order concepts from the 
@@ -33,7 +33,7 @@ logic HasCASL
 
 spec BinaryRelations[sort Elem] = 
      Set	
-then 
+then %def
      type Relation ::= abs(rep:Set(Elem*Elem))
 end
 
@@ -70,7 +70,7 @@ end
 
 
 
-spec SetAlgebraOfBinaryRelations[sort Elem] =
+spec SetAlgebraOfBinaryRelations1[sort Elem] =
      FullAlgebraOfBinaryRelations[sort Elem] 
 then
      sort Rel < Relation
@@ -88,8 +88,26 @@ then %implies
 end
 
 
+spec SetAlgebraOfBinaryRelations[sort Elem] =
+local  FullAlgebraOfBinaryRelations[sort Elem] 
+within
+     sort Rel < Relation
+     ops
+	 0,1:Rel;
+         __cup__,__cap__: Rel * Rel -> Rel;
+         compl__: Rel -> Rel
 
-spec AlgebraOfBinaryRelations[sort Elem] =
+then %implies 
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+     forall x:Rel
+     . compl(compl(x)) = x 
+end
+
+
+
+spec AlgebraOfBinaryRelations1[sort Elem] =
      SetAlgebraOfBinaryRelations[sort Elem] 
 then  
      ops
@@ -97,6 +115,27 @@ then
          __cmps__:  Rel * Rel -> Rel;
          inv__: Rel -> Rel
 end
+
+
+
+spec AlgebraOfBinaryRelations[sort Elem] =
+local FullAlgebraOfBinaryRelations[sort Elem] 
+within
+     sort Rel < Relation
+     ops
+	 0,1,id:Rel;
+         __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
+         compl__,inv__: Rel -> Rel;
+then %implies 
+     ops
+         __cup__ :  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+	 __cap__ :  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+	 __cmps__:  Rel * Rel -> Rel, assoc, unit id;
+     forall x:Rel
+     . compl(compl(x)) = x 
+     . inv(inv(x)) = x 
+end
+
 
 
 view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl[sort Elem]:
@@ -123,7 +162,7 @@ spec ElemStructure =
 end
 
 
-spec BaseRelationModel[ElemStrucutre] =
+spec BaseRelationModel[ElemStructure] =
      BinaryRelations[sort Elem]
 then 
      type BaseRel < Relation   
@@ -142,7 +181,29 @@ end
 
 
 
-spec GenerateBooleanAlgebraModel[JEPDBaseRelationModel] = %def
+spec GeneratePseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+     type Rel = {x:Relation . exists X:Set(BaseRel) .  
+			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
+		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
+and
+     AlgebraOfBinaryRelations[sort Elem]
+
+then %implies
+     type BaseRel < Rel
+end
+
+
+view BooleanAlgebra_from_JEPDBaseRelationModel[JEPDBaseRelationModel[ElemStructure]] :
+     BooleanAlgebraWithCompl
+to   GeneratePseudoModelFromBaseRelationModel[JEPDBaseRelationModel[ElemStructure]]
+=    Elem |-> Rel 
+end
+
+
+
+
+%[
+spec GenerateBooleanAlgebraModel[JEPDBaseRelationModel[ElemStructure]] = %def
      type Rel = {x:Relation . exists X:Set(BaseRel) .  
 			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
 		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
@@ -154,8 +215,8 @@ then %implies
 end
 
 
-spec GenerateModelFromBaseRelationModel[JEPDBaseRelationModel] = %def
-     GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
+spec GenerateModelFromBaseRelationModel1[JEPDBaseRelationModel[ElemStructure]] = %def
+     GenerateBooleanAlgebraModel[JEPDBaseRelationModel[ElemStructure]] 
 then %def
      ops
          id:Rel;
@@ -167,89 +228,4 @@ then %def
      . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
      . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
 end
-
-
-
-
-
-
-
-
-%( Part III: Representation Concepts for Relation Algebras
-)% 
-
-
-spec RepresentationOfRelationAlgebra [RelationAlgebra] =
-     Set 
-then
-     sort Dom
-     op int: Rel -> Set (Dom * Dom)
-
-     forall r,s:Rel;x,y:Dom	
-     . not (x,y) isIn int(0)
-     . (x,y) isIn int(r cup s) <=> (x,y) isIn int(r) \/ (x,y) isIn int(s)
-     . (x,y) isIn int(r cap s) <=> (x,y) isIn int(r) /\ (x,y) isIn int(s)
-     . (x,y) isIn int(1) => ((x,y) isIn int(compl(r)) <=> not (x,y) isIn int(r))
-     . (x,y) isIn int(id:Rel)  <=> x = y
-     . (x,y) isIn int(inv(r)) <=> (y,x) isIn int(r)
-     . (x,y) isIn int(r cmps s) <=> (exists z:Dom . (x,z) isIn int(r) /\ (z,y) isIn int(s))
-end
-
-
-spec CompleteRepresentationOfRelationAlgebra [RelationAlgebraWithOrderRelations] =
-     RepresentationOfRelationAlgebra [RelationAlgebra] 
-then
-     forall x,y:Dom
-     . (x,y) isIn int(1:Rel) => (exists r:Rel . Atom(r) /\ (x,y) isIn int(r))
-end
-
-
-view CompleteRepresentationOfRelationAlgebra_as_AtomicRelationAlgebra :
-     AtomicRelationAlgebra to 
-    { CompleteRepresentationOfRelationAlgebra[RelationAlgebraWithOrderRelations] 
-	then %def
-	sort AtomRel = {r:Rel . Atom(r)}
-    }
-end
-
-
-
-
-
-%[
-spec GenerateWeakRelationAlgebraModel[JEPDBaseRelationModel] = 
-     GenerateBooleanAlgebraModel[JEPDBaseRelationModel] 
-then %def
-     ops
-         id:Relation;
-	 inv: Rel -> Relation;
-	 __cmps__: Rel * Rel -> Relation
-
-     forall r,s:Rel; x,y:Elem
-     . 0 = emptySet:Set(Elem*Elem)
-     . 1 = allSet:Set(Elem*Elem)
-     . r cup s = r union s
-     . r cap s = r intersection s
-     . compl(r) = 1 \\ r
-     . (x,y) isIn r cmps s <=> exists z:Elem . (x,z) isIn r /\ (z,y) isIn s 
-     . (x,y) isIn inv(r) <=> (y,x) isIn r
-     . (x,y) isIn id <=> x = y
-
-then %implies 
-     ops
-         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
-	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;  
-         __cmps__: Rel * Rel -> Rel, assoc, unit id;
-     forall x:Rel
-     . compl(compl(x)) = x 
-     . inv(inv(x)) = x 
-
-     . (x,y) isIn rep(id)  <=> x = y
-     . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
-     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
-then %implies
-     type BaseRel < Rel
-end
 ]%
-
-
