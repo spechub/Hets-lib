@@ -1,7 +1,7 @@
 library Calculi/Time/PointAlgebraLin
-version 0.2
+version 0.3
 %% author: S. Wölfl
-%% date: 11-05-2005
+%% date: 20-06-2005
 %% 
 
 %left_assoc __cup__,__cap__
@@ -21,14 +21,11 @@ from Calculi/Algebra/RelationAlgebraSymbolic get
 	GroundingCompositionTable,	
 	GenerateBooleanAlgebra,		
 	GeneratePseudoRelationAlgebra,
-	GenerateExtPseudoRelationAlgebra,
-	GenerateProductOfBaseRelations,
-	ProdOfGeneratedPseudoRelationAlgebras
+	GenerateExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get 
-	AlgebraOfBinaryRelations
-%%	GeneratePreModelFromBaseRelationModel,
-%%	JEPDBaseRelationModel,
-%%	Relation
+	AlgebraOfBinaryRelations,
+	JEPDBaseRelationModel,
+	BaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
 	LinFlowOfTime
@@ -128,28 +125,20 @@ view PAlin_as_SymmetricRelationAlgebra :
 end
 
 
-spec PA2BaseRelations = 
-     GenerateProductOfBaseRelations
-	[PAlinBaseRelations with BaseRel |-> BaseRel1]
-	[PAlinBaseRelations with BaseRel |-> BaseRel2] 
-end
-
-
-
 %(  Part II: Semantic Level
 
     Following we describe how models of PAlin can be constructed from 
     dense linear flows of time without endpoints. 
 )%
 
-%[
+
 
 logic HasCASL
 
 
-
+ 
 spec PAlinBaseRelationModel[LinFlowOfTime] = %def 
-     Relation[sort Instant] 
+     BaseRelationModel[LinFlowOfTime fit Elem |-> Instant]  
 then %def
      ops pRel,eRel,piRel:Relation 
      type BaseRel ::= pRel | eRel | piRel 
@@ -160,10 +149,8 @@ then %def
      . (x,y) isIn rep(piRel) <=> y pre x
 end
 
-
+    
 view PAlinBaseRelationModel_as_JEPDBAseRelationModel :
-     
-
 
 spec GenerateBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
       GeneratePreModelFromBaseRelationModel[BaseRelationAllenModelOfPAlin[LinFlowOfTime]
