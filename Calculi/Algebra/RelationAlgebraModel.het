@@ -91,29 +91,6 @@ then %implies
 end  
 
 
-%[
-spec SetAlgebraOfBinaryRelations1[sort Elem] =
-     FullAlgebraOfBinaryRelations[sort Elem]   
-then
-     sort Rel < Relation
-     ops
-	 0,1:Rel;
-         __cup__,__cap__: Rel * Rel -> Rel;
-         compl__: Rel -> Rel
-	%% hide sort Relation 
-then %implies 
-     ops
-         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
-	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
-     forall x:Rel
-     . compl(compl(x)) = x 
-end
-]%
-
-
-
-
-
 spec AlgebraOfBinaryRelations =
      BinaryRelations[sort Elem]
 and 
@@ -136,18 +113,6 @@ then %implies
      . inv(inv(x)) = x 
 end
 
-
-
-%[
-spec AlgebraOfBinaryRelations1[sort Elem] =
-     SetAlgebraOfBinaryRelations1[sort Elem] 
-then  
-     ops
-	 id:Rel;
-         __cmps__:  Rel * Rel -> Rel;
-         inv__: Rel -> Rel
-end
-]%
 
 
 view AlgebraOfBinaryRelations_as_SetAlgebraOfBinaryRelations:

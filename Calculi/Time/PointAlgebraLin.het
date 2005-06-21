@@ -87,6 +87,13 @@ then
 end
 
 
+view PAlinCompositionTable_as_GroundingCompositionTable:
+     GroundingCompositionTable to PAlinCompositionTable
+=
+     id |-> e
+end
+
+
 spec BooleanAlgebraOfPAlinRelations = 
      ConstructBooleanAlgebra[PAlinBaseRelations] 
 end
@@ -162,61 +169,54 @@ end
 
 
 spec ConstructPAlinPseudoModel[LinFlowOfTime] = %def
-     ConstructPseudoModelFromBaseRelationModel[
+     ConstructPseudoModelFromBaseRelationModel[	
 	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
 end
 	
 
-
-spec PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd] = %def
+spec PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] = %def
      ConstructPAlinPseudoModel[LinFlowOfTime]
 end
 
 
+spec Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] = %def
+     PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+then %def
+     ops __cmps__:BaseRel*BaseRel -> Rel;
+	    inv__:BaseRel -> BaseRel
+end
 
 
-%[
+view PAlinDnsLinFlowTimeSEndModel_modelsExtensionally_PAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
+     PAlinCompositionTable 
+to 
+     Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+=   
+    ops p|->pRel, pi|->piRel, e|->eRel
+end
+
+
 
 view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations[DnsLinFlowOfTimeSEnd] :
     AlgebraOfBinaryRelations 
 to 
-    PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd] 
+    PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] 
 =
     Elem |-> Instant, Rel |-> Rel 
 end
 
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfPAlin[DnsLinFlowOfTimeSEnd] :
-     { PAlin hide ops __+__,__-__,{},{__}    
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
+     { PAlin 
+	hide ops __+__,__-__,{},{__},     
+	     preds __eps__,__isSubsetOf__,isNonEmpty 
+     } 	
 to 
-    PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd]
+    Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
 =   
-    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
-	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
-        id |-> eRel
-end
-]%
-
-
-
-
-%[
-spec ConstructBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
-      ConstructPreModelFromBaseRelationModel[BaseRelationAllenModelOfPAlin[LinFlowOfTime]
-	fit sort Elem |-> AllenPoint]
-then %cons
-     ops  eRel: Rel;
-          inv: BaseRel -> BaseRel;
-          inv: Rel -> Rel
+    ops p|->pRel, pi|->piRel, e|->eRel
 end
 
 
-spec ConstructAllenModelOfPAlin[DnsLinFlowOfTimeSEnd] = %def
-     ConstructPreAllenModelOfPAlin[LinFlowOfTime]
-then %cons     
-     op  __cmps__:  Rel * Rel -> Rel;
-	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
-end
 
-]%
+
