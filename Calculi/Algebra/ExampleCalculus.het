@@ -1,7 +1,7 @@
 library Calculi/Algebra/ExampleCalculus
-version 0.1
+version 0.2
 %author: S. Wölfl
-%date: 12-05-2005
+%date: 22-06-2005
 
 
 %( 
@@ -21,8 +21,8 @@ from Calculi/Algebra/BooleanAlgebra get AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-	GenerateBooleanAlgebra,		
-	GeneratePseudoRelationAlgebra
+	ConstructBooleanAlgebra,		
+	ConstructPseudoRelationAlgebra
 
 
 
@@ -58,7 +58,7 @@ end
 
 
 spec ExCalcBooleanAlgebra = 
-     GenerateBooleanAlgebra[ExCalcBaseRelations] 
+     ConstructBooleanAlgebra[ExCalcBaseRelations] 
 end
 
 
@@ -70,7 +70,7 @@ end
 
 
 spec ExCalc = 
-     GeneratePseudoRelationAlgebra[ExCalcBaseRelations]
+     ConstructPseudoRelationAlgebra[ExCalcBaseRelations]
 	[ExCalcCompositionTable fit op id:BaseRel |-> relation1]
 end
 

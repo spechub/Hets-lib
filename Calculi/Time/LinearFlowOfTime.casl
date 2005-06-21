@@ -1,7 +1,7 @@
 library Calculi/Time/LinearFlowOfTime
-version 0.1
+version 0.2
 %author: S. Wölfl
-%date: 15-10-04
+%date: 22-06-05
 
 
 %{ This library provides basic specifications for temporal reasoning. 
@@ -28,6 +28,7 @@ version 0.1
 	FDis:     discrete w.r.t. the future
 	PDis:     discrete w.r.t. the past
 	Dis:	  discrete w.r.t. future and past
+	NT:	  non-trivial (at least two elements)
 	...
 
    Some of the implications presented in the specifications are used for 
@@ -183,6 +184,20 @@ end
 
 spec Rich_DnsLinFlowOfTimeSEnd = 
 	Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd]
+
+
+
+spec NTLinFlowOfTime = 
+     LinFlowOfTime
+then 
+     . exists x,y:Instant . not x = y
+end
+   
+
+view LinFlowOfTimeSEnd_Is_NonTrivial:
+     NTLinFlowOfTime to LinFlowOfTimeSEnd     
+end
+
 
 
 

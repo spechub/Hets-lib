@@ -1,7 +1,7 @@
 library Calculi/Algebra/RelationAlgebraSymbolic
-version 0.3
+version 0.4
 %author: T. Mossakowski, K. Lüttich, S. Wölfl
-%date: 16-06-2005
+%date: 22-06-2005
 
 %( 
     This library contains specifications that describe how a relation
@@ -36,11 +36,11 @@ from Calculi/Algebra/RelationAlgebra get
 
 
 
-%( GenerateBooleanAlgebra introduces relations as sets of base relations.
+%( ConstructBooleanAlgebra introduces relations as sets of base relations.
    The result is atomic Boolean Algebra.
 )%
 
-spec GenerateBooleanAlgebra[sort BaseRel] = %mono
+spec ConstructBooleanAlgebra[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
@@ -70,9 +70,9 @@ end
 
 
 
-view AtomicBooleanAlgebra_from_GenerateBooleanAlgebra[sort BaseRel] :
+view AtomicBooleanAlgebra_from_ConstructBooleanAlgebra[sort BaseRel] :
      AtomicBooleanAlgebra to 
-	GenerateBooleanAlgebra[sort BaseRel]
+	ConstructBooleanAlgebra[sort BaseRel]
 = 
      Elem |-> Rel, AtomElem |-> BaseRel
 end
@@ -113,7 +113,7 @@ end
 spec GroundingCompositionTable =
      CompositionTable
 
-then local  GenerateBooleanAlgebra[sort BaseRel]
+then local  ConstructBooleanAlgebra[sort BaseRel]
 
 within
      forall x,y,z:BaseRel
@@ -124,8 +124,8 @@ end
 
 
 
-spec GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
-     GenerateBooleanAlgebra[sort BaseRel]
+spec ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     ConstructBooleanAlgebra[sort BaseRel]
 then %def
      ops 
 	  id	  : Rel;
@@ -151,12 +151,12 @@ end
 
 
 	
-spec GeneratedPseudoRelationAlgebra =  
-     GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable]
+spec ConstructedPseudoRelationAlgebra =  
+     ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable]
 
 
-spec GenerateExtPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
-     GeneratePseudoRelationAlgebra[sort BaseRel][CompositionTable] 
+spec ConstructExtPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable] 
 and
      ExtBooleanAlgebraByOrderRelations[BooleanAlgebra with sort Elem |-> Rel]
 
@@ -169,14 +169,14 @@ then %implies
 end
 
 
-spec RichGeneratedPseudoRelationAlgebra =  
-     GenerateExtPseudoRelationAlgebra[sort BaseRel][CompositionTable]
+spec RichConstructedPseudoRelationAlgebra =  
+     ConstructExtPseudoRelationAlgebra[sort BaseRel][CompositionTable]
 
 
 view PseudoRelationAlgebra_as_AtomicNonAssocRelationAlgebra[sort BaseRel][GroundingCompositionTable]:
      AtomicNonAssocRelationAlgebra 
 to
-     GenerateExtPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]
+     ConstructExtPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end 

@@ -1,7 +1,7 @@
 library Calculi/Time/PointAlgebraLin
-version 0.3
+version 0.4
 %% author: S. Wölfl
-%% date: 20-06-2005
+%% date: 22-06-2005
 %% 
 
 %left_assoc __cup__,__cap__
@@ -19,16 +19,19 @@ from Calculi/Algebra/RelationAlgebra get
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
 	GroundingCompositionTable,	
-	GenerateBooleanAlgebra,		
-	GeneratePseudoRelationAlgebra,
-	GenerateExtPseudoRelationAlgebra
+	ConstructBooleanAlgebra,		
+	ConstructPseudoRelationAlgebra,
+	ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get 
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
-	BaseRelationModel
+	BaseRelationModel,
+	ConstructPseudoModelFromBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime
+	NTLinFlowOfTime |-> LinFlowOfTime 
+	   %% we just consider flows of time with at least 2 elements
+
 from Calculi/Time/FlowOfTime get 
 	ExtFlowOfTimeByConvexity,
 	ExtFlowOfTimeBySetRelations
@@ -85,7 +88,7 @@ end
 
 
 spec BooleanAlgebraOfPAlinRelations = 
-     GenerateBooleanAlgebra[PAlinBaseRelations] 
+     ConstructBooleanAlgebra[PAlinBaseRelations] 
 end
 
 view BooleanAlgebraOfPAlinRelations_as_AtomicBooleanAlgebra :
@@ -96,13 +99,13 @@ end
 
 
 spec PAlin = 
-     GeneratePseudoRelationAlgebra[PAlinBaseRelations]
+     ConstructPseudoRelationAlgebra[PAlinBaseRelations]
 	[PAlinCompositionTable fit op id:BaseRel |-> e]
 end
 
 
 spec RichPAlin =
-     GenerateExtPseudoRelationAlgebra[PAlinBaseRelations]
+     ConstructExtPseudoRelationAlgebra[PAlinBaseRelations]
 	[PAlinCompositionTable fit op id:BaseRel |-> e]
 end	
 
@@ -136,12 +139,11 @@ end
 logic HasCASL
 
 
- 
 spec PAlinBaseRelationModel[LinFlowOfTime] = %def 
      BaseRelationModel[LinFlowOfTime fit Elem |-> Instant]  
 then %def
      ops pRel,eRel,piRel:Relation 
-     type BaseRel ::= pRel | eRel | piRel 
+     free type BaseRel ::= pRel | eRel | piRel 
 
      forall x,y:Instant
      . (x,y) isIn rep(pRel)  <=> x pre y
@@ -149,11 +151,59 @@ then %def
      . (x,y) isIn rep(piRel) <=> y pre x
 end
 
-    
-view PAlinBaseRelationModel_as_JEPDBAseRelationModel :
 
-spec GenerateBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
-      GeneratePreModelFromBaseRelationModel[BaseRelationAllenModelOfPAlin[LinFlowOfTime]
+ 
+view JEPDBaseRelationModel_From_PAlinBaseRelationModel[LinFlowOfTime]:
+     JEPDBaseRelationModel 
+to 
+     PAlinBaseRelationModel[LinFlowOfTime]
+=    sort Elem |-> Instant
+end
+
+
+spec ConstructPAlinPseudoModel[LinFlowOfTime] = %def
+     ConstructPseudoModelFromBaseRelationModel[
+	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
+end
+	
+
+
+spec PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd] = %def
+     ConstructPAlinPseudoModel[LinFlowOfTime]
+end
+
+
+
+
+%[
+
+view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations[DnsLinFlowOfTimeSEnd] :
+    AlgebraOfBinaryRelations 
+to 
+    PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd] 
+=
+    Elem |-> Instant, Rel |-> Rel 
+end
+
+
+view DnsLinFlowOfTimeSEnd_induces_ModelOfPAlin[DnsLinFlowOfTimeSEnd] :
+     { PAlin hide ops __+__,__-__,{},{__}    
+	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
+to 
+    PAlinDnsLinFlowSEndModel[DnsLinFlowOfTimeSEnd]
+=   
+    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
+	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
+        id |-> eRel
+end
+]%
+
+
+
+
+%[
+spec ConstructBooleanAlgebraModelOfPAlin[LinFlowOfTime] = %def
+      ConstructPreModelFromBaseRelationModel[BaseRelationAllenModelOfPAlin[LinFlowOfTime]
 	fit sort Elem |-> AllenPoint]
 then %cons
      ops  eRel: Rel;
@@ -162,51 +212,11 @@ then %cons
 end
 
 
-spec GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd] = %def
-     GeneratePreAllenModelOfPAlin[LinFlowOfTime]
+spec ConstructAllenModelOfPAlin[DnsLinFlowOfTimeSEnd] = %def
+     ConstructPreAllenModelOfPAlin[LinFlowOfTime]
 then %cons     
      op  __cmps__:  Rel * Rel -> Rel;
 	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
 end
 
-
-
-%(  Part III: Views
-)%
-
-
-
-
-view BaseRelationAllenModelOfPAlin_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort AllenPoint] 
-to 
-     BaseRelationAllenModelOfPAlin[LinFlowOfTime]
-end
-
-
-view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations :
-    AlgebraOfBinaryRelations[sort Elem] 
-to 
-    GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd]
-=
-    sort Elem |-> AllenPoint , op id |-> eRel 
-end
-
-
-
-view DnsLinFlowOfTimeSEnd_induces_AllenModelOfPAlin :
-     { PAlin hide ops __+__,__-__,{},{__}    
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
-to 
-    GenerateAllenModelOfPAlin[DnsLinFlowOfTimeSEnd]
-=   
-    ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel, 
-	bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel, fi|->fiRel,
-        id |-> eRel
-end
-
-
-
 ]%
-
-
