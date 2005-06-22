@@ -160,17 +160,49 @@ then
 end
 
 
-
-spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+spec ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
      type Rel = {x:Relation . exists X:Set(BaseRel) .  
 			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
 		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
-and
-     AlgebraOfBinaryRelations
+     preds __eps__:BaseRel * Rel;
+	  __subset__:Rel*Rel
+     forall x:BaseRel;r,r':Rel
+     . x eps r <=> rep(x) subset rep(r)
+     . r subset r' <=> rep(r) subset rep(r')
 
 then %implies
-     type BaseRel < Rel
+     sorts BaseRel < Rel 
+     sorts Rel < Relation
 end
+
+
+spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
+and
+     SetAlgebraOfBinaryRelations
+then %def 
+local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+within 
+    { ops __cmps__: BaseRel * BaseRel -> Relation;
+             inv__: BaseRel -> Relation
+    then %def
+      ops __cmps__: Rel * Rel -> Relation;
+             inv__: Rel -> Relation
+    }
+end
+
+
+spec CompositionClosedBaseRelationModel =
+     ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
+then 
+     ops __cmps__: BaseRel * BaseRel -> Rel;
+            inv__: BaseRel -> BaseRel;
+	      id :Rel
+then %def
+      ops __cmps__: Rel * Rel -> Rel;
+             inv__: Rel -> Rel
+end
+
 
 
 view BooleanAlgebra_from_JEPDBaseRelationModel[JEPDBaseRelationModel] :
@@ -180,32 +212,3 @@ to   ConstructPseudoModelFromBaseRelationModel[JEPDBaseRelationModel]
 end
 
 
-
-
-%[
-spec ConstructBooleanAlgebraModel[JEPDBaseRelationModel[ElemStructure]] = %def
-     type Rel = {x:Relation . exists X:Set(BaseRel) .  
-			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
-		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
-and
-     SetAlgebraOfBinaryRelations[sort Elem]
-
-then %implies
-     type BaseRel < Rel
-end
-
-
-spec ConstructModelFromBaseRelationModel1[JEPDBaseRelationModel[ElemStructure]] = %def
-     ConstructBooleanAlgebraModel[JEPDBaseRelationModel[ElemStructure]] 
-then %def
-     ops
-         id:Rel;
-	 inv__: Rel -> Rel;
-	 __cmps__: Rel * Rel -> Rel
-
-     forall r,s:Rel; x,y:Elem
-     . (x,y) isIn rep(id)  <=> x = y
-     . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
-     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
-end
-]%

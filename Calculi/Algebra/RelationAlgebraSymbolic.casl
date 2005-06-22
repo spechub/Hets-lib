@@ -40,7 +40,42 @@ from Calculi/Algebra/RelationAlgebra get
    The result is atomic Boolean Algebra.
 )%
 
-spec ConstructBooleanAlgebra[sort BaseRel] = %mono
+
+spec ConstructBooleanAlgebra[sort BaseRel] = %def
+local  { Set[sort BaseRel fit Elem |-> BaseRel] 
+	 with           __union__ |-> __cup__, 
+             __intersection__ |-> __cap__,
+	     __isSubsetOf__ |-> __subset__ }
+within
+     free type Rel ::= sort Set[BaseRel]
+     sorts BaseRel < Rel
+     ops 
+	   0,1 : Rel;
+	 compl__: Rel -> Rel;
+        __cup__,__cap__: Rel * Rel -> Rel
+     preds
+	   __eps__: BaseRel * Rel;
+         __subset__ : Rel * Rel
+     forall x:BaseRel; r:Rel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . x eps compl(r) <=> not x eps r
+
+then %implies
+     ops
+	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+          __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+ 
+     forall x,y:BaseRel; r:Rel
+	     . not x = y => x cap y = 0		
+     . exists z:BaseRel . z eps r
+     . r subset 1
+end
+
+
+
+spec ConstructBooleanAlgebraOld[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
 	            __union__ |-> __cup__, 
@@ -67,7 +102,6 @@ then %implies
      . exists z:BaseRel . z eps r
      . r isSubsetOf 1
 end
-
 
 
 view AtomicBooleanAlgebra_from_ConstructBooleanAlgebra[sort BaseRel] :
@@ -162,10 +196,10 @@ and
 
 then %implies
      forall x,y:Rel
-     . x < y  <=> x isSubsetOf y /\ not x = y
-     . x <= y <=> x isSubsetOf y
-     . x > y  <=> y isSubsetOf x /\ not x = y
-     . x >= y <=> y isSubsetOf x		
+     . x < y  <=> x subset y /\ not x = y
+     . x <= y <=> x subset y
+     . x > y  <=> y subset x /\ not x = y
+     . x >= y <=> y subset x		
 end
 
 

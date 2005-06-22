@@ -26,7 +26,8 @@ from Calculi/Algebra/RelationAlgebraModel get
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
 	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel
+	ConstructPseudoModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
 	LinFlowOfTime,
@@ -176,27 +177,28 @@ spec ConstructPAlinPseudoModel[LinFlowOfTime] = %def
      ConstructPseudoModelFromBaseRelationModel[	
 	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
 end
-	
+
+
+
 
 spec PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] = %def
      ConstructPAlinPseudoModel[LinFlowOfTime]
 end
 
 
-spec Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] = %def
+view PAlinDnsLinFlowOfTimeSEndModel_Is_CompositionClosed[DnsLinFlowOfTimeSEnd]:
+     CompositionClosedBaseRelationModel to
      PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
-then %def
-     ops __cmps__:BaseRel*BaseRel -> Rel;
-	    inv__:BaseRel -> BaseRel
+=    Elem |-> Instant 
 end
 
 
 view PAlinDnsLinFlowTimeSEndModel_modelsExtensionally_PAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
      PAlinCompositionTable 
 to 
-     Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+     PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
 =   
-    ops p|->pRel, pi|->piRel, e|->eRel
+    ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
 
 
@@ -206,17 +208,18 @@ view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations[DnsLinFlowOfTimeSEnd]
 to 
     PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] 
 =
-    Elem |-> Instant, Rel |-> Rel 
+    Elem |-> Instant
 end
 
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfPAlin[DnsLinFlowOfTimeSEnd] :
-     { PAlin 
-	hide ops __+__,__-__,{},{__},     
-	     preds __eps__,__isSubsetOf__,isNonEmpty 
-     } 	
+     PAlin
+%%     { PAlin 
+%%	hide ops __+__,__-__,{},{__},     
+%%	     preds __eps__,__isSubsetOf__,isNonEmpty 
+%%     } 	
 to 
-    Rich_PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+    PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
 =   
     ops p|->pRel, pi|->piRel, e|->eRel
 end
