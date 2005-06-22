@@ -29,12 +29,13 @@ from Calculi/Algebra/RelationAlgebraModel get
 	ConstructPseudoModelFromBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
-	NTLinFlowOfTime |-> LinFlowOfTime 
-	   %% we just consider flows of time with at least 2 elements
+	LinFlowOfTime,
+	NTLinFlowOfTime
 
-from Calculi/Time/FlowOfTime get 
-	ExtFlowOfTimeByConvexity,
-	ExtFlowOfTimeBySetRelations
+
+%%from Calculi/Time/FlowOfTime get 
+%%	ExtFlowOfTimeByConvexity,
+%%	ExtFlowOfTimeBySetRelations
 
 
 %(  Part I: Symbolic Level
@@ -44,8 +45,8 @@ from Calculi/Time/FlowOfTime get
     and the composition table. Arbitrary relations of PAlin are 
     represented as sets of base relations. In turn base relations are 
     represented by their respective singleton sets. The spec
-    RelationBaseOfPintAlgebraLin builds this set of all relations, 
-    which obviously forms an atomic boolean algebra. Via the composition 
+    BooleanAlgebraOfPAlinRelations builds this set of all relations, 
+    which obviously forms an atomic Boolean algebra. Via the composition 
     table we then define a relation algebra on the set of all relations. 
     This provides us with a specification of PAlin, namely spec 
     PAlin.
@@ -61,7 +62,7 @@ spec PAlinBaseRelations = %mono
      free type BaseRel ::= p | pi | e
 end
 
-%(   The following specs encode the composition table of PAlin as well as 
+%(   The following spec encodes the composition table of PAlin as well as 
      the information on inverses of base relations.
 )%
 
@@ -80,7 +81,7 @@ then
      . p cmps e  = p					%(cmps_pe)%
      . pi cmps p  = 1 					%(cmps_pip)%	
      . pi cmps pi = pi					%(cmps_pipi)%
-     . pi cmps e  = p					%(cmps_pie)%
+     . pi cmps e  = pi					%(cmps_pie)%
      . e cmps p  = p 					%(cmps_ep)%	
      . e cmps pi = pi					%(cmps_epi)%
      . e cmps e  = e					%(cmps_ee)%
@@ -159,11 +160,14 @@ then %def
 end
 
 
+%( A linear flow of time provides a JEPDBaseRelationModel only if it contains 
+   at least 2 elements
+)%
  
-view JEPDBaseRelationModel_From_PAlinBaseRelationModel[LinFlowOfTime]:
+view JEPDBaseRelationModel_From_PAlinBaseRelationModel[NTLinFlowOfTime]:
      JEPDBaseRelationModel 
 to 
-     PAlinBaseRelationModel[LinFlowOfTime]
+     PAlinBaseRelationModel[NTLinFlowOfTime]
 =    sort Elem |-> Instant
 end
 
