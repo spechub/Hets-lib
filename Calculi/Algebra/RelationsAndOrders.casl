@@ -56,9 +56,8 @@ logic HasCASL
 from HasCASL/Set get Set |-> SetHasCASL
 
 
-spec ExtStrictPartialOrderByConvexity[StrictPartialOrder] = 
+spec ExtStrictPartialOrderByConvexity[StrictPartialOrder] = %def
      SetHasCASL
-
 then %def
      pred
          Convex : Set(Elem)
@@ -86,9 +85,9 @@ end
 
 spec ExtStrictPartialOrderBySetRelations[StrictPartialOrder] = 
      ExtStrictPartialOrderByOrderRelations[StrictPartialOrder]
-then
-     SetHasCASL
 then %def
+local SetHasCASL
+within 
      preds 
 	__<__,__>__,__<=__,__>=__: Set(Elem) * Set(Elem);		
 	__<__,__>__,__<=__,__>=__: Elem * Set(Elem);		

@@ -31,9 +31,9 @@ from Calculi/Algebra/RelationAlgebra get
 from Calculi/Algebra/RelationAlgebraSymbolic get
 	CompositionTable,
 	GroundingCompositionTable,
-	GenerateBooleanAlgebra,
-	GeneratePseudoRelationAlgebra,
-	GeneratedPseudoRelationAlgebra
+	ConstructBooleanAlgebra,
+	ConstructPseudoRelationAlgebra,
+	ConstructedPseudoRelationAlgebra
 
 
 
@@ -42,7 +42,7 @@ from Calculi/Algebra/RelationAlgebraSymbolic get
 
 
 
-spec GenerateProductOfBaseRelations[sort BaseRel1][sort BaseRel2]
+spec ConstructProductOfBaseRelations[sort BaseRel1][sort BaseRel2]
 = %mono
      free type BaseRel ::= <__-__> (first:BaseRel1;second:BaseRel2)
      forall x,y:BaseRel
@@ -50,19 +50,19 @@ spec GenerateProductOfBaseRelations[sort BaseRel1][sort BaseRel2]
 end
 
 
-spec GenerateProductOfCompositionTables
+spec ConstructProductOfCompositionTables
 	[CompositionTable  with BaseRel |-> BaseRel1, Rel |-> Rel1]
 	[CompositionTable  with BaseRel |-> BaseRel2, Rel |-> Rel2]
 = %def 
-     GenerateProductOfBaseRelations
+     ConstructProductOfBaseRelations
 	[sort BaseRel1][sort BaseRel2] 
 then CompositionTable 
 then local
-     { GenerateBooleanAlgebra[sort BaseRel] }
+     { ConstructBooleanAlgebra[sort BaseRel] }
       and
-      closed { GenerateBooleanAlgebra[sort BaseRel1] with sort Rel |-> Rel1 }
+      closed { ConstructBooleanAlgebra[sort BaseRel1] with sort Rel |-> Rel1 }
       and
-      closed { GenerateBooleanAlgebra[sort BaseRel2] with sort Rel |-> Rel2 } 		
+      closed { ConstructBooleanAlgebra[sort BaseRel2] with sort Rel |-> Rel2 } 		
 within
      forall x,y,z:BaseRel
      . id = <id - id>
@@ -74,14 +74,14 @@ end
 
 
 
-spec GenerateProductOfPseudoRelationAlgebras
+spec ConstructProductOfPseudoRelationAlgebras
      	[sort BaseRel1][CompositionTable  with BaseRel |-> BaseRel1, Rel |-> Rel1]
      	[sort BaseRel2][CompositionTable  with BaseRel |-> BaseRel2, Rel |-> Rel2]
 = %def
-     GeneratePseudoRelationAlgebra
-	[GenerateProductOfBaseRelations
+     ConstructPseudoRelationAlgebra
+	[ConstructProductOfBaseRelations
 		[sort BaseRel1][sort BaseRel2]]
-	[GenerateProductOfCompositionTables
+	[ConstructProductOfCompositionTables
 		[sorts BaseRel1	< Rel1
 		 ops  id : BaseRel1;  inv__ : BaseRel1 -> BaseRel1;  __cmps__:BaseRel1 * BaseRel1 -> Rel1; 
           		0,1  : Rel1;  __cup__: Rel1 * Rel1 -> Rel1;  compl__: Rel1 -> Rel1]
@@ -98,15 +98,15 @@ end
 
 %(
 
-spec ProdOfGeneratedPseudoRelationAlgebras
-	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
-	[GeneratedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
+spec ProdOfConstructedPseudoRelationAlgebras
+	[ConstructedPseudoRelationAlgebra with BaseRel |-> BaseRel1, Rel |-> Rel1]
+	[ConstructedPseudoRelationAlgebra with BaseRel |-> BaseRel2, Rel |-> Rel2] 
 = %mono
      free type BaseRelP ::= __-__ (first:BaseRel1;second:BaseRel2)
      forall x,y:BaseRelP
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
 then %def
-     GenerateBooleanAlgebra[sort BaseRelP] with sort Rel |-> RelP
+     ConstructBooleanAlgebra[sort BaseRelP] with sort Rel |-> RelP
 then %def
      ops 
          id	 : BaseRelP;	 	 
@@ -118,7 +118,7 @@ then %def
      . x eps (y cmps z) <=> first(x) eps (first(y) cmps first(z)) /\ 
 			second(x) eps (second(y) cmps second(z))
 then %def
-     GeneratePseudoRelationAlgebra[sort BaseRelP][
+     ConstructPseudoRelationAlgebra[sort BaseRelP][
 	sorts BaseRelP < RelP
 	ops 
 	  id : BaseRelP;
