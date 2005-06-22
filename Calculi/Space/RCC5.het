@@ -1,33 +1,43 @@
 library Calculi/Space/RCC5
-version 0.1
+version 0.3
 %% author: S. Wölfl
-%% date: 18-02-2005
+%% date: 22-06-2005
 %% 
 
 %left_assoc __cup__,__cap__
 %prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__} 
 
 %( 
 	The RCC5 Calculus (resp. Containment Algebra) 
   
-Literature: TODO   
+
 )%
 
 
+from Calculi/Algebra/BooleanAlgebra get 
+	BooleanAlgebraWithCompl,
+	ExtBooleanAlgebraByOrderRelations,
+	AtomicBooleanAlgebra 
 from Calculi/Algebra/RelationAlgebra get 
-	AtomicRelationAlgebra
+	AtomicRelationAlgebra,
+	IntegralRelationAlgebra,
+	SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-     	GeneratePseudoRelationAlgebra,
-	GenerateRelations
+	GroundingCompositionTable,	
+	ConstructBooleanAlgebra,		
+	ConstructPseudoRelationAlgebra,
+	ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get 
+	BinaryRelations,
 	AlgebraOfBinaryRelations,
-	GenerateModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	BinaryRelations
-%%from Calculi/Time/LinearFlowOfTime get 
-%%	DnsLinFlowOfTimeSEnd,
-%%	LinFlowOfTime
+	BaseRelationModel,
+	ConstructPseudoModelFromBaseRelationModel
+from Calculi/Space/EuclideanSpace get
+	EuclideanSpace2D,
+	EuclideanSpace3D
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
@@ -40,45 +50,40 @@ from HasCASL/Set get
 
 %(  Part I: Symbolic Level
 
-    We start by describing the symbolic level of the region connection 
-    calculus RCC5, i.e., the set of base relations 
+    We start by describing the symbolic level of the region connection
+    calculus RCC5, i.e., the set of base relations
     and the composition table. Arbitrary relations of RCC5 are 
     represented as sets of base relations. In turn base relations are 
     represented by their respective singleton sets. The spec
-    RelationBaseOfRCC5 builds this set of all relations, 
-    which obviously forms an atomic boolean algebra. Via the composition 
+    BooleanAlgebraOfRCC5Relations builds this set of all relations, 
+    which obviously forms an atomic Boolean algebra. Via the composition 
     table we then define a relation algebra on the set of all relations. 
     This provides us with a specification of RCC5, namely spec 
     RCC5.
 )%
 
-
-
-
-%(   RCC5 has 5 base relations,
-     namely, dr ("disconnected"), po ("partially overlaps"), pp ("proper part"),
-     ppi ("proper part inverse"), and  eq ("equals").
+%(  RCC5 has 5 base relations, namely, dr ("disconnected"), po
+    ("partially overlaps"), pp ("proper part"), ppi ("proper part inverse"), 
+    and  eq ("equals").
 )%
+
 
 
 
 spec RCC5BaseRelations = %mono
-     free type BaseRel ::= dr | po | pp | ppi | eq
+        free type BaseRel ::= dr | po | pp | ppi | eq
 end
 
 
-
-%(   The following spec not only contains the raw composition table of RCC5, but also
-     information that the 1 is the union of all base relations, and that the set of base relations is
-     closed with respect to converses.
+%(   The following spec encodes the composition table of RCC5 as well as 
+     the information on inverses of base relations.
 )%
-
 
 spec RCC5CompositionTable =
      sort BaseRel
      ops dr,po,pp,ppi,eq: BaseRel
 and 
-     CompositionTable 
+     CompositionTable  with op id |-> eq
 then
      . inv(dr) = dr					%(sym_dr)%
      . inv(po) = po					%(sym_po)%
@@ -120,138 +125,212 @@ end
 
 
 
-spec RCC5Relations =  
-     GenerateRelations[RCC5BaseRelations]
-and
-     RCC5CompositionTable 
-end 
 
-
-%(
-view RCC5RelationsRCC5_as_RelationBase[BaseRelationsOfRCC5] :
-     RelationBase[sort BaseRel] to RelationBaseOfRCC5
+view RCC5CompositionTable_as_GroundingCompositionTable:
+     GroundingCompositionTable to RCC5CompositionTable
 =
-     op id:BaseRel |-> eq
+     id |-> eq
 end
-)%
+
+
+spec BooleanAlgebraOfRCC5Relations = 
+     ConstructBooleanAlgebra[RCC5BaseRelations] 
+end
+
+view BooleanAlgebraOfRCC5Relations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to BooleanAlgebraOfRCC5Relations
+= 
+     Elem |-> Rel, AtomElem |-> BaseRel
+end
+
 
 spec RCC5 = 
-     GeneratePseudoRelationAlgebra[RCC5Relations]
-	[RCC5CompositionTable fit op id:BaseRel |-> eq:BaseRel] 
+     ConstructPseudoRelationAlgebra[RCC5BaseRelations]
+	[RCC5CompositionTable fit op id:BaseRel |-> eq]
 end
 
 
-%( TBD:
-view RCC5CompositionTableIsGrounding:
-     GroundingCompositionTable to RCC5CompositionTable
-=    
-     op  id: BaseRel |-> eq
-end
-)%
-	
+spec RichRCC5 =
+     ConstructExtPseudoRelationAlgebra[RCC5BaseRelations]
+	[RCC5CompositionTable fit op id:BaseRel |-> eq]
+end	
 
 
 view RCC5_as_AtomicRelationAlgebra :
      AtomicRelationAlgebra to 
-     { RCC5	then %def
-	preds 
-		__<__,__<=__,__>__,__>=__:Rel*Rel
-	forall x,y:Rel
-	. x < y  <=> x isSubsetOf y /\ not x = y
-	. x <= y <=> x isSubsetOf y
-	. x > y  <=> y isSubsetOf x /\ not x = y
-	. x >= y <=> y isSubsetOf x
-     }
+     RichRCC5 
 =
-     Rel |-> Rel , AtomRel |-> BaseRel
+     AtomRel |-> BaseRel
 end
 
+
+%[ Needs to be checked:
+view RCC5_as_IntegralRelationAlgebra :
+     IntegralRelationAlgebra to RichRCC5
+end
+
+
+view RCC5_as_SymmetricRelationAlgebra :
+     SymmetricRelationAlgebra to RichRCC5
+end
+]%
 
 
 
 %(  Part II: Semantic Level
 
     Following we describe how models of RCC5 can be constructed from 
-    metrical spaces. We describe only one such method, namely interpreting 
-    regions as open discs of a metrical space.
+    metric spaces. 
 )%
+
 
 
 logic HasCASL
 
 
-spec OpenDiscModelOfRCC5BaseRelations[MetricSpace] = 
-     Set
-then
-     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
-     type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
-then 
-     BinaryRelations[sort OpenDisc] 
 
+spec OpenDiscs[MetricSpace] = %def
+local Set
+within
+     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+     type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=openDisc(r,x)}
+     preds __disjoint__,__subset__: OpenDisc * OpenDisc 
+end
+
+
+spec RCC5BaseRelationModel_OpenDisc[MetricSpace] = %def 
+     BaseRelationModel[OpenDiscs[MetricSpace] fit Elem |-> OpenDisc]  
 then %def
      ops ppRel,ppiRel,poRel,drRel,eqRel:Relation 
-     type BaseRel ::= ppRel | ppiRel | poRel | drRel | eqRel 
+     free type BaseRel ::= ppRel | ppiRel | poRel | drRel | eqRel 
+
      forall x,y:OpenDisc
      . (x,y) isIn rep(ppRel) <=> x subset y /\ not x = y
      . (x,y) isIn rep(ppiRel) <=> y subset x /\ not x = y
      . (x,y) isIn rep(poRel) <=> not x subset y /\ not y subset x /\ 
- 				not  x intersection y = emptySet
-     . (x,y) isIn rep(drRel) <=> x intersection y = emptySet
+ 				not  x disjoint y
+     . (x,y) isIn rep(drRel) <=> x disjoint y 
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
-spec OpenDiscModelOfRCC5[MetricSpace] = %def
-      GenerateModelFromBaseRelationModel[OpenDiscModelOfRCC5BaseRelations[MetricSpace]
-	fit sort Elem |-> OpenDisc]
-then %cons  
-     ops  eqRel: Rel;
-          inv: BaseRel -> BaseRel;
-          inv: Rel -> Rel
+
+
+spec LargeMetricSpace =
+     MetricSpace
+%[ to be done ]%
 end
 
-%(
-spec GenerateOpenDiscModelOfRCC5[MetricSpace] = %def
-     GeneratePreOpenDiscModelOfRCC5[MetricSpace]
-then %cons 
-     op  __cmps__:  Rel * Rel -> Rel;
-	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
+spec EvenLargerMetricSpace =
+     MetricSpace
+%[ to be done , presumably unbounded metric spaces ]%
 end
+
+
+view v_ToBeDone:  LargeMetricSpace to EvenLargerMetricSpace
+
+   
+
+
+
+%( A metric space provides a JEPDBaseRelationModel only if it contains 
+   at least ??? elements
 )%
+ 
 
-
-
-%(  Part III: Views
-)%
-
-
-
-%( TBD
-view BaseRelationOpenDiscModelOfRCC5_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel
+view JEPDBaseRelationModel_From_RCC5BaseRelationModel_OpenDisc[LargeMetricSpace]:
+     JEPDBaseRelationModel 
 to 
-     OpenDiscModelOfRCC5BaseRelations[MetricSpace]
-end
-
-
-view MetricSpace_induces_AlgebraOfBinaryRelations :
-    AlgebraOfBinaryRelations[sort Elem] 
-to 
-    GenerateOpenDiscModelOfRCC5[MetricSpace]
-=
-    sort Elem |-> OpenDisc , op id |-> eqRel 
+     RCC5BaseRelationModel_OpenDisc[LargeMetricSpace]
+=    sort Elem |-> OpenDisc
 end
 
 
 
-view MetricSpace_induces_OpenDiscModelOfRCC5 :
-     { RCC5 hide ops __+__,__-__,{},{__}    
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
+spec ConstructRCC5PseudoModel_OpenDisc[MetricSpace] = %def
+     ConstructPseudoModelFromBaseRelationModel[	
+	RCC5BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+end
+	
+
+spec RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] = %def
+     ConstructRCC5PseudoModel_OpenDisc[MetricSpace]
+end
+
+
+spec Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] = %def
+     RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
+then %def
+     ops __cmps__:BaseRel*BaseRel -> Rel;
+	    inv__:BaseRel -> BaseRel
+end
+
+
+
+view RCC5MetricSpaceModel_OpenDisc_modelsExtensionally_RCC5CompositionTable[EvenLargerMetricSpace] :
+     RCC5CompositionTable 
 to 
-  OpenDiscModelOfRCC5[MetricSpace]
+     Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
 =   
-    ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel, 
-        id |-> eqRel
+    ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
 end
-)%
+
+
+
+view MetricSpace_induces_AlgebraOfBinaryRelations_OpenDisc[EvenLargerMetricSpace] :
+    AlgebraOfBinaryRelations 
+to 
+    RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] 
+=
+    Elem |-> OpenDisc
+end
+
+
+
+view MetricSpace_induces_ModelOfRCC5_OpenDisc[EvenLargerMetricSpace] :
+     { RCC5 
+	hide ops __+__,__-__,{},{__},     
+	     preds __eps__,__isSubsetOf__,isNonEmpty 
+     } 	
+to 
+    Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
+=   
+    ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
+end
+
+
+
+
+
+%( Special Models )%
+
+
+
+view EuclideanSpace2D_Is_EvenLarger:
+     EvenLargerMetricSpace to EuclideanSpace2D
+=  S |-> Point, d |-> dist
+end
+
+
+    
+     	
+spec RCC5EuclideanSpace2D_OpenDisc = %def
+     Rich_RCC5MetricSpaceModel_OpenDisc[view EuclideanSpace2D_Is_EvenLarger]
+end
+
+
+view RCC5EuclideanSpace2D_OpenDisc_modelsRCC5 :
+     { RCC5 
+	hide ops __+__,__-__,{},{__},     
+	     preds __eps__,__isSubsetOf__,isNonEmpty 
+     } 	
+to 
+    RCC5EuclideanSpace2D_OpenDisc
+=   
+    ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
+end
+
+
+
+
 
 

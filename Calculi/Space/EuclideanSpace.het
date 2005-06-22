@@ -1,0 +1,73 @@
+library Calculi/Space/EuclideanSpace
+version 0.1
+%% author: S. Wölfl
+%% date: 22-06-2005
+%% 
+from HasCASL/TopologicalSpaces get 
+	RichTopologicalSpace
+from HasCASL/MetricSpaces get 
+	MetricSpace
+from HasCASL/Set get 
+	Set
+from HasCASL/Real get 
+	Real
+
+
+logic HasCASL
+
+
+spec ExtRealByMetric[Real] = %def
+     op dist: Real * Real -> Real
+     forall x,y,r:Real
+     . dist(x,y)=r <=> x + r = y \/ y + r = x
+end
+
+
+view MetricSpace_From_ExtRealByMetric[Real]:
+     MetricSpace to ExtRealByMetric[Real]
+=  S |-> Real, d |-> dist
+end
+
+
+
+spec EuclideanSpace3D = %def
+     ExtRealByMetric[Real] 
+then %def
+local Set
+within
+     free type Point ::= <__ __ __>: (pr1:Real;pr2:Real;pr3:Real)
+     op dist: Point * Point -> Real
+     forall x,y:Point;r:Real
+     . dist(x,y) = r * r <=> r = dist(pr1(x),pr1(y)) * dist(pr1(x),pr1(y))
+				+ dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
+				  + dist(pr3(x),pr3(y)) * dist(pr3(x),pr3(y))
+end    
+
+
+view MetricSpace_From_EuclideanSpace3D:
+     MetricSpace to EuclideanSpace3D
+=  S |-> Point, d |-> dist
+end 
+
+
+
+
+spec EuclideanSpace2D = %def
+     ExtRealByMetric[Real] 
+then %def
+local Set
+within
+     free type Point ::= <__ __>: (pr1:Real;pr2:Real)
+     op dist: Point * Point -> Real
+     forall x,y:Point;r:Real
+     . dist(x,y) = r * r <=> r = dist(pr1(x),pr1(y)) * dist(pr1(x),pr1(y))
+				+ dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
+
+end    
+
+
+
+view MetricSpace_From_EuclideanSpace2D:
+     MetricSpace to EuclideanSpace2D
+=  S |-> Point, d |-> dist
+end 
