@@ -70,7 +70,7 @@ end
 
 
 
-spec SetAlgebraOfBinaryRelations =
+spec SetAlgebraOfBinaryRelations1 =
      BinaryRelations[sort Elem]
 and
 {  local  ConstructFullAlgebraOfBinaryRelations[sort Elem] 
@@ -91,17 +91,35 @@ then %implies
 end  
 
 
+spec SetAlgebraOfBinaryRelations =
+     sort Elem
+and local ConstructFullAlgebraOfBinaryRelations[sort Elem] 
+within {	
+	sort Rel < Relation
+     	ops
+	     0,1:Rel;
+            __cup__,__cap__: Rel * Rel -> Rel;
+         compl__: Rel -> Rel
+	}
+then %implies 
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+	 __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+     forall x:Rel
+     . compl(compl(x)) = x 
+end  
+
+
 spec AlgebraOfBinaryRelations =
-     BinaryRelations[sort Elem]
-and 
-    { local  ConstructFullAlgebraOfBinaryRelations[sort Elem] 
-      within
-	     sort Rel < Relation
+     sort Elem
+and
+local  ConstructFullAlgebraOfBinaryRelations[sort Elem] 
+within
+        sort Rel < Relation
      	ops
 		           0,1,id:Rel;
          __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
          	    compl__,inv__: Rel -> Rel
-	}
 
 then %implies 
      ops
@@ -172,12 +190,15 @@ then %implies
 end
 
 
+%( Following we provide three specs that are needed to check whether a BaseRelationModel
+   is suitable to define a reasonable model.
+)%
+
 
 spec CheckCompositionClosedBaseRelationModel =
      JEPDBaseRelationModel
-and ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
-then    
-local ConstructFullAlgebraOfBinaryRelations[ElemStructure] 
+and  ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
+then local ConstructFullAlgebraOfBinaryRelations[ElemStructure] 
 within 
     { sort Rel 
       ops __cmps__: BaseRel * BaseRel -> Rel;
@@ -193,29 +214,21 @@ hide sort Rel
 end
 
 
-
-
 spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
      ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
+and
+     ConstructFullAlgebraOfBinaryRelations[ElemStructure]
 then %def 
-local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
-within 
-    { ops __cmps__: BaseRel * BaseRel -> Relation;
+     ops __cmps__: BaseRel * BaseRel -> Relation;
              inv__: BaseRel -> Relation;
 	        id: Relation
-    }
 end
 
 
 spec ConstructModelFromBaseRelationModel[CompositionClosedBaseRelationModel] = %def
      ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
-and SetAlgebraOfBinaryRelations
+and  AlgebraOfBinaryRelations
 then %def 
-local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
-within 
-      ops __cmps__: Rel * Rel -> Rel;
-             inv__: Rel -> Rel;
-                id: Rel
      preds __eps__:BaseRel * Rel;
 	  __subset__:Rel*Rel
      forall x:BaseRel;r,r':Rel
