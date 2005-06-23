@@ -160,15 +160,11 @@ then
 end
 
 
+
 spec ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
      type Rel = {x:Relation . exists X:Set(BaseRel) .  
 			(forall y,z:Elem . (y,z) isIn rep(x) <=> 
 		(exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
-     preds __eps__:BaseRel * Rel;
-	  __subset__:Rel*Rel
-     forall x:BaseRel;r,r':Rel
-     . x eps r <=> rep(x) subset rep(r)
-     . r subset r' <=> rep(r) subset rep(r')
 
 then %implies
      sorts BaseRel < Rel 
@@ -176,39 +172,70 @@ then %implies
 end
 
 
-spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
-     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
-and
-     SetAlgebraOfBinaryRelations
-then %def 
-local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+
+spec CheckCompositionClosedBaseRelationModel =
+     JEPDBaseRelationModel
+and ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
+then    
+local ConstructFullAlgebraOfBinaryRelations[ElemStructure] 
 within 
-    { ops __cmps__: BaseRel * BaseRel -> Relation;
-             inv__: BaseRel -> Relation
-    then %def
-      ops __cmps__: Rel * Rel -> Relation;
-             inv__: Rel -> Relation
+    { sort Rel 
+      ops __cmps__: BaseRel * BaseRel -> Rel;
+             inv__: BaseRel -> Rel;
+	       id : Rel
     }
 end
 
 
 spec CompositionClosedBaseRelationModel =
-     ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
-then 
-     ops __cmps__: BaseRel * BaseRel -> Rel;
-            inv__: BaseRel -> BaseRel;
-	      id :Rel
-then %def
+     CheckCompositionClosedBaseRelationModel
+hide sort Rel
+end
+
+
+
+
+spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
+then %def 
+local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+within 
+    { ops __cmps__: BaseRel * BaseRel -> Relation;
+             inv__: BaseRel -> Relation;
+	        id: Relation
+    }
+end
+
+
+spec ConstructModelFromBaseRelationModel[CompositionClosedBaseRelationModel] = %def
+     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] 
+and SetAlgebraOfBinaryRelations
+then %def 
+local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+within 
       ops __cmps__: Rel * Rel -> Rel;
-             inv__: Rel -> Rel
+             inv__: Rel -> Rel;
+                id: Rel
+     preds __eps__:BaseRel * Rel;
+	  __subset__:Rel*Rel
+     forall x:BaseRel;r,r':Rel
+     . x eps r <=> rep(x) subset rep(r)
+     . r subset r' <=> rep(r) subset rep(r')
 end
 
 
 
 view BooleanAlgebra_from_JEPDBaseRelationModel[JEPDBaseRelationModel] :
      BooleanAlgebraWithCompl
-to   ConstructPseudoModelFromBaseRelationModel[JEPDBaseRelationModel]
+to   { ConstructPseudoModelFromBaseRelationModel[JEPDBaseRelationModel]
+	and SetAlgebraOfBinaryRelations }
 =    Elem |-> Rel 
+end
+
+
+view RelationAlgebra_from_CompositionClosedBaseRelationModel[CompositionClosedBaseRelationModel] :
+     RelationAlgebra
+to   ConstructModelFromBaseRelationModel[CompositionClosedBaseRelationModel]
 end
 
 

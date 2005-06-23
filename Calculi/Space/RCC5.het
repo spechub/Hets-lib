@@ -34,7 +34,10 @@ from Calculi/Algebra/RelationAlgebraModel get
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
 	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel
+	ConstructPseudoModelFromBaseRelationModel,
+	ConstructModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel,
+	CheckCompositionClosedBaseRelationModel
 from Calculi/Space/EuclideanSpace get
 	EuclideanSpace2D,
 	EuclideanSpace3D
@@ -246,30 +249,35 @@ end
 
 
 
-spec ConstructRCC5PseudoModel_OpenDisc[MetricSpace] = %def
-     ConstructPseudoModelFromBaseRelationModel[	
-	RCC5BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+
+view CompositionClosedBaseRelationModel_From_RCC5BaseRelationModel_OpenDisc[EvenLargerMetricSpace]:
+     CheckCompositionClosedBaseRelationModel to
+     {  ConstructPseudoModelFromBaseRelationModel[	
+		RCC5BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+	then %def 
+	ops id:Rel;
+	    inv__:BaseRel -> Rel;
+	     __cmps__:BaseRel * BaseRel -> Rel
+	}
+=    Elem |-> OpenDisc
 end
 	
 
-spec RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] = %def
-     ConstructRCC5PseudoModel_OpenDisc[MetricSpace]
-end
-
-
-spec Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] = %def
-     RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
+spec RCC5Model_OpenDisc[EvenLargerMetricSpace] = %def
+     ConstructModelFromBaseRelationModel[
+	RCC5BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
 then %def
-     ops __cmps__:BaseRel*BaseRel -> Rel;
-	    inv__:BaseRel -> BaseRel
-end
+      ops  inv__ : BaseRel -> BaseRel;
+	 __cmps__: BaseRel * BaseRel -> Rel
+end 
 
 
 
-view RCC5MetricSpaceModel_OpenDisc_modelsExtensionally_RCC5CompositionTable[EvenLargerMetricSpace] :
+
+view RCC5Model_OpenDisc_ExtModels_RCC5CompositionTable[EvenLargerMetricSpace] :
      RCC5CompositionTable 
 to 
-     Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
+     RCC5Model_OpenDisc[EvenLargerMetricSpace]
 =   
     ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
 end
@@ -279,7 +287,7 @@ end
 view MetricSpace_induces_AlgebraOfBinaryRelations_OpenDisc[EvenLargerMetricSpace] :
     AlgebraOfBinaryRelations 
 to 
-    RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace] 
+    RCC5Model_OpenDisc[EvenLargerMetricSpace] 
 =
     Elem |-> OpenDisc
 end
@@ -287,12 +295,9 @@ end
 
 
 view MetricSpace_induces_ModelOfRCC5_OpenDisc[EvenLargerMetricSpace] :
-     { RCC5 
-	hide ops __+__,__-__,{},{__},     
-	     preds __eps__,__isSubsetOf__,isNonEmpty 
-     } 	
+     RCC5 
 to 
-    Rich_RCC5MetricSpaceModel_OpenDisc[EvenLargerMetricSpace]
+    RCC5Model_OpenDisc[EvenLargerMetricSpace]
 =   
     ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
 end
@@ -314,15 +319,12 @@ end
     
      	
 spec RCC5EuclideanSpace2D_OpenDisc = %def
-     Rich_RCC5MetricSpaceModel_OpenDisc[view EuclideanSpace2D_Is_EvenLarger]
+     RCC5Model_OpenDisc[view EuclideanSpace2D_Is_EvenLarger]
 end
 
 
 view RCC5EuclideanSpace2D_OpenDisc_modelsRCC5 :
-     { RCC5 
-	hide ops __+__,__-__,{},{__},     
-	     preds __eps__,__isSubsetOf__,isNonEmpty 
-     } 	
+     RCC5 
 to 
     RCC5EuclideanSpace2D_OpenDisc
 =   

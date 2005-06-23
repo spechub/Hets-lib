@@ -27,7 +27,9 @@ from Calculi/Algebra/RelationAlgebraModel get
 	JEPDBaseRelationModel,
 	BaseRelationModel,
 	ConstructPseudoModelFromBaseRelationModel,
-	CompositionClosedBaseRelationModel
+	ConstructModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel,
+	CheckCompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
 	LinFlowOfTime,
@@ -165,6 +167,7 @@ end
    at least 2 elements
 )%
  
+
 view JEPDBaseRelationModel_From_PAlinBaseRelationModel[NTLinFlowOfTime]:
      JEPDBaseRelationModel 
 to 
@@ -173,55 +176,59 @@ to
 end
 
 
-spec ConstructPAlinPseudoModel[LinFlowOfTime] = %def
-     ConstructPseudoModelFromBaseRelationModel[	
+
+
+view CompositionClosedBaseRelationModel_From_PAlinBaseRelationModel[DnsLinFlowOfTimeSEnd]:
+     CheckCompositionClosedBaseRelationModel to
+     {  ConstructPseudoModelFromBaseRelationModel[	
+		PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
+	then %def 
+	ops id:Rel;
+	    inv__:BaseRel -> Rel;
+	     __cmps__:BaseRel * BaseRel -> Rel
+	}
+=    Elem |-> Instant
+end
+
+
+
+spec PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] = %def 
+     ConstructModelFromBaseRelationModel[
 	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
-end
+then %def
+      ops  inv__ : BaseRel -> BaseRel;
+	 __cmps__: BaseRel * BaseRel -> Rel
+end 
 
 
 
 
-spec PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] = %def
-     ConstructPAlinPseudoModel[LinFlowOfTime]
-end
-
-
-view PAlinDnsLinFlowOfTimeSEndModel_Is_CompositionClosed[DnsLinFlowOfTimeSEnd]:
-     CompositionClosedBaseRelationModel to
-     PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
-=    Elem |-> Instant 
-end
-
-
-view PAlinDnsLinFlowTimeSEndModel_modelsExtensionally_PAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
+view PAlinModel_DnsSEnd_ExtModels_PAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
      PAlinCompositionTable 
 to 
-     PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] 
 =   
-    ops p |-> pRel, pi |-> piRel, e |-> eRel
+     ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
 
 
 
 view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations[DnsLinFlowOfTimeSEnd] :
-    AlgebraOfBinaryRelations 
+     AlgebraOfBinaryRelations 
 to 
-    PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd] 
+     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] 
 =
-    Elem |-> Instant
+     Elem |-> Instant
 end
+
 
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfPAlin[DnsLinFlowOfTimeSEnd] :
      PAlin
-%%     { PAlin 
-%%	hide ops __+__,__-__,{},{__},     
-%%	     preds __eps__,__isSubsetOf__,isNonEmpty 
-%%     } 	
 to 
-    PAlinDnsLinFlowOfTimeSEndModel[DnsLinFlowOfTimeSEnd]
+    PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd]
 =   
-    ops p|->pRel, pi|->piRel, e|->eRel
+    ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
 
 

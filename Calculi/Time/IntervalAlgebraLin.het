@@ -27,7 +27,10 @@ from Calculi/Algebra/RelationAlgebraModel get
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
 	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel
+	ConstructPseudoModelFromBaseRelationModel,
+	ConstructModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel,
+	CheckCompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get 
 	DnsLinFlowOfTimeSEnd,
 	LinFlowOfTime,
@@ -385,30 +388,32 @@ to
 end
 
 
-
-spec ConstructIAlinPseudoModel_Allen[LinFlowOfTime] = %def
-     ConstructPseudoModelFromBaseRelationModel[	
-	IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
+view CompositionClosedBaseRelationModel_From_IAlinBaseRelationModel_Allen[DnsLinFlowOfTimeSEnd]:
+     CheckCompositionClosedBaseRelationModel to
+     {  ConstructPseudoModelFromBaseRelationModel[	
+		IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
+	then %def 
+	ops id:Rel;
+	    inv__:BaseRel -> Rel;
+	     __cmps__:BaseRel * BaseRel -> Rel
+	}
+=    Elem |-> Interval
 end
-	
-
-spec IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd] = %def
-     ConstructIAlinPseudoModel_Allen[LinFlowOfTime]
-end
 
 
-spec Rich_IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd] = %def
-     IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd]
+spec IAlinModel_Allen[DnsLinFlowOfTimeSEnd] = %def     
+     ConstructModelFromBaseRelationModel[
+	IAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Interval]
 then %def
-     ops __cmps__:BaseRel*BaseRel -> Rel;
-	    inv__:BaseRel -> BaseRel
-end
+      ops  inv__ : BaseRel -> BaseRel;
+	 __cmps__: BaseRel * BaseRel -> Rel
+end 
 
 
-view IAlinDnsLinFlowTimeSEndModel_Allen_modelsExtensionally_IAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
+view IAlinModel_Allen_ExtModels_IAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
      IAlinCompositionTable 
 to 
-     Rich_IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd]
+     IAlinModel_Allen[DnsLinFlowOfTimeSEnd]
 =   
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel, 
 	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
@@ -419,23 +424,20 @@ end
 view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations_Allen[DnsLinFlowOfTimeSEnd] :
     AlgebraOfBinaryRelations 
 to 
-    IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd] 
+    IAlinModel_Allen[DnsLinFlowOfTimeSEnd] 
 =
-    Elem |-> Interval, Rel |-> Rel 
+    Elem |-> Interval
 end
 
 
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfIAlin_Allen[DnsLinFlowOfTimeSEnd] :
-     { IAlin 
-	hide ops __+__,__-__,{},{__},     
-	     preds __eps__,__isSubsetOf__,isNonEmpty 
-     } 	
+     IAlin 
 to 
-    Rich_IAlinDnsLinFlowOfTimeSEndModel_Allen[DnsLinFlowOfTimeSEnd]
+     IAlinModel_Allen[DnsLinFlowOfTimeSEnd]
 =   
-    ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel, 
-	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
+     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel, 
+	 bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
 end
 
 
@@ -512,29 +514,34 @@ end
 
 
 
-spec ConstructIAlinPseudoModel_Conv[LinFlowOfTime] = %def
-     ConstructPseudoModelFromBaseRelationModel[	
-	IAlinBaseRelationModel_Conv[LinFlowOfTime] fit Elem |-> Interval]
+
+view CompositionClosedBaseRelationModel_From_IAlinBaseRelationModel_Conv[DnsLinFlowOfTimeSEnd]:
+     CheckCompositionClosedBaseRelationModel to
+     {  ConstructPseudoModelFromBaseRelationModel[	
+		IAlinBaseRelationModel_Conv[LinFlowOfTime] fit Elem |-> Interval]
+	then %def 
+	ops id:Rel;
+	    inv__:BaseRel -> Rel;
+	     __cmps__:BaseRel * BaseRel -> Rel
+	}
+=    Elem |-> Interval
 end
+
 	
 
-spec IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd] = %def
-     ConstructIAlinPseudoModel_Conv[LinFlowOfTime]
-end
-
-
-spec Rich_IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd] = %def
-     IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd]
+spec IAlinModel_Conv[DnsLinFlowOfTimeSEnd] = %def     
+     ConstructModelFromBaseRelationModel[
+	IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
 then %def
-     ops __cmps__:BaseRel*BaseRel -> Rel;
-	    inv__:BaseRel -> BaseRel
-end
+      ops  inv__ : BaseRel -> BaseRel;
+	 __cmps__: BaseRel * BaseRel -> Rel
+end 
 
 
-view IAlinDnsLinFlowTimeSEndModel_Conv_modelsExtensionally_IAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
+view IAlinDnsLinFlowTimeSEndModel_Conv_ExtModels_IAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
      IAlinCompositionTable 
 to 
-     Rich_IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd]
+     IAlinModel_Conv[DnsLinFlowOfTimeSEnd]
 =   
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel, 
 	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
@@ -545,20 +552,17 @@ end
 view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations_Conv[DnsLinFlowOfTimeSEnd] :
     AlgebraOfBinaryRelations 
 to 
-    IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd] 
+    IAlinModel_Conv[DnsLinFlowOfTimeSEnd] 
 =
-    Elem |-> Interval, Rel |-> Rel 
+    Elem |-> Interval
 end
 
 
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfIAlin_Conv[DnsLinFlowOfTimeSEnd] :
-     { IAlin 
-	hide ops __+__,__-__,{},{__},     
-	     preds __eps__,__isSubsetOf__,isNonEmpty 
-     } 	
+     IAlin 
 to 
-    Rich_IAlinDnsLinFlowOfTimeSEndModel_Conv[DnsLinFlowOfTimeSEnd]
+    IAlinModel_Conv[DnsLinFlowOfTimeSEnd]
 =   
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel, 
 	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel

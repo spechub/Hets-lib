@@ -1,7 +1,7 @@
 library Calculi/Space/RCC8
-version 0.1
+version 0.3
 %% author: S. Wölfl
-%% date: 18-02-2005
+%% date: 23-06-2005
 %% 
 
 %left_assoc __cup__,__cap__
@@ -14,26 +14,39 @@ Literature: TODO
 )%
 
 
+from Calculi/Algebra/BooleanAlgebra get 
+	BooleanAlgebraWithCompl,
+	ExtBooleanAlgebraByOrderRelations,
+	AtomicBooleanAlgebra 
 from Calculi/Algebra/RelationAlgebra get 
-	AtomicRelationAlgebra
+	AtomicRelationAlgebra,
+	IntegralRelationAlgebra,
+	SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-	GeneratePseudoRelationAlgebra,
-	GenerateRelations
+	GroundingCompositionTable,	
+	ConstructBooleanAlgebra,		
+	ConstructPseudoRelationAlgebra,
+	ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get 
+	BinaryRelations,
 	AlgebraOfBinaryRelations,
-	GenerateModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	BinaryRelations
-%%from Calculi/Time/LinearFlowOfTime get 
-%%	DnsLinFlowOfTimeSEnd,
-%%	LinFlowOfTime
+	BaseRelationModel,
+	ConstructPseudoModelFromBaseRelationModel,
+	ConstructModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel,
+	CheckCompositionClosedBaseRelationModel
+from Calculi/Space/EuclideanSpace get
+	EuclideanSpace2D,
+	EuclideanSpace3D
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
 	MetricSpace
 from HasCASL/Set get 
 	Set
+
 
 
 
@@ -70,190 +83,307 @@ spec RCC8BaseRelations = %mono
 end
 
 
-
-%(   The following spec not only contains the raw composition table of RCC8, but also
-     information that the 1 is the union of all base relations, and that the set of base relations is
-     closed with respect to converses.
+%(   The following spec encodes the composition table of RCC8 as well as 
+     the information on the converses of base relations.
 )%
+
 
 
 spec RCC8CompositionTable =
      sort BaseRel
      ops dc ,ec ,po ,tpp ,ntpp ,tppi ,ntppi ,eq: BaseRel
 and 
-     CompositionTable 
+     CompositionTable with op id |-> eq 
 then
-     . inv(dc) = dc					%(sym_dc)%
-     . inv(ec) = ec					%(sym_dc)%
-     . inv(po) = po					%(sym_po)%
-     . inv(tpp) = tppi					%(inv_tpp)%
-     . inv(tppi) = tpp					%(inv_tppi)%
-     . inv(ntpp) = ntppi				%(inv_ntpp)%
-     . inv(ntppi) = ntpp				%(inv_ntppi)%
-     . inv(eq) = eq					%(sym_eq)%
+     . inv(dc) = dc						%(sym_dc)%
+     . inv(ec) = ec						%(sym_dc)%
+     . inv(po) = po						%(sym_po)%
+     . inv(tpp) = tppi						%(inv_tpp)%
+     . inv(tppi) = tpp						%(inv_tppi)%
+     . inv(ntpp) = ntppi					%(inv_ntpp)%
+     . inv(ntppi) = ntpp					%(inv_ntppi)%
+     . inv(eq) = eq						%(sym_eq)%
 
-%[
-     . pp cmps pp  = pp					%(cmps_pppp)%	
-     . pp cmps ppi = 1					%(cmps_ppppi)%
-     . pp cmps po  = pp cup po cup dc			%(cmps_pppo)%
-     . pp cmps dc  = dc					%(cmps_ppdc)%
-     . pp cmps eq  = pp					%(cmps_ppeq)%
+     . dc cmps dc  = 1 						%(cmps_dcdc)%
+     . dc cmps ec  = dc cup ec cup po cup tpp cup ntpp  	%(cmps_dcec)%
+     . dc cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_dcpo)%
+     . dc cmps tpp = dc cup ec cup po cup tpp cup ntpp		%(cmps_dctpp)%
+     . dc cmps ntpp = dc cup ec cup po cup tpp cup ntpp		%(cmps_dcntpp)%
+     . dc cmps tppi = dc					%(cmps_dctppi)%
+     . dc cmps ntppi = dc					%(cmps_dcntppi)%
 
-     . ppi cmps pp  = compl(dc)				%(cmps_ppipp)%	
-     . ppi cmps ppi = 1					%(cmps_ppippi)%
-     . ppi cmps po  = ppi cup po 			%(cmps_ppipo)%
-     . ppi cmps dc  = ppi cup po cup dc			%(cmps_ppidc)%
-     . ppi cmps eq  = ppi				%(cmps_ppieq)%
+     . ec cmps dc = dc cup ec cup po cup tppi cup ntppi		%(cmps_ecdc)%
+     . ec cmps ec = dc cup ec cup po cup tpp cup tppi cup eq 	%(cmps_ecec)%
+     . ec cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_ecpo)%
+     . ec cmps tpp = ec cup po cup tpp cup ntpp			%(cmps_ectpp)%
+     . ec cmps ntpp = po cup tpp cup ntpp			%(cmps_ecntpp)%
+     . ec cmps tppi = dc cup ec					%(cmps_ectppi)%
+     . ec cmps ntppi = dc					%(cmps_ecntppi)%
 
-     . po cmps pp  = pp cup po				%(cmps_popp)%	
-     . po cmps ppi = ppi cup po cup dc			%(cmps_poppi)%
-     . po cmps po  = 1      				%(cmps_popo)%
-     . po cmps dc  = ppi cup po cup dc			%(cmps_podc)%
-     . po cmps eq  = po					%(cmps_poeq)%
+     . po cmps dc = dc cup ec cup po cup tppi cup ntppi		%(cmps_podc)%
+     . po cmps ec = dc cup ec cup po cup tppi cup ntppi		%(cmps_poec)%
+     . po cmps po = 1						%(cmps_popo)%
+     . po cmps tpp = po cup tpp cup ntpp			%(cmps_potpp)%
+     . po cmps ntpp = po cup tpp cup ntpp			%(cmps_pontpp)%
+     . po cmps tppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_potppi)%
+     . po cmps ntppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_pontppi)%
 
-     . dc cmps pp  = pp cup po cup dc			%(cmps_dcpp)%	
-     . dc cmps ppi = dc					%(cmps_dcppi)%
-     . dc cmps po  = pp cup po cup dc			%(cmps_dcpo)%
-     . dc cmps dc  = 1					%(cmps_dcdc)%
-     . dc cmps eq  = dc					%(cmps_dceq)%
+     . tpp cmps dc = dc						%(cmps_tppdc)%
+     . tpp cmps ec = dc cup ec					%(cmps_tppec)%
+     . tpp cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_tpppo)%
+     . tpp cmps tpp = tpp cup ntpp				%(cmps_tpptpp)%
+     . tpp cmps ntpp = ntpp					%(cmps_tppntpp)%
+     . tpp cmps tppi = dc cup ec cup po cup tpp cup tppi cup eq	%(cmps_tpptppi)%
+     . tpp cmps ntppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_tppntppi)%
 
-     . eq cmps pp  = pp   				%(cmps_eqpp)%	
-     . eq cmps ppi = ppi				%(cmps_eqppi)%
-     . eq cmps po  = po					%(cmps_eqpo)%
-     . eq cmps dc  = dc					%(cmps_eqdc)%
-     . eq cmps eq  = eq					%(cmps_eqeq)%
-]%
+     . ntpp cmps dc = dc					%(cmps_ntppdc)%
+     . ntpp cmps ec = dc					%(cmps_ntppec)%
+     . ntpp cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_ntpppo)%
+     . ntpp cmps tpp = ntpp					%(cmps_ntpptpp)%
+     . ntpp cmps ntpp = ntpp					%(cmps_ntppntpp)%
+     . ntpp cmps tppi = dc cup ec cup po cup tpp cup ntpp	%(cmps_ntpptppi)%
+     . ntpp cmps ntppi = 1					%(cmps_ntppntppi)%
+
+     . tppi cmps dc = dc cup ec cup po cup tppi cup ntppi	%(cmps_tppidc)%
+     . tppi cmps ec = ec cup po cup tppi cup ntppi		%(cmps_tppiec)%
+     . tppi cmps po = po cup tppi cup ntppi			%(cmps_tppipo)%
+     . tppi cmps tpp = po cup eq cup tpp cup tppi		%(cmps_tppitpp)%
+     . tppi cmps ntpp = po cup tpp cup ntpp			%(cmps_tppintpp)%
+     . tppi cmps tppi = tppi cup ntppi				%(cmps_tppitppi)%
+     . tppi cmps ntppi = ntppi					%(cmps_tppintppi)%
+
+     . ntppi cmps dc = dc cup ec cup po cup tppi cup ntppi	%(cmps_ntppidc)%
+     . ntppi cmps ec = po cup tppi cup ntppi			%(cmps_ntppiec)%
+     . ntppi cmps po = po cup tppi cup ntppi			%(cmps_ntppipo)%
+     . ntppi cmps tpp = po cup tppi cup ntppi			%(cmps_ntppitpp)%
+     . ntppi cmps ntpp = po cup tpp cup tppi cup ntpp cup ntppi cup eq	%(cmps_ntppintpp)%
+     . ntppi cmps tppi = ntppi					%(cmps_ntppitppi)%
+     . ntppi cmps ntppi = ntppi					%(cmps_ntppintppi)%
+
+end
+
+view RCC8CompositionTable_as_GroundingCompositionTable:
+     GroundingCompositionTable to RCC8CompositionTable
+=
+     id |-> eq
 end
 
 
-
-spec RCC8Relations =  
-     GenerateRelations[RCC8BaseRelations]
-and
-     RCC8CompositionTable 
-end 
-
-%(
-view RelationBaseOfRCC8_as_RelationBase[BaseRelationsOfRCC8] :
-     RelationBase[sort BaseRel] to RelationBaseOfRCC8
-=		
-	op id : BaseRel |-> eq
+spec BooleanAlgebraOfRCC8Relations = 
+     ConstructBooleanAlgebra[RCC8BaseRelations] 
 end
-)%
+
+view BooleanAlgebraOfRCC8Relations_as_AtomicBooleanAlgebra :
+     AtomicBooleanAlgebra to BooleanAlgebraOfRCC8Relations
+= 
+     Elem |-> Rel, AtomElem |-> BaseRel
+end
+
 
 spec RCC8 = 
-     GeneratePseudoRelationAlgebra[RCC8Relations]
-	[RCC8CompositionTable fit op id:BaseRel |-> eq:BaseRel] 
+     ConstructPseudoRelationAlgebra[RCC8BaseRelations]
+	[RCC8CompositionTable fit op id:BaseRel |-> eq]
 end
+
+
+spec RichRCC8 =
+     ConstructExtPseudoRelationAlgebra[RCC8BaseRelations]
+	[RCC8CompositionTable fit op id:BaseRel |-> eq]
+end	
 
 
 view RCC8_as_AtomicRelationAlgebra :
      AtomicRelationAlgebra to 
-     { RCC8	then %def
-	preds 
-		__<__,__<=__,__>__,__>=__:Rel*Rel
-	forall x,y:Rel
-	. x < y  <=> x isSubsetOf y /\ not x = y
-	. x <= y <=> x isSubsetOf y
-	. x > y  <=> y isSubsetOf x /\ not x = y
-	. x >= y <=> y isSubsetOf x
-     }
+     RichRCC8 
 =
-     Rel |-> Rel , AtomRel |-> BaseRel
+     AtomRel |-> BaseRel
 end
 
+
+%[ Needs to be checked:
+view RCC8_as_IntegralRelationAlgebra :
+     IntegralRelationAlgebra to RichRCC8
+end
+
+
+view RCC8_as_SymmetricRelationAlgebra :
+     SymmetricRelationAlgebra to RichRCC8
+end
+]%
 
 
 
 %(  Part II: Semantic Level
 
     Following we describe how models of RCC8 can be constructed from 
-    metrical spaces. We describe only one such method, namely interpreting 
-    regions as open discs of a metrical space.
+    metric spaces. 
 )%
+
 
 
 logic HasCASL
 
 
-spec OpenDiscModelOfRCC8BaseRelations[MetricSpace] = 
-     Set
-then
-     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
-     type OpenDisc = {X:Set S . exists r:Real;x:S . X=openDisc(r,x)}
-then 
-     BinaryRelations[sort OpenDisc] 
 
+spec Discs[MetricSpace] = %def
+local Set
+within
+     op opDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+     op clDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<=r
+     type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=opDisc(r,x)}
+     type ClosedDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=clDisc(r,x)}
+     preds __disjoint__,__subset__: Set S * Set S
+     ops  cen: OpenDisc -> S;
+	  rad: OpenDisc -> Real
+     forall X:OpenDisc; r:Real; x:S
+     . X = opDisc(r,x) <=> cen(X) = x /\ rad(X) = r
+end
+
+
+spec RCC8BaseRelationModel_OpenDisc[MetricSpace] = %def 
+     BaseRelationModel[Discs[MetricSpace] fit Elem |-> OpenDisc]  
 then %def
      ops dcRel,ecRel,poRel,tppRel,ntppRel,tppiRel,ntppiRel,eqRel:Relation 
-     type BaseRel ::= dcRel | ecRel | poRel | tppRel | 
+     free type BaseRel ::= dcRel | ecRel | poRel | tppRel | 
 			ntppRel | tppiRel | ntppiRel | eqRel 
+
      forall x,y:OpenDisc
-     . (x,y) isIn rep(dcRel) <=> x intersection y = emptySet
-     . (x,y) isIn rep(ecRel) <=> x intersection y = emptySet
-     . (x,y) isIn rep(poRel) <=> not x subset y /\ not y subset x /\ 
- 				not  x intersection y = emptySet
-     . (x,y) isIn rep(tppRel) <=> x subset y /\ not x = y
-     . (x,y) isIn rep(ntppRel) <=> x subset y /\ not x = y
-     . (x,y) isIn rep(tppiRel) <=> y subset x /\ not x = y
-     . (x,y) isIn rep(ntppiRel) <=> y subset x /\ not x = y
+     . (x,y) isIn rep(dcRel) <=>   
+		  clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y)) 
+     . (x,y) isIn rep(ecRel) <=>  
+		x disjoint y /\ 
+  	     	not clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y)) 
+     . (x,y) isIn rep(poRel) <=> 
+		not x subset y /\ not y subset x /\ not  x disjoint y 
+     . (x,y) isIn rep(tppRel) <=> 
+		x subset y /\  not clDisc(rad(x),cen(x)) subset y
+     . (x,y) isIn rep(ntppRel) <=> 
+		clDisc(rad(x),cen(x)) subset y
+     . (x,y) isIn rep(tppiRel) <=> 
+		y subset x /\  not clDisc(rad(y),cen(y)) subset x
+     . (x,y) isIn rep(ntppiRel) <=> 
+		clDisc(rad(y),cen(y)) subset x
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
-spec OpenDiscModelOfRCC8[MetricSpace] = %def
-      GenerateModelFromBaseRelationModel[OpenDiscModelOfRCC8BaseRelations[MetricSpace]
-	fit sort Elem |-> OpenDisc]
-then %cons  
-     ops eqRel: Rel;
-	inv: BaseRel -> BaseRel;
-	inv: Rel -> Rel
+
+
+spec LargeMetricSpace =
+     MetricSpace
+%[ to be done ]%
+end
+
+spec UnboundedMetricSpace =
+     MetricSpace
+then
+     forall r:Real
+     . exists x,y:S . d(x,y) > r 
 end
 
 
-%(
-spec GenerateOpenDiscModelOfRCC8[MetricSpace] = %def
-     GeneratePreOpenDiscModelOfRCC8[MetricSpace]
-then %cons 
-     op  __cmps__:  Rel * Rel -> Rel;
-	 __cmps__: BaseRel * BaseRel -> Rel;  %% <- Das sollte eigentlich klar sein?
-end
+view v_ToBeDone:  LargeMetricSpace to UnboundedMetricSpace
+
+   
+
+
+
+%( A metric space provides a JEPDBaseRelationModel only if it contains 
+   at least ??? elements
 )%
+ 
 
-
-
-%(  Part III: Views
-)%
-
-
-
-%( TBD
-view BaseRelationOpenDiscModelOfRCC8_as_JEPDBaseRelationModel:
-     JEPDBaseRelationModel[sort OpenDisc] 
+view JEPDBaseRelationModel_From_RCC8BaseRelationModel_OpenDisc[LargeMetricSpace]:
+     JEPDBaseRelationModel 
 to 
-     BaseRelationOpenDiscModelOfRCC8[MetricSpace]
-end
-
-
-view MetricSpace_induces_AlgebraOfBinaryRelations :
-    AlgebraOfBinaryRelations[sort Elem] 
-to 
-    GenerateOpenDiscModelOfRCC8[MetricSpace]
-=
-    sort Elem |-> OpenDisc , op id |-> eqRel 
+     RCC8BaseRelationModel_OpenDisc[LargeMetricSpace]
+=    sort Elem |-> OpenDisc
 end
 
 
 
-view MetricSpace_induces_OpenDiscModelOfRCC8 :
-     { RCC8 hide ops __+__,__-__,{},{__}    
-	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
+
+view CompositionClosedBaseRelationModel_From_RCC8BaseRelationModel_OpenDisc[UnboundedMetricSpace]:
+     CheckCompositionClosedBaseRelationModel to
+     {  ConstructPseudoModelFromBaseRelationModel[	
+		RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+	then %def 
+	ops id:Rel;
+	    inv__:BaseRel -> Rel;
+	     __cmps__:BaseRel * BaseRel -> Rel
+	}
+=    Elem |-> OpenDisc
+end
+	
+
+spec RCC8Model_OpenDisc[UnboundedMetricSpace] = %def
+     ConstructModelFromBaseRelationModel[
+	RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+then %def
+      ops  inv__ : BaseRel -> BaseRel;
+	 __cmps__: BaseRel * BaseRel -> Rel
+end 
+
+
+
+
+view RCC8Model_OpenDisc_ExtModels_RCC8CompositionTable[UnboundedMetricSpace] :
+     RCC8CompositionTable 
 to 
-    GenerateOpenDiscModelOfRCC8[MetricSpace]
+     RCC8Model_OpenDisc[UnboundedMetricSpace]
 =   
-    ops dc |-> dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel, 
-	tppi|->tppiRel, ntppi|->ntppiRel, eq|->eqRel, 
-        id |-> eqRel
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
 end
 
-)%
+
+
+view MetricSpace_induces_AlgebraOfBinaryRelations_OpenDisc[UnboundedMetricSpace] :
+    AlgebraOfBinaryRelations 
+to 
+    RCC8Model_OpenDisc[UnboundedMetricSpace] 
+=
+    Elem |-> OpenDisc
+end
+
+
+
+view MetricSpace_induces_ModelOfRCC8_OpenDisc[UnboundedMetricSpace] :
+     RCC8 
+to 
+    RCC8Model_OpenDisc[UnboundedMetricSpace]
+=   
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
+end
+
+
+
+%( Special Models )%
+
+
+view EuclideanSpace2D_Is_EvenLarger:
+     UnboundedMetricSpace to EuclideanSpace2D
+=    S |-> Point, d |-> dist
+end
+    
+     	
+spec RCC8EuclideanSpace2D_OpenDisc = %def
+     RCC8Model_OpenDisc[view EuclideanSpace2D_Is_EvenLarger]
+end
+
+
+view RCC8EuclideanSpace2D_OpenDisc_models_RCC8 :
+     RCC8 
+to 
+     RCC8EuclideanSpace2D_OpenDisc
+=   
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
+end
+
+
+
+
+
+
 
