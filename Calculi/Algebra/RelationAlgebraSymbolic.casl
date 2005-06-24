@@ -48,7 +48,7 @@ local  { Set[sort BaseRel fit Elem |-> BaseRel]
 	     __isSubsetOf__ |-> __subset__ }
 within
      free type Rel ::= sort Set[BaseRel]
-     sorts BaseRel < Rel
+     sort BaseRel < Rel
      ops 
 	   0,1 : Rel;
 	 compl__: Rel -> Rel;
@@ -60,7 +60,7 @@ within
      . x = {x}
      . x eps 1
      . not x eps 0
-     . x eps compl(r) <=> not x eps r
+     . x eps compl r <=> not x eps r
 
 then %implies
      ops
