@@ -262,7 +262,8 @@ from HasCASL/Real get Real
 
 view FlowOfTime_in_Real : 
      { DedekindComplLinFlowOfTime hide preds isUpperBounded,isLowerBounded,
-	__isIn__}  
+	  __isIn__, __preE__ : Instant * Pred(Instant),
+          __preE__ : Pred(Instant) * Instant}  
 	to Real 
 =
      sort Instant |-> Real, preds __pre__ |-> __<__, __preE__ |-> __<__,
