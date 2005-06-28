@@ -1,0 +1,83 @@
+library Filter
+
+logic CASL
+
+spec Bool =
+  free type Bool ::= False | True
+end
+
+spec List =
+  sort Elem
+  free type List[Elem] ::= [] | __::__(Elem; List[Elem])
+end
+
+logic HasCASL
+
+spec Filter =
+  List and Bool
+then
+  op filter : (Elem -> Bool) -> List[Elem] -> List[Elem]
+  var p:Elem->Bool; x:Elem; l:List[Elem]
+  . filter p [] = []
+  . filter p (x::l) = x::filter p l   if p x = True 
+  . filter p (x::l) = filter p l      if p x = False
+end
+
+%%from Haskell/Prelude get Prelude
+%%
+spec FilterImp = sort Elem, Bool with logic -> Haskell
+then
+  { 
+x:: Elem
+x = x
+y::Bool
+y = y
+}
+
+%[
+then
+logic Haskell:
+  { 
+filter :: (Elem -> Bool) -> [Elem] -> [Elem]
+filter p [] = []
+filter p (x:l) | p x == True = x:filter p l  
+               | p x == False = filter p l
+}
+end
+
+view Filter_Correct : Filter to FilterImp
+end
+]%
+
+
+logic Haskell
+spec test =
+{ data Elem
+}
+
+%[
+
+spec Bool1 =
+  free type Bool ::= False | True
+end
+
+spec List1 =
+  sort Elem
+  free type List[Elem] ::= [] | __::__(Elem; List[Elem])
+end
+
+logic HasCASL
+
+spec Filter1 =
+  List1 and Bool1
+then
+  op filter : (Elem -> Bool) -> List[Elem] -> List[Elem]
+  var p:Elem->Bool; x:Elem; l:List[Elem]
+  . filter p [] = []
+  . filter p (x::l) = x::filter p l   if p x = True 
+  . filter p (x::l) = filter p l      if p x = False
+end
+
+view v1 : Filter to Filter1 end
+view v2 : Filter1 to Filter end
+]%
