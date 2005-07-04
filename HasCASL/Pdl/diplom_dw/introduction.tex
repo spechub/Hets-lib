@@ -1,0 +1,151 @@
+
+
+\chapter{Introduction}
+\label{cha:introduction}
+
+
+\section{Motivation and Classification}
+\label{sec:motiv-class}
+
+The study of formal methods, \IE the mathematically rigorous specification,
+design and analysis of software systems, has a long tradition in the --by itself
+relatively short-- history of computer science. It has, however, not gained as
+much attention for being an effective and efficient means of software design as
+for example object oriented software design or UML\footnote{Unified Modeling
+  Language (see \url{www.uml.org})} modeling have. Quite the contrary, it is
+often considered a very complex and demanding way of creating software,
+requiring specialised skills in mathematics of all developers involved and
+taking a long time to finish. Its application is therefore often rejected and
+regarded as too expensive. A similar situation can be found in the field of
+software verification and validation, where the predominant method of operation
+is to perform clever and extensive testing.
+
+Despite these facts, we consider formal methods to be a very valuable arrow in a
+computer scientist's quiver; the use of formal methods is the only known way to
+actually prove the absence of errors in a system, whereas other methods, \EG
+testing, can only show their presence. Experience has shown (see
+\cite{KuhnChandramouliButler02,SobelClarkson02}) that there are applications
+in which formal methods is a means of not only writing better software, but writing
+it in proper time. Examples include the verification of AMD\TM's floating point
+processing unit of the K7 cpu, which Intel\TM also did for their Pentium Pro
+cpu, the verification of several cryptographic protocols like Needham-Schroeder
+and the employment of various model-checkers in hardware design. We consider
+essential two features when using formal methods: firstly, it must be
+reasonably easy to understand and use and, secondly, there has to be a software
+tool that assists the user and relieves him of the duty of performing trivial
+but highly detailed proof steps.
+
+Within formal methods, there are three major branches that are concerned with
+giving meaning to programs and programming languages and in particular with proving
+equivalence of programs; these are
+\begin{itemize}
+\item \emph{Operational semantics}, in which the execution of programs is
+  described by a transition (or evaluation) relation between program fragments,
+  an overall state and the value in which an expression is supposed to result.
+  Among the various incarnations of operational semantics, an approach
+  popularized by Plotkin is used very commonly. In it rules similar to those
+  found in deduction systems are given to determine the evaluation of a program
+   in a syntax directed way (see \cite{Plotkin81}).
+  
+  Other known examples of operational semantics, which are quite close to actual
+  implementations of the respective language include Warren's abstract machine
+  for interpreting Prolog programs or the SECD machine for evaluation of lambda
+  terms.
+\item \emph{Denotational semantics}, in which so called semantic functions are
+  defined, which map language elements into their intended interpretation in a
+  mathematical model of the programming language at hand.  In simple cases this
+  is quite similar to giving a model for a language of first-order logic, but in
+  common applications (\EG when giving a semantics for a functional language
+  featuring some kind of recursion) rather sophisticated mathematics (in
+  concrete terms: the field of \emph{domain theory} with its notions of
+  least upper bounds, continuous functions and fixed points) get involved. A
+  cornerstone of this kind of semantics is the compositionality of its semantic
+  functions, \IE semantic functions for composite terms can be explained through
+  the meaning of their component parts alone.
+  
+\item \emph{Program logics} (often called axiomatic semantics), which differ
+  from the above methods as they do not directly assign meaning to programs, but
+  rather embed the programming language into a logical framework that allows for
+  making statements about a program's behaviour and, hence, its correctness.
+  \cite{Hoare69} is the classical introductory paper about program logics, a
+  special kind of which therefore are termed \emph{Hoare logics}.
+
+\end{itemize}
+
+In this thesis, we describe, apply and implement a program logic named
+\emph{monadic dynamic logic} \cite{SchroederMossakowski:PDL} which allows one to
+prove properties of monadic programs. \Eat{The semantics of this logic is
+monad-independent in the sense that it is not tailored towards specific monads
+like the state monad, but rather requires some quite general additional
+structure that is found in many commonly encountered monads.}  The logic allows
+not only to prove partial correctness as is known from standard Hoare calculi,
+but also to prove termination and thus total correctness in one and the same
+framework.
+
+Monads constitute an elegant technique for consistently abstracting and analyzing
+several kinds of language features, \EG side effects, nondeterminism,
+exceptions, input and output as well as combinations of these. The use of a
+logic of monadic programs is twofold: it can be used to rather directly reason
+about programming languages that support the notion of a monad (such as
+Haskell), but it can also be used to reason about programs written in imperative
+first-order languages, if one creates a monadic model of the key features of
+such a language. For Java\TM this has been done recently (see
+\cite{HuismanJacobs00}) and the calculus described in this thesis has been
+extended to deal with Java\TM-like abnormal termination. This extension does not
+solely cover actual exceptions but also termination of a method through a
+\code{return} statement, or the interruption of execution of a while-loop
+through a \code{break} or \code{continue} statement.
+
+An important feature of the logic is the fact that it is monad independent,
+which means that the general logical framework is applicable to every monad that
+allows the interpretation of dynamic logic, which is the case for nearly all
+computationally relevant monads. A notable exception to this is the continuation
+monad. Instantiations of the logic for concrete monads are realized through
+additional axioms regarding the monad-specific operations, like reference
+writing in the state monad, or nondeterministic choice in the nondeterminism
+monad.  The calculus bears some resemblance to Pitt's evaluation logic
+\cite{Pitts91} and the alternative (global) semantics for it given by Moggi
+\cite{Moggi95}. However, in contrast to these approaches, the described calculus
+is equipped with a purely monadic semantics that retains the local character of
+the modal operators. On top of it, a Hoare calculus for total correctness can
+easily be formulated.
+
+
+\section{Problem Setting}
+\label{sec:problem-setting}
+The aim of this work is twofold: on the one hand, it constitutes the first
+extended application of the recently developed calculus of monadic dynamic logic
+ and thus demonstrates how this calculus can be
+applied to serious verification tasks. To name two examples, the total
+correctness of a breadth-first search algorithm and of a pattern matching
+algorithm involving Java\TM-like exception handling have been established. 
+
+On the other hand, driven by the insight that due to the complexity even of
+relatively small software systems it is not feasible to carry out formal proofs
+about these manually, the calculus had to be implemented in some proof assistant
+tool. We chose the generic proof assistant (often termed ``theorem
+prover'') \IsabelleHOL in which we could base our implementation on a stable and
+well developed underlying higher-order logic. \IsabelleHOL comes with
+tools for proving theorems outright (by means of a classical tableau reasoner)
+as well as a term rewriting system that allows for equational reasoning and
+functional programming. Tasks during this implementation included the definition
+of a syntax for monadic dynamic logic, proving the theorems needed as
+foundations for the logic, and working out theorems and setting up \Isabelle's
+automatic proof facilities to make
+life easier when applying the logic. The embedding into higher-order logic is a
+deep one in the sense that we define monadic logical connectives $\land_D$, $\longrightarrow_D$,
+etc. as well as a predicate $\models$ asserting the validity of
+monadic formulas. HOL formulas may, however, appear in monadic formulas thanks to
+existence of an insertion function $\Ret$ mapping HOL formulas into
+those of dynamic logic.
+
+\section{Structure of the Thesis}
+\label{sec:structure-thesis}
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 

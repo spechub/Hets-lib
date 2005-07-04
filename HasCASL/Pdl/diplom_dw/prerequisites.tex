@@ -1,0 +1,951 @@
+
+\chapter{Theoretical Basis}
+\label{cha:theoret-basis}
+
+We now provide the foundations needed to understand the further development of
+monadic dynamic logic and its implementation in \IsabelleHOL. A complete survey
+of all concepts involved would certainly go beyond the scope of this thesis, so
+that we assume basic familiarity with functional programming languages,
+especially Haskell, which is taught at the university of Bremen during the
+undergraduate studies, as well as basic knowledge of first-order logic. We
+concentrate instead on three topics that are of fundamental importance in the
+following. First we introduce the lambda calculus, in its pure and untyped as
+well as its typed form with added constants. We then introduce a formulation of
+higher-order logic based on the lambda calculus. This calculus will be quite
+similar to the one used in \IsabelleHOL and therefore provide useful insight
+into \IsabelleHOL's concepts. Finally we devote a section to the description of
+monads and their applications in computer science. Although monads are a concept
+of category theory, we do not provide an introduction into the latter since we
+will merely use its basic terminology. 
+
+A good introduction to functional programming in Haskell with a focus on monadic
+programming is given in \cite{Hudak00}, whereas \cite{Andrews00} introduces
+first-order and higher-order logic in a mathematically rigorous manner with an
+eye on historical developments. A book
+on category theory aimed at students of computer science is \cite{BarrWells95};
+ \cite{MacLane98} delves even deeper into the topic, but with its focus
+geared towards mathematicians.
+
+
+\section{The Lambda Calculus}
+\label{sec:lambda-calculus}
+
+The lambda calculus is a formalism for describing and analyzing functions. It
+has been developed by Alonzo Church in the 1930's and has influenced many
+programming languages since then. In particular, functional languages such as
+Haskell or ML have been directly influenced by the ideas underlying the lambda
+calculus, in particular its syntax. One of the key ideas of the lambda calculus
+is to make a function that takes its argument (say, $x$) to a certain expression
+containing that argument (\EG $x+y$) an expression itself (in the example, this
+function would be denoted by $\LambdaTerm{x}{x+y}$). Thus, lambda expressions
+(sometimes called lambda terms) denote anonymous functions, which can be used as
+values themselves, for example as input into another function, like in $(\lambda x. x)
+(\lambda x. x+y)$, which furthermore indicates that the notation for function
+application is simply juxtaposition.
+
+We will now explain some basic concepts on the basis of the \emph{untyped lambda
+  calculus}, in which all expressions are considered to have one universal type,
+since in this calculus, the concepts are easier to explain.  Later on, typed
+calculi will be more important, as they are the basis of higher-order logic and
+modern functional programming languages. Nonetheless, the concepts introduced
+below provide a good starting point and apply to advanced calculi in similar form.
+
+
+\subsection{Syntax and Terminology}
+\label{sec:syntax-terminology}
+
+
+The untyped lambda calculus is conceptually very simple, but encompasses the
+whole expressive power of what is known as the computable functions or the
+Turing machine, \IE to say every computable function can be formalized in the
+lambda calculus. Given a countably infinite set of variables $\NT{var}$ (\EG the
+variable set $\{x_i \Alt i \in \mathbb{N}\}$), the abstract syntax of lambda
+expressions can be given as
+
+\begin{equation}
+  \label{eq:syntax-lambda}
+  \NT{exp}  ::=  \NT{var} \Alt
+  \LambdaTerm{\NT{var}}{\NT{exp}} \Alt \NT{exp}\ \NT{exp}
+\end{equation}
+where an expression of the form $\LambdaTerm{x}{e}$ is called an
+\emph{abstraction}, which is intuitively to be understood as a function mapping
+its argument $x$ to the value denoted by the expression $e$. Expressions that
+have the form of the third alternative are called \emph{applications} since they
+stand for applications of functions to arguments.
+
+In a lambda expression $\LambdaTerm{x}{e}$ the occurrence of the variable $x$
+directly succeeding the $\lambda$ is called a \emph{binding occurrence}, $\lambda$ itself is
+called a \emph{(variable) binder} and $x$ is considered to be \emph{bound} in
+the subexpression $e$, which is the \emph{scope} of the binder. All variables in
+a lambda expression that are not bound are \emph{free}. An expression that has
+no free variables is called a \emph{closed} expression. To avoid
+unnecessary use of brackets when writing down concrete lambda expressions, we
+will stick with the common convention that the scope of a $\lambda$ extends to the
+right as far as possible without breaking the existing bracketing hierarchy and
+that function application associates to the left.
+
+\begin{expl}
+The expression $\LambdaTerm{x}{xx}$ is to be read as $\LambdaTerm{x}{(xx)}$,
+whereas $(\LambdaTerm{x}{x})(\LambdaTerm{y}{y})\LambdaTerm{x}{xx}$ denotes 
+$((\LambdaTerm{x}{x})(\LambdaTerm{y}{y}))(\LambdaTerm{x}{(xx)})$.
+\end{expl}
+
+It is often useful
+to work with the set of all free variables of an expression, which leads to the 
+following definition.
+\begin{defn}
+The set $FV$ of \emph{free variables} of a lambda expression is defined by
+induction on the structure of the expression. Thus, one has
+\begin{equation}
+\begin{split}
+ FV(x) ={} & \{x\}\\
+ FV(ee') ={}& FV(e) \cup FV(e')\\
+ FV(\LambdaTerm{x}{e}) ={}& FV(e) - \{x\}
+\end{split}
+\end{equation}
+\end{defn}
+
+One further elementary concept is needed to formalize the idea of function
+evaluation in the untyped lambda calculus: the \emph{substitution} of a lambda
+expression for a free variable. 
+\begin{defn}
+The substitution of an expression $e'$ for the
+variable $x$ in $e$, written $e[e'/x]$ can be defined as follows
+\begin{align}
+  x[e'/x] &= e'\\
+  y[e'/x] &= y   && \text{provided } x \neq y\\
+  (\LambdaTerm{x}{e_0})[e'/x] &= \LambdaTerm{x}{e_0} \label{eq:subst1}\\
+  (\LambdaTerm{y}{e_0})[e'/x] &=  \LambdaTerm{y'}{e_0[y'/y][e'/x]} &&
+  \text{provided } x \neq y \text{ and } y' \notin FV(e') \cup \{x\}  \label{eq:subst2}\\
+  (e_0 e_1)[e'/x] &= e_0[e'/x] e_1[e'/x]
+\end{align}
+
+where \eqref{eq:subst1} and \eqref{eq:subst2} make sure that the phenomenon of
+bound variable capture is avoided, \IE after substitution all variables free in
+$e'$ will be free in $e[e'/x]$. As a shortcut, one should let $y' = y$ in
+\eqref{eq:subst2} whenever possible, \IE when $y \notin FV(e')$. 
+\end{defn}
+
+The concepts of binding and of a bound variable are quite similar to those in
+first-order logic, where $\forall$ and $\exists$ are commonly used as binders. Since in both
+cases bound variables merely provide a local name with a local meaning that
+might differ from the meaning outside the scope of the binder, the lambda
+calculus also features the concept of bound variable renaming. Changing an
+expression $e$ into an expression $e'$ by renaming some of its bound variables
+in subexpressions is called \emph{$\alpha$-conversion}. It is intuitively clear that
+this process does not change the meaning of an expression, and in fact this can
+be shown. Hence, it makes sense to say that two expressions are equivalent up to
+renaming of bound variables
+(notation $e \equiv_\alpha e'$) if they can be converted into each other purely by applying
+$\alpha$-conversion. It is often convenient to mentally identify expressions
+that are equivalent up to $\alpha$-conversion, rather than making this
+identification a part of the formal system; in fact, it is possible to formalize
+the lambda calculus in such a way that all $\alpha$-equivalent expressions are
+syntactically equal.
+\begin{expl}
+The simplest case of $\alpha$-conversion is to change the name of the bound variable
+in the identity function: we have $\LambdaTerm{x}{x} \equiv_\alpha
+\LambdaTerm{y}{y}$. There are, however, cases where more attention has to be
+paid: in renaming $\LambdaTerm{x}{\LambdaTerm{y}{x y}}$ into the obviously
+equivalent expression $\LambdaTerm{y}{\LambdaTerm{x}{y x}}$, the first step
+involves renaming the inner abstraction with the help of an intermediate
+variable: $\LambdaTerm{x}{\LambdaTerm{y}{x y}} \equiv_\alpha
+\LambdaTerm{y}{\LambdaTerm{x'}{y x'}} \equiv_\alpha \LambdaTerm{y}{\LambdaTerm{x}{y
+    x}}$. Otherwise, a bound variable capture would occur, resulting in the
+entirely different expression on the right hand: 
+$\LambdaTerm{x}{\LambdaTerm{y}{x y}} \not\equiv_\alpha \LambdaTerm{y}{\LambdaTerm{y}{y y}}$
+\end{expl}
+
+
+\subsection{Function Evaluation by Reduction}
+\label{sec:function-evaluation}
+The concept of function evaluation is formalized in the lambda calculus through
+the concept of reduction. An application expression of the form
+$(\LambdaTerm{x}{e}) e'$ is called a \emph{redex}, which is short for reducible
+expression. A reduction then is the transformation of $(\LambdaTerm{x}{e}) e'$
+into $e[e'/x]$. The latter expression appears to be somewhat simpler, but this
+idea can be misleading, since it is possible for it to be larger than the former
+or in fact even equal to it. In any case, it coincides with the intuition behind
+function application: the function's argument (or formal parameter, in computer
+science parlance) is substituted by the value (or actual parameter) applied to
+it. Reducing an expression or one of its subexpressions in this way is called
+$\beta$-reduction. If an expression contains no redexes it is said to be in
+\emph{normal form}.
+
+Another way of converting an expression is by the so called $\eta$-contraction,
+which is closely related to the principle of extensionality of a function. It
+allows to convert an expression $\LambdaTerm{x}{ex}$, where $e$ does not contain
+$x$ as a free variable, into the simpler expression $e$. The idea is that one
+may see $\LambdaTerm{x}{ex}$ as a function that takes its argument $x$ simply to
+apply it to the function $e$ and thus one may identify it with $e$. If in some
+calculus there are expressions that do not denote a function, it might be
+reasonable to exclude the $\eta$-contraction rule.
+
+We will now give some examples of reductions to motivate the concept of normal
+order evaluation, which is a certain way of evaluating lambda
+expressions. The conversion of expression $e$ into $e'$ will be denoted by $e \longrightarrow
+e'$. 
+\begin{expl}
+\begin{align}
+  & (\LambdaTerm{x}{xy})(\LambdaTerm{z}{\LambdaTerm{w}{z}}) \\
+\longrightarrow \quad& (\LambdaTerm{z}{\LambdaTerm{w}{z}})y \notag \\
+\longrightarrow \quad& \LambdaTerm{w}{y} \notag
+\end{align}
+\begin{align}
+& (\LambdaTerm{x}{\LambdaTerm{y}{xy}})(\LambdaTerm{x}{\LambdaTerm{y}{xy}})\\
+\longrightarrow \quad& \LambdaTerm{y}{(\LambdaTerm{x}{\LambdaTerm{y}{xy}})y} \notag\\
+\longrightarrow \quad& \LambdaTerm{y}{\LambdaTerm{z}{yz}} \notag
+\end{align}
+\begin{align}
+\label{eq:lambda-diverge}
+  &  (\LambdaTerm{x}{y})((\LambdaTerm{x}{xxx}) (\LambdaTerm{x}{xxx})) & 
+  & (\LambdaTerm{x}{y})((\LambdaTerm{x}{xxx}) (\LambdaTerm{x}{xxx}))\\
+\longrightarrow \quad& (\LambdaTerm{x}{y})
+      ((\LambdaTerm{x}{xxx})(\LambdaTerm{x}{xxx})(\LambdaTerm{x}{xxx})) \notag&
+ \longrightarrow \quad& y \\
+\longrightarrow \quad& \ldots \notag
+\end{align}
+\end{expl}
+
+As \eqref{eq:lambda-diverge} shows, there are expressions where the evaluation
+strategy matters: on the left-hand side, the evaluation diverges, whereas on the
+right-hand side the evaluation terminates into a normal form after one
+step. Thus, one might ask for an evaluation strategy that is guaranteed to
+terminate into a normal form whenever possible. A simple strategy satisfying
+this request is \emph{normal order evaluation}. It works by always reducing the
+leftmost redexes first:
+\begin{defn}
+The \emph{leftmost redex} of a lambda expression $e$ (if such exists) is defined
+over the structure of $e$:
+\begin{listcase}
+\item[$e = x$ (where $x$ is a variable)]
+ $e$ obviously does not contain any redexes.
+
+\item[$e = (e_0\ e_1)$]
+The leftmost redex of $e$ is the leftmost redex of $e_0$ if such exists;
+otherwise, the leftmost redex of $e$ is $(e_0\ e_1)$, \IE $e$ itself.
+
+\item[$e = \LambdaTerm{x}{e'}$]
+The leftmost redex of $e$ is the leftmost redex of $e'$ if such exists;
+otherwise $e$ does not contain any redexes.
+\end{listcase}
+\end{defn}
+
+\begin{prop}[Termination of normal order evaluation]
+  The normal order evaluation of a lambda expression $e$ terminates in a normal
+  form if and only if there is \emph{some} evaluation strategy that terminates
+  in a normal form for $e$.
+\end{prop}
+
+\begin{rem}
+\label{rem:multi-argument}
+The syntax of the lambda calculus suggests that there can only be functions that
+take exactly one argument; but this does not impose any restrictions concerning
+the expressibility of multi-argument functions, since a function taking $n$
+arguments may be expressed as $\lambda x_1.\lambda x_2.\ldots\lambda x_n.\,e$ (frequently abbreviated
+to $\lambda x_1\,\ldots \,x_n.\, e$). The following reduction sequence may suggest how this
+works: $(\LambdaTerm{f}{\LambdaTerm{x}{f\,x}})\,g\,y \longrightarrow (\LambdaTerm{x}{g\,x})\,
+y \longrightarrow g\,y$. The transformation of a function taking a single argument in form of
+a tuple into an equivalent one taking `each argument at a time' as shown above
+has been proposed by Sch\"onfinkel and Curry. Therefore, it is often called
+\emph{currying}
+\end{rem}
+
+One might ask how the simple untyped lambda calculus can be used to express
+common functions like addition and multiplication on the natural numbers and, to
+that effect, how natural numbers themselves can be represented. Obviously, as
+there is nothing else available, they will have to be functions. To provide a
+short insight into this problem, we will now show how to represent even simpler
+functions and values, namely the booleans and the conjunction function.
+\begin{lem}
+Let $\True$, $\False$ and $(\Arg \land \Arg)$ denote the lambda expressions defined
+below.
+\begin{align*}
+\True &:= \LambdaTerm{x}{\LambdaTerm{y}{x}} & 
+\False &:= \LambdaTerm{x}{\LambdaTerm{y}{y}} &
+e \land e' &:= (e\ e')\ \False
+\end{align*}
+Then
+the following holds:
+\begin{align*}
+  \True \land \True \longrightarrow \ldots \longrightarrow \True &&
+  \True \land \False \longrightarrow \ldots \longrightarrow \False \\
+  \False \land \True \longrightarrow \ldots \longrightarrow \False &&
+  \False \land \False \longrightarrow \ldots \longrightarrow \False
+\end{align*}
+\end{lem}
+\begin{proof}
+By a direct calculation:
+\begin{align*}
+  \True \land \True &\longrightarrow 
+  ((\LambdaTerm{x}{\LambdaTerm{y}{x}}) (\LambdaTerm{x}{\LambdaTerm{y}{x}}))
+  \ \False \\
+  &\longrightarrow (\LambdaTerm{y}{(\LambdaTerm{x}{\LambdaTerm{y}{x}})}) \ \False \\
+  &\longrightarrow \LambdaTerm{x}{\LambdaTerm{y}{x}} \longrightarrow \True \\[2ex]
+  \True \land \False &\longrightarrow
+  ((\LambdaTerm{x}{\LambdaTerm{y}{x}}) (\LambdaTerm{x}{\LambdaTerm{y}{y}}))
+  \ \False \\ 
+  &\longrightarrow (\LambdaTerm{y}{(\LambdaTerm{x}{\LambdaTerm{y'}{y'}})})\ \False \\
+  &\longrightarrow \LambdaTerm{x}{\LambdaTerm{y'}{y'}} \longrightarrow \False
+\end{align*}
+The remaining cases are analogous.
+\end{proof}
+
+Upon leaving the untyped calculus and turning our eyes to typed calculi possibly
+with additional constants, we state one central theorem that ensures that in
+what way an expression might ever be converted, it is always possible to
+``cross the ways'' of other strategies.
+\begin{prop}[Church-Rosser Theorem]
+If an expression $e$ can be evaluated to $e_0$ in arbitrary steps according to the
+rules given above, and it can also be evaluated to $e_1$, then there is an
+expression $\overline{e}$ such that $e_0$ and $e_1$ can be converted to $\overline{e}$.
+\end{prop}
+
+%\begin{align}
+%\alpha\text{-conversion} && \Rule{}{\LambdaTerm{x}{e} \longrightarrow \LambdaTerm{x'}{e[x'/x]}}
+%  && \text{($x'$ not free in $e$)}  \\
+%\beta\text{-reduction} &&\Rule{}{(\LambdaTerm{x}{e})e' \longrightarrow e[e'/x]}\\
+%\eta\text{-contraction} && \Rule{}{\LambdaTerm{x}{e x} \longrightarrow e} &&
+%  \text{($x$ not free in $e$)}
+%\end{align}
+
+\subsection{Adding Types and Constants}
+\label{sec:adding-types}
+
+Even if one accepts that the untyped lambda calculus is powerful enough to
+express every computable function, and that reduction to normal form is a kind
+of evaluation of these functions, it is obviously not very natural to directly
+work in this calculus. In fact, it took several decades until a denotational
+semantics for it was found by Dana Scott, which does not raise problems similar
+to those encountered in naive (untyped) set theory like Russell's paradox.
+Modern functional programming languages nowadays rely on type systems, where
+every expression is assigned a unique type. This idea goes back to Russell and
+Whitehead, who demonstrated the usefulness of types in higher-order logic within
+their influential work \emph{Principa Mathematica} (1913). Church and Curry are
+the names commonly associated with typed lambda calculi (see \cite{Barendregt92}
+for a detailed comparison).
+
+We will equip a variant of the lambda calculus with types and constants,
+thereby introducing some recurrent concepts of formal systems. First of all, the
+abstract syntax of lambda terms has to be extended slightly:
+\begin{equation}
+  \label{eq:type-lambda-syn}
+  \begin{split}
+    \NT{exp} ::= &\NT{var}     \Alt \NT{exp} + \NT{exp} \\
+    & \Alt \NT{exp}\ \NT{exp} \Alt
+    \LambdaTerm{\NT{var}}{\NT{exp}} \\
+    & \Alt \langle\NT{exp}, \NT{exp}\rangle \Alt \NT{exp}.\mathsf{fst}
+    \Alt \NT{exp}.\mathsf{snd}
+  \end{split}
+\end{equation}
+where  $\langle e_1, e_2\rangle$ and $n_1 + n_2$ should be interpreted as a pair of
+expressions $e_1, e_2$ and a sum of natural numbers $n_1, n_2$, respectively.
+Selection of the first and second components of a tuple are expressed by
+attaching $.\mathsf{fst}$ or $.\mathsf{snd}$ to it.  Of course, this syntax
+alone does not prevent ``ill-typed'' expressions like $e_1 + e_2$, where, for
+example,  $e_1$ is a function.
+
+Types can be introduced in the following way. Usually one starts with a given
+set $\NT{btyp}$ of \emph{base types} (which in common programming languages
+will include the type $\Type{int}$ of integers, the type $\Type{float}$ of floating point
+numbers and the type $\Type{char}$ of characters). Complex types can then be
+formed by applying \emph{type constructors} to the base types and the already
+created compound types. We will take two type constructors $(\Arg \to\Arg)$
+(called the function type constructor) and $(\Arg \times \Arg)$ (called
+the product type constructor) into the lambda calculus. They are introduced in a
+purely syntactic manner, but their intuitive interpretation ought to be that of
+a function and product type, respectively. In summary, the abstract syntax of
+types is the following:
+% syntax for types
+\begin{equation}
+\label{eq:syntax-types}
+  \NT{typ} ::= \NT{btyp} \Alt \NT{typ} \to \NT{typ} \Alt \NT{typ} \times \NT{typ}
+\end{equation}
+
+Next comes the concept of a \emph{context}, which is a finite list $\Gamma =
+[x_1:\sigma_1, \ldots, x_n:\sigma_n]$ of variable/type pairs, subject to the condition that
+$x_i \neq x_j$ for $i \neq j$. A context is used in \emph{typing judgments} $\Gamma \vdash e :
+\sigma$ which should be read as ``if the variables occuring in the context $\Gamma$
+have the assigned types, then expression $e$ has type $\sigma$''. Only typing
+judgments where each $x \in FV(e)$ occurs in the context $\Gamma$ are allowed. Contexts
+will occasionally be compound, like in $\Gamma, x:\sigma \vdash e : \tau$, where it is implicitly
+assumed that $x$ does not occur in $\Gamma$, or in $\Gamma, \Gamma' \vdash e : \tau$, where the
+assumption is that the sets of variables of $\Gamma$ and $\Gamma'$ are disjoint.
+
+We would like to equip the calculus with a type $\Type{nat}$ representing the
+natural numbers and constants $\mathsf{0} : \Type{nat}$ and $\Suc : \Type{nat} \to
+\Type{nat}$ for zero and the successor function. This can be done in the
+following way: add $\Type{nat}$ to the set of base types (or pick an existing
+base type when appropriate), and let $\Gamma_0 = [\mathsf{0} : \Type{nat}, \Suc :
+\Type{nat} \to \Type{nat}]$ be the \emph{base context}, where $\mathsf{0}$ and
+$\Suc$ are arbitrary variables which are given mnemonic names here. This context
+will be used implicitly in all typing judgments, such that $\Gamma \vdash e : \sigma$ actually
+means $\Gamma_0, \Gamma \vdash e : \sigma$, thus excluding their use as variables of different types
+through the convention that $\Gamma_0$ and $\Gamma$ must have disjoint variables. This
+will of course not introduce the properties of the natural numbers, \EG with respect to
+addition (commutativity, associativity, zero as a unit element), but will merely
+make them available on the type-theoretical level.
+
+Figure \ref{fig:rules-typed-lambda} lists the rules of a (decidable) deduction
+system, which will serve the purpose of determining whether given typing
+judgments are valid. These rules are to be read in the standard way: if the
+premisses above the horizontal bar are derivable in the calculus, one may also
+derive the conclusion below the bar. Now one defines a typing judgment to be
+valid if and only if there is a proof (see Definition
+\ref{defn:proof-from-rules} below) of the judgment from the given rules. The
+presentation of a proof will slightly deviate from the standard structure of a
+proof in natural deduction as it will be linearized to make presentation easier.
+
+\begin{defn}
+\label{defn:proof-from-rules}
+A \emph{proof from rules} of a statement $S$ is a sequence of statements
+$S_1,\ldots,S_n$ where $S_n = S$ and for each of the $S_i$ one of the following
+holds:
+\begin{itemize}
+\item $S_i$ is an axiom, \IE a rule without premisses.
+\item $S_i$ is the conclusion of a rule whose premisses $P_1,\ldots,P_k$ 
+  have been proven, \IE for all $P_j \;(1\leq j\leq k)$ there is an $S_{j'} \;(1\leq j'<i)$
+  such that $P_j = S_{j'}$.
+\end{itemize}
+\end{defn}
+
+
+% inference rules for simply typed lambda calculus
+\begin{figure}
+  \begin{align*}
+    \mathrm{(var)}\quad& \Rule{}{\Gamma, x:\sigma, \Gamma' \vdash x:\sigma} &
+    \mathrm{(wk)} \quad& \Rule{\Gamma \vdash e : \sigma}{\Gamma,\Gamma' \vdash e : \sigma}\\[2ex]
+    \mathrm{(abs)}\quad & \Rule{\Gamma, x:\sigma \vdash e:\tau}{\Gamma \vdash \LambdaTerm{x}{e} : \sigma\to\tau} &
+    \mathrm{(app)}\quad & \Rule{\Gamma \vdash e : \sigma\to\tau \quad \Gamma \vdash e' : \sigma}
+    {\Gamma \vdash e\ e' : \tau}\\[2ex]
+    \mathrm{(prodI)}\quad & \Rule{\Gamma \vdash e_1:\sigma_1 \quad \Gamma \vdash e_2:\sigma_2}
+    {\Gamma \vdash \langle e_1,e_2\rangle : \sigma_1 \times \sigma_2}\\[2ex]
+    \mathrm{(fst)} \quad & \Rule{\Gamma \vdash e : \sigma_1 \times \sigma_2}{\Gamma \vdash e.\mathsf{fst} : \sigma_1} &
+    \mathrm{(snd)} \quad & \Rule{\Gamma \vdash e : \sigma_1 \times \sigma_2}{\Gamma \vdash e.\mathsf{snd} : \sigma_2} &
+%    \mathrm{(zero)} \quad& \Rule{}{\Gamma \vdash 0 : \Type{nat}} &
+%    \mathrm{(Suc)}\quad &\Rule{}{\Gamma \vdash \Suc : \Type{nat}\to\Type{nat}}\\[2ex]
+%    \mathrm{(add)}\quad&  \Rule{}{\Gamma \vdash + : \Type{nat}\to\Type{nat}\to\Type{nat}} &
+%    \mathrm{(proj)}\quad& \Rule{}{\Gamma \vdash \pi^{\sigma_1\times \sigma_2}_i : \sigma_i \quad (i\in \{1,2\})}\\[2ex]
+  \end{align*}
+  \caption{Type inference rules for the simply typed lambda calculus}
+  \label{fig:rules-typed-lambda}
+\end{figure}
+
+% proof of a typing judgment
+\begin{expl}
+  Here is a proof of the typing judgment of a function that sums its arguments
+  and adds one to it; recall that the base context is not shown. The right
+  column indicates which rule has been used with which previous lines as
+  premisses to obtain the respective statement.
+\begin{flalign*}
+  (.1) && &\vdash 0 : \Type{nat} & \text{(var)}\\
+  (.2) && &\vdash Suc : \Type{nat} \to \Type{nat} & \text{(var)}\\
+  (.3) && x:\Type{nat}, y:\Type{nat} &\vdash \Suc 0 : \Type{nat} & \text{(app: .2,.1; wk)}\\
+  (.4) && x:\Type{nat}, y:\Type{nat} &\vdash x : \Type{nat} & \text{(var)}\\
+  (.5) && x:\Type{nat}, y:\Type{nat} &\vdash y : \Type{nat} & \text{(var)}\\
+  (.6) && x:\Type{nat}, y:\Type{nat} &\vdash x+y : \Type{nat} & \text{(add: .4, .5)}\\
+  (.7) && x:\Type{nat}, y:\Type{nat} &\vdash (x+y)+\Suc 0 : \Type{nat} & \text{(add:
+    .6, .3)}\\
+  (.8) && x:\Type{nat} &\vdash \LambdaTerm{y}{(x+y)+\Suc 0} : \Type{nat}\to\Type{nat}
+  &  \text{(abs: .7)}\\
+  (.9) && &\vdash \LambdaTerm{x}{\LambdaTerm{y}{(x+y)+\Suc 0}} : \Type{nat}\to\Type{nat}
+  \to\Type{nat} & \text{(abs: .8)}
+\end{flalign*}
+
+The following example shows that  certain functions like the
+identity function are polymorphic in the sense that there are proofs of
+different types of the syntactically identical function $(\LambdaTerm{x}{x})$:
+\begin{flalign*}
+  (.1) && x:\Type{\sigma} &\vdash x:\Type{\sigma}       &\text{(var)}\\
+  (.2) && x:\Type{\tau} &\vdash x:\Type{\tau}       &\text{(var)}\\
+  (.3) &&            &\vdash \LambdaTerm{x}{x} : \Type{\sigma \to \sigma} & \text{(abs: .1)}\\
+  (.4) &&            &\vdash \LambdaTerm{x}{x} : \Type{\tau \to \tau} & \text{(abs: .2)}
+\end{flalign*}
+\end{expl}
+
+
+
+An important point concerning the introduced ``simple'' types, however, which
+partly explains why they are called that, is the fact that the simply typed
+lambda calculus lacks a genuine notion of polymorphism. This means that every
+function whose type is provable is assigned a fixed type $\sigma$, such that there is
+an identity function on the type $\Type{nat}$ of natural numbers
+$\LambdaTerm{x}{x}: \Type{nat}\to\Type{nat}$, and an identity function
+$\LambdaTerm{x}{x} : \Type{nat}\times \Type{nat} \to \Type{nat} \times \Type{nat}$ on pairs
+of $\Type{nat}$'s, but these functions are not identical.  This leads to the
+typical problems (or at least inconveniences) found in programming languages
+that also lack the concept of polymorphism, like the necessity to give different
+names to functions that essentially ``perform the same action'' (although in the
+small calculus described here there is no way to give functions a name, it could
+be easily extended to allow this, \EG by the introduction of $\Let$-terms). The
+lack of polymorphism also was the motivation for introducing the projection
+operations $\mathsf{fst}$ and $\mathsf{snd}$ on the syntactial level rather than
+making them constants like $\Suc$: we could only have expressed the type of
+$\mathsf{fst} : \sigma_1\times\sigma_2 \to \sigma_1$ for fixed types $\sigma_1$ and $\sigma_2$, but they are
+intended to be used on any kind of tuple.
+
+
+One might wonder if contexts in typing judgments are really necessary, since the
+initial goal was to assign types to expressions, but then one must recall that
+expressions may contain free variables, as opposed to (functional) programs,
+which may be identified with the closed lambda expressions. Typing judgments,
+then, essentially tell what the types of the free variables of an expression
+are. Furthermore, it is often convenient (and sometimes necessary to make typing
+decidable) to extend the syntax of typed calculi in such a way that types become
+a part of it. A common place where types are often explicitly annotated is at
+the binding occurrences of variables, like in $\LambdaTerm{x:\Type{\sigma}}{e}$. We
+will leave the types of bound variables implicit whenever possible, \IE when
+they are determined by the context.
+
+
+
+\section{Monads in Computer Science}
+\label{sec:monads-cs}
+
+Originally arisen in category theory, monads have been introduced into computer
+science by Moggi (see, for example, \cite{Moggi91}) as an elegant device for
+dealing with manyfold kinds of side effects. Initially, they were used in the
+field of semantics of programming languages, but their value especially for
+encapsulating side effects in purely functional programming languages like
+Haskell was soon discovered.  Wadler and Peyton Jones \cite{Wadler97,
+  JonesWadler93} advocated the monadic style of functional programming and it
+was finally included in the Haskell~98 language standard as \emph{the} way of
+communicating with the real world, \IE for dealing with input and output.
+
+To understand what a monad might be good for, one has to take a look into the
+field of denotational semantics. When giving a denotational semantics to a
+programming language, one often has to deal with language features -- like
+abrupt termination or side effects -- that are not captured easily by giving a
+set theoretic interpretation of the language. It has proved quite successful to
+interpret programming languages (and formal systems in general) within category
+theory, such that one reasons about `objects' instead of sets and `morphisms'
+instead of functions (see \cite{JacobsPoll00} for a semantics of Java\TM). The
+task then is to find or build categories with the right structure to interpret
+the language at hand in a comfortable way. It is this point where monads come
+into play, since they have been recognized to be an elegant tool for
+interpreting many kinds of side effects in a uniform way.
+ 
+We will first give some examples of concrete monads from the realm of functional
+programming, then we will introduce the abstract categorical concept of monads,
+and finally we will introduce Moggi's meta-language, which essentially is an
+equational logic that can be identified, in a sense yet to be specified, with
+categories equipped with strong monads.
+
+
+\subsection{Monads in Haskell}
+\label{sec:monads-haskell}
+
+One of the most well-known applications of a monad is to simulate a global store
+of assignable variables in a way that does not conflict with referential
+transparency. The simplest idea to simulate a global store is to make the store
+explicit in every function by letting each function have one further argument
+that acts as the global store, \EG a tuple containing all values involved, and
+furthermore extending its return value to be a pair of the actual return value and
+the possibly modified store. This way of proceeding is, however, extremely
+impractical and by no means modular: if the structure of the store has to be
+modified, this adaptation will have to be done in every single function. 
+
+The monadic approach to side effects does not suffer from such deficiencies and
+is thus much more elegant. The first step in turning the language feature of a
+global store into a monad (which is commonly called the \emph{state monad}) is
+to define a datatype $T A$ that represents the \emph{computations} over values
+of type $A$. In this case, computations will simply be functions that take the
+global store (which is treated abstractly as a type $S$ here, but may be
+imagined as a finite map of variable-name/value pairs) as input and return a
+value of type $A$ together with the modified store. The expressions of type $T
+A$ as given below are often called \emph{state transformers} (note that $a$ is
+a type variable, so one has types $T A$ for each concrete type $A$).
+\begin{alltt}
+  type T a = (S -> (S, a))
+\end{alltt}
+
+The next step is to define the two basic polymorphic operations on computations,
+that on the one hand enable sequencing of computations, and on the other hand
+let us turn values into computations that do nothing except return the inserted
+value. The Haskell-style signatures of these functions are
+\begin{alltt}
+  (>>=) :: T a -> (a -> T b) -> T b
+  ret   :: a -> T a
+\end{alltt}
+where the infix operation $(\gg=)$ is called \emph{binding}, in which the second
+parameter is a function that will be fed the resulting value of the computation
+which is the first parameter. The overall result of a computation $p \gg= f$ will
+be the result of $f$. To make these ideas clearer, we will provide the definitions
+of these operations for the state monad.
+\begin{verbatim}
+  p >>= f   = \ s-> let (s', a) = p s in f a s'
+  ret x     = \ s-> (s, a)
+\end{verbatim}
+where the backslash is Haskell syntax for a lambda abstraction. Recalling that $p$
+actually is a function from the state to a pair of state and return value, one
+sees that binding really implements a kind of sequencing: first, p is given the
+current state to evaluate to a new state and a value, which are then given as
+inputs to f, whose return value is also the return value of the overall
+computation.
+
+What is called a monad in this context is the triple $(T, \gg=, \ret)$, \IE the
+type constructor $T$ together with the two basic polymorphic operations. For the
+state monad to be useful, one naturally has to introduce further operations for
+reading the state and for updating it. Other operations can then be defined in
+terms of these. A possible signature for the former two operations is
+\begin{verbatim}
+  get    :: T S
+  update :: S -> T ()
+ 
+  get       = \ s-> (s, s)
+  update s1 = \ s0-> (s1, ())
+\end{verbatim}
+
+Finally, we present some computationally relevant monads, together with the
+possible definitions of $T$, $\gg=$ and $\ret$, respectively. These defintions
+will be given in a set-theoretic manner, but the translations to Haskell
+datatypes and functions should not constitute a problem. This is done so to
+motivate the more abstract definition of monads in the next section and because
+monads can not merely be used as a feature of a concrete programming language,
+but also to study programming languages themselves in an abstract way.
+\begin{itemize}
+\item The \emph{state monad} has been described above. The appropriate
+  definitions are\\
+  $T A = (S \to S \times A)$ for some fixed set $S$ representing the state, where $\times$
+  denotes the cartesian product of sets and $X \to Y = \{f\Alt f \Map{X}{Y}\}$
+  denotes the function space of all functions from $X$ to $Y$,\\
+  $(p \gg= f) = \LambdaTerm{s}{\Let \langle s', a\rangle = p\ s \In f\,a\,s'}$ and\\
+  $\ret x = \LambdaTerm{s}{\langle s, x\rangle}$, where $\langle\rangle$ denotes pairing.
+
+\item The \emph{exception monad} is used to model abnormal termination. One
+  has\\
+  $T A = (A + E)$, \IE the disjoint union (corresponding to a sum datatype) of
+  the result set $A$ with some global set $E$ of exceptions. In the simplest
+  case, $E = \{\bot\}$, such that an ``exception''
+  indicates nontermination or failure,\\
+  $(p \gg= f) = \Case p \Of (\inl a) \to f\,a \Alt (\inr e) \to \inr e$; this
+  definition models the usual effect of an exception, in that the right-hand
+  computation is evaluated only if the left-hand one did not raise an
+  exception. The definition of the $\Case$-construct is standard. $\inl$ and
+  $\inr$ stand for the left and right injections (corresponding to data
+  constructors of the same datatype), and\\
+  $\ret x = \inl x$, which once more makes clear that $\ret$ actually is just an
+  embedding of values into computations.
+
+\item The \emph{nondeterminism monad} captures the effects of multiple possible
+  outputs of a function by letting\\
+  $T A = \mathcal{P}_{\mathrm{fin}} A$, \IE $T$ maps a set $A$ to all its finite
+  subsets,\\
+  $(p \gg= f) = \bigcup\{f\ x \Alt x \in p\}$; $p$ is a subset of $A$, and $f$ is applied to
+  all elements of $p$, the result of which will be a set of sets, which is
+  therefore ``flattened'' by taking the union of all these sets.
+
+\item A combination of the \emph{list monad} and a particular state monad is
+  used in \cite{HuttonMeijer96} to elegantly implement a library of monadic
+  parser combinators. In it, one has\\
+  $T A = (\Type{List}\, I \to \Type{List}\, (\Type{List}\, I \times A))$, where $I$ is
+  a fixed, finite set of input tokens, and $\Type{List}$ maps a set $A$ to the
+  set
+  of all finite lists of elements over $A$, and \\
+  $p \gg= f = \LambdaTerm{s}{\mathit{concat}\ (\mathit{map}\
+    (\LambdaTerm{\langle x,s'\rangle}{f\ x\ s'})\ (p\ s))}$. Here, $\mathit{concat}$ and
+  $\mathit{map}$ behave exactly like the well-known total functions of the same
+  name as defined in the Haskell prelude. What happens is that $p$ is applied to
+  the the current state (a list of input tokens), returning a list of result
+  pairs. To each result pair, the function $f$ is applied, resulting in a list
+  of lists of result pairs. These have to be flattened by $\mathit{concat}$,
+  very much like in the nondeterminism monad. Finally, $\ret$ is once more just
+  an embedding:\\
+  $\ret x = \LambdaTerm{s}{\left[\langle s, x\rangle\right]}$, where $[e]$ denotes the
+  list containing exactly one element $e$.
+
+\item The \emph{continuation monad}, in which $T A = (A \to R) \to R$ for some fixed
+  result type $R$, will not be described further in this thesis, since the
+  continuation monad does not admit dynamic logic (see
+  \cite{SchroederMossakowski:PDL}). 
+\end{itemize}
+
+
+\subsection{Monads -- the Abstract Way}
+\label{sec:monads-categ-theory}
+
+We will now give a formal definition of what a monad is originally defined to
+be. Furthermore, we will give an alternative definition which is more suitable
+for our purposes and which comes closer to the intuitive introduction given in
+Section \ref{sec:monads-haskell}. Although we are not so much interested in
+applications of monads in category theory itself, we feel that it is reasonable
+to provide the original definition of a monad, as the term even appears in the
+title of this thesis. The following Definition \ref{def:monad} is taken from
+\cite{MacLane98}, Chapter VI, p. 137. Readers totally unfamiliar with category
+theory may easily skip this subsection.
+
+%% Enter remark text
+\begin{defn}
+\label{def:monad}
+A \emph{monad} $\mathbb{T} = (T, \eta, \mu)$ in a category $\Cat{C}$ consists of an
+endofunctor $T \Map{\Cat{C}}{\Cat{C}}$ and two natural transformations $\eta$ (called the unit)
+and $\mu$ (called multiplication), \IE morphisms $\eta_A \Map{A}{T A}$ and $\mu_A
+\Map{T^2 A}{T A}$ for each object $A$ in $\Cat{C}$, which make the following
+diagrams commute for every morphism $f \Map{A}{B}$ in $\Cat{C}$
+\begin{diagram}
+A          & \rTo^{\eta_{A}}    & T A & \qquad &
+T^2 A       & \rTo^{\mu_{A}}    & T A \\
+ \dTo<f    &                & \dTo>{T f} & &
+ \dTo<{T^2f}&               & \dTo>{T f} \\
+B          & \rTo_{\eta_{B}}    & T B & &
+T^2 B       & \rTo_{\mu_B}     & T B
+\end{diagram}
+\begin{diagram}
+  T A       & \rTo^{\eta_{TA}}    & T^2 A & \lTo^{T\eta_A} & T A & \qquad &
+  T^3 A      & \rTo^{\mu_{TA}} & T^2 A\\
+            & \rdTo<{\Id_{TA}} & \dTo>{\mu_A} & \ldTo>{\Id_{T A}} & &  &
+  \dTo<{T \mu_A} &             & \dTo>{\mu_A}\\
+            &   & T A & & & &
+  T^2 A      & \rTo_{\mu_A}   & T A
+\end{diagram}
+where the upper two diagrams simply express the naturality of $\eta$ and $\mu$,
+whereas the lower two diagrams express the required interplay of these.
+\end{defn}
+
+How this definition can be related to the ``monads'' of Subsection
+\ref{sec:monads-haskell} can be seen after the following definition and
+lemma:
+
+\begin{defn}
+\label{def:kleisli-triple}
+  A \emph{Kleisli triple} on a category $\Cat{C}$ is a triple
+  $(T, \eta, \Arg^*)$ where $T \Map{Ob\,\Cat{C}}{Ob\,\Cat{C}}$ is a function, $\eta$
+  is a family of morphisms $\eta_A$ for each object $A$ in $\Cat{C}$ and $(\Arg^*)$
+  maps each morphism $f \Map{A}{T B}$ to a morphism $f^* \Map{T A}{T B}$. The
+  following equations are required to hold:
+\begin{equation}
+\label{eq:mondef}
+  \eta_A^* = \Id_{TA} \qquad f^*\eta_A = f \qquad g^*f^* = (g^*f)^* 
+\end{equation}
+\end{defn}
+
+\begin{rem}
+  The meaning of Equations \eqref{eq:mondef} can be understood best with the
+  help of a derived operation called \emph{Kleisli composition} $(\circ)$ that takes
+  morphisms $f \Map{A}{TB}$ and $g \Map{B}{TC}$ to $g \circ f := g^*f$. Formulated
+  with this operation, Equations \eqref{eq:mondef} state that each $\eta_A$ is a left
+  and right unit, and that composition is associative:
+  \begin{equation}
+    \label{eq:kleislicomp}
+    \eta_A\circ f = f = f \circ \eta_A \qquad (f \circ g) \circ h = f \circ (g \circ h)
+  \end{equation}
+
+  Another noteworthy point is that the binding operation $(p \gg= f)$ used above
+  can be expressed as $f^*(p)$. The polymorphic operation $\ret$ can obviously
+  be identified with $\eta$ of the Kleisli triple.
+\end{rem}
+
+The following Lemma shows that one may equally well use a Kleisli triple as the
+defining entity for a monad. Actually, one may even prove a stronger lemma
+establishing a one-one correspondence between Kleisli triples and monads.
+\begin{lem}
+  Every Kleisli triple $(T', \eta, \Arg^*)$ determines a monad $\mathbb{T} = (T,
+  \eta, \mu)$ by taking $T$ to be the function $T'$ extended to an endofunctor,
+  defining $T f := (\eta_B f)^*$ for each morphism $f \Map{A}{B}$, and by setting
+  $\mu_A := (\Id_{T A})^*$.
+\end{lem}
+\begin{proof}
+First of all, we must validate that the proposed extension $T$ actually
+constitutes a functor, \IE we must check compatibility with identities and
+composition; for $f \Map{A}{B}$ and $g \Map{B}{C}$ one has
+\begin{gather}
+  T \Id_A = (\eta_A\, \Id_A)^* = \eta_A^* = \Id_{T A} \\
+  \label{eq:ext-functor}
+  T (g f) = (\eta_C\, g\, f)^* = ((\eta_C\, g)^*\, \eta_B\, f)^* = (\eta_C\, g)^*\, (\eta_B\,
+  f)^* = T f\, T g
+\end{gather}
+where in \eqref{eq:ext-functor} we used the definition of T applied to
+morphisms, the property of $\eta$ being right-cancellable, and the special kind
+of associativity given to $\Arg^*$.
+
+The fact that $\eta$ and $\mu$ actually are natural transformations can be
+easily calculated, so we only show that they satisfy the equalities induced by
+the lower two diagrams. First comes the left-hand diagram:
+\begin{equation}
+    \mu_A\, \eta_{T A} = (\Id_{TA})^*\, \eta_{T A} = \Id_{T A}
+\end{equation} 
+\begin{equation}
+  \begin{split}
+    \mu_A\, T\eta_A &= (\Id_{T A})^*\, (\eta_{T A}\, \eta_A)^*\\
+              &= ((\Id_{T A})^*\, \eta_{T A}\, \eta_A)^* = \eta_A^* = \Id_{T A}
+  \end{split}
+\end{equation}
+which proves the required equality $\mu_A\, \eta_{T A} = \Id_{T A} = \mu_A\,
+T\eta_A$. Finally we have to show that $\mu_A\, T\mu_A = \mu_A\, \mu_{T A}$, which is
+expressed through the right-hand diagram.
+\begin{equation}
+  \begin{split}
+    \mu_A\, T\mu_A &= \mu_A\, (\eta_{T A}\, \mu_A)^*\\
+              &= (\Id_{T A})^*\, (\eta_{T A}\, (\Id_{T A})^*)^*
+              = ((\Id_{T A})^*\, \eta_{T A}\, (\Id_{T A})^*)^*\\
+              &= ((\Id_{T A})^*)^*
+              = ((\Id_{T A})^*\, \Id_{T^2A})^*
+              = (\Id_{T A})^*\, (\Id_{T^2A})^*\\
+              &= \mu_A\, \mu_{T A}
+  \end{split}
+\end{equation}
+\end{proof}
+
+
+
+
+\subsection{The Meta-language for Strong Monads}
+\label{sec:metalanguage-monads}
+
+The so called `do-notation' is known from its use in Haskell, where it is
+deployed to make the idea of sequential evaluation of monadic programs
+syntactically evident. This idea is not so apparent when monadic programs are
+expressed through $\gg=$ and $\ret$.  Nonetheless, the do-notation is only
+syntactical sugar for conventional monadic expressions, and the former is
+actually reducible to the latter (see \cite{Haskell98} for details on how this
+is done).
+\begin{expl}
+  The expression $\DoStmt{x\leteq p; q}$ (where $q$ is to be regarded as a
+  syntactical variable for a monadic program and thus may contain $x$ as a free
+  variable) is translated into $p \gg= q$. Another example is the expression
+  $\DoStmt{p; q}$, where the return value of $p$ is ignored; a possible
+  translation is $p \gg= \LambdaTerm{u}{q}$, where $u$ is a fresh variable, \IE $u$
+  does not occur in $q$.
+\end{expl}
+
+
+Another way to look at the do-notation is by taking it to be a language to
+express morphisms in categories that are equipped with a monad. Taken this way,
+one obtains a language that can be employed to reason about monads in a manner
+that sometimes is more readable than the usual diagrammatic language of category
+theory. This approach has been proposed by Moggi in \cite{Moggi91}, where a
+formal system (called the \emph{meta-language} for strong monads) is developed,
+which allows the formation of terms quite similar to do-terms (Moggi used a
+variant of let-terms instead, but the two formulations are easily transferred
+into each other).  This meta-language is defined through term formation rules.
+The additionally given inference rules then make it possible to establish
+equations between terms. The key to make this formal system an internal language
+for (strong) monads is to interpret it in categories equipped with a strong
+monad in such a way that there is a one-one correspondence between the formal
+system and the category (a \emph{strong monad} is one that is additionally
+equipped with a natural transformation $t_{A,B} \Map{A \times T B}{T (A\times B)}$, called
+\emph{tensorial strength} that must obey certain conditions given in
+\cite{Moggi91}).  Extensions of the meta-language can furthermore be used to
+describe categories with additional structure, \EG one might include product
+terms and appropriate rules in the language to describe categories that
+additionally have finite products.
+
+\begin{rem}
+  The term \emph{internal language} has its origins in the domain of categorical
+  logic. An internal language is a means to reason about a category in a way
+  that is easier to follow for people not acquainted with category theory and
+  that sometimes makes proofs clearer than is possible through the typical
+  `diagram chasing'. In essence, an internal language is to be construed as a
+  formal system giving names to relevant entities of the category at hand. This
+  system is then given an interpretation in the category in such a way that
+  statements in the internal language translate into interesting statements
+  about the category. For a detailed overview, see \cite{Pitts95}.
+\end{rem}
+
+
+
+In our case, where the corresponding models for terms are
+categories equipped with more structure than just a monad, \IE where a typed
+lambda calculus can be interpreted, the strength is
+definable in the following way: let $\pi_1, \pi_2$ denote the first and second
+projections as usual, then
+\[
+t_{A,B} := \LambdaTerm{x:\Type{A\times T B}}{\pi_2\,x \gg= \LambdaTerm{y}{\eta_{A\times B}\, \langle\pi_1\,x, y\rangle}}
+\]
+is a tensorial strength for the monad at hand. 
+\begin{expl}
+  Intuitively, the tensorial strength $t_{A,B}$ attaches a value of type $A$ to
+  a computation of type $T B$:
+  \begin{itemize}
+  \item In the state monad, the strength as defined above is equal to the
+    function \[
+    t_{A,B}(\langle a, t\rangle) = \LambdaTerm{s}{\Let \langle s', x\rangle = t\,s
+      \In \langle s', \langle a, x\rangle\rangle} \]
+  \item In the nondeterminism monad, defining the strength as above amounts to
+    saying that
+    \[
+    t_{A,B}(\langle a, p\rangle) = \{\langle a, x\rangle \Alt b\in p\}
+    \]
+  \end{itemize}
+\end{expl}
+
+
+The formal system for the meta-language can on the one hand be used to define
+morphisms in the underlying category, and on the other hand to prove
+equivalences between these morphisms. Thanks to a soundness and completeness
+theorem provided in \cite{Moggi91}, one may abandon reasoning in categories with
+Kleisli triples and work in an adequate extension of the meta-language instead,
+which adds up to reasoning about do-terms in the following way:
+\begin{enumerate}
+\item Terms are formed in a context (which we shall often omit, as long as the
+  types of all variables are obvious or do not matter), \IE they have the
+  structure $\Gamma \vdash e : \tau$. It should be noted that interpretations of terms depend
+  on the context: if $\Gamma = [x_1 : \sigma_1, \ldots, x_n : \sigma_n]$, the interpretations of
+  types $\sigma_i$ are objects $c_i$ in the underlying category, and  $\tau$ is
+  interpreted as object $c$, then $\Gamma \vdash e : \tau$ will denote a morphism $c_1 \times \cdots \times
+  c_n \to c$.
+
+\item We are given a type constructor $T$ that takes values of type $A$ into
+  computations of type $T A$ (the interpretation of $T$ is exactly the function
+  $T$ of the Kleisli triple described in Definition \ref{def:kleisli-triple}).
+  
+\item The polymorphic operation $\ret$ embeds values into computations; it is
+  polymorphic in the sense that it exists for each producible type.
+  
+\item A construct to simultaneously express binding and sequencing, denoted by
+  $\DoStmt{x\leteq p; q}$, where $x$ is a variable that gets bound to the
+  resulting value of the computation $p$, and $q$ is a computation which may
+  contain $x$.
+  
+\item There is a notion of associativity of binding; for every program $r$ not
+  containing $x$, one has
+  \[
+  (\DoStmt{y\leteq \DoStmt{x\leteq p; q}; r}) = (\DoStmt{x\leteq p;
+    \DoStmt{y\leteq q}; r})
+  \]
+  For notational clarity, repeated do-terms are abbreviated: Write $\DoStmt{x_1\leteq
+    p_1; x_2\leteq p_2; \ldots}$ for $\DoStmt{x_1\leteq p_1; \DoStmt{x_2\leteq p_2; \ldots}}$
+  
+\item Corresponding to the properties of $\eta$, one has unit laws for $\ret$
+  (which actually is interpreted as $\eta$) in the following way
+  \begin{align*}
+    \DoStmt{x\leteq p; \ret x} &= p \\
+    \DoStmt{x\leteq \ret a; p} &= p[a/x] \\
+  \end{align*}
+  
+\item There are rules about equality, namely reflexivity, symmetry and
+  transitivity, as well as a rule for substitution, stating that if an
+  equation between terms $e_1 = e_2$ containing a variable $x$ can be derived,
+  then so can the equality $e_1[e/x] = e_2[e/x]$ for each well-formed term $e$
+  not containing free variables that do not occur in $e_1$ or $e_2$.
+\end{enumerate}
+
+
+As a final word on the meta-language, it should be pointed out that it is an
+equational theory. It therefore presents an instrument to prove equivalences
+between programs, \IE an equality of the morphisms they denote in the
+interpretation. The logic that will be developed in the sequel goes far beyond
+the ability of proving equalences. In monadic dynamic logic, it is possible to
+make much more specific statements about programs, \EG one can specify under
+what conditions a program will terminate or one can prove that, in the state
+monad, a given program will modify the state in a certain way.
+
+%% TODO explain the use of monads for interpreting equational logic (with type
+%% constructor T)
+
+%\begin{flalign*}
+%  (.1) && x : A &\vdash f x = g (h x) & \text{(Axiom)}\\
+%  (.2) && x : A &\vdash g (h x) : A   & \text{(by term formation rules)}\\
+%  (.3) && x : A &\vdash f (g (h x)) = g (h (g (h x))) & \text{(subst: .2, .1)}\\
+%  (.4) && x : A &\vdash f (f x) = f (g (h x)) & \text{(cong: .1)}\\
+%  (.5) && x : A &\vdash f (f x) = g (h (g (h x))) & \text{(trans: .4, .3)} \\
+%  (.6) && x : A &\vdash g (h (g (h x))) = f (f x) & \text{(sym)}
+%\end{flalign*}
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 

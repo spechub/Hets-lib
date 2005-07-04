@@ -1,0 +1,1226 @@
+
+\chapter{Monadic Dynamic Logic}
+\label{cha:logic}
+
+In this chapter, the proof calculus of monadic dynamic logic is presented.
+First, properties of monadic programs are introduced that will be needed later
+on in order to develop the calculus; these include notions such as
+discardability and side effect freeness of programs. After that, the modal
+operators of dynamic logic are introduced in an axiomatic way and their meaning
+in the example monads of Section \ref{sec:monads-cs} is explained. All
+prerequisites gathered together, the monad-independent proof calculus for
+dynamic logic is described in Section \ref{sec:monad-indep-calc}. Finally, an
+extension of the calculus that is tailored towards the exception monad is
+developed.
+
+In what follows the type of truth values will be denoted by $\Omega$ (in \Isabelle,
+which is classical, this type will be $\Type{bool}$). Formulas of dynamic logic
+will be taken to be terms of type $D\Omega$, where for each $A$ $D A$ is the subtype
+of $T A$ of all deterministically side effect free programs, a notion depicted
+below. As a primary feature of the calculus, there will be modal operators
+$\PDLBox{x \leteq p}{\Arg}$ and $\PDLDmd{x \leteq p}{\Arg}$ for each program $p$
+that take a formula of dynamic logic $\phi$ (possibly containing $x$ as a free
+variable) to another formula which may state properties of $x$ being the result
+of executing $p$. The modal operators thus act as new variable binders; because
+we also allow program sequences to occur inside the operators -- as in
+$\PDLBox{x\leteq p; y\leteq q}$ -- they may bind several variables at once. An
+initial intuitive understanding of the box and diamond operators can be most
+easily given in the nondeterminism monad, where the formula $\PDLBox{x\leteq
+  p}{(x=1)}$ should be interpreted as `after executing $p$ and binding the
+result to $x$, $(x=1)$ will hold \emph{for all} possible outcomes of $p$'. On
+the other hand, $\PDLDmd{x\leteq p}{(x=1)}$ states that there will be
+\emph{some} result $x$ of $p$ such that $(x=1)$ is true.
+
+For simplicity, we will assume that $\ret \Map{A}{T A}$ is a mono (the
+categorical counterpart of an injective function in set theory) for each $A$,
+\IE $\ret x = \ret y$ implies $x = y$ for all $x$ and $y$; all monads introduced
+so far satisfy this condition.
+
+
+\section{Preliminaries}
+\label{sec:dl-prelim}
+
+The possibility for program sequences to occur inside the box and diamond
+operators instead of single bindings should be regarded as a mere notational
+convenience. That this does not add to the expressiveness of the operators can
+be seen by translating multiple bindings into bindings of tuples, \EG the bound
+variables $x$ and $y$ in $\PDLBox{x\leteq p; y\leteq q}$ can be packaged into the
+single variable $z = (x,y)$ in $\PDLBox{z\leteq \DoStmt{x\leteq p; y\leteq q;
+    \ret (x,y)}}$.  Horizontal bars above variables will indicate that actually a
+  non-empty program sequence is under consideration rather than a single
+  binding. Let $\bar x = [x_1,\ldots,x_n]$ and $\bar p = [p_1,\ldots,p_n]$; then $\bar x
+  \leteq \bar p$ will denote the program $\DoStmt{x_1\leteq p_1; \cdots; x_n\leteq
+    p_n; \ret (x_1,\ldots,x_n)}$ or, if it appears inside a do-statement or a box
+  or diamond operator, just the
+  binding sequence $x_1\leteq p_1;\cdots; x_n\leteq p_n$.
+
+
+\subsection{Properties of Monadic Programs}
+\label{sec:prop-monad-progr}
+
+The property of a monadic program being deterministically side effect free
+(abbreviated to \emph{dsef} in the following) relies on some simpler properties
+that will now be defined. The main idea behind the introduction of a subtype $D
+A$ of dsef programs is that these programs have properties allowing them to be
+rearranged quite freely within a monadic program sequence. For example, if $p$
+and $q$ are both dsef programs, the programs $\DoStmt{x\leteq p; y\leteq q; r}$
+and $\DoStmt{y\leteq q; x\leteq p; r}$ will be equal for every program $r$
+(possibly containing $x$ and $y$, in contrast to $p$ and $q$, which may not
+mention them). This is an important fact when introducing connectives for
+formulas of dynamic logic: intuitively, $\phi : D\Omega$ and $\phi \land \phi : D\Omega$ should be
+regarded as equivalent formulas, but if $\phi$ has side effects or is
+nondeterministic, this equivalence might break down.  Taking only terms of type
+$D \Omega$ as formulas makes sure such equivalences are retained in the calculus.
+
+A more elaborate account of the information provided in this section can be
+found in \cite{SchroederMossakowski:PDL}, where virtually all lemmas and
+propositions stated here are proved. To avoid overly repeating facts already
+stated elsewhere, only the most important lemmas and some of their proofs are
+given in this thesis. 
+% XXX refer to Isabelle section if proof will be presented there
+Independently established proofs are found in the chapters on application
+(Chapter~\ref{cha:application}) and implementation
+(Chapter~\ref{cha:implementation}) of the calculus.
+
+\begin{defn}
+  \label{defn:dis}
+  Let $1$ be the unit type and $\unit$ the single element of this type. A
+  program $p : T A$ is called \emph{discardable} if
+  \[ \DoStmt{x\leteq p; \ret \unit} = \ret \unit \]
+  \begin{itemize}
+  \item In the state monad, $p$ is discardable if it terminates and does not
+    alter the state; since its result is not used in the remainder of the
+    program on the left-hand side (\IE in $\ret \unit$), it might just as well
+    be omitted altogether.
+  \item In the nondeterminism monad, $p$ is discardable if it yields at least
+    one result; in that case, both sides of the equation yield $\{\unit\}$.
+  \item The concept of discardability reveals differences between the list monad
+    and the nondeterminism monad: in the list monad, $p$ is discardable if it
+    yields exactly one result, in which case both sides of the equation equal
+    the singleton list $[\unit]$.
+  \end{itemize}
+\end{defn}
+
+\begin{defn}
+  Let $p : T A$ be a program. $p$ is called \emph{stateless} if it is of the
+  form $p = \ret a$ for some $a : A$. Obviously, all stateless programs are
+  discardable which follows immediately from the basic monad laws.
+\end{defn}
+
+The following lemma confirms the appropriateness of Definition \ref{defn:dis}
+for indicating when a program may be discarded at the head of an arbitrary
+program sequence:
+\begin{lem}
+  \label{thm:dis-general}
+  Let $p: T A$ be discardable and $q : T B$ be an arbitrary program. Then
+  \[ \DoStmt{p; q} = q \]
+\end{lem}
+Most proofs of the propositions in this section are by equational reasoning;
+here is an example proof of the above lemma.
+\begin{proof}
+  \begin{align*}
+    \DoStmt{p; q} &= \DoStmt{p; \ret\unit; q}  && \text{(since
+      $\DoStmt{\ret\unit; q} = q$)}\\
+                  &= \DoStmt{\ret\unit; q} && \text{($p$ discardable)}\\
+                  &= q
+  \end{align*}
+\end{proof}
+
+While discardability allows one to omit certain programs altogether whose return
+value is not used in the remainder, the following concept admits
+statements about the behaviour of certain programs when they are executed
+repeatedly:
+\begin{defn}
+  Let $p : T A$ be a program. $p$ is called \emph{copyable} if the following
+  equation holds:
+  \[ \DoStmt{x\leteq p; y\leteq p; \ret (x,y)} = \DoStmt{x\leteq p; \ret (x,x)}
+  \] 
+\end{defn}
+As with discardability, copyability entails a stronger form of program equality
+which expresses the fact that copyable programs may be doubled (or cancelled,
+taken the opposite way) without effect more directly:
+\begin{prop}
+  \label{thm:cp-general}
+  Let $p : T A$ be a copyable and $r : T B$ be an arbitrary program possibly
+  containing $y$ as a free variable. Then one has
+  \[ \DoStmt{x\leteq p; y\leteq p; r} = \DoStmt{x\leteq p; r[x/y]} \]
+\end{prop}
+
+
+Basically, the deterministically side effect free programs comprise the copyable
+and discardable programs. That this type is not empty can easily be seen by
+considering stateless programs of the form $\ret a$, which are discardable and
+copyable at any rate. These programs are also deterministically side effect
+free, a property that depends on one further concept.
+\begin{defn}
+  \label{defn:commutes}
+  Let $p$ and $q$ be copyable and discardable programs with $x \notin FV(q)$ and $y \notin
+  FV(p)$. Then $p$ \emph{commutes with} $q$ if
+  \[ \DoStmt{x\leteq p; y\leteq q; \ret (x,y)} = \DoStmt{y\leteq q; x\leteq p;
+    \ret (x,y)}\]
+\end{defn}
+
+\begin{defn}
+  \label{defn:dsef}
+  A copyable and discardable program $p$ that commutes with \emph{all} copyable
+  and discardable programs is called \emph{deterministically side effect free}
+  (dsef).
+\end{defn}
+
+\begin{prop}
+  Dsef programs are stable under sequential composition, \IE for every sequence
+  $\bar x\leteq \bar p$ of dsef programs and every dsef program $q$, the program
+  $\DoStmt{\bar x\leteq\bar p; q}$ is also dsef.
+\end{prop}
+
+As a rather technical aside, \Isabelle imposes the restriction of quantifying
+not over all programs of all possible types, but merely over all programs of a
+fixed type.  Fortunately, a program already commutes with all discardable and
+copyable programs if it commutes with all such programs of type $T\Omega$. Therefore,
+the property of a program $p$ being dsef can also be expressed with more
+stringent type constraints in \Isabelle.
+
+ 
+%% dsef hier einbauen, unten streichen. Dann: commutes-relation nur durch
+%% primitive ausdruecken, [[\ldots]] kommt spaeter dazu. Getreu der Philosophie: erst
+%% die Syntax, dann die Semantik\ldots oder so.
+
+\subsection{Global Dynamic Judgments}
+\label{sec:glob-dynam-judg}
+
+Before introducing logical operators for dsef terms (viewed as formulas), we
+clarify when such a formula is to be regarded as valid.  Contending the global
+validity of a term of type $T\Omega$ (notation $\gbox \phi$) -- note that the type
+indicates that global validity is also defined for `formulas' with side effects
+-- amounts to saying that
+\[
+\phi = \DoStmt{a\leteq\phi; \ret \top}
+\]
+\IE basically $\phi$ evaluates to truth ($\top$) if it yields any results at all. In
+the state monad (resp. the exception monad), this equation also holds if $\phi$
+is undefined (resp. throws an exception), while in the nondeterminism
+monad it also holds if $\phi$ does not produce any results at all. For the
+important special case when $\phi$ is discardable, $\gbox \phi$ reduces to $\phi = \ret
+\top$.
+
+Although global validity is a sufficiently strong concept to express when a term
+of type $T\Omega$ is to be considered valid, there are monads (albeit rather exotic
+ones such as the free abelian group monad, see \cite[Section
+3]{SchroederMossakowski:PDL}) for which it is too weak to give a semantics to
+the box and diamond operators. For this to be possible in a most general manner,
+the similar but more powerful notion of a \emph{global dynamic judgment} is
+necessary: let $\Gdj{\bar x\leteq \bar p}{\phi}$ abbreviate
+\[ \DoStmt{\bar x\leteq \bar p; \ret (\bar x, \phi)} = \DoStmt{\bar x\leteq \bar p; \ret(\bar
+  x, \top)} \]
+(note that $\phi : \Omega$ in $\Gdj{x\leteq p}{\phi}$, \IE $\phi$ is an actual formula,
+whereas $\psi : T \Omega$ is a monadic term -- regarded as a formula -- in $\gbox
+\psi$). 
+\begin{rem}
+  The monads under consideration in this thesis have been called \emph{simple}
+  in \cite{SchroederMossakowski:PDL}; in simple monads the equivalence of the
+  two statements $\gbox (\DoStmt{x\leteq p; \ret \phi})$ and $\Gdj{x\leteq p}{\phi}$
+  holds, such that one of these concepts would actually be sufficient. In simple
+  monads, having both notations available is just a matter of convenience.
+\end{rem}
+
+The following lemma once more shows that a more general statement (in this case
+about global dynamic judgments) drops out of an apparently primitive definition.
+\begin{lem}
+  \label{thm:gdj-general}
+  If $\Gdj{\bar x\leteq \bar p}{\phi}$ holds, 
+  \[ \DoStmt{\bar x\leteq \bar p; q[\phi/y]} = \DoStmt{\bar x\leteq \bar p; q[\top/y]}
+  \]
+  for each program $q$ containing $y : \Omega$ as a free variable.
+\end{lem}
+\begin{proof}
+  Again, by a direct calculation: let $\pi_i$ denote the $i$-th projection
+  function and let $\theta$ be the substitution $\{(\pi_1\cdot \pi_1)z/x_1, \ldots, (\pi_n\cdot
+  \pi_1)z/x_n, \pi_2z/y\}$ which replaces $x_i$ and $y$ by their respective selection
+  from the tuple $z= ((x_1,\ldots,x_n), y)$. Then
+  \begin{align*}
+       \DoStmt{\bar x\leteq \bar p; q[\phi/y]} &= 
+       \DoStmt{\bar x\leteq \bar p; y\leteq \ret \phi; q} \\
+    &= \DoStmt{\bar x\leteq \bar p; y\leteq \ret \phi; z\leteq \ret (\bar x, y);
+      (q)\theta} \\
+    &= \DoStmt{z\leteq\DoStmt{\bar x\leteq \bar p; y\leteq \ret \phi; \ret (\bar x,
+        y)}; (q)\theta}\\
+    &= \DoStmt{z\leteq\DoStmt{\bar x\leteq\bar p; \ret (\bar x, \phi)}; (q)\theta}\\
+    &= \DoStmt{z\leteq\DoStmt{\bar x\leteq\bar p; \ret (\bar x, \top)}; (q)\theta} &&(\star)\\
+    &= \DoStmt{z\leteq\DoStmt{\bar x\leteq\bar p; y\leteq \ret \top; \ret (\bar x,
+        y)}; (q)\theta}\\
+    &= \ldots = \DoStmt{\bar x\leteq \bar p; q[\top/y]}
+  \end{align*}
+  where to arrive at $(\star)$ the assumption  $\Gdj{\bar x\leteq \bar p}{\phi}$ has
+  been used.
+\end{proof}
+
+\begin{cor}
+  \label{thm:gdj-gbox-equiv}
+  One has $\Gdj{a\leteq \phi}{a}$ if and only if $\gbox \phi$. The implication from
+  left to right is a direct consequence of Lemma \ref{thm:gdj-general},
+  recalling that $\phi = \DoStmt{a \leteq \phi; \ret a}$, whereas the implication from
+  right to left is, again, a manipulation with the help of unit and
+  associativity laws of monads.
+\end{cor}
+
+We will not devote ourselves to developing an entire calculus of global dynamic
+judgments -- which indeed already is expressive enough to formulate a Hoare
+calculus for partial correctness with it, as has been done in
+\cite{SchroederMossakowski:Hoare} -- but rather make use of it to define the
+modal operators of monadic dynamic logic. Global dynamic judgments are also
+useful to formalize what it means for a program to terminate:
+\begin{defn}
+  \label{defn:termination}
+  A program $p$ \emph{terminates} if
+  \[ \Gdj{\bar x \leteq \bar q; p}\phi \quad \text{implies} \quad \Gdj{\bar x\leteq
+    \bar q}\phi\]
+  for each program sequence $\bar x\leteq \bar q$ and each formula $\phi : \Omega$.
+\end{defn}
+\begin{expl}
+  \label{ex:term-except}
+  Obviously, $\phi :\Omega$ in $\Gdj{\bar x\leteq \bar q; p}\phi$ cannot mention the result
+  of $p$ since this result is not bound. To see how the above definition accords
+  with the intuitive understanding of termination, consider the simplest
+  possible exception monad where $T A = A + \{\bot\}$. In this setting, it is
+  reasonable to talk of nontermination of a program $p$ if it throws an
+  exception (\IE $p = \bot$). In this case $\Gdj{\bar x\leteq \bar q; p}\bot$ will be
+  true for every program sequence $\bar x \leteq \bar q$ since $\DoStmt{\bar
+    x\leteq \bar q; p; \ret (\bar x, \bot)} = \bot = \DoStmt{x\leteq q;p; \ret (\bar x,
+      \top)}$ (recall the definition of binding in the exception monad). $\Gdj{\bar
+        x\leteq \bar q}\bot$ will however be false for every  program
+      sequence $\bar x\leteq \bar q$ not throwing any exceptions.
+\end{expl}
+\begin{rem}
+  Reasoning about termination in the state monad (recall that here $T A$ takes
+  the form $S \to S \times A$, \IE a function space of \emph{total} functions) only
+  makes sense if either \emph{partial} functions are considered or the theory of
+  \emph{complete partial orders} (cpos) with \emph{continuous functions} between
+  them is employed. In a setting where programs are partial functions $f : S \rightharpoonup S
+  \times A$, one finds that the above definition of termination precisely identifies
+  the terminating programs with the total functions -- given an adapted
+  definition of binding that takes the possibility of undefinedness of programs
+  into account. Since in \IsabelleHOL every function is implicitly total, we
+  also stick to this principle in the overall development, explicitly indicating
+  when more structure is necessary, \EG in the definition of arbitrarily
+  recursive definitions like that of a while-loop.
+\end{rem}
+
+
+The greater freedom in treatment that dsef programs are characterized by also
+shows up when they appear in global dynamic judgments. Several properties such
+as the equivalence of $\Gdj{\bar w\leteq \bar q; x\leteq p; y\leteq p; \bar
+  z\leteq \bar r}\phi$ and $\Gdj{\bar w\leteq \bar q; x\leteq p; \bar z\leteq \bar
+  r[x/y]}\phi[x/y]$ can be proved for a dsef program $p$. This leads to two
+notational conventions that allow one to replace variables in terms and actual
+formulas by dsef programs of the appropriate types without introducing
+ambiguities or enabling the formulation of nonsensical terms. Put concretely, we
+allow
+\begin{enumerate}
+\item a dsef program $p : DA$ to occur in places where a variable $x : A$ is
+  expected; the program $q[p/x]$ decodes into $\DoStmt{x\leteq p; q}$.
+\item a formula $\psi : D\Omega$ to occur in places where a genuine formula $a: \Omega$ can
+  appear in global dynamic judgments; the judgment $\Gdj{\bar x\leteq \bar
+    p}\phi[\psi/a]$ decodes into $\Gdj{\bar x\leteq \bar p; a\leteq \psi}\phi$. Note that
+  here the evaluation of $\psi$ takes place \emph{after} having evaluated $\bar
+  x\leteq \bar p$, whereas in (1.) $p$ is evaluated \emph{before} $q$.
+\end{enumerate}
+
+
+\section{Logical Operators}
+\label{sec:logic-operators}
+
+
+\subsection{Primitive Connectives}
+\label{sec:prim-conn}
+
+The logical operators are defined in terms of already existing logical operators
+for the type of truth values $\Omega$. So we assume that the background formalism at
+least allows the formulation of the standard propositional connectives; this is
+certainly the case for \IsabelleHOL which even allows the formulation of
+higher-order functions and predicates. We will use the same symbols for both
+actual formulas of type $\Omega$ as well as \emph{formulas of dynamic logic} of type
+$D\Omega$; it will be clear from the context which of them is meant. Let
+$\mathbf{op}$ stand for conjunction $\land$, disjunction $\lor$, implication $\Rightarrow$ or
+equivalence $\iff$ of two formulas of dynamic logic $\phi, \psi: D\Omega$ respectively. Then
+these connectives are defined as
+\[ \phi\ \mathbf{op}\ \psi \quad:=\quad \DoStmt{a\leteq \phi; b\leteq \psi; \ret (a\ \mathbf{op}\ b)} 
+\]
+which again is a dsef term (hence, a formula) because all its constituent parts
+are dsef terms. Negation is of course similarly defined  as
+\[ \lnot \phi \quad := \quad \DoStmt{a\leteq \phi; \ret (\lnot a)} \]
+
+First-order operators like a universal quantifier are not available for formulas
+of dynamic logic; they may however appear in \emph{stateless formulas}, \EG of
+the form $\ret (\forall x\bdot P(x))$, if the underlying formalism allows their
+formulation for formulas of type $\Omega$. An example thereof can be found in Chapter
+\ref{cha:application} within the specification of a breadth-first search
+algorithm.
+
+Asserting the validity of a formula of dynamic logic can be stated in two
+equivalent ways, due to the existence of two different notations and their
+relation to each other. The `global box' $\gbox$ basically serves the purpose of
+asserting validity of a formula: $\gbox(\phi\land\psi)$ decodes into
+$\gbox(\DoStmt{a\leteq \phi; b\leteq \psi; \ret (a\land b)})$ according to the definition
+of conjunction and is to be read as ``it is globally true that $\phi \land \psi$ holds''.
+By Corollary \ref{thm:gdj-gbox-equiv}, an equivalent formulation is to say that
+$\Gdj{a\leteq \phi; b\leteq \psi}(a\land b)$ holds. It is important to note that all
+propositional tautologies carry over into the calculus of monadic dynamic logic:
+$\phi \Rightarrow (\psi \Rightarrow \phi)$ is globally valid, since global validity amounts to $\Gdj{a\leteq
+  \phi; b\leteq \psi; c\leteq \phi}(a \Rightarrow (b \Rightarrow c))$ being valid. The latter judgment is
+valid because by Lemma \ref{thm:cp-general} it is equivalent to $\Gdj{a\leteq \phi;
+  b\leteq \psi}(a \Rightarrow (b \Rightarrow a))$ in which $a \Rightarrow (b \Rightarrow a)$ is a tautology (in $\Omega$), thus
+equal to $\top$.
+
+
+\subsection{Boxes and Diamonds}
+\label{sec:box-diamond}
+
+The key feature of monadic dynamic logic is the existence of modal operators
+that allow building \emph{formulas} (\IE terms of type $D\Omega$) stating that after
+execution of a program some condition will necessarily or possibly hold. This is
+in contrast to the global box $\gbox$ and the global dynamic judgments which, as
+the name suggests, merely allow the formulation of \emph{global} statements
+about program sequences and properties of their bound variables. The semantics
+of the diamond and box operators $\PDLBox{x\leteq p}{\phi}$ and $\PDLDmd{x\leteq
+  p}{\phi}$ is \emph{local} in the sense that the state in which $\phi$ is evaluated
+may be modified by $p$, but the entire formula does not modify the state in
+which itself is evaluated. Hence, it may appear as a subformula without
+affecting the semantics of surrounding subformulas.
+
+\begin{expl}
+  The axiomatic introduction of the box and diamond operators given below does
+  not quite point to an idea of what they intuitively express. We therefore give
+  their intended interpretation for the monads described in
+  Section~\ref{sec:monads-cs} as a motivation for their usefulness.
+  \begin{itemize}
+  \item In the state monad of total functions $\PDLBox{x\leteq p}{\phi}$ and
+    $\PDLDmd{x\leteq p}{\phi}$ depend on the state. They denote the same
+    formula which is true in a state $s$ if after execution of $p$ the result
+    $x$ will satisfy $\phi$. If partial functions are involved $\PDLBox{x\leteq
+      p}{\phi}$ is actually weaker than $\PDLDmd{x\leteq p}{\phi}$ in that the former
+    is also true if $p$ is undefined.
+  \item In the exception monad $\PDLBox{x\leteq p}{\phi}$ holds if $p$ throws an
+    exception or yields a value satisfying $\phi$, whereas for $\PDLDmd{x\leteq
+      p}{\phi}$ to hold it is additionally required that $p$ does not throw an
+    exception.
+  \item In the nondeterminism monad, where $p : T A$ is a set of elements of
+    $A$, $\PDLBox{x\leteq p}{\phi}$ holds if all elements in $p$ satisfy $\phi$ (which
+    also includes the case where $p = \emptyset$) and  $\PDLDmd{x\leteq p}{\phi}$ is true
+    if and only if $p$ contains some value satisfying $\phi$.
+  \item Finally, in the combination of the list monad and the state monad the
+    modal operators depend on the state as well. Validity of $\PDLBox{x\leteq
+      p}{\phi}$ (or $\PDLDmd{x\leteq p}{\phi}$) in a state $s$ means that all outcomes
+    of $p$ satisfy $\phi$ (or at least one outcome satisfies $\phi$).
+  \end{itemize}
+\end{expl}
+
+
+The following definition formalizes the essential requirement that a monad must
+satisfy in order to allow the interpretation of monadic dynamic logic. The
+somehow dual operators $\PDLBox{x\leteq p}\Arg$ and $\PDLDmd{x\leteq p}\Arg$ are
+introduced independently of each other in order to make their particular
+interpretation possible in intuitionistic logics as well. In a classical setting,
+one might define $\PDLDmd{x\leteq p}{\phi}$ as $\lnot \PDLBox{x\leteq p}\lnot \phi$.
+\begin{defn}
+  A monad \emph{admits dynamic logic} if there exist formulas $\PDLBox{\bar
+    y\leteq \bar q}\phi$ and $\PDLDmd{\bar y\leteq \bar q}\phi$ for each program
+  sequence $\bar y\leteq \bar q$ and each formula $\phi : D\Omega$ such that for each program
+  sequence $\bar x\leteq \bar p = x_1\leteq p_1; \ldots; x_n\leteq p_n$ containing
+  $x_i : \Omega \; (1\leq i\leq n)$ the following equivalences hold:
+  \begin{align*}
+    \Gdj{\bar x\leteq \bar p}(x_i \Rightarrow \PDLBox{\bar y\leteq\bar q}\phi)
+      &\iff \Gdj{\bar x\leteq \bar p; \bar y\leteq\bar q}(x_i \Rightarrow \phi) \\
+    \Gdj{\bar x\leteq\bar p}(\PDLDmd{\bar y\leteq\bar q}\phi \Rightarrow x_i)
+      &\iff \Gdj{\bar x\leteq\bar p; \bar y\leteq\bar q}(\phi \Rightarrow x_i)
+  \end{align*}
+  The purpose of using the variable $x_i$ is  generality: one can express
+  every formula $\psi$ in context of the other $x_j$ through it: simply put $x_i =
+  x_n$ and $p_n = \ret \psi$. Note also that the above equivalences make use of the
+  notational convention of letting formulas of monadic logic appear where a
+  formula of type $\Omega$ is expected: in decoded form the first equivalence reads
+  as 
+  \[  \Gdj{\bar x\leteq \bar p; a\leteq \PDLBox{\bar y\leteq\bar q}\phi}(x_i \Rightarrow a)
+  \iff \Gdj{\bar x\leteq \bar p; \bar y\leteq\bar q; b\leteq \phi}(x_i \Rightarrow b) \]
+  and similar for the second one.
+\end{defn}
+
+We state some basic properties that accompany the box and diamond operators.
+\begin{prop}[Unique determination]
+  One can turn the type of dsef programs $D\Omega$ into a partial order by setting $\phi
+  \leq \chi$ if and only if $\phi \Rightarrow \chi$. Then $\PDLBox{\bar y\leteq\bar q}\phi$ is the
+  greatest formula $\psi$ such that 
+  $\Gdj{a\leteq \psi; \bar y\leteq\bar q}(a\Rightarrow\phi)$
+  and $\PDLDmd{\bar y\leteq\bar q}\phi$ is the smallest formula $\psi$ such that 
+  $\Gdj{a\leteq \psi; \bar y\leteq\bar q}(\phi\Rightarrow a)$.
+\end{prop}
+A proof of this proposition involves two steps: first, it has to be shown that
+for each formula $\psi$ satisfying $\Gdj{a\leteq \psi; \bar y\leteq\bar q}(a\Rightarrow\phi)$ (or
+$\Gdj{a\leteq \psi; \bar y\leteq\bar q}(\phi\Rightarrow a)$) one has $\psi \Rightarrow \PDLBox{\bar y\leteq\bar
+  q}\phi$ (or $\PDLDmd{\bar y\leteq\bar q}\phi \Rightarrow \psi$). Second, it must be shown that
+$\PDLBox{\bar y\leteq\bar q}\phi$ ($\PDLDmd{\bar y\leteq\bar q}\phi$) in fact satisfy
+the judgments. Both parts of the proof follow more or less immediately from the
+definition of the box and diamond operators.
+
+\begin{prop}[Global validity of box formulas]
+  Let $\bar y\leteq \bar q$ be an arbitrary program sequence and $\phi : D\Omega$ a
+  formula. Then $\gbox(\PDLBox{\bar y\leteq\bar q}\phi)$ is equivalent to
+  $\Gdj{\bar y\leteq \bar q}\phi$.
+\end{prop}
+
+The following equivalence allows us to reason about termination within the
+calculus of monadic dynamic logic without having to fall back to reasoning about
+global dynamic judgments.
+\begin{prop}[Termination]
+  A program $p$ terminates in the sense of Definition \ref{defn:termination} if
+  and only if $\PDLDmd{p}\top$ holds.
+\end{prop}
+
+
+\subsubsection{Defining the Modal Operators}
+In monads with additional structure that besides imposing some minor logical
+well-behavedness basically allows one to `read the current state' -- a property
+which virtually all of the running example monads possess -- it is possible to
+directly define the box operator (the diamond operator can then be defined in
+terms of the box operator in a rather contrived way that we will not present
+here). This definition is shown now as it enlightens the particular locality of
+the box operator's semantics.
+
+The general idea is that dsef programs can essentially be regarded as programs
+that may read the `state', but not alter it, \IE there is an isomorphism between
+the type $D A$ of dsef programs over $A$ and the function space $F \to A$, where
+$F$ is the type of states (see below). With the help of this isomorphism, one
+may describe the box operator $\PDLBox{x\leteq p}\phi$ as a function that maps the
+current state to a global dynamic judgment (hence, a formula of type $\Omega$)
+asserting that after setting this state and executing $p$, the formula $\phi$ will
+be true. We need some definitions to make these ideas precise.
+The notion of state has to be abstracted
+from the  set of concrete state values $S$ in the state monad to a concept that
+also makes sense in other monads.
+
+\begin{defn}
+  A \emph{state} is a terminating program $s : T1$ such that for each dsef
+  program $p : DA$ there exists an element $a : A$ s.t.
+  \[ \DoStmt{s; p} = \DoStmt{s; \ret a} \]
+  If for each terminating program $q$ one furthermore has
+  \[ s             = \DoStmt{q; s} \]
+  then $s$ is called a \emph{forcible state}. The subtype of $T1$ of all
+  forcible states is denoted by $F$.
+\end{defn}
+
+In the state monad, a state as just defined would rather be thought of as an
+update operation: the function $\mathit{update}\ s' = \LambdaTerm{s:S}{(s',
+  \unit)}$ of Section~\ref{sec:monads-haskell} yields a state when it is applied
+to an element of the  set of concrete states $S$. In the exception and
+nondeterminism monads there is only the trivial state $\ret \unit$, which in
+both cases is forcible; the special kind of list monad we have described does
+not have forcible states: its states take the form $s_c = \LambdaTerm{i :
+  \Type{List}\ I}{[(c, \unit)]}$ for $c : \Type{List}\ I$, but for the program
+$q = \LambdaTerm{i:\Type{List}\ I}{[(a, \unit), (b, \unit)]}$ one has
+\[
+  \DoStmt{q; s_c} = \LambdaTerm{i:\Type{List}\ I}{[(j,\unit), (j,\unit)]} \neq s_c
+\]
+The basic problem is that an element can occur multiple times in lists, in
+contrast to sets so that forcibility is only available when the latter are used,
+\EG in the nondeterminism monad.
+
+
+For the definition of the box operator we need a further operation that allows
+one to extract the state. It is determined by the property that accessing the
+state with the help of it and then immediately executing this state has no effect
+(since the state will be the same afterwards as beforehand):
+\begin{defn}
+  A program $d : DF$ is called a \emph{state discloser} if the term
+  $\DoStmt{x\leteq d; x}$ is discardable.
+\end{defn}
+
+It is now possible to establish that $D A \cong (F \to A)$ by defining two
+isomorphisms $\kappa_A \Map{D A}{(F \to A)}$ and its inverse $\kappa^{-1}_A \Map{(F \to A)}{D
+  A}$ for each type $A$ (the index $A$ will be omitted in the following). While
+to be able to define $\kappa$ one needs a Hilbert description operator, its inverse
+$\kappa^{-1}_A$ can be defined purely by means already available. Let $d : DF$ be a
+state discloser, then for each function $f \Map{F}{A}$ the program $\kappa^{-1}(f)$
+accesses the current state and applies $f$ to it, \IE one has
+\[
+  \kappa^{-1}( f )\quad :=  \DoStmt{s\leteq d; \ret (f~s)}
+\]
+which is a dsef program of type $D A$, recalling that both $d$ and $\ret$ are
+dsef programs. This mapping allows us to describe the box operator as a function
+in $F \to \Omega$, \IE as a state dependent truth value, and then subsequently inject
+it into $D A$: $\PDLBox{\bar y\leteq\bar q}{\phi}$ can be interpreted in $F\to\Omega$ as a
+function that returns the global validity of $\phi$ after executing the state $s$
+followed by $\bar y\leteq\bar q$. This is formalized by the following definition
+of the box operator:
+\[
+\PDLBox{\bar y\leteq\bar q}\phi \quad:= \kappa^{-1} (\LambdaTerm{s: F}{\Gdj{s; \bar
+    y\leteq\bar q}\phi})
+\]
+
+\section{The Monad-independent Proof Calculus}
+\label{sec:monad-indep-calc}
+
+The entire proof calculus for monadic dynamic logic can be formalized by adding
+the rules and axioms of Figure \ref{fig:mon-dyn-logic} to the set of
+propositional tautologies in $D\Omega$. Certainly the inclusion of \emph{all}
+tautologies is overkill which might be prevented by only including an
+independent and complete set of axioms (and some rules) for propositional logic,
+but this detail is not of much importance here, since we are mainly concerned
+with rules and axioms for the modal operators. The soundness of the calculus has
+been established in \cite{SchroederMossakowski:PDL}, whereas its completeness is
+still an open issue.
+
+\begin{figure}
+%  \centering
+  \textbf{Rules:} 
+  \begin{displaymath}\displaystyle
+    \quad \NRule{nec}{\phi}{\PDLBox{\bar x\leteq\bar p}\phi}
+    \mbox{~~\begin{tabular}{c}$\bar x$ not free\\ in assumptions\end{tabular}}
+    \qquad
+    \NRule{mp}{\phi\Rightarrow\psi;\quad\phi}{\psi}
+  \end{displaymath}
+  
+  \textbf{Axioms:}
+  \begin{displaymath}
+    \begin{array}{lll}
+      \textrm{(K1)} & \PDLBox{\bar x\leteq\bar p}(\phi\Rightarrow\psi)\Rightarrow
+      \PDLBox{\bar x\leteq\bar p}\phi\Rightarrow\PDLBox{\bar x\leteq\bar p}\psi\\
+      \textrm{(K2)} & \PDLBox{\bar x\leteq\bar p}(\phi\Rightarrow\psi)\Rightarrow
+      \PDLDmd{\bar x\leteq\bar p}\phi\Rightarrow\PDLDmd{\bar x\leteq\bar p}\psi\\
+      \textrm{(K3$\Box$)} & \ret{\phi}\Rightarrow\PDLBox{p}\ret{\phi}\\
+      \textrm{(K3$\Diamond$)} & \PDLDmd{p}\ret{\phi}\Rightarrow\ret{\phi}\\
+      \textrm{(K4)} & \PDLDmd{\bar x\leteq\bar p}(\phi\lor\psi)\Rightarrow
+      (\PDLDmd{\bar x\leteq\bar p}\phi\lor\PDLDmd{\bar x\leteq\bar
+        p}\psi)\\
+      \textrm{(K5)} & (\PDLDmd{\bar x\leteq\bar p}\phi\Rightarrow\PDLBox{\bar x\leteq\bar
+        p}\psi)
+      \Rightarrow
+      \PDLBox{\bar x\leteq\bar p}(\phi\Rightarrow\psi)\\
+      \textrm{(seq$\Box$)} & \PDLBox{\bar x\leteq\bar p;y\leteq q}\phi \iff
+      \PDLBox{\bar x\leteq\bar p}\PDLBox{y\leteq q}\phi\\
+      \textrm{(seq$\Diamond$)} & \PDLDmd{\bar x\leteq\bar p; y\leteq q}\phi\iff
+      \PDLDmd{\bar x\leteq\bar p}\,\PDLDmd{y\leteq q}\phi\\
+      \textrm{(ctr$\Box$)} &
+      \PDLBox{x\leteq p; y\leteq  q}\phi\Rightarrow
+      \PDLBox{ y\leteq\DoStmt{ x\leteq p; q}}\phi
+      & (x\notin FV(\phi))\\
+      \textrm{(ctr$\Diamond$)} & \PDLDmd{ x\leteq p; y\leteq
+        q}\phi \Leftarrow   \PDLDmd{ y\leteq\DoStmt{ x\leteq p; q}}\phi& (x\notin FV(\phi))\\
+      \textrm{(ret$\Box$)} & \PDLBox{x\leteq \ret{a}}\phi\iff\phi[a/x]\\
+      \textrm{(ret$\Diamond$)} & 
+      \PDLDmd{x\leteq \ret{a}}\phi\iff\phi[a/x]
+    \end{array}
+  \end{displaymath}
+
+  \caption{The generic proof calculus of monadic dynamic logic}
+  \label{fig:mon-dyn-logic}
+\end{figure}
+
+The side condition `$\bar x$ not free in assumptions' in the necessitation rule
+is a typical side condition analogous to the one for the universal quantifier in
+first-order logic; the term \emph{assumptions} is to be understood as it is used
+in natural deduction and does not refer to the \emph{premiss} of the rule, $\phi$.
+The axioms K3$\Box$ and K3$\Diamond$ refer to stateless formulas that are mere
+injections of formulas $\phi : \Omega$. The first one expresses the fact that stateless
+formulas continue to hold after execution of programs (whereas the inverse is
+not true due to possible nontermination of the program $p$), and the second one
+expresses the fact that stateless formulas that hold after terminating
+executions of $p$ also hold unconditionally. The sequencing axioms seq$\Box$ and
+seq$\Diamond$ allow one to freely split and join boxes and diamonds. 
+
+
+Two further axioms that are needed in Chapter \ref{cha:implementation} can only
+be proved in so called \emph{logically regular monads} (cf. \cite[Def.
+5.14]{SchroederMossakowski:PDL}). Essentially, logical regularity means that
+arbitrary formulas $c : \Omega$ implying some global dynamic judgment can be moved
+into the scope of that judgment, as follows
+\[
+  c \Rightarrow \Gdj{x\leteq p}{\phi} \quad\mathit{implies}\quad 
+  \Gdj{x\leteq p}{(c \Rightarrow \phi)}
+\]
+This restriction is only necessary in the intuitionistic case; if the underlying
+logic is classical (as \IsabelleHOL) one can show that all monads are logically
+regular. Even in the intuitionistic case all monads that are under consideration
+here are logically regular.
+
+\vspace{1.5ex} \noindent  \textbf{Axioms:}
+  \begin{displaymath}
+    \begin{array}{lll}
+      \textrm{(eq$\Box$)} & p = q \Rightarrow \PDLBox{x\leteq p}{\phi} \Rightarrow \PDLBox{x\leteq q}{\phi}\\
+      \textrm{(eq$\Diamond$)} & p = q \Rightarrow \PDLDmd{x\leteq p}{\phi} \Rightarrow \PDLDmd{x\leteq q}{\phi}
+    \end{array}
+  \end{displaymath}
+
+\subsection{Hoare Calculi}
+\label{sec:hoare-calculi}
+
+The calculus of monadic dynamic logic can be applied in order to define a Hoare
+logic for partial as well as one for total correctness of monadic programs. In
+Hoare logics for partial correctness of imperative programs one has assertions
+of the form $\PHTriple{\phi}{p}{\psi}$, which are to be understood as ``if the
+precondition $\phi$ holds before execution of $p$, then the postcondition $\psi$ will
+hold afterwards if $p$ terminates''. This idea also makes sense for monadic
+programs, but in fact it is already incorporated in dynamic logic by formulas of
+the form $\phi \Rightarrow \PDLBox{p}{\psi}$. Likewise, one can give meaning to Hoare assertions
+for total correctness, leading to the following definition.
+
+\begin{defn}
+  \label{defn:hoare-assns}
+  A \emph{Hoare assertion for partial correctness} of monadic programs is a formula
+  \[ \phi \Rightarrow \PDLBox{\bar x\leteq \bar p}{\psi} \qquad (\text{written as} \quad
+  \PHTriple{\phi}{p}{\psi}) \] 
+
+  A \emph{Hoare assertion for total correctness} also requires the termination of the
+  program under consideration and hence takes the following form:
+  \[ \phi \Rightarrow (\PDLBox{\bar x\leteq \bar p}{\psi} \land \PDLDmd{\bar x\leteq\bar p}{\top})
+  \qquad (\text{written as} \quad 
+  \THTriple{\phi}{p}{\psi}) \]
+\end{defn}
+
+Classical Hoare rules like a sequencing rule or a context weakening rule
+\[
+  \Rule{\displaystyle \datop{\THTriple{\phi}{\bar x\leteq\bar p}{\psi}} 
+      {\THTriple{\psi}{\bar y\leteq\bar q}{\chi}}}
+       {\THTriple{\phi}{\bar x\leteq\bar p; \bar y\leteq \bar q}{\chi}}
+       \hspace*{15mm}
+  \Rule{\begin{array}{c} \THTriple{\phi}{\bar x\leteq \bar p}{\psi} \\
+             \phi' \Rightarrow \phi \\  \forall\bar x\bdot \psi \Rightarrow \psi' \end{array}}
+       {\THTriple{\phi'}{\bar x\leteq\bar p}{\psi'}}
+\]
+(which of course also exist for partial correctness assertions) are easily
+derived in the proof calculus of dynamic logic. In the next section we will  make
+use of a Hoare logic definable in this way for specifying and 
+proving correct a pattern match algorithm. While Hoare logic represents a
+convenient way of reasoning about programs in the state monad (which naturally
+comes quite close to reasoning about simple imperative programming languages),
+\EG the queue monad used in the next chapter does not lend itself to
+axiomatizing it simply by means of Hoare assertions about the basic queue
+operations and hence proofs about the queue monad will be conducted in the
+calculus of dynamic logic.
+
+\section{Specific Extensions for the Exception Monad}
+\label{sec:spec-extens-except}
+
+We have mentioned in Example \ref{ex:term-except} that non-termination
+in the (simple) exception monad means that an exception has been
+thrown. So, given an operation $\raiseEx : E \to T A$ which raises an
+exception from the set $E$ of exceptions, one has $\PDLBox{\raiseEx
+  e}{\bot}$ so that `anything can be proved in the presence of an
+exception'. This might be acceptable as long as exceptions simply
+indicate some kind of failure and it does not matter much which error
+eventually occured.  In this case, partial correctness explicitly does
+\emph{not} say anything about whether the program actually terminated
+and total correctness excludes all situations in which an exception
+occured.  But as soon as exceptions are employed to deliberately
+manipulate the control flow and if they may carry values (\EG in the
+monad for Java of \cite{JacobsPoll00,HuismanJacobs00}) this turns out
+to be a serious lack of expressiveness. An extension of the basic
+Hoare calculus descibed above has been given in
+\cite{SchroederMossakowski:Java} which makes it possible to reason
+about so called \emph{abnormal postconditions} required to hold if an
+exception has been thrown (as opposed to the \emph{normal
+  postcondition} which must be satisfied in case of regular
+termination). This construction relies on the presence of an operation
+to turn an exceptional state back into a normal one, which is, of
+course, the well-known $\catchEx : T A \to T(A + E)$ operation. As
+indicated by this signature, $\catchEx$ simply makes an exception
+visible rather than additionally requiring a handler to cope with the
+exceptional situation, as in Haskell's $\op{catchHS} : T A \to (E \to T A)
+\to T A$. The latter is easily definable in terms of the former.  In
+\cite{SchroederMossakowski:Java} a categorical definition of exception
+monads is given (in which $\catchEx$ is taken to be a natural
+transformation between $T$ and $T(\Arg + E)$ such that it equalises
+the strong monad morphisms $\catchEx_{\Arg + E}$ and $T\inl$), from
+which however one can derive all equations that may intuitively be
+expected to hold, \EG
+\begin{equation}
+  \label{eq:except-eqns}
+  \begin{split}
+    & \catchEx \DoStmt{x\leteq p; q\,x} = \\
+    & \quad\DoStmt{y\leteq \catchEx p; \Case y\Of \inl a \to \catchEx (q\,a) \;|\; \inr e \to
+    \ret(\inr e)}\\
+    & \catchEx (\ret x) = \ret (\inl x) \\
+    & \catchEx (\raiseEx e) = \ret (\inr e)
+  \end{split}
+\end{equation}
+where the first equation states how $\catchEx$ behaves under sequential
+composition of programs (in particular the second program $q$ is only executed
+if $p$ did not throw any exceptions), the second one states that $\ret$ does not
+throw any exceptions and the third one expresses how $\catchEx$ interacts with
+$\raiseEx$, namely that it precisely returns the exception thrown by this
+operation. 
+
+With these defining equations for $\catchEx$ available, one may reason in the
+regular Hoare calculus by wrapping up all programs with a $\catchEx$ and doing a
+case distinction about the return value of $\catchEx$ in the postcondition:
+\[
+\PHTriple{\phi}{y \leteq (\catchEx \xp)}{\Case y \Of \inl x \to \psi \;|\; \inr e \to S\,e}
+\]
+The abnormal postcondition $S : E \to D\Omega$ is a stateful predicate on exception
+values and may not mention the normal return value $x$, whereas $\psi$ of the
+normal postcondition may contain $x$ freely. This scheme can be given a more
+convenient notation by explicitly distinguishing between normal and abnormal
+postcondition and leaving the ubiquitous $\catchEx$ unmentioned:
+\[
+\EPHTriple{\phi}{\xp}{\psi}{S}
+\]
+
+It is now possible to derive a Hoare calculus to reason about
+exception monads, including rules for sequential composition of
+programs, a rule for $\raiseEx$ as well as one for $\catchEx$, etc.
+Figure XXX lists all rules that apply to arbitrary exception monads;
+in particular note rule (raise) which shows how the problem of giving
+a reasonable postcondition for $\raiseEx$ has been resolved. A
+two-step retranslation of these rules into dynamic logic proceeds as
+described above and in Section \ref{sec:hoare-calculi}.
+
+\subsection{Parameterised Exceptions}
+\label{sec:param-except}
+
+As a concrete example, we will now describe how to translate the exception
+handling mechanism of the Java programming language into the calculus descibed
+here. It will then appear that one further extension has to be made, since in
+Java even \code{return} statements terminate abnormally, resulting in exceptions
+carrying values of an arbitrary type. The stipulation that \code{return} (and
+\code{break} and \code{continue}) statements terminate abnormally is not
+specific to the model of Java given here, but rather settled in the Java
+language specification \cite{JoySteeleGoslingBracha00}.  To deal with this
+situation a conversion function $\mbody$ is required that mediates between
+slightly different monads. This is due to the fact that every concrete monad may only
+carry exception values of a fixed type, as will be seen, whereas \emph{return
+  exceptions} of different methods may have entirely unrelated types -- which is
+naturally so, since methods may have different return types.
+
+The fact that certain statements terminate abnormally suggests the following
+data type be used as the type of exceptions -- ignoring for the time being the
+class-hierarchy of exceptions rooting in class \code{Exception}, \IE all
+run-time errors like \code{Array\-OutOf\-Bounds\-Exception} or
+\code{IOException}. The main point to be made here is how to model the hidden
+exceptions that do not show up as such within a real Java program. So let
+\[
+E\ a = \op{MRet}\ a \Alt \op{FallenOff} \Alt \op{Break} \Alt \op{Cont} \Alt \op{Error}
+\]
+where $\op{MRet}\ a$ represents a return exception carrying the value
+which was the argument of the \code{return} statement that raised the exception.
+$\op{FallenOff}$ will be raised by the yet to be defined $\mbody$ operation to
+indicate that its argument illegally terminated normally, $\op{Break}$ and
+$\op{Cont}$ are exceptions raised by \code{break} and \code{continue} statements
+resp., and $\op{Error}$ is an exception that slightly over-simplifyingly models
+all other cases.
+ 
+The monad in which the semantics of sequential Java is modelled best is the
+state monad extended by exceptions and nontermination (where the latter is
+treated similar to an exception by the binding operation)
+\[
+T\ a\ b = S \to S \times (b + E\ a) + 1
+\]
+such that $T\ a$ is an exception state monad for each each type $a$ in which
+binding respects exceptions, \IE in $\DoStmt{x\gets p; q}$ the program $q$ is only
+evaluated if $p$ did not raise an exception. In this monad one has $\catchEx :
+T\ a\ b \to T\ a\ (b + E\ a)$ and $\raiseEx : E \to T\ a\ b$ for all types $a$ and
+$b$. The type of $\catchEx$ already points out that it is not possible to switch
+between monads of different exception types; this precludes the applicability of
+this model in situations where \EG one method of Java-return type \code{int} is
+called within another method of return type \code{boolean}. The following
+example demonstrates the problem. 
+\begin{expl} \label{ex:java-to-monad}
+Let $\op{mret}\ x$ abbreviate $\raiseEx
+(\op{MRet}\ x)$, then the Java methods
+\begin{alltt}
+public static int f(int x) {
+  if (g(x) < 0)
+    return x + 1;
+  else
+    return x - 1;
+}
+
+public static boolean g(int x) {
+  return x*x < 100;
+}
+\end{alltt}
+might na\"\i vely be translated into the monadic model  to obtain
+\begin{alltt}
+f :: Int -> T Int a
+f x = do r <- catch (g x)
+         case r of 
+           Inl (MRet b) -> if b then mret (x+1) else mret (x-1)
+           _            -> raise Error
+
+g :: Int -> T \(\Omega\) a
+g x = mret (x * x < 100)
+\end{alltt}
+But this results in a type error, since the program $\catchEx (g\ x)$ has type
+$T\ \Omega\ (a + \op{Int})$ in $f$, which itself is a monadic computation in $T\
+\op{Int}$. Thus, the two monadic computations are incompatible. Intuitively, it
+should be possible to resolve this incompatibility, as the type of exceptions
+$g$ may throw is not of importance to the exception type of $f$ (all calls to
+methods are enclosed by $\catchEx$ and hence cannot propagate into $f$). In
+fact, this can be achieved in a way that simultaneously avoids having to enclose
+every method call by a $\catchEx$. The key to this solution is the observation
+that every exception monad $T$ can be obtained by applying the \emph{exception
+  monad transformer} (well known as \code{ErrorT} from the Haskell libraries) to
+some existing monad $R$ such that $T$ is isomorphic to $R(\Arg + E)$. Basically,
+this says that for every exception monad there is some underlying monad such
+that they share the same structure, but the exception monad only lives on result
+types enriched by some set $E$ of exceptions. In the case at hand, $R$ simply is
+the state monad with non-termination, and $R\ (\Arg+E) = S \to S \times (\Arg+E) + 1$.
+The practical consequence of this relationship is that one can also write
+programs in $R(\Arg+E)$ and convert them to $T$ via \code{ErrorT}, which is
+precisely what is done for $\mbody$. Please refer to Appendix
+\ref{cha:hask-impl-mbody}, p.~\pageref{page:mbody-def}, for a Haskell implementation
+of $\mbody$ and the exception monad transformer. The pivotal property of
+$\mbody$ from the viewpoint of the exception monad $T$ is that it converts the
+exceptional state of a computation back into a normal one if a return exception
+has been raised, but lets all other exceptions pass -- thus making it
+\emph{polymorphic in its own exception type}. Additionally, in case of normal
+termination of its argument, $\mbody$ will raise a $\op{FallenOff}$ exception.
+Its type therefore is
+\[
+  \mbody : T\ a\ b \to T\ c\ a
+\]
+
+When translating Java methods into the monadic setting, one will thus enclose
+the translation $m$ of every method body \code{m} of function \code{f} by
+$\op{mbody}$ to obtain the translated function $f$. Conducted in this manner,
+the translation of the above Java methods then is
+\begin{alltt}
+f :: Int -> T a Int
+f x = mbody (
+      do b <- g x
+         if b then mret (x+1) else mret (x-1)
+      )
+
+g :: Int -> T b \(\Omega\)
+g x = mbody (
+      mret (x * x < 100)
+      )
+\end{alltt}
+\end{expl}
+
+Since every program $p$ obtained from a translation of a Java method into the
+monadic setting will now contain an occurrence of $\mbody$, it is henceforth
+necessary to specify and prove a Hoare rule for this construct which captures
+its decisive properties. Fortunately, one single rule suffices for this purpose
+in the case of parital as well as total correctness assertions (and both rules
+look alike so that only one of them is shown), noting that one will only want to
+prove properties of programs that terminate abruptly with a return exception.
+\[
+    \NRule{mbody}
+    {\EPHTriple{\phi}{x\leteq p}{\bot}{\LambdaTerm{e}{\Case\ e\Of\ \op{MRet}\,y \to \psi
+          \Alt e \to S\,e}}}
+    {\EPHTriple{\phi}{y\leteq \mbody\ p}{\psi}{S}}
+\]
+
+\subsubsection{Correctness of a pattern match algorithm}
+\label{sec:corr-patt-match}
+
+As an example of how to apply the extended calculus to realistic programs, we
+will specify and prove the correctness of a pattern match algorithm which
+searches for a given subpattern in a given base pattern.  The algorithm is
+implemented in an exception monad with dynamic references and a while loop; the
+existence of the latter implicitly presupposes additional structure on the
+monad, see 
+\cite[Section 7] {SchroederMossakowski:PDL} for details and Appendix \ref{cha:hask-impl-mbody}
+for an implementation. One therefore has to axiomatize additional operations on
+the monad (apart from $\ret$ and $\bindOp$); the corresponding specification is
+shown in Figure~\ref{fig:spec-ex-ref-mon}.  A condensed version of this proof
+already appeared in \cite{WalterEA05}, while here we provide the full picture.
+
+\begin{alltt}
+pmatch :: List a -> List a -> T e Nat
+pmatch base pat = mbody ( do \{
+    r <- new 0;
+    s <- new 0;
+    while (ret \(\top\))
+          (do \{ u <- \(\rd{r}\);
+                v <- \(\rd{s}\);
+                if u = len pat
+                  then mret v
+                  else if v + u = len base 
+                    then raise Error
+                    else if base!!(v+u) = pat!!u
+                      then r := u+1
+                      else do \{ s := v+1; r := 0 \}
+              \})
+    \})
+\end{alltt}
+                  
+This definition of $\op{pmatch}$ is almost identical to the Haskell
+implementation to be found in Appendix \ref{cha:hask-impl-mbody}, with slight
+modifications to retain the notation used so far. It introduces a type
+constructor $\op{List}$ mapping each type $a$ to the type of lists over $a$, a
+length function $\op{len} : \op{List}\ a \to \op{Nat}$ and an indexing function
+$!! : \op{List}\ a \to \op{Nat} \to a$ operating on these lists in the usual way --
+where the latter is undefined if the index exceeds the bounds of the list.
+Further it requires a natural numbers type $\op{Nat}$ and makes use of
+\emph{existential equality} when comparing elements of lists.  This means that a
+comparison $v!!i = w!!j$ yields true if and only if both $v!!i$ and $w!!j$ are
+defined and equal. An informal specification of this algorithm is as follows.
+\begin{itemize}
+\item $\op{pmatch}$ returns the first --\IE least-- index $x$ such that the
+  pattern $\op{pat}$ occurs in $\op{base}$ starting at index $x$.
+\item If no such index exists, $\op{pmatch}$ will fail with an exception
+  $\op{Error}$.
+\end{itemize}
+
+
+\begin{figure}
+  \begin{flalign*}
+    & \mathbf{Operations}\\
+    & \op{read} : \op{Ref}\ a \to T\ b\ a &&  (\op{read}\ r \defeq \rd{r})\\
+    & \op{write} : \op{Ref}\ a \to a \to T\ b\ 1 && (\op{write}\ r\ x \defeq {r
+      := x})\\
+    & \op{new} : a \to T\ b\ (\op{Ref}\ a)
+  \end{flalign*}
+  \begin{flalign*}
+    & \mathbf{Axioms}\\
+    & \AssertDsef{\op{read}} &&\text{(dsef-read)}\\
+    & \ETHTriple{}{r := x}{x = \rd{r}}{\bot} && \text{(read-write)}\\
+    & \ETHTriple{x = \rd{r} \land \lnot r=s}{s:=y}{x=\rd{r}}{\bot} 
+        && \text{(read-write-other)}\\
+    & \ETHTriple{}{r\leteq \op{new}\ x}{x=\rd{r}}{\bot}
+        && \text{(read-new)}\\
+    & \ETHTriple{x=\rd{r}\land\lnot r=s}{s\leteq \op{new}\ y}{x=\rd{r}}{\bot}
+        && \text{(read-new-other)}\\
+    & \ETHTriple{\phi}{r\leteq \op{new}\ x; p}{\top}{\top} \Rightarrow\\
+    & \qquad \ETHTriple{\phi}{r\leteq \op{new}\ x; p; s\leteq \op{new}\ y}{\lnot r=s}{\top}
+        && \text{(new-distinct)}
+  \end{flalign*}
+  \caption{Specification of the exception reference monad}
+  \label{fig:spec-ex-ref-mon}
+\end{figure}
+
+
+% The generic Hoare calculus for total exception correctness
+\input{parexfig}
+
+
+The specification in Figure~\ref{fig:spec-ex-ref-mon} extends the axiomatisation
+of the dynamic reference monad in terms of `normal' Hoare triples given in
+\cite{SchroederMossakowski:Hoare} by abnormal postconditions, which in most
+cases are $\bot$, asserting that the corresponding operations do not raise
+exceptions. An exception is the rule (new-distinct), which states that
+subsequent creation of references, with an arbitrary program $p$ (which may
+raise exceptions) executed in between, produces distinct references.  We prove
+total correctness of the algorithm generically, \IE without further assumptions
+on the underlying monad other than the axioms of
+Figure~\ref{fig:spec-ex-ref-mon} and the interpretability of a $\While$
+construct. Figure \ref{fig:exc-partial-hoare} displays the generic Hoare
+calculus for total exception correctness. The calculus for partial correctness
+is essentially identical (where the square brackets are of course replaced by
+curly brackets) except for rule (stateless) in which there is no need for a
+premiss.
+
+For the actual method body $p$, \IE the argument of $\mbody$ in function
+$\op{pmatch}$, we claim that it terminates abnormally, raising either a return
+exception carrying as its value an index $x$ that is the starting position of
+the first occurence of the pattern in the base string, or a failure exception
+$\op{Error}$ indicating that there is no occurrence of the pattern in the base
+string. Compare this to the specification \eqref{eq:pmmbody-spec} for
+$\op{pmatch}$ itself, which actually \emph{returns} the index $x$ if found:
+\begin{equation}
+\label{eq:pmatchspec}
+\begin{array}{ll}
+[]~ p~ [\bot \parallel \lambda e.\; \Case&\ e\ \Of \\
+ & \hspace{0.7em}\op{MRet}\ i \to \op{MPOS}\ i \land
+    \forall j\bnd \op{MPOS}\ j\Rightarrow i\leq j\\
+ &  \mid \op{Error} \to \lnot \exists i\bnd \op{MPOS}\ i\\
+ &  \mid \Arg \to \bot]
+\end{array}
+\end{equation}
+The abnormal postcondition above will be denoted by $\op{POST}$ below. Here,
+$\op{MPOS}\ i$ states that the pattern is matched at position $i$ in the
+base string:
+\begin{equation*}
+\op{MPOS}\ i \equiv \forall j.\; 0 \leq j < \mathit{len}~\op{pat} \Rightarrow
+\op{base}!!(i+j) = \op{pat}!!j.
+\end{equation*}
+In order to apply the total exception while rule (while) of Figure
+\ref{fig:exc-partial-hoare}, we need to provide a loop invariant $\op{INV}$ and
+a termination measure $t$.  Putting
+\begin{equation*}
+\begin{array}{ll}
+\op{INV} \equiv 
+      & (\forall i.\; 0 \leq i < \rd{r} \Rightarrow 
+       \op{base}!!(\rd{s}+i) = \op{pat}!!i)\ \land {}\\
+      & \forall i.\; \op{MPOS}\ i \Rightarrow \rd{s} \leq i 
+\end{array}
+\end{equation*}
+(which implies $0 \leq \rd{r} \leq \mathit{len}~\op{pat}$ and $0\leq
+\rd{s} + \rd{r} \leq \mathit{len}~\op{base}$) guarantees that the
+dsef term \(t = (\mathit{len}~\op{base} - \rd{s},
+\mathit{len}~\op{pat} - \rd{r})\) always yields results of type
+$\op{Nat} \times \op{Nat}$, on which we have the lexicographic ordering
+as a well-founded relation.
+
+Establishing the invariant upon entrance into the loop is easy, since
+from the axioms given above, 
+\begin{equation}\label{eq:init-seq}
+\ETHTriple{}{r \leteq \op{new}\ 0; s \leteq \op{new}\ 0}
+{\rd{s} = \rd{r} = 0 \land \lnot (r = s)}{\bot}
+\end{equation}
+can be derived by the rules (seq), (conj), (read-new-other) and (new-distinct).
+Inside the loop, there are essentially four branches, arising from three
+applications of the rule (if), so that the three premisses of the total
+exception while rule are split into twelve proof goals (the two read operations
+$u\leteq \rd{r}$ and $v\leteq \rd{s}$ are dealt with by rules (dsef) and (seq)).
+The total exception while rule proof obligations intuitively are first to prove
+termination of the program at hand, then to prove that the invariant is
+maintained as well as that the termination measure decreases strictly, and
+finally to prove that the abnormal postcondition can be established given the
+loop invariant as a precondition. We know prove the goals for each branch, with
+some of those having obvious proofs omitted. Furthermore, we will leave the pre-
+and postcondition $\lnot (r = s)$ implicit, since it obviously prevails in the whole
+proof thanks to rule (stateless).
+
+\paragraph{(i) Returning an Index.} 
+\begin{gather}
+\label{eq:monkey1-1}
+\ETHTriple{\op{INV} \land \rd{r} = u \land \rd{s} = v
+  \land u = \op{len}~\op{pat}}{\op{mret}~v}{\top}{\top}\\[2ex]\nonumber
+\{\op{INV} \land \rd{r} = u \land \rd{s} = v \land u = \op{len}~\op{pat} \land
+(\op{len}~\op{base}-v, \op{len}~\op{pat}-u) = z\} \\
+\label{eq:monkey1-2}
+  {\op{mret}~v}\\\nonumber
+  \{\op{INV} \land (\op{len}~\op{base} - \rd{s}, 
+    \op{len}~\op{pat}-\rd{r}) < z \;\parallel\; \top\}\\[2ex]
+\label{eq:monkey1-3}
+\EPHTriple{\op{INV} \land \rd{r} = u \land \rd{s} = v \land u = \op{len}~\op{pat}}
+  {\op{mret}~v}{\top}{\op{POST}}
+\end{gather}
+By the total and partial variants of rules (raise) and (wk), recalling that
+$\op{mret}~v$ is just an abbreviation for $\raiseEx~\op{MRet}~v$ one easily
+obtains \eqref{eq:monkey1-1} and \eqref{eq:monkey1-2}. It remains to show
+\eqref{eq:monkey1-3}; now from its precondition we infer $\op{MPOS}\ v \land \forall i.\,
+\op{MPOS}\ i \Rightarrow v \leq i$, a stateless formula.  Further we may derive
+$\EPHTriple{}{\op{mret}~v}{\bot}{\lambda e.\; e = (\op{MRet}~v)}$ by (raise). Hence, by
+(stateless), (conj), and (wk), we obtain
+\begin{multline*}
+\{\op{INV}  \land \rd{r} = u \land \rd{s} = v \land \rd{r}
+= \mathit{len}~\op{pat}\}\ \op{mret}~v\\
+ \{\bot \parallel \lambda e.\, e = \op{MRet}\ v
+\land \op{MPOS}\ v \land \forall i.\, \op{MPOS}\ i \Rightarrow v\leq i\}
+\end{multline*}
+The formula in the abnormal postcondition implies $\op{POST}$, since the
+kind of exception  is identified as $\op{MRet}$ and thus the formula can be
+extended to the case construct of
+$\op{POST}$. This means we are finished by another application
+of (wk).
+
+\paragraph{(ii) Failing to Find an Index.}
+\begin{gather}
+\label{eq:monkey2-1}
+\ETHTriple{\op{INV} \land \rd{r} = u \land \rd{s} = v \land \lnot(u = \op{len}~\op{pat})
+\land u+v = \op{len}~\op{base}}{\raiseEx~\op{Error}}{\top}{\top}\\[2ex]
+\label{eq:monkey2-2}
+\EPHTriple{\op{INV} \land (\op{len}~\op{base} - \rd{s}, \op{len}~\op{pat} - \rd{r}) = z
+  \land \ldots}{ \raiseEx~\op{Error}}{\op{INV} \land \ldots}{\top}\\[2ex] \nonumber
+\{\op{INV} \land \rd{r} = u \land \rd{s} = v \land 
+ \lnot (u = \op{len}~\op{pat}) \land u+v = \op{len}~\op{base}\}\\
+\label{eq:monkey2-3}
+{\raiseEx~\op{Error}}\\\nonumber
+\{\top \parallel \op{POST}\}
+\end{gather}
+Again, \eqref{eq:monkey2-1} and \eqref{eq:monkey2-2} --which has not even been
+written out in full; the pattern is as in (i)-- are immediate by rules
+(raise) and (wk). To show \eqref{eq:monkey2-3} we note that by (raise) one has 
+\begin{equation}
+\label{eq:aux-raise-error}
+\EPHTriple{}{\raiseEx~\op{Error}}{\bot}{\lambda e.\; e = \op{Error}}
+\end{equation}
+and letting $P \defeq \op{INV}[u/ \rd{r}, v/ \rd{s}] \land u + v =
+\op{len}~\op{base} \land \lnot(u = \op{len}~\op{pat})$ by (stateless) one obtains
+\begin{equation}\label{eq:aux-inv-stl}
+\EPHTriple{P}{\raiseEx~\op{Error}}{P}{\lambda e.\, P}
+\end{equation}
+After strengthening the precondition of \eqref{eq:aux-raise-error} by (wk) one
+may combine it with \eqref{eq:aux-inv-stl} by rule (conj). But the formula thus
+obtained in the abnomal postcondition implies $\op{POST}$: informally this can
+be seen because the exception type is $\op{Error}$; the substituted invariant
+guarantees that no pattern has been found up to $v$ and none can appear later on
+as the end of the pattern has been reached and $u$ is less than
+$\op{len}~\op{pat}$; this means that no occurrence of $\op{pat}$ in $\op{base}$
+exists. 
+
+\paragraph{(iii) Proceeding With a Partial Match.}
+In this branch the first and third goals are trivially proved, since assignment
+terminates and does not raise exceptions. The second goal is
+\begin{gather}
+\nonumber
+\{\op{INV} \land \rd{r} = u\land \rd{s} = v\land \lnot(u=\op{len}~\op{pat})\land
+  \lnot(u+v = \op{len}~\op{base}) \\\nonumber
+  {}\land (\op{len}~\op{base} - v,  z = \op{len}~\op{pat} - u)
+  \land \op{base}!!(u+v) = \op{pat}!!u\}\\
+\label{eq:monkey3-2}
+  {r := u + 1}\\\nonumber
+  \{\op{INV} \land (\op{len}~\op{base} - \rd{s}, \op{len}~\op{pat} - \rd{r})
+  < z \;\parallel\; \top\}
+\end{gather}
+There are two parts to be shown here, on the one hand it has to be established
+that the invariant holds in the postcondition and on the other hand, one must
+show that the termination measure $t$ decreases. Both proofs hinge on rules
+(read-write) and (read-write-other) from which one infers 
+\begin{equation}
+\label{eq:rd-wrt-carry}
+\EPHTriple{\lnot(r = s) \land
+  \rd{s} = v} {r := u+1}{\rd{s} = v \land \rd{r} = u+1}{\bot}
+\end{equation}
+so that in \eqref{eq:monkey3-2} the value of $\rd{s}$ carries over from the pre-
+to the postcondition, while the value of $\rd{r}$ is increased exactly by one.
+Taken together, this forces the measure $t$ to decrease strictly. Regarding the
+invariant a similar point can be made: analogous to (ii) the invariant with $u$
+and $v$ replacing $\rd{r}$ and $\rd{s}$ respectively carries over from the
+precondition to the postcondition since it is stateless. Moreover, the facts
+that the partial match may be extended, \IE one has $\op{base}!!(u+v) =
+\op{pat}!!u$, and \eqref{eq:rd-wrt-carry} establish the invariant proper.
+
+
+\paragraph{(iv) Starting a New Match.}
+Again, the first and third goals are not shown, because the situation is
+essentially the same as for (iii), the only difference being that two
+assignments are executed instead of one.
+\begin{gather}
+\label{eq:monkey4-2}\nonumber
+\{\op{INV} \land \rd{r} = u \land \rd{s} = v \land \lnot(u = \op{len}~\op{pat}) \land \lnot (v+u =
+\op{len}~\op{base}) \\\nonumber
+{} \land z = (\op{len}~\op{base} - v, \op{len}~\op{pat} - u) \land
+   \lnot(\op{base}!!(u+v) = \op{pat}!!u)\}\\
+{\DoStmt{s := v + 1; r := 0}}\\\nonumber
+\{\op{INV} \land (\op{len}~\op{base} - \rd{s}, \op{len}~\op{pat} - \rd{r}) < z\}
+\end{gather}
+Once more the crucial fact can be obtained from (read-write) and
+(read-write-other):
+\begin{equation}
+\label{eq:rd-wrt-carry2}
+\EPHTriple{\lnot(r = s)} {s:= v+1; r := 0}{\rd{r} = 0 \land \rd{s} = v+1}{\bot}
+\end{equation}
+This forces the termination measure to decrease strictly, and enables one to
+retain the invariant in the postcondition. Informally this is valid due to the
+fact that $\lnot(\op{base}!!(u+v) = \op{pat}!!u)$, \IE the current partial match
+cannot be completed. It is then legal to increase $s$ by one to search for
+another match further on, validating the second conjunct of the invariant. By
+setting $r$ to zero the first conjunct of the invariant becomes vacuously true.
+
+
+
+Altogether, having arrived at proving Formula~(\ref{eq:pmatchspec}) by
+composing (\ref{eq:init-seq}) with the conclusion of the total exception
+while rule, we can then apply rule (mbody) to obtain the total
+correctness of the whole algorithm:
+\begin{multline}
+\label{eq:pmmbody-spec}
+[]~ i \leteq \mbody~p ~[\op{MPOS}\ i \land
+    \forall j.\, \op{MPOS}\ j\Rightarrow i\leq j \parallel {} \\ 
+\lambda e.\,\Case\ e\ \Of\ 
+   \begin{array}[t]{l}
+    \hspace{0.5em}\op{Error} \to \lnot \exists i.\, \op{MPOS}\ i \\
+    \mid \Arg \to\bot].
+   \end{array}
+\end{multline}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 

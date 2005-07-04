@@ -1,0 +1,158 @@
+% Mathematical ``environments'' for definitions, proofs, etc.
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[chapter]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{expl}[thm]{Example}
+
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+
+
+\numberwithin{equation}{chapter}
+
+
+\newenvironment{ttscript}[1]
+  {\begin{list}{}{%
+        \settowidth{\labelwidth}{\texttt{#1}}
+        \setlength{\leftmargin}{\labelwidth}
+        \addtolength{\leftmargin}{\labelsep}
+        \setlength{\parsep}{0.5ex plus0.2ex minus0.2ex}
+        \setlength{\itemsep}{0.3ex}
+        \renewcommand{\makelabel}[1]{$\bullet$ \texttt{##1}\hfill}}}
+    {\end{list}}
+
+               
+
+
+% An environment for case distinctions (to be used mainly in proofs, defns,
+% etc.)
+\newenvironment{listcase}
+               {\begin{list}{}
+                   {%
+                     \renewcommand{\makelabel}[1]{[ ##1 ]\hfill}}}
+                 {\end{list}}
+
+
+\newenvironment{isabelleenv} %
+               {\begin{displaymath}\begin{array}{l}\rule{\textwidth}{0mm}\\} %
+               {\end{array}\end{displaymath}}
+
+% standard phrases
+
+\newcommand{\IE}{{i.e.}\xspace}
+\newcommand{\EG}{\emph{e.g.}\xspace}
+\newcommand{\TM}{\texttrademark\xspace}
+% \newcommand{\TM}{{\small$\mathrm{^{TM}}$}\xspace}
+
+
+\newcommand{\comment}[1]{\marginpar{\color{red}#1}}
+
+% unknown whether it really makes sense .. .
+\newcommand{\Eat}[1]{}
+
+% Isabelle stuff
+\newcommand{\Isabelle}{\textit{Isabelle}\xspace}
+\newcommand{\IsabelleHOL}{\textit{Isabelle/HOL}\xspace}
+\newcommand{\IsabelleIsar}{\textit{Isabelle/Isar}\xspace}
+\newcommand{\IsaMap}[2]{::\, #1 \Rightarrow #2}
+\newcommand{\IsaMapAB}[3]{::\, #1 \Rightarrow #2 \Rightarrow #3}
+
+% Highlight an initial paragraph segment
+\newcommand{\parhilite}[1]{\noindent \textbf{#1}}
+
+
+% PDL symbols
+%\newcommand{\Gdj}[2]{\boldsymbol{[}\hspace{-2.75pt}\boldsymbol{[}#1\boldsymbol{]}%
+%  \hspace{-2.75pt}\boldsymbol{]}\,#2}
+\newcommand{\Gdj}[2]{[#1]_G\,#2}
+\newcommand{\PDLBox}[1]{[#1]\,}
+\newcommand{\PDLDmd}[1]{\langle#1\rangle\,}
+\newcommand{\xpbox}[1]{\PDLBox{x\leteq p}{#1}}
+\newcommand{\xpdmd}[1]{\PDLDmd{x\leteq p}{#1}}
+\newcommand{\gbox}{\square\hspace{-6.5pt}\raisebox{2pt}{\tiny{G}}\;}
+\newcommand{\PHTriple}[3]{\{#1\}\:#2\:\{#3\}}
+\newcommand{\THTriple}[3]{[#1]\:#2\:[#3]}
+\newcommand{\EPHTriple}[4]{\{#1\}\:#2\:\{#3\:\|\:#4\}}
+\newcommand{\ETHTriple}[4]{[#1]\:#2\:[#3\:\|\:#4]}
+\newcommand{\xp}{x \leteq p}
+
+
+% mathematical / functional notation:
+%\newcommand{\defeq}{\stackrel{\mathrm{def}}{\equiv}}
+\newcommand{\defeq}{\equiv_{\mathrm{def}}}
+\newcommand{\datop}[2]{\genfrac{}{}{0pt}{0}{#1}{#2}}
+\newcommand{\True}{\mathsf{True}}
+\newcommand{\False}{\mathsf{False}}
+\newcommand{\Let}{\mathsf{let}\,}
+\newcommand{\In}{\;\mathsf{in}\;}
+\newcommand{\IfTerm}[3]{\mathsf{if}\;#1\;\mathsf{then}\;#2\;\mathsf{else}\;#3}
+\newcommand{\WhileTerm}[2]{\mathsf{while}\;#1\;#2}
+\newcommand{\If}{\mathsf{if}\xspace}
+\newcommand{\Then}{\;\mathsf{then}\;}
+\newcommand{\Else}{\;\mathsf{else}\;}
+\newcommand{\While}{\mathsf{while}}
+\newcommand{\Case}{\mathsf{case}\;}
+\newcommand{\Of}{\;\mathsf{of}\;}
+% \newcommand{\DO}{\mathsf{do}\xspace}
+\newcommand{\DoStmt}[1]{\mathsf{do}\: \{#1\}}
+\newcommand{\Type}[1]{\mathit{#1}}
+\newcommand{\leteq}{\!\gets\!}
+\newcommand{\NT}[1]{\mathit{#1}}
+\newcommand{\Alt}{\;|\;}
+\newcommand{\Rule}[2]{\frac{\displaystyle #1}{\displaystyle #2}}
+\newcommand{\NRule}[3]{(\mathbf{#1})\quad\Rule{#2}{#3}}
+\newcommand{\GapFrac}[2]{\frac{\rule{0em}{2.3ex}#1}{\rule{0mm}{2.3ex}#2}}
+\newcommand{\LambdaTerm}[2]{{\lambda #1.\,#2}}
+\newcommand{\Arg}{\_\!\_}
+\newcommand{\Cat}[1]{\mathbf{#1}}
+\newcommand{\Fun}[1]{\mathit{#1}}
+\newcommand{\Map}[2]{:\, #1 \to #2}
+\newcommand{\MapAB}[3]{:\, #1 \to #2 \to #3}
+\newcommand{\Id}{{id}}
+\newcommand{\bnd}{\ensuremath{.\;}}
+\newcommand{\bdot}{.\:}
+\newcommand{\unit}{\ast}
+\newcommand{\rd}[1]{{\ast#1}}
+
+%% \newcommand{\defn}[1]{\textsc{#1}}
+\newcommand{\ibox}[1]{\mbox{\itshape #1}}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\AssertDsef}[1]{\mathrm{dsef}(#1)}
+
+
+% Functions
+\newcommand{\bindOp}{\gg=}
+\newcommand{\op}[1]{\mathit{#1}}
+\newcommand{\inl}{\mathit{inl}\,}
+\newcommand{\inr}{\mathit{inr}\,}
+\newcommand{\Suc}{\mathit{Suc\,}}
+\newcommand{\Ret}{\mathit{Ret}\,}
+\newcommand{\chld}{\mathit{chld}\,}
+\newcommand{\enq}{\mathit{enq\,}}
+\newcommand{\enqAll}{\mathit{enqAll\,}}
+\newcommand{\deqAll}{\mathit{deqAll}}
+\newcommand{\deq}{\mathit{deq}}
+\newcommand{\ret}{\mathit{ret\,}}
+\newcommand{\get}{\mathit{get}}
+\newcommand{\last}{\mathit{last}}
+\newcommand{\relq}{\mathit{relq}}
+\newcommand{\inq}{\mathit{inq\,}}
+\newcommand{\qmt}{\mathit{empty}}
+\newcommand{\raiseEx}{\mathit{raise}\,}
+\newcommand{\catchEx}{\mathit{catch}\,}
+\newcommand{\mbody}{\mathit{mbody}\,}
+% defining some colors
+%\definecolor{red}{rgb}{1.0,0,0}
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End: 
