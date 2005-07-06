@@ -6,11 +6,11 @@
    logic, thus following Schroeder/Mossakowski.
 *)
 
-header {* Introducing propositional connectives *}
+header {* Introducing Propositional Connectives *}
 theory MonLogic = MonProp:
 
 
-subsection {* Propositional connectives *}
+subsection {* Propositional Connectives *}
 
 text {* As usual in intuitionistic logics, we introduce conjunction,
   disjunction and implication independently of each other.
@@ -22,7 +22,7 @@ consts
  "\<longrightarrow>\<^sub>D"        :: "[bool D, bool D] \<Rightarrow> bool D"    (infixr 25)
 
 text {*
-  According with the definition in \cite{pdlpaper}, the connectives
+  According with the definition in \cite{SchroederMossakowski:PDL}, the connectives
   are simply lifted from HOL, and validity amounts to being
   equal to a program always returning @{term "True"}.
 *}
@@ -37,7 +37,7 @@ constdefs
  iffD        :: "[bool D, bool D] \<Rightarrow> bool D"   (infixr "\<longleftrightarrow>\<^sub>D" 20)
  "P \<longleftrightarrow>\<^sub>D Q \<equiv> (P \<longrightarrow>\<^sub>D Q) \<and>\<^sub>D (Q \<longrightarrow>\<^sub>D P)"
  NotD        :: "bool D \<Rightarrow> bool D"              ("\<not>\<^sub>D _" [40] 40)
-  "NotD P \<equiv> P \<longrightarrow>\<^sub>D Ret False"
+  "\<not>\<^sub>D P \<equiv> P \<longrightarrow>\<^sub>D Ret False"
 
 
 
@@ -94,7 +94,7 @@ lemma disjD_Ret_hom: "Ret (a\<or>b) = ((Ret a) \<or>\<^sub>D (Ret b))"
 lemma impD_Ret_hom: "Ret (a\<longrightarrow>b) = ((Ret a) \<longrightarrow>\<^sub>D (Ret b))"
   by (simp add: lift_Ret_hom impD_def)
 
-lemma NotD_Ret_hom: "Ret (\<not> P) = (NotD (Ret P))"
+lemma NotD_Ret_hom: "Ret (\<not> P) = (\<not>\<^sub>D (Ret P))"
   by(simp add: NotD_def impD_Ret_hom[symmetric])
 
 
@@ -102,9 +102,6 @@ lemma NotD_Ret_hom: "Ret (\<not> P) = (NotD (Ret P))"
 text {*
   If a formula depending on variable @{term "x"} is valid for all @{term "x"}, then we
   may also `substitute' it by a @{term "dsef"} term.
-  The lemma written in @{typ "'a T"} rather than @{typ "'a D"} is clearer 
-  (if not type correct):
-  @{text "\<forall>x. \<turnstile> P x \<Longrightarrow> \<forall>b. dsef b \<longrightarrow> \<turnstile> do {a\<leftarrow>b; P a}"}
 *}
 
 lemma dsef_form: " \<forall>x. \<turnstile> P x \<Longrightarrow> \<forall>b. \<turnstile> \<Up> (do {a\<leftarrow>\<Down> b; \<Down> (P a)})"
@@ -204,17 +201,101 @@ text {*
 *} 
 
 
-subsection {* Proof rules *}
+subsection {* Setting up the Simplifier for Propositional Reasoning *}
+
+
+text {* 
+  Since natural deduction rules don't get us far in the calculus of global
+  validity judgments (in particular, we do not have an analogon for
+  the implication introduction rule), we algebraize it and perform
+  proofs by term manipulation.
+ 
+  All these axioms are in fact provable; it is just the shortage of time that
+  forces us to impose them directly.  
+*}
+
+constdefs
+  xorD :: "[bool D, bool D] \<Rightarrow> bool D"      (infixr "\<oplus>\<^sub>D" 20)
+  "xorD P Q  \<equiv>  (P \<and>\<^sub>D \<not>\<^sub>D Q) \<or>\<^sub>D (\<not>\<^sub>D P \<and>\<^sub>D Q)"
+
+  
+axioms
+  apl_and_assoc:   "((P \<and>\<^sub>D Q) \<and>\<^sub>D R) = (P \<and>\<^sub>D (Q \<and>\<^sub>D R))"
+  apl_xor_assoc:    "((P \<oplus>\<^sub>D Q) \<oplus>\<^sub>D R) = (P \<oplus>\<^sub>D (Q \<oplus>\<^sub>D R))"
+  apl_and_comm:     "(P \<and>\<^sub>D Q) = (Q \<and>\<^sub>D P)"
+  apl_xor_comm:     "(P \<oplus>\<^sub>D Q) = (Q \<oplus>\<^sub>D P)"
+  apl_and_LC:       "(P \<and>\<^sub>D (Q \<and>\<^sub>D R)) = (Q \<and>\<^sub>D (P \<and>\<^sub>D R))"
+  apl_xor_LC:       "(P \<oplus>\<^sub>D (Q \<oplus>\<^sub>D R)) = (Q \<oplus>\<^sub>D (P \<oplus>\<^sub>D R))"
+  apl_and_True_r:   "(P \<and>\<^sub>D Ret True) = P"
+  apl_and_True_l:   "(Ret True \<and>\<^sub>D P) = P"
+  apl_and_absorb:   "(P \<and>\<^sub>D P) = P"
+  apl_and_absorb2:  "(P \<and>\<^sub>D (P \<and>\<^sub>D Q)) = (P \<and>\<^sub>D Q)"
+  apl_and_False_l:  "(Ret False \<and>\<^sub>D P) = Ret False"
+  apl_and_False_r:  "(P \<and>\<^sub>D Ret False) = Ret False"
+  apl_xor_False_r:  "(P \<oplus>\<^sub>D Ret False) = P"
+  apl_xor_False_l:  "(Ret False \<oplus>\<^sub>D P) = P"
+  apl_xor_contr:    "(P \<oplus>\<^sub>D P) = Ret False"
+  apl_xor_contr2:   "(P \<oplus>\<^sub>D (P \<oplus>\<^sub>D Q)) = Q"
+  apl_and_ldist:    "(P \<and>\<^sub>D (Q \<oplus>\<^sub>D R)) = ((P \<and>\<^sub>D Q) \<oplus>\<^sub>D (P \<and>\<^sub>D R))"
+  apl_and_rdist:    "((P \<oplus>\<^sub>D Q) \<and>\<^sub>D R) = ((P \<and>\<^sub>D R) \<oplus>\<^sub>D (Q \<and>\<^sub>D R))"
+  -- {* Expressing the connectives by conjunction and exclusive or *}
+  apl_imp_xor:      "(P \<longrightarrow>\<^sub>D Q) = ((P \<and>\<^sub>D Q) \<oplus>\<^sub>D P \<oplus>\<^sub>D Ret True)"
+  apl_or_xor:       "(P \<or>\<^sub>D Q) = (P \<oplus>\<^sub>D Q \<oplus>\<^sub>D (P \<and>\<^sub>D Q))"
+  apl_not_xor:      "(\<not>\<^sub>D P) = (P \<oplus>\<^sub>D Ret True)"
+  apl_iff_xor:      "(P \<longleftrightarrow>\<^sub>D Q) = (P \<oplus>\<^sub>D Q \<oplus>\<^sub>D Ret True)"
+
+
+text {* @{text "pdl_taut"} is the collection of all these rules, so that
+  they can be handed over to the simplifier conveniently.
+  
+  This set of rewrite rules is complete with respect to normalisation
+  of propositional tautologies to their normal form 
+  @{term "Ret True"}. Hence, we can prove monadic tautologies 
+  in one fell swoop by applying 
+  the tactic @{text "(simp only: pdl_taut Valid_Ret)"}.
+*}
+
+lemmas pdl_taut = (*<*) apl_and_assoc apl_xor_assoc apl_and_comm apl_xor_comm 
+  apl_and_LC apl_xor_LC apl_and_True_r apl_and_True_l apl_and_absorb 
+  apl_and_absorb2 apl_and_False_l apl_and_False_r apl_xor_False_r 
+  apl_xor_False_l apl_xor_contr apl_xor_contr2 apl_and_ldist apl_and_rdist
+  apl_imp_xor apl_or_xor apl_not_xor apl_iff_xor (*>*) -- {* \dots all axioms above *}
+
+
+lemmas mon_prop_reason = Abs_Dsef_inverse dsef_liftM2 
+  Dsef_def conjD_def disjD_def impD_def NotD_def 
+
+
+text {* A proof showing in what manner the above axioms may be proved *}
+lemma "(P \<and>\<^sub>D (\<not>\<^sub>D P)) = Ret False"
+  apply(simp add: mon_prop_reason, simp only: liftM2_def)
+  apply(unfold Ret_def)
+  apply(rule cong[of Abs_Dsef Abs_Dsef], rule refl)
+  apply(simp add: Abs_Dsef_inverse Dsef_def)
+  apply(simp add: mon_ctr del: bind_assoc)
+  apply(simp add: cp_arb dsef_cp[OF dsef_Rep_Dsef])
+  apply(rule dis_left2)
+  apply(rule dsef_dis[OF dsef_Rep_Dsef])
+done
+
+
+subsection {* Proof Rules *}
 
 text {* 
   Proof rules, which can all be proven to be correct, since we have
   the semantics built into the logic (i.e. we can access it within HOL).
+  Some proofs however simply employ the above tautology reasoner.
 *}
-theorem mon_mp: "\<lbrakk>\<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> P\<rbrakk> \<Longrightarrow> \<turnstile> Q"
+
+theorem pdl_excluded_middle: "\<turnstile> P \<or>\<^sub>D (\<not>\<^sub>D P)"
+  by (simp add: pdl_taut)
+
+
+theorem pdl_mp: "\<lbrakk>\<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> P\<rbrakk> \<Longrightarrow> \<turnstile> Q"
   by(simp add: Valid_simp impD_def liftM2_def Rep_Dsef_inverse)
 
 text {* Disjunction introduction *}
-theorem mon_disjI1: "\<turnstile> P \<Longrightarrow> \<turnstile> (P \<or>\<^sub>D Q)"
+theorem pdl_disjI1: "\<turnstile> P \<Longrightarrow> \<turnstile> (P \<or>\<^sub>D Q)"
 proof -
   assume "\<turnstile> P"
   hence pt: "\<Down> P = ret True" by (simp only: Valid_simp)
@@ -239,7 +320,7 @@ proof -
 qed
 
 text {* Entirely analogous for this dual rule. *}
-theorem mon_disjI2: "\<turnstile> Q \<Longrightarrow> \<turnstile> (P \<or>\<^sub>D Q)"
+theorem pdl_disjI2: "\<turnstile> Q \<Longrightarrow> \<turnstile> (P \<or>\<^sub>D Q)"
 (*<*)
 proof -
   assume "\<turnstile> Q"
@@ -265,30 +346,39 @@ proof -
 qed
 (*>*)
 
-lemmas mon_prop_reason = Abs_Dsef_inverse dsef_liftM2 
-  Dsef_def conjD_def disjD_def impD_def NotD_def 
 
-
-theorem mon_excluded_middle: "\<turnstile> P \<or>\<^sub>D (\<not>\<^sub>D P)"
-  -- {* First attempt of a semi-automatic proof tactic for prop. taut. *}
-  apply(rule iffD2[OF Valid_simp])
-  apply(simp add: disjD_def NotD_def impD_def dsef_liftM2)
-  apply(unfold liftM2_def)
-  apply(simp only: mon_ctr ret_lunit)
-  apply(simp add: cp_arb cp_Rep_Dsef) 
-  apply(simp add: dis_left2 dis_Rep_Dsef)
-  done
-
-theorem mon_FalseE: "\<turnstile> Ret False \<Longrightarrow> \<turnstile> R"
+text {* 
+  The following proof proceeds by a standard pattern: First insert the 
+  assumptions into some specifically tailored do-term and then 
+  reduce this do-term to @{term "ret True"} with the simplifier.
+*}
+theorem pdl_disjE: "\<lbrakk> \<turnstile> P \<or>\<^sub>D Q; \<turnstile> P \<longrightarrow>\<^sub>D R; \<turnstile> Q \<longrightarrow>\<^sub>D R\<rbrakk> \<Longrightarrow> \<turnstile> R"
 proof -
-  assume "\<turnstile> Ret False"
-  hence "False" by (rule iffD1[OF Valid_Ret])
-  thus "\<turnstile> R" by (rule FalseE)
+  assume a1: "\<turnstile> P \<or>\<^sub>D Q" "\<turnstile> P \<longrightarrow>\<^sub>D R" "\<turnstile> Q \<longrightarrow>\<^sub>D R"
+  note copy = dsef_cp[OF dsef_Rep_Dsef]
+  note dsc  = dsef_dis[OF dsef_Rep_Dsef]
+  -- {* 1st part: blow up program @{term "\<Down> R"} to some giant term: *}
+  have "\<Down> R = do {u\<leftarrow>ret True; v\<leftarrow>ret True; w\<leftarrow>ret True; r\<leftarrow>\<Down> R; ret(u\<longrightarrow>v\<longrightarrow>w\<longrightarrow>r)}"
+    by simp
+  also from a1 have "\<dots> = do {u\<leftarrow>(\<Down> (P \<or>\<^sub>D Q));
+                             v\<leftarrow>(\<Down> (P \<longrightarrow>\<^sub>D R));
+                             w\<leftarrow>(\<Down> (Q \<longrightarrow>\<^sub>D R));
+                             r\<leftarrow>\<Down> R; ret (u\<longrightarrow>v\<longrightarrow>w\<longrightarrow>r)}"
+    by (simp add: Valid_simp)
+  -- {* 2nd part: reduce this giant program to @{term "ret True"} exploiting
+        properties of dsef programs *}
+  also have "\<dots> = ret True"
+    apply(simp add: mon_prop_reason liftM2_def dsef_Rep_Dsef dsef_seq mon_ctr del: bind_assoc)
+    apply(simp add: commute_dsef[of "\<Down> Q" "\<Down> P"])
+    apply(simp add: commute_dsef[of "\<Down> R" "\<Down> Q"])
+    apply(simp add: dsef_cp[OF dsef_Rep_Dsef] cp_arb del: bind_assoc)
+    apply(simp add: dsef_dis[OF dsef_Rep_Dsef] dis_left2)
+    done
+  finally show ?thesis by (simp only: Valid_simp)
 qed
+    
 
-
-
-theorem mon_conjI: "\<lbrakk> \<turnstile> P; \<turnstile> Q \<rbrakk> \<Longrightarrow> \<turnstile> P \<and>\<^sub>D Q"
+theorem pdl_conjI: "\<lbrakk> \<turnstile> P; \<turnstile> Q \<rbrakk> \<Longrightarrow> \<turnstile> P \<and>\<^sub>D Q"
 proof -
   assume a: "\<turnstile> P" "\<turnstile> Q"
   from a have "\<Down> P = ret True" by (simp add: Valid_simp)
@@ -301,252 +391,122 @@ proof -
 qed
 
 
-theorem mon_disjE: "\<lbrakk> \<turnstile> P \<or>\<^sub>D Q; \<turnstile> P \<longrightarrow>\<^sub>D R; \<turnstile> Q \<longrightarrow>\<^sub>D R\<rbrakk> \<Longrightarrow> \<turnstile> R"
+subsubsection {* Derived rules of inference *}
+
+
+theorem pdl_FalseE: "\<turnstile> Ret False \<Longrightarrow> \<turnstile> R"
 proof -
-  assume a1: "\<turnstile> P \<or>\<^sub>D Q" "\<turnstile> P \<longrightarrow>\<^sub>D R" "\<turnstile> Q \<longrightarrow>\<^sub>D R"
-  let ?P = "\<Down> P" and ?Q = "\<Down> Q" and ?R = "\<Down> R"
-  note copy = dsef_cp[OF dsef_Rep_Dsef]
-  note dsc  = dsef_dis[OF dsef_Rep_Dsef]
-  -- {* 1st part: blow up program @{term "?R"} to some giant term: *}
-  have "?R = do {u\<leftarrow>ret True; v\<leftarrow>ret True; w\<leftarrow>ret True; r\<leftarrow>?R; ret(u\<longrightarrow>v\<longrightarrow>w\<longrightarrow>r)}"
-    by simp
-  also from a1 have "\<dots> = do {u\<leftarrow>(\<Down> (P \<or>\<^sub>D Q));
-                             v\<leftarrow>(\<Down> (P \<longrightarrow>\<^sub>D R));
-                             w\<leftarrow>(\<Down> (Q \<longrightarrow>\<^sub>D R));
-                             r\<leftarrow>?R; ret (u\<longrightarrow>v\<longrightarrow>w\<longrightarrow>r)}"
-    by (simp add: Valid_simp)
-  also have "\<dots> = do {u\<leftarrow>do {x\<leftarrow>?P; y\<leftarrow>?Q; ret(x\<or>y)}; 
-                     v\<leftarrow>do {x\<leftarrow>?P; y\<leftarrow>?R; ret(x\<longrightarrow>y)};
-                     w\<leftarrow>do {x\<leftarrow>?Q; y\<leftarrow>?R; ret(x\<longrightarrow>y)};
-                     r\<leftarrow>?R; ret (u\<longrightarrow>v\<longrightarrow>w\<longrightarrow>r)}"
-    by (simp add: mon_prop_reason, simp only: liftM2_def)
-  
-
-  -- {* 2nd part: reduce this giant program to @{term "ret True"} by 
-        simple but tedious manipulations. *}
-  also have "\<dots> = 
-        do {p1\<leftarrow>?P; q1\<leftarrow>?Q; p2\<leftarrow>?P; r2\<leftarrow>?R; q3\<leftarrow>?Q; r3\<leftarrow>?R; r\<leftarrow>?R; 
-            ret((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}" by (simp add: mon_ctr del: bind_assoc)
-  also have "\<dots> = do {p1\<leftarrow>?P; p2\<leftarrow>?P; q1\<leftarrow>?Q; r2\<leftarrow>?R; q3\<leftarrow>?Q; r3\<leftarrow>?R; r\<leftarrow>?R;
-                      ret((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}"
-  proof -
-    have "\<forall>p1. do {q1\<leftarrow>?Q; p2\<leftarrow>?P; r2\<leftarrow>?R; q3\<leftarrow>?Q; r3\<leftarrow>?R; r\<leftarrow>?R; 
-                   ret((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)} =
-               do {p2\<leftarrow>?P; q1\<leftarrow>?Q; r2\<leftarrow>?R; q3\<leftarrow>?Q; r3\<leftarrow>?R; r\<leftarrow>?R;
-                      ret((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}"
-      (is "\<forall>p1. ?A p1 = ?B p1")
-    proof 
-      fix p1
-      have "dsef ?Q" by (rule dsef_Rep_Dsef)
-      moreover have "dsef ?P" by (rule dsef_Rep_Dsef)
-      ultimately have "\<forall>r. do {q1\<leftarrow>?Q; p2\<leftarrow>?P; r q1 p2} = do {p2\<leftarrow>?P; q1\<leftarrow>?Q; r q1 p2}"
-	by (rule commute_dsef)
-      thus "?A p1 = ?B p1" by (rule spec)
-    qed
-    thus ?thesis by simp
-  qed
-  also have "\<dots> = do {p1\<leftarrow>?P; p2\<leftarrow>?P; q1\<leftarrow>?Q; q3\<leftarrow>?Q; r2\<leftarrow>?R; r3\<leftarrow>?R; r\<leftarrow>?R;
-                      ret((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}"
-  proof -
-    have "\<forall>p1 p2 q1. 
-          do {r2\<leftarrow>?R; q3\<leftarrow>?Q; r3\<leftarrow>?R; r\<leftarrow>?R; ret ((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)} =
-          do {q3\<leftarrow>?Q; r2\<leftarrow>?R; r3\<leftarrow>?R; r\<leftarrow>?R; ret ((p1\<or>q1)\<longrightarrow>(p2\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}"
-      (is "\<forall>p1 p2 q1. ?A p1 p2 q1 = ?B p1 p2 q1")
-    proof -
-      {	fix p1 p2 q1
-	have "dsef ?R" by (rule dsef_Rep_Dsef)
-	moreover have "dsef ?Q" by (rule dsef_Rep_Dsef)
-	ultimately have "\<forall>r. do {r2\<leftarrow>?R; q3\<leftarrow>?Q; r r2 q3} = do {q3\<leftarrow>?Q; r2\<leftarrow>?R; r r2 q3}"
-	  by (rule commute_dsef)
-	hence "?A p1 p2 q1 = ?B p1 p2 q1" by (rule spec)
-      } thus ?thesis by blast
-    qed
-    thus ?thesis by simp 
-  qed
-  also from copy[of P]
-  have "\<dots> = do {p1\<leftarrow>?P; q1\<leftarrow>?Q; q3\<leftarrow>?Q; r2\<leftarrow>?R; r3\<leftarrow>?R; r\<leftarrow>?R;
-    ret((p1\<or>q1)\<longrightarrow>(p1\<longrightarrow>r2)\<longrightarrow>(q3\<longrightarrow>r3)\<longrightarrow>r)}"
-    by (rule cp_arb)
-  also from copy[of Q]
-  have "\<dots> =do {p1\<leftarrow>?P; q1\<leftarrow>?Q; r2\<leftarrow>?R; r3\<leftarrow>?R; r\<leftarrow>?R; 
-                ret((p1\<or>q1)\<longrightarrow>(p1\<longrightarrow>r2)\<longrightarrow>(q1\<longrightarrow>r3)\<longrightarrow>r)}" by (simp add: cp_arb)
-  also from copy[of R]
-  have "\<dots> = do {p\<leftarrow>?P; q\<leftarrow>?Q; r\<leftarrow>?R; ret True}" by (simp add: cp_arb) 
-  also from dsc[of P] dsc[of Q] dsc[of R] have "\<dots> = ret True" by (simp add: dis_left2)
-  finally show ?thesis by (simp only: Valid_simp)
+  assume "\<turnstile> Ret False"
+  hence "False" by (rule iffD1[OF Valid_Ret])
+  thus "\<turnstile> R" by (rule FalseE)
 qed
-    
 
 
-axioms
- mon_conjE: "\<lbrakk> \<turnstile> P \<and>\<^sub>D Q; \<lbrakk>\<turnstile> P; \<turnstile> Q\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
+lemma pdl_notE: "\<lbrakk> \<turnstile> P; \<turnstile> \<not>\<^sub>D P \<rbrakk> \<Longrightarrow> \<turnstile> R"
+proof (unfold NotD_def)
+  assume p: "\<turnstile> P" and np: "\<turnstile> P \<longrightarrow>\<^sub>D Ret False"
+  from np p have "\<turnstile> Ret False" by (rule pdl_mp)
+  thus "\<turnstile> R" by (rule pdl_FalseE)
+qed
 
-text {* 
-  Axiom @{thm [source] mon_conjE} is, of course, actually a theorem. Its proof
-  proceeds in the same fashion as that of @{thm [source] mon_disjE}, i.e. one
-  derives the global validity of @{term "P"} (resp. @{term "Q"}) from that of
-  @{term "P \<and>\<^sub>D Q"} by restating @{term "\<Down> P"} as 
-  @{term "do {x\<leftarrow>ret True; p\<leftarrow>\<Down> P; ret(x\<longrightarrow>p)}"} and then substituting
-  @{term "P \<and>\<^sub>D Q"} for @{term "ret True"}.
-*}
+
+lemma pdl_conjE: "\<lbrakk> \<turnstile> P \<and>\<^sub>D Q; \<lbrakk>\<turnstile> P; \<turnstile> Q\<rbrakk> \<Longrightarrow> \<turnstile> R\<rbrakk> \<Longrightarrow> \<turnstile> R"
+proof -
+  assume a1: "\<turnstile> P \<and>\<^sub>D Q"
+  assume a2: "\<lbrakk>\<turnstile> P; \<turnstile> Q\<rbrakk> \<Longrightarrow> \<turnstile> R"
+  have "\<turnstile> P" 
+  proof (rule pdl_mp)
+    show "\<turnstile> P \<and>\<^sub>D Q \<longrightarrow>\<^sub>D P" by (simp add: pdl_taut)
+  qed
+  moreover
+  have "\<turnstile> Q" 
+  proof (rule pdl_mp)
+    show "\<turnstile> P \<and>\<^sub>D Q \<longrightarrow>\<^sub>D Q" by (simp add: pdl_taut)
+  qed
+  moreover note a1 a2
+  ultimately 
+  show "\<turnstile> R" by (rules)
+qed
 
 
 text {* Some further typical rules *}
-lemma mon_notI: "\<lbrakk> \<turnstile> P; \<turnstile> Ret False\<rbrakk> \<Longrightarrow> \<turnstile> NotD P"
-by(rule mon_FalseE)
+lemma pdl_notI: "\<lbrakk> \<turnstile> P; \<turnstile> Ret False\<rbrakk> \<Longrightarrow> \<turnstile> \<not>\<^sub>D P"
+by(rule pdl_FalseE)
 
-
-lemma mon_notE: "\<lbrakk> \<turnstile> P; \<turnstile> NotD P \<rbrakk> \<Longrightarrow> \<turnstile> R"
-proof (unfold NotD_def)
-  assume p: "\<turnstile> P" and np: "\<turnstile> P \<longrightarrow>\<^sub>D Ret False"
-  from np p have "\<turnstile> Ret False" by (rule mon_mp)
-  thus "\<turnstile> R" by (rule mon_FalseE)
-qed
-
-lemma mon_conjunct1: "\<turnstile> P \<and>\<^sub>D Q \<Longrightarrow> \<turnstile> P"
+lemma pdl_conjunct1: "\<turnstile> P \<and>\<^sub>D Q \<Longrightarrow> \<turnstile> P"
 proof -
   assume "\<turnstile> P \<and>\<^sub>D Q"
   thus "\<turnstile> P"
-  proof (rule mon_conjE)
+  proof (rule pdl_conjE)
     assume "\<turnstile> P"
     thus ?thesis .
   qed
 qed
 
-lemma mon_conjunct2: assumes pq: "\<turnstile> P \<and>\<^sub>D Q" shows "\<turnstile> Q"
+lemma pdl_conjunct2: assumes pq: "\<turnstile> P \<and>\<^sub>D Q" shows "\<turnstile> Q"
 proof -
   from pq show "\<turnstile> Q"
-  proof (rule mon_conjE)
+  proof (rule pdl_conjE)
     assume "\<turnstile> Q"
     thus ?thesis .
   qed
 qed
     
-lemma mon_iffI: "\<lbrakk>\<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> Q \<longrightarrow>\<^sub>D P\<rbrakk> \<Longrightarrow> \<turnstile> P \<longleftrightarrow>\<^sub>D Q"
+lemma pdl_iffI: "\<lbrakk>\<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> Q \<longrightarrow>\<^sub>D P\<rbrakk> \<Longrightarrow> \<turnstile> P \<longleftrightarrow>\<^sub>D Q"
 proof (unfold iffD_def)
   assume a: "\<turnstile> P \<longrightarrow>\<^sub>D Q" and b: "\<turnstile> Q \<longrightarrow>\<^sub>D P"
   show "\<turnstile> (P \<longrightarrow>\<^sub>D Q) \<and>\<^sub>D (Q \<longrightarrow>\<^sub>D P)"
-    by (rule mon_conjI)
+    by (rule pdl_conjI)
 qed
 
-lemma mon_iffE: "\<lbrakk>\<turnstile> P \<longleftrightarrow>\<^sub>D Q; \<lbrakk> \<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> Q \<longrightarrow>\<^sub>D P \<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
- apply(unfold iffD_def)
- apply(erule mon_conjE)
+lemma pdl_iffE: "\<lbrakk>\<turnstile> P \<longleftrightarrow>\<^sub>D Q; \<lbrakk> \<turnstile> P \<longrightarrow>\<^sub>D Q; \<turnstile> Q \<longrightarrow>\<^sub>D P \<rbrakk> \<Longrightarrow> \<turnstile> R\<rbrakk> \<Longrightarrow> \<turnstile> R"
+ apply(unfold iffD_def) 
+ apply(erule pdl_conjE)
 by blast
 
-lemma mon_sym: "(\<turnstile> P \<longleftrightarrow>\<^sub>D Q) \<Longrightarrow> (\<turnstile> Q \<longleftrightarrow>\<^sub>D P)"
-  apply(erule mon_iffE)
-by(rule mon_iffI)
+lemma pdl_sym: "(\<turnstile> P \<longleftrightarrow>\<^sub>D Q) \<Longrightarrow> (\<turnstile> Q \<longleftrightarrow>\<^sub>D P)"
+  apply(erule pdl_iffE)
+by(rule pdl_iffI)
 
-lemma mon_iffD1: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> P \<longrightarrow>\<^sub>D Q"
-by(erule mon_iffE)
+lemma pdl_iffD1: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> P \<longrightarrow>\<^sub>D Q"
+by(erule pdl_iffE)
 
-lemma mon_iffD2: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> Q \<longrightarrow>\<^sub>D P"
-by (erule mon_iffE)
+lemma pdl_iffD2: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> Q \<longrightarrow>\<^sub>D P"
+by (erule pdl_iffE)
 
-
-subsection {* Setting up the simplifier for prop. reasoning *}
-
-
-text {* 
-  Since natural deduction rules don't get us far in the calculus of global
-  validity judgments (in particular, we do not have an analogon for
-  the implication introduction rule), we algebraize it and perform
-  proofs by term manipulation.
- 
-  All these axioms are in fact provable; it is just the shortage of time that
-  forces us to impose them directly.  
-*}
-
-constdefs
-  xorD :: "[bool D, bool D] \<Rightarrow> bool D"      (infixr "\<oplus>\<^sub>D" 20)
-  "xorD P Q  \<equiv>  (P \<and>\<^sub>D \<not>\<^sub>D Q) \<or>\<^sub>D (\<not>\<^sub>D P \<and>\<^sub>D Q)"
-
-
-  
-axioms
-  mon_and_assoc:   "((P \<and>\<^sub>D Q) \<and>\<^sub>D R) = (P \<and>\<^sub>D (Q \<and>\<^sub>D R))"
-  mon_xor_assoc:    "((P \<oplus>\<^sub>D Q) \<oplus>\<^sub>D R) = (P \<oplus>\<^sub>D (Q \<oplus>\<^sub>D R))"
-  mon_and_comm:     "(P \<and>\<^sub>D Q) = (Q \<and>\<^sub>D P)"
-  mon_xor_comm:     "(P \<oplus>\<^sub>D Q) = (Q \<oplus>\<^sub>D P)"
-  mon_and_LC:       "(P \<and>\<^sub>D (Q \<and>\<^sub>D R)) = (Q \<and>\<^sub>D (P \<and>\<^sub>D R))"
-  mon_xor_LC:       "(P \<oplus>\<^sub>D (Q \<oplus>\<^sub>D R)) = (Q \<oplus>\<^sub>D (P \<oplus>\<^sub>D R))"
-  mon_and_True_r:   "(P \<and>\<^sub>D Ret True) = P"
-  mon_and_True_l:   "(Ret True \<and>\<^sub>D P) = P"
-  mon_and_absorb:   "(P \<and>\<^sub>D P) = P"
-  mon_and_absorb2:  "(P \<and>\<^sub>D (P \<and>\<^sub>D Q)) = (P \<and>\<^sub>D Q)"
-  mon_and_False_l:  "(Ret False \<and>\<^sub>D P) = Ret False"
-  mon_and_False_r:  "(P \<and>\<^sub>D Ret False) = Ret False"
-  mon_xor_False_r:  "(P \<oplus>\<^sub>D Ret False) = P"
-  mon_xor_False_l:  "(Ret False \<oplus>\<^sub>D P) = P"
-  mon_xor_contr:    "(P \<oplus>\<^sub>D P) = Ret False"
-  mon_xor_contr2:   "(P \<oplus>\<^sub>D (P \<oplus>\<^sub>D Q)) = Q"
-  mon_and_ldist:    "(P \<and>\<^sub>D (Q \<oplus>\<^sub>D R)) = ((P \<and>\<^sub>D Q) \<oplus>\<^sub>D (P \<and>\<^sub>D R))"
-  mon_and_rdist:    "((P \<oplus>\<^sub>D Q) \<and>\<^sub>D R) = ((P \<and>\<^sub>D R) \<oplus>\<^sub>D (Q \<and>\<^sub>D R))"
-  -- {* Expressing the connectives by conjunction and exclusive or *}
-  mon_imp_xor:      "(P \<longrightarrow>\<^sub>D Q) = ((P \<and>\<^sub>D Q) \<oplus>\<^sub>D P \<oplus>\<^sub>D Ret True)"
-  mon_or_xor:       "(P \<or>\<^sub>D Q) = (P \<oplus>\<^sub>D Q \<oplus>\<^sub>D (P \<and>\<^sub>D Q))"
-  mon_not_xor:      "(\<not>\<^sub>D P) = (P \<oplus>\<^sub>D Ret True)"
-  mon_iff_xor:      "(P \<longleftrightarrow>\<^sub>D Q) = (P \<oplus>\<^sub>D Q \<oplus>\<^sub>D Ret True)"
-
-
-text {* @{text "pdl_taut"} is the collection of all these rules, so that
-  they can be handed over to the simplifier conveniently.
-  
-  This set of rewrite rules is complete with respect to normalisation
-  of propositional tautologies to their normal form 
-  @{term "Ret True"}. Hence, we can prove monadic tautologies 
-  in one fell swoop by applying 
-  the tactic @{text "(simp only: pdl_taut Valid_Ret)"}.
-*}
-
-lemmas pdl_taut = (*<*) mon_and_assoc mon_xor_assoc mon_and_comm mon_xor_comm 
-  mon_and_LC mon_xor_LC mon_and_True_r mon_and_True_l mon_and_absorb 
-  mon_and_absorb2 mon_and_False_l mon_and_False_r mon_xor_False_r 
-  mon_xor_False_l mon_xor_contr mon_xor_contr2 mon_and_ldist mon_and_rdist
-  mon_imp_xor mon_or_xor mon_not_xor mon_iff_xor (*>*) -- {* \dots all axioms above *}
-
-
-
-lemma mon_conjI_lifted: 
+lemma pdl_conjI_lifted: 
 assumes "\<turnstile> P \<longrightarrow>\<^sub>D Q" and "\<turnstile> P \<longrightarrow>\<^sub>D R" shows "\<turnstile> P \<longrightarrow>\<^sub>D Q \<and>\<^sub>D R"
 proof -
   have "\<turnstile> (P \<longrightarrow>\<^sub>D Q) \<longrightarrow>\<^sub>D (P \<longrightarrow>\<^sub>D R) \<longrightarrow>\<^sub>D (P \<longrightarrow>\<^sub>D Q \<and>\<^sub>D R)" 
-    by (simp only: Valid_Ret pdl_taut)
-  thus ?thesis by (rule mon_mp[THEN mon_mp])
+    by (simp add:  pdl_taut)
+  thus ?thesis by (rule pdl_mp[THEN pdl_mp])
 qed
 
-lemma mon_eq_iff: "\<lbrakk> P = Q \<rbrakk> \<Longrightarrow> \<turnstile> P \<longleftrightarrow>\<^sub>D Q"
+lemma pdl_eq_iff: "\<lbrakk> P = Q \<rbrakk> \<Longrightarrow> \<turnstile> P \<longleftrightarrow>\<^sub>D Q"
 by (simp only: pdl_taut Valid_Ret)
 
 
-lemma mon_iff_sym: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> Q \<longleftrightarrow>\<^sub>D P"
+lemma pdl_iff_sym: "\<turnstile> P \<longleftrightarrow>\<^sub>D Q \<Longrightarrow> \<turnstile> Q \<longleftrightarrow>\<^sub>D P"
 by (simp only: pdl_taut Valid_Ret)
 
-lemma mon_imp_wk: "\<turnstile> P \<Longrightarrow> \<turnstile> Q \<longrightarrow>\<^sub>D P"
+lemma pdl_imp_wk: "\<turnstile> P \<Longrightarrow> \<turnstile> Q \<longrightarrow>\<^sub>D P"
 proof -
   assume "\<turnstile> P"
   have "\<turnstile> P \<longrightarrow>\<^sub>D Q \<longrightarrow>\<^sub>D P" by (simp add: pdl_taut)
-  thus ?thesis by (rule mon_mp)
+  thus ?thesis by (rule pdl_mp)
 qed
 
 
-lemma mon_False_imp: "\<turnstile> Ret False \<longrightarrow>\<^sub>D P"
+lemma pdl_False_imp: "\<turnstile> Ret False \<longrightarrow>\<^sub>D P"
   by (simp add: pdl_taut)
 
 
-
-text {* A proof showing in what manner the above axioms may be proved *}
-lemma "(P \<and>\<^sub>D (\<not>\<^sub>D P)) = Ret False"
-  apply(simp add: mon_prop_reason, simp only: liftM2_def)
-  apply(unfold Ret_def)
-  apply(rule cong[of Abs_Dsef Abs_Dsef], rule refl)
-  apply(simp add: Abs_Dsef_inverse Dsef_def)
-  apply(simp add: mon_ctr del: bind_assoc)
-  apply(simp add: cp_arb dsef_cp[OF dsef_Rep_Dsef])
-  apply(rule dis_left2)
-  apply(rule dsef_dis[OF dsef_Rep_Dsef])
-done
+lemma pdl_imp_trans: "\<lbrakk>\<turnstile> A \<longrightarrow>\<^sub>D B; \<turnstile> B \<longrightarrow>\<^sub>D C\<rbrakk> \<Longrightarrow> \<turnstile> A \<longrightarrow>\<^sub>D C"
+proof -
+  assume a1: "\<turnstile> A \<longrightarrow>\<^sub>D B" and a2: "\<turnstile> B \<longrightarrow>\<^sub>D C"
+  have "\<turnstile> (A \<longrightarrow>\<^sub>D B) \<longrightarrow>\<^sub>D (B \<longrightarrow>\<^sub>D C) \<longrightarrow>\<^sub>D A \<longrightarrow>\<^sub>D C" by (simp only: pdl_taut Valid_Ret)
+  from this a1 a2 show ?thesis by (rule pdl_mp[THEN pdl_mp])
+qed
 
 
 

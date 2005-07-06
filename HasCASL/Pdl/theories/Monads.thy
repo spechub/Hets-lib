@@ -8,7 +8,7 @@
 *)
 
 
-header {* Basic monad definitions and laws. *}
+header {* Basic Monad Definitions and Laws. *}
 
 theory Monads = Main:
 
@@ -63,15 +63,15 @@ syntax (xsymbols)
 
 translations
  -- {* input macros; replace do-notation by @{term "bind"}/@{term "seq"} *}
- "_monseq(_mongen x p q)"    => "p \<ggreater>= (%x. (_monseq q))"
- "_monseq(_monexp p q)"      => "p \<ggreater> (_monseq q)"
- "_monseq(_monexp0 q)"       => "q"
+ "_monseq(_mongen x p q)"    \<rightharpoonup> "p \<ggreater>= (%x. (_monseq q))"
+ "_monseq(_monexp p q)"      \<rightharpoonup> "p \<ggreater> (_monseq q)"
+ "_monseq(_monexp0 q)"       \<rightharpoonup> "q"
  -- {* Retranslation of into the do-notation *}
- "_monseq(_mongen x p q)"    <= "p \<ggreater>= (%x. q)"
- "_monseq(_monexp p q)"      <= "p \<ggreater> q"
+ "_monseq(_mongen x p q)"    \<leftharpoondown> "p \<ggreater>= (%x. q)"
+ "_monseq(_monexp p q)"      \<leftharpoondown> "p \<ggreater> q"
  -- {* Normalization macros `flattening' do-terms *}
- "_monseq(_mongen x p q)"    <= "_monseq (_mongen x p (_monseq q))"
- "_monseq(_monexp p q)"      <= "_monseq (_monexp p (_monseq q))"
+ "_monseq(_mongen x p q)"    \<leftharpoondown> "_monseq (_mongen x p (_monseq q))"
+ "_monseq(_monexp p q)"      \<leftharpoondown> "_monseq (_monexp p (_monseq q))"
 
 
 text {* Actually, this rule does not contract, but rather expand monadic 

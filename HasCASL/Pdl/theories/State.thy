@@ -10,8 +10,8 @@
 *)
 
 
-header {* A simple reference monad with \texttt{while} and \texttt{if} *}
-theory State = PDL:
+header {* A Simple Reference Monad with \texttt{while} and \texttt{if} *}
+theory State = PDL + MonEq:
 
 
 
@@ -85,7 +85,7 @@ constdefs
                                     if (nat_odd u) then (r := w + v) else ret ();
                                     x := u div 2; y := v * 2} END; readRef r}"
 
-subsection {* General auxiliary lemmas *}
+subsection {* General Auxiliary Lemmas *}
 
 text {*
   Following are several auxiliary lemmas which are not general enough to be placed
@@ -95,7 +95,7 @@ text {*
 
 text {* Some weakening rules *}
 
-lemma mon_conj_imp_wk1: "\<turnstile> A \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
+lemma pdl_conj_imp_wk1: "\<turnstile> A \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
 proof -
   assume "\<turnstile> A \<longrightarrow>\<^sub>D C"
   have "\<turnstile> (A \<longrightarrow>\<^sub>D C) \<longrightarrow>\<^sub>D A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
@@ -103,7 +103,7 @@ proof -
   thus ?thesis by (rule pdl_mp)
 qed
 
-lemma mon_conj_imp_wk2: "\<turnstile> B \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
+lemma pdl_conj_imp_wk2: "\<turnstile> B \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
 proof -
   assume "\<turnstile> B \<longrightarrow>\<^sub>D C"
   have "\<turnstile> (B \<longrightarrow>\<^sub>D C) \<longrightarrow>\<^sub>D A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
@@ -114,22 +114,22 @@ qed
 
 text {*
   The following can be used to prove a specific goal by proving two parts separately. It is
-  similar to @{thm [source] mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp]}, which is
+  similar to @{thm [source] pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp]}, which is
 
-  @{thm mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp, no_vars]}
+  @{thm pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp, no_vars]}
 *}
-lemma mon_conj_imp_box_split: "\<lbrakk>\<turnstile> A \<longrightarrow>\<^sub>D [# p]C; \<turnstile> B \<longrightarrow>\<^sub>D [# p]D\<rbrakk> \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# x\<leftarrow>p](C x \<and>\<^sub>D D x)"
-proof (rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+lemma pdl_conj_imp_box_split: "\<lbrakk>\<turnstile> A \<longrightarrow>\<^sub>D [# p]C; \<turnstile> B \<longrightarrow>\<^sub>D [# p]D\<rbrakk> \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# x\<leftarrow>p](C x \<and>\<^sub>D D x)"
+proof (rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
   assume a1: "\<turnstile> A \<longrightarrow>\<^sub>D [# p]C" and a2: "\<turnstile> B \<longrightarrow>\<^sub>D [# p]D"
   show "\<turnstile> (A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# p]C) \<and>\<^sub>D (A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# p]D)"
-  proof (rule mon_conjI)
+  proof (rule pdl_conjI)
     show "\<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# p]C"
-    proof (rule mon_conj_imp_wk1) 
+    proof (rule pdl_conj_imp_wk1) 
       show "\<turnstile> A \<longrightarrow>\<^sub>D [# p]C" .
     qed
   next
     show "\<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# p]D"
-    proof (rule mon_conj_imp_wk2)
+    proof (rule pdl_conj_imp_wk2)
       show "\<turnstile> B \<longrightarrow>\<^sub>D [# p]D" .
     qed
   qed
@@ -162,7 +162,7 @@ text {*
   A rendition of @{thm [source] pdl_dsefB}.
 *}
 lemma dsefB_D: "dsef p \<Longrightarrow> \<turnstile> P \<longrightarrow>\<^sub>D [# x\<leftarrow>p]P"
-by(subst dsef_form_eq[of p P], assumption, rule mon_iffD1[OF pdl_dsefB])
+by(subst dsef_form_eq[of p P], assumption, rule pdl_iffD1[OF pdl_dsefB])
 
 
 
@@ -195,7 +195,7 @@ lemma pdl_dsefB_ret: "dsef p \<Longrightarrow> \<turnstile> \<Up> (do {a\<leftar
 done
 
 
-subsection {* Specific auxiliary lemmas of no general importance *}
+subsection {* Problem-Specific Auxiliary Lemmas *}
 
 text {*
   The following lemmas are required for the final correctness proof to go through, but
@@ -249,7 +249,6 @@ proof -
 qed
 
 
-
 lemma doterm_eq1_aux: "do {u\<leftarrow>readRef x; v\<leftarrow>readRef y; w\<leftarrow>readRef r; ret (u * v + w = a * b)} =
                        do {u\<leftarrow>readRef x; \<Down> (\<Up> (do {v\<leftarrow>readRef y; w\<leftarrow>readRef r; ret (u * v + w = a * b)}))}"
 (*<*)
@@ -266,6 +265,7 @@ proof -
 qed
 (*>*)
 
+
 lemma doterm_eq2_aux: "do {v\<leftarrow>readRef y; w\<leftarrow>readRef r; ret (u * v + w = a * b)} =
                        do {v\<leftarrow>readRef y; \<Down> (\<Up> (do {w\<leftarrow>readRef r; ret (u * v + w = a * b)}))}"
 (*<*)
@@ -281,6 +281,7 @@ proof -
   thus ?thesis by simp
 qed
 (*>*)
+
 
 lemma arith_aux: "\<lbrakk>nat_odd u; u * v + w = a * b\<rbrakk> \<Longrightarrow> (u div 2 + u div 2) * v + (w + v) = a * b"
 (*<*)
@@ -331,11 +332,12 @@ proof -
 qed
 (*>*)
 
+
 lemma wrt_other_aux: "\<turnstile> Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r ) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}) \<longrightarrow>\<^sub>D 
                         [# x := a](\<lambda>uu. Ret (x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}))"
 (*<*)
   apply(rule pdl_mpB_lifted1)
-  apply(rule mon_conj_imp_box_split)
+  apply(rule pdl_conj_imp_box_split)
   apply(rule pdl_k3B)
   apply(rule read_write_other_gen)
   apply(subst eq_sym_conv[of r x])
@@ -348,13 +350,14 @@ lemma wrt_other2_aux:  "\<turnstile> Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
                         [# y := b](\<lambda>uu. Ret (x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}))"
 (*<*)
   apply(rule pdl_mpB_lifted1)
-  apply(rule mon_conj_imp_box_split)
+  apply(rule pdl_conj_imp_box_split)
   apply(rule pdl_k3B)
   apply(rule read_write_other_gen)
   apply(subst eq_sym_conv[of r y])
   apply(simp add: conjD_Ret_hom pdl_taut)
 done
 (*>*)
+
 
 lemma rd_seq_aux: "\<turnstile> \<Up> (do {w\<leftarrow>readRef r; ret (f a w)}) \<and>\<^sub>D *x =\<^sub>D Ret a \<longrightarrow>\<^sub>D
                      \<Up> (do {u\<leftarrow>readRef x; w\<leftarrow>readRef r; ret (f u w)})"
@@ -369,6 +372,7 @@ lemma rd_seq_aux: "\<turnstile> \<Up> (do {w\<leftarrow>readRef r; ret (f a w)})
   apply(simp add: Valid_simp Abs_Dsef_inverse Dsef_def)
 done
 (*>*)
+
 
 lemma arith2_aux: "(u div (2::nat) + u div 2) * v + w = a * b \<longrightarrow> u div 2 * (v * 2) + w = a * b"
 (*<*)
@@ -405,6 +409,7 @@ lemma asm_results_aux: " \<turnstile> (Ret (x \<noteq> y) \<longrightarrow>\<^su
 done
 (*>*)
 
+
 text {* Yet another dsef formula extension *}
 lemma yadfe: " \<lbrakk>dsef p; dsef q; dsef r; \<forall>x y z. f x y z\<rbrakk> \<Longrightarrow> \<turnstile> \<Up> (do {x\<leftarrow>p; y\<leftarrow>q; z\<leftarrow>r; ret (f x y z)})"
 proof -
@@ -426,7 +431,7 @@ lemma conclude_aux: " \<turnstile> (Ret (x \<noteq> y \<and> y \<noteq> r \<and>
 (*<*)
   apply(rule pdl_imp_trans)
   prefer 2
-  apply(rule mon_iffD1[OF pdl_dsefB])
+  apply(rule pdl_iffD1[OF pdl_dsefB])
   apply(rule dsef_read)
   apply(simp add: MonEq_def NotD_def conjD_def impD_def liftM2_def Ret_ret)
   apply(simp add: Abs_Dsef_inverse Dsef_def dsef_read dsef_seq)
@@ -444,7 +449,7 @@ done
 
 
 
-subsection {* Correctness of Russian multiplication *}
+subsection {* Correctness of Russian Multiplication *}
 
 text {*
   Equipped with all these prerequisites, the correctness proof of Russian multiplication
@@ -452,134 +457,131 @@ text {*
 *}
 
 theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r)) \<longrightarrow>\<^sub>D [# rumult a b x y r](\<lambda>x. Ret (x = a * b))"
-(*<*)
   apply(unfold rumult_def)
   apply(simp only: seq_def) -- {* make plug rules applicable *}
-  apply(rule pdl_plug_lifted1) -- {* working on @{text [# x := a]} box *}
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule pdl_k3B)
-  apply(rule mon_imp_wk)
-  apply(rule read_write)
-  apply(rule allI)
-  apply(rule pdl_plug_lifted1)   -- {* working on @{text [# y := b]} box *}
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_imp_wk)
-  apply(rule read_write) -- {* used the first goal to establish value of y *}
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_conj_imp_wk1)
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_wk2) 
-  apply(rule read_write_other)
-  apply(rule allI)
-  apply(rule pdl_imp_trans)
-  apply(rule var_aux1)
-  apply(rule pdl_plug_lifted1) -- {* working on @{text [# r := 0]} box *}
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI) -- {* four identical goals, one for each conjunct needed inside the box. *}
-  apply(rule mon_imp_wk)
-  apply(rule read_write)
-  apply(rule mon_conj_imp_wk2)+
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_wk1)
-  apply(rule read_write_other)
-  apply(rule mon_conj_imp_wk2, rule mon_conj_imp_wk1)
-  apply(rule read_write_other)
-  apply(rule allI)
-  apply(rule pdl_imp_trans)
-  apply(rule var_aux2) -- {* arrived at the while loop *}
-  apply(rule pdl_imp_trans) -- {* derive invariant from the premiss *}
+  apply(rule pdl_plugB_lifted1) -- {* working on @{text "[# x := a]"} box *}
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI)
+    apply(rule pdl_k3B)
+    apply(rule pdl_imp_wk)
+    apply(rule read_write)
+    apply(rule allI)
+  apply(rule pdl_plugB_lifted1)   -- {* working on @{text "[# y := b]"} box *}
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI)
+    apply(rule pdl_imp_wk)
+    apply(rule read_write) -- {* used the first goal to establish value of y *}
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI)
+    apply(rule pdl_conj_imp_wk1)
+    apply(rule pdl_k3B)
+    apply(rule pdl_conj_imp_wk2) 
+    apply(rule read_write_other)
+    apply(rule allI)
+    apply(rule pdl_imp_trans)
+    apply(rule var_aux1)
+  apply(rule pdl_plugB_lifted1) -- {* working on @{text "[# r := 0]"} box *}
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI)
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI)
+    apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+    apply(rule pdl_conjI) -- {* four identical goals, one for each conjunct needed inside the box. *}
+    apply(rule pdl_imp_wk)
+    apply(rule read_write)
+    apply(rule pdl_conj_imp_wk2)+
+    apply(rule pdl_k3B)
+    apply(rule pdl_conj_imp_wk1)
+    apply(rule read_write_other)
+    apply(rule pdl_conj_imp_wk2, rule pdl_conj_imp_wk1)
+    apply(rule read_write_other)
+    apply(rule allI)
+    apply(rule pdl_imp_trans)
+    apply(rule var_aux2) -- {* arrived at the while loop *}
+    apply(rule pdl_imp_trans) -- {* derive invariant from the premiss *}
   apply(rule derive_inv_aux)
-  apply(rule pdl_plug_lifted1)
-  apply(rule while_par)  -- {* applied the while rule *}
-  apply(simp del: bind_assoc) -- {* work off read operations *}
-  apply(rule pdl_plug_lifted1)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_conj_imp_wk2) 
-  apply(rule mon_iffD1[OF pdl_dsefB_ret], rule dsef_read)
-  apply(rule mon_conj_imp_wk1)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_conj_imp_wk1)
-  apply(rule dsefB_D)
-  apply(rule dsef_read)
-  apply(rule mon_conj_imp_wk2)
-  apply(subst doterm_eq1_aux)
-  apply(rule mon_iffD1[OF pdl_dsefB])
-  apply(rule dsef_read)
-  apply(rule allI) (* work off y *)
-  apply(rule pdl_plug_lifted1)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule dsefB_D)
-  apply(rule dsef_read)
-  apply(subst doterm_eq2_aux)
-  apply(rule mon_iffD1[OF pdl_dsefB])
-  apply(rule dsef_read)
-  apply(rule allI) (* work away r *)
-  apply(rule pdl_plug_lifted1) 
-  apply(rule mon_conj_imp_box_split)
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule dsefB_D)
-  apply(rule dsef_read)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_iffD1[OF pdl_dsefB_ret])
-  apply(rule dsef_read)
-  apply(rule dsefB_D)
-  apply(rule dsef_read)
-  apply(rule allI) -- {* arrived at the if-then-else construct *}
-  apply(rule pdl_plug_lifted1)
-  apply(simp add: split_if)
-  apply(safe)  -- {* now we have to prove the two different branches  *}
-  apply(rule pdl_mpB_lifted1) (* dropping 0 < u, since we don't need it (is appears) *)
-  apply(rule mon_conj_imp_wk2)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_wk1)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp]) 
-  apply(rule mon_conjI)
-  apply(rule mon_imp_wk)
-  apply(rule read_write)
-  apply(rule pdl_k3B)
-  apply(rule allI)
-  apply(rule rel1_aux)
-  apply(assumption)
-  apply(rule mon_conj_imp_wk2)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule pdl_k3B)
-  apply(rule mon_conj_imp_wk2)
-  apply(simp add: even_div_eq nat_odd_def)
-  apply(rule mon_iffD2[OF pdl_retB]) -- {* arrived at @{text "x := u div 2"} *}
-  apply(rule pdl_plug_lifted1)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_imp_wk)
-  apply(rule read_write)
-  apply(rule wrt_other_aux)
-  apply(rule allI) -- {* almost done, just the @{text "y := v * 2"} remaining *}
-  apply(rule pdl_mpB_lifted1)
-  apply(rule mon_conj_imp_box_split)
-  apply(rule read_write_other)
-  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-  apply(rule mon_conjI)
-  apply(rule mon_imp_wk)
-  apply(rule read_write)
-  apply(rule wrt_other2_aux)
-  apply(rule allI)
-  apply(rule asm_results_aux)  
-(*>*)
-  -- {* \dots Just 124 straightforward proof steps later *}
-  apply(rule conclude_aux)
+  apply(rule pdl_plugB_lifted1)
+    apply(rule while_par)  -- {* applied the while rule *}
+    apply(simp del: bind_assoc) -- {* work off read operations *}
+    apply(rule pdl_plugB_lifted1)
+      apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+      apply(rule pdl_conjI)
+      apply(rule pdl_conj_imp_wk2) 
+      apply(rule pdl_iffD1[OF pdl_dsefB_ret], rule dsef_read)
+      apply(rule pdl_conj_imp_wk1)
+      apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+      apply(rule pdl_conjI)
+      apply(rule pdl_conj_imp_wk1)
+      apply(rule dsefB_D)
+      apply(rule dsef_read)
+      apply(rule pdl_conj_imp_wk2)
+      apply(subst doterm_eq1_aux)
+      apply(rule pdl_iffD1[OF pdl_dsefB])
+      apply(rule dsef_read)
+      apply(rule allI) (* work off y *)
+    apply(rule pdl_plugB_lifted1)
+      apply(rule pdl_conj_imp_box_split)
+      apply(rule pdl_k3B)
+      apply(rule pdl_conj_imp_box_split)
+      apply(rule dsefB_D)
+      apply(rule dsef_read)
+      apply(subst doterm_eq2_aux)
+      apply(rule pdl_iffD1[OF pdl_dsefB])
+      apply(rule dsef_read)
+      apply(rule allI) (* work away r *)
+    apply(rule pdl_plugB_lifted1) 
+      apply(rule pdl_conj_imp_box_split)
+      apply(rule pdl_k3B)
+      apply(rule pdl_conj_imp_box_split)
+      apply(rule dsefB_D)
+      apply(rule dsef_read)
+      apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+      apply(rule pdl_conjI)
+      apply(rule pdl_iffD1[OF pdl_dsefB_ret])
+      apply(rule dsef_read)
+      apply(rule dsefB_D)
+      apply(rule dsef_read)
+      apply(rule allI) -- {* arrived at the if-then-else construct *}
+    apply(rule pdl_plugB_lifted1)
+      apply(simp add: split_if)
+        apply(safe)  -- {* now we have to prove the two different branches  *}
+        apply(rule pdl_mpB_lifted1) (* dropping 0 < u, since we don't need it (is appears) *)
+        apply(rule pdl_conj_imp_wk2)
+        apply(rule pdl_conj_imp_box_split)
+        apply(rule pdl_k3B)
+        apply(rule pdl_conj_imp_wk1)
+        apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp]) 
+        apply(rule pdl_conjI)
+        apply(rule pdl_imp_wk)
+        apply(rule read_write)
+        apply(rule pdl_k3B)
+        apply(rule allI)
+        apply(rule rel1_aux)
+        apply(assumption)
+        apply(rule pdl_conj_imp_wk2)
+        apply(rule pdl_conj_imp_box_split)
+        apply(rule pdl_k3B)
+        apply(rule pdl_conj_imp_wk2)
+        apply(simp add: even_div_eq nat_odd_def)
+        apply(rule pdl_iffD2[OF pdl_retB]) -- {* arrived at @{text "x := u div 2"} *}
+    apply(rule pdl_plugB_lifted1)
+      apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+      apply(rule pdl_conjI)
+      apply(rule pdl_imp_wk)
+      apply(rule read_write)
+      apply(rule wrt_other_aux)
+      apply(rule allI) -- {* almost done, just the @{text "y := v * 2"} remaining *}
+    apply(rule pdl_mpB_lifted1)
+      apply(rule pdl_conj_imp_box_split)
+      apply(rule read_write_other)
+      apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+      apply(rule pdl_conjI)
+      apply(rule pdl_imp_wk)
+      apply(rule read_write)
+      apply(rule wrt_other2_aux)
+      apply(rule allI)
+    apply(rule asm_results_aux)  
+  apply(rule conclude_aux)  -- {* \dots Just 124 straightforward proof steps later *}
 done
 
 

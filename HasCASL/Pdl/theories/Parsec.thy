@@ -1,6 +1,6 @@
-header {* A deterministic parser monad with fall back alternatives *}
+header {* A Deterministic Parser Monad with Fall Back Alternatives *}
 
-theory Parsec = PDL:
+theory Parsec = PDL + MonEq:
 
 
 text {*
@@ -121,11 +121,11 @@ qed
 text {* We can show that an alternative parser terminates iff one of its constituent
   parsers does *}
 lemma par_term: "\<turnstile> \<langle>x \<leftarrow> p\<parallel>q\<rangle>(Ret True) \<longleftrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D \<langle>x\<leftarrow>q\<rangle>(Ret True)"
-proof (rule mon_iffI)
+proof (rule pdl_iffI)
   have "\<turnstile> ( \<langle>x\<leftarrow>p\<parallel>q\<rangle>(Ret True) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D \<langle>x\<leftarrow>q\<rangle>(Ret True) \<and>\<^sub>D [# x\<leftarrow>p](Ret False) ) \<longrightarrow>\<^sub>D 
           \<langle>x\<leftarrow>p\<parallel>q\<rangle>(Ret True) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D \<langle>x\<leftarrow>q\<rangle>(Ret True)"
     by (simp add: pdl_taut)
-  moreover note mon_iffD1[OF altD_iff]
+  moreover note pdl_iffD1[OF altD_iff]
   ultimately show  "\<turnstile> \<langle>p \<parallel> q\<rangle>(\<lambda>x. Ret True) \<longrightarrow>\<^sub>D \<langle>p\<rangle>(\<lambda>x. Ret True) \<or>\<^sub>D \<langle>q\<rangle>(\<lambda>x. Ret True)" 
     by (rule pdl_mp)
 next
@@ -134,7 +134,7 @@ next
            \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D \<langle>x\<leftarrow>q\<rangle>(Ret True) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow> p \<parallel> q\<rangle>(Ret True)"
     by (simp add: pdl_taut)
   moreover 
-  note mon_iffD2[OF altD_iff]
+  note pdl_iffD2[OF altD_iff]
   moreover 
   note box_dmd_rel
   ultimately
@@ -153,7 +153,7 @@ proof -
   moreover 
   have "\<turnstile> ([# x\<leftarrow>p](P x) \<and>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D [# x\<leftarrow>q](P x) \<and>\<^sub>D [# x\<leftarrow>p](Ret False)) \<longrightarrow>\<^sub>D
           [# x\<leftarrow>p\<parallel>q](P x)"
-    by (rule mon_iffD2[OF altB_iff])
+    by (rule pdl_iffD2[OF altB_iff])
   ultimately
   show ?thesis by (rule pdl_imp_trans)
 qed
@@ -169,7 +169,7 @@ proof -
   moreover 
   have "\<turnstile> ([# x\<leftarrow>p](P x) \<and>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Ret True) \<or>\<^sub>D [# x\<leftarrow>q](P x) \<and>\<^sub>D [# x\<leftarrow>p](Ret False)) \<longrightarrow>\<^sub>D
           [# x\<leftarrow>p\<parallel>q](P x)"
-    by (rule mon_iffD2[OF altB_iff])
+    by (rule pdl_iffD2[OF altB_iff])
   ultimately
   show ?thesis by (rule pdl_imp_trans)
 qed
@@ -177,7 +177,7 @@ qed
 
 
 
-subsection {* Specifying simple parsers in terms of the basic ones *}
+subsection {* Specifying Simple Parsers in Terms of the Basic Ones *}
 
 
 constdefs
@@ -217,7 +217,7 @@ text {*
 *}
 
 
-subsection {* Auxiliary lemmas *}
+subsection {* Auxiliary Lemmas *}
 
 (*<*)
 (* NOTE:
@@ -233,7 +233,7 @@ lemma "\<turnstile> [# x\<leftarrow>p; z'\<leftarrow>do {y\<leftarrow>q; z\<left
 by (rule pdl_seqB)
 
 lemma "\<turnstile> [# do {x\<leftarrow>p; y\<leftarrow>q; ret (f x y)}]P \<longleftrightarrow>\<^sub>D [# p](\<lambda>x. [# do {y\<leftarrow>q; ret (f x y)}]P)"
-  by (rule mon_iff_sym[OF pdl_seqB_simp])
+  by (rule pdl_iff_sym[OF pdl_seqB_simp])
 (*>*)
 
 
@@ -265,7 +265,7 @@ proof -
   have "\<turnstile> GetInput =\<^sub>D Ret (y#ys) \<longrightarrow>\<^sub>D [# digitp](\<lambda>x. GetInput =\<^sub>D Ret ys)"
   proof -
     have "\<turnstile> GetInput =\<^sub>D Ret (y#ys) \<longrightarrow>\<^sub>D [# do {x\<leftarrow>item; if x < 10 then ret x else fail}](\<lambda>x. GetInput =\<^sub>D Ret ys)"
-    proof (rule pdl_plug_lifted1)
+    proof (rule pdl_plugB_lifted1)
       from aux_1 get_item[of "y#ys", simplified] box_conj_distrib
       show "\<turnstile> GetInput =\<^sub>D Ret(y#ys) \<longrightarrow>\<^sub>D [# item](\<lambda>x. GetInput =\<^sub>D Ret ys)"
 	by (rule pdl_mp_2x)
@@ -278,13 +278,13 @@ proof -
 	  apply(simp add: split_if)
 	  apply(rule conjI)
 	  apply(rule impI)
-	  apply(rule mon_iffD2[OF pdl_retB]) (* First subgoal done; now for fail *)
+	  apply(rule pdl_iffD2[OF pdl_retB]) (* First subgoal done; now for fail *)
 	  apply(rule impI)
-	  apply(rule mon_imp_wk)
+	  apply(rule pdl_imp_wk)
 	  apply(rule pdl_mpB)
 	  apply(rule fail_bot)
 	  apply(rule allI) 
-	  apply(rule mon_False_imp)
+	  apply(rule pdl_False_imp)
 	  (*>*) -- {* \dots some rather obvious proof steps later *}
 	  done
       qed
@@ -295,7 +295,7 @@ proof -
   have "\<turnstile> GetInput =\<^sub>D Ret (y#ys) \<longrightarrow>\<^sub>D [# digitp](\<lambda>x. Ret (x = y))"
   proof -
     have "\<turnstile> GetInput =\<^sub>D Ret (y#ys) \<longrightarrow>\<^sub>D [# do {x\<leftarrow>item; if x<10 then ret x else fail}](\<lambda>x. Ret(x=y))"
-    proof (rule pdl_plug_lifted1)
+    proof (rule pdl_plugB_lifted1)
       show "\<turnstile> GetInput =\<^sub>D Ret (y#ys) \<longrightarrow>\<^sub>D [# item](\<lambda>x. Ret (x=y))"
 	by (rule get_item1)
     next
@@ -307,13 +307,13 @@ proof -
 	  apply(simp add: split_if)
 	  apply(rule conjI)
 	  apply(rule impI)
-	  apply(rule mon_iffD2[OF pdl_retB])
+	  apply(rule pdl_iffD2[OF pdl_retB])
 	  apply(rule impI)
-	  apply(rule mon_imp_wk)
+	  apply(rule pdl_imp_wk)
 	  apply(rule pdl_mpB)
 	  apply(rule fail_bot)
 	  apply(rule allI)
-	  apply(rule mon_False_imp)
+	  apply(rule pdl_False_imp)
 	  (*>*) -- {* Again, the easy proof steps are omitted *}
 	  done
       qed
@@ -329,10 +329,10 @@ qed
 
 theorem digitp_fail: "\<turnstile> GetInput =\<^sub>D Ret [] \<longrightarrow>\<^sub>D [# digitp](\<lambda>x. Ret False)"
   apply(simp add: digitp_def sat_def)
-  apply(rule pdl_plug_lifted1)
+  apply(rule pdl_plugB_lifted1)
   apply(rule GetInput_item_fail)
   apply(rule allI)
-  apply(rule mon_False_imp)
+  apply(rule pdl_False_imp)
 done
 
 
@@ -375,7 +375,7 @@ qed
 (*>*)
 
 
-lemma mon_imp_strg1: "\<turnstile> A \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
+lemma pdl_imp_strg1: "\<turnstile> A \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
 (*<*)
 proof -
   assume "\<turnstile> A \<longrightarrow>\<^sub>D C"
@@ -385,7 +385,7 @@ proof -
 qed
 (*>*)
 
-lemma mon_imp_strg2: "\<turnstile> B \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
+lemma pdl_imp_strg2: "\<turnstile> B \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
 (*<*)
 proof -
   assume "\<turnstile> B \<longrightarrow>\<^sub>D C"
@@ -395,7 +395,7 @@ proof -
 qed
 (*>*)
 
-subsection {* Correctness of the monadic parser *}
+subsection {* Correctness of the Monadic Parser *}
 text {* 
   The following is a major theorem, more because of its complexity and since it 
   involves most of the axioms given for the monad, than because of its
@@ -419,13 +419,13 @@ proof -
 	proof -
 	  -- {* Split into two parts and connect per mpB *}
 	  have g1: "\<turnstile> GetInput =\<^sub>D Ret [1] \<longrightarrow>\<^sub>D [# digitp](\<lambda>n. Ret (n=1) \<and>\<^sub>D GetInput =\<^sub>D Ret [])"
-	  proof (rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+	  proof (rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
 	    have "\<turnstile> (GetInput =\<^sub>D Ret [1] \<longrightarrow>\<^sub>D [# digitp](\<lambda>x. Ret (x = 1)))" (is "\<turnstile> ?A")
 	      by (rule imp_box_conj2[OF digitp_nat])
 	    moreover
 	    have "\<turnstile> (GetInput =\<^sub>D Ret [1] \<longrightarrow>\<^sub>D [# digitp](\<lambda>x. GetInput =\<^sub>D Ret []))" (is "\<turnstile> ?B")
 	      by (rule imp_box_conj1[OF digitp_nat])
-	    ultimately show "\<turnstile> ?A \<and>\<^sub>D ?B" by (rule mon_conjI)
+	    ultimately show "\<turnstile> ?A \<and>\<^sub>D ?B" by (rule pdl_conjI)
 	  qed
 	  have g2: "\<forall>n. \<turnstile> (Ret (n=1) \<and>\<^sub>D GetInput =\<^sub>D Ret []) \<longrightarrow>\<^sub>D 
 	    ([# do {xs\<leftarrow>many digitp; ret (foldl (\<lambda>r. op + (10 * r)) n xs)}](\<lambda>n. Ret (n=1) \<and>\<^sub>D Eot))"
@@ -439,30 +439,30 @@ proof -
 	      have "\<turnstile> Ret (n = Suc 0) \<and>\<^sub>D GetInput =\<^sub>D Ret [] \<longrightarrow>\<^sub>D
 		[# do {xs\<leftarrow>(do {x\<leftarrow>digitp; xs\<leftarrow>many digitp; ret (x # xs)}) \<parallel> ret []; 
 		       ret (foldl (\<lambda>r. op + (10 * r)) n xs)}](\<lambda>n. Ret (n = Suc 0) \<and>\<^sub>D Eot)"
-	      proof (rule pdl_plug_lifted1[where B = "\<lambda>xs. Ret (n = 1) \<and>\<^sub>D GetInput =\<^sub>D Ret [] \<and>\<^sub>D Ret (xs = [])"])
+	      proof (rule pdl_plugB_lifted1[where B = "\<lambda>xs. Ret (n = 1) \<and>\<^sub>D GetInput =\<^sub>D Ret [] \<and>\<^sub>D Ret (xs = [])"])
 		-- {* Part one shows that the alternative @{term "p\<parallel>q"} yields a sufficient result *}
 		show "\<turnstile> Ret (n = Suc 0) \<and>\<^sub>D GetInput =\<^sub>D Ret [] \<longrightarrow>\<^sub>D 
 		        [# (do {x\<leftarrow>digitp; xs\<leftarrow>many digitp; ret (x # xs)}) \<parallel> ret []](\<lambda>xs. 
                            Ret (n = 1) \<and>\<^sub>D GetInput =\<^sub>D Ret [] \<and>\<^sub>D Ret (xs = []))"
 		  (*<*)
 		  apply(rule altB_iff_lifted2[THEN pdl_mp])
-		  apply(rule mon_conjI_lifted)
-		  apply(rule pdl_plug_lifted1)
-		  apply(rule mon_imp_strg2)
+		  apply(rule pdl_conjI_lifted)
+		  apply(rule pdl_plugB_lifted1)
+		  apply(rule pdl_imp_strg2)
 		  apply(rule digitp_fail)
 		  apply(rule allI)
-		  apply(rule mon_False_imp)
-		  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-		  apply(rule mon_conjI)
-		  apply(rule mon_imp_strg1)
+		  apply(rule pdl_False_imp)
+		  apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+		  apply(rule pdl_conjI)
+		  apply(rule pdl_imp_strg1)
 		  apply(simp)
-		  apply(rule mon_iffD2[OF pdl_retB])
-		  apply(rule mon_imp_strg2)
-		  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-		  apply(rule mon_conjI)
-		  apply(rule mon_iffD2[OF pdl_retB])
-		  apply(rule mon_imp_wk)
-		  apply(rule mon_iffD2[OF pdl_retB, THEN pdl_mp])
+		  apply(rule pdl_iffD2[OF pdl_retB])
+		  apply(rule pdl_imp_strg2)
+		  apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+		  apply(rule pdl_conjI)
+		  apply(rule pdl_iffD2[OF pdl_retB])
+		  apply(rule pdl_imp_wk)
+		  apply(rule pdl_iffD2[OF pdl_retB, THEN pdl_mp])
 		  (*>*)
 		by simp -- {* And some proof steps omitted in the text *}
 	      next
@@ -478,13 +478,13 @@ proof -
 		      proof (rule aux_3[THEN pdl_mp])
 			have "\<turnstile> GetInput =\<^sub>D Ret [] \<longrightarrow>\<^sub>D [# ret (1::nat)](\<lambda>n. Ret (n = 1) \<and>\<^sub>D Eot)"
 			  (*<*)
-			  apply(rule mon_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
-			  apply(rule mon_conjI)
-			  apply(rule mon_imp_wk)
-			  apply(rule mon_iffD2[OF pdl_retB, THEN pdl_mp])
+			  apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
+			  apply(rule pdl_conjI)
+			  apply(rule pdl_imp_wk)
+			  apply(rule pdl_iffD2[OF pdl_retB, THEN pdl_mp])
 			  apply(subst Valid_Ret, simp)
 			  apply(subst Eot_GetInput)
-			  apply(rule mon_iffD2[OF pdl_retB])
+			  apply(rule pdl_iffD2[OF pdl_retB])
 			  (*>*) -- {* Obvious *}
 			  done
 			thus "\<turnstile> GetInput =\<^sub>D Ret [] \<longrightarrow>\<^sub>D [# ret (foldl (\<lambda>r\<Colon>nat. op + ((10\<Colon>nat) * r)) (1\<Colon>nat) [])](\<lambda>n\<Colon>nat. Ret (n = Suc 0) \<and>\<^sub>D Eot)"
@@ -500,7 +500,7 @@ proof -
 	  from g1 g2 show ?thesis  by (rule pdl_mpB_lifted1)
 	qed
 	-- {* Sequencing *}
-	thus ?thesis by (rule mon_iffD1[OF pdl_seqB_lifted1, THEN pdl_mp])
+	thus ?thesis by (rule pdl_iffD1[OF pdl_seqB_lifted1, THEN pdl_mp])
       qed
       -- {* Retranslation to @{term "natp"} *}
       thus ?thesis by (simp add: natp_def many1_def mon_ctr del: bind_assoc)
@@ -575,8 +575,8 @@ proof -
   (* \<dots> *)
   have p2: "\<turnstile> \<not>\<^sub>D b \<longrightarrow>\<^sub>D [# ?s]P"
     sorry
-  from mon_excluded_middle p1 p2
-  show "\<turnstile> [# ?s]P" by (rule mon_disjE)
+  from pdl_excluded_middle p1 p2
+  show "\<turnstile> [# ?s]P" by (rule pdl_disjE)
 qed
 *)
 

@@ -3,7 +3,7 @@
    Author: Dennis Walter
 *)
 
-header {* Monadic equality *}
+header {* Monadic Equality *}
 theory MonEq = MonLogic:
 
 

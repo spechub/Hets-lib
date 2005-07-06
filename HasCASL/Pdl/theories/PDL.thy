@@ -1,11 +1,11 @@
 
-header {* The proof calculus of monadic dynamic logic *}
+header {* The Proof Calculus of Monadic Dynamic Logic *}
 
-theory PDL = MonLogic + MonEq:
+theory PDL = MonLogic:
 
 
 
-subsection {* Types, rules and axioms *}
+subsection {* Types, Rules and Axioms *}
 
 text {*
  Types, rules and axioms for the box and diamond operators of PDL formulas
@@ -41,10 +41,10 @@ syntax (xsymbols)
 translations 
   "_pdlbox (_pdlseq (_pdlbnd x p) r) phi"  
           \<rightharpoonup>  "Box (_pdlseq (_pdlbnd x p) (_pdlin x r)) phi"
-  "_pdlbox (_pdlbnd x p) phi"  => "Box p (\<lambda>x. phi)"
+  "_pdlbox (_pdlbnd x p) phi"  \<rightharpoonup> "Box p (\<lambda>x. phi)"
   "_pdldmd (_pdlseq (_pdlbnd x p) r) phi"  
           \<rightharpoonup>  "Dmd (_pdlseq (_pdlbnd x p) (_pdlin x r)) phi"
-  "_pdldmd (_pdlbnd x p) phi"  => "Dmd p (\<lambda>x. phi)"
+  "_pdldmd (_pdlbnd x p) phi"  \<rightharpoonup> "Dmd p (\<lambda>x. phi)"
   "_pdlin tpl (_pdlseq (_pdlbnd x p) r)"
           \<rightharpoonup>  "_pdlseq (_pdlbnd x p) (_pdlin (tpl, x) r)"
   "_pdlin tpl (_pdlbnd x p)"
@@ -64,7 +64,7 @@ text {*
 
 axioms
  pdl_nec:   "(\<forall>x. \<turnstile> P x) \<Longrightarrow> \<turnstile> [# x\<leftarrow>p](P x)"
- pdl_mp:    "\<lbrakk>\<turnstile> (P \<longrightarrow>\<^sub>D  Q); \<turnstile> P\<rbrakk> \<Longrightarrow> \<turnstile> Q"
+ pdl_mp_:    "\<lbrakk>\<turnstile> (P \<longrightarrow>\<^sub>D  Q); \<turnstile> P\<rbrakk> \<Longrightarrow> \<turnstile> Q"  -- {* Only repeated here for completeness. *}
 
  pdl_k1:    "\<turnstile> [# x\<leftarrow>p](P x \<longrightarrow>\<^sub>D Q x) \<longrightarrow>\<^sub>D [# x\<leftarrow>p](P x) \<longrightarrow>\<^sub>D [# x\<leftarrow>p](Q x)"
  pdl_k2:    "\<turnstile> [# x\<leftarrow>p](P x \<longrightarrow>\<^sub>D Q x) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(P x) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Q x)"
@@ -89,7 +89,7 @@ axioms
 pdl_seqB_simp: "\<turnstile> ( [# p](\<lambda>x. [# q x]P) ) \<longleftrightarrow>\<^sub>D ( [# do {x\<leftarrow>p; q x}]P )"
 
 text {* Further axioms satisfied by logically regular monads (which we deal with here).
-  Cf. \cite[Page 601]{pdlpaper}
+  Cf. \cite[Page 601]{SchroederMossakowski:PDL}
 *}
 axioms
   pdl_eqB: "\<turnstile> Ret (p = q) \<longrightarrow>\<^sub>D [# x\<leftarrow>p](P x) \<longrightarrow>\<^sub>D [# x\<leftarrow>q](P x)"
@@ -100,7 +100,7 @@ axioms
   pdl_dsefB: "dsef p \<Longrightarrow> \<turnstile> \<Up> (do {a\<leftarrow>p; \<Down> (P a)}) \<longleftrightarrow>\<^sub>D [# a\<leftarrow>p](P a)"
   pdl_dsefD: "dsef p \<Longrightarrow> \<turnstile> \<Up> (do {a\<leftarrow>p; \<Down> (P a)}) \<longleftrightarrow>\<^sub>D \<langle>a\<leftarrow>p\<rangle>(P a)"
 
-subsection {* Derived rules of inference *}
+subsection {* Derived Rules of Inference *}
 
 
 text {* `Multiple' modus ponens, provided for convenience *}
@@ -161,13 +161,13 @@ text {*
   logic behaves classically.
 *}
 theorem dmd_box_rel: "\<turnstile> \<langle>x\<leftarrow>p\<rangle>(P x) \<longleftrightarrow>\<^sub>D \<not>\<^sub>D [# x\<leftarrow>p](\<not>\<^sub>D P x)"
-  apply(rule mon_iffI)
+  apply(rule pdl_iffI)
   apply(unfold NotD_def)
   apply(rule dmd_box_rel2)
   apply(rule dmd_box_rel1)
 done
 
-text {* Given @{thm dmd_box_rel}, one easily obtains a dual one. *}
+text {* Given @{thm [source] dmd_box_rel}, one easily obtains a dual one. *}
 theorem box_dmd_rel: "\<turnstile> [# x\<leftarrow>p](P x) \<longleftrightarrow>\<^sub>D \<not>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(\<not>\<^sub>D P x)"
 proof -
   have "\<turnstile> ( \<langle>x\<leftarrow>p\<rangle>(\<not>\<^sub>D P x) \<longleftrightarrow>\<^sub>D \<not>\<^sub>D [# x\<leftarrow>p](\<not>\<^sub>D \<not>\<^sub>D P x) ) \<longrightarrow>\<^sub>D 
@@ -221,13 +221,6 @@ text {*
   (and hence represent rules)
 *}
 
-lemma pdl_imp_trans: "\<lbrakk>\<turnstile> A \<longrightarrow>\<^sub>D B; \<turnstile> B \<longrightarrow>\<^sub>D C\<rbrakk> \<Longrightarrow> \<turnstile> A \<longrightarrow>\<^sub>D C"
-proof -
-  assume a1: "\<turnstile> A \<longrightarrow>\<^sub>D B" and a2: "\<turnstile> B \<longrightarrow>\<^sub>D C"
-  have "\<turnstile> (A \<longrightarrow>\<^sub>D B) \<longrightarrow>\<^sub>D (B \<longrightarrow>\<^sub>D C) \<longrightarrow>\<^sub>D A \<longrightarrow>\<^sub>D C" by (simp only: pdl_taut Valid_Ret)
-  from this a1 a2 show ?thesis by (rule pdl_mp_2x)
-qed
-
 
 lemma box_imp_distrib: "\<turnstile> [# x\<leftarrow>p](P x \<longrightarrow>\<^sub>D Q x) \<Longrightarrow> \<turnstile> [# x\<leftarrow>p](P x) \<longrightarrow>\<^sub>D [# x\<leftarrow>p](Q x)"
  by(rule pdl_k1[THEN pdl_mp])
@@ -267,7 +260,7 @@ text {*
 *}
 theorem pdl_plugB: "\<lbrakk>\<turnstile> [# x\<leftarrow>p](P x); \<forall>x. \<turnstile> P x \<longrightarrow>\<^sub>D [# y\<leftarrow>q x](C y)\<rbrakk> \<Longrightarrow> \<turnstile> [# do {x\<leftarrow>p; q x}]C"
   apply(drule pdl_mpB, assumption)
-  by (rule mon_iffD1[OF pdl_seqB_simp, THEN pdl_mp])
+  by (rule pdl_iffD1[OF pdl_seqB_simp, THEN pdl_mp])
 
   
 
@@ -301,7 +294,7 @@ qed
 
 text {* The box operator distributes over (finite) conjunction *}
 theorem box_conj_distrib: "\<turnstile> [# x\<leftarrow>p](P x \<and>\<^sub>D Q x) \<longleftrightarrow>\<^sub>D [# x\<leftarrow>p](P x) \<and>\<^sub>D [# x\<leftarrow>p](Q x)"
-  apply (rule mon_iffI)
+  apply (rule pdl_iffI)
   apply (rule box_conj_distrib2)
   apply (rule box_conj_distrib1)
 done
@@ -312,19 +305,19 @@ done
 text {* Split and join rules for boxes and diamonds *}
 lemma pdl_seqB_split: "\<turnstile> [# do {x\<leftarrow>p; y\<leftarrow>q x; ret (x, y)}](\<lambda>(x, y). P x y) 
                          \<Longrightarrow> \<turnstile> [# p](\<lambda>x. [# q x]P x)"
-  by (rule pdl_seqB[THEN mon_iffD1, THEN pdl_mp])
+  by (rule pdl_seqB[THEN pdl_iffD1, THEN pdl_mp])
 
 lemma pdl_seqB_join: "\<turnstile> [# p](\<lambda>x. [# q x]P x) 
                          \<Longrightarrow> \<turnstile> [# do {x\<leftarrow>p; y\<leftarrow>q x; ret (x, y)}](\<lambda>(x, y). P x y)"
-  by (rule pdl_seqB[THEN mon_iffD2, THEN pdl_mp])
+  by (rule pdl_seqB[THEN pdl_iffD2, THEN pdl_mp])
 
 lemma pdl_seqD_split: "\<turnstile> \<langle>do {x\<leftarrow>p; y\<leftarrow>q x; ret (x, y)}\<rangle>(\<lambda>(x, y). P x y) 
                          \<Longrightarrow> \<turnstile> \<langle>p\<rangle>(\<lambda>x. \<langle>q x\<rangle>P x)"
-  by (rule pdl_seqD[THEN mon_iffD1, THEN pdl_mp])
+  by (rule pdl_seqD[THEN pdl_iffD1, THEN pdl_mp])
 
 lemma pdl_seqD_join: "\<turnstile> \<langle>p\<rangle>(\<lambda>x. \<langle>q x\<rangle>P x) 
                          \<Longrightarrow> \<turnstile> \<langle>do {x\<leftarrow>p; y\<leftarrow>q x; ret (x, y)}\<rangle>(\<lambda>(x, y). P x y)"
-  by (rule pdl_seqD[THEN mon_iffD2, THEN pdl_mp])
+  by (rule pdl_seqD[THEN pdl_iffD2, THEN pdl_mp])
 
 
 
@@ -346,7 +339,7 @@ qed
 
 
 lemma box_conj_distrib_lifted1: "\<turnstile> (A \<longrightarrow>\<^sub>D [# p](\<lambda>x. P x \<and>\<^sub>D Q x)) \<longleftrightarrow>\<^sub>D ((A \<longrightarrow>\<^sub>D [# p]P) \<and>\<^sub>D (A \<longrightarrow>\<^sub>D [# p]Q))"
-proof (rule mon_iffI)
+proof (rule pdl_iffI)
   show "\<turnstile> (A \<longrightarrow>\<^sub>D [# p](\<lambda>x. P x \<and>\<^sub>D Q x)) \<longrightarrow>\<^sub>D (A \<longrightarrow>\<^sub>D [# p]P) \<and>\<^sub>D (A \<longrightarrow>\<^sub>D [# p]Q)"
   proof -
     have "\<turnstile> ([# p](\<lambda>x. P x \<and>\<^sub>D Q x) \<longrightarrow>\<^sub>D [# p]P \<and>\<^sub>D [# p]Q) \<longrightarrow>\<^sub>D
@@ -367,14 +360,14 @@ next
 qed
 
 lemma pdl_seqB_lifted1: "\<turnstile> ( A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]P) ) \<longleftrightarrow>\<^sub>D ( A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P )"
-proof (rule mon_iffI)
+proof (rule pdl_iffI)
   show "\<turnstile> (A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]P)) \<longrightarrow>\<^sub>D A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P"
   proof -
     have "\<turnstile> ([# p](\<lambda>x. [# q x]P) \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P) \<longrightarrow>\<^sub>D
              (A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]P)) \<longrightarrow>\<^sub>D
              (A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P)"
       by (simp add: pdl_taut)
-    from this mon_iffD1[OF pdl_seqB_simp] show ?thesis by (rule pdl_mp)
+    from this pdl_iffD1[OF pdl_seqB_simp] show ?thesis by (rule pdl_mp)
   qed
 next
   show "\<turnstile> (A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P) \<longrightarrow>\<^sub>D A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]P)"
@@ -383,16 +376,16 @@ next
             (A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]P) \<longrightarrow>\<^sub>D
             (A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]P))"
       by (simp add: pdl_taut)
-    from this mon_iffD2[OF pdl_seqB_simp] show ?thesis by (rule pdl_mp)
+    from this pdl_iffD2[OF pdl_seqB_simp] show ?thesis by (rule pdl_mp)
   qed
 qed
 
 
-lemma pdl_plug_lifted1: "\<lbrakk> \<turnstile> A \<longrightarrow>\<^sub>D [# p]B; \<forall>x. \<turnstile> B x \<longrightarrow>\<^sub>D [# q x]C\<rbrakk> \<Longrightarrow> \<turnstile> A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]C"
+lemma pdl_plugB_lifted1: "\<lbrakk> \<turnstile> A \<longrightarrow>\<^sub>D [# p]B; \<forall>x. \<turnstile> B x \<longrightarrow>\<^sub>D [# q x]C\<rbrakk> \<Longrightarrow> \<turnstile> A \<longrightarrow>\<^sub>D [# do {x\<leftarrow>p; q x}]C"
 proof -
   assume a1: "\<turnstile> A \<longrightarrow>\<^sub>D [# p]B" and a2: "\<forall>x. \<turnstile> B x \<longrightarrow>\<^sub>D [# q x]C"
   from a1 a2 have "\<turnstile> A \<longrightarrow>\<^sub>D [# p](\<lambda>x. [# q x]C)" by (rule pdl_mpB_lifted1)
-  thus ?thesis by (rule mon_iffD1[OF pdl_seqB_lifted1, THEN pdl_mp])
+  thus ?thesis by (rule pdl_iffD1[OF pdl_seqB_lifted1, THEN pdl_mp])
 qed
 
 
@@ -459,7 +452,7 @@ done
 *)
 
 lemma "\<turnstile> [# a\<leftarrow>p; b\<leftarrow>q](P a b) \<longrightarrow>\<^sub>D [# a\<leftarrow>p][# x\<leftarrow>q](P a x)"
-by (rule mon_iffD1[OF pdl_seqB])
+by (rule pdl_iffD1[OF pdl_seqB])
 
 
 
@@ -498,7 +491,7 @@ done
 subsection {* Examples *}
 
 text {*
- Examples from \cite[Theorem 6]{harelEtAl}
+ Examples from \cite[Theorem 6]{HarelKozen02}
 *}
 
 lemma "\<turnstile> \<langle>x\<leftarrow>p\<rangle>(P x) \<or>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(Q x) \<longrightarrow>\<^sub>D \<langle>x\<leftarrow>p\<rangle>(P x \<or>\<^sub>D Q x)"
@@ -553,7 +546,7 @@ proof -
     qed
   qed
   -- {* Now assemble the results to arrive at the main thesis *}
-  ultimately show ?thesis by (rule  mon_conjI_lifted)
+  ultimately show ?thesis by (rule  pdl_conjI_lifted)
 qed
 
 
