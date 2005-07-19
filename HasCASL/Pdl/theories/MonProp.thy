@@ -11,7 +11,7 @@
 header {* Basic Notions of Monadic Programs *}
 
 theory MonProp = Monads:
-
+text_raw{* \label{sec:monprop-thy} *}
 
 subsection {* Discardability and Copyability *}
 
@@ -19,6 +19,7 @@ text {*
   Properties of monadic programs which are needed for the further development,
   e.g. for the definition of a subtype @{text "'a D"} of deterministically
   side-effect free (@{text "dsef"}) programs.
+  \label{isa:mon-properties}
 *}
 constdefs
   -- {* Discardable programs *}
@@ -154,6 +155,7 @@ text {*
   The following lemmas @{text "commute_X_Y"} are proofs of the Propositions 
   4.24 of \cite{SchroederMossakowski:PDL} where @{text "X"} is the respective premiss
   and @{text "Y"} is the conclusion.
+  \label{isa:commute-1-2}
 *}
 
 
@@ -161,16 +163,11 @@ lemma commute_1_2: "\<lbrakk>cp q; cp p; dis q; dis p\<rbrakk> \<Longrightarrow>
                     \<Longrightarrow> do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)} = do {y\<leftarrow>q; x\<leftarrow>p; ret(x,y)}"
 proof -
   assume a: "cp q" "cp p" "dis q" "dis p"
-  let ?s = "do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)}"
-  from a have ds: "dis ?s" by (simp add: dis_def dis_left mon_ctr)
   assume c: "cp (do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)})"
-  have "?s = do {z\<leftarrow>?s; ret z}" by (rule ret_runit[symmetric])
-  also have "\<dots> = do {z\<leftarrow>?s; ret (fst z, snd z)}" by simp
+  let ?s = "do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)}"
+  have "?s = do {z\<leftarrow>?s; ret (fst z, snd z)}" by simp
   also from c have "\<dots> = do {w\<leftarrow>?s; z\<leftarrow>?s; ret (fst z, snd w)}" by (simp add: cp_arb)
-  also have "\<dots> = do {u\<leftarrow>p; v\<leftarrow>q; w\<leftarrow>ret(u,v); x\<leftarrow>p; y\<leftarrow>q; z\<leftarrow>ret(x,y); ret(fst z, snd w)}"
-    by (simp only:mon_ctr)
-  also have "\<dots> = do {p; v\<leftarrow>q; x\<leftarrow>p; q; ret(x,v)}" by (simp add: seq_def)
-  also from a have "\<dots> = do {v\<leftarrow>q; x\<leftarrow>p; ret(x,v)}" by (simp only: dis_left)
+  also from a have "\<dots> = do {v\<leftarrow>q; x\<leftarrow>p; ret(x,v)}" by (simp add: mon_ctr dis_left2)
   finally show ?thesis .
 qed
 
@@ -192,7 +189,6 @@ proof
   finally show "do {x\<leftarrow>p; y\<leftarrow>q; r x y} = do {y\<leftarrow>q; x\<leftarrow>p; r x y}" .
 qed
 
-
 (*<*)
 (* Once more, type related unification problems prevent us from stating a
    formula without type restrictions *)
@@ -203,7 +199,8 @@ by(simp add: seq_def)
 
 text {* In this case, type annotations are necessary, since we cannot
   quantify over types of programs. The type for @{text "r"} given here
-  is needed for the proof to go through.
+  is precisely what is needed for the proof to go through.
+  \label{isa:commute-3-1}
 *}
 lemma commute_3_1: "\<lbrakk>cp q; cp p; dis q; dis p\<rbrakk> \<Longrightarrow>
                     \<forall>r::'a \<Rightarrow> 'b \<Rightarrow> (('a*'b)*('a*'b)) T.
@@ -236,11 +233,14 @@ done
 
 
 text {*
-  This weird axiom is needed to obtain the commutativity of an arbitrary program
-  from its commuting  with all @{typ "bool"} valued programs.
+  This weird axiom is needed to obtain the general commutativity of 
+  a discardable and copyable program from its commuting  with all 
+  @{typ "bool"}-valued programs.
+  \label{isa:commute-bool-arb} 
 *}
 axioms
-  commute_bool_arb: "(\<forall>q::bool T. cp(q) \<and> dis(q) \<longrightarrow> cp(do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)})) \<Longrightarrow>
+  commute_bool_arb: "\<lbrakk>dis p; cp p; \<forall>q1::bool T. cp(q1) \<and> dis(q1) \<longrightarrow> 
+                                        cp(do {x\<leftarrow>p; y\<leftarrow>q1; ret(x,y)})\<rbrakk> \<Longrightarrow>
                    (\<forall>q. cp(q) \<and> dis(q) \<longrightarrow> cp(do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)}))"
 
 
@@ -272,16 +272,17 @@ text {*
     @{text "Abs_Dsef :: 'a T \<Rightarrow> 'a D"}
   where @{text "Abs_Dsef p"} is of course only sensibly defined if @{term "dsef p"}
    holds.
+  \label{isa:intro-dsef}
 *}
 
 typedef (Dsef) ('a) D = "{p::'a T. dsef p}"
-  apply(rule_tac x = "ret x" in exI)
+  apply(rule exI[of _ "ret x"])
   apply(blast intro: dsef_ret)
 done
 
 
 text {* 
-  Minimizing the clutter caused by @{term "Abs_Dsef"} and @{term "Rep_Dsef"}
+  Minimizing the clutter caused by @{term "Abs_Dsef"} and @{term "Rep_Dsef"}.
 *}
 syntax
   "_absdsef"            :: "'a T \<Rightarrow> 'a D"      ("\<Up> _" [200] 199)
@@ -341,6 +342,7 @@ text {*
   Lifting operations will allow us to introduce monadic connectives @{text "\<and>, \<or>"}, etc.
   by simply lifting the HOL ones. Theorem @{thm [source] "dsef_ret"} will
   assert these to be @{term "dsef"} (see below).  
+  \label{isa:lift-op}
 *} 
 
 constdefs
@@ -364,8 +366,6 @@ lemma liftM3_ap: "liftM3 f x y z = ret f $$ x $$ y $$ z"
  by(simp add: mon_ctr ap_def liftM3_def)
 
 
-
-
 theorem dsef_ret_ap: "dsef p \<Longrightarrow> dsef (ret f $$ p)"
   apply(simp add: ap_def dsef_def)
   apply(clarify)
@@ -380,13 +380,14 @@ theorem dsef_ret_ap: "dsef p \<Longrightarrow> dsef (ret f $$ p)"
 done
 
 
-text {* @{term "dsef"} programs may be swapped. *}
+text {* @{term "dsef"} programs may be swapped. \label{isa:commute-dsef} *}
 lemma commute_dsef: "\<lbrakk>dsef p; dsef q\<rbrakk> \<Longrightarrow> 
                       \<forall>r. do {x\<leftarrow>p; y\<leftarrow>q; r x y} = do {y\<leftarrow>q; x\<leftarrow>p; r x y}"
   apply(rule commute_1_3)
   apply(simp_all add: dsef_def)
   apply(clarify)
   apply(drule commute_bool_arb)
+  apply(assumption)+
   apply(drule_tac x = q in spec)
 by(blast)
   
@@ -399,6 +400,7 @@ text {*
   A formalisation of the essential fact that @{term "dsef"} programs
   are actually stable under sequencing; this has only been proposed
   in \cite{SchroederMossakowski:PDL}, but has not been shown.
+  \label{isa:dsef-seq}
 *}
 theorem dsef_seq: "\<lbrakk>dsef p; \<forall>x. dsef (q x)\<rbrakk> \<Longrightarrow> dsef (do {x\<leftarrow>p; q x})"
 proof -
@@ -530,10 +532,8 @@ lemma Abs_Dsef_inverse_liftM2 [simp]: "\<lbrakk>dsef p; dsef q\<rbrakk> \<Longri
 by (simp add: Abs_Dsef_inverse Dsef_def dsef_liftM2)
 
 
-
-
 end
-
+(*<*)
 
 (*
  Interesting note about polymorphism:
@@ -583,3 +583,4 @@ lemma "\<lbrakk>cp p; cp q; dis p; dis q\<rbrakk> \<Longrightarrow>
   apply(simp_all)
   oops
 *)
+(*>*)

@@ -12,11 +12,12 @@
 
 header {* A Simple Reference Monad with \texttt{while} and \texttt{if} *}
 theory State = PDL + MonEq:
-
+text_raw {* \label{sec:state-thy} *}
 
 
 text {* 
   Read/write operations on references of arbitrary type, and a while loop.
+  \label{isa:ref-spec} 
 *}
 
 typedecl 'a ref
@@ -25,18 +26,19 @@ consts
   newRef     :: "'a \<Rightarrow> 'a ref T"
   readRef    :: "'a ref \<Rightarrow> 'a T"               
   writeRef   :: "'a ref \<Rightarrow> 'a \<Rightarrow> unit T"           ("(_ := _)" [100, 10] 10)
-  MonWhile   :: "bool D \<Rightarrow> unit T \<Rightarrow> unit T"       ("WHILE (4_) /DO (4_) /END")
+  monWhile   :: "bool D \<Rightarrow> unit T \<Rightarrow> unit T"       ("WHILE (4_) /DO (4_) /END")
   
 
 text {*
   To make the dsef operation of reading a reference more readable (pun unintended),
-  we introduce a translation: @{text "*r"} stands for @{term "\<Up> readRef r"}.
+  we introduce syntactical sugar: @{text "*r"} stands for @{term "\<Up> readRef r"}.
 *}
+
 syntax 
   "_readRefD"  :: "'a ref \<Rightarrow> 'a D"                ("*_" [100] 100)
 
 translations
-  "_readRefD r"         ==    "\<Up> (readRef r)"
+  "_readRefD r"         \<rightleftharpoons>    "\<Up> (readRef r)"
 
 
 text {* This definition is rather useless as it stands, since one actually wants
@@ -59,19 +61,40 @@ text {*
 axioms
 dsef_read:     "dsef (readRef r)"
 read_write:    "\<turnstile> [# r := x](\<lambda>uu. *r =\<^sub>D Ret x)"
-read_write_other: "\<turnstile> ( *r =\<^sub>D Ret x) \<longrightarrow>\<^sub>D [# s := y](\<lambda>uu. Ret (r\<noteq>s) \<longrightarrow>\<^sub>D ( *r =\<^sub>D Ret x))"
 read_write_other_gen: "\<turnstile> \<Up> (do {u\<leftarrow>readRef r; ret (f u)}) \<longrightarrow>\<^sub>D 
                             [# s := y](\<lambda>uu. Ret (r\<noteq>s) \<longrightarrow>\<^sub>D \<Up> (do {u\<leftarrow>readRef r; ret (f u)}))"
 while_par:     "\<turnstile> P \<and>\<^sub>D b \<longrightarrow>\<^sub>D [# p](\<lambda>u. P) \<Longrightarrow> \<turnstile> P \<longrightarrow>\<^sub>D [# WHILE b DO p END](\<lambda>x. P \<and>\<^sub>D \<not>\<^sub>D b)"
 read_new:      "\<turnstile> [# r\<leftarrow>newRef a]( Ret a =\<^sub>D *r)"
 read_new_other: "\<turnstile> (Ret x =\<^sub>D *r) \<longrightarrow>\<^sub>D [# s \<leftarrow> newRef y]((Ret x =\<^sub>D *r) \<or>\<^sub>D Ret (r=s))"
-new_distinct:   "\<turnstile> [# r\<leftarrow>newRef a; t\<leftarrow>p; s\<leftarrow>newRef b](Ret (\<not>(r=s)))"
 
+
+
+lemma read_write_other: "\<turnstile> ( *r =\<^sub>D Ret x) \<longrightarrow>\<^sub>D [# s := y](\<lambda>uu. Ret (r\<noteq>s) \<longrightarrow>\<^sub>D ( *r =\<^sub>D Ret x))"
+proof -
+  have "\<turnstile> \<Up> (do {u\<leftarrow>readRef r; ret (u = x)}) \<longrightarrow>\<^sub>D
+            [# s := y](\<lambda>uu. Ret (r\<noteq>s) \<longrightarrow>\<^sub>D \<Up> (do {u\<leftarrow>readRef r; ret (u = x)}))"
+    by (rule read_write_other_gen)
+  thus ?thesis
+    by (simp add: MonEq_def liftM2_def Dsef_def Ret_def Abs_Dsef_inverse dsef_read)
+qed
+
+
+text {* It is not really necessary to step back to the do-notation for 
+  @{thm [source] read_write_other_gen}. *}
+lemma "\<turnstile> *r =\<^sub>D Ret b \<and>\<^sub>D Ret (f b) \<longrightarrow>\<^sub>D \<Up> (do {a\<leftarrow>readRef r; ret (f a \<and> a = b)})"
+(*<*)
+  apply(simp add: mon_prop_reason MonEq_def liftM2_def Ret_def dsef_seq dsef_read)
+  apply(simp add: mon_ctr del: bind_assoc)
+  apply(simp add: dsef_cp dsef_dis dsef_read cp_arb 
+    dis_left2 Valid_simp  Abs_Dsef_inverse Dsef_def)
+done
+(*>*)
 
 
 text {* 
   Definitions of oddity and evenness of natural numbers, as well as an algorithm
   for computing Russian multiplication @{text "rumult"}.
+  \label{isa:rumult-spec}
 *}
 constdefs
   nat_even  :: "nat \<Rightarrow> bool"
@@ -93,7 +116,7 @@ text {*
   justify their mere existence.
 *}
 
-text {* Some weakening rules *}
+text {* Some weakening rules. *}
 
 lemma pdl_conj_imp_wk1: "\<turnstile> A \<longrightarrow>\<^sub>D C \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D C"
 proof -
@@ -116,7 +139,7 @@ text {*
   The following can be used to prove a specific goal by proving two parts separately. It is
   similar to @{thm [source] pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp]}, which is
 
-  @{thm pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp, no_vars]}
+  @{thm [display=true] pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp, no_vars]}.
 *}
 lemma pdl_conj_imp_box_split: "\<lbrakk>\<turnstile> A \<longrightarrow>\<^sub>D [# p]C; \<turnstile> B \<longrightarrow>\<^sub>D [# p]D\<rbrakk> \<Longrightarrow> \<turnstile> A \<and>\<^sub>D B \<longrightarrow>\<^sub>D [# x\<leftarrow>p](C x \<and>\<^sub>D D x)"
 proof (rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
@@ -336,7 +359,7 @@ qed
 lemma wrt_other_aux: "\<turnstile> Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r ) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}) \<longrightarrow>\<^sub>D 
                         [# x := a](\<lambda>uu. Ret (x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}))"
 (*<*)
-  apply(rule pdl_mpB_lifted1)
+  apply(rule pdl_wkB_lifted1)
   apply(rule pdl_conj_imp_box_split)
   apply(rule pdl_k3B)
   apply(rule read_write_other_gen)
@@ -349,7 +372,7 @@ done
 lemma wrt_other2_aux:  "\<turnstile> Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r ) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}) \<longrightarrow>\<^sub>D 
                         [# y := b](\<lambda>uu. Ret (x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r) \<and>\<^sub>D \<Up> (do {w\<leftarrow>readRef r; ret (f w)}))"
 (*<*)
-  apply(rule pdl_mpB_lifted1)
+  apply(rule pdl_wkB_lifted1)
   apply(rule pdl_conj_imp_box_split)
   apply(rule pdl_k3B)
   apply(rule read_write_other_gen)
@@ -410,7 +433,7 @@ done
 (*>*)
 
 
-text {* Yet another dsef formula extension *}
+text {* Yet another dsef formula extension. *}
 lemma yadfe: " \<lbrakk>dsef p; dsef q; dsef r; \<forall>x y z. f x y z\<rbrakk> \<Longrightarrow> \<turnstile> \<Up> (do {x\<leftarrow>p; y\<leftarrow>q; z\<leftarrow>r; ret (f x y z)})"
 proof -
   assume ds: "dsef p" "dsef q" "dsef r"
@@ -453,20 +476,35 @@ subsection {* Correctness of Russian Multiplication *}
 
 text {*
   Equipped with all these prerequisites, the correctness proof of Russian multiplication
-  is `at your fingertips'\texttrademark. 
+  is `at your fingertips'\texttrademark. We will not display the actual rule applications but
+  only the important proof goals arising in between.
+  \label{isa:rumult-proof}
 *}
 
 theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x\<noteq>r)) \<longrightarrow>\<^sub>D [# rumult a b x y r](\<lambda>x. Ret (x = a * b))"
-  apply(unfold rumult_def)
-  apply(simp only: seq_def) -- {* make plug rules applicable *}
-  apply(rule pdl_plugB_lifted1) -- {* working on @{text "[# x := a]"} box *}
+  apply(unfold rumult_def) -- {* First, unfold the definition of @{term "rumult"} *}
+  apply(simp only: seq_def)
+  apply(rule pdl_plugB_lifted1) 
+  txt {* 
+    Establish the `strongest postcondition' of the assignment to @{term "x"}
+
+    @{goals [display=true, goals_limit=1]}
+    *}
+(*<*)
     apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
     apply(rule pdl_conjI)
     apply(rule pdl_k3B)
     apply(rule pdl_imp_wk)
     apply(rule read_write)
     apply(rule allI)
-  apply(rule pdl_plugB_lifted1)   -- {* working on @{text "[# y := b]"} box *}
+  apply(rule pdl_plugB_lifted1)
+(*>*)
+    txt {*  
+      From this postcondition proceed with assignment to @{term "y"}
+
+      @{goals [display=true, goals_limit=1]}
+      *}
+(*<*)
     apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
     apply(rule pdl_conjI)
     apply(rule pdl_imp_wk)
@@ -481,6 +519,13 @@ theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
     apply(rule pdl_imp_trans)
     apply(rule var_aux1)
   apply(rule pdl_plugB_lifted1) -- {* working on @{text "[# r := 0]"} box *}
+(*>*)
+  txt {*  
+    After the final assignment to @{term "r"} all variables will have their initial values
+
+    @{goals [display=true, goals_limit=1]}
+    *}
+(*<*)
     apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
     apply(rule pdl_conjI)
     apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
@@ -500,8 +545,22 @@ theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
     apply(rule var_aux2) -- {* arrived at the while loop *}
     apply(rule pdl_imp_trans) -- {* derive invariant from the premiss *}
   apply(rule derive_inv_aux)
+(*>*)
+    txt {* 
+      Now we have arrived at the while-loop, with the invariant readily established.
+
+      @{goals [display=true, goals_limit=1]}
+      *}
   apply(rule pdl_plugB_lifted1)
     apply(rule while_par)  -- {* applied the while rule *}
+    txt {*  
+      After splitting off the while-loop as a single box formula, we can apply the while
+      rule, so that we obtain the following proof goal, telling us to establish the invariant after
+      one run of the loop body:
+
+      @{goals [display=true, goals_limit=1]}
+      *}
+(*<*)
     apply(simp del: bind_assoc) -- {* work off read operations *}
     apply(rule pdl_plugB_lifted1)
       apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
@@ -543,9 +602,18 @@ theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
       apply(rule dsef_read)
       apply(rule allI) -- {* arrived at the if-then-else construct *}
     apply(rule pdl_plugB_lifted1)
+(*>*)
+    txt {*  
+      After having worked off all read operations, we again have to establish the strongest
+      postcondition that is required after the if-statement.
+
+      @{goals [display=true, goals_limit=1]}
+      *}
+(*<*)
       apply(simp add: split_if)
         apply(safe)  -- {* now we have to prove the two different branches  *}
-        apply(rule pdl_mpB_lifted1) (* dropping 0 < u, since we don't need it (is appears) *)
+        apply(rule pdl_wkB_lifted1) -- {* dropping 0 < u, 
+           since we don't need it for partial corr. *}
         apply(rule pdl_conj_imp_wk2)
         apply(rule pdl_conj_imp_box_split)
         apply(rule pdl_k3B)
@@ -565,13 +633,28 @@ theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
         apply(simp add: even_div_eq nat_odd_def)
         apply(rule pdl_iffD2[OF pdl_retB]) -- {* arrived at @{text "x := u div 2"} *}
     apply(rule pdl_plugB_lifted1)
+(*>*)
+    txt {* 
+      Here we see what the just mentioned postcondition looks like: it says that the following
+      relation (found in the premiss of the implication) holds:
+      
+      @{goals [display=true, goals_limit=1]}
+      *}
+(*<*)
       apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
       apply(rule pdl_conjI)
       apply(rule pdl_imp_wk)
       apply(rule read_write)
       apply(rule wrt_other_aux)
       apply(rule allI) -- {* almost done, just the @{text "y := v * 2"} remaining *}
-    apply(rule pdl_mpB_lifted1)
+    apply(rule pdl_wkB_lifted1)
+(*>*)
+    txt {* 
+      Now only the assignment to @{term "y"} remains.
+
+      @{goals [display=true, goals_limit=1]}
+      *}
+(*<*)
       apply(rule pdl_conj_imp_box_split)
       apply(rule read_write_other)
       apply(rule pdl_iffD2[OF box_conj_distrib_lifted1, THEN pdl_mp])
@@ -580,7 +663,15 @@ theorem russian_mult: "\<turnstile> (Ret ( x\<noteq>y \<and> y\<noteq>r \<and> x
       apply(rule read_write)
       apply(rule wrt_other2_aux)
       apply(rule allI)
-    apply(rule asm_results_aux)  
+    apply(rule asm_results_aux)
+(*>*)
+    txt {* 
+      We finally succeeded in re-establishing the loop invariant after one
+      execution of the loop
+      body. The final part is just to read reference @{term "r"}, which is easily done.
+      
+       @{goals [display=true, goals_limit=1]}
+      *}
   apply(rule conclude_aux)  -- {* \dots Just 124 straightforward proof steps later *}
 done
 

@@ -11,10 +11,12 @@
 header {* Basic Monad Definitions and Laws. *}
 
 theory Monads = Main:
+text_raw {* \label{sec:monads-thy} *}
 
 text {*
  For the lack of constructor classes in Isabelle, we initially
  use functor @{text "T"} as a parameter standing for the monad in question.
+ \label{isa:monads-def}
 *}
 
 typedecl 'a T
@@ -35,6 +37,7 @@ constdefs
 text {*
   The usual monad laws for bind and ret (not the Kleisli triple ones)
   including injectivity of @{term "ret"} for convenience.
+  \label{isa:monads-laws}
 *}
 
 axioms
@@ -50,6 +53,7 @@ lemma seq_assoc [simp]: "(p \<ggreater> (q \<ggreater> r)) = (p \<ggreater> q \<
 text {*
   This sets up a Haskell-style `@{text "do {x\<leftarrow>p; q}"}' syntax 
   with multiple bindings inside one @{text "do"} term.
+  \label{isa:do-notation}
 *}
 
 nonterminals

@@ -8,17 +8,18 @@
 
 header {* Introducing Propositional Connectives *}
 theory MonLogic = MonProp:
-
+text_raw{* \label{sec:monlogic-thy} *}
 
 subsection {* Propositional Connectives *}
 
 text {* As usual in intuitionistic logics, we introduce conjunction,
   disjunction and implication independently of each other.
+  \label{isa:logical-const}
 *}  
 consts
- "Valid"       :: "bool D => bool"               ("(\<turnstile> _)" 15)
- "\<and>\<^sub>D"         :: "[bool D, bool D] => bool D"     (infixr 35)
- "\<or>\<^sub>D"         :: "[bool D, bool D] => bool D"     (infixr 30)
+ "Valid"       :: "bool D \<Rightarrow> bool"               ("(\<turnstile> _)" 15)
+ "\<and>\<^sub>D"         :: "[bool D, bool D] \<Rightarrow> bool D"     (infixr 35)
+ "\<or>\<^sub>D"         :: "[bool D, bool D] \<Rightarrow> bool D"     (infixr 30)
  "\<longrightarrow>\<^sub>D"        :: "[bool D, bool D] \<Rightarrow> bool D"    (infixr 25)
 
 text {*
@@ -47,6 +48,7 @@ text {*
   Because of discardability, the definition of @{term "Valid"}, which 
   was simply taken over from the definition of global validity of terms of type
   @{typ "bool T"}, can be simplified.
+  \label{isa:valid-simp}
 *}
 lemma Valid_simp: "(\<turnstile> p) = (\<Down> p = ret True)"
 proof
@@ -64,11 +66,19 @@ next
   thus "\<turnstile> p" by (simp only: Valid_def)
 qed
 
+lemma Valid_simpD: "(\<turnstile> P) = (P = Ret True)"
+  apply(simp add: Valid_simp Ret_ret Ret_def)
+  apply(induct_tac P rule:  Abs_Dsef_induct)
+  apply(simp add: Dsef_def Abs_Dsef_inverse)
+  apply(rule Abs_Dsef_inject[symmetric])
+  by (simp_all add: Dsef_def)
 
+    
 text {*
   There is a notion of homomorphism associated with lifted operations. The formulation
   does not really make clear what is intended, but the subsequent lemmas should
   illuminate the idea.
+  \label{isa:lift-ret-hom}
 *}
 theorem lift_Ret_hom:  "(\<Up> (liftM2 f (\<Down> (Ret a)) (\<Down> (Ret b)))) 
                             = Ret (f a b)"
@@ -126,6 +136,7 @@ qed
 text {*
   Every true formula may be injected into @{typ "bool D"} by @{term "Ret"} to 
   yield a valid formula of dynamic logic. And the converse also holds!
+  \label{isa:valid-ret}
 *}
 
 theorem Valid_Ret [simp]: "(\<turnstile> Ret P) = P"
@@ -212,6 +223,7 @@ text {*
  
   All these axioms are in fact provable; it is just the shortage of time that
   forces us to impose them directly.  
+  \label{isa:simp-pdl-taut}
 *}
 
 constdefs
@@ -266,7 +278,7 @@ lemmas mon_prop_reason = Abs_Dsef_inverse dsef_liftM2
   Dsef_def conjD_def disjD_def impD_def NotD_def 
 
 
-text {* A proof showing in what manner the above axioms may be proved *}
+text {* A proof showing in what manner the above axioms may be proved. *}
 lemma "(P \<and>\<^sub>D (\<not>\<^sub>D P)) = Ret False"
   apply(simp add: mon_prop_reason, simp only: liftM2_def)
   apply(unfold Ret_def)
@@ -278,13 +290,23 @@ lemma "(P \<and>\<^sub>D (\<not>\<^sub>D P)) = Ret False"
   apply(rule dsef_dis[OF dsef_Rep_Dsef])
 done
 
-
+text {* And another one, following the same scheme, only that the simplifier now
+  needs help from the classical reasoner to finish. *}
+lemma "(P \<oplus>\<^sub>D Q) = (Q \<oplus>\<^sub>D P)"
+  apply(simp add: disjD_def conjD_def NotD_def impD_def liftM2_def xorD_def Ret_def)
+  apply(simp add: Abs_Dsef_inverse Dsef_def dsef_seq dsef_Rep_Dsef mon_ctr del: bind_assoc)
+  apply(simp add: commute_dsef[of "\<Down> Q" "\<Down> P"])
+  apply(simp add: dsef_cp cp_arb)
+  apply(subgoal_tac "\<forall>x y. (x \<and> \<not> y \<or> \<not> x \<and> y) = (y \<and> \<not> x \<or> \<not> y \<and> x)", simp)
+  by blast
+  
 subsection {* Proof Rules *}
 
 text {* 
-  Proof rules, which can all be proven to be correct, since we have
+  Proof rules, which can all be proved to be correct, since we have
   the semantics built into the logic (i.e. we can access it within HOL).
   Some proofs however simply employ the above tautology reasoner.
+  \label{isa:proof-rules}
 *}
 
 theorem pdl_excluded_middle: "\<turnstile> P \<or>\<^sub>D (\<not>\<^sub>D P)"
@@ -429,7 +451,7 @@ proof -
 qed
 
 
-text {* Some further typical rules *}
+text {* Some further typical rules. *}
 lemma pdl_notI: "\<lbrakk> \<turnstile> P; \<turnstile> Ret False\<rbrakk> \<Longrightarrow> \<turnstile> \<not>\<^sub>D P"
 by(rule pdl_FalseE)
 
@@ -511,7 +533,7 @@ qed
 
 
 text {*  Some applications of the enhanced simplifier, which is now
-         capable of proving prop. tautologies immediately *}
+         capable of proving prop. tautologies immediately. *}
 
 
 lemma "\<turnstile> A \<longrightarrow>\<^sub>D B \<longrightarrow>\<^sub>D A"

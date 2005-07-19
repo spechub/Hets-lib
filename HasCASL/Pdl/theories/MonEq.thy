@@ -6,7 +6,7 @@
 header {* Monadic Equality *}
 theory MonEq = MonLogic:
 
-
+text {* \label{sec:moneq-thy} *}
 
 constdefs
   "MonEq"  :: "['a D, 'a D] \<Rightarrow> bool D"    (infixl "=\<^sub>D" 60)
@@ -17,78 +17,51 @@ lemma MonEq_Ret_hom: "((Ret a) =\<^sub>D (Ret b)) = (Ret (a=b))"
 by (simp add: lift_Ret_hom MonEq_def)
 
 
-(* Not so interesting since it used nowhere *)
-(*<*)
+text {* Transitivity of monadic equality. *}
+lemma mon_eq_trans: "\<lbrakk>\<turnstile> a =\<^sub>D b; \<turnstile> b =\<^sub>D c\<rbrakk> \<Longrightarrow> \<turnstile> a =\<^sub>D c"
+proof -
+  assume ab: "\<turnstile> a =\<^sub>D b" and bc: "\<turnstile> b =\<^sub>D c"
+  have "\<turnstile> (a =\<^sub>D b) \<longrightarrow>\<^sub>D (b =\<^sub>D c) \<longrightarrow>\<^sub>D (a =\<^sub>D c)"
+    apply(simp add: MonEq_def impD_def liftM2_def)
+    apply(simp add: Abs_Dsef_inverse dsef_Rep_Dsef Dsef_def dsef_seq mon_ctr del: bind_assoc)
+    apply(simp add: cp_arb dsef_cp[OF dsef_Rep_Dsef]) 
+    apply(simp add: commute_dsef[of "\<Down> c" "\<Down> a"]) 
+    apply(simp add: commute_dsef[of "\<Down> b" "\<Down> a"]) 
+    apply(simp add: cp_arb dsef_cp[OF dsef_Rep_Dsef] del: bind_assoc) 
+    apply (simp add: dsef_dis[OF dsef_Rep_Dsef] dis_left2)
+    apply(subst Ret_def[symmetric])
+    by simp
+  from this ab bc show ?thesis by (rule pdl_mp[THEN pdl_mp])
+qed
+
+text {* Reflexivity of monadic equality. *}
+lemma mon_eq_refl:  "\<turnstile> a =\<^sub>D a"
+  apply(simp add: MonEq_def liftM2_def)
+  apply(simp add: cp_arb dsef_cp[OF dsef_Rep_Dsef])
+  apply(simp add: dis_left2 dsef_dis[OF dsef_Rep_Dsef])
+  apply(subst Ret_def[symmetric])
+  by (simp)
 
 
-(* A copyable and discardable program commutes with all cp and dis programs iff
-   it commutes with all bool-valued cp/dis programs. *)
-axioms 
-dsef_anytype: "\<lbrakk>(\<forall>q::bool T. cp q \<and> dis q \<longrightarrow> cp (do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)}));
-                cp p; dis p\<rbrakk> \<Longrightarrow>
-                \<forall>q::'a T. cp q \<and> dis q \<longrightarrow> cp (do {x\<leftarrow>p; y\<leftarrow>q; ret(x,y)})"
-mon_eq_trans: "\<lbrakk>\<turnstile> a =\<^sub>D b; \<turnstile> b =\<^sub>D c\<rbrakk> \<Longrightarrow> \<turnstile> a =\<^sub>D c"
-mon_eq_refl:  "\<turnstile> a =\<^sub>D a"
-mon_eq_sym:   "(a =\<^sub>D b) = (b =\<^sub>D a)"
-
-
-lemma sym_subst_seq2: "\<forall>x y. c x y = c y x \<Longrightarrow> do {x\<leftarrow>p; y\<leftarrow>q; c x y} = do {x\<leftarrow>p; y\<leftarrow>q; c y x}"
+text {* Auxiliary lemma, just to help the simplifier. *}
+lemma sym_subst_seq2: "\<forall>x y. c x y = c y x \<Longrightarrow> 
+  (\<Up> (do {x\<leftarrow>p; y\<leftarrow>q; c x y})) = (\<Up> (do {x\<leftarrow>p; y\<leftarrow>q; c y x}))"
   by simp
 
 
-(* An ugly and cumbersome proof if ever there was one 
-   uses "coercion lemma" dsef_anytype *)
-theorem mon_eq_sym1: "\<turnstile> a =\<^sub>D b \<Longrightarrow> \<turnstile> b =\<^sub>D a"
-proof -
-  assume asm: "\<turnstile> a =\<^sub>D b"
-  have "do {x\<leftarrow>\<Down> b; y\<leftarrow>\<Down> a; ret(x=y)} = 
-        do {x\<leftarrow>\<Down> a; y\<leftarrow>\<Down> b; ret(x=y)}"
-  proof -
-    have "dsef (\<Down> a)"
-      by (rule dsef_Rep_Dsef)
-    moreover have "dsef (\<Down> b)" 
-      by (rule dsef_Rep_Dsef)
-    ultimately have "do {x\<leftarrow>(\<Down> a); y\<leftarrow>(\<Down> b); ret(x,y)} 
-                     = do {y\<leftarrow>(\<Down> b); x\<leftarrow>(\<Down> a); ret(x,y)}"
-      apply(simp add: dsef_def)
-      apply(clarify)
-      apply(drule dsef_anytype, assumption+)
-      apply(drule_tac x = "\<Down> b" in spec)
-      apply(drule conjI, assumption, drule mp, assumption, erule conjE)
-      apply(rule commute_1_2, assumption+)
-      done
-    thus ?thesis
-    proof -
-      let ?ra = "\<Down> a" and ?rb = "\<Down> b"
-      assume a1: "do {x\<leftarrow>?ra; y\<leftarrow>?rb; ret (x, y)} 
-                = do {y\<leftarrow>?rb; x\<leftarrow>?ra; ret (x, y)}"
-      have "do {x\<leftarrow>?rb; y\<leftarrow>?ra; ret(x = y)} = 
-            do {u\<leftarrow>do {x\<leftarrow>?rb; y\<leftarrow>?ra; ret(y,x)}; ret(snd u = fst u)}"
-	by (simp add: mon_ctr)
-      also from a1 have "\<dots> = do {u\<leftarrow>do {x\<leftarrow>?ra; y\<leftarrow>?rb; ret(x,y)}; ret((snd u) = (fst u))}"
-	by simp
-      also have "\<dots> = do {x\<leftarrow>?ra; y\<leftarrow>?rb; ret(y = x)}" by (simp add: mon_ctr)
-      also have "\<dots> = do {x\<leftarrow>?ra; y\<leftarrow>?rb; ret(x = y)}"
-      proof -
-	have rs: " \<forall>x y. ret(y=x) = ret(x=y)" 
-	proof (rule allI)+
-	  fix x y
-	  have "(x = y) = (y = x)" by blast
-	  thus "ret(x=y) = ret(y=x)" by simp
-	qed
-	show ?thesis by (rule sym_subst_seq2, rule rs)
-      qed
-      finally show ?thesis . 
-    qed
-  qed
-  hence "(liftM2 op = (\<Down> a) (\<Down> b))
-         = (liftM2 op = (\<Down> b) (\<Down> a))" (is "?A = ?B") 
-    by (simp add: liftM2_def)
-  hence "\<Up> ?A = \<Up> ?B" by simp
-  with asm show "\<turnstile> b =\<^sub>D a" by (simp add: MonEq_def)
-qed
+text {* Symmetry of monadic equality. 
+  The simplifier gets into trouble here, for it must apply symmetry
+  of real equality inside the scope of lambda terms. We circumvent
+  this problem by extracting the essential proof obligation through 
+  @{thm [source] sym_subst_seq2} and then working by hand.
+*}
 
-
-(*>*)
+lemma mon_eq_sym:   "(a =\<^sub>D b) = (b =\<^sub>D a)"
+  apply(simp add: MonEq_def liftM2_def)
+  apply(simp add: commute_dsef[of "\<Down> a" "\<Down> b"])
+  apply(rule sym_subst_seq2)
+  apply(clarify)
+  apply(rule arg_cong[where f = ret]) 
+  by (rule eq_sym_conv)
 
 end
