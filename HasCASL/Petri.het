@@ -61,18 +61,18 @@ then
        /\ forall t:T . t isIn transitions n1 =>
           (   freeMap hp (preMap n1 t) = preMap n2 (ht t)
            /\ freeMap hp (postMap n1 t) = postMap n2 (ht t) ) } 
-  ops dom : HomNet  -> Net;
-      cod : HomNet  -> Net;
-      placesMap : HomNet  -> (P->?P);
-      transitionsMap : HomNet  -> (T->?T);
-      id : Net ->? HomNet;
-      __o__ : HomNet  * HomNet  ->? HomNet 
+  ops dom : HomNet -> Net;
+      cod : HomNet -> Net;
+      placesMap : HomNet -> (P->?P);
+      transitionsMap : HomNet -> (T->?T);
+      id : Net -> HomNet;
+      __o__ : HomNet * HomNet ->? HomNet 
   pred injective : HomNet
    forall n, n1,n2 : Net; p : Set P; pre, post : T ->? MultiSet P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
    . let h=(n1,hp,ht,n2) in dom (h) = n1
-   . let h=(n1,hp,ht,n2)  in cod (h) = n2
-   . let h=(n1,hp,ht,n2)  in placesMap (h) = hp
-   . let h=(n1,hp,ht,n2)  in transitionsMap (h) = ht
+   . let h=(n1,hp,ht,n2) in cod (h) = n2
+   . let h=(n1,hp,ht,n2) in placesMap (h) = hp
+   . let h=(n1,hp,ht,n2) in transitionsMap (h) = ht
    . def (h2 o h1) <=> cod h1 = dom h2
    . def (h2 o h1) => h2 o h1 = 
      (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)

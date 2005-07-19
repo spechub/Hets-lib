@@ -157,13 +157,13 @@ then
       cod (a : Set S; f : Map S; b: Set S): Set S = b;
       func (a : Set S; f : Map S; b: Set S): Map S = f;
       __o__ : MapS * MapS ->? MapS;
-      id : SetS ->? MapS %% was missing for CategoryofSets
+      id : SetS -> MapS  %% was missing for CategoryOfSets
   forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
   . def (f o g) <=> cod g = dom f
   . (b,g',c) o (a,f',b) = (a,g' o f',c)
 end
 
-view CategoryofSets : Category to SetCategory =
+view CategoryOfSets : Category to SetCategory =
      Ob |-> SetS, Mor |-> MapS, __o__, dom, cod, id
 end
 
