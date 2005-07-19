@@ -15,8 +15,8 @@ meta-logic, its syntax and inference rules. We then introduce higher-order logic
 as formalised in \Isabelle. Finally, we provide insight into basic proof methods
 whose knowledge is necessary to comprehend or at least read printed \Isabelle
 proofs. A full account of all facilities that were applied cannot be given in
-this thesis; very readable introductions to \Isabelle and \IsabelleIsar are
-given in \cite{Nipkow03,IsabelleHOL}
+this thesis; very readable introductions to \Isabelle and \IsabelleIsar can be
+found in \cite{Nipkow03,IsabelleHOL}
 
 But first, a note about terminology and the development of \Isabelle is in
 order: Initially, communicating with \Isabelle meant sequentially applying ML
@@ -24,7 +24,7 @@ functions, since \Isabelle is written in this functional language. This user
 interface has recently been discharged in favour of an independent proof and
 theory language called \emph{Isar}, making proofs substantially more readable
 (and maintainable). The combination of \Isabelle with Isar is named
-\IsabelleIsar, which becomes \textit{Isabelle/Isar/HOL} when referring to the
+\IsabelleIsar, which becomes Isabelle/Isar/HOL when referring to the
 specific logic HOL, expressed in Isar. In the following, we will often use the
 term \Isabelle for all these phrases, stating once and for all that the formal
 proofs in this thesis are presented in \IsabelleIsar with HOL as the underlying
@@ -37,17 +37,19 @@ logic.
 \Isabelle lets the user define his own logics, so that he does not have to work
 within a fixed logic that might not suit his needs. In doing so, one needs some
 means to express the syntax of one's newly defined logic, to express inference
-rules, and to impose side conditions on these rules. The following natural
-deduction rule governing the introduction of the $\forall$-quantifier is a good
-example: the annotation `$x$ not free in $\ldots$' is a very typical side condition,
-while the horizontal bar expresses a possible logical inference from the
-premisses (above) to the conclusion (below).
+rules, and to impose side conditions on these rules. Take the following natural
+deduction rule governing the introduction of the $\forall$-quantifier as an
+example: 
 \begin{equation}
   \Rule{P(x)}{\forall x.\,P(x)} \quad \text{($x$ not free in assumptions)}
 \end{equation}
+The annotation `$x$ not free in $\ldots$' is a very typical side condition,
+while the horizontal bar expresses a possible logical inference from the
+premisses (displayed above the bar) to the conclusion (below the bar).
+
 Besides determining the basic syntax of all definable logics, it is the task of
 the \emph{meta-logic} to enable the formulation of such `meta-logical'
-constructs, \IE to formalize properties of concrete object-logics. Put shortly,
+constructs, \IE to formalise properties of concrete object-logics. Put shortly,
 the meta-logic is an intuitionistic higher-order logic with polymorphic
 functions in the style of ML or Haskell that possesses a universal quantifier,
 implication and equality as its constants.
@@ -59,15 +61,16 @@ implication and equality as its constants.
 The meta-logic is syntactically based on the simply typed lambda calculus as
 described in Section \ref{sec:adding-types} (although without product types).
 The additional possibility to define polymorphic functions means that function
-types may contain \emph{type variables} (commonly denoted by the initial Greek
-letters $\alpha$, $\beta$, $\gamma$, etc.), \EG the identity function $\Id \Map{\alpha}{\alpha}$ can be
-applied to terms of any type.  \emph{Type declarations} allow the introduction
-of new base types, whereas \emph{type classes} may be seen as collections of
-types that share some structure (a well-known example is the class $\Type{ord}$,
-which the types with a notion of order among their elements belong to). The
-latter concept comes close to Haskell's type classes, but is not powerful enough
-to embrace Haskell's constructor classes as well. In particular, the notion of a
-type constructor being an instance of a monad cannot be specified in \Isabelle.
+types may contain \emph{type variables}, \EG the identity function $\Id
+\Map{\alpha}{\alpha}$ exists for \emph{every} type $\alpha$.  \emph{Type declarations} allow
+the introduction of new base types, whereas \emph{type classes} may be seen as
+collections of types that share some structure (a well-known example is the
+class $\Type{ord}$, which the types with a notion of order among their elements
+belong to). The latter concept comes close to Haskell's type classes, but is not
+powerful enough to embrace Haskell's constructor classes as well. In particular,
+the notion of a type constructor being an instance of a monad cannot be
+specified in \Isabelle. A remark about how this problem has been resolved in the
+implementation can be found in Section~\ref{sec:monads-isabelle}.
 
 Some peculiarities of \Isabelle's syntax should be noted before proceeding: 
 \begin{itemize}
@@ -78,28 +81,29 @@ Some peculiarities of \Isabelle's syntax should be noted before proceeding:
   $f\Map{\sigma}{\tau}$. The type constructor $\Rightarrow$ associates to the right.
 \item The types of curried functions taking $n$ arguments, $f :: \sigma_1 \Rightarrow \cdots \Rightarrow \sigma_n \Rightarrow
   \sigma$ may be written in a list-like notation $f :: [\sigma_1,\ldots,\sigma_n] \Rightarrow \sigma$.
-\item Type variables are written as Latin letters prefixed with a $'$, \EG $'a$,
-  $'b$, $'b_1$ are type variables. Inside normal text we will sometimes use
-  Greek letters, however.
+\item Type variables are written as Latin letters prefixed with an apostrophe
+  ($'$), \EG $\ivar{a}$, $\ivar{b}$, $\ivar{b_1}$ are type variables. Inside
+  normal text we will however not use this style.
 \end{itemize}
 
 The constants of the meta-logic are a universal quantifier, (denoted by the
-symbol $\bigwedge$), implication ($\Longrightarrow$; note the difference between this one and the
-shorter symbol for the function type constructor $\Rightarrow$; both however associate to
-the right and there also is a list-like notation for repeated implication of
-the form $\llbracket\phi_1;\ldots;\phi_n\rrbracket \Longrightarrow \psi$), and equality ($\equiv$). An interesting property of
-higher-order logics that spring from the lambda calculus is the fact that no
-variable binders other than $\lambda$ are needed: predicates are simply interpreted as
-functions into truth values (\EG a predicate on the type $\Type{nat}$ of natural
-numbers might be expressed as a function $P \Map{\Type{nat}}{\Type{prop}}$), and
-quantifiers are interpreted as higher-order functions from predicates to truth
-values. Thus, the type of the universal quantifier is
+symbol $\bigwedge$), implication ($\Longrightarrow$\footnote{note the difference between this symbol
+  and the shorter one for the function type constructor $\Rightarrow$; both however
+  associate to the right and there also is a list-like notation for repeated
+  implication of the form $\llbracket\phi_1;\ldots;\phi_n\rrbracket \Longrightarrow \psi$}) and equality ($\equiv$). An interesting
+property of higher-order logics that spring from the lambda calculus is the fact
+that no variable binders other than $\lambda$ are needed: predicates are simply
+interpreted as functions into truth values (\EG a predicate on the type
+$\Type{nat}$ of natural numbers might be expressed as a function $P
+\Map{\Type{nat}}{\Type{prop}}$), and quantifiers are interpreted as higher-order
+functions from predicates to truth values. Thus, the type of the universal
+quantifier is
 \begin{equation}
   \label{eq:univ-quant-type}
-  \bigwedge\nolimits_\alpha \IsaMap{(\alpha \Rightarrow o)}{o}
+  \bigwedge\nolimits_\alpha \IsaMap{(\alpha \Rightarrow \Type{prop})}{\Type{prop}}
 \end{equation}
-for each type $\alpha$; the polymorphism of \Isabelle is restricted like that of
-ML or Haskell in that it does not allow higher-order functions to take
+for each type $\alpha$; the polymorphism of \Isabelle is restricted in the same way
+as in ML or Haskell in that it does not allow higher-order functions to take
 polymorphic functions as arguments. This is made explicit here by indexing the
 quantifier with the appropriate type under consideration.
 
@@ -108,11 +112,11 @@ quantifier with the appropriate type under consideration.
 \label{sec:defining-logics}
 
 Users are not expected to work within the meta-logic itself, but rather to
-formalize their own logics by extending the meta-logic through the introduction
+formalise their own logics by extending the meta-logic through the introduction
 of new types and constants and through axioms capturing the properties of these
 constants. An example is given in Section \ref{sec:higher-order-logic}, where
-the formalization of HOL within the meta-logic is described. The outline of such
-a formalization is as follows:
+the formalisation of HOL within the meta-logic is described. The outline of such
+a formalisation is as follows:
 \begin{enumerate}
 \item Introduce a new type for truth values, thereby distinguishing it from the
   type of truth values of the meta-logic. Furthermore introduce a predicate
@@ -122,18 +126,19 @@ a formalization is as follows:
 \item Name and assign types to the constants that will serve as basic functions
   of the logic to be defined; examples include propositional connectives $\land$,
   $\longrightarrow$, etc., or even modal operators. It is possible to decorate constants with
-  concrete syntax (by so called \emph{mixfix annotations}) that makes
-  operations more readable than is possible with the minimalistic syntax of the
-  lambda calculus. One way or the other, functions of the respective object-logic
-  conventionally have higher precedence than those of the meta-logic.
+  concrete syntax (by so called \emph{mixfix annotations}, cf. \cite{IsaRef04})
+  that makes operations more readable than is possible with the minimalistic
+  syntax of the lambda calculus. One way or the other, functions of the
+  respective object-logic conventionally have higher precedence than those of
+  the meta-logic.
 \item Extend the meta-logic by further axioms that capture the properties of
   these constants and types. The basic idea is that axioms of the meta-logic are to be
   interpreted as rules in the object logic. For example, the typical
-  rules for conjunction introduction and universal generalization in first-order
+  rules for conjunction introduction and universal generalisation in first-order
   logic 
   \[ \Rule{P\quad Q}{P \land Q}\qquad \Rule{P\, x}{\forall x\bdot P\, x}\;\text{($x$ not
     free in assumptions)}\]
-  might be formalized as 
+  might be formalised as 
   \[ \llbracket P; Q\rrbracket \Longrightarrow P \land Q\quad\text{and}\quad (\bigwedge x\bdot P\, x) \Longrightarrow \forall x\bdot P\, x \]
 \end{enumerate}
 Proofs from rules within the object-logic are then basically proofs from
@@ -146,40 +151,45 @@ corresponding axioms within the meta-logic.
 To perform such proofs inside the meta-logic, a collection of meta-rules is
 necessary. These rules are hard-wired into \Isabelle, which means they are
 implemented as ML functions operating on meta-logic terms rather than being
-terms of the meta-logic itself. Thus, these functions have to take care of the
-observing of side conditions and the like. A complete exposition of these rules
+terms of the meta-logic itself. A complete exposition of these rules
 can be found in \cite[Section 2.4]{Paulson89}, which we do not repeat here,
 since the meta-rules are virtually never applied in proofs inside object-logics.
-Instead, we merely summarize the rules, giving an idea of the relative
-compactness of the meta-logic. The meta-rules can roughly be put into three
-categories: (1) Introduction and elemination rules for the constants $\bigwedge$, $\Longrightarrow$
-and $\equiv$; (2) rules concerning lambda terms; put concretely, there is a rule for
-$\alpha$-conversion, a rule for $\beta$-reduction admitting the conclusion $a[b/x]$ from
-the premiss $(\LambdaTerm{x}{a})\ b$, and a rule of extensionality; (3) finally,
-there are basic rules for equality.
+Instead, we merely summarise the rules, giving an idea of the relative
+compactness of the meta-logic. 
 
+The meta-rules can roughly be put into three
+categories:
+\begin{enumerate}
+\item Introduction and elimination rules for the constants $\bigwedge$, $\Longrightarrow$
+and $\equiv$; 
+\item Rules concerning lambda terms; put concretely, there is a rule for
+$\alpha$-conversion, a rule for $\beta$-reduction admitting the conclusion $a[b/x]$ from
+the premiss $(\LambdaTerm{x}{a})\ b$, and a rule of extensionality; 
+\item  Finally,
+there are basic rules for equality.
+\end{enumerate}
 
 \section{Higher-order Logic (HOL)}
 \label{sec:higher-order-logic}
 
-In this section we introduce the formalization of the simply typed higher-order
+In this section we introduce the formalisation of the simply typed higher-order
 logic HOL. The outstanding feature of higher-order logics is their
 capability of expressing higher-order functions (in a sense similar to that of
 functional programming languages), but also of expressing predicates and
 quantification on arbitrarily typed terms. For example, one may state the
-property of a function being surjective by expressing that the function is
-`right-cancellable':
+property of a set $S$ being infinite by expressing that there is an injective
+function from $S$ into a proper subset $S' \subset S$:
 \[
-f\IsaMap{c}{a}\; \textit{surjective} \quad\text{iff}\quad \forall g\IsaMap{a}{b}\bdot
-\forall h\IsaMap{a}{b}\bdot g \circ f = h \circ f \longrightarrow g = h
+S\;\mathit{infinite} \quad\text{iff}\quad \exists S'\bnd S' \subset S\land\exists f :: S \Rightarrow S'\bnd f\
+\mathit{injective}
 \]
-Although surjectivity can also be expressed in first-order languages, the form
-above is inherently higher-order, because of the quantification on
-functions. In HOL all functions are required to be total; an extension
-incorporating concepts from domain theory that allows the formulation of
-arbitrary computable functions is HOLCF \cite{MuellerNipkowOheimbSlotosch}. 
-For in-depth descriptions of higher-order logic and its implementation in
-\Isabelle, see \cite{Andrews00,IsabelleHOL}.
+Because of the quantification on the function $f$ this statement is inherently
+higher-order; it cannot even be expressed equivalently in first-order languages.
+In HOL all functions are required to
+be total; an extension incorporating concepts from domain theory that allows the
+formulation of arbitrary computable functions is HOLCF
+\cite{MuellerNipkowOheimbSlotosch}.  For in-depth descriptions of higher-order
+logic and its implementation in \Isabelle, see \cite{Andrews00,IsabelleHOL}.
 
 
 \subsection{Constants}
@@ -188,27 +198,29 @@ For in-depth descriptions of higher-order logic and its implementation in
 HOL as implemented in \Isabelle extends the meta-logic by a number of constants
 that are to be interpreted as the usual logical connectives, like conjunction,
 universal quantification, or boolean case distinction (the familiar
-$\If\Arg\Then\Arg\Else\Arg$ construct). Some of them come in two flavours,
-namely their functional form (as actual constants in the lambda calculus of the
-meta-logic) and with some syntactical sugaring; Table \ref{tab:hol-const-typ}
-lists the most important ones. The function $\Fun{The}$ is Hilbert's description
-operator; $\varepsilon x\bdot P\ x$ is meant to be interpreted as ``the $x$, such that $P\
-x$ holds'' and will be undefined if no such $x$ exists. It plays only a minor
-role in the following. The interpretation of the remaining functions and values
-is standard, but one should note that quantification exists for arbitrary
-types, just as equality, $\If\Arg\Then\Arg\Else\Arg$ and $\Let$. 
+\emph{if-then-else} construct). Differing from the notation used so far,
+implication is denoted by a simple long arrow $\longrightarrow$. Some of the operations come
+in two flavours, namely their functional form (as actual constants in the lambda
+calculus of the meta-logic) and with some syntactical sugaring; Table
+\ref{tab:hol-const-typ} lists the most important ones. The function $\Fun{The}$
+is a \emph{definite description operator}; $\op{THE}~x\bdot P\ x$ is meant to be
+interpreted as ``the $x$, such that $P\ x$ holds'' and will yield an arbitrary
+value of the appropriate type if no such $x$ exists.  The interpretation of the
+remaining functions and values is standard, but one should note that
+quantification exists for arbitrary types, just as equality, \emph{if-then-else}
+and \emph{let} do.
 \begin{table}
   \centering \renewcommand{\arraystretch}{1.3}
   \begin{tabular}{|l|l|l|}\hline
     \emph{Constant}       & \emph{Term} & \emph{written as}\\\hline
     $\Fun{Not}\IsaMap{\Type{bool}}{\Type{bool}}$ & $\Fun{Not}\ P$ & $\lnot
       P$\\\hline
-    $\True :: \Type{bool}$ & &\\\hline
-    $\False :: \Type{bool}$ & &\\\hline
+    $\op{True} :: \Type{bool}$ & &\\\hline
+    $\op{False} :: \Type{bool}$ & &\\\hline
     $\Fun{If} \IsaMap{[\Type{bool}, 'a, 'a]}{'a}$ & $\Fun{If}\ b\ p\ q$ &
       $\If b\Then p \Else q$\\\hline
     $\Fun{The} \IsaMap{('a \Rightarrow \Type{bool})}{'a}$ & 
-      $\Fun{The}\ P$ & $\ \varepsilon x\bdot P\ x$\\\hline
+      $\Fun{The}\ P$ & $\ \op{THE}~ x\bdot P\ x$\\\hline
     $\Fun{All}\IsaMap{('a \Rightarrow \Type{bool})}{\Type{bool}}$ &
       $\Fun{All}\ P$ & $\forall x\bdot P\ x$\\\hline
     $\Fun{Ex}\IsaMap{('a \Rightarrow \Type{bool})}{\Type{bool}}$ &
@@ -226,14 +238,15 @@ types, just as equality, $\If\Arg\Then\Arg\Else\Arg$ and $\Let$.
 
 HOL inherits the ability to express functions as lambda terms from the
 meta-logic by identifying HOL types and functions with the types and functions
-of the meta-logic (this might seem an obvious choice, but some logics follow
-another approach, \EG the formulations of Zermelo-Fraenkel set theory or CTT).
-This way, HOL also exploits \Isabelle's built-in type checker, which is a great
-help in immediately refuting ill-typed expressions. Nonetheless it has its own
-type of truth values, classically named $\Type{bool}$. In fact, HOL is a
-classical logic (as opposed to a constructive or intuitionistic logic) featuring
-the law of excluded middle (cf. rule $\mathit{True\_or\_False}$ in Table
-\ref{tab:axioms-hol}).
+of the meta-logic\footnote{this might seem an obvious choice, but some logics
+  follow a different approach to make type systems possible that do not fit into
+  the one provided by the meta-logic, cf.  \EG the formulations of
+  Zermelo-Fraenkel set theory or CTT}.  This way, HOL also exploits \Isabelle's
+built-in type checker, which is a great help in immediately refuting ill-typed
+expressions. Nonetheless it has its own type of truth values, classically named
+$\Type{bool}$. In fact, HOL is a classical logic (as opposed to a constructive
+or intuitionistic logic) featuring the law of excluded middle (cf. rule
+$\irule{True-or-False}$ in Table \ref{tab:axioms-hol}).
 
 There is an interesting difference between variables in HOL and the more
 syntactical variables encountered in the definition of logics `on paper', where
@@ -252,10 +265,10 @@ substitution, and the rule under consideration is expressed as
 \Rule{a = b \quad \phi\ a}{\phi\ b}
 \end{equation}
 making $\phi\IsaMap{\sigma}{\Type{bool}}$ a function variable provided that $a, b : \sigma$. 
-Here is a simple example to visualize the difference.
+Here is a simple example to visualise the difference.
 \begin{expl}
   Assuming some proof has reached a state such that $a = b$ and $f\,a = g\,x$
-  have been proven. In this case, $\phi$ of \eqref{eq:paper-rule-subst} can be
+  have been proved. In this case, $\phi$ of \eqref{eq:paper-rule-subst} can be
   instantiated to $f\,a = g\,x$, whereas $\phi$ of \eqref{eq:hol-rule-subst} is
   $\LambdaTerm{y}{f\,y = g\,x}$. Applying rule \eqref{eq:hol-rule-subst} yields
   $(\LambdaTerm{y}{f\,y = g\,x})\ b$ which can be converted to $f\,b = g\,x$ by
@@ -268,13 +281,13 @@ Here is a simple example to visualize the difference.
 \label{sec:hol-definitions}
 
 To avoid unnecessary redundancy, logics -- including HOL -- often only
-axiomatize the properties of a minimal set of constants, with everything else
+axiomatise the properties of a minimal set of constants, with everything else
 being defined in the form of abbreviations (the definition of implication
 through negation and disjunction is a case in point, although in HOL implication
 is the basic connective). It is here, where the constants of the meta-logic come
 into play: we may use meta-equality to describe definitions, meta-implication to
 express rules and the use of meta-quantification is a convenient way to capture
-many common side conditions. Table \ref{tab:axioms-hol} shows the axiomatization
+many common side conditions. Table \ref{tab:axioms-hol} shows the axiomatisation
 of HOL as an extension of the meta-logic, where the usual connectives are still
 missing; their definitions are presented in Table \ref{tab:defn-logic-op}.
 Within the latter, the left column shows the logical constants with their types,
@@ -292,18 +305,18 @@ while their definition is presented in the right column.
 \begin{table}
   \centering \renewcommand{\arraystretch}{1.3}
   \begin{tabular}{|l@{$\quad$}l|}\hline
-    eq\_reflection & $(x = y) \Longrightarrow (x \equiv y)$ \\\hline
-    refl          & $(x  = x)$ \\\hline
-    subst         & $\llbracket s = t; P\, s\rrbracket \Longrightarrow P\, t$ \\\hline
-    ext           & $(\bigwedge x. f\,x = g\,x) \Longrightarrow \LambdaTerm{x}{f\,x} =
+    \irule{eq-reflection} & $(x = y) \Longrightarrow (x \equiv y)$ \\\hline
+    \irule{refl}          & $(x  = x)$ \\\hline
+    \irule{subst}         & $\llbracket s = t; P\, s\rrbracket \Longrightarrow P\, t$ \\\hline
+    \irule{ext}           & $(\bigwedge x. f\,x = g\,x) \Longrightarrow \LambdaTerm{x}{f\,x} =
     \LambdaTerm{x}{g\,x}$ \\\hline
-    the\_eq\_trivial & $(\varepsilon x.\,x=a) = a$ \\\hline
-    impI          & $(P \Longrightarrow Q) \Longrightarrow P \longrightarrow Q$ \\\hline
-    mp            & $\llbracket P \longrightarrow Q; P\rrbracket \Longrightarrow Q$ \\\hline
-    iff           & $(P\longrightarrow Q) \longrightarrow (Q\longrightarrow P)\longrightarrow (P=Q)$\\\hline
-    True\_or\_False & $P = True \lor P = False$ \\\hline
+    \irule{the-eq-trivial} & $(\varepsilon x.\,x=a) = a$ \\\hline
+    \irule{impI}          & $(P \Longrightarrow Q) \Longrightarrow P \longrightarrow Q$ \\\hline
+    \irule{mp}            & $\llbracket P \longrightarrow Q; P\rrbracket \Longrightarrow Q$ \\\hline
+    \irule{iff}           & $(P\longrightarrow Q) \longrightarrow (Q\longrightarrow P)\longrightarrow (P=Q)$\\\hline
+    \irule{True-or-False} & $P = True \lor P = False$ \\\hline
   \end{tabular}
-  \caption{Axiomatization of HOL in \Isabelle}
+  \caption{Axiomatisation of HOL in \Isabelle}
   \label{tab:axioms-hol}
 \end{table}
 
@@ -311,17 +324,17 @@ while their definition is presented in the right column.
   \centering \renewcommand{\arraystretch}{1.3}
   \begin{tabular}{|l|l@{$\quad\equiv\quad$}l|}\hline
     \multicolumn{2}{|l}{\emph{Constant}} & \emph{Definition} \\\hline
-    $\True :: \Type{bool}$ &
-    $\True$           & $(\LambdaTerm{x::\Type{bool}}{x}) =
+    $\op{True} :: \Type{bool}$ &
+    $\op{True}$           & $(\LambdaTerm{x::\Type{bool}}{x}) =
     \LambdaTerm{x}{x}$\\\hline 
     $\Fun{All} :: ('a \Rightarrow \Type{bool}) \Rightarrow \Type{bool}$ &
-    $\forall x.\, P\, x$      & $P = \LambdaTerm{x}{\True}$\\\hline
+    $\forall x.\, P\, x$      & $P = \LambdaTerm{x}{\op{True}}$\\\hline
     $\Fun{Ex} :: ('a \Rightarrow\Type{bool}) \Rightarrow \Type{bool}$ &
     $\exists x\bdot P\, x$    & $\forall b\bdot (\forall x\bdot P\, x \longrightarrow b) \longrightarrow b$\\\hline
-    $\False :: \Type{bool}$ &
-    $\False$          & $\forall b.\ b$\\\hline
+    $\op{False} :: \Type{bool}$ &
+    $\op{False}$          & $\forall b.\ b$\\\hline
     $\Fun{Not} \IsaMap{\Type{bool}}{\Type{bool}}$ &
-    $\lnot P$            & $P \longrightarrow \False$\\\hline
+    $\lnot P$            & $P \longrightarrow \op{False}$\\\hline
     $\land  \IsaMap{[\Type{bool}, \Type{bool}]}{\Type{bool}}$ &
     $P \land Q$          & $\forall R\bdot (P \longrightarrow Q \longrightarrow R) \longrightarrow R$\\\hline
     $\lor \IsaMap{[\Type{bool},\Type{bool}]}{\Type{bool}}$ &
@@ -336,7 +349,7 @@ while their definition is presented in the right column.
   convincing, we take a closer look at two of them:
   \begin{itemize}
   \item The most basic notion of HOL is equality, so it is tempting to define
-    truth in terms of equality: $\True \equiv (\LambdaTerm{x::\Type{bool}}{x}) =
+    truth in terms of equality: $\op{True} \equiv (\LambdaTerm{x::\Type{bool}}{x}) =
     \LambdaTerm{x}{x}$. This term is entirely closed, \IE it neither contains
     free term variables nor free type variables, which is why this definition is
     used instead of the seemingly simpler $x=x$.
@@ -344,7 +357,7 @@ while their definition is presented in the right column.
     or equivalently $\forall x\bdot P\,x$ is true, this says that $P$ is a predicate
     that constantly yields true, no matter what argument it is applied to (of
     course, all arguments must have the appropriate type). So, one can define
-    $(\forall x.\, P\, x) \equiv (P = \LambdaTerm{x}{\True})$.
+    $(\forall x.\, P\, x) \equiv (P = \LambdaTerm{x}{\op{True}})$.
   \end{itemize}
 \end{expl}
 
@@ -379,23 +392,24 @@ in $\theta$ by the according terms is written as $(t_1)\theta$ and $(t_2)\theta$
 Due to the fact that \Isabelle employs the lambda calculus as its formal basis,
 it sometimes has to unify lambda abstractions that do not have a \emph{most
   general unifier} (mgu), which is in contrast to first-order unification, where
-two terms either are not unifyable or have exactly one mgu (up to equivalence).
+two terms either are not unifiable or have exactly one mgu (up to equivalence).
 The effect of this problem mainly is that sometimes the user must assist
 \Isabelle in finding a unifier by supplying instantiations of variables.
 
 \begin{rem}
   \Isabelle distinguishes two kinds of variables that logically have the same
   meaning. On the one hand there are the usual variables with standard lexical
-  syntax ($x$, $y$, $x_1$, $P$ are varialbes of this kind). On the other hand
+  syntax ($x$, $y$, $x_1$, $P$ are variables of this kind). On the other hand
   there are \emph{schematic variables} which may be used as variables for
-  substitution during unification. These are prefixed with a $?$ to emphasize
-  their role as placeholders. The general way of proceeding is that theorems are
-  stated solely with normal variables. After they have been proven, \Isabelle
-  internally converts all free variables of the theorem into schematic
-  variables. This is in accordance with intuition: in proving a theorem $T$, one
-  would certainly not want $T$'s variables to be replaced by some concrete term;
-  but one should be able to replace the free variables of already proved
-  theorems, as they eventually represent arbitrary terms.
+  substitution during unification. These are prefixed with a question mark to
+  emphasise their role as placeholders (\EG $?x$, $?P$). The usual way of
+  proceeding is that theorems are stated solely with normal variables. After
+  they have been proved, \Isabelle internally converts all free variables of the
+  theorem into schematic variables. This is in accordance with intuition: in
+  proving a theorem $T$, one would certainly not want $T$'s variables to be
+  replaced by some concrete term; but one should be able to replace the free
+  variables of already proved theorems, as they eventually represent arbitrary
+  terms.
 \end{rem}
 
 
@@ -405,7 +419,7 @@ The effect of this problem mainly is that sometimes the user must assist
 
 In what follows we will talk of the left-hand side of a meta-implication as the
 premiss (or premisses, if the $\llbracket\ldots\rrbracket$ notation is used) and of the right-hand side
-as the conclusion, to emphasize the role of meta-implication for object-logics.
+as the conclusion, to emphasise the role of meta-implication for object-logics.
 Given two theorems $\llbracket P_1,\ldots,P_n\rrbracket \Longrightarrow P$ and $\llbracket Q_1,\ldots,Q_m\rrbracket \Longrightarrow Q$ in the meta-logic,
 such that $(P_i \equiv Q)\theta$ holds for some $i\in\{1,\ldots,n\}$ and some unifier $\theta$,
 resolution allows us to prove a new theorem that has $P$ as its conclusion and
@@ -424,10 +438,10 @@ substitution $\theta$.
 A complication concerning the applicability of resolution arises when the
 premisses of a meta-theorem contain a meta-implication or meta-quantification
 themselves, as in the derived HOL rule (impI): $(A \Longrightarrow B) \Longrightarrow A \longrightarrow B$. The single
-premiss of this meta-theorem will only be unifyable with the conclusion of
+premiss of this meta-theorem will only be unifiable with the conclusion of
 another meta-theorem if the latter consists of a variable or is of the form
 $X\Longrightarrow Y$, but both forms seldom appear in theorems.  To circumvent this problem,
-\Isabelle is able to \emph{lift} a rule into a context, which can be formalized
+\Isabelle is able to \emph{lift} a rule into a context, which can be formalised
 by the rule
 \begin{equation}
   \Rule{\llbracket P_1,\ldots,P_n\rrbracket \Longrightarrow P}
@@ -448,7 +462,7 @@ so far can best be understood with the help of an example.
   by the meta-rules and resolution until  $T$ has been derived. The following
   are HOL rules, derivable from the axioms given in Table \ref{tab:axioms-hol}. 
   \begin{align*}
-    &    (?A \Longrightarrow B) \Longrightarrow {}?A \longrightarrow {}?B && \quad \text{(impI)}\\
+    &    (?A \Longrightarrow ?B) \Longrightarrow {}?A \longrightarrow {}?B && \quad \text{(impI)}\\
     & \llbracket?A; {}?B\rrbracket \Longrightarrow {}?A \land{} ?B    & & \quad \text{(conjI)}\\
     & \llbracket?A \land {}?B\rrbracket \Longrightarrow {}?A        && \quad \text{(conjunct1)}\\
     & \llbracket?A \land {}?B\rrbracket \Longrightarrow {}?B       && \quad \text{(conjunct2)}
@@ -490,7 +504,7 @@ premisses, regarding them as \emph{goals}, \IE statements that are yet to be
 proved in order to finish the proof of $T$. Thus, the initial goal is the
 theorem itself. Resolution of the theorem at hand with other theorems as
 described above can then be imagined as the application of rules to the current
-goal. For example, if the current goal is to show $A \longrightarrow B$ for some formulas $A$
+goal. For example, if the current goal is to show $A \longrightarrow B$ for some formulae $A$
 and $B$ in the proof of $T$ (\IE internally the theorem $A \longrightarrow B \Longrightarrow T$ has been
 derived), we may `apply the rule (impI)' to turn this goal into $A \Longrightarrow B$. Making
 one further step of abstraction, this term can be taken as the goal $B$, to be
@@ -513,7 +527,7 @@ T$, which is an already proved theorem.
   simplicity we assume to be $P_1$ -- and yields the subgoals 
   \[(\llbracket \llbracket P_2;\ldots;P_n\rrbracket \Longrightarrow
   T_2; \ldots; \llbracket P_2;\ldots;P_n\rrbracket \Longrightarrow T_k; \llbracket P_2; \ldots; P_n; T\rrbracket \Longrightarrow P\rrbracket)\theta\] 
-  The idea is that $T_1$ is among the current assumptions (it is unifyable with
+  The idea is that $T_1$ is among the current assumptions (it is unifiable with
   $P_1$ here) and can thus be proved trivially. It then remains to prove $T_2$
   to $T_k$, but if this can be done, it is reasonable to take $T$ as an
   assumption in proving $P$, since all of $T$'s premisses can be proved from the
@@ -560,10 +574,17 @@ in proofs.
   (a + (b + (d + c)))$ outright, relieving the user of several applications of
   these rules by hand.
 
+  To avoid looping on so-called permutative rewrite rules in which the left-hand
+  side of the equation is equal to the right-hand side up to a renaming of
+  variables -- \EG the rule $a + b = b + a$ -- the simplifier performs
+  \emph{ordered rewriting} so that terms are only rewritten by permutative rules
+  if they become lexicographically smaller. Hence, $a + b$ may be rewritten to
+  $b + a$, but not the other way round.
+
 \item \emph{A classical tableau prover.} In contrast to the simplifier -- which
   can be employed as an intermediate proof step leaving a goal that is simpler
   to prove by hand, and which is able to manipulate arbitrary terms -- there
-  also is a tool for proving logical formulas directly. This tool is known as
+  also is a tool for proving logical formulae directly. This tool is known as
   the \texttt{blast} method and it is capable of proving theorems like $(\exists y\bdot
   \forall x\bdot P\ x\ y) \longrightarrow (\forall x\bdot \exists y\bdot P\ x\ y)$ without intervention from the
   user (this theorem could not even be altered by the simplifier in any way). It
@@ -594,8 +615,8 @@ thereby explaining basic syntactic elements.
 \isacommand{by}\ \ {\isacharparenleft}drule\ mp{\isacharparenright}\isanewline
 \end{isabellebody}
 
-Read as a rule of the object-logic HOL, $\mathit{imp\_uncurry}$ says that given
-the implication $P \longrightarrow (Q \longrightarrow R)$, one may conclude $(P\land Q) \longrightarrow R$. These formulas are
+Read as a rule of the object-logic HOL, $\irule{imp-uncurry}$ says that given
+the implication $P \longrightarrow (Q \longrightarrow R)$, one may conclude $(P\land Q) \longrightarrow R$. These formulae are
 well known to be equivalent, so we might even have proposed $(P \longrightarrow Q \longrightarrow R) = (P \land
 Q \longrightarrow R)$ (omitting all unnecessary parentheses) which we have not done to keep
 the example short. Let's walk through this proof
@@ -629,8 +650,43 @@ further steps of proof by assumption if necessary.
 \section{The Isar Proof Language}
 \label{sec:isar-proof-language}
 
+The proof style displayed in Section \ref{sec:an-example-proof} above --
+occasionally termed the \emph{apply style} due to its excessive use of the
+\isacommand{apply} method -- has two major drawbacks. The first one is that
+proof scripts comprising a long sequence of \isacommand{apply}s are hard to
+read, because there is no information about intermediate proof states shown.
+The second one, which becomes evident in the presence of large numbers of
+theories, is maintainability: if, for example, the simplifier by changing its
+configuration becomes more powerful, an application of the \emph{simp} method which
+previously resulted in a certain proof state might now result in quite a
+different one. This often means that subsequent rules of the original proof
+script are no longer applicable, so that the script has to be adjusted.
 
-\begin{isabellebody}
+Another issue is that pure backward-oriented proofs are sometimes quite
+unnatural to perform. This is especially true for proofs involving applications
+of modus ponens. If at some point in a proof the goal $A$ remains, which one
+wants to prove from the globally given facts $B$ and $B \longrightarrow A$, then an
+application of rule (mp) results in the two new subgoals $?P \longrightarrow A$ and $?P$, thus
+introducing a new unification variable $?P$. In this simple case the structure
+of the goals containing the unification variable is very similar to the structure
+of the given facts, but in practice their relation can be hard to guess, since
+$?P$ may stand for any formula. This problem is of course closely related to the
+reason why cut-freeness and the sub-formula property are desired properties of
+logical calculi (see \cite{Andrews00}).
+
+\subsection{Introducing Isar by Example}
+The Isar proof language has been conceived as a formalism for writing proof
+scripts that are both machine- and human-readable. Strictly speaking, one already
+works within Isar when employing the apply style, since \isacommand{apply} is an
+Isar command rather than one of basic \Isabelle. However, this mode of usage
+closely resembles the original \Isabelle style in which ML functions were called
+directly. Full Isar comes with several advanced features which are best
+introduced with the help of a simple example. This is how a proof of the above
+lemma $\irule{imp-uncurry}$ looks like in Isar:
+
+
+%
+\begin{isabellebody}%
 \isanewline
 \isamarkupfalse%
 \isacommand{lemma}\ imp{\isacharunderscore}uncurry{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}P\ {\isasymlongrightarrow}\ {\isacharparenleft}Q\ {\isasymlongrightarrow}\ R{\isacharparenright}\ {\isasymLongrightarrow}\ {\isacharparenleft}P\ {\isasymand}\ Q{\isacharparenright}\ {\isasymlongrightarrow}\ R{\isachardoublequote}\isanewline
@@ -647,29 +703,72 @@ further steps of proof by assumption if necessary.
 \ \ \ \ \isamarkupfalse%
 \isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
 \isacommand{have}\ P\ \isamarkupfalse%
-\isacommand{{\isachardot}{\isachardot}}\isanewline
+\isacommand{by}\ {\isacharparenleft}rule\ conjunct{\isadigit{1}}{\isacharparenright}\isanewline
 \ \ \ \ \isamarkupfalse%
 \isacommand{with}\ a{\isadigit{1}}\ \isamarkupfalse%
 \isacommand{have}\ qr{\isacharcolon}\ {\isachardoublequote}Q\ {\isasymlongrightarrow}\ R{\isachardoublequote}\ \isamarkupfalse%
-\isacommand{{\isachardot}{\isachardot}}\isanewline
+\isacommand{by}\ {\isacharparenleft}rule\ mp{\isacharparenright}\isanewline
 \ \ \ \ \isamarkupfalse%
 \isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
 \isacommand{have}\ Q\ \isamarkupfalse%
 \isacommand{{\isachardot}{\isachardot}}\isanewline
 \ \ \ \ \isamarkupfalse%
 \isacommand{with}\ qr\ \isamarkupfalse%
-\isacommand{show}\ {\isachardoublequote}R{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
 \isacommand{{\isachardot}{\isachardot}}\isanewline
 \ \ \isamarkupfalse%
 \isacommand{qed}\isanewline
 \isamarkupfalse%
 \isacommand{qed}\isanewline
-\isanewline
-\isanewline
-\isamarkupfalse%
-\isacommand{end}\isanewline
-\isamarkupfalse%
 \end{isabellebody}%
+
+
+\emph{Compound Isar proofs} are commenced by the keyword \isacommand{proof}. In
+its pure form this statement tries to find a rule that can be applied to the
+goal -- in the example, the implication introduction rule (impI) is selected.
+This kind of implicit rule application, which is much the same as
+\isacommand{apply}ing a rule in a backward-oriented proof, can be avoided by
+appending a hyphen `$-$' or the rule selection can be made explicit by providing a
+concrete rule. Applying (impI) here results in the \Isabelle proof state
+\[
+  \llbracket P \longrightarrow Q \longrightarrow R; P \land Q\rrbracket \Longrightarrow R
+\]
+which is exactly mirrored by the following two \isacommand{assume} commands
+introducing the valid assumptions (which may be given a name for future
+reference) in the proof script. Moreover, the succeeding \isacommand{show}
+command precisely depicts the statement that remains to be shown.  In every
+compound proof there occurs exactly one \isacommand{show}. To prove $R$ another
+compound proof has to be initiated, this time without applying a backward rule.
+From the given assumptions $\mathit{a1}$ and $\mathit{a2}$ it is very natural to
+prove $R$ by forward reasoning: basically, two applications of modus ponens to
+assumption $\mathit{a1}$ should yield the desired result. This is exactly what
+we find in the proof script: first, we derive $P$ from $P \land Q$ by rule
+(conjunct1) as an intermediate fact, then we may apply modus ponens to $a1$ to
+obtain fact $\mathit{qr}$, \IE $Q \longrightarrow R$.  The same procedure can be executed once
+more (this time on $\mathit{qr}$) to finally show the thesis. 
+
+Several concepts
+of Isar have been used to achieve this result. The \isacommand{by} command
+represents \emph{basic proofs} which are finished immediately through an
+application of the rule handed to it (\EG rule (conjunct1) or (mp)) and possibly
+further steps of proof by assumption.  But how can a rule having itself some
+premisses be used to prove a pending subgoal? For this purpose the
+\isacommand{from} command is needed, which feeds facts into a proof so that
+these are unified with the premisses of the applied rule. In the concrete
+example, the fact $P \land Q$ is fed into the proof by rule (conjunct1) to obtain $P$. A
+handy abbreviation is \isacommand{with}, which behaves like \isacommand{from},
+but additionally feeds the most recent fact into the subsequent proof. For
+example, to obtain $Q \longrightarrow R$ by (mp), one must feed the two premisses $P \longrightarrow Q \longrightarrow R$
+and $P$ into the proof, where $P$ is the most recently established result.
+Hence, \isacommand{with} $\mathit{a1}$ yields all that is required to finish the
+proof by modus ponens.  Finally, \isacommand{qed} concludes a compound proof and
+two dots `$..$' are shorthand for \isacommand{by} \textit{standard rules}, \IE a
+basic proof established through the standard rule set which includes (mp),
+(impI), (conjunct1) and many more. See Appendix \ref{cha:freq-used-rules} for
+frequently used rules in HOL and refer to \cite{Nipkow03,Wenzel02} for further
+details about the Isar proof language. Some more specialised features will also
+be explained in Chapter \ref{cha:implementation} as required.
+
 
 
 

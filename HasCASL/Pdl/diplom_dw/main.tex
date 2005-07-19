@@ -1,30 +1,34 @@
-\documentclass[11pt,a4paper,twoside,DIV14,BCOR20mm,headinclude,automark]{scrreprt}
+\documentclass[11pt,a4paper,headinclude,automark,pdftex,appendixprefix]{scrreprt}   %,DIV14
 %\documentclass[10pt,a4paper,twoside,DIV12,BCOR10mm,headinclude,automark]{scrreprt}
 
 
 \usepackage{diagrams}           % categorical diagrams
-%\usepackage[pdftex]{color}        % colorful text
+\usepackage[dvips]{color}        % colorful text
 \usepackage{isabelle,isabellesym} % Isabelle generated theorems, etc.
 \usepackage{scrpage2}           % page layout, used instead of fancyhdr
 \usepackage[USenglish]{babel} % support for German peculiarities
 % \usepackage[T1]{fontenc}
 \usepackage{xspace}             % intelligent spacing for newcommands
 \usepackage[latin1]{inputenc}   % enables direct use of umlaute
-\usepackage{graphicx}           % embedding of eps/png graphics
+\usepackage{graphicx}           % embedding of eps/png/pdf graphics
 \usepackage{latexsym}           % some extra symbols
 \usepackage{amssymb}            % even more extra symbols for math
 \usepackage{stmaryrd}           % yet more symbols! ("semantic braces")
 \usepackage{amsmath}            % for theorem environments and nice equations
 \usepackage{amsthm}             % oh, this one's for theorem envs
 \usepackage{url}                % include urls in a verbatim style
-% \usepackage{mathptmx}
-\usepackage{mathpazo}
+\usepackage{mathptmx}
+% \usepackage{mathpazo}
 \usepackage{helvet}
 \usepackage{alltt}              % a verbatim env that allows to include math
 %\usepackage[sf,bf,big,raggedright]{titlesec} % changes section headings etc.
 
-%\usepackage[a4paper=true,pageanchor=true,colorlinks=true,breaklinks=true, %
-%            pdftitle={Monadic Dynamic Logic: Application and Implementation}]{hyperref}
+\definecolor{darkblue}{rgb}{0,0,0.5}
+\usepackage[draft=false,a4paper=true,pageanchor=true,colorlinks=true,breaklinks=true, %
+            linkcolor=darkblue,citecolor=darkblue,filecolor=darkblue, %
+            pagecolor=darkblue, urlcolor=darkblue, %
+            pdftex, %
+            pdftitle={Monadic Dynamic Logic: Application and Implementation}]{hyperref}
 
 
 
@@ -35,7 +39,8 @@
 
 \input{header}
 
-
+% bold captions for figures
+\setkomafont{captionlabel}{\bfseries}
 
 % page style definition by means of scrpage2
 \pagestyle{scrheadings}
@@ -55,6 +60,14 @@
 
 \isabellestyle{it}
 
+%%
+% stretch the text area a bit 
+\addtolength{\topmargin}{-0.5cm}
+\addtolength{\textheight}{3cm}
+\addtolength{\textwidth}{-0.5cm}
+
+
+
 \begin{document}
 
 \selectlanguage{USenglish}
@@ -73,7 +86,7 @@
   \vspace*{40mm}
   \begin{flushright}
     \begin{tabular}{c}
-      Bremen, April 30, 2005\rule{20mm}{0mm}\\
+      Bremen, July 20, 2005\rule{20mm}{0mm}\\
       \rule{0mm}{20mm}\\\hline
       Dennis Walter
     \end{tabular}
@@ -87,7 +100,7 @@
 \begin{flushright}
 \itshape
 \Eat{Formal methods do not solve a single serious software problem;\\
-they merely minimize the circle of those able to deteriorate them.\\[2ex]}
+they merely minimise the circle of those able to deteriorate them.\\[2ex]}
 \Eat{If anything is false, the assertion $\forall x_o.x_o$ that everything is true must be false.
 \emph{Peter B. Andrews}}
 \Eat{Wat heft wi lacht,\\
@@ -112,33 +125,34 @@ I can't get no relief'\\[2ex]
 
 % here we go
 
-%\input{introduction} 
+\input{introduction} 
 
-%\input{prerequisites}
+\input{prerequisites}
 
 \input{logic}
 
-%\input{application}
+\input{application}
 
-%\input{isabelle}
+\input{isabelle}
 
-%\input{implementation}
+\input{implementation}
 
 \input{outlook}
 
+
 \begin{appendix}
-\input{appendix}
+  \input{appendix}
 \end{appendix}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 % the bibliography, to be inserted by bibtex
 \newpage
-\nocite{*}
-\bibliographystyle{alpha}
+% \nocite{*}
+\bibliographystyle{plain}
 \bibliography{biblio}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \end{document}
 

@@ -1,0 +1,995 @@
+%
+\begin{isabellebody}%
+\def\isabellecontext{PDL}%
+%
+\isamarkupheader{The Proof Calculus of Monadic Dynamic Logic%
+}
+\isamarkuptrue%
+\isacommand{theory}\ PDL\ {\isacharequal}\ MonLogic{\isacharcolon}\isamarkupfalse%
+%
+\label{sec:pdl-thy}
+%
+\isamarkupsubsection{Types, Rules and Axioms%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Types, rules and axioms for the box and diamond operators of PDL formulas.
+  \label{isa:pdl-calculus}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{consts}\isanewline
+\ Box\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharparenleft}{\isacharprime}a\ {\isasymRightarrow}\ bool\ D{\isacharparenright}\ {\isasymRightarrow}\ bool\ D{\isachardoublequote}\ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ {\isacharunderscore}{\isacharbrackright}{\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{0}}{\isacharcomma}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ Dmd\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharparenleft}{\isacharprime}a\ {\isasymRightarrow}\ bool\ D{\isacharparenright}\ {\isasymRightarrow}\ bool\ D{\isachardoublequote}\ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isasymlangle}{\isacharunderscore}{\isasymrangle}{\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{0}}{\isacharcomma}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Syntax translations that let you write e.g.
+    \isa{{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharbrackright}{\isacharparenleft}ret\ {\isacharparenleft}x{\isacharequal}y{\isacharparenright}{\isacharparenright}}
+  for 
+    \isa{Box\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isacharparenleft}{\isasymlambda}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isachardot}\ ret\ {\isacharparenleft}x{\isacharequal}y{\isacharparenright}{\isacharparenright}}
+  Essentially, these translations collect all bound variables inside the 
+  boxes and return them as a tuple. The lambda term that constitutes the 
+  second argument of Box will then also take a tuple pattern as its sole
+  argument.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{nonterminals}\isanewline
+\ \ bndseq\ bndstep\isanewline
+\ \isanewline
+\isamarkupfalse%
+\isacommand{syntax}\ {\isacharparenleft}xsymbols{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlbox{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}bndseq{\isacharcomma}\ bool\ D{\isacharbrackright}\ {\isasymRightarrow}\ bool\ D{\isachardoublequote}\ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ {\isacharunderscore}{\isacharbrackright}{\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{0}}{\isacharcomma}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\ \isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdldmd{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}bndseq{\isacharcomma}\ bool\ D{\isacharbrackright}\ {\isasymRightarrow}\ bool\ D{\isachardoublequote}\ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isasymlangle}{\isacharunderscore}{\isasymrangle}{\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{0}}{\isacharcomma}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlbnd{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}idt{\isacharcomma}\ {\isacharprime}a\ T{\isacharbrackright}\ {\isasymRightarrow}\ bndstep{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharunderscore}{\isasymleftarrow}{\isacharunderscore}{\isachardoublequote}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlseq{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}bndstep{\isacharcomma}\ bndseq{\isacharbrackright}\ {\isasymRightarrow}\ bndseq{\isachardoublequote}\ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharunderscore}{\isacharsemicolon}{\isacharslash}\ {\isacharunderscore}{\isachardoublequote}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isachardoublequote}\ \ \ \ \ \ \ \ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}bndstep\ {\isasymRightarrow}\ bndseq{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharunderscore}{\isachardoublequote}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlin{\isachardoublequote}\ \ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}pttrn{\isacharcomma}\ bndseq{\isacharbrackright}\ {\isasymRightarrow}\ bndseq{\isachardoublequote}\ \ \ \ \ \ \ \isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlout{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}pttrn{\isacharcomma}\ bndseq{\isacharbrackright}\ {\isasymRightarrow}\ bndseq{\isachardoublequote}\ \ \ \ \ \ \isanewline
+\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{translations}\ \isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlbox\ {\isacharparenleft}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ r{\isacharparenright}\ phi{\isachardoublequote}\ \ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}Box\ {\isacharparenleft}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ {\isacharparenleft}{\isacharunderscore}pdlin\ x\ r{\isacharparenright}{\isacharparenright}\ phi{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlbox\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ phi{\isachardoublequote}\ \ {\isasymrightharpoonup}\ {\isachardoublequote}Box\ p\ {\isacharparenleft}{\isasymlambda}x{\isachardot}\ phi{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdldmd\ {\isacharparenleft}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ r{\isacharparenright}\ phi{\isachardoublequote}\ \ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}Dmd\ {\isacharparenleft}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ {\isacharparenleft}{\isacharunderscore}pdlin\ x\ r{\isacharparenright}{\isacharparenright}\ phi{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdldmd\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ phi{\isachardoublequote}\ \ {\isasymrightharpoonup}\ {\isachardoublequote}Dmd\ p\ {\isacharparenleft}{\isasymlambda}x{\isachardot}\ phi{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlin\ tpl\ {\isacharparenleft}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ r{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ {\isacharparenleft}{\isacharunderscore}pdlin\ {\isacharparenleft}tpl{\isacharcomma}\ x{\isacharparenright}\ r{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlin\ tpl\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}{\isacharunderscore}pdlout\ {\isacharparenleft}tpl{\isacharcomma}x{\isacharparenright}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}tpl{\isacharcomma}x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}pdlseq\ {\isacharparenleft}{\isacharunderscore}pdlbnd\ x\ p{\isacharparenright}\ {\isacharparenleft}{\isacharunderscore}pdlout\ tpl\ r{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}{\isacharunderscore}pdlout\ tpl\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ r{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}Box\ {\isacharparenleft}{\isacharunderscore}pdlout\ tpl\ r{\isacharparenright}\ phi{\isachardoublequote}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}Box\ r\ {\isacharparenleft}{\isasymlambda}tpl{\isachardot}\ phi{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}Dmd\ {\isacharparenleft}{\isacharunderscore}pdlout\ tpl\ r{\isacharparenright}\ phi{\isachardoublequote}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymrightharpoonup}\ \ {\isachardoublequote}Dmd\ r\ {\isacharparenleft}{\isasymlambda}tpl{\isachardot}\ phi{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The axioms of the proof calculus for propositional dynamic logic.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{axioms}\isanewline
+\ \ pdl{\isacharunderscore}nec{\isacharcolon}\ \ \ {\isachardoublequote}{\isacharparenleft}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}mp{\isacharunderscore}{\isacharcolon}\ \ \ \ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ {\isacharparenleft}P\ {\isasymlongrightarrow}\isactrlsub D\ \ Q{\isacharparenright}{\isacharsemicolon}\ {\isasymturnstile}\ P{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ Q{\isachardoublequote}\ \ %
+\isamarkupcmt{Only repeated here for completeness.%
+}
+\isanewline
+\ \isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{1}}{\isacharcolon}\ \ \ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{2}}{\isacharcolon}\ \ \ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{3}}B{\isacharcolon}\ \ \ {\isachardoublequote}{\isasymturnstile}\ Ret\ P\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Ret\ P{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{3}}D{\isacharcolon}\ \ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Ret\ P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ P{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{4}}{\isacharcolon}\ \ \ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymor}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}k{\isadigit{5}}{\isacharcolon}\ \ \ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}seqB{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}P\ x\ y{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}P\ x\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}seqD{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isasymrangle}{\isacharparenleft}P\ x\ y{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isasymlangle}y{\isasymleftarrow}q\ x{\isasymrangle}{\isacharparenleft}P\ x\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}ctrB{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}ctrD{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}y{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}{\isacharparenleft}P\ y{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \ {\isasymlangle}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isasymrangle}{\isacharparenleft}P\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}retB{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}ret\ a{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ P\ a{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}retD{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}ret\ a{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ P\ a{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}dsefB{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymUp}\ {\isacharparenleft}do\ {\isacharbraceleft}a{\isasymleftarrow}p{\isacharsemicolon}\ {\isasymDown}\ {\isacharparenleft}P\ a{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ a{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ a{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}dsefD{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymUp}\ {\isacharparenleft}do\ {\isacharbraceleft}a{\isasymleftarrow}p{\isacharsemicolon}\ {\isasymDown}\ {\isacharparenleft}P\ a{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymlangle}a{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ a{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+A simpler notion of sequencing is often more practical in real programs.
+  Essentially this boils down to admitting just one binding within the modal
+  operators.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{axioms}\isanewline
+pdl{\isacharunderscore}seqB{\isacharunderscore}simp{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}\ {\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}\ {\isacharparenright}{\isachardoublequote}\isanewline
+pdl{\isacharunderscore}seqD{\isacharunderscore}simp{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isasymlangle}y{\isasymleftarrow}q\ x{\isasymrangle}{\isacharparenleft}P\ y{\isacharparenright}\ {\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}\ {\isasymlangle}y{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}{\isacharparenleft}P\ y{\isacharparenright}\ {\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+For simple monads \cite{SchroederMossakowski:PDL} both rules can be derived from
+  axiom \isa{pdl{\isacharunderscore}seqB} (or \isa{pdl{\isacharunderscore}seqD}). Simplicity is
+  exploited through the use of the converse rule of \isa{pdl{\isacharunderscore}ctrB}.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}P\ y{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ {\isasymturnstile}\ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}\ {\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P\ {\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}ctrB{\isacharparenright}\ \ %
+\isamarkupcmt{dispose of the trailing ret expression%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}assumption{\isacharparenright}\ \ \ \ \ %
+\isamarkupcmt{this time dispose by the converse of \isa{pdl{\isacharunderscore}ctrB}%
+}
+\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharbrackright}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Further axioms satisfied by logically regular monads (which we deal with here).
+  Cf. \cite[Page 601]{SchroederMossakowski:PDL}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{axioms}\isanewline
+\ \ pdl{\isacharunderscore}eqB{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}p\ {\isacharequal}\ q{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}q{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ pdl{\isacharunderscore}eqD{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}p\ {\isacharequal}\ q{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}q{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\isamarkupsubsection{Derived Rules of Inference%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+`Multiple' modus ponens, provided for convenience.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemmas}\ \isanewline
+pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{2}}x\ {\isacharequal}\ pdl{\isacharunderscore}mp{\isacharbrackleft}THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}\ \isakeyword{and}\isanewline
+pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{3}}x\ {\isacharequal}\ pdl{\isacharunderscore}mp{\isacharbrackleft}THEN\ pdl{\isacharunderscore}mp{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+First half of the classical relationship between diamond and box.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isanewline
+\ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}b\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}d{\isachardoublequote}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ %
+\isamarkupcmt{Show a classically equivalent statement%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}d\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}b{\isachardoublequote}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ %
+\isamarkupcmt{The `usual' axiomatic proof method%
+}
+\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ f{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharparenleft}{\isacharquery}d\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Ret\ False{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isacharquery}d\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}b{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ f{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}d\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Ret\ False{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}b{\isachardoublequote}\ \isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}k{\isadigit{5}}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ f{\isadigit{1}}\ f{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+\dots and the second half.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Ret\ False{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ False{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}k{\isadigit{3}}D\ pdl{\isacharunderscore}k{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{2}}x{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Inheriting the classical theorems from Isabelle/HOL, one also obtains the classical equivalence
+  between the diamond and box operator.
+
+  The proofs of \isa{dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{1}}} and \isa{dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{2}}} implicitly employ
+  classical arguments through the use of the simplifier, since the algebraization of propositional
+  logic behaves classically.
+  \label{isa:dmd-box-rel}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}{\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}unfold\ NotD{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isadigit{1}}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Given \isa{dmd{\isacharunderscore}box{\isacharunderscore}rel}, one easily obtains a dual one.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ box{\isacharunderscore}dmd{\isacharunderscore}rel{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}{\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}{\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}{\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}\ {\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}{\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}\ {\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}{\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}\ {\isacharparenright}\ {\isachardoublequote}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ \ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}{\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}{\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ dmd{\isacharunderscore}box{\isacharunderscore}rel{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}{\isasymnot}\isactrlsub D\ {\isasymnot}\isactrlsub D\ P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{2}}x{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+A specialized form of the equality rule \isa{pdl{\isacharunderscore}eqD} that only requires the arguments
+  of a program \isa{p} to be equal.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ pdl{\isacharunderscore}eqD{\isacharunderscore}ext{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}a\ {\isacharequal}\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p\ a{\isasymrangle}P\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p\ b{\isasymrangle}P{\isachardoublequote}\ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharquery}ab\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pa\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pb{\isachardoublequote}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}Ret\ {\isacharparenleft}a\ {\isacharequal}\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ {\isacharparenleft}p\ a\ {\isacharequal}\ p\ b{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}Ret\ {\isacharparenleft}p\ a\ {\isacharequal}\ p\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pa\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pb{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isacharquery}ab\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pa\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pb{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}a\ {\isacharequal}\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ Ret\ {\isacharparenleft}p\ a\ {\isacharequal}\ p\ b{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}subst\ impD{\isacharunderscore}Ret{\isacharunderscore}hom{\isacharbrackleft}symmetric{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}a\ {\isacharequal}\ b\ {\isasymlongrightarrow}\ p\ a\ {\isacharequal}\ p\ b{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ iffD{\isadigit{2}}{\isacharbrackleft}OF\ Valid{\isacharunderscore}Ret{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}a\ {\isacharequal}\ b\ {\isasymlongrightarrow}\ p\ a\ {\isacharequal}\ p\ b{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ blast\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ Ret\ {\isacharparenleft}p\ a\ {\isacharequal}\ p\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pa\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}pb{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}eqD{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{2}}x{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The following are simple consequences of the axioms above;
+  rather than monadic implication, they use Isabelle's meta implication
+  (and hence represent rules).
+  \label{isa:pdl-derived-rules}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ box{\isacharunderscore}imp{\isacharunderscore}distrib{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \isamarkupfalse%
+\isacommand{by}{\isacharparenleft}rule\ pdl{\isacharunderscore}k{\isadigit{1}}{\isacharbrackleft}THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ dmd{\isacharunderscore}imp{\isacharunderscore}distrib{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharbrackleft}OF\ pdl{\isacharunderscore}k{\isadigit{2}}{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharcolon}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ box{\isacharunderscore}imp{\isacharunderscore}distrib{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}nec{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}\ assumption\isanewline
+\isamarkupfalse%
+\isacommand{done}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharcolon}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ dmd{\isacharunderscore}imp{\isacharunderscore}distrib{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}nec{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}\ assumption\isanewline
+\isamarkupfalse%
+\isacommand{done}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{theorem}\ pdl{\isacharunderscore}wkB{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ box{\isacharunderscore}imp{\isacharunderscore}distrib{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{by}{\isacharparenleft}rule\ pdl{\isacharunderscore}nec{\isacharparenright}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{theorem}\ pdl{\isacharunderscore}wkD{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ b{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ b\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ \ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}nec{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ \ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}k{\isadigit{2}}{\isacharbrackleft}THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a\ \isamarkupfalse%
+\isacommand{show}\ \ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The following rule comes in handy when program sequences occur inside the box.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ pdl{\isacharunderscore}plugB{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ y{\isasymleftarrow}q\ x{\isacharbrackright}{\isacharparenleft}C\ y{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}C{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}drule\ pdl{\isacharunderscore}wkB{\isacharcomma}\ assumption{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharunderscore}simp{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{theorem}\ pdl{\isacharunderscore}plugD{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}y{\isasymleftarrow}q\ x{\isasymrangle}{\isacharparenleft}C\ y{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}C{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}drule\ pdl{\isacharunderscore}wkD{\isacharcomma}\ assumption{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqD{\isacharunderscore}simp{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ x\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut\ Valid{\isacharunderscore}Ret{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}k{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}\ {\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isachardoublequote}\ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}\ {\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}P\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}Q\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}PQ\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}PQ\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}PQ\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}Q{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}PQ\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}P\ {\isasymand}\isactrlsub D\ {\isacharquery}Q{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut\ Valid{\isacharunderscore}Ret{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}PQ\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}Q{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}PQ\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}P\ {\isasymand}\isactrlsub D\ {\isacharquery}Q{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The box operator distributes over (finite) conjunction.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}\ {\isacharparenleft}rule\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}\ {\isacharparenleft}rule\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{1}}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Split and join rules for boxes and diamonds.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqB{\isacharunderscore}split{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharbrackright}{\isacharparenleft}{\isasymlambda}{\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isachardot}\ P\ x\ y{\isacharparenright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}seqB{\isacharbrackleft}THEN\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqB{\isacharunderscore}join{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P\ x{\isacharparenright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharbrackright}{\isacharparenleft}{\isasymlambda}{\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isachardot}\ P\ x\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}seqB{\isacharbrackleft}THEN\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqD{\isacharunderscore}split{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isasymrangle}{\isacharparenleft}{\isasymlambda}{\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isachardot}\ P\ x\ y{\isacharparenright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}seqD{\isacharbrackleft}THEN\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqD{\isacharunderscore}join{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P\ x{\isacharparenright}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ {\isasymturnstile}\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ x{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isasymrangle}{\isacharparenleft}{\isasymlambda}{\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isachardot}\ P\ x\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}seqD{\isacharbrackleft}THEN\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Working in an axiomatic proof system requires a lot of auxiliary 
+  rules; especially the lack of an implication introduction rule 
+  (\isa{{\isacharparenleft}P\ {\isasymLongrightarrow}\ Q{\isacharparenright}\ {\isasymLongrightarrow}\ P\ {\isasymlongrightarrow}\ Q}) cries for lots of lemmas that are essentially just
+  basic lemmas lifted over some premiss.
+  \label{isa:pdl-lifted-lemmas}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ pdl{\isacharunderscore}wkB{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}C{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B{\isachardoublequote}\ \isakeyword{and}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}C{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{with}\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}wkD{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}B{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}C{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\ \ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}B{\isachardoublequote}\ \isakeyword{and}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}p{\isasymrangle}B\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}C{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{with}\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{next}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}P{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}Q{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ box{\isacharunderscore}conj{\isacharunderscore}distrib{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqB{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}\ {\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P\ {\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharunderscore}simp{\isacharbrackright}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{next}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}P{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharunderscore}simp{\isacharbrackright}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}seqD{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}\ A{\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isasymlangle}q\ x{\isasymrangle}P\ {\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P\ {\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqD{\isacharunderscore}simp{\isacharbrackright}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{next}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}P{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isasymlangle}q\ x{\isasymrangle}P{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqD{\isacharunderscore}simp{\isacharbrackright}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\ \ \isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}plugB{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}C{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharbrackright}C{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B{\isachardoublequote}\ \isakeyword{and}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}C{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ {\isacharbrackleft}{\isacharhash}\ q\ x{\isacharbrackright}C{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}wkB{\isacharunderscore}lifted{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharunderscore}lifted{\isadigit{1}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}plugD{\isacharunderscore}lifted{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}B{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}q\ x{\isasymrangle}C{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isasymrangle}C{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}p{\isasymrangle}B{\isachardoublequote}\ \isakeyword{and}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}q\ x{\isasymrangle}C{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isasymlangle}q\ x{\isasymrangle}C{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}wkD{\isacharunderscore}lifted{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}iffD{\isadigit{1}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqD{\isacharunderscore}lifted{\isadigit{1}}{\isacharcomma}\ THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ imp{\isacharunderscore}box{\isacharunderscore}conj{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}B{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}wkB{\isacharunderscore}lifted{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{next}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x\ {\isasymlongrightarrow}\isactrlsub D\ B\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ x\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x\ {\isasymlongrightarrow}\isactrlsub D\ B\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ imp{\isacharunderscore}box{\isacharunderscore}conj{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}C{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}wkB{\isacharunderscore}lifted{\isadigit{1}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{next}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ x\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}{\isasymturnstile}\ B\ x\ {\isasymand}\isactrlsub D\ C\ x\ {\isasymlongrightarrow}\isactrlsub D\ C\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The following lemmas show how one can split and join boxes freely with the help
+  of axiom \isa{pdl{\isacharunderscore}seqB{\isacharunderscore}simp}.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ pdl{\isacharunderscore}imp{\isacharunderscore}id{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ A\ {\isasymlongrightarrow}\isactrlsub D\ A{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isadigit{1}}{\isasymleftarrow}p{\isadigit{1}}{\isacharsemicolon}\ x{\isadigit{2}}{\isasymleftarrow}p{\isadigit{2}}{\isacharsemicolon}\ x{\isadigit{3}}{\isasymleftarrow}p{\isadigit{3}}{\isacharsemicolon}\ r\ x{\isadigit{1}}\ x{\isadigit{2}}\ x{\isadigit{3}}{\isacharbraceright}{\isacharbrackright}P\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ {\isacharbrackleft}{\isacharhash}\ x{\isadigit{1}}{\isasymleftarrow}p{\isadigit{1}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ x{\isadigit{2}}{\isasymleftarrow}p{\isadigit{2}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ x{\isadigit{3}}{\isasymleftarrow}p{\isadigit{3}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ r\ x{\isadigit{1}}\ x{\isadigit{2}}\ x{\isadigit{3}}{\isacharbrackright}P{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharcomma}\ rule\ pdl{\isacharunderscore}iffD{\isadigit{2}}{\isacharbrackleft}OF\ pdl{\isacharunderscore}seqB{\isacharunderscore}simp{\isacharbrackright}{\isacharcomma}\ rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg\ {\isacharcomma}rule\ allI{\isacharparenright}{\isacharplus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isadigit{1}}{\isasymleftarrow}p{\isadigit{1}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ x{\isadigit{2}}{\isasymleftarrow}p{\isadigit{2}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ x{\isadigit{3}}{\isasymleftarrow}p{\isadigit{3}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ x{\isadigit{4}}{\isasymleftarrow}p{\isadigit{4}}{\isacharbrackright}{\isacharbrackleft}{\isacharhash}\ r\ x{\isadigit{1}}\ x{\isadigit{2}}\ x{\isadigit{3}}\ x{\isadigit{4}}{\isacharbrackright}P\ {\isasymlongrightarrow}\isactrlsub D\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharbrackleft}{\isacharhash}\ do\ {\isacharbraceleft}x{\isadigit{1}}{\isasymleftarrow}p{\isadigit{1}}{\isacharsemicolon}\ x{\isadigit{2}}{\isasymleftarrow}p{\isadigit{2}}{\isacharsemicolon}\ x{\isadigit{3}}{\isasymleftarrow}p{\isadigit{3}}{\isacharsemicolon}\ x{\isadigit{4}}{\isasymleftarrow}p{\isadigit{4}}{\isacharsemicolon}\ r\ x{\isadigit{1}}\ x{\isadigit{2}}\ x{\isadigit{3}}\ x{\isadigit{4}}{\isacharbraceright}{\isacharbrackright}P{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ pdl{\isacharunderscore}plugB{\isacharunderscore}lifted{\isadigit{1}}{\isacharcomma}\ rule\ pdl{\isacharunderscore}imp{\isacharunderscore}id{\isacharcomma}\ rule\ allI{\isacharparenright}{\isacharplus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkuptrue%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+%
+\isamarkupsubsection{Examples%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Examples from \cite[Theorem 6]{HarelKozen02}.
+  \label{isa:harel-kozen}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymor}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}P\ {\isacharequal}\ {\isachardoublequote}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}Q\ {\isacharequal}\ {\isachardoublequote}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}PQ\ {\isacharequal}\ {\isachardoublequote}{\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}P\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}P\ \ {\isasymor}\isactrlsub D\ {\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut\ Valid{\isacharunderscore}Ret{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}P\ \ {\isasymor}\isactrlsub D\ {\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ \ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ \ {\isasymturnstile}\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ \ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ \ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}k{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}imp{\isacharunderscore}trans{\isacharparenright}\ \ %
+\isamarkupcmt{transitivity of implication%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ pdl{\isacharunderscore}conj{\isacharunderscore}dmd{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymand}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ %
+\isamarkupcmt{first proving the `P-part'%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ dp{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ fa{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\ \isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ %
+\isamarkupcmt{the same for Q%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ dq{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ fa{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isachardoublequote}\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\ \isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymand}\isactrlsub D\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ Q\ x{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}{\isasymturnstile}\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}P\ x\ {\isasymand}\isactrlsub D\ Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isasymlangle}x{\isasymleftarrow}p{\isasymrangle}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}dmd{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ %
+\isamarkupcmt{Now assemble the results to arrive at the main thesis%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ \ pdl{\isacharunderscore}conjI{\isacharunderscore}lifted{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymor}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ P\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isachardoublequote}\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ {\isasymturnstile}\ Q\ x\ {\isasymlongrightarrow}\isactrlsub D\ P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ pdl{\isacharunderscore}taut{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}box{\isacharunderscore}reg{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}P\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}Q\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}Q\ x{\isacharparenright}{\isachardoublequote}\ \isakeyword{and}\ {\isacharquery}PQ\ {\isacharequal}\ {\isachardoublequote}{\isacharbrackleft}{\isacharhash}\ x{\isasymleftarrow}p{\isacharbrackright}{\isacharparenleft}P\ x\ \ {\isasymor}\isactrlsub D\ Q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}{\isacharquery}P\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}{\isacharquery}P\ \ {\isasymor}\isactrlsub D\ {\isacharquery}Q\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharquery}PQ{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ pdl{\isacharunderscore}taut\ Valid{\isacharunderscore}Ret{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{1}}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharunderscore}{\isadigit{2}}x{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{end}\isanewline
+\isamarkupfalse%
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:

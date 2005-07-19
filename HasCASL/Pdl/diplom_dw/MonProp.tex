@@ -1,0 +1,945 @@
+%
+\begin{isabellebody}%
+\def\isabellecontext{MonProp}%
+%
+\isamarkupheader{Basic Notions of Monadic Programs%
+}
+\isamarkuptrue%
+\isacommand{theory}\ MonProp\ {\isacharequal}\ Monads{\isacharcolon}\isamarkupfalse%
+%
+\label{sec:monprop-thy}
+%
+\isamarkupsubsection{Discardability and Copyability%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Properties of monadic programs which are needed for the further development,
+  e.g. for the definition of a subtype \isa{{\isacharprime}a\ D} of deterministically
+  side-effect free (\isa{dsef}) programs.
+  \label{isa:mon-properties}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{constdefs}\isanewline
+\ \ %
+\isamarkupcmt{Discardable programs%
+}
+\isanewline
+\ \ dis\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ bool{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}dis{\isacharparenleft}p{\isacharparenright}\ {\isasymequiv}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isacharequal}\ ret\ {\isacharparenleft}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ %
+\isamarkupcmt{Copyable programs%
+}
+\isanewline
+\ \ cp\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ bool{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}cp{\isacharparenleft}p{\isacharparenright}\ {\isasymequiv}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ %
+\isamarkupcmt{\isa{dsef} programs are \isa{cp} and \isa{dis} and
+        commute with all such programs%
+}
+\isanewline
+\ \ dsef\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ bool{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}dsef{\isacharparenleft}p{\isacharparenright}\ {\isasymequiv}\ cp{\isacharparenleft}p{\isacharparenright}\ {\isasymand}\ dis{\isacharparenleft}p{\isacharparenright}\ {\isasymand}\ {\isacharparenleft}{\isasymforall}q{\isacharcolon}{\isacharcolon}bool\ T{\isachardot}\ cp{\isacharparenleft}q{\isacharparenright}\ {\isasymand}\ dis{\isacharparenleft}q{\isacharparenright}\ {\isasymlongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cp{\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ dsef{\isacharunderscore}cp{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ cp\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ blast\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ dsef{\isacharunderscore}dis{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ blast\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+This is Lemma 4.5 of \cite{SchroederMossakowski:PDL} that allows us to actually discard
+  discardable programs in front of arbitrary programs.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dis{\isacharunderscore}left{\isacharcolon}\ {\isachardoublequote}dis{\isacharparenleft}p{\isacharparenright}\ {\isasymLongrightarrow}\ do\ {\isacharbraceleft}p{\isacharsemicolon}\ q{\isacharbraceright}\ {\isacharequal}\ q{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ d{\isacharcolon}\ {\isachardoublequote}dis{\isacharparenleft}p{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}p{\isacharsemicolon}\ q{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}p{\isacharsemicolon}\ ret\ {\isacharparenleft}{\isacharparenright}{\isacharsemicolon}\ q{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ seq{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ d\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}ret\ {\isacharparenleft}{\isacharparenright}{\isacharsemicolon}\ q{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}def\ seq{\isacharunderscore}def\ del{\isacharcolon}\ ret{\isacharunderscore}lunit{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ q{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ seq{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Essentially the same as \isa{dis{\isacharunderscore}left}, but expressed
+  with binding.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dis{\isacharunderscore}left{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}dis\ p\ {\isasymLongrightarrow}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q{\isacharbraceright}\ {\isacharequal}\ q{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isacharcolon}\ {\isachardoublequote}dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}p{\isacharsemicolon}\ q{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ seq{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ q{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ dis{\isacharunderscore}left{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+This is Lemma 4.22 of \cite{SchroederMossakowski:PDL} which allows us to insert or remove
+  copies of \isa{cp} programs whose result values may be substituted for each other
+  in the following program sequence \isa{r}.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ cp{\isacharunderscore}arb{\isacharcolon}\ {\isachardoublequote}cp\ p\ {\isasymLongrightarrow}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ x{\isacharbraceright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}unfold\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ c{\isacharcolon}\ {\isachardoublequote}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ z{\isasymleftarrow}ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}z{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ c\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}z{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}x{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ z{\isasymleftarrow}ret\ {\isacharparenleft}x{\isacharcomma}x{\isacharparenright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ x{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+This is Lemma 4.23 of \cite{SchroederMossakowski:PDL}, asserting a weak composability of copyable programs.
+  It is generally not the case that sequences of copyable programs constitute
+  a copyable program.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ weak{\isacharunderscore}cp{\isacharunderscore}seq{\isacharcolon}\ {\isachardoublequote}cp\ p\ {\isasymLongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ c{\isacharcolon}\ {\isachardoublequote}cp\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}q\ {\isacharequal}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}u{\isasymleftarrow}{\isacharquery}q{\isacharsemicolon}\ v{\isasymleftarrow}{\isacharquery}q{\isacharsemicolon}\ ret{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ u{\isasymleftarrow}ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ v{\isasymleftarrow}ret\ {\isacharparenleft}f\ y{\isacharparenright}{\isacharsemicolon}\ ret{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharcomma}\ f\ y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ c\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharcomma}\ f\ x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ u{\isasymleftarrow}ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharsemicolon}\ ret{\isacharparenleft}u{\isacharcomma}u{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}{\isacharquery}q{\isacharsemicolon}\ ret{\isacharparenleft}u{\isacharcomma}u{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+One can reduce the copyability of a program of a certain form to a simpler
+  form.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ cp{\isacharunderscore}seq{\isacharunderscore}ret{\isacharcolon}\ {\isachardoublequote}cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isasymLongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{hence}\ c{\isacharcolon}\ {\isachardoublequote}cp\ {\isacharparenleft}do\ {\isacharbraceleft}u{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ {\isacharparenleft}fst\ u{\isacharparenright}\ {\isacharparenleft}snd\ u{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ weak{\isacharunderscore}cp{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}u{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ {\isacharparenleft}fst\ u{\isacharparenright}\ {\isacharparenleft}snd\ u{\isacharparenright}{\isacharparenright}{\isacharbraceright}\isanewline
+\ \ \ \ \ \ \ \ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{with}\ c\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+We also have a weak notion of stability under sequencing for \isa{dsef}
+  programs.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ weak{\isacharunderscore}dis{\isacharunderscore}seq{\isacharcolon}\ {\isachardoublequote}dis\ p\ {\isasymLongrightarrow}\ dis\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ d{\isacharcolon}\ {\isachardoublequote}dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}z{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ ret\ {\isacharparenleft}{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ z{\isasymleftarrow}ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharsemicolon}\ ret\ {\isacharparenleft}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ d\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ ret\ {\isacharparenleft}{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The following lemmas \isa{commute{\isacharunderscore}X{\isacharunderscore}Y} are proofs of the Propositions 
+  4.24 of \cite{SchroederMossakowski:PDL} where \isa{X} is the respective premiss
+  and \isa{Y} is the conclusion.
+  \label{isa:commute-1-2}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ commute{\isacharunderscore}{\isadigit{1}}{\isacharunderscore}{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}cp\ q{\isacharsemicolon}\ cp\ p{\isacharsemicolon}\ dis\ q{\isacharsemicolon}\ dis\ p{\isasymrbrakk}\ {\isasymLongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isacharcolon}\ {\isachardoublequote}cp\ q{\isachardoublequote}\ {\isachardoublequote}cp\ p{\isachardoublequote}\ {\isachardoublequote}dis\ q{\isachardoublequote}\ {\isachardoublequote}dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ c{\isacharcolon}\ {\isachardoublequote}cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}s\ {\isacharequal}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isacharquery}s\ {\isacharequal}\ do\ {\isacharbraceleft}z{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret\ {\isacharparenleft}fst\ z{\isacharcomma}\ snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ c\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}w{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ z{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret\ {\isacharparenleft}fst\ z{\isacharcomma}\ snd\ w{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}v{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}v{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr\ dis{\isacharunderscore}left{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ commute{\isacharunderscore}{\isadigit{2}}{\isacharunderscore}{\isadigit{3}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}cp\ q{\isacharsemicolon}\ cp\ p{\isacharsemicolon}\ dis\ q{\isacharsemicolon}\ dis\ p{\isasymrbrakk}\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}r{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{fix}\ r\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isacharcolon}\ {\isachardoublequote}cp\ q{\isachardoublequote}\ {\isachardoublequote}cp\ p{\isachardoublequote}\ {\isachardoublequote}dis\ q{\isachardoublequote}\ {\isachardoublequote}dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ b{\isacharcolon}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ z{\isasymleftarrow}ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}z{\isasymleftarrow}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ b\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}z{\isasymleftarrow}do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharsemicolon}\ r\ {\isacharparenleft}fst\ z{\isacharparenright}\ {\isacharparenleft}snd\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isamarkupfalse%
+\isamarkupfalse%
+\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+In this case, type annotations are necessary, since we cannot
+  quantify over types of programs. The type for \isa{r} given here
+  is precisely what is needed for the proof to go through.
+  \label{isa:commute-3-1}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ commute{\isacharunderscore}{\isadigit{3}}{\isacharunderscore}{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}cp\ q{\isacharsemicolon}\ cp\ p{\isacharsemicolon}\ dis\ q{\isacharsemicolon}\ dis\ p{\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}r{\isacharcolon}{\isacharcolon}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b\ {\isasymRightarrow}\ {\isacharparenleft}{\isacharparenleft}{\isacharprime}a{\isacharasterisk}{\isacharprime}b{\isacharparenright}{\isacharasterisk}{\isacharparenleft}{\isacharprime}a{\isacharasterisk}{\isacharprime}b{\isacharparenright}{\isacharparenright}\ T{\isachardot}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcolon}{\isacharcolon}{\isacharparenleft}{\isacharprime}a\ {\isacharasterisk}\ {\isacharprime}b{\isacharparenright}\ T{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}s\ {\isacharequal}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isacharcolon}\ {\isachardoublequote}cp\ q{\isachardoublequote}\ {\isachardoublequote}cp\ p{\isachardoublequote}\ {\isachardoublequote}dis\ q{\isachardoublequote}\ {\isachardoublequote}dis\ p{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ c{\isacharcolon}\ {\isachardoublequote}{\isasymforall}r{\isacharcolon}{\isacharcolon}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b\ {\isasymRightarrow}\ {\isacharparenleft}{\isacharparenleft}{\isacharprime}a{\isacharasterisk}{\isacharprime}b{\isacharparenright}{\isacharasterisk}{\isacharparenleft}{\isacharprime}a{\isacharasterisk}{\isacharprime}b{\isacharparenright}{\isacharparenright}\ T{\isachardot}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}w{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ z{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret\ {\isacharparenleft}w{\isacharcomma}z{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ v{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ c\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ v{\isasymleftarrow}q{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ v{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharcomma}{\isacharparenleft}u{\isacharcomma}v{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ cp{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}w{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret{\isacharparenleft}w{\isacharcomma}w{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ commute{\isacharunderscore}{\isadigit{1}}{\isacharunderscore}{\isadigit{3}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}cp\ q{\isacharsemicolon}\ cp\ p{\isacharsemicolon}\ dis\ q{\isacharsemicolon}\ dis\ p{\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}r{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ %
+\isamarkupcmt{More or less just transitivity of implication%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ commute{\isacharunderscore}{\isadigit{2}}{\isacharunderscore}{\isadigit{3}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp{\isacharunderscore}all{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ commute{\isacharunderscore}{\isadigit{1}}{\isacharunderscore}{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp{\isacharunderscore}all{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+This weird axiom is needed to obtain the general commutativity of 
+  a discardable and copyable program from its commuting  with all 
+  \isa{bool}-valued programs.
+  \label{isa:commute-bool-arb}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{axioms}\isanewline
+\ \ commute{\isacharunderscore}bool{\isacharunderscore}arb{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dis\ p{\isacharsemicolon}\ cp\ p{\isacharsemicolon}\ {\isasymforall}q{\isadigit{1}}{\isacharcolon}{\isacharcolon}bool\ T{\isachardot}\ cp{\isacharparenleft}q{\isadigit{1}}{\isacharparenright}\ {\isasymand}\ dis{\isacharparenleft}q{\isadigit{1}}{\isacharparenright}\ {\isasymlongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cp{\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isadigit{1}}{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isasymforall}q{\isachardot}\ cp{\isacharparenleft}q{\isacharparenright}\ {\isasymand}\ dis{\isacharparenleft}q{\isacharparenright}\ {\isasymlongrightarrow}\ cp{\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+In order to introduce the subtype of \isa{dsef} programs, we
+  must prove it is not empty.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ dsef{\isacharunderscore}ret\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}dsef\ {\isacharparenleft}ret\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}cp\ {\isacharparenleft}ret\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}dis\ {\isacharparenleft}ret\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isacharparenleft}{\isasymforall}q{\isachardot}\ cp\ q\ {\isasymand}\ dis\ q\ {\isasymlongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}ret\ x{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ weak{\isacharunderscore}cp{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}cp\ {\isacharparenleft}ret\ x{\isacharparenright}\ {\isasymand}\ dis\ {\isacharparenleft}ret\ x{\isacharparenright}\ {\isasymand}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isasymforall}q{\isachardot}\ cp\ q\ {\isasymand}\ dis\ q\ {\isasymlongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}ret\ x{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ blast\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\isamarkupsubsection{Introducing the Subtype of \emph{dsef} Programs%
+}
+\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Introducing the subtype \isa{{\isacharprime}a\ D} of \isa{{\isacharprime}a\ T} comprising the 
+\isa{dsef} programs;
+  since Isabelle lacks true subtyping, it is simply declared as a new type
+  with coercion functions 
+    \isa{Rep{\isacharunderscore}Dsef\ {\isacharcolon}{\isacharcolon}\ {\isacharprime}a\ D\ {\isasymRightarrow}\ {\isacharprime}a\ T}
+  and 
+    \isa{Abs{\isacharunderscore}Dsef\ {\isacharcolon}{\isacharcolon}\ {\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharprime}a\ D}
+  where \isa{Abs{\isacharunderscore}Dsef\ p} is of course only sensibly defined if \isa{dsef\ p}
+   holds.
+  \label{isa:intro-dsef}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{typedef}\ {\isacharparenleft}Dsef{\isacharparenright}\ {\isacharparenleft}{\isacharprime}a{\isacharparenright}\ D\ {\isacharequal}\ {\isachardoublequote}{\isacharbraceleft}p{\isacharcolon}{\isacharcolon}{\isacharprime}a\ T{\isachardot}\ dsef\ p{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ exI{\isacharbrackleft}of\ {\isacharunderscore}\ {\isachardoublequote}ret\ x{\isachardoublequote}{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}blast\ intro{\isacharcolon}\ dsef{\isacharunderscore}ret{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Minimizing the clutter caused by \isa{Abs{\isacharunderscore}Dsef} and \isa{Rep{\isacharunderscore}Dsef}.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{syntax}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}absdsef{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharprime}a\ D{\isachardoublequote}\ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isasymUp}\ {\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{2}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{9}}{\isadigit{9}}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}{\isacharunderscore}repdsef{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ D\ {\isasymRightarrow}\ {\isacharprime}a\ T{\isachardoublequote}\ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isasymDown}\ {\isacharunderscore}{\isachardoublequote}\ {\isacharbrackleft}{\isadigit{2}}{\isadigit{0}}{\isadigit{0}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{9}}{\isadigit{9}}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{translations}\isanewline
+\ \ {\isachardoublequote}{\isasymUp}\ p{\isachardoublequote}\ \ \ \ \ \ {\isasymrightleftharpoons}\ \ \ \ \ {\isachardoublequote}Abs{\isacharunderscore}Dsef\ p{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}{\isasymDown}\ p{\isachardoublequote}\ \ \ \ \ \ {\isasymrightleftharpoons}\ \ \ \ \ {\isachardoublequote}Rep{\isacharunderscore}Dsef\ p{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+All representatives of terms of type \isa{{\isacharprime}a\ D} are dsef and thus in 
+        particular discardable and copyable.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}dsef\ {\isacharparenleft}{\isasymDown}\ a{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}induct\ a\ rule{\isacharcolon}\ Abs{\isacharunderscore}Dsef{\isacharunderscore}induct{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{fix}\ a\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ {\isachardoublequote}a\ {\isacharcolon}\ Dsef{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}dsef\ {\isacharparenleft}{\isasymDown}\ {\isacharparenleft}{\isasymUp}\ a{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ Abs{\isacharunderscore}Dsef{\isacharunderscore}inverse\ Dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ dis{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharcolon}\ {\isachardoublequote}dis\ {\isacharparenleft}{\isasymDown}\ a{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}insert\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackleft}of\ a{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}blast{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ cp{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharcolon}\ {\isachardoublequote}cp\ {\isacharparenleft}{\isasymDown}\ a{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}insert\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackleft}of\ a{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}blast{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+\textbf{Convention:} We will denote functions in \isa{D} that are simply
+abstracted versions
+  of appropriate functions in \isa{T} by the same name with the first
+  letter capitalised.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{constdefs}\ \isanewline
+\ \ Ret\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}a\ D{\isachardoublequote}\isanewline
+\ \ {\isachardoublequote}Ret\ x\ {\isasymequiv}\ {\isasymUp}\ {\isacharparenleft}ret\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ Ret{\isacharunderscore}ret{\isacharcolon}\ {\isachardoublequote}{\isasymDown}\ {\isacharparenleft}Ret\ x{\isacharparenright}\ {\isacharequal}\ ret\ x{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymDown}\ {\isacharparenleft}Ret\ x{\isacharparenright}\ {\isacharequal}\ {\isasymDown}\ {\isacharparenleft}{\isasymUp}\ {\isacharparenleft}ret\ x{\isacharparenright}{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ Ret{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ ret\ x{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ Dsef{\isacharunderscore}def\ Abs{\isacharunderscore}Dsef{\isacharunderscore}inverse{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{{\isachardot}}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Lifting operations will allow us to introduce monadic connectives \isa{{\isasymand}{\isacharcomma}\ {\isasymor}}, etc.
+  by simply lifting the HOL ones. Theorem \isa{{\isachardoublequote}dsef{\isacharunderscore}ret{\isachardoublequote}} will
+  assert these to be \isa{dsef} (see below).  
+  \label{isa:lift-op}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{constdefs}\isanewline
+\ liftM\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b{\isacharcomma}\ {\isacharprime}a\ T{\isacharbrackright}\ {\isasymRightarrow}\ {\isacharprime}b\ T{\isachardoublequote}\isanewline
+\ {\isachardoublequote}liftM\ f\ p\ {\isasymequiv}\ do\ {\isacharbraceleft}x\ {\isasymleftarrow}\ p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ liftM{\isadigit{2}}\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b\ {\isasymRightarrow}\ {\isacharprime}c{\isacharcomma}\ {\isacharprime}a\ T{\isacharcomma}\ {\isacharprime}b\ T{\isacharbrackright}\ {\isasymRightarrow}\ {\isacharprime}c\ T{\isachardoublequote}\isanewline
+\ {\isachardoublequote}liftM{\isadigit{2}}\ f\ p\ q\ {\isasymequiv}\ do\ {\isacharbraceleft}x\ {\isasymleftarrow}\ p{\isacharsemicolon}\ y\ {\isasymleftarrow}\ q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ liftM{\isadigit{3}}\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b\ {\isasymRightarrow}\ {\isacharprime}c\ {\isasymRightarrow}\ {\isacharprime}d{\isacharcomma}\ {\isacharprime}a\ T{\isacharcomma}\ {\isacharprime}b\ T{\isacharcomma}\ {\isacharprime}c\ T{\isacharbrackright}\ {\isasymRightarrow}\ {\isacharprime}d\ T{\isachardoublequote}\isanewline
+\ {\isachardoublequote}liftM{\isadigit{3}}\ f\ p\ q\ r\ {\isasymequiv}\ do\ {\isacharbraceleft}x\ {\isasymleftarrow}\ p{\isacharsemicolon}\ y\ {\isasymleftarrow}\ q{\isacharsemicolon}\ z\ {\isasymleftarrow}\ r{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y\ z{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ %
+\isamarkupcmt{The most general form of lifting; the above may be expressed by it%
+}
+\isanewline
+\ ap\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharparenleft}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b{\isacharparenright}\ T{\isacharcomma}\ {\isacharprime}a\ T{\isacharbrackright}\ {\isasymRightarrow}\ {\isacharprime}b\ T{\isachardoublequote}\ \ \ \ \ \ \ \ \ {\isacharparenleft}\isakeyword{infixl}\ {\isachardoublequote}{\isachardollar}{\isachardollar}{\isachardoublequote}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ {\isachardoublequote}ap\ m\ p\ {\isasymequiv}\ do\ {\isacharbraceleft}f\ {\isasymleftarrow}\ m{\isacharsemicolon}\ x\ {\isasymleftarrow}\ p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ liftM{\isacharunderscore}ap{\isacharcolon}\ {\isachardoublequote}liftM\ f\ x\ {\isacharequal}\ {\isacharparenleft}ret\ f\ {\isachardollar}{\isachardollar}\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ ap{\isacharunderscore}def\ liftM{\isacharunderscore}def{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ liftM{\isadigit{2}}{\isacharunderscore}ap{\isacharcolon}\ {\isachardoublequote}liftM{\isadigit{2}}\ f\ x\ y\ {\isacharequal}\ {\isacharparenleft}ret\ f\ {\isachardollar}{\isachardollar}\ x\ {\isachardollar}{\isachardollar}\ y{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr\ ap{\isacharunderscore}def\ liftM{\isadigit{2}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ liftM{\isadigit{3}}{\isacharunderscore}ap{\isacharcolon}\ {\isachardoublequote}liftM{\isadigit{3}}\ f\ x\ y\ z\ {\isacharequal}\ ret\ f\ {\isachardollar}{\isachardollar}\ x\ {\isachardollar}{\isachardollar}\ y\ {\isachardollar}{\isachardollar}\ z{\isachardoublequote}\isanewline
+\ \isamarkupfalse%
+\isacommand{by}{\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr\ ap{\isacharunderscore}def\ liftM{\isadigit{3}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{theorem}\ dsef{\isacharunderscore}ret{\isacharunderscore}ap{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ dsef\ {\isacharparenleft}ret\ f\ {\isachardollar}{\isachardollar}\ p{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ ap{\isacharunderscore}def\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}clarify{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ conjI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}erule\ weak{\isacharunderscore}cp{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ conjI{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}erule\ weak{\isacharunderscore}dis{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}clarify{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}drule{\isacharunderscore}tac\ x\ {\isacharequal}\ q\ \isakeyword{in}\ spec{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ mon{\isacharunderscore}ctr\ weak{\isacharunderscore}cp{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ {\isacharparenleft}no{\isacharunderscore}asm{\isacharunderscore}simp{\isacharparenright}\ only{\isacharcolon}\ cp{\isacharunderscore}seq{\isacharunderscore}ret{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{done}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+\isa{dsef} programs may be swapped. \label{isa:commute-dsef}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ commute{\isacharunderscore}dsef{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dsef\ p{\isacharsemicolon}\ dsef\ q{\isasymrbrakk}\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}r{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ commute{\isacharunderscore}{\isadigit{1}}{\isacharunderscore}{\isadigit{3}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp{\isacharunderscore}all\ add{\isacharcolon}\ dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}clarify{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}drule\ commute{\isacharunderscore}bool{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}assumption{\isacharparenright}{\isacharplus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}drule{\isacharunderscore}tac\ x\ {\isacharequal}\ q\ \isakeyword{in}\ spec{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{by}{\isacharparenleft}blast{\isacharparenright}\isanewline
+\ \ \isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ commute{\isacharunderscore}bool{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dsef\ p{\isacharsemicolon}\ cp\ {\isacharparenleft}q{\isacharcolon}{\isacharcolon}bool\ T{\isacharparenright}{\isacharsemicolon}\ dis\ q{\isasymrbrakk}\ {\isasymLongrightarrow}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymforall}r{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ x{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ y{\isacharbraceright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ commute{\isacharunderscore}{\isadigit{1}}{\isacharunderscore}{\isadigit{3}}{\isacharcomma}\ simp{\isacharunderscore}all\ add{\isacharcolon}\ dsef{\isacharunderscore}def{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+A formalisation of the essential fact that \isa{dsef} programs
+  are actually stable under sequencing; this has only been proposed
+  in \cite{SchroederMossakowski:PDL}, but has not been shown.
+  \label{isa:dsef-seq}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{theorem}\ dsef{\isacharunderscore}seq{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dsef\ p{\isacharsemicolon}\ {\isasymforall}x{\isachardot}\ dsef\ {\isacharparenleft}q\ x{\isacharparenright}{\isasymrbrakk}\ {\isasymLongrightarrow}\ dsef\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}dsef\ p{\isachardoublequote}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ dsef\ {\isacharparenleft}q\ x{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ disp{\isacharcolon}\ {\isachardoublequote}dis\ p{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ dsef{\isacharunderscore}dis{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ cpp{\isacharcolon}\ {\isachardoublequote}cp\ p{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ dsef{\isacharunderscore}cp{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ disq{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ dis\ {\isacharparenleft}q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharcomma}\ blast{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ cpq{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x{\isachardot}\ cp\ {\isacharparenleft}q\ x{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}unfold\ dsef{\isacharunderscore}def{\isacharcomma}\ blast{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}s\ {\isacharequal}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ %
+\isamarkupcmt{The proof proceeds in three parts, each one asserting some property stated
+        in the definition of \isa{dsef} terms. Firstly, \isa{dsef} terms 
+        are discardable.%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}dis\ {\isacharquery}s{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret\ {\isacharparenleft}{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q\ x{\isacharsemicolon}\ ret\ {\isacharparenleft}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ seq{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ disp\ disq\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ ret\ {\isacharparenleft}{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}left\ dis{\isacharunderscore}left{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ %
+\isamarkupcmt{\isa{dsef} terms are also copyable. We unfold the definition and prove
+        the required equation directly.%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}cp\ {\isacharquery}s{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ y{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ \isanewline
+\ \ \ \ \ \ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ v{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ v{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ v{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}q\ v{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \ \ %
+\isamarkupcmt{This swapping step is a bit more difficult; we have to assist 
+            the simplifier by the following general statement:%
+}
+\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}u{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}q\ u{\isacharsemicolon}\ v{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q\ v{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}v{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}q\ v{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequote}{\isasymforall}u{\isachardot}\ {\isacharquery}A\ u\ {\isacharequal}\ {\isacharquery}B\ u{\isachardoublequote}{\isacharparenright}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ \isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ u\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}dsef\ {\isacharparenleft}q\ u{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ spec{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{1}}\ \isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}r{\isacharcolon}{\isacharcolon}{\isacharprime}b{\isasymRightarrow}{\isacharprime}a{\isasymRightarrow}{\isacharparenleft}{\isacharprime}b{\isacharasterisk}{\isacharprime}b{\isacharparenright}\ T{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}q\ u{\isacharsemicolon}\ v{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ v{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}v{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ r\ x\ v{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ commute{\isacharunderscore}dsef{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}{\isacharquery}A\ u\ {\isacharequal}\ {\isacharquery}B\ u{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ spec{\isacharparenright}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ cpp\ cpq\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}x{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ %
+\isamarkupcmt{The final step is that \isa{p\ {\isasymggreater}{\isacharequal}\ q} commutes with bool-valued programs:%
+}
+\isanewline
+\ \ \isamarkupfalse%
+\isacommand{moreover}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}q{\isacharcolon}{\isacharcolon}bool\ T{\isachardot}\ cp\ q\ {\isasymand}\ dis\ q\ {\isasymlongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}{\isacharquery}s{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\isanewline
+\ \ \ \ %
+\isamarkupcmt{The proof is carried out by a so called raw proof block, where the succeeding
+          application of blast spares us having to do the trivial proof steps.%
+}
+\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ qa\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{{\isacharbraceleft}}\ \isamarkupfalse%
+\isacommand{assume}\ cpqa{\isacharcolon}\ {\isachardoublequote}cp\ {\isacharparenleft}qa{\isacharcolon}{\isacharcolon}bool\ T{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{assume}\ disqa{\isacharcolon}\ {\isachardoublequote}dis\ qa{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}do{\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ q\ u{\isacharbraceright}{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{let}\ {\isacharquery}w\ {\isacharequal}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}do{\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ q\ u{\isacharbraceright}{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}do\ {\isacharbraceleft}x{\isasymleftarrow}{\isacharquery}w{\isacharsemicolon}\ y{\isasymleftarrow}{\isacharquery}w{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ del{\isacharcolon}\ bind{\isacharunderscore}assoc\ add{\isacharcolon}\ mon{\isacharunderscore}ctr{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ cpqa\ disqa\ \isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ commute{\isacharunderscore}bool{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ a{\isadigit{2}}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ %
+\isamarkupcmt{This fact is needed to help the simplifier solve the goal%
+}
+\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}u{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}q\ u{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}\ {\isacharequal}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ do\ {\isacharbraceleft}u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}\isakeyword{is}\ {\isachardoublequote}{\isasymforall}u{\isachardot}\ {\isacharquery}A\ u\ {\isacharequal}\ {\isacharquery}B\ u{\isachardoublequote}{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ u\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}dsef\ {\isacharparenleft}q\ u{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ spec{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{from}\ this\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymforall}r{\isachardot}\ do\ {\isacharbraceleft}x{\isasymleftarrow}q\ u{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ r\ x\ u{\isacharprime}{\isacharbraceright}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ r\ x\ u{\isacharprime}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ commute{\isacharunderscore}dsef{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}{\isacharquery}A\ u\ {\isacharequal}\ {\isacharquery}B\ u{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ spec{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ cpqa\ disqa\ \isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ u{\isacharprime}{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ x{\isacharprime}{\isasymleftarrow}q\ u{\isacharprime}{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ y{\isacharprime}{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharprime}{\isacharcomma}y{\isacharprime}{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ commute{\isacharunderscore}bool{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{also}\ \isamarkupfalse%
+\isacommand{from}\ cpp\ cpq\ cpqa\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymdots}\ {\isacharequal}\ do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ x{\isasymleftarrow}q\ u{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ ret{\isacharparenleft}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharcomma}{\isacharparenleft}x{\isacharcomma}y{\isacharparenright}{\isacharparenright}{\isacharbraceright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{finally}\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ del{\isacharcolon}\ bind{\isacharunderscore}assoc\ add{\isacharcolon}\ mon{\isacharunderscore}ctr\ cp{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{{\isacharbraceright}}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}cp\ {\isacharparenleft}qa{\isacharcolon}{\isacharcolon}bool\ T{\isacharparenright}\ {\isasymand}\ dis\ qa\ {\isasymlongrightarrow}\ cp\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}do\ {\isacharbraceleft}u{\isasymleftarrow}p{\isacharsemicolon}\ q\ u{\isacharbraceright}{\isacharsemicolon}\ y{\isasymleftarrow}qa{\isacharsemicolon}\ ret\ {\isacharparenleft}x{\isacharcomma}\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{by}\ blast\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{ultimately}\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}dsef\ {\isacharquery}s{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}dsef{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Given that \isa{dsef} programs are stable under sequencing, this
+        weak form, which comes in handy sometimes, can easily be proved.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ weak{\isacharunderscore}dsef{\isacharunderscore}seq{\isacharcolon}\ {\isachardoublequote}dsef\ p\ {\isasymLongrightarrow}\ dsef\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}{\isacharparenleft}simp\ add{\isacharcolon}\ dsef{\isacharunderscore}seq{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+With the help of theorem \isa{dsef{\isacharunderscore}seq} the following proof is
+  immediate.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ dsef{\isacharunderscore}liftM{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dsef\ p{\isacharsemicolon}\ dsef\ q{\isasymrbrakk}\ {\isasymLongrightarrow}\ dsef\ {\isacharparenleft}liftM{\isadigit{2}}\ f\ p\ q{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ a{\isadigit{1}}{\isacharcolon}\ {\isachardoublequote}dsef\ p{\isachardoublequote}\ \isakeyword{and}\ a{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}dsef\ q{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{1}}\ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}dsef\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ dsef{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}\ {\isasymforall}x{\isachardot}\ dsef\ {\isacharparenleft}do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ \isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ x\ \isamarkupfalse%
+\isacommand{from}\ a{\isadigit{2}}\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}dsef\ {\isacharparenleft}do\ {\isacharbraceleft}y{\isasymleftarrow}q{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ {\isacharparenleft}rule\ dsef{\isacharunderscore}seq{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}\ {\isasymforall}y{\isachardot}\ dsef\ {\isacharparenleft}ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{proof}\ \isanewline
+\ \ \ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{fix}\ y\ \isamarkupfalse%
+\isacommand{show}\ {\isachardoublequote}dsef\ {\isacharparenleft}ret\ {\isacharparenleft}f\ x\ y{\isacharparenright}{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ dsef{\isacharunderscore}ret{\isacharparenright}\isanewline
+\ \ \ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{qed}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{thus}\ {\isachardoublequote}dsef\ {\isacharparenleft}liftM{\isadigit{2}}\ f\ p\ q{\isacharparenright}{\isachardoublequote}\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ only{\isacharcolon}\ liftM{\isadigit{2}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ Abs{\isacharunderscore}Dsef{\isacharunderscore}inverse{\isacharunderscore}liftM{\isadigit{2}}\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}dsef\ p{\isacharsemicolon}\ dsef\ q{\isasymrbrakk}\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isasymDown}\ {\isacharparenleft}{\isasymUp}\ {\isacharparenleft}liftM{\isadigit{2}}\ f\ p\ q{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ liftM{\isadigit{2}}\ f\ p\ q{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ Abs{\isacharunderscore}Dsef{\isacharunderscore}inverse\ Dsef{\isacharunderscore}def\ dsef{\isacharunderscore}liftM{\isadigit{2}}{\isacharparenright}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{end}\isamarkupfalse%
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:

@@ -1,0 +1,109 @@
+%
+\begin{isabellebody}%
+\def\isabellecontext{Monads}%
+%
+\isamarkupheader{Basic Monad Definitions and Laws.%
+}
+\isamarkuptrue%
+\isacommand{theory}\ Monads\ {\isacharequal}\ Main{\isacharcolon}\isamarkupfalse%
+%
+\label{sec:monads-thy}
+%
+\begin{isamarkuptext}%
+For the lack of constructor classes in Isabelle, we initially
+ use functor \isa{T} as a parameter standing for the monad in question.
+ \label{isa:monads-def}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{typedecl}\ {\isacharprime}a\ T\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{arities}\ T\ {\isacharcolon}{\isacharcolon}\ {\isacharparenleft}type{\isacharparenright}type\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Monadic operations, decorated with Haskell-style syntax.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{consts}\isanewline
+\ bind\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharparenleft}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}b\ T{\isacharparenright}\ {\isasymRightarrow}\ {\isacharprime}b\ T{\isachardoublequote}\ \ \ \ \ {\isacharparenleft}\isakeyword{infixl}\ {\isachardoublequote}{\isasymggreater}{\isacharequal}{\isachardoublequote}\ {\isadigit{2}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ ret\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ {\isasymRightarrow}\ {\isacharprime}a\ T{\isachardoublequote}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{constdefs}\isanewline
+\ seq\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharprime}a\ T\ {\isasymRightarrow}\ {\isacharprime}b\ T\ {\isasymRightarrow}\ {\isacharprime}b\ T{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}\isakeyword{infixl}\ {\isachardoublequote}{\isasymggreater}{\isachardoublequote}\ {\isadigit{2}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ {\isachardoublequote}p\ {\isasymggreater}\ q\ {\isasymequiv}\ {\isacharparenleft}p\ {\isasymggreater}{\isacharequal}\ {\isacharparenleft}{\isasymlambda}x{\isachardot}\ q{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+The usual monad laws for bind and ret (not the Kleisli triple ones)
+  including injectivity of \isa{ret} for convenience.
+  \label{isa:monads-laws}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{axioms}\isanewline
+\ bind{\isacharunderscore}assoc\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}p\ {\isasymggreater}{\isacharequal}\ {\isacharparenleft}{\isasymlambda}x{\isachardot}\ f\ x\ {\isasymggreater}{\isacharequal}\ g{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}p\ {\isasymggreater}{\isacharequal}\ f\ {\isasymggreater}{\isacharequal}\ g{\isacharparenright}{\isachardoublequote}\isanewline
+\ ret{\isacharunderscore}lunit\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}ret\ x\ {\isasymggreater}{\isacharequal}\ f{\isacharparenright}\ {\isacharequal}\ f\ x{\isachardoublequote}\isanewline
+\ ret{\isacharunderscore}runit\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}p\ {\isasymggreater}{\isacharequal}\ ret{\isacharparenright}\ {\isacharequal}\ p{\isachardoublequote}\isanewline
+\ ret{\isacharunderscore}inject{\isacharcolon}\ {\isachardoublequote}ret\ x\ {\isacharequal}\ ret\ z\ {\isasymLongrightarrow}\ x\ {\isacharequal}\ z{\isachardoublequote}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ seq{\isacharunderscore}assoc\ {\isacharbrackleft}simp{\isacharbrackright}{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}p\ {\isasymggreater}\ {\isacharparenleft}q\ {\isasymggreater}\ r{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}p\ {\isasymggreater}\ q\ {\isasymggreater}\ r{\isacharparenright}{\isachardoublequote}\isanewline
+\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ seq{\isacharunderscore}def{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+This sets up a Haskell-style `\isa{do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ q{\isacharbraceright}}' syntax 
+  with multiple bindings inside one \isa{do} term.
+  \label{isa:do-notation}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{nonterminals}\isanewline
+\ monseq\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{syntax}\ {\isacharparenleft}xsymbols{\isacharparenright}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}monseq\ {\isasymRightarrow}\ {\isacharprime}a\ T{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharparenleft}do\ {\isacharbraceleft}{\isacharparenleft}{\isacharunderscore}{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\ \ \ \ {\isacharbrackleft}{\isadigit{5}}{\isacharbrackright}\ {\isadigit{1}}{\isadigit{0}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}mongen{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}pttrn{\isacharcomma}\ {\isacharprime}a\ T{\isacharcomma}\ monseq{\isacharbrackright}{\isasymRightarrow}\ monseq{\isachardoublequote}\ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharparenleft}{\isacharunderscore}{\isasymleftarrow}{\isacharparenleft}{\isacharunderscore}{\isacharparenright}{\isacharsemicolon}{\isacharslash}\ {\isacharunderscore}{\isacharparenright}{\isachardoublequote}\ \ {\isacharbrackleft}{\isadigit{1}}{\isadigit{0}}{\isacharcomma}\ {\isadigit{6}}{\isacharcomma}\ {\isadigit{5}}{\isacharbrackright}\ {\isadigit{5}}{\isacharparenright}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monexp{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ T{\isacharcomma}\ monseq{\isacharbrackright}{\isasymRightarrow}\ monseq{\isachardoublequote}\ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharparenleft}{\isacharunderscore}{\isacharsemicolon}{\isacharslash}\ {\isacharunderscore}{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ \ {\isacharbrackleft}{\isadigit{6}}{\isacharcomma}\ {\isadigit{5}}{\isacharbrackright}\ {\isadigit{5}}{\isacharparenright}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monexp{\isadigit{0}}{\isachardoublequote}\ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ T{\isacharbrackright}\ {\isasymRightarrow}\ monseq{\isachardoublequote}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\isachardoublequote}{\isacharparenleft}{\isacharunderscore}{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ \ \ \ {\isadigit{5}}{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{translations}\isanewline
+\ %
+\isamarkupcmt{input macros; replace do-notation by \isa{op\ {\isasymggreater}{\isacharequal}}/\isa{op\ {\isasymggreater}}%
+}
+\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}mongen\ x\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ {\isasymrightharpoonup}\ {\isachardoublequote}p\ {\isasymggreater}{\isacharequal}\ {\isacharparenleft}{\isacharpercent}x{\isachardot}\ {\isacharparenleft}{\isacharunderscore}monseq\ q{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}monexp\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ {\isasymrightharpoonup}\ {\isachardoublequote}p\ {\isasymggreater}\ {\isacharparenleft}{\isacharunderscore}monseq\ q{\isacharparenright}{\isachardoublequote}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}monexp{\isadigit{0}}\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ \ {\isasymrightharpoonup}\ {\isachardoublequote}q{\isachardoublequote}\isanewline
+\ %
+\isamarkupcmt{Retranslation of into the do-notation%
+}
+\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}mongen\ x\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ {\isasymleftharpoondown}\ {\isachardoublequote}p\ {\isasymggreater}{\isacharequal}\ {\isacharparenleft}{\isacharpercent}x{\isachardot}\ q{\isacharparenright}{\isachardoublequote}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}monexp\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ {\isasymleftharpoondown}\ {\isachardoublequote}p\ {\isasymggreater}\ q{\isachardoublequote}\isanewline
+\ %
+\isamarkupcmt{Normalization macros `flattening' do-terms%
+}
+\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}mongen\ x\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ {\isasymleftharpoondown}\ {\isachardoublequote}{\isacharunderscore}monseq\ {\isacharparenleft}{\isacharunderscore}mongen\ x\ p\ {\isacharparenleft}{\isacharunderscore}monseq\ q{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ {\isachardoublequote}{\isacharunderscore}monseq{\isacharparenleft}{\isacharunderscore}monexp\ p\ q{\isacharparenright}{\isachardoublequote}\ \ \ \ \ \ {\isasymleftharpoondown}\ {\isachardoublequote}{\isacharunderscore}monseq\ {\isacharparenleft}{\isacharunderscore}monexp\ p\ {\isacharparenleft}{\isacharunderscore}monseq\ q{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Actually, this rule does not contract, but rather expand monadic 
+  sequences, but for historical reasons\dots%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ mon{\isacharunderscore}ctr{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}do\ {\isacharbraceleft}x\ {\isasymleftarrow}\ {\isacharparenleft}do\ {\isacharbraceleft}y\ {\isasymleftarrow}\ p{\isacharsemicolon}\ q\ y{\isacharbraceright}{\isacharparenright}{\isacharsemicolon}\ f\ x{\isacharbraceright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}do\ {\isacharbraceleft}y\ {\isasymleftarrow}\ p{\isacharsemicolon}\ x\ {\isasymleftarrow}\ q\ y{\isacharsemicolon}\ f\ x{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}{\isacharparenleft}rule\ bind{\isacharunderscore}assoc{\isacharbrackleft}symmetric{\isacharbrackright}{\isacharparenright}\isanewline
+\isanewline
+\ \ \isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{end}\isanewline
+\isamarkupfalse%
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:

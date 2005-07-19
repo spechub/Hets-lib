@@ -1,0 +1,114 @@
+%
+\begin{isabellebody}%
+\def\isabellecontext{MonEq}%
+%
+\isamarkupheader{Monadic Equality%
+}
+\isamarkuptrue%
+\isacommand{theory}\ MonEq\ {\isacharequal}\ MonLogic{\isacharcolon}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+\label{sec:moneq-thy}%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{constdefs}\isanewline
+\ \ {\isachardoublequote}MonEq{\isachardoublequote}\ \ {\isacharcolon}{\isacharcolon}\ {\isachardoublequote}{\isacharbrackleft}{\isacharprime}a\ D{\isacharcomma}\ {\isacharprime}a\ D{\isacharbrackright}\ {\isasymRightarrow}\ bool\ D{\isachardoublequote}\ \ \ \ {\isacharparenleft}\isakeyword{infixl}\ {\isachardoublequote}{\isacharequal}\isactrlsub D{\isachardoublequote}\ {\isadigit{6}}{\isadigit{0}}{\isacharparenright}\isanewline
+\ \ {\isachardoublequote}MonEq\ a\ b\ {\isasymequiv}\ {\isasymUp}\ {\isacharparenleft}liftM{\isadigit{2}}\ {\isacharparenleft}op\ {\isacharequal}{\isacharparenright}\ {\isacharparenleft}{\isasymDown}\ a{\isacharparenright}\ {\isacharparenleft}{\isasymDown}\ b{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{lemma}\ MonEq{\isacharunderscore}Ret{\isacharunderscore}hom{\isacharcolon}\ {\isachardoublequote}{\isacharparenleft}{\isacharparenleft}Ret\ a{\isacharparenright}\ {\isacharequal}\isactrlsub D\ {\isacharparenleft}Ret\ b{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}Ret\ {\isacharparenleft}a{\isacharequal}b{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp\ add{\isacharcolon}\ lift{\isacharunderscore}Ret{\isacharunderscore}hom\ MonEq{\isacharunderscore}def{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Transitivity of monadic equality.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ mon{\isacharunderscore}eq{\isacharunderscore}trans{\isacharcolon}\ {\isachardoublequote}{\isasymlbrakk}{\isasymturnstile}\ a\ {\isacharequal}\isactrlsub D\ b{\isacharsemicolon}\ {\isasymturnstile}\ b\ {\isacharequal}\isactrlsub D\ c{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ a\ {\isacharequal}\isactrlsub D\ c{\isachardoublequote}\isanewline
+\isamarkupfalse%
+\isacommand{proof}\ {\isacharminus}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{assume}\ ab{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ a\ {\isacharequal}\isactrlsub D\ b{\isachardoublequote}\ \isakeyword{and}\ bc{\isacharcolon}\ {\isachardoublequote}{\isasymturnstile}\ b\ {\isacharequal}\isactrlsub D\ c{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{have}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharparenleft}a\ {\isacharequal}\isactrlsub D\ b{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}b\ {\isacharequal}\isactrlsub D\ c{\isacharparenright}\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharparenleft}a\ {\isacharequal}\isactrlsub D\ c{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ MonEq{\isacharunderscore}def\ impD{\isacharunderscore}def\ liftM{\isadigit{2}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ Abs{\isacharunderscore}Dsef{\isacharunderscore}inverse\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef\ Dsef{\isacharunderscore}def\ dsef{\isacharunderscore}seq\ mon{\isacharunderscore}ctr\ del{\isacharcolon}\ bind{\isacharunderscore}assoc{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb\ dsef{\isacharunderscore}cp{\isacharbrackleft}OF\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackright}{\isacharparenright}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ commute{\isacharunderscore}dsef{\isacharbrackleft}of\ {\isachardoublequote}{\isasymDown}\ c{\isachardoublequote}\ {\isachardoublequote}{\isasymDown}\ a{\isachardoublequote}{\isacharbrackright}{\isacharparenright}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ commute{\isacharunderscore}dsef{\isacharbrackleft}of\ {\isachardoublequote}{\isasymDown}\ b{\isachardoublequote}\ {\isachardoublequote}{\isasymDown}\ a{\isachardoublequote}{\isacharbrackright}{\isacharparenright}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb\ dsef{\isacharunderscore}cp{\isacharbrackleft}OF\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackright}\ del{\isacharcolon}\ bind{\isacharunderscore}assoc{\isacharparenright}\ \isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}\ {\isacharparenleft}simp\ add{\isacharcolon}\ dsef{\isacharunderscore}dis{\isacharbrackleft}OF\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackright}\ dis{\isacharunderscore}left{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}subst\ Ret{\isacharunderscore}def{\isacharbrackleft}symmetric{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \ \ \isamarkupfalse%
+\isacommand{by}\ simp\isanewline
+\ \ \isamarkupfalse%
+\isacommand{from}\ this\ ab\ bc\ \isamarkupfalse%
+\isacommand{show}\ {\isacharquery}thesis\ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ pdl{\isacharunderscore}mp{\isacharbrackleft}THEN\ pdl{\isacharunderscore}mp{\isacharbrackright}{\isacharparenright}\isanewline
+\isamarkupfalse%
+\isacommand{qed}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Reflexivity of monadic equality.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ mon{\isacharunderscore}eq{\isacharunderscore}refl{\isacharcolon}\ \ {\isachardoublequote}{\isasymturnstile}\ a\ {\isacharequal}\isactrlsub D\ a{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ MonEq{\isacharunderscore}def\ liftM{\isadigit{2}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ cp{\isacharunderscore}arb\ dsef{\isacharunderscore}cp{\isacharbrackleft}OF\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ dis{\isacharunderscore}left{\isadigit{2}}\ dsef{\isacharunderscore}dis{\isacharbrackleft}OF\ dsef{\isacharunderscore}Rep{\isacharunderscore}Dsef{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}subst\ Ret{\isacharunderscore}def{\isacharbrackleft}symmetric{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}simp{\isacharparenright}\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Auxiliary lemma, just to help the simplifier.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ sym{\isacharunderscore}subst{\isacharunderscore}seq{\isadigit{2}}{\isacharcolon}\ {\isachardoublequote}{\isasymforall}x\ y{\isachardot}\ c\ x\ y\ {\isacharequal}\ c\ y\ x\ {\isasymLongrightarrow}\ \isanewline
+\ \ {\isacharparenleft}{\isasymUp}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ c\ x\ y{\isacharbraceright}{\isacharparenright}{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}{\isasymUp}\ {\isacharparenleft}do\ {\isacharbraceleft}x{\isasymleftarrow}p{\isacharsemicolon}\ y{\isasymleftarrow}q{\isacharsemicolon}\ c\ y\ x{\isacharbraceright}{\isacharparenright}{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ simp\isamarkupfalse%
+%
+\begin{isamarkuptext}%
+Symmetry of monadic equality. 
+  The simplifier gets into trouble here, for it must apply symmetry
+  of real equality inside the scope of lambda terms. We circumvent
+  this problem by extracting the essential proof obligation through 
+  \isa{sym{\isacharunderscore}subst{\isacharunderscore}seq{\isadigit{2}}} and then working by hand.%
+\end{isamarkuptext}%
+\isamarkuptrue%
+\isacommand{lemma}\ mon{\isacharunderscore}eq{\isacharunderscore}sym{\isacharcolon}\ \ \ {\isachardoublequote}{\isacharparenleft}a\ {\isacharequal}\isactrlsub D\ b{\isacharparenright}\ {\isacharequal}\ {\isacharparenleft}b\ {\isacharequal}\isactrlsub D\ a{\isacharparenright}{\isachardoublequote}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ MonEq{\isacharunderscore}def\ liftM{\isadigit{2}}{\isacharunderscore}def{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}simp\ add{\isacharcolon}\ commute{\isacharunderscore}dsef{\isacharbrackleft}of\ {\isachardoublequote}{\isasymDown}\ a{\isachardoublequote}\ {\isachardoublequote}{\isasymDown}\ b{\isachardoublequote}{\isacharbrackright}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ sym{\isacharunderscore}subst{\isacharunderscore}seq{\isadigit{2}}{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}clarify{\isacharparenright}\isanewline
+\ \ \isamarkupfalse%
+\isacommand{apply}{\isacharparenleft}rule\ arg{\isacharunderscore}cong{\isacharbrackleft}\isakeyword{where}\ f\ {\isacharequal}\ ret{\isacharbrackright}{\isacharparenright}\ \isanewline
+\ \ \isamarkupfalse%
+\isacommand{by}\ {\isacharparenleft}rule\ eq{\isacharunderscore}sym{\isacharunderscore}conv{\isacharparenright}\isanewline
+\isanewline
+\isamarkupfalse%
+\isacommand{end}\isanewline
+\isamarkupfalse%
+\end{isabellebody}%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "root"
+%%% End:
