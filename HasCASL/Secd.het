@@ -193,7 +193,7 @@ view Secd : Machine[Run] to SecdMachine =
      sorts State |-> Dump, Expr |-> ClosedTerm
 
 spec Time = Eval[view TermReduction] and Nat then 
-op time : ClosedTerm ->? Nat 
+op time : ClosedTerm -> Nat 
 forall x: Variable; a, b, f : ClosedTerm; v: Value
 . time v = 1
 . Lam x b = eval f /\ v = eval a => time (App f a) = 
