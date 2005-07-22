@@ -603,8 +603,8 @@ issue.
       \PDLBox{\bar x\leteq\bar p}\phi\Rightarrow\PDLBox{\bar x\leteq\bar p}\psi\\
       \textrm{(K2)} & \PDLBox{\bar x\leteq\bar p}(\phi\Rightarrow\psi)\Rightarrow
       \PDLDmd{\bar x\leteq\bar p}\phi\Rightarrow\PDLDmd{\bar x\leteq\bar p}\psi\\
-      \textrm{(K3$\Box$)} & \ret{\phi}\Rightarrow\PDLBox{p}\ret{\phi}\\
-      \textrm{(K3$\Diamond$)} & \PDLDmd{p}\ret{\phi}\Rightarrow\ret{\phi}\\
+      \textrm{(K3$\Box$)} & \ret~{\phi}\Rightarrow\PDLBox{p}\ret~{\phi}\\
+      \textrm{(K3$\Diamond$)} & \PDLDmd{p}\ret~{\phi}\Rightarrow\ret~{\phi}\\
       \textrm{(K4)} & \PDLDmd{\bar x\leteq\bar p}(\phi\lor\psi)\Rightarrow
       (\PDLDmd{\bar x\leteq\bar p}\phi\lor\PDLDmd{\bar x\leteq\bar
         p}\psi)\\
@@ -622,13 +622,13 @@ issue.
       & (x\notin FV(\phi))\\
       \textrm{(ctr$\Diamond$)} & \PDLDmd{ x\leteq p; y\leteq
         q}\phi \Leftarrow   \PDLDmd{ y\leteq\DoStmt{ x\leteq p; q}}\phi& (x\notin FV(\phi))\\
-      \textrm{(ret$\Box$)} & \PDLBox{x\leteq \ret{a}}\phi\iff\phi[a/x]\\
+      \textrm{(ret$\Box$)} & \PDLBox{x\leteq \ret~{a}}\phi\iff\phi[a/x]\\
       \textrm{(ret$\Diamond$)} & 
-      \PDLDmd{x\leteq \ret{a}}\phi\iff\phi[a/x] \\
+      \PDLDmd{x\leteq \ret~{a}}\phi\iff\phi[a/x] \\
       \textrm{(dsef$\Box$)} & \PDLBox{x\leteq p}{P}\iff P[p/x]& (p \text{ is }
       \op{dsef}) \\
       \textrm{(dsef$\Diamond$)} & \PDLDmd{x\leteq p}{P} \iff  P[p/x] & (p \text{ is }
-      \op{dsef} 
+      \op{dsef})
     \end{array}
   \end{displaymath}
   \mylinesep
@@ -851,7 +851,7 @@ called within another method of return type \code{boolean}. The following
 example demonstrates the problem. 
 \begin{expl} \label{ex:java-to-monad} Let $\op{mret}\ x$ abbreviate $\raiseEx\
   (\op{MRet}\ x)$, then the Java methods
-\begin{alltt}
+\begin{verbatim}
 public static int f(int x) {
   if (g(x) < 0)
     return x + 1;
@@ -862,7 +862,7 @@ public static int f(int x) {
 public static boolean g(int x) {
   return x*x < 100;
 }
-\end{alltt}
+\end{verbatim}
 might na\"\i vely be translated into the monadic model  to obtain
 {
   \newcommand{\filla}{\hspace*{1.8cm}}
@@ -938,10 +938,11 @@ the translation of the above Java methods then is
 Since every program $p$ obtained from a translation of a Java method into the
 monadic setting will now contain an occurrence of $\mbody$, it is necessary at
 this point to specify and prove a Hoare rule for this construct which captures
-its decisive properties. Fortunately, one single rule suffices for this purpose
-in the case of partial as well as total correctness assertions (and both rules
-look alike so that only one of them is shown), noting that one will only want to
-prove properties of programs that terminate abruptly with a return exception.
+its decisive properties (see also \cite{WalterEA05}). Fortunately, a single rule
+suffices for this purpose in the case of partial as well as total correctness
+assertions (and both rules look alike so that only one of them is shown), noting
+that one will only want to prove properties of programs that terminate abruptly
+with a return exception.
 \[
     \NRule{mbody}
     {\EPHTriple{\phi}{x\leteq p}{\bot}{\LambdaTerm{e}{\Case\ e\ \Of\ \op{MRet}\ y \to \psi

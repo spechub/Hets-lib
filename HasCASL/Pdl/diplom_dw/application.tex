@@ -56,7 +56,7 @@ $\PDLBox{x\leteq p}{(\bigwedge\phi_i)}$ by proving each $\PDLBox{x\leteq p}{\phi
 
 \begin{lem} \label{thm:wkbox-wkdmd}
   The following two rules that resemble modus ponens, only `inside'
-  boxes and diamonds, are valid derived rules of inference. \\ 
+  boxes and diamonds, are valid derived rules of inference.
 \[
   \NRule{wk\Box}{[\xp]\phi \quad \forall x\bdot \phi \Rightarrow \psi}{[\xp] \psi}
   \qquad
@@ -107,7 +107,9 @@ lemma, where the reverse implication is axiom (K4)).
 \begin{lem}
   \label{thm:more-distrib}
   The following implications are valid in the calculus. Proofs thereof are very
-  similar to the previous ones and are therefore omitted.
+  similar to the previous ones and are omitted here. Instead we refer to
+  Section~\ref{sec:pdl-thy} in the Appendix where the formulae have been
+  verified with Isabelle.
 
   \begin{gather*}
       \xpdmd{\phi} \land \xpbox{\psi} \Rightarrow \xpdmd{\phi \land \psi} \\
@@ -278,10 +280,10 @@ In the inductive step, w.l.o.g. let $p$ consist of programs $\enq~z_i,\; 1\leq i
 n+1$ and $x_j\leteq \deq,\;1\leq j\leq m$ where necessarily $m\leq n$. We take a look at the final
 occurrence of an $\enq$ and distinguish two possible cases:
 
-(i) $p =( \ldots; \enq~z_{n+1})$, \IE the final $\enq$ appears at the end of the program
-sequence. In this easier case, by repeated application of rule (nec) to $[\enq
-z_{n+1}]\lnot \qmt$, which is an instance of axiom (non-empty), one obtains $[p]\lnot
-\qmt$.
+(i) $p =( \ldots; \enq~z_{n+1})$, \IE the final $\enq$ appears at the end of the
+program sequence. In this easier case, by repeated application of rule (nec) to
+$[\enq~z_{n+1}]\lnot \qmt$, which is an instance of axiom (non-empty), one
+obtains $[p]\lnot \qmt$.
 
 (ii) $p = (\ldots; \enq~z_{n+1}; x_{m-j}\leteq \deq; \ldots; x_{m}\leteq \deq)$. This can be proved by
 induction on $j$. In the base case, where $j=0$, we have $p = (\ldots; \enq~z_{n+1};
@@ -492,14 +494,14 @@ unwieldy. We therefore take another approach and axiomatise one further
 deterministically side-effect free operation $\get$, which lets us
 \emph{look inside} the queue by returning a list of all elements in the queue.
 We will use notation $(x:xs)$ for a list with head $x$ and tail list $xs$ as
-well as $(xs\uparrow x)$ for a list with endmost element $x$ and initial part $xs$.
+well as $(xs\Snoc x)$ for a list with endmost element $x$ and initial part $xs$.
 
 \begin{flalign*}
 & \mathbf{Axioms}\\
 & \AssertDsef{get} && \text{(dsef-get)} \\
-& (\get = xs) \Rightarrow  \PDLBox{\enq~x}{(get = (xs\uparrow x))} && \text{(enq-app)} \\
+& (\get = xs) \Rightarrow  \PDLBox{\enq~x}{(get = (xs\Snoc x))} && \text{(enq-app)} \\
 & (\get = (x:xs)) \Rightarrow \PDLBox{y \leteq \deq}{(x = y \land \get = xs)} && \text{(deq-tl)} \\
-& \qmt \iff (\get = []) && \text{empty-nil}
+& \qmt \iff (\get = []) && \text{(empty-nil)}
 \end{flalign*}
 
 An essential operation on queues we will need in our correctness proof is
@@ -511,7 +513,7 @@ there is a function $\op{lst}$ on lists that returns the last element in the lis
 \]
 
 Obviously,
-one has $(\get = xs\uparrow z) \Rightarrow (last = z)$.
+one has $(\get = xs\Snoc z) \Rightarrow (last = z)$.
 
 \begin{defn}[$\relq$ and $\inq$]
 \begin{eqnarray}
@@ -579,8 +581,8 @@ Before providing the proof, we note some basic facts we will use later on.
 In a non-empty queue, $\enqAll$ and $\deq$ may be swapped:
 \label{enqAll-deq}
 \begin{eqnarray*}
-&& \lnot \qmt \land [\enqAll~xs][t\leteq\deq]\varphi\;t \\
-&\iff \quad& \lnot \qmt \land [t\leteq\deq][\enqAll~xs]\varphi\;t
+&& \lnot \qmt \land [\enqAll~xs][t\leteq\deq]\varphi \\
+&\iff \quad& \lnot \qmt \land [t\leteq\deq][\enqAll~xs]\varphi
 \end{eqnarray*}
 \end{lem}
 
@@ -591,12 +593,12 @@ by the definition of $\enqAll$. So the base case is trivially true.
 
 In the inductive step, let $xs = (y: ys)$, so we need to show
 \begin{eqnarray*}
-&& \lnot \qmt \land [\enq~y; \enqAll~ys][t\leteq\deq]\varphi\;t \\
-&\iff \quad& \lnot \qmt \land [t\leteq\deq][\enq~y; \enqAll~ys]\varphi\;t
+&& \lnot \qmt \land [\enq~y; \enqAll~ys][t\leteq\deq]\varphi \\
+&\iff \quad& \lnot \qmt \land [t\leteq\deq][\enq~y; \enqAll~ys]\varphi
 \end{eqnarray*}
 By the inductive hypothesis, the left-hand part of the formula can be
 equivalently 
-reformulated as $\lnot \qmt\land [\enq~y][t\leteq\deq][\enqAll~ys]\varphi\;t$ and then, by axiom
+reformulated as $\lnot \qmt\land [\enq~y][t\leteq\deq][\enqAll~ys]\varphi$ and then, by axiom
 (swap) this is equivalent to the right-hand side of the formula
 \end{proof}
 
@@ -612,15 +614,15 @@ losing property $\relq~R$:
 \end{lem}
 
 \begin{proof} 
-  For (i), we reformulate $\lnot \qmt$ as $\get = xs\uparrow y$ (which indeed is an
+  For (i), we reformulate $\lnot \qmt$ as $\get = xs\Snoc y$ (which indeed is an
   existential statement: there are some $xs$ and $y$ with this property), from
   which it follows that $\last\;R\;x$ is $yRx$ and $\relq\ R$ simplifies to 
-  $\forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\uparrow y)^iR(xs\uparrow y)^{i+1}$. The latter two formulae
+  $\forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\Snoc y)^iR(xs\Snoc y)^{i+1}$. The latter two formulae
   are stateless, such that together with axiom (get-app) one has
   \begin{equation*}\begin{split}
- \get = (xs\uparrow y) \land yRx \land \forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\uparrow y)^iR(xs\uparrow y)^{i+1} \Rightarrow \\
-  \PDLBox{\enq\ x}{\get = (xs\uparrow y\uparrow x) \land yRx \land \forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\uparrow
-    y)^iR(xs\uparrow y)^{i+1}}
+ \get = (xs\Snoc y) \land yRx \land \forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\Snoc y)^iR(xs\Snoc y)^{i+1} \Rightarrow \\
+  \PDLBox{\enq\ x}{\get = (xs\Snoc y\Snoc x) \land yRx \land \forall i\bnd 0\leq i<\op{len}\ xs \Rightarrow (xs\Snoc
+    y)^iR(xs\Snoc y)^{i+1}}
   \end{split}
   \end{equation*}
 where the formula in the scope of the box operator implies $\relq\ R$, which finishes
@@ -668,7 +670,7 @@ $\inq~x$. Put formally:
   some list $ys$. Now as usual we proceed by induction on the structure of $xs$ and
   leave out the base case, where $\enqAll$ does nothing and there are no
   elements to make a statement about. So let $xs = (x':xs')$.  It then follows
-  by (get-app) that $[\enq~x'](get = (ys \uparrow x'))$ and so $[\enq~x'](\inq~x')$. By
+  by (get-app) that $[\enq~x'](get = (ys \Snoc x'))$ and so $[\enq~x'](\inq~x')$. By
   the induction hypothesis we have
 \[
 [\enqAll~xs'](\forall x\in xs'\bnd \inq~x)
@@ -696,7 +698,7 @@ which actually is what we claimed, recalling that $(x':xs') = xs$
 %\label{get-defn}
 %Let
 %\[
-%\get\quad := (iter\; (\LambdaTerm{\Arg}{\lnot \qmt})\; (\LambdaTerm{z}{y \leteq \deq; ret (z\uparrow y)})\; [])
+%\get\quad := (iter\; (\LambdaTerm{\Arg}{\lnot \qmt})\; (\LambdaTerm{z}{y \leteq \deq; ret (z\Snoc y)})\; [])
 %\]
 %In this case, the formulas \emph{enq-app}, \emph{deq-tl} and \emph{empty-nil}
 %hold in a modified form accomodating the fact that $\get$, as defined here, is not dsef.
@@ -906,9 +908,7 @@ most integral part:
 \begin{array}{l}
 INV \land \rd{x} = \unit \land \lnot \qmt \land vol = z \Rightarrow \\
  \qquad 
-   [t \leteq \deq; \mathrm{if}\; p\ t\; \mathrm{then}\; x := inl\ t \;
-   \mathrm{else}\; \enqAll~\chld
-t](INV \land vol < z)
+   [t \leteq \deq; \If\ p~t\ \Then\ x := inl~t\ \Else\ \enqAll~\chld~t](INV \land vol < z)
 \end{array}
 \end{equation}
 where we introduce the termination measure $vol$ which computes the total number
@@ -1142,7 +1142,7 @@ elements of $t$ (pointing out that $t'$ cannot be a child of $t$ because
 $t' = x_1$ and therefore is a child of some predecessor of $t$ by $CIN(t)$). With
 $\chld~t = [c_1,\ldots,c_k]$ one has by structural induction
 \[
-\get = [x_1,\ldots,x_n] \Rightarrow [t' \leteq \deq][\enqAll~(\chld~t)](get = ((\ldots([x_2,\ldots,x_n]\uparrow c_1)\uparrow \ldots ) \uparrow c_k))
+\get = [x_1,\ldots,x_n] \Rightarrow [t' \leteq \deq][\enqAll~(\chld~t)](get = ((\ldots([x_2,\ldots,x_n]\Snoc c_1)\Snoc \ldots ) \Snoc c_k))
 \]
 or slightly more readable
 \[
@@ -1177,9 +1177,9 @@ one has $\lnot \qmt \iff get = [x_1,\ldots,x_n]$ for some elements $x_i$ and som
 thus by (deq-tl) and the definition of $\op{vol}$ resp. $\op{volume}$
 \begin{eqnarray}
 \label{eq:then-vol}
-&& \op{volume} x > 0 \nonumber \\
+&& \op{volume}\ x > 0 \nonumber \\
 && SI \land \get = [x_1,\ldots,x_n] \land vol = z \nonumber \\ {}
-& \Rightarrow &[t \leteq \deq](get = [x_2,\ldots,x_n] \land vol = (z - \op{volume} x_1))
+& \Rightarrow &[t \leteq \deq](get = [x_2,\ldots,x_n] \land vol = (z - \op{volume}\ x_1))
     \nonumber \\
 && \text{so by (frame)} \nonumber\\
 & & SI \land get = [x_1,\ldots,x_n] \land vol = z \\
@@ -1191,7 +1191,7 @@ defined to be by one larger than the sum of volumes of its child elements:
 \begin{equation}
 \label{eq:else-vol}
 \begin{array}{ll}
-& \op{volume} t = 1 + \sum_{i=1}^{k}(\op{volume} c_i)\\
+& \op{volume}\ t = 1 + \sum_{i=1}^{k}(\op{volume}\ c_i)\\
 & SI \land get = [x_1,\ldots,x_n] \land vol = z \\
 \Rightarrow & [t \leteq \deq; \enqAll~(\chld~t)](get = [x_2,\ldots,x_n,c_1,\ldots,c_k] \land vol < z)
 \end{array}

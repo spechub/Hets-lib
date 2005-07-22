@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,headinclude,automark,pdftex,appendixprefix]{scrreprt}   %,DIV14
+\documentclass[11pt,a4paper,twoside,headinclude,automark,pdftex,appendixprefix]{scrreprt}   %,DIV14
 %\documentclass[10pt,a4paper,twoside,DIV12,BCOR10mm,headinclude,automark]{scrreprt}
 
 
@@ -17,14 +17,14 @@
 \usepackage{amsmath}            % for theorem environments and nice equations
 \usepackage{amsthm}             % oh, this one's for theorem envs
 \usepackage{url}                % include urls in a verbatim style
-\usepackage{mathptmx}
-% \usepackage{mathpazo}
+\usepackage{mathptmx}         % use Times as the main font
+% \usepackage{mathpazo}         % use Palatino as the main font
 \usepackage{helvet}
 \usepackage{alltt}              % a verbatim env that allows to include math
 %\usepackage[sf,bf,big,raggedright]{titlesec} % changes section headings etc.
 
 \definecolor{darkblue}{rgb}{0,0,0.5}
-\usepackage[draft=false,a4paper=true,pageanchor=true,colorlinks=true,breaklinks=true, %
+\usepackage[draft=true,a4paper=true,pageanchor=true,colorlinks=true,breaklinks=true, %
             linkcolor=darkblue,citecolor=darkblue,filecolor=darkblue, %
             pagecolor=darkblue, urlcolor=darkblue, %
             pdftex, %
@@ -47,10 +47,10 @@
 \automark[section]{chapter}
 \clearscrheadfoot
 \setheadsepline{0.4pt}
-\lehead{\headmark}
-\rohead{\headmark}
-\lohead{\pagemark}
-\rehead{\pagemark}
+\lehead{\pagemark}
+\rohead{\pagemark}
+\lohead{\headmark}
+\rehead{\headmark}
 
 %\titleformat{\section}%
 %    {\sffamily\Large\bfseries \filcenter}%
@@ -75,6 +75,11 @@
 % TITLE PAGE
 \input{titlepage}
 \maketitle
+
+\Eat{
+\thispagestyle{empty}\mbox{}
+\newpage
+}
 
 % statement of honesty
   \thispagestyle{empty} 

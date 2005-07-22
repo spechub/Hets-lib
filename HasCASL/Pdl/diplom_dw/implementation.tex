@@ -15,7 +15,7 @@ To keep the notation within the main text and the inserted Isabelle example
 specifications consistent, we will use the notation of Isabelle throughout this
 chapter. One major change caused thereby is that we will write $\ivar{a} \Rightarrow
 \ivar{b}\ T$ for the type of a polymorphic function which would otherwise be
-denoted by $a \to T\ b$ (cf. \ref{sec:meta-basic-syntax}). Because the commonly
+denoted by $a \to T\ b$ (cf. Section~\ref{sec:meta-basic-syntax}). Because the commonly
 used symbols for the propositional connectives like $\land$ or $\longrightarrow$ are 
 reserved for HOL, monadic connectives will be indexed by a $D$, as in $\land_D$
 or $\longrightarrow_D$. Note also that implication is denoted by a simple arrow $\longrightarrow$ and not by
@@ -1126,15 +1126,17 @@ read{\isacharunderscore}write{\isacharunderscore}other{\isacharunderscore}gen{\i
 while{\isacharunderscore}par{\isacharcolon}\ \ \ \ \ {\isachardoublequote}{\isasymturnstile}\ P\ {\isasymand}\isactrlsub D\ b\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ p{\isacharbrackright}{\isacharparenleft}{\isasymlambda}u{\isachardot}\ P{\isacharparenright}\ {\isasymLongrightarrow}\ {\isasymturnstile}\ P\ {\isasymlongrightarrow}\isactrlsub D\ {\isacharbrackleft}{\isacharhash}\ WHILE\ b\ DO\ p\ END{\isacharbrackright}{\isacharparenleft}{\isasymlambda}x{\isachardot}\ P\ {\isasymand}\isactrlsub D\ {\isasymnot}\isactrlsub D\ b{\isacharparenright}{\isachardoublequote}\isanewline
 \end{isabellebody}
 
-A peculiarity of this specification is axiom \irule{read-write-other-gen}, which
-constitutes a generalisation of axiom \irule{read-write-other} of
-Section~\ref{sec:spec-ref-monad}. It expresses the fact that any stateless
-assertion that holds for the value of a reference $r$ -- notice that this
-means that the asserting formula itself is \emph{not} stateless, as it depends
-on $\rd{r}$ -- continues to hold after a value is assigned to a  different
-reference $s$. It is in fact not necessary to employ do-terms to specify this
-fact since one can prove the following equivalence and solely work with the
-$\Ret$ terms of the left-hand side.
+Rule \irule{while-par} is really just a translation of the standard while rule
+for partial correctness into dynamic logic, such that the formula $P$ can be
+thought of as some kind of loop invariant. A peculiarity of this specification
+is axiom \irule{read-write-other-gen}, which constitutes a generalisation of
+axiom \irule{read-write-other} of Section~\ref{sec:spec-ref-monad}. It expresses
+the fact that any stateless assertion that holds for the value of a reference
+$r$ -- notice that this means that the asserting formula itself is \emph{not}
+stateless, as it depends on $\rd{r}$ -- continues to hold after a value is
+assigned to a different reference $s$. It is in fact not necessary to employ
+do-terms to specify this fact since one can prove the following equivalence and
+solely work with the $\Ret$ terms of the left-hand side.
 \begin{isabellebody}
 \isanewline
 \isacommand{lemma}\ {\isachardoublequote}{\isasymturnstile}\ {\isacharasterisk}r\ {\isacharequal}\isactrlsub D\ Ret\ b\ {\isasymand}\isactrlsub D\ Ret\ {\isacharparenleft}f\ b{\isacharparenright}\ {\isasymlongleftrightarrow}\isactrlsub D\ {\isasymUp}\ {\isacharparenleft}do\ {\isacharbraceleft}a{\isasymleftarrow}readRef\ r{\isacharsemicolon}\ ret\ {\isacharparenleft}f\ a\ {\isasymand}\ a\ {\isacharequal}\ b{\isacharparenright}{\isacharbraceright}{\isacharparenright}{\isachardoublequote}\isamarkupfalse%
@@ -1143,19 +1145,19 @@ $\Ret$ terms of the left-hand side.
 
 \begin{rem}
   We have opted to work with do-terms for the following reason. The invariant
-  present in the rule for while loops (termed $P$ in rule \irule{while-par}
-  above) virtually always involves some non-trivial arithmetical relation
-  between the references occurring in the program. To state this relation in
-  terms of monadic formulae one would have to lift several arithmetical
-  operations like addition, multiplication, integer division, etc. to form
-  monadic operators. But for these, there would be no automatic proof procedure
-  available -- and it would indeed require a great amount of work to change this
-  fact. We found it preferable to go along with the slightly less readable
-  do-notation and in turn be able to employ the arithmetical reasoner
-  \emph{arith} that is built into HOL. As an example, take the following two
-  formulae which are equivalent and both valid, but where the second one
-  requires a lifted multiplication $\cdot_D$ and where to prove the second
-  formula one would initially have to decode it into the first formula manually.
+  $P$ present in the rule for while loops virtually always involves some
+  non-trivial arithmetical relation between the references occurring in the
+  program. To state this relation in terms of monadic formulae one would have to
+  lift several arithmetical operations like addition, multiplication, integer
+  division, etc. to form monadic operators. But for these, there would be no
+  automatic proof procedure available -- and it would indeed require a quite an
+  amount of work to change this fact. We found it preferable to go along with
+  the slightly less readable do-notation and in turn be able to employ the
+  arithmetical reasoner \emph{arith} that is built into HOL. As an example, take
+  the following two formulae which are equivalent and both valid, but where the
+  second one requires a lifted multiplication $\cdot_D$ and where to prove the
+  second formula one would initially have to decode it into the first formula
+  manually.
   \begin{gather*}
     \vdash {\Uparrow\DoStmt{a\leteq \op{readRef}\ r; b\leteq \op{readRef}\ s; \ret~(b = 0 \longrightarrow
         a \cdot b = 0)}} \\
@@ -1177,7 +1179,7 @@ $\Ret$ terms of the left-hand side.
     & \fillaa       \op{DO}\ \DO\ \{\If\ (\op{odd}\ \rd{x})\ \Then\ r\assgn (\rd{r} +
     \rd{y})\ \Else\ \ret\ \unit;\\
     & \fillaaa          x\assgn \rd{x}\ \op{div}\ 2;\\
-    & \fillaaa          y\assgn \rd{y} * 2\\
+    & \fillaaa          y\assgn \rd{y} * 2\ \}\\
     & \fillaa          \op{END};\\
     & \fillaa          \rd{r}\ \}
   \end{align*}
@@ -1234,7 +1236,7 @@ one has to invent, \IE prove, a structuring rule like
         A \longrightarrow_D \PDLSBox{x := a}{C}\\
         A \longrightarrow_D \PDLSBox{x := a}{D}
       \end{array}}
-    {A \longrightarrow_D \PDLSBox{x := a}{C \land_D D}}
+    {A \longrightarrow_D \PDLSBox{x := a}{(C \land_D D)}}
 \]
 so that an application of this rule to \eqref{eq:postcond-unifvar} unifies $?B$
 with $C \land_D D$ and one can prove the resulting two new goals by the given facts
@@ -1276,12 +1278,12 @@ whole body by virtue of \irule{pdl-k3B}.
 
 To obtain a \emph{total correctness verification} of this algorithm in an
 extended specification of the reference monad, one essentially needs to find a
-term living in a type equipped with a well-founded relation. This term then has
-to decrease strictly (with respect to this relation) in each run of the loop
-body. The obvious candidate for such a term is $\rd{x}$, which will
-unconditionally be decreased in each run, since the assertion provided by the
-loop exit condition $(0 < \rd{x})$ ensures that $\rd{x}$ is strictly greater
-than $\rd{x}\ \op{div}\ 2$.
+termination measure living in a type equipped with a well-founded relation. This
+measure then has to decrease strictly (with respect to the well-founded
+relation) in each run of the loop body. The obvious candidate for such a measure is
+$\rd{x}$, which will unconditionally be decreased in each run, since the
+assertion provided by the loop exit condition $(0 < \rd{x})$ ensures that
+$\rd{x}$ is strictly greater than $\rd{x}\ \op{div}\ 2$.
 
 \subsection{Similarity to Hoare Logic Proofs}
 Proofs in the reference monad are basically just Hoare logic proofs retranslated

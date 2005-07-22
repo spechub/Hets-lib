@@ -81,19 +81,19 @@ which allows one to prove properties of monadic programs. \Eat{The semantics of
 logic allows to reason about partial correctness of programs, but also to prove
 termination and thus total correctness in one and the same framework.
 
-Monads constitute an elegant technique for consistently abstracting and analysing
-several kinds of language features, \EG side effects, nondeterminism,
+Monads constitute an elegant technique for consistently abstracting and
+analysing several kinds of language features, \EG side effects, nondeterminism,
 exceptions, input and output as well as combinations of these. The use of a
 logic of monadic programs is twofold: it can be used to rather directly reason
 about programming languages that support the notion of a monad (such as
 Haskell), but it can also be used to reason about programs written in imperative
 first-order languages, if one creates a monadic model of the key features of
-such a language. For Java this has been done recently (see
-\cite{HuismanJacobs00}) and the calculus described in this thesis has been
-extended to deal with Java-like abnormal termination. This extension does not
-solely cover actual exceptions but also termination of a method through a
-\code{return} statement, or the interruption of execution of a while-loop
-through a \code{break} or \code{continue} statement.
+such a language and translates programs into this model. For Java this has been
+done recently (see \cite{HuismanJacobs00}) and the calculus described in this
+thesis has been extended to deal with Java-like abnormal termination. This
+extension does not solely cover actual exceptions but also termination of a
+method through a \code{return} statement, or the interruption of execution of a
+while-loop through a \code{break} or \code{continue} statement.
 
 An important feature of the logic is the fact that it is monad independent,
 which means that the general logical framework is applicable to every monad that
@@ -126,22 +126,20 @@ relatively small software systems it is not feasible to carry out formal proofs
 about these manually, the calculus had to be implemented in some proof assistant
 tool. Furthermore, the formalisation within such a tool provides further
 evidence of the correctness of one's inferences -- provided one trusts in the
-correctness of the tool, of course.
-We chose the generic proof assistant (often termed `theorem
-prover') \IsabelleHOL in which we could base our implementation on a stable and
-well developed underlying higher-order logic. \IsabelleHOL comes with
-tools for proving theorems outright (by means of a classical tableau reasoner)
-as well as a term rewriting system that allows for equational reasoning and
-functional programming. Tasks during this implementation included the definition
-of a syntax for monadic dynamic logic, proving the theorems needed as
-foundations for the logic, and working out theorems and setting up \Isabelle's
-automatic proof facilities to make
-life easier when applying the logic. The embedding into higher-order logic is a
-deep one in the sense that we define monadic logical connectives $\land_D$, $\longrightarrow_D$,
-etc. as well as a predicate $\vdash$ asserting the validity of
-monadic formulae. HOL formulae may, however, appear in monadic formulae thanks to
-existence of an insertion function $\Ret$ mapping HOL formulae into
-those of dynamic logic.
+correctness of the tool, of course.  We chose the generic proof assistant (often
+termed `theorem prover') \IsabelleHOL in which we could base our implementation
+on a stable and well developed formalisation of higher-order logic. \IsabelleHOL
+comes with tools for proving theorems outright (by means of a classical tableau
+reasoner) as well as a term rewriting system that allows for equational
+reasoning and functional programming. Tasks during this implementation included
+the definition of a syntax for monadic dynamic logic, proving the theorems
+needed as foundations for the logic, and working out theorems and setting up
+\Isabelle's automatic proof facilities to make life easier when applying the
+logic. The embedding into higher-order logic is a deep one in the sense that we
+define monadic logical connectives $\land_D$, $\longrightarrow_D$, etc. as well
+as a predicate $\vdash$ asserting the validity of monadic formulae. HOL formulae
+may, however, appear in monadic formulae thanks to existence of an insertion
+function $\Ret$ mapping HOL formulae into those of dynamic logic.
 
 \section{Structure of the Thesis}
 \label{sec:structure-thesis}

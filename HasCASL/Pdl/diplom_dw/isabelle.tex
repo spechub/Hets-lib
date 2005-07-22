@@ -468,15 +468,20 @@ so far can best be understood with the help of an example.
     & \llbracket?A \land {}?B\rrbracket \Longrightarrow {}?B       && \quad \text{(conjunct2)}
   \end{align*}
   Here is  a proof of $A\land B \longrightarrow B \land A$ from these rules:
-  \begin{align*}
-    (.1) &&   (A\land B \longrightarrow B\land A) \Longrightarrow&\; (A\land B \longrightarrow B\land A)       \\
-    (.2) &&      \llbracket A\land B \Longrightarrow B\land A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A)       \\
-    (.3) &&     \llbracket A\land B \Longrightarrow B; A\land B \Longrightarrow A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A) \\
-    (.4) &&     \llbracket A\land B \Longrightarrow ?A\land B; A\land B \Longrightarrow A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A)   \\
-    (.5) &&     (A\land B \Longrightarrow A) \Longrightarrow&\; (A\land B \longrightarrow B\land A)      \\
-    (.6) &&     (A\land B \Longrightarrow A \land{} ?B) \Longrightarrow&\; (A\land B \longrightarrow B\land A) \\
-    (.7) &&     & \;(A\land B \longrightarrow B\land A)
-  \end{align*}
+  \begin{flalign*}
+    (.1) &&   (A\land B \longrightarrow B\land A) \Longrightarrow&\; (A\land B \longrightarrow B\land A)    \\
+    (.2) &&      \llbracket A\land B \Longrightarrow B\land A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A)   &
+                \text{(impI)}\\
+    (.3) &&     \llbracket A\land B \Longrightarrow B; A\land B \Longrightarrow A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A) &
+                \text{(conjI, lifted)}\\
+    (.4) &&     \llbracket A\land B \Longrightarrow ?A\land B; A\land B \Longrightarrow A\rrbracket \Longrightarrow&\; (A\land B \longrightarrow B\land A)  &
+                \text{(conjunct2, lifted)}\\
+    (.5) &&     (A\land B \Longrightarrow A) \Longrightarrow&\; (A\land B \longrightarrow B\land A)   &
+                \text{(assumption)}\\
+    (.6) &&     (A\land B \Longrightarrow A \land{} ?B) \Longrightarrow&\; (A\land B \longrightarrow B\land A) &
+                \text{(conjunct1, lifted)}\\
+    (.7) &&     & \;(A\land B \longrightarrow B\land A) & \text{(assumption)}
+  \end{flalign*}
   To derive (.2), the premiss of (.1) has been resolved with the conclusion of
   rule (impI), where $?A$ has been unified with $(A\land B)$ and $?B$ has been
   instantiated to $(B\land A)$. To arrive at (.3) lifting is necessary, because there

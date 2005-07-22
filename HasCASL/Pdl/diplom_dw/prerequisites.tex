@@ -416,12 +416,13 @@ holds:
     \mathrm{(app)}\quad & \Rule{\Gamma \vdash e : \sigma\to\tau \quad \Gamma \vdash e' : \sigma}
     {\Gamma \vdash e\ e' : \tau}\\[2ex]
     \mathrm{(prodI)}\quad & \Rule{\Gamma \vdash e_1:\sigma_1 \quad \Gamma \vdash e_2:\sigma_2}
-    {\Gamma \vdash \langle e_1,e_2\rangle : \sigma_1 \times \sigma_2}\\[2ex]
+    {\Gamma \vdash \langle e_1,e_2\rangle : \sigma_1 \times \sigma_2} &
+    \mathrm{(add)}\quad&  \Rule{\Gamma \vdash e_1 : \Type{nat}\quad \Gamma \vdash e_2: \Type{nat}}
+    {\Gamma \vdash e_1 + e_2 : \Type{nat}} \\[2ex]   
     \mathrm{(fst)} \quad & \Rule{\Gamma \vdash e : \sigma_1 \times \sigma_2}{\Gamma \vdash e.\mathsf{fst} : \sigma_1} &
     \mathrm{(snd)} \quad & \Rule{\Gamma \vdash e : \sigma_1 \times \sigma_2}{\Gamma \vdash e.\mathsf{snd} : \sigma_2} &
 %    \mathrm{(zero)} \quad& \Rule{}{\Gamma \vdash 0 : \Type{nat}} &
 %    \mathrm{(Suc)}\quad &\Rule{}{\Gamma \vdash \Suc : \Type{nat}\to\Type{nat}}\\[2ex]
-%    \mathrm{(add)}\quad&  \Rule{}{\Gamma \vdash + : \Type{nat}\to\Type{nat}\to\Type{nat}} &
 %    \mathrm{(proj)}\quad& \Rule{}{\Gamma \vdash \pi^{\sigma_1\times \sigma_2}_i : \sigma_i \quad (i\in \{1,2\})}\\[2ex]
   \end{align*}
   \caption{Type inference rules for the simply typed lambda calculus}
@@ -660,7 +661,7 @@ but also to study programming languages themselves in an abstract way.
   of lists of result pairs. These have to be flattened by $\op{concat}$,
   very much like in the nondeterminism monad. Finally, $\ret$ is once more just
   an embedding:\\
-  $\ret~x = \LambdaTerm{s}{\left[\langle s, x\rangle\right]}$, where $[e]$ denotes the
+  $\ret~x = \LambdaTerm{s}{\left[\langle s, x\rangle\right]}$, where $[e]$ denotes a
   list containing exactly one element $e$.
 
 \item The \emph{continuation monad}, in which $T A = (A \to R) \to R$ for some fixed
