@@ -257,8 +257,8 @@ then
   forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
   . (f,g) as CEDiagram= d =>
     coequalizer d = 
-       let r:PER S = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
-           c:Map S = coeq r;
+       let r = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
+           c:Map S = coeq (r as PER S);
            med = \h:MapS .! (cod h,\x:S . choice(\y:S . 
 	       exists z:S . func h z = x /\ c z = y),range c)
        in

@@ -104,7 +104,7 @@ then %def
   . (f coproduct g) =
       let (c,med) = dom f coproduct dom g;
           (inl,inr) = c as CPCocone
-      in (med as CPCocone ->? Mor)(inl o f, inr o g)
+      in med((inl o f, inr o g) as CPCocone)
 end
 
 view CEShape : Shape to CoequalizerShape =

@@ -48,26 +48,26 @@ then %def
          nn : Set N; s, t, source, target : E->?N
   . emptyGraph = (emptySet,emptyMap,emptyMap) as Graph N E %(emtpyGraph)%
 
-  . nodes (nn,s,t) = nn
+  . nodes ((nn,s,t) as Graph N E) = nn
 
-  . edges (nn,source,target) = dom source                    %(edges)%
+  . edges ((nn,source,target) as Graph N E) = dom source      %(edges)%
 
-  . sourceMap (nn,source,target) = source
+  . sourceMap ((nn,source,target) as Graph N E) = source
 
-  . targetMap (nn,source,target) = target
+  . targetMap ((nn,source,target) as Graph N E) = target
 
-  . addNode n (nn,source,target) =
-    ( nn union {n}, source, target) %% as Graph N E            %(addNode)%
+  . addNode n ((nn,source,target) as Graph N E) =
+    ( nn union {n}, source, target) as Graph N E            %(addNode)%
 
-  . removeNode n (nn,source,target) =
+  . removeNode n ((nn,source,target) as Graph N E) =
     (nn \\ {n}, source, target) as Graph N E             %(removeNode)%
 
-  . addEdge (e,n1,n2) (nn,source,target) =
+  . addEdge (e,n1,n2) ((nn,source,target) as Graph N E) =
     (nn union {n1} union {n2},
-     source[e/n1], target[e/n2])                              %(addEdge)%
+     source[e/n1], target[e/n2]) as Graph N E               %(addEdge)%
 
-  . removeEdge e (nn,source,target) =
-    (nn, source-e, target-e)                            %(removeEdge)%
+  . removeEdge e ((nn,source,target) as Graph N E) =
+    (nn, source-e, target-e) as Graph N E                %(removeEdge)%
 
   . symmetric g <=> 
     forall e:E .
@@ -95,7 +95,7 @@ then %def
     targetMap g1 = targetMap g1 intersectionMap targetMap g2
                                                               %(subgraph_def)%
 
-  . complete (nn,source,target) <=>
+  . complete ((nn,source,target) as Graph N E) <=>
     forall n1,n2:N . n1 isIn nn /\ n2 isIn nn =>
       exists e:E . source e = n /\ target e = n                   %(complete)%
 
@@ -265,4 +265,3 @@ end
 view CategoryofGraphs : HLRCategory to GraphCategory =
      Ob |-> G, Mor |-> H, __o__, dom, cod, id, M
 end
-
