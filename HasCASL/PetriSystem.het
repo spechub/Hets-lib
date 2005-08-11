@@ -45,10 +45,10 @@ then
        __o__ : HomSys  * HomSys  ->? HomSys 
   pred injective : HomSys
   forall sys,sys1,sys2:System; n:Net; x:P; m:Marking; t:T; hp:P->?P; ht:T->?T; h, h1, h2:HomSys; v: MultiSet T 
-  . let h=(sys1,hp,ht,sys2) as HomSys in dom (h) = sys1
-  . let h=(sys1,hp,ht,sys2) as HomSys in cod (h) = sys2
-  . let h=(sys1,hp,ht,sys2) as HomSys in placesMap (h) = hp
-  . let h=(sys1,hp,ht,sys2) as HomSys in transitionsMap (h) = ht
+  . let (sys1,hp,ht,sys2)=h in dom (h) = sys1
+  . let (sys1,hp,ht,sys2)=h in cod (h) = sys2
+  . let (sys1,hp,ht,sys2)=h in placesMap (h) = hp
+  . let (sys1,hp,ht,sys2)=h in transitionsMap (h) = ht
   . def (h2 o h1) <=> cod h1 = dom h2
   . def (h2 o h1) => h2 o h1 = 
      (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)

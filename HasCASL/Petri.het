@@ -44,10 +44,10 @@ then
       transitions : Net  -> Set T;
       preMap, postMap : Net  -> (T ->? MultiSet P);
    forall n : Net; p : Set P; pre, post : T ->? MultiSet P
-   . let n=(p,pre,post) as Net in places n = p
-   . let n=(p,pre,post) as Net in transitions n = dom pre
-   . let n=(p,pre,post) as Net in preMap n = pre
-   . let n=(p,pre,post) as Net in postMap n = post
+   . let (p,pre,post)=n in places n = p
+   . let (p,pre,post)=n in transitions n = dom pre
+   . let (p,pre,post)=n in preMap n = pre
+   . let (p,pre,post)=n in postMap n = post
 end
 
 
@@ -69,10 +69,10 @@ then
       __o__ : HomNet * HomNet ->? HomNet 
   pred injective : HomNet
    forall n, n1,n2 : Net; p : Set P; pre, post : T ->? MultiSet P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
-   . let h=(n1,hp,ht,n2) as HomNet in dom (h) = n1
-   . let h=(n1,hp,ht,n2) as HomNet in cod (h) = n2
-   . let h=(n1,hp,ht,n2) as HomNet in placesMap (h) = hp
-   . let h=(n1,hp,ht,n2) as HomNet in transitionsMap (h) = ht
+   . let (n1,hp,ht,n2)=h in dom (h) = n1
+   . let (n1,hp,ht,n2)=h in cod (h) = n2
+   . let (n1,hp,ht,n2)=h in placesMap (h) = hp
+   . let (n1,hp,ht,n2)=h in transitionsMap (h) = ht
    . def (h2 o h1) <=> cod h1 = dom h2
    . def (h2 o h1) => h2 o h1 = 
      (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
