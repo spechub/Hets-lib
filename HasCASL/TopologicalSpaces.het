@@ -1,6 +1,7 @@
 library HasCASL/TopologicalSpaces
 
 %author: T. Mossakowski, S. Wölfl
+%date: 2005-10-11
 
 from HasCASL/Set get Set
 
@@ -20,13 +21,16 @@ spec TopologicalSpace_Ngh =
                /\ forall y:S . y isIn V => U isIn Ngh(y)
 end
 
-spec RichTopologicalSpace_Ngh =
-  TopologicalSpace_Ngh
-then %def
+spec ExtTopologicalSpace_Ngh [TopologicalSpace_Ngh] =
   ops int(X:Set S):Set S = \ x:S . X isIn Ngh(x);
       cls(X:Set S):Set S = 
            \ x:S . forall Y:Set S . Y isIn Ngh(x) => not Y disjoint X;
       tau : Set(Set S) = \ X:Set S . X = int(X)
+end
+
+
+spec RichTopologicalSpace_Ngh =
+  ExtTopologicalSpace_Ngh [TopologicalSpace_Ngh]
 end
 
 
@@ -164,12 +168,35 @@ view BooleanAlgebra_in_RegularClosedSets
   Elem |-> RegularClosed, 0, 1, __cup__, __cap__
 end
 
-from HasCASL/MetricSpaces get MetricSpace
+from HasCASL/MetricSpaces get 
+	MetricSpace,
+	ExtMetricSpaceByOpenSets
 
-view MetricInducesTopology : TopologicalSpace_Ngh to 
+view MetricInducesTopology : 
+     TopologicalSpace_Ngh 
+to 
      { MetricSpace and Set then
        op Ngh(x:S):Set(Set S) = \X : Set S . 
           exists epsilon:Real . epsilon > 0 
             /\ forall y:S . d(x,y)<epsilon => y isIn X
      } 
+end
+
+
+view MetricInducesTopology2[MetricSpace]  : 
+     TopologicalSpace_Ngh 
+to
+     { ExtMetricSpaceByOpenSets[MetricSpace] 
+      then 
+      op Ngh(x:S):Set(Set S) = \X : Set S . 
+          exists U:OpenSets . x isIn U /\ U subset X
+	}
+end 	
+
+
+view MetricInducesHausdorff[MetricSpace]  : 
+     T2
+to   
+     ExtTopologicalSpace_Ngh[
+	view MetricInducesTopology2[MetricSpace]]
 end
