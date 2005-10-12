@@ -1,21 +1,74 @@
 library HasCASL/Real
+version 0.2
 
-from Basic/RelationsAndOrders get RichTotalOrder
-from Basic/Algebra_I get Field
+%author: T. Mossakowski, S. Wölfl
+%date: 12-10-2005
+
+from Basic/RelationsAndOrders get 
+	TotalOrder,ExtTotalOrder,RichTotalOrder
+from Basic/Algebra_I get 
+	Field |-> BasicField
 
 logic CASL
 
+spec Field =
+     BasicField with op e |-> 1
+then %def
+     op -__: Elem -> Elem
+     forall x: Elem
+     . -x + x = 0
+end
+
 spec OrderedField =
-    Field and RichTotalOrder
+    Field and TotalOrder
 then
     vars a, b, c:Elem
-    . (a + c) < (b + c) if a < b
-    . (a * c) < (b * c) if a < b /\ c > 0
+    . (a + c) <= (b + c) if a <= b
+    . (a * c) <= (b * c) if a <= b /\ 0 <= c
 end
+
+
+spec FieldWithOrdering = 
+     Field 
+then
+     pred Pos: Elem
+     forall x,y: Elem
+     . Pos(x) /\ Pos(y) => Pos(x*y) 
+     . Pos(x) /\ Pos(y) => Pos(x+y)
+     . Pos(x) /\ Pos(-x) => x = 0
+     . Pos(x) \/ Pos(-x)
+end
+
+view FieldWithOrdering_in_OrderedField :
+     FieldWithOrdering to 
+     { OrderedField then %def
+       pred Pos: Elem
+       forall x: Elem 
+       . Pos(x) <=> 0 <= x
+     }
+end   	
+
+view OrderedField_in_FieldWithOrdering :
+     OrderedField to 
+     { FieldWithOrdering then %def
+       pred __<=__: Elem * Elem
+       forall x,y: Elem 
+       . x <= y  <=> Pos(y + -x)
+     }
+end   	
+
+spec ExtOrderedField[OrderedField] = 
+     ExtTotalOrder[TotalOrder]
+end
+
+spec RichOrderedField = ExtOrderedField[OrderedField]
+
+
 
 logic HasCASL
 
-spec Real = OrderedField with Elem |-> Real
+spec Real = 
+     RichOrderedField with Elem |-> Real
 then
   ops __<__ :     Pred(Real * Pred(Real));
       __<__ :     Pred(Pred(Real) * Real);
@@ -28,5 +81,59 @@ then
    . sup(M)=r <=> M < r /\ forall s:Real . M < s => r < s
    . isBounded(M) <=> exists ub,lb:Real . lb < M /\ M < ub
    . isBounded(M) => def inf(M) /\ def sup(M)  %(completeness)%
+then %def
+     ops 
+	|__| :	Real -> Real;
+	quad :   Real -> Real;
+	sqr  :   Real ->? Real;
+	2    :   Real      
+     forall r,s:Real
+     . | r | = max(r,-r)
+     . quad(r) = r * r
+     . def sqr(r) <=> r >= 0
+     . sqr(quad(r)) = | r |  
+     . 2 = 1 + 1
 end
 
+
+
+
+
+spec FieldWithValuation =
+     Field 
+and  Real
+then
+     op val: Elem -> Real
+     forall x,y:Elem 
+     . val(x) >= 0		%(non-negative)%
+     . val(x) = 0 <=> x = 0 	%(pos-definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= val(x) + val(y) %(triangle)%
+then %implies
+     . val(1) = 1 
+end
+
+
+spec FieldWithArchimedianValuation =
+     Field 
+and  Real
+then
+     op val: Elem -> Real
+     forall x,y:Elem 
+     . val(x) >= 0		%(non-negative)%
+     . val(x) = 0 <=> x = 0 	%(pos-definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= max(val(x),val(y)) %(ultra)%
+end
+
+view FieldWithValuation_in_FieldWithArchimedianValuation :
+     FieldWithValuation 
+to   FieldWithArchimedianValuation
+end
+
+
+view Real_as_FieldWithArchimedianValuation : 
+     FieldWithArchimedianValuation to Real
+=    Elem |-> Real, val |-> |__|
+end
+	
