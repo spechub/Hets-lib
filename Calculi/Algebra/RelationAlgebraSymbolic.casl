@@ -41,7 +41,7 @@ from Calculi/Algebra/RelationAlgebra get
 )%
 
 
-spec ConstructBooleanAlgebra[sort BaseRel] = %def
+spec ConstructBooleanAlgebra[sort BaseRel] = %mono
 local  { Set[sort BaseRel fit Elem |-> BaseRel] 
 	 with           __union__ |-> __cup__, 
              __intersection__ |-> __cap__,
@@ -147,7 +147,7 @@ end
 spec GroundingCompositionTable =
      CompositionTable
 
-then local  ConstructBooleanAlgebra[sort BaseRel]
+then local ConstructBooleanAlgebra[sort BaseRel]
 
 within
      forall x,y,z:BaseRel
