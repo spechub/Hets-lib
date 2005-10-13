@@ -74,7 +74,7 @@ then %implies
 end
 
 
-
+%[
 spec ConstructBooleanAlgebraOld[sort BaseRel] = %mono
      { Set[sort BaseRel fit Elem |-> BaseRel] 
 	    with Set[BaseRel] |-> Rel,
@@ -102,7 +102,7 @@ then %implies
      . exists z:BaseRel . z eps r
      . r isSubsetOf 1
 end
-
+]%
 
 view AtomicBooleanAlgebra_from_ConstructBooleanAlgebra[sort BaseRel] :
      AtomicBooleanAlgebra to 
@@ -137,27 +137,6 @@ spec CompositionTable =
 end
 
 
-
-
-%( Not each composition table is suitable for building an abstract relation algebra.
-   The axioms that need to be fullfilled are specified in GroundingCompositionTable.
-)%
-
-
-spec GroundingCompositionTable =
-     CompositionTable
-
-then local ConstructBooleanAlgebra[sort BaseRel]
-
-within
-     forall x,y,z:BaseRel
-     . inv(x) eps (y cmps z) <=> inv(z) eps (x cmps y)
-%% etc.
-end
-
-
-
-
 spec ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
      ConstructBooleanAlgebra[sort BaseRel]
 then %def
@@ -183,7 +162,6 @@ then %implies
 end
 
 
-
 	
 spec ConstructedPseudoRelationAlgebra =  
      ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable]
@@ -205,6 +183,29 @@ end
 
 spec RichConstructedPseudoRelationAlgebra =  
      ConstructExtPseudoRelationAlgebra[sort BaseRel][CompositionTable]
+
+
+
+
+
+%( Not each composition table is suitable for building an abstract 
+   (non assoc) relation algebra.
+   The axioms that need to be fullfilled are specified in GroundingCompositionTable.
+)%
+
+
+spec GroundingCompositionTable =
+     CompositionTable
+
+then local ConstructBooleanAlgebra[sort BaseRel]
+within
+     forall x,y,z:BaseRel
+     . inv(inv(x)) = x
+     . inv(x) eps (y cmps z) <=> x eps inv(z) cmps inv(y)
+     . (x cmps y) cap inv(z) = 0 => (y cmps z) cap inv(x) = 0
+%%     . inv(x) eps (y cmps z) <=> inv(z) eps (x cmps y)
+%% etc.
+end
 
 
 view AtomicNonAssocRelationAlgebra_from_ConstructPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]:
