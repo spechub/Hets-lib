@@ -1,0 +1,250 @@
+library HasCASL/EuclideanSpaces
+version 0.2
+%author: S. Wölfl
+%date: 12-10-2005
+%% 
+
+from Basic/LinearAlgebra_I  get
+ 	VectorSpace |-> VectorSpaceCASL
+from Basic/Algebra_I  get
+     	AbelianGroup, 
+     	ExtAbelianGroup, 
+     	Monoid,
+     	Group
+from HasCASL/TopologicalSpaces get 
+	RichTopologicalSpace
+from HasCASL/Set get 
+	Set
+from HasCASL/Real get 
+	Field,
+	Real,
+	OrderedField,
+	FieldWithValuation,
+	Real_as_FieldWithArchimedianValuation
+from HasCASL/MetricSpaces get 
+	MetricSpace
+
+
+
+logic CASL
+
+
+spec VectorSpace_aux[Field] =
+     VectorSpaceCASL[Field fit e |-> 1] 
+end
+
+
+logic HasCASL
+
+
+spec VectorSpace[Field] =
+     VectorSpace_aux[Field] with logic -> HasCASL
+end
+
+
+%( A real vecor space is a vector space over the reals: )%
+
+spec RealVectorSpace = 
+     VectorSpace[Real fit Elem |-> Real]
+end
+
+
+%( Vector spaces with norms are defined for F-vector spaces, where 
+   F is a field with valuation (NOT Krull valuation):			 )%
+
+spec VectorSpaceWithNorm[FieldWithValuation]  given Real = 
+     VectorSpace_aux[Field]
+then
+     op ||__|| : Space -> Real 
+     forall a:Elem ; v,w: Space   
+     . ||a * v|| = val(a) * ||v||	%(homogen)%
+     . ||v + w|| <= ||v|| + ||w||      	%(triangle)%
+     . ||v|| = 0 <=> v = 0  	 	%(8definit)%
+end
+
+
+%( An important subclass of vector spaces with norm are real vector space with norm: )%
+
+spec VectorSpaceWithRealNorm = 
+     VectorSpaceWithNorm[view Real_as_FieldWithArchimedianValuation] 
+end
+
+
+%( Each vector space with norm defines a metric: )%
+
+spec ExtVectorSpaceWithNormByMetric[VectorSpaceWithNorm[FieldWithValuation]] = %def
+     op d: Space * Space -> Real
+     forall v,w:Space
+     . d(v,w) = ||v + -1 * w||
+end
+
+
+view VectorSpaceWithNorm_as_MetricSpace : 
+     MetricSpace 
+to   ExtVectorSpaceWithNormByMetric[VectorSpaceWithNorm[FieldWithValuation]]
+=    S |-> Space
+        
+end    
+
+
+
+
+%( An Euclidean vector space is a real vector space with bilinear form: )%
+
+spec EuclideanVectorSpace = 
+     RealVectorSpace
+then
+     op <__#__> : Space * Space -> Real   %% (bilinear form)
+
+     forall a,b:Real ; v,v',w,w': Space
+     . <v+v' # w> = <v # w> + <v' # w>  %(herm1)%
+     . <a*v # w> = a * <v # w> 		%(herm2)%
+     . <v # w> = <w # v>		%(sym)%
+     . <v # v> = 0 =>  v = 0		%(pos_definit)%
+
+then %implies
+     forall a,b:Real ; v,v',w,w': Space
+     . <v # w+w'> = <v # w> + <v # w'>
+     . <v # a*w> = a * <v # w> 
+end
+
+%( Trivially, the reals (considered a vecor space) define an Euclidean vector space: )% 
+
+
+view EuclideanVectorSpace_in_Real :
+     EuclideanVectorSpace
+to
+     { Real then %def
+       op <__#__> : Real * Real -> Real
+       forall x,y:Real
+       . <x # y> = x * y
+      }
+=
+    sort Space |-> Real
+end
+
+
+%( On each Euclidean vector space a norm can be introduced in a canonical manner: )%
+
+spec ExtEuclideanVectorSpaceByNorm[EuclideanVectorSpace] = %def
+     op ||__|| : Space -> Real
+     forall v: Space
+     . || v || = sqr(<v # v>)
+then %implies
+     forall v,w: Space; r: Real
+     . | <v # w> | <= || v || * || w ||   		%(cauchy-schwarz)%
+     . quad(||v + w||) = quad(||v||) + quad(||w||) + <v # w> + <w # v> %(pythagoras)%  
+     . quad(||v + w||) + quad(||v + -1 * w||) = 2 * (quad(||v||) + quad(||w||))  %(parallel)%
+end
+
+
+view VectorSpaceWithRealNorm_in_EuclideanVectorSpace : 
+     VectorSpaceWithRealNorm 
+to
+     ExtEuclideanVectorSpaceByNorm[EuclideanVectorSpace] 
+end
+
+
+%( An Euclidean vector Space defines a bilinear form, a norm, and a metric: )%
+
+spec RichEuclideanVectorSpace = 
+     ExtVectorSpaceWithNormByMetric[ExtEuclideanVectorSpaceByNorm[EuclideanVectorSpace] fit Elem |-> Real, val |-> |__| ]
+%%and 
+%%    ExtVectorSpaceWithNormByMetric[view VectorSpaceWithRealNorm_in_EuclideanVectorSpace]
+end
+      
+
+
+
+
+
+
+spec Real2D =
+     Real 
+then %mono
+     free type Space ::= <__!__> (pr1:Real;pr2:Real)
+end
+
+
+spec ExtReal2DByVectorSpace[Real2D] = 
+     ops  0:Space;
+	 __*__ : Real * Space -> Space;
+	 __+__ : Space * Space -> Space  
+
+     forall a,b:Real; v,w:Space
+     . 0 = <0 ! 0>
+     . a * v = <a*pr1(v) ! a*pr2(v)>
+     . v + w = <pr1(v)+pr1(w) ! pr2(v)+pr2(w)>
+end
+
+
+spec ExtReal2DByBilinear[Real2D] =  
+     ExtReal2DByVectorSpace[Real2D]
+then %def
+     op <__#__> : Space * Space -> Real
+     forall x,y:Space
+     . <x # y> = pr1(x) * pr1(y) + pr2(x) * pr2(y)
+end
+
+
+view RealVectorSpace_in_Real2D : 
+     RealVectorSpace
+to   ExtReal2DByVectorSpace[Real2D] 
+end
+
+
+view EuclideanVectorSpace_in_Real2D : 
+     EuclideanVectorSpace
+to   ExtReal2DByBilinear[Real2D] 
+end
+
+
+
+spec Real3D =
+     Real 
+then %mono
+     free type Space ::= <__!__!__> (pr1:Real;pr2:Real;pr3:Real)
+end
+
+
+spec ExtReal3DByVectorSpace[Real3D] = 
+     ops  0:Space;
+	 __*__ : Real * Space -> Space;
+	 __+__ : Space * Space -> Space  
+
+     forall a,b:Real; v,w:Space
+     . 0 = <0 ! 0 ! 0>
+     . a * v = <a*pr1(v) ! a*pr2(v) ! a*pr3(v)>
+     . v + w = <pr1(v)+pr1(w) ! pr2(v)+pr2(w) ! pr3(v)+pr3(w)>
+end
+
+
+spec ExtReal3DByBilinear[Real3D] =  
+     ExtReal3DByVectorSpace[Real3D]
+then %def
+     op <__#__> : Space * Space -> Real
+     forall x,y:Space
+     . <x # y> = pr1(x) * pr1(y) + pr2(x) * pr2(y) + pr3(x) * pr3(y)
+end
+
+
+view RealVectorSpace_in_Real3D : 
+     RealVectorSpace
+to   ExtReal3DByVectorSpace[Real3D] 
+end
+
+
+view EuclideanVectorSpace_in_Real3D : 
+     EuclideanVectorSpace
+to   ExtReal3DByBilinear[Real3D] 
+end
+
+
+
+
+
+
+
+
+
+
