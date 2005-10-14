@@ -1,0 +1,119 @@
+library HasCASL/SinCos
+version 0.2
+
+%author: T. Mossakowski, S. Wölfl
+%date: 12-10-2005
+
+from Basic/RelationsAndOrders get 
+	TotalOrder,ExtTotalOrder,RichTotalOrder
+from HasCASL/Real get 
+	Field  
+from HasCASL/Real get Real
+
+
+spec ExtField[Field] =  %def
+     ops 2:Elem;
+	__-__: Elem * Elem -> Elem;
+        qdr__: Elem -> Elem;
+        __/__: Elem * Elem ->? Elem     
+     forall x,y,z: Elem
+     . 2 = 1 + 1
+     . x-y = x + -y
+     . qdr(x) = x * x
+     . not def(x/0) 
+     . x/y = z <=> y * z = x
+end
+
+spec RichField = ExtField[Field]
+
+
+spec FieldWithSinCos = 
+     RichField 
+then 
+     ops sin__,cos__ : Elem -> Elem
+     forall x,y: Elem
+     . sin(x - y) = (sin x * cos y) - (cos x * sin y)
+     . cos(x - y) = (cos x * cos y) + (sin x * sin y)
+then %implies
+     forall x,y: Elem
+     . cos(-x) = cos x
+     . sin(-x) = - sin x
+     . sin(x + y) = (sin x * cos y) + (cos x * sin y)
+     . cos(x + y) = (cos x * cos y) - (sin x * sin y)
+     . sin(2 * x) = 2 * sin x * cos x
+     . cos(2 * x) = qdr(cos x) - qdr(sin x)
+     . cos(2 * x) = (2 * qdr(cos x)) - 1
+     . cos(2 * x) = 1 - (2 * qdr(sin x))
+     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)
+     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)
+     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)
+     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)
+     . cos x - cos y =  0   %(SollteNichtGelten?)%
+
+
+%[then %def]%
+%[     ops tan__: Elem ->? Elem]%
+%[     forall x: Elem]%
+%[     . def tan x <=> not cos x = 0]%
+%[     . tan x * cos x = sin x
+       laesst sich noch beliebig erweitern ...
+]%
+
+%[then %implies]%
+%[     forall x,y: Elem]%
+%[     . tan(x + y) = (tan x + tan y)/(1 - tan x * tan y) ]%
+         
+end 
+
+     
+  
+
+logic HasCASL
+
+
+spec RealsWithSinCos1 = 
+     Real 
+then %def
+     ops sin__,cos__ : Real -> Real
+
+    forall x,y: Real
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\ 
+	forall y:Real .  |(x - y)| < d  => |(sin x - sin y)| < e  
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\ 
+	forall y:Real .  | (x - y) | < d  => | (cos x - cos y) | < e  
+    . sin(x - y) = (sin x * cos y) - (cos x * sin y)
+    . cos(x - y) = (cos x * cos y) + (sin x * sin y)
+    . forall e:Real . e > 0 => 
+	exists y:Real . y > 0 /\ |1 - sin(y)/y| < e
+end
+
+%( Es gibt einen Satz aus der Analysis, der besagt, dass ein Paar stetiger
+   reelle Funktionen, die die Gleichungen aus FieldWithSinCos erfüllen, 
+   sowie lim_(a->0)(sin(a)/a) = 1 genau das Paar (sin,cos) sein muss.
+   Daher obiges %def
+)%
+
+view FieldWithSinCos_in_RealsWithSinCos1 :
+     FieldWithSinCos to RealsWithSinCos1 
+=    Elem |-> Real
+end
+
+
+%( Damit bekommt man die Theoreme aus FieldWithSinCos, die sich 
+   leicht (zu leicht???) mit SPASS beweisen lassen.
+)%
+
+
+from HasCASL/EuclideanSpaces get Real2D
+
+spec RealsWithSinCos2[Real] = %def
+local Real2D
+within
+     ops sin__,cos__ : Real -> Real
+	%( .... 
+           hier kommt noch die geometrische Interpretation der 
+	   cosinus als Winkel zwischen zwei Vektoren, die bei der 
+	   Definition des Skalarprodukt im Real2D definiert wird.
+	)%
+end
+
