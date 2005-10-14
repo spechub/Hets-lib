@@ -96,9 +96,6 @@ then %def
 end
 
 
-
-
-
 spec FieldWithValuation =
      Field 
 and  Real
@@ -137,3 +134,13 @@ view Real_as_FieldWithArchimedianValuation :
 =    Elem |-> Real, val |-> |__|
 end
 	
+
+from HasCASL/EuclideanSpaces get Real2D
+
+
+spec ExtRealByCos[Real] = %def
+local Real2D
+within
+     op cos: Real -> Real
+     forall v,w: Real2D, theta:Real
+     . <v # w> = || v || * || w ||         

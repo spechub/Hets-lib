@@ -31,7 +31,7 @@ from Calculi/Algebra/RelationAlgebra get
 from Calculi/Algebra/RelationAlgebraSymbolic get
 	CompositionTable,
 	GroundingCompositionTable,
-	ConstructBooleanAlgebra,
+	SetRepresentationOfRelations,
 	ConstructPseudoRelationAlgebra,
 	ConstructedPseudoRelationAlgebra
 
@@ -58,11 +58,11 @@ spec ConstructProductOfCompositionTables
 	[sort BaseRel1][sort BaseRel2] 
 then CompositionTable 
 then local
-     { ConstructBooleanAlgebra[sort BaseRel] }
+     { SetRepresentationOfRelations[sort BaseRel] }
       and
-      closed { ConstructBooleanAlgebra[sort BaseRel1] with sort Rel |-> Rel1 }
+      closed { SetRepresentationOfRelations[sort BaseRel1] with sort Rel |-> Rel1 }
       and
-      closed { ConstructBooleanAlgebra[sort BaseRel2] with sort Rel |-> Rel2 } 		
+      closed { SetRepresentationOfRelations[sort BaseRel2] with sort Rel |-> Rel2 } 		
 within
      forall x,y,z:BaseRel
      . id = <id - id>
@@ -102,7 +102,7 @@ spec ProdOfConstructedPseudoRelationAlgebras
      forall x,y:BaseRelP
      . x = y <=> first(x) = first(y) /\ second(x) = second(y)
 then %def
-     ConstructBooleanAlgebra[sort BaseRelP] with sort Rel |-> RelP
+     SetRepresentationOfRelations[sort BaseRelP] with sort Rel |-> RelP
 then %def
      ops 
          id	 : BaseRelP;	 	 

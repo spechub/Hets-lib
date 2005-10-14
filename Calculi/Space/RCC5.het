@@ -26,7 +26,7 @@ from Calculi/Algebra/RelationAlgebra get
 from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
 	GroundingCompositionTable,	
-	ConstructBooleanAlgebra,		
+	SetRepresentationOfRelations,		
 	ConstructPseudoRelationAlgebra,
 	ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get 
@@ -38,13 +38,14 @@ from Calculi/Algebra/RelationAlgebraModel get
 	ConstructModelFromBaseRelationModel,
 	CompositionClosedBaseRelationModel,
 	CheckCompositionClosedBaseRelationModel
-from Calculi/Space/EuclideanSpace get
-	EuclideanSpace2D,
-	EuclideanSpace3D
+from HasCASL/EuclideanSpaces get
+	Real2D,
+	Real3D
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
-	MetricSpace
+	MetricSpace,
+	ExtMetricSpaceByOpenDiscs
 from HasCASL/Set get 
 	Set
 
@@ -137,7 +138,7 @@ end
 
 
 spec BooleanAlgebraOfRCC5Relations = 
-     ConstructBooleanAlgebra[RCC5BaseRelations] 
+     SetRepresentationOfRelations[RCC5BaseRelations] 
 end
 
 view BooleanAlgebraOfRCC5Relations_as_AtomicBooleanAlgebra :
@@ -190,15 +191,6 @@ end
 
 logic HasCASL
 
-
-
-spec OpenDiscs[MetricSpace] = %def
-local Set
-within
-     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
-     type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=openDisc(r,x)}
-     preds __disjoint__,__subset__: OpenDisc * OpenDisc 
-end
 
 
 spec RCC5BaseRelationModel_OpenDisc[MetricSpace] = %def 
@@ -308,10 +300,10 @@ end
 
 %( Special Models )%
 
+%[
 
-
-view EuclideanSpace2D_Is_EvenLarger:
-     EvenLargerMetricSpace to EuclideanSpace2D
+view Real2D_Is_EvenLarger:
+     EvenLargerMetricSpace to Real2D
 =  S |-> Point, d |-> dist
 end
 
@@ -331,6 +323,7 @@ to
     ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
 end
 
+]%
 
 
 

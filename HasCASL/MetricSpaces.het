@@ -24,6 +24,16 @@ spec ExtMetricSpaceByOpenDiscs[MetricSpace] given Set =
   type OpenDiscs = {X:Set S . exists x:S;r:Real . X=openDisc(x,r)}
 end
 
+%(
+spec OpenDiscs[MetricSpace] = %def
+local Set
+within
+     op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+     type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=openDisc(r,x)}
+     preds __disjoint__,__subset__: OpenDisc * OpenDisc 
+end
+)%
+
 spec ExtMetricSpaceByOpenSets[MetricSpace] given Set =
      ExtMetricSpaceByOpenDiscs[MetricSpace] 
 then %def
