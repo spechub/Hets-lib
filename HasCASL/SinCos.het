@@ -37,14 +37,23 @@ spec Field_test =
      . def(inv x) <=> not x = 0
      . x * inv x = 1 if def(inv x)
      . x * (y+z) = x * y + x * z
+
 then %implies
      forall x,y,z: Elem
-     . 0 * x  = 0
-     . 1 * x = x
-     . (-x) * y = -(x * y)
-     . x * y = 0 => x = 0 \/ y = 0
-     . (y+z) * x = y * x  + z * x 
-     
+     . - (- x) = x 			%(th_f0)%
+     . -x = -1 * x			%(th_f1)%
+     . 0 * x  = 0			%(th_f2)%
+     . 1 * x = x			%(th_f3)%
+     . (-x) * y = -(x * y)		%(th_f4)%
+     . x * y = 0 => x = 0 \/ y = 0	%(th_f5)%
+     . (y+z) * x = x * (y+z)		%(th_f6_h)%
+     . (y+z) * x = y * x  + z * x 	%(th_f6)% 
+     . inv(inv(x)) = x if def(inv(x)) /\ def(inv(inv(x)))   
+					%(th_f7)%
+     . -1 * -1 = 1  			%(th_f8)%
+     . x * -y = -(x * y)		%(th_f10)%
+     . (-x) * (-y) = - (- (x * y))	%(th_f11)%   
+     . (-x) * (-y) = x * y 		%(th_f12)%   
 end
 
 
@@ -61,10 +70,10 @@ spec ExtField_test[Field_test] = %def
      . x/y = inv(y) *  x if def(x/y)
 then %implies     
      forall x,y,z: Elem
-     . 2 * x = x + x
-     . qdr(x + y) = qdr(x) + 2 * x * y + qdr(y)
-     . qdr(x - y) = qdr(x) + -2 * x * y + qdr(y)
-     . (x + y) * (x - y) = qdr(x) - qdr(y)
+     . 2 * x = x + x				 %(th_ef1)%
+     . qdr(x + y) = qdr(x) + 2 * x * y + qdr(y)	 %(th_ef2)%
+     . qdr(x - y) = qdr(x) + -2 * x * y + qdr(y) %(th_ef3)%
+     . (x + y) * (x - y) = qdr(x) - qdr(y)	 %(th_ef4)%
 end
 
 
@@ -85,23 +94,23 @@ then
      . cos(x - y) = (cos x * cos y) + (sin x * sin y)
 then %implies
      forall x,y: Elem
-     . sin(0) = 0
-     . cos(0) = 1
-     . qdr(sin(x)) + qdr(cos(x)) = 1
-     . cos(-x) = cos x
-     . sin(-x) = - (sin x)
-     . sin(x + y) = (sin x * cos y) + (cos x * sin y)
-     . cos(x + y) = (cos x * cos y) - (sin x * sin y)
-     . sin(2 * x) = 2 * sin x * cos x
-     . cos(2 * x) = qdr(cos x) - qdr(sin x)
-     . cos(2 * x) = (2 * qdr(cos x)) - 1
-     . cos(2 * x) = 1 - (2 * qdr(sin x))
-     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)
-     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)
-     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)
-     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)
-     . cos x - cos y =  0   %(SollteNichtGelten?)%
-     . cos x = sin x
+     . sin(0) = 0					 	%(th_sc1)%
+     . cos(0) = 1						%(th_sc2)%
+     . qdr(sin(x)) + qdr(cos(x)) = 1				%(th_sc3)%
+     . cos(-x) = cos x						%(th_sc4)%
+     . sin(-x) = - (sin x)					%(th_sc5)%
+     . sin(x + y) = (sin x * cos y) + (cos x * sin y)		%(th_sc6)%
+     . cos(x + y) = (cos x * cos y) - (sin x * sin y)		%(th_sc7)%
+     . sin(2 * x) = 2 * sin x * cos x				%(th_sc8)%
+     . cos(2 * x) = qdr(cos x) - qdr(sin x)			%(th_sc9)%
+     . cos(2 * x) = (2 * qdr(cos x)) - 1			%(th_sc10)%
+     . cos(2 * x) = 1 - (2 * qdr(sin x))			%(th_sc11)%
+     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)		%(th_sc12)%
+     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)		%(th_sc13)%
+     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)		%(th_sc14)%
+     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)		%(th_sc15)%
+     . cos x - cos y =  0   					%(SollteNichtGelten)%
+     . cos x = sin x						%(Ebenso Nicht)%
 
 
 %[then %def]%
