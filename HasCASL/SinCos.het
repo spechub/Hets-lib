@@ -7,7 +7,7 @@ version 0.2
 from Basic/RelationsAndOrders get 
 	TotalOrder,ExtTotalOrder,RichTotalOrder
 from HasCASL/Real get 
-	Field  
+	Field,  RichOrderedField  
 from HasCASL/Real get Real
 
 
@@ -68,11 +68,29 @@ end
      
   
 
-logic HasCASL
+logic CASL
 
 
 spec RealsWithSinCos1 = 
-     Real 
+     %%Real 
+     RichOrderedField with Elem |-> Real
+then %def
+     ops 	
+        __-__: Real * Real -> Real;
+	|__| : Real -> Real;      
+        __/__: Real * Real ->? Real;     
+	qdr__: Real -> Real;
+	sqr__: Real ->? Real;
+	2    : Real      
+     forall r,r',r'':Real
+     . | r | = max(r,-r)
+     . qdr(r) = r * r
+     . def sqr(r) <=> r >= 0
+     . sqr(qdr(r)) = | r |  
+     . 2 = 1 + 1   
+     . r-r' = r + -r' 
+     . not def(r/0)      
+     . r/r' = r'' <=> r'' * r' = r
 then %def
      ops sin__,cos__ : Real -> Real
 
@@ -103,10 +121,12 @@ end
    leicht (zu leicht???) mit SPASS beweisen lassen.
 )%
 
-
+%[
 from HasCASL/EuclideanSpaces get Real2D
 
-spec RealsWithSinCos2[Real] = %def
+spec RealsWithSinCos2 = 
+  Real 
+then %def
 local Real2D
 within
      ops sin__,cos__ : Real -> Real
@@ -122,3 +142,4 @@ view FieldWithSinCos_in_RealsWithSinCos2 :
      FieldWithSinCos to RealsWithSinCos2 
 =    Elem |-> Real
 end
+]%
