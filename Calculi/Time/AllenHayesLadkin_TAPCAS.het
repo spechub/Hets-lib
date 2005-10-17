@@ -4,6 +4,9 @@ version 0.1
 %author: S. Wölfl
 %date: 22-10-04
 
+from Basic/RelationsAndOrders get StrictOrder
+from HasCASL/Set get Set
+
 %{
 	 Allen Hayes First-Order Theory on Intervals -- First order theory
 	 Based on Peter B. ladkin's PhD thesis (1987): 
@@ -95,71 +98,78 @@ version 0.1
 
 
 spec AllenHayes = 
-     sort Int
-     preds __M__: Int * Int
-     forall x,y,z,u:Int
+     sort Elem
+     preds __M__: Elem * Elem
+     forall x,y,z,u:Elem
      %% meeting places are unique:
      . x M y /\ x M u /\ z M y => z M u			%(M1)%
      %% meeting places are linearily ordered     
      . x M y /\ z M u =>  x M u 
-		      \/ (exists v:Int. x M v /\ v M u) 
-		      \/ (exists v:Int. z M v /\ v M y) 
+		      \/ (exists v:Elem. x M v /\ v M u) 
+		      \/ (exists v:Elem. z M v /\ v M y) 
 							%(M2a)%
      . x M y /\ z M u /\ x M u => 
-			not (exists v:Int. x M v /\ v M u) 
-		     /\ not (exists v:Int. z M v /\ v M y) 
+			not (exists v:Elem. x M v /\ v M u) 
+		     /\ not (exists v:Elem. z M v /\ v M y) 
 							%(M2b)%
-     . x M y /\ z M u /\ (exists v:Int. x M v /\ v M u) => 
+     . x M y /\ z M u /\ (exists v:Elem. x M v /\ v M u) => 
 			not (x M u) 
-		     /\ not (exists v:Int. z M v /\ v M y) 
+		     /\ not (exists v:Elem. z M v /\ v M y) 
 							%(M2c)%
-     . x M y /\ z M u /\ (exists v:Int. z M v /\ v M y) => 
+     . x M y /\ z M u /\ (exists v:Elem. z M v /\ v M y) => 
 			not (x M u) 
-		     /\ not (exists v:Int. x M v /\ v M u) 
+		     /\ not (exists v:Elem. x M v /\ v M u) 
 							%(M2d)%
      %% time is infinite, both to the past and to the future:		
-     . exists y,z:Int . y M x /\ x M z		%(M3)%
+     . exists y,z:Elem . y M x /\ x M z		%(M3)%
 					
      %% we do not care about endpoints of intervals:
      . x M y /\ y M u /\ x M z /\ z M u => y = z	%(M4)%
      %% 
-     . x M y => exists z:Int . forall v:Int 
+     . x M y => exists z:Elem . forall v:Elem 
 	. (v M z <=> v M x)  /\ (z M v <=> y M v)       %(M5exist)%
 
 then %implies
-   forall x,y,z:Int
+   forall x,y,z,u,v:Elem
    . not (x M x)					%(M_irrefl)%
    . x M y => not (y M x)				%(M_asym)%
-   . x M y /\ y M z => not (x M z)			%(M_atrans)% 
+   . x M y /\ y M z => not (x M z)			%(M_atrans)%
+   . x M y /\ y M z /\ z M v => not (x M v)		%(M_atranss)%
+   . x M y /\ y M z /\ z M v /\ v M u => not (x M u)	%(M_atransss)%
+   . x M y => exists z,u,v:Elem . 
+	  u M x /\ u M z /\ y M v /\ z M v              %(M5existV)%
+   . x M y /\ y M z /\ z M v /\ v M u =>
+           exists w:Elem . x M w /\ w M u		%(M5existVV)% 
 end
 
 
+
 spec ExtAllenHayesByRelations [AllenHayes] = %def
-     preds  __B__, __O__,  __S__, __F__,  __D__, __E__: Int * Int
+     preds  __B__, __O__,  __S__, __F__,  __D__: Elem * Elem
       
-     forall x,y:Int
-     . x B y <=> exists z:Int . x M z /\ z M y     %(B_def)%
-     . x S y <=> exists z:Int . x M z /\ 
-			(forall u:Int . y M u <=> z M u)
+     forall x,y:Elem
+     . x B y <=> exists z:Elem . x M z /\ z M y     %(B_def)%
+     . x S y <=> exists z:Elem . x M z /\ 
+			(forall u:Elem . y M u <=> z M u)
 							%(S_def)%
-     . x F y <=> exists z:Int . z M x /\ 
-			(forall u:Int . u M y <=> u M z)
+     . x F y <=> exists z:Elem . z M x /\ 
+			(forall u:Elem . u M y <=> u M z)
 							%(F_def)%
-     . x O y <=> exists z,u:Int . z S x /\ z M y /\ 
+     . x O y <=> exists z,u:Elem . z S x /\ z M y /\ 
 			x M u /\ u F y			
 					                %(O_def)%
-     . x D y <=> exists z,u:Int . z S y /\ z M x /\ 
+     . x D y <=> exists z,u:Elem . z S y /\ z M x /\ 
 			x M u /\ u F y	
 					                %(D_def)%
-     . x E y <=> forall z:Int . (z M x <=> z M y) /\ (x M z <=> y M z)
 then %implies
-     forall x,y,z:Int
+     forall x,y,z,u,v:Elem
      . x M y /\ y M z => x B z
+     . x M y /\ y M z /\ z M u => x B u 
      . x M y /\ y B z => x B z
      . x B y /\ y M z => x B z
      . x B y /\ y B z => x B z
-
-     . x B y \/ x M y \/ x O y \/ x D y \/ x S y \/ x F y \/ x E y \/
+     . x = y <=> forall z:Elem . (z M x <=> z M y) /\ (x M z <=> y M z)
+     . x B y \/ x M y \/ x O y \/ x D y \/ x S y \/ x F y \/ x = y \/
 	 y B x \/ y M x \/ y O x \/ y D x \/ y S x \/ y F x 
 	 						%(All13_JE)%
 end
@@ -167,51 +177,140 @@ end
 spec ExtAllenHayesByCup [AllenHayes] = 
      ExtAllenHayesByRelations [AllenHayes]
 then %def
-     op __cup__: Int * Int ->? Int
-     forall x,y,z:Int
-     . def(x cup y) <=> x M y \/ y M x
-     . x M y => (x cup y = z  <=> forall v:Int 
-	. (v M z <=> v M x)  /\ (z M v <=> y M v))
-     . y cup x = x cup y if def(x cup y)     
+     op __rcup__: Elem * Elem ->? Elem
+     forall x,y,z:Elem
+     . def(x rcup y) <=> x M y 
+     . x M y => (x rcup y = z  <=> 
+ 	  		(forall v:Elem . v M z <=> v M x) /\ 
+			(forall v:Elem . z M v <=> y M v))
+%%     . y cup x = x cup y if def(x cup y)     
 then %implies
-     forall x,y:Int
-     . x B y <=> exists z:Int . x M z /\ (x cup z) M y
-%%     . x S y <=> exists z:Int . ()  
+     forall x,y,z,u,v:Elem
+     . x M y => (x rcup y = z <=> 
+		exists u,v:Elem . u M x /\ u M z /\ y M v /\ z M v)   
+     . x M y /\ u M x => u M (x rcup y)
+     . x M y /\ y M v => (x rcup y) M v
 end
 	
 spec RichAllenHayes = 
+     ExtAllenHayesByRelations [AllenHayes]
+and
      ExtAllenHayesByCup [AllenHayes]
+then %implies
+     forall x,y:Elem
+     . x B y <=> exists z:Elem . x M z /\ (x rcup z) M y
+     . x S y <=> exists z:Elem . x M z /\ (x rcup z) = y 
+     . x F y <=> exists z:Elem . z M x /\ (z rcup x) = y
+	%%% ... 
 end
 
 
-spec ConstructPointsFromIntervals =
-     AllenHayes
-then %def
-     preds  __ __ Equiv __ __: Int * Int * Int * Int;
-	    __ __ PointLess __ __: Int * Int * Int * Int
+spec ConstructPointsFO[AllenHayes] = %def
+     %% ExtAllenHayesByRelations[AllenHayes] then %def
+     preds  __ __ Equi __ __: Elem * Elem * Elem * Elem;
+	    __ __ Less __ __: Elem * Elem * Elem * Elem
 
 
-     forall x,y,z,u:Int
-     . x y Equiv z u <=> x M y /\ z M u /\ x M u	%(Equiv_def)%
-%%     . x y PointLessOrg z u <=> (exists r,s,t:Int 
-%%				    . x y Equiv r s /\ z u Equiv s t)
-%%							%(PointLessOrg_def)%
-     . x y PointLess z u <=> (exists v:Int 
-				    . x y Equiv x v /\ z u Equiv v u)
+     forall x,y,z,u:Elem
+     . x y Equi z u <=> x M y /\ z M u /\ x M u	%(Equi_def)%
+     . x y Less z u <=> x M y /\ z M u /\
+                (exists v:Elem  . x y Equi x v /\ z u Equi v u)
 							%(PointLess_def)%
 
-
 then %implies
-     forall x,y,z,u,v,w:Int 
-     . x M y => x y Equiv x y				%(Equiv_refl)%
-     . x y Equiv z u => z u Equiv x y			%(Equiv_sym)%
-     . x y Equiv z u /\ z u Equiv v w => x y Equiv v w  %(Equiv_trans)%
+     forall x,y,z,u,v,w:Elem 
+     . x M y => x y Equi x y				%(Equi_refl)%
+     . x y Equi z u => z u Equi x y			%(Equi_sym)%
+     . x y Equi z u /\ z u Equi v w => x y Equi v w     %(Equi_trans)%
 
-     . x M y => not(x y PointLess x y)			%(PointLess_irrefl)%
-     . x y PointLess z u /\ z u PointLess v w => x y PointLess v w 
-	   						%(PointLess_trans)%    
-     . x M y /\ z M u => (x y PointLess z u \/ x y Equiv z u  \/ 
-			      z u PointLess x y)
-							%(PointLess_linear)%
+     . x M y => not(x y Less x y)			%(Less_irrefl)%
+     . x y Less z u /\ z u Less v w => x y Less v w 
+	   						%(Less_trans)%    
+     . x M y /\ z M u => x y Less z u \/ x y Equi z u  \/ 
+			      z u Less x y
+							%(Less_linear)%
+%%     . x y Less z u <=> (exists r,s,t:Elem 
+%%				    . x y Equiv r s /\ z u Equiv s t)
+%%							%(PointLessOrg_def)%
+
 end
+
+
+
+
+logic CASL
+
+
+spec DnsLinFlowOfTimeSEnd =
+     StrictOrder 
+then      
+     forall x,y:Elem
+     . x < y \/ x = y \/ y < x
+     . x < y => (exists z:Elem . x < z  /\ z < y) 
+     . exists u,v:Elem . u < x /\ x < v
+end
+
+
+logic HasCASL
+
+
+spec AllenIntervals[DnsLinFlowOfTimeSEnd] = %def
+    type Int = {(x,y):Elem*Elem . x < y}
+    ops beg,fin : Int -> Elem
+
+    forall p:Int; x,y:Elem 
+     . p = (x,y) => beg(p) = x /\ fin(p) = y
+end
+
+
+view AllenHayes_in_AllenIntervals[DnsLinFlowOfTimeSEnd] :
+     AllenHayes to 
+	{ AllenIntervals[DnsLinFlowOfTimeSEnd] then %def
+	  pred __M__: Int * Int
+          forall x,y:Int
+	  . x M y <=> fin(x) = beg(y)		
+	}
+=    sort Elem |-> Int
+end
+
+
+
+
+logic HasCASL
+
+spec ConstructPointsFromIntervals[AllenHayes] =
+     ConstructPointsFO[AllenHayes] 
+and  Set
+then %mono
+     op eqcl(x:Elem;y:Elem) :? Set(Elem * Elem) = 
+	\ p: Elem * Elem . exists u,v:Elem .
+		(u,v) = p /\ u M v /\ x y Equi u v
+     type Inst = {X:Set(Elem * Elem) .  
+			exists x,y:Elem . x M y /\ X = eqcl(x,y)}
+     forall x,y:Elem
+    . def(eqcl(x,y)) <=> x M y
+
+%%   op eqcl: Elem * Elem ->? Set(Elem * Elem) 
+%%   . x M y => 
+%%           eqcl(x,y) = \ p: Elem * Elem . exists u,v:Elem .
+%%		(u,v) = p /\ u M v /\ x y Equi u v  
+end
+
+
+view DnsLinFlowOfTimeSEnd_in_ConstructPointsFromIntervals[AllenHayes] : 
+     DnsLinFlowOfTimeSEnd to 
+     { ConstructPointsFromIntervals[AllenHayes] then %def
+       pred __<__: Inst * Inst
+       forall X,Y:Inst
+       . X < Y <=> exists x,y,u,v:Elem . x M y /\ u M v /\ 
+		X = eqcl(x,y) /\ Y = eqcl(u,v) /\ (x y Less u v)	
+	}
+= sort Elem |-> Inst
+end
+
+
+
+
+
+
 
