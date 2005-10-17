@@ -4,27 +4,76 @@ version 0.2
 %author: T. Mossakowski, S. Wölfl
 %date: 12-10-2005
 
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __, __ ^ __
+
+
 from Basic/RelationsAndOrders get 
 	TotalOrder,ExtTotalOrder,RichTotalOrder
-from HasCASL/Real get 
-	Field,  RichOrderedField  
+from Basic/Numbers get Nat, Int, Rat
+from Basic/Algebra_I get 
+	AbelianGroup, ExtAbelianGroup,
+	AbelianGroup_in_ConstructField,
+	Field |-> FieldFromAlgebra_I,
+	Ring,ExtRing
+from  HasCASL/Real get
+	RichOrderedField  
 from HasCASL/Real get Real
 
 
-spec ExtField[Field] =  %def
+spec Field_test =
+     sort Elem		    
+     ops 
+   	0,1 : Elem;
+        __ + __: Elem * Elem -> Elem, assoc, comm, unit 0;
+	__ * __: Elem * Elem -> Elem, assoc, comm, unit 1;
+	-__:Elem -> Elem;
+        inv__:Elem ->? Elem
+     forall x,y,z:Elem
+     . not 0 = 1
+     . x + -x = 0
+     . def(inv x) <=> not x = 0
+     . x * inv x = 1 if def(inv x)
+     . x * (y+z) = x * y + x * z
+then %implies
+     forall x,y,z: Elem
+     . 0 * x  = 0
+     . 1 * x = x
+     . (-x) * y = -(x * y)
+     . x * y = 0 => x = 0 \/ y = 0
+     . (y+z) * x = y * x  + z * x 
+     
+end
+
+
+spec ExtField_test[Field_test] = %def
      ops 2:Elem;
 	__-__: Elem * Elem -> Elem;
         qdr__: Elem -> Elem;
         __/__: Elem * Elem ->? Elem     
      forall x,y,z: Elem
-     . 2 = 1 + 1
+     . 2:Elem = 1:Elem + 1:Elem
      . x-y = x + -y
      . qdr(x) = x * x
-     . not def(x/0) 
-     . (x/y = z <=> y * z = x) if not y=0
+     . def(x/y) <=> not y =0  
+     . x/y = inv(y) *  x if def(x/y)
+then %implies     
+     forall x,y,z: Elem
+     . 2 * x = x + x
+     . qdr(x + y) = qdr(x) + 2 * x * y + qdr(y)
+     . qdr(x - y) = qdr(x) + -2 * x * y + qdr(y)
+     . (x + y) * (x - y) = qdr(x) - qdr(y)
 end
 
-spec RichField = ExtField[Field]
+
+spec Field = Field_test
+end
+
+
+spec RichField = ExtField_test[Field_test]
+
 
 
 spec FieldWithSinCos = 
@@ -36,8 +85,11 @@ then
      . cos(x - y) = (cos x * cos y) + (sin x * sin y)
 then %implies
      forall x,y: Elem
+     . sin(0) = 0
+     . cos(0) = 1
+     . qdr(sin(x)) + qdr(cos(x)) = 1
      . cos(-x) = cos x
-     . sin(-x) = - sin x
+     . sin(-x) = - (sin x)
      . sin(x + y) = (sin x * cos y) + (cos x * sin y)
      . cos(x + y) = (cos x * cos y) - (sin x * sin y)
      . sin(2 * x) = 2 * sin x * cos x
@@ -66,14 +118,36 @@ then %implies
          
 end 
 
-     
+%[     
   
 
 logic HasCASL
 
 
 spec RealsWithSinCos1 = 
+<<<<<<< SinCos.het
      Real 
+     %% RichOrderedField with Elem |-> Real
+then %def
+     ops 	
+        __-__: Real * Real -> Real;
+	|__| : Real -> Real;      
+        __/__: Real * Real ->? Real;     
+	qdr__: Real -> Real;
+	sqr__: Real ->? Real;
+	2    : Real      
+     forall r,r',r'':Real
+     . | r | = max(r,-r)
+     . qdr(r) = r * r
+     . def sqr(r) <=> r >= 0
+     . sqr(qdr(r)) = | r |  
+     . 2 = 1 + 1   
+     . r-r' = r + -r' 
+     . not def(r/0)      
+     . r/r' = r'' <=> r'' * r' = r
+=======
+     Real 
+>>>>>>> 1.4
 then %def
      ops sin__,cos__ : Real -> Real
 
@@ -104,7 +178,7 @@ end
    leicht (zu leicht???) mit SPASS beweisen lassen.
 )%
 
-%[
+
 from HasCASL/EuclideanSpaces get Real2D
 
 spec RealsWithSinCos2 = 
@@ -126,3 +200,4 @@ view FieldWithSinCos_in_RealsWithSinCos2 :
 =    Elem |-> Real
 end
 ]%
+
