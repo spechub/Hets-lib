@@ -21,7 +21,7 @@ spec ExtField[Field] =  %def
      . x-y = x + -y
      . qdr(x) = x * x
      . not def(x/0) 
-     . x/y = z <=> y * z = x
+     . (x/y = z <=> y * z = x) if not y=0
 end
 
 spec RichField = ExtField[Field]
@@ -49,6 +49,7 @@ then %implies
      . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)
      . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)
      . cos x - cos y =  0   %(SollteNichtGelten?)%
+     . cos x = sin x
 
 
 %[then %def]%
@@ -68,29 +69,11 @@ end
      
   
 
-logic CASL
+logic HasCASL
 
 
 spec RealsWithSinCos1 = 
-     %%Real 
-     RichOrderedField with Elem |-> Real
-then %def
-     ops 	
-        __-__: Real * Real -> Real;
-	|__| : Real -> Real;      
-        __/__: Real * Real ->? Real;     
-	qdr__: Real -> Real;
-	sqr__: Real ->? Real;
-	2    : Real      
-     forall r,r',r'':Real
-     . | r | = max(r,-r)
-     . qdr(r) = r * r
-     . def sqr(r) <=> r >= 0
-     . sqr(qdr(r)) = | r |  
-     . 2 = 1 + 1   
-     . r-r' = r + -r' 
-     . not def(r/0)      
-     . r/r' = r'' <=> r'' * r' = r
+     Real 
 then %def
      ops sin__,cos__ : Real -> Real
 
