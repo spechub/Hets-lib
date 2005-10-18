@@ -110,16 +110,11 @@ spec AllenHayes =
 							%(M2a)%
      . x M y /\ z M u /\ x M u => 
 			not (exists v:Elem. x M v /\ v M u) 
-		     /\ not (exists v:Elem. z M v /\ v M y) 
 							%(M2b)%
      . x M y /\ z M u /\ (exists v:Elem. x M v /\ v M u) => 
 			not (x M u) 
 		     /\ not (exists v:Elem. z M v /\ v M y) 
 							%(M2c)%
-     . x M y /\ z M u /\ (exists v:Elem. z M v /\ v M y) => 
-			not (x M u) 
-		     /\ not (exists v:Elem. x M v /\ v M u) 
-							%(M2d)%
      %% time is infinite, both to the past and to the future:		
      . exists y,z:Elem . y M x /\ x M z		%(M3)%
 					
@@ -132,14 +127,22 @@ spec AllenHayes =
 then %implies
    forall x,y,z,u,v:Elem
    . not (x M x)					%(M_irrefl)%
+   . x M y /\ z M u /\ x M u => 
+       not (exists v:Elem. z M v /\ v M y)              %(M2aV)%
+   . x M y /\ z M u /\ (exists v:Elem. z M v /\ v M y) => 
+   			not (x M u) 
+		     /\ not (exists v:Elem. x M v /\ v M u) 
+							%(M2d)%
    . x M y => not (y M x)				%(M_asym)%
    . x M y /\ y M z => not (x M z)			%(M_atrans)%
    . x M y /\ y M z /\ z M v => not (x M v)		%(M_atranss)%
    . x M y /\ y M z /\ z M v /\ v M u => not (x M u)	%(M_atransss)%
    . x M y => exists z,u,v:Elem . 
-	  u M x /\ u M z /\ y M v /\ z M v              %(M5existV)%
+	  u M x /\ u M z /\ y M v /\ z M v              %(M5exist1)%
+   . x M y /\ y M z /\ z M v =>
+           exists w:Elem . x M w /\ w M v		%(M5exist2)%    
    . x M y /\ y M z /\ z M v /\ v M u =>
-           exists w:Elem . x M w /\ w M u		%(M5existVV)% 
+           exists w:Elem . x M w /\ w M u		%(M5exist3)% 
 end
 
 
@@ -148,7 +151,7 @@ spec ExtAllenHayesByRelations [AllenHayes] = %def
      preds  __B__, __O__,  __S__, __F__,  __D__: Elem * Elem
       
      forall x,y:Elem
-     . x B y <=> exists z:Elem . x M z /\ z M y     %(B_def)%
+     . x B y <=> exists z:Elem . x M z /\ z M y     	%(B_def)%
      . x S y <=> exists z:Elem . x M z /\ 
 			(forall u:Elem . y M u <=> z M u)
 							%(S_def)%
