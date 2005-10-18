@@ -123,7 +123,10 @@ spec AllenHayes =
      %% 
      . x M y => exists z:Elem . forall v:Elem 
 	. (v M z <=> v M x)  /\ (z M v <=> y M v)       %(M5exist)%
-
+     %% time is dense
+     . x M y /\ y M z => exists u,v:Elem . x M u 
+	/\ u M v /\ v M z 				%(M6)%
+  
 then %implies
    forall x,y,z,u,v:Elem
    . not (x M x)					%(M_irrefl)%
@@ -147,6 +150,7 @@ end
 
 
 
+%[ nicht nötig
 spec ExtAllenHayesByRelations [AllenHayes] = %def
      preds  __B__, __O__,  __S__, __F__,  __D__: Elem * Elem
       
@@ -206,7 +210,7 @@ then %implies
      . x F y <=> exists z:Elem . z M x /\ (z rcup x) = y
 	%%% ... 
 end
-
+]%
 
 spec ConstructPointsFO[AllenHayes] = %def
      %% ExtAllenHayesByRelations[AllenHayes] then %def
@@ -215,26 +219,25 @@ spec ConstructPointsFO[AllenHayes] = %def
 
 
      forall x,y,z,u:Elem
-     . x y Equi z u <=> x M y /\ z M u /\ x M u	%(Equi_def)%
+     . x y Equi z u <=> x M y /\ z M u /\ x M u		%(Equi_def)%
      . x y Less z u <=> x M y /\ z M u /\
-                (exists v:Elem  . x y Equi x v /\ z u Equi v u)
-							%(PointLess_def)%
+                (exists v:Elem  . x M v /\ v M u)       %(Less_def)%
 
 then %implies
      forall x,y,z,u,v,w:Elem 
      . x M y => x y Equi x y				%(Equi_refl)%
      . x y Equi z u => z u Equi x y			%(Equi_sym)%
      . x y Equi z u /\ z u Equi v w => x y Equi v w     %(Equi_trans)%
-
+     . x y Less z u <=>	x M y /\ z M u /\ 
+	(exists v:Elem  . x y Equi x v /\ z u Equi v u) %(Equi_defV)%
      . x M y => not(x y Less x y)			%(Less_irrefl)%
+     . x y Equi z u => not(x y Less z u) 		%(Less_irreflV)%
      . x y Less z u /\ z u Less v w => x y Less v w 
 	   						%(Less_trans)%    
-     . x M y /\ z M u => x y Less z u \/ x y Equi z u  \/ 
-			      z u Less x y
-							%(Less_linear)%
-%%     . x y Less z u <=> (exists r,s,t:Elem 
-%%				    . x y Equiv r s /\ z u Equiv s t)
-%%							%(PointLessOrg_def)%
+     . x M y /\ z M u => x y Less z u 
+		\/ x y Equi z u  \/  z u Less x y 	%(Less_linear)%
+     . x y Less u v => exists r,s:Elem . x y Less r s /\ r s Less u v
+							%(Less_dense)%
 
 end
 
@@ -244,7 +247,7 @@ end
 logic CASL
 
 
-spec DnsLinFlowOfTimeSEnd =
+spec FlowOfTime =
      StrictOrder 
 then      
      forall x,y:Elem
@@ -257,7 +260,7 @@ end
 logic HasCASL
 
 
-spec AllenIntervals[DnsLinFlowOfTimeSEnd] = %def
+spec AllenIntervals[FlowOfTime] = %def
     %%type Int = {(x,y):Elem*Elem . x < y}
     sort Int
     ops toInt : Elem*Elem ->? Int;
@@ -266,6 +269,7 @@ spec AllenIntervals[DnsLinFlowOfTimeSEnd] = %def
     . def toInt(x,y) <=> x < y
     . toInt(fromInt(i))=i
     . def toInt(x,y) => fromInt(toInt(x,y)) = (x,y)
+
     ops beg,fin : Int -> Elem
 
     forall p:Int; x,y:Elem 
@@ -273,16 +277,15 @@ spec AllenIntervals[DnsLinFlowOfTimeSEnd] = %def
 end
 
 
-view AllenHayes_in_AllenIntervals[DnsLinFlowOfTimeSEnd] :
+view AllenHayes_in_AllenIntervals[FlowOfTime] :
      AllenHayes to 
-	{ AllenIntervals[DnsLinFlowOfTimeSEnd] then %def
+	{ AllenIntervals[FlowOfTime] then %def
 	  pred __M__: Int * Int
           forall x,y:Int
 	  . x M y <=> fin(x) = beg(y)		
 	}
 =    sort Elem |-> Int
 end
-
 
 
 
@@ -315,8 +318,8 @@ then %mono
 end
 
 
-view DnsLinFlowOfTimeSEnd_in_ConstructPointsFromIntervals[AllenHayes] : 
-     DnsLinFlowOfTimeSEnd to 
+view FlowOfTime_in_ConstructPointsFromIntervals[AllenHayes] : 
+     FlowOfTime to 
      { ConstructPointsFromIntervals[AllenHayes] then %def
        pred __<__: Inst * Inst
        forall X,Y:Inst
