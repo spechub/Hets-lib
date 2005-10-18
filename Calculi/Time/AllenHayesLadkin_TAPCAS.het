@@ -258,11 +258,18 @@ logic HasCASL
 
 
 spec AllenIntervals[DnsLinFlowOfTimeSEnd] = %def
-    type Int = {(x,y):Elem*Elem . x < y}
+    %%type Int = {(x,y):Elem*Elem . x < y}
+    sort Int
+    ops toInt : Elem*Elem ->? Int;
+        fromInt : Int -> Elem*Elem
+    forall i:Int; x,y:Elem
+    . def toInt(x,y) <=> x < y
+    . toInt(fromInt(i))=i
+    . def toInt(x,y) => fromInt(toInt(x,y)) = (x,y)
     ops beg,fin : Int -> Elem
 
     forall p:Int; x,y:Elem 
-     . p = (x,y) => beg(p) = x /\ fin(p) = y
+     . fromInt p = (x,y) => beg(p) = x /\ fin(p) = y
 end
 
 
@@ -288,10 +295,18 @@ then %mono
      op eqcl(x:Elem;y:Elem) :? Set(Elem * Elem) = 
 	\ p: Elem * Elem . exists u,v:Elem .
 		(u,v) = p /\ u M v /\ x y Equi u v
-     type Inst = {X:Set(Elem * Elem) .  
-			exists x,y:Elem . x M y /\ X = eqcl(x,y)}
+     %%type Inst = {X:Set(Elem * Elem) .  
+     %%  		exists x,y:Elem . x M y /\ X = eqcl(x,y)}
+     sort Inst
+     ops toInst : Set(Elem*Elem) ->? Inst;
+         fromInst : Inst -> Set(Elem*Elem)
+     forall i:Inst; X:Set(Elem*Elem)
+     . def toInst(X) <=> exists x,y:Elem . x M y /\ X = eqcl(x,y)
+     . toInst(fromInst(i))=i
+     . def toInst(X) => fromInst(toInst(X)) = X;
+
      forall x,y:Elem
-    . def(eqcl(x,y)) <=> x M y
+     . def(eqcl(x,y)) <=> x M y
 
 %%   op eqcl: Elem * Elem ->? Set(Elem * Elem) 
 %%   . x M y => 
@@ -306,7 +321,7 @@ view DnsLinFlowOfTimeSEnd_in_ConstructPointsFromIntervals[AllenHayes] :
        pred __<__: Inst * Inst
        forall X,Y:Inst
        . X < Y <=> exists x,y,u,v:Elem . x M y /\ u M v /\ 
-		X = eqcl(x,y) /\ Y = eqcl(u,v) /\ (x y Less u v)	
+		fromInst(X) = eqcl(x,y) /\ fromInst(Y) = eqcl(u,v) /\ (x y Less u v)	
 	}
 = sort Elem |-> Inst
 end
