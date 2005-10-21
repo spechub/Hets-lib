@@ -126,7 +126,7 @@ spec AllenHayes =
      %% time is dense
      . x M y /\ y M z => exists u,v:Elem . x M u 
 	/\ u M v /\ v M z 				%(M6)%
-  
+
 then %implies
    forall x,y,z,u,v:Elem
    . not (x M x)					%(M_irrefl)%
@@ -224,12 +224,13 @@ spec ConstructPointsFO[AllenHayes] = %def
                 (exists v:Elem  . x M v /\ v M u)       %(Less_def)%
 
 then %implies
-     forall x,y,z,u,v,w:Elem 
+     forall x,x',y,y',z,u,u',v,v',w:Elem 
      . x M y => x y Equi x y				%(Equi_refl)%
      . x y Equi z u => z u Equi x y			%(Equi_sym)%
      . x y Equi z u /\ z u Equi v w => x y Equi v w     %(Equi_trans)%
      . x y Less z u <=>	x M y /\ z M u /\ 
 	(exists v:Elem  . x y Equi x v /\ z u Equi v u) %(Equi_defV)%
+     . x y Equi x' y' /\ u v Equi u' v' => (x y Less u v <=> x' y' Less u' v') %(Less_well_def)%
      . x M y => not(x y Less x y)			%(Less_irrefl)%
      . x y Equi z u => not(x y Less z u) 		%(Less_irreflV)%
      . x y Less z u /\ z u Less v w => x y Less v w 
