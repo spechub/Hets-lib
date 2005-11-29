@@ -13,6 +13,122 @@ version 0.1
 
 
 
+
+
+spec RCC_FO = 
+     sort QReg
+     pred __C__: QReg * QReg;
+     preds  __P__, __O__, __NTP__: QReg * QReg
+
+     forall x,y: QReg
+     . x P y   <=> forall z:QReg .(z C x => z C y)		%(P_def)%
+     . x O y   <=> exists z:QReg .(z C z /\ z P x /\ z P y)	%(O_def)%
+     . x NTP y <=> forall z:QReg .(z C x => z O y)		%(NTP_def)%
+     . x C y => x C x					        %(C_non_null)%
+     . x C y => y C x						%(C_sym)%
+     . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
+%%     . exists z:QReg . forall u:QReg . 
+%%		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
+     . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
+
+then %def
+     sort Reg = { x: QReg . x C x }
+
+then %implies
+     forall x,y,z: Reg  
+     . x O y => y O x						%(O_sym)%
+     . x P y /\ y P z => x P z					%(cmps_PP)%	
+     . x P y => x O y
+end
+
+
+
+spec ExtRCCByRCC5Rels[RCC_FO] = %def 
+     preds
+	  __PP__,  __PO__,  __EQ__, 
+	  __DR__,  __PPi__, __?__: Reg * Reg
+
+     forall x,y:Reg 
+     . x PP y   <=>  x P y /\ not y P x              		%(PP_def)%
+     . x PO y   <=>  x O y /\ not x P y /\ not y P x		%(PO_def)%
+     . x DR y   <=>  not x O y					%(DR_def)%      	
+     . x PPi y  <=> y PP x                                 	%(PPi_def)%
+     . x EQ y   <=> x = y	                		%(EQ_def)%
+     . x ? y    <=> x DR y \/ x PO y \/ x PP y \/ x PPi y \/ x EQ y 
+								%(?_def)%
+then %implies
+     forall x,y,z:Reg 
+     . x ? y
+
+     . x PP y /\ y PP z => x PP	z				%(cmps_PPPP)%	
+     . x PP y /\ y PPi z => x ? z  				%(cmps_PPPPi)%
+     . x PP y /\ y PO z => x PP z \/ x PO z \/ x DR z		%(cmps_PPPO)%
+     . x PP y /\ y DR z => x DR z				%(cmps_PPDR)%
+     . x PP y /\ y EQ z => x PP z				%(cmps_PPEQ)%
+
+     . x PPi y /\ y PP z => not x DR z				%(cmps_PPiPP)%	
+     . x PPi y /\ y PPi z => x ? z				%(cmps_PPiPPi)%
+     . x PPi y /\ y PO z => x PPi z \/ x PO z			%(cmps_PPiPO)%
+     . x PPi y /\ y DR z => x PPi z \/ x PO z \/ x DR z		%(cmps_PPiDR)%
+     . x PPi y /\ y EQ z => x PPi z				%(cmps_PPiEQ)%
+
+     . x PO y /\ y PP z => x PP z \/ x PO z			%(cmps_POPP)%	
+     . x PO y /\ y PPi z => x PPi z \/ x PO z \/ x DR z		%(cmps_POPPi)%
+     . x PO y /\ y PO z => x ? z      				%(cmps_POPO)%
+     . x PO y /\ y DR z => x PPi z \/ x PO z \/ x DR z		%(cmps_PODR)%
+     . x PO y /\ y EQ z => x PO z				%(cmps_POEQ)%
+
+     . x DR y /\ y PP z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPP)%	
+     . x DR y /\ y PPi z => x DR z				%(cmps_DRPi)%
+     . x DR y /\ y PO z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPO)%
+     . x DR y /\ y DR z => x ? z				%(cmps_DRDR)%
+     . x DR y /\ y EQ z => x DR	z 				%(cmps_DREQ)%
+
+     . x EQ y /\ z PP z => x PP z   				%(cmps_EQPP)%	
+     . x EQ y /\ z PPi z => x PPi z				%(cmps_EQPPi)%
+     . x EQ y /\ z PO z => x PO	z				%(cmps_EQPO)%
+     . x EQ y /\ z DR z => x DR	z 				%(cmps_EQDR)%
+     . x EQ y /\ z EQ z => x EQ z				%(cmps_EQEQ)%
+
+
+end
+
+
+spec ExtRCCByRCC8Rels[RCC_FO] = %def 
+     preds
+	  __PP__,  __PO__,  __EC__,  __DC__, __EQ__, 
+	 __TPP__, __NTPP__,  __DR__,  __Pi__,
+	 __PPi__, __TPPi__,  __NTPPi__, __?__: Reg * Reg
+
+     forall x,y:Reg 
+     .   x PP y   <=>  x P y /\ not y P x              		%(PP_def)%
+     .   x PO y   <=>  x O y /\ not x P y /\ not y P x		%(PO_def)%
+     .   x DC y   <=>  not x C y				%(DC_def)%   
+     .   x DR y   <=>  not x O y				%(DR_def)%      	
+     .   x EC y   <=>  x C y /\ not x O y	          	%(EC_def)%
+     .  x TPP y   <=>  x PP y /\ exists z:Reg. z EC x /\ z EC y %(TPP_def)%
+     . x NTPP y   <=>  x PP y /\ forall z:Reg. z EC x => not z EC y 
+								%(NTPP_def)%
+     .    x Pi y  <=> y P x                                  	%(Pi_def)%
+     .   x PPi y  <=> y PP x                                 	%(PPi_def)%
+     .  x TPPi y  <=> y TPP x                                	%(TPPi_def)%
+     . x NTPPi y  <=> y NTPP x	                		%(NTPPi_def)%
+     . x EQ y     <=> x = y	                		%(EQ_def)%
+     . x ? y      <=> x DR y \/ x PO y \/ x PP y \/ x PPi y \/ x EQ y 
+								%(?_def)%
+end
+
+
+
+
+
+
+
+
+
+
+
+%[
 spec RCC_FO = 
      sort Reg
      pred __C__: Reg * Reg;
@@ -55,25 +171,6 @@ within	{
 end
 
 
-spec RCC_FO2 = 
-     sort Reg
-     pred __C__: Reg * Reg;
-     preds  __P__, __O__, __NTP__: Reg * Reg
-     forall x,y: Reg
-     . x P y   <=> forall z:Reg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:Reg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:Reg .(z C x => z O y)		%(NTP_def)%
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:Reg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:Reg . forall u:Reg . 
-		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
-     . x C x => exists z:Reg . (z C z /\ z NTP x) 		%(no_atoms)%
-then %implies
-     forall x,y,z: Reg  
-     . x O y => y O x						%(O_sym)%
-end
-
 
 spec RCC_FO3 = 
      sort Reg
@@ -105,9 +202,10 @@ then %implies
      forall x,y,z: Reg  
      . x O y => y O x						%(O_sym)%
 end     
+end     
 
 
-%[
+
       then %implies
 	
 
@@ -120,39 +218,6 @@ end
 
 
 
-
-spec RCC_FirstOrder_Rel = 
-
-     %% Definitions of RCC-relations %% 
-
-     RCC_FirstOrder
-
-     then %def
- 
-     
-	preds
-	  __ PP __,  __ POv __,  __ EC __,  __ DC __, __ EQ __, 
-	 __ TPP __, __ NTPP __,  __ DR __,  __ Pi __,
-	 __ PPi __, __ TPPi __,  __ NTPPi __: Reg * Reg
-
-	forall x,y:Reg 
-        .   x PP y   <=>  (x P y /\ not (y P x))              	%(RCC_def_PP)%
-        .   x POv y   <=>  (x Ov y /\ not (x P y) /\ not (y P x))	          
-								%(RCC_def_PO)%
-        .   x DC y   <=>  not (x C y)				%(RCC_def_DC)%   
-        .   x DR y   <=>  not (x Ov y)				%(RCC_def_DR)%      	
-	.   x EC y   <=>  (x C y /\ not (x Ov y))          	%(RCC_def_EC)%
-	.  x TPP y   <=>  (x PP y /\ exists z:Reg.(z EC x /\ z EC y))     
-								%(RCC_def_TPP)%
-	. x NTPP y   <=>  (x PP y /\ forall z:Reg.(z EC x => not (z EC y))) 
-								%(RCC_def_NTPP)%
-        .    x Pi y  <=> y P x                                  %(RCC_def_Pi)%
-        .   x PPi y  <=> y PP x                                 %(RCC_def_PPi)%
-        .  x TPPi y  <=> y TPP x                                %(RCC_def_TPPi)%
-        . x NTPPi y  <=> y NTPP x	                	%(RCC_def_NTPPi)%
-
-
-     then %implies
 
 	forall x,y,z: Reg  
 	. x POv y => y POv x 				%(RCC_thm_PO_sym_PO)%
