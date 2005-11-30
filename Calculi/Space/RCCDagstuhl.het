@@ -37,8 +37,8 @@ then %def
 then %implies
      forall x,y,z: Reg  
      . x O y => y O x						%(O_sym)%
-     . x P y /\ y P z => x P z					%(cmps_PP)%	
-     . x P y => x O y
+     . x P y /\ y P z => x P z					%(cmps_PP)%
+     . x P y => x O y						%(P_impl_O)%
 end
 
 
@@ -58,7 +58,7 @@ spec ExtRCCByRCC5Rels[RCC_FO] = %def
 								%(?_def)%
 then %implies
      forall x,y,z:Reg 
-     . x ? y
+     . x ? y							%(triv)%
 
      . x PP y /\ y PP z => x PP	z				%(cmps_PPPP)%	
      . x PP y /\ y PPi z => x ? z  				%(cmps_PPPPi)%
@@ -84,12 +84,11 @@ then %implies
      . x DR y /\ y DR z => x ? z				%(cmps_DRDR)%
      . x DR y /\ y EQ z => x DR	z 				%(cmps_DREQ)%
 
-     . x EQ y /\ z PP z => x PP z   				%(cmps_EQPP)%	
-     . x EQ y /\ z PPi z => x PPi z				%(cmps_EQPPi)%
-     . x EQ y /\ z PO z => x PO	z				%(cmps_EQPO)%
-     . x EQ y /\ z DR z => x DR	z 				%(cmps_EQDR)%
-     . x EQ y /\ z EQ z => x EQ z				%(cmps_EQEQ)%
-
+     . x EQ y /\ y PP z => x PP z   				%(cmps_EQPP)%	
+     . x EQ y /\ y PPi z => x PPi z				%(cmps_EQPPi)%
+     . x EQ y /\ y PO z => x PO	z				%(cmps_EQPO)%
+     . x EQ y /\ y DR z => x DR	z 				%(cmps_EQDR)%
+     . x EQ y /\ y EQ z => x EQ z				%(cmps_EQEQ)%
 
 end
 

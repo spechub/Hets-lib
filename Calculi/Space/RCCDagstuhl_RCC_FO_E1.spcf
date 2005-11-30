@@ -1,0 +1,690 @@
+Configuration:
+
+{"O_sym":=SPASSConfig {timeLimit = Nothing, timeLimitExceeded = False, extraOpts = []},"P_impl_O":=SPASSConfig {timeLimit = Nothing, timeLimitExceeded = False, extraOpts = []},"cmps_PP":=SPASSConfig {timeLimit = Nothing, timeLimitExceeded = False, extraOpts = []}}
+
+Results:
+
+{"O_sym":=
+    (Proved {goalName = "O_sym", usedAxioms = ["O_sym","O_def","ga_non_empty_sort_QReg","declaration0","Ax1"], proverName = "SPASS", proofTree = (), tacticScript = Tactic_script ""},
+     "
+--------------------------SPASS-START-----------------------------
+Input Problem:
+1[0:Inp] ||  -> Reg(skc7)*.
+2[0:Inp] ||  -> QReg(skc6)*.
+3[0:Inp] ||  -> Reg(skc5)*.
+4[0:Inp] ||  -> Reg(skc4)*.
+5[0:Inp] ||  -> QReg(skf9(U))*.
+6[0:Inp] ||  -> __O__(skc5,skc4)*.
+7[0:Inp] ||  -> QReg(skf8(U,V))*.
+8[0:Inp] ||  -> QReg(skf7(U,V))*.
+9[0:Inp] ||  -> QReg(skf6(U,V))*.
+10[0:Inp] ||  -> QReg(skf5(U,V))*.
+11[0:Inp] || __O__(skc4,skc5)* -> .
+12[0:Inp] || Reg(U)* -> QReg(U).
+13[0:Inp] || __C__(U,U)* QReg(U) -> Reg(U).
+14[0:Inp] || Reg(U) QReg(U) -> __C__(U,U)*.
+15[0:Inp] || __C__(U,U) QReg(U) -> __NTP__(skf9(U),U)*.
+16[0:Inp] || __C__(U,U) QReg(U) -> __C__(skf9(U),skf9(U))*.
+17[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(U,V)*.
+18[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(V,V)*.
+19[0:Inp] || QReg(U) QReg(V) -> __NTP__(V,U) __C__(skf7(U,V),V)*.
+20[0:Inp] || QReg(U) QReg(V) -> __P__(V,U) __C__(skf5(U,V),V)*.
+21[0:Inp] || QReg(U) __O__(skf7(U,V),U)* QReg(V) -> __NTP__(V,U).
+22[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),U)*.
+23[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),V)*.
+24[0:Inp] || QReg(U) __C__(skf5(U,V),U)* QReg(V) -> __P__(V,U).
+25[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __C__(skf6(U,V),skf6(U,V))*.
+26[0:Inp] || QReg(U) QReg(V) -> equal(V,U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)*.
+27[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __P__(W,U)* QReg(W) -> __C__(V,U)*.
+28[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __NTP__(W,U)* QReg(W) -> __O__(V,U)*.
+29[0:Inp] || QReg(U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)* QReg(V) -> equal(V,U).
+30[0:Inp] || QReg(U) __P__(V,U)* __P__(V,W)* __C__(V,V)* QReg(V) QReg(W) -> __O__(W,U)*.
+ This is a first-order Non-Horn problem containing equality.
+ This is a problem that contains sort information.
+ All equations are many sorted.
+ The conjecture is ground.
+ Axiom clauses: 26 Conjecture clauses: 4
+ Inferences: IEmS=1 ISoR=1 IEqF=1 ISpR=1 ISpL=1 IORe=1 IOFc=1 
+ Reductions: RFRew=1 RBRew=1 RFMRR=1 RBMRR=1 RObv=1 RUnC=1 RTaut=1 RSST=1 RSSi=1 RFSub=1 RBSub=1 RCon=1 
+ Extras    : Input Saturation, Dynamic Selection, Full Splitting, Full Reduction,  Ratio: 5, FuncWeight: 1, VarWeight: 1
+ Precedence: skf8 > skf7 > skf6 > skf5 > skf3 > skf2 > skf1 > skf0 > skf9 > skf4 > Reg > QReg > __P__ > __O__ > __NTP__ > __C__ > skc7 > skc6 > skc5 > skc4 > skc3 > skc2 > skc1 > skc0
+ Ordering  : KBO
+Processed Problem:
+
+Worked Off Clauses:
+
+Usable Clauses:
+4[0:Inp] ||  -> Reg(skc4)*.
+3[0:Inp] ||  -> Reg(skc5)*.
+1[0:Inp] ||  -> Reg(skc7)*.
+2[0:Inp] ||  -> QReg(skc6)*.
+33[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+35[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+6[0:Inp] ||  -> __O__(skc5,skc4)*.
+5[0:Inp] ||  -> QReg(skf9(U))*.
+32[0:Res:4.0,31.0] ||  -> __C__(skc4,skc4)*.
+34[0:Res:3.0,31.0] ||  -> __C__(skc5,skc5)*.
+11[0:Inp] || __O__(skc4,skc5)* -> .
+10[0:Inp] ||  -> QReg(skf5(U,V))*.
+9[0:Inp] ||  -> QReg(skf6(U,V))*.
+8[0:Inp] ||  -> QReg(skf7(U,V))*.
+7[0:Inp] ||  -> QReg(skf8(U,V))*.
+12[0:Inp] Reg(U) ||  -> QReg(U)*.
+41[0:MRR:37.0,37.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc4)*.
+42[0:MRR:38.0,38.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc5)*.
+31[0:MRR:14.1,12.1] Reg(U) ||  -> __C__(U,U)*.
+43[0:MRR:36.0,36.1,33.0,35.0] ||  -> __C__(skf6(skc4,skc5),skf6(skc4,skc5))*.
+13[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+15[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+44[0:MRR:39.0,39.1,35.0,33.0] QReg(U) || __NTP__(U,skc5)* __C__(skc4,U) -> .
+16[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+17[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+18[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+19[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+20[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+23[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+22[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+21[0:Inp] QReg(U) QReg(V) || __O__(skf7(V,U),V)* -> __NTP__(U,V).
+24[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+45[0:MRR:40.0,40.2,35.0,33.0] QReg(U) || __C__(U,U)* __P__(U,skc4) __P__(U,skc5)* -> .
+25[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __C__(skf6(V,U),skf6(V,U))*.
+26[0:Inp] QReg(U) QReg(V) ||  -> equal(U,V) __C__(skf8(V,U),U)* __C__(skf8(V,U),V)*.
+28[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __NTP__(U,W)* -> __O__(V,W)*.
+27[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __P__(U,W)* -> __C__(V,W)*.
+29[0:Inp] QReg(U) QReg(V) || __C__(skf8(V,U),V)* __C__(skf8(V,U),U)* -> equal(U,V).
+30[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)* __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+	Given clause: 4[0:Inp] ||  -> Reg(skc4)*.
+	Given clause: 3[0:Inp] ||  -> Reg(skc5)*.
+	Given clause: 1[0:Inp] ||  -> Reg(skc7)*.
+	Given clause: 2[0:Inp] ||  -> QReg(skc6)*.
+	Given clause: 6[0:Inp] ||  -> __O__(skc5,skc4)*.
+	Given clause: 33[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+	Given clause: 35[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+	Given clause: 32[0:Res:4.0,31.0] ||  -> __C__(skc4,skc4)*.
+	Given clause: 34[0:Res:3.0,31.0] ||  -> __C__(skc5,skc5)*.
+	Given clause: 5[0:Inp] ||  -> QReg(skf9(U))*.
+	Given clause: 11[0:Inp] || __O__(skc4,skc5)* -> .
+	Given clause: 10[0:Inp] ||  -> QReg(skf5(U,V))*.
+	Given clause: 9[0:Inp] ||  -> QReg(skf6(U,V))*.
+	Given clause: 8[0:Inp] ||  -> QReg(skf7(U,V))*.
+	Given clause: 7[0:Inp] ||  -> QReg(skf8(U,V))*.
+	Given clause: 41[0:MRR:37.0,37.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc4)*.
+	Given clause: 42[0:MRR:38.0,38.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc5)*.
+	Given clause: 12[0:Inp] Reg(U) ||  -> QReg(U)*.
+	Given clause: 31[0:MRR:14.1,12.1] Reg(U) ||  -> __C__(U,U)*.
+	Given clause: 13[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+	Given clause: 43[0:MRR:36.0,36.1,33.0,35.0] ||  -> __C__(skf6(skc4,skc5),skf6(skc4,skc5))*.
+	Given clause: 63[0:SSi:62.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf6(skc4,skc5))*.
+	Given clause: 44[0:MRR:39.0,39.1,35.0,33.0] QReg(U) || __NTP__(U,skc5)* __C__(skc4,U) -> .
+	Given clause: 15[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+	Given clause: 16[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+	Given clause: 66[0:MRR:65.0,34.0] || __C__(skc4,skf9(skc5))* -> .
+	Given clause: 68[0:SSi:67.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(U))*.
+	Given clause: 74[0:SSi:69.0,4.0,33.0] ||  -> Reg(skf9(skc4))*.
+	Given clause: 75[0:SSi:70.0,3.0,35.0] ||  -> Reg(skf9(skc5))*.
+	Given clause: 17[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+	Given clause: 77[0:SSi:72.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf9(skf6(skc4,skc5)))*.
+	Given clause: 76[0:SSi:71.1,12.1] Reg(U) ||  -> Reg(skf9(U))*.
+	Given clause: 78[0:SSi:73.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(U)))*.
+	Given clause: 94[0:SSi:89.0,4.0,33.0] ||  -> Reg(skf9(skf9(skc4)))*.
+	Given clause: 18[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+	Given clause: 95[0:SSi:90.0,3.0,35.0] ||  -> Reg(skf9(skf9(skc5)))*.
+	Given clause: 97[0:SSi:92.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf6(skc4,skc5))))*.
+	Given clause: 96[0:SSi:91.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(U)))*.
+	Given clause: 98[0:SSi:93.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(skf9(U))))*.
+	Given clause: 19[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+	Given clause: 114[0:SSi:109.0,4.0,33.0] ||  -> Reg(skf9(skf9(skf9(skc4))))*.
+	Given clause: 115[0:SSi:110.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skc5))))*.
+	Given clause: 117[0:SSi:112.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skf6(skc4,skc5)))))*.
+	Given clause: 116[0:SSi:111.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(skf9(U))))*.
+	Given clause: 20[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+	Given clause: 118[0:SSi:113.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(skf9(skf9(U)))))*.
+	Given clause: 136[0:SSi:131.0,4.0,33.0] ||  -> Reg(skf9(skf9(skf9(skf9(skc4)))))*.
+	Given clause: 137[0:SSi:132.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skf9(skc5)))))*.
+	Given clause: 139[0:SSi:134.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skf9(skf6(skc4,skc5))))))*.
+	Given clause: 23[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+	Given clause: 138[0:SSi:133.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(skf9(skf9(U)))))*.
+	Given clause: 140[0:SSi:135.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(skf9(skf9(skf9(U))))))*.
+	Given clause: 146[0:SSi:141.0,4.0,33.0] ||  -> Reg(skf9(skf9(skf9(skf9(skf9(skc4))))))*.
+	Given clause: 147[0:SSi:142.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skf9(skf9(skc5))))))*.
+	Given clause: 22[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+	Given clause: 149[0:SSi:144.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf9(skf9(skf9(skf9(skf9(skf6(skc4,skc5)))))))*.
+	Given clause: 148[0:SSi:143.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(skf9(skf9(skf9(U))))))*.
+	Given clause: 122[0:SSi:121.1,8.0] QReg(U) QReg(V) ||  -> __NTP__(V,U) __C__(V,skf7(U,V))*.
+	Given clause: 154[0:SSi:153.2,8.0] QReg(U) QReg(V) ||  -> __NTP__(V,U)* __C__(V,V)*.
+	Given clause: 21[0:Inp] QReg(U) QReg(V) || __O__(skf7(V,U),V)* -> __NTP__(U,V).
+	Given clause: 168[0:SSi:167.0,3.0,35.0] QReg(U) || __C__(skc4,U)* -> __C__(U,U)*.
+	Given clause: 165[0:Obv:162.1] QReg(U) QReg(V) ||  -> __NTP__(V,U)* Reg(V).
+	Given clause: 180[0:SSi:179.0,3.0,35.0] QReg(U) || __C__(skc4,U)* -> Reg(U).
+	Given clause: 184[0:SSi:183.2,183.1,8.0,4.0,33.0,4.0,33.0] QReg(U) ||  -> __NTP__(skc4,U) Reg(skf7(U,skc4))*.
+	Given clause: 24[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+	Given clause: 186[0:Obv:185.4] QReg(U) ||  -> __P__(U,U)*.
+	Given clause: 166[0:Obv:161.1] QReg(U) QReg(V) ||  -> __NTP__(V,U)* Reg(skf9(V))*.
+	Given clause: 169[0:Obv:160.1] QReg(U) QReg(V) ||  -> __NTP__(V,U)* Reg(skf9(skf9(V)))*.
+	Given clause: 170[0:Obv:159.1] QReg(U) QReg(V) ||  -> __NTP__(V,U)* Reg(skf9(skf9(skf9(V))))*.
+	Given clause: 25[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __C__(skf6(V,U),skf6(V,U))*.
+	Given clause: 195[0:SSi:192.2,9.0] QReg(U) QReg(V) || __O__(U,V) -> Reg(skf6(V,U))*.
+	Given clause: 128[0:SSi:127.1,10.0] QReg(U) QReg(V) ||  -> __P__(V,U) __C__(V,skf5(U,V))*.
+	Given clause: 207[0:SSi:203.2,203.1,10.0,4.0,33.0,4.0,33.0] QReg(U) ||  -> __P__(skc4,U) Reg(skf5(U,skc4))*.
+	Given clause: 209[0:SSi:208.2,10.0] QReg(U) QReg(V) ||  -> __P__(V,U)* __C__(V,V)*.
+	Given clause: 26[0:Inp] QReg(U) QReg(V) ||  -> equal(U,V) __C__(skf8(V,U),U)* __C__(skf8(V,U),V)*.
+	Given clause: 219[0:Obv:216.1] QReg(U) QReg(V) ||  -> __P__(V,U)* Reg(V).
+	Given clause: 220[0:Obv:215.1] QReg(U) QReg(V) ||  -> __P__(V,U)* Reg(skf9(V))*.
+	Given clause: 221[0:Obv:214.1] QReg(U) QReg(V) ||  -> __P__(V,U)* Reg(skf9(skf9(V)))*.
+	Given clause: 222[0:Obv:213.1] QReg(U) QReg(V) ||  -> __P__(V,U)* Reg(skf9(skf9(skf9(V))))*.
+	Given clause: 28[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __NTP__(U,W)* -> __O__(V,W)*.
+	Given clause: 255[0:SSi:254.0,4.0,33.0] QReg(U) || __NTP__(skc4,U) -> __O__(skc4,U)*.
+	Given clause: 281[0:SSi:280.0,3.0,35.0] || __NTP__(skc4,skc5)* -> .
+	Given clause: 257[0:SSi:256.0,3.0,35.0] QReg(U) || __NTP__(skc5,U) -> __O__(skc5,U)*.
+	Given clause: 259[0:SSi:258.1,12.1] Reg(U) QReg(V) || __NTP__(U,V) -> __O__(U,V)*.
+	Given clause: 27[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __P__(U,W)* -> __C__(V,W)*.
+	Given clause: 302[0:SSi:301.0,4.0,33.0] QReg(U) || __P__(skc4,U)* -> __C__(skc4,U).
+	Given clause: 304[0:SSi:303.0,3.0,35.0] QReg(U) || __P__(skc5,U)* -> __C__(skc5,U).
+	Given clause: 306[0:SSi:305.1,12.1] Reg(U) QReg(V) || __P__(U,V)* -> __C__(U,V).
+	Given clause: 364[0:SSi:353.1,353.0,4.0,33.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> __C__(skf6(skc4,skc5),skc4)*.
+	Given clause: 29[0:Inp] QReg(U) QReg(V) || __C__(skf8(V,U),V)* __C__(skf8(V,U),U)* -> equal(U,V).
+	Given clause: 365[0:SSi:354.1,354.0,3.0,35.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> __C__(skf6(skc4,skc5),skc5)*.
+	Given clause: 379[0:SSi:378.1,378.0,4.0,33.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> __C__(skc4,skf6(skc4,skc5))*.
+	Given clause: 387[0:SSi:386.1,386.0,3.0,35.0,63.0,9.0,4.0,33.0,3.0,35.0] ||  -> __C__(skc5,skf6(skc4,skc5))*.
+	Given clause: 380[0:SSi:376.1,376.0,63.0,9.0,4.0,33.0,3.0,35.0,4.0,33.0] QReg(U) || __NTP__(skc4,U) -> __O__(skf6(skc4,skc5),U)*.
+	Given clause: 30[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)* __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+	Given clause: 381[0:SSi:375.1,375.0,63.0,9.0,4.0,33.0,3.0,35.0,4.0,33.0] QReg(U) || __P__(skc4,U) -> __C__(skf6(skc4,skc5),U)*.
+	Given clause: 388[0:SSi:384.1,384.0,63.0,9.0,4.0,33.0,3.0,35.0,3.0,35.0] QReg(U) || __NTP__(skc5,U) -> __O__(skf6(skc4,skc5),U)*.
+	Given clause: 389[0:SSi:383.1,383.0,63.0,9.0,4.0,33.0,3.0,35.0,3.0,35.0] QReg(U) || __P__(skc5,U) -> __C__(skf6(skc4,skc5),U)*.
+	Given clause: 396[0:SSi:393.1,393.0,4.0,33.0,63.0,9.0,4.0,33.0,3.0,35.0] QReg(U) || __NTP__(skf6(skc4,skc5),U)* -> __O__(skc4,U).
+	Given clause: 45[0:MRR:40.0,40.2,35.0,33.0] QReg(U) || __C__(U,U)* __P__(U,skc4) __P__(U,skc5)* -> .
+SPASS V 2.1 
+SPASS beiseite: Proof found.
+Problem: Read from stdin. 
+SPASS derived 217 clauses, backtracked 0 clauses and kept 165 clauses.
+SPASS allocated 819 KBytes.
+SPASS spent	0:00:00.06 on the problem.
+		0:00:00.00 for the input.
+		0:00:00.01 for the FLOTTER CNF translation.
+		0:00:00.01 for inferences.
+		0:00:00.00 for the backtracking.
+		0:00:00.03 for the reduction.
+
+
+Here is a proof with depth 2, length 26 :
+3[0:Inp] ||  -> Reg(skc5)*.
+4[0:Inp] ||  -> Reg(skc4)*.
+6[0:Inp] ||  -> __O__(skc5,skc4)*.
+9[0:Inp] ||  -> QReg(skf6(U,V))*.
+11[0:Inp] || __O__(skc4,skc5)* -> .
+12[0:Inp] Reg(U) ||  -> QReg(U)*.
+13[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+22[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+23[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+25[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __C__(skf6(V,U),skf6(V,U))*.
+30[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)*+ __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+33[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+35[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+36[0:Res:6.0,25.2] QReg(skc4) QReg(skc5) ||  -> __C__(skf6(skc4,skc5),skf6(skc4,skc5))*.
+37[0:Res:6.0,22.2] QReg(skc4) QReg(skc5) ||  -> __P__(skf6(skc4,skc5),skc4)*.
+38[0:Res:6.0,23.2] QReg(skc4) QReg(skc5) ||  -> __P__(skf6(skc4,skc5),skc5)*.
+40[0:Res:30.6,11.0] QReg(skc5) QReg(U) QReg(skc4) || __C__(U,U)* __P__(U,skc5)* __P__(U,skc4) -> .
+41[0:MRR:37.0,37.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc4)*.
+42[0:MRR:38.0,38.1,33.0,35.0] ||  -> __P__(skf6(skc4,skc5),skc5)*.
+43[0:MRR:36.0,36.1,33.0,35.0] ||  -> __C__(skf6(skc4,skc5),skf6(skc4,skc5))*.
+45[0:MRR:40.0,40.2,35.0,33.0] QReg(U) || __C__(U,U)*+ __P__(U,skc4) __P__(U,skc5)* -> .
+62[0:Res:43.0,13.1] QReg(skf6(skc4,skc5)) ||  -> Reg(skf6(skc4,skc5))*.
+63[0:SSi:62.0,9.0,4.0,33.0,3.0,35.0] ||  -> Reg(skf6(skc4,skc5))*.
+488[0:Res:43.0,45.1] QReg(skf6(skc4,skc5)) || __P__(skf6(skc4,skc5),skc4) __P__(skf6(skc4,skc5),skc5)* -> .
+498[0:SSi:488.0,63.0,9.0,4.0,33.0,3.0,35.0] || __P__(skf6(skc4,skc5),skc4) __P__(skf6(skc4,skc5),skc5)* -> .
+499[0:MRR:498.0,498.1,41.0,42.0] ||  -> .
+Formulae used in the proof : O_sym O_def ga_non_empty_sort_QReg declaration0 Ax1
+
+--------------------------SPASS-STOP------------------------------
+")
+"P_impl_O":=
+    (Proved {goalName = "P_impl_O", usedAxioms = ["P_impl_O","declaration0","Ax1","P_def","ga_non_empty_sort_QReg","O_def"], proverName = "SPASS", proofTree = (), tacticScript = Tactic_script ""},
+     "
+--------------------------SPASS-START-----------------------------
+Input Problem:
+1[0:Inp] ||  -> Reg(skc7)*.
+2[0:Inp] ||  -> QReg(skc6)*.
+3[0:Inp] ||  -> Reg(skc5)*.
+4[0:Inp] ||  -> Reg(skc4)*.
+5[0:Inp] ||  -> QReg(skf9(U))*.
+6[0:Inp] ||  -> __P__(skc5,skc4)*.
+7[0:Inp] ||  -> QReg(skf8(U,V))*.
+8[0:Inp] ||  -> QReg(skf7(U,V))*.
+9[0:Inp] ||  -> QReg(skf6(U,V))*.
+10[0:Inp] ||  -> QReg(skf5(U,V))*.
+11[0:Inp] || __O__(skc5,skc4)* -> .
+12[0:Inp] || Reg(U)* -> QReg(U).
+13[0:Inp] || __C__(U,U)* QReg(U) -> Reg(U).
+14[0:Inp] || Reg(U) QReg(U) -> __C__(U,U)*.
+15[0:Inp] || __C__(U,U) QReg(U) -> __NTP__(skf9(U),U)*.
+16[0:Inp] || __C__(U,U) QReg(U) -> __C__(skf9(U),skf9(U))*.
+17[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(U,V)*.
+18[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(V,V)*.
+19[0:Inp] || Reg(U) __O__(V,U)* Reg(V) -> __O__(U,V)*.
+20[0:Inp] || QReg(U) QReg(V) -> __NTP__(V,U) __C__(skf7(U,V),V)*.
+21[0:Inp] || QReg(U) QReg(V) -> __P__(V,U) __C__(skf5(U,V),V)*.
+22[0:Inp] || QReg(U) __O__(skf7(U,V),U)* QReg(V) -> __NTP__(V,U).
+23[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),U)*.
+24[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),V)*.
+25[0:Inp] || QReg(U) __C__(skf5(U,V),U)* QReg(V) -> __P__(V,U).
+26[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __C__(skf6(U,V),skf6(U,V))*.
+27[0:Inp] || QReg(U) QReg(V) -> equal(V,U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)*.
+28[0:Inp] || Reg(U) Reg(V) __P__(V,U)* __P__(W,V)* Reg(W) -> __P__(W,U)*.
+29[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __P__(W,U)* QReg(W) -> __C__(V,U)*.
+30[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __NTP__(W,U)* QReg(W) -> __O__(V,U)*.
+31[0:Inp] || QReg(U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)* QReg(V) -> equal(V,U).
+32[0:Inp] || QReg(U) __P__(V,U)* __P__(V,W)* __C__(V,V)* QReg(V) QReg(W) -> __O__(W,U)*.
+ This is a first-order Non-Horn problem containing equality.
+ This is a problem that contains sort information.
+ All equations are many sorted.
+ The conjecture is ground.
+ Axiom clauses: 28 Conjecture clauses: 4
+ Inferences: IEmS=1 ISoR=1 IEqF=1 ISpR=1 ISpL=1 IORe=1 IOFc=1 
+ Reductions: RFRew=1 RBRew=1 RFMRR=1 RBMRR=1 RObv=1 RUnC=1 RTaut=1 RSST=1 RSSi=1 RFSub=1 RBSub=1 RCon=1 
+ Extras    : Input Saturation, Dynamic Selection, Full Splitting, Full Reduction,  Ratio: 5, FuncWeight: 1, VarWeight: 1
+ Precedence: skf8 > skf7 > skf6 > skf5 > skf3 > skf2 > skf1 > skf0 > skf9 > skf4 > Reg > QReg > __P__ > __O__ > __NTP__ > __C__ > skc7 > skc6 > skc5 > skc4 > skc3 > skc2 > skc1 > skc0
+ Ordering  : KBO
+Processed Problem:
+
+Worked Off Clauses:
+
+Usable Clauses:
+4[0:Inp] ||  -> Reg(skc4)*.
+3[0:Inp] ||  -> Reg(skc5)*.
+1[0:Inp] ||  -> Reg(skc7)*.
+2[0:Inp] ||  -> QReg(skc6)*.
+37[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+44[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+6[0:Inp] ||  -> __P__(skc5,skc4)*.
+5[0:Inp] ||  -> QReg(skf9(U))*.
+36[0:Res:4.0,33.0] ||  -> __C__(skc4,skc4)*.
+43[0:Res:3.0,33.0] ||  -> __C__(skc5,skc5)*.
+11[0:Inp] || __O__(skc5,skc4)* -> .
+10[0:Inp] ||  -> QReg(skf5(U,V))*.
+9[0:Inp] ||  -> QReg(skf6(U,V))*.
+8[0:Inp] ||  -> QReg(skf7(U,V))*.
+7[0:Inp] ||  -> QReg(skf8(U,V))*.
+56[0:MRR:55.0,55.1,3.0,4.0] || __O__(skc4,skc5)* -> .
+12[0:Inp] Reg(U) ||  -> QReg(U)*.
+33[0:MRR:14.1,12.1] Reg(U) ||  -> __C__(U,U)*.
+71[0:Res:4.0,57.0] || __P__(skc4,skc5)* -> __P__(skc4,skc4).
+13[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+61[0:MRR:50.1,50.2,50.3,44.0,37.0,43.0] QReg(U) || __P__(skc5,U)* -> __O__(skc4,U).
+58[0:MRR:51.1,51.2,4.0,3.0] Reg(U) || __P__(skc4,U) -> __P__(skc5,U)*.
+35[0:Res:4.0,19.0] Reg(U) || __O__(U,skc4)* -> __O__(skc4,U)*.
+42[0:Res:3.0,19.0] Reg(U) || __O__(U,skc5)* -> __O__(skc5,U)*.
+39[0:Res:4.0,19.1] Reg(U) || __O__(skc4,U)* -> __O__(U,skc4)*.
+46[0:Res:3.0,19.1] Reg(U) || __O__(skc5,U)* -> __O__(U,skc5)*.
+62[0:MRR:48.0,48.1,48.3,37.0,44.0,43.0] QReg(U) || __P__(skc5,U)* -> __O__(U,skc4).
+59[0:MRR:52.0,52.2,37.0,44.0] QReg(U) || __C__(U,skc5)* -> __C__(U,skc4).
+57[0:MRR:49.0,49.1,4.0,3.0] Reg(U) || __P__(U,skc5)* -> __P__(U,skc4).
+15[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+60[0:MRR:53.0,53.1,37.0,44.0] QReg(U) || __NTP__(U,skc4)* __C__(skc5,U) -> .
+16[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+19[0:Inp] Reg(U) Reg(V) || __O__(U,V)* -> __O__(V,U)*.
+17[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+18[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+20[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+21[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+78[0:Res:4.0,41.1] Reg(U) || __P__(U,skc5)* __P__(skc4,U)* -> __P__(skc4,skc5)*.
+67[0:Res:4.0,40.0] Reg(U) || __P__(U,skc4)* __P__(skc4,U)* -> __P__(skc4,skc4)*.
+77[0:Res:4.0,45.1] Reg(U) || __P__(skc5,U)* __P__(skc4,skc5) -> __P__(skc4,U).
+66[0:Res:4.0,41.0] Reg(U) || __P__(U,skc4) __P__(skc4,skc5)* -> __P__(U,skc5)*.
+24[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+23[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+22[0:Inp] QReg(U) QReg(V) || __O__(skf7(V,U),V)* -> __NTP__(U,V).
+25[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+63[0:MRR:54.0,54.2,37.0,44.0] QReg(U) || __C__(U,U)* __P__(U,skc5)* __P__(U,skc4) -> .
+26[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __C__(skf6(V,U),skf6(V,U))*.
+40[0:Res:4.0,28.2] Reg(U) Reg(V) || __P__(U,V)* __P__(skc4,U)* -> __P__(skc4,V)*.
+47[0:Res:3.0,28.2] Reg(U) Reg(V) || __P__(U,V)* __P__(skc5,U)* -> __P__(skc5,V)*.
+34[0:Res:4.0,28.0] Reg(U) Reg(V) || __P__(U,V)* __P__(V,skc4)* -> __P__(U,skc4)*.
+41[0:Res:3.0,28.0] Reg(U) Reg(V) || __P__(U,V)* __P__(V,skc5)* -> __P__(U,skc5)*.
+38[0:Res:4.0,28.1] Reg(U) Reg(V) || __P__(U,skc4)* __P__(skc4,V)* -> __P__(U,V)*.
+45[0:Res:3.0,28.1] Reg(U) Reg(V) || __P__(U,skc5)* __P__(skc5,V)* -> __P__(U,V)*.
+27[0:Inp] QReg(U) QReg(V) ||  -> equal(U,V) __C__(skf8(V,U),U)* __C__(skf8(V,U),V)*.
+30[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __NTP__(U,W)* -> __O__(V,W)*.
+29[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __P__(U,W)* -> __C__(V,W)*.
+28[0:Inp] Reg(U) Reg(V) Reg(W) || __P__(V,W)* __P__(U,V)* -> __P__(U,W)*.
+31[0:Inp] QReg(U) QReg(V) || __C__(skf8(V,U),V)* __C__(skf8(V,U),U)* -> equal(U,V).
+32[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)* __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+	Given clause: 4[0:Inp] ||  -> Reg(skc4)*.
+	Given clause: 3[0:Inp] ||  -> Reg(skc5)*.
+	Given clause: 1[0:Inp] ||  -> Reg(skc7)*.
+	Given clause: 2[0:Inp] ||  -> QReg(skc6)*.
+	Given clause: 6[0:Inp] ||  -> __P__(skc5,skc4)*.
+	Given clause: 37[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+	Given clause: 44[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+	Given clause: 36[0:Res:4.0,33.0] ||  -> __C__(skc4,skc4)*.
+	Given clause: 43[0:Res:3.0,33.0] ||  -> __C__(skc5,skc5)*.
+	Given clause: 5[0:Inp] ||  -> QReg(skf9(U))*.
+	Given clause: 11[0:Inp] || __O__(skc5,skc4)* -> .
+	Given clause: 56[0:MRR:55.0,55.1,3.0,4.0] || __O__(skc4,skc5)* -> .
+	Given clause: 10[0:Inp] ||  -> QReg(skf5(U,V))*.
+	Given clause: 9[0:Inp] ||  -> QReg(skf6(U,V))*.
+	Given clause: 8[0:Inp] ||  -> QReg(skf7(U,V))*.
+	Given clause: 7[0:Inp] ||  -> QReg(skf8(U,V))*.
+	Given clause: 12[0:Inp] Reg(U) ||  -> QReg(U)*.
+	Given clause: 33[0:MRR:14.1,12.1] Reg(U) ||  -> __C__(U,U)*.
+	Given clause: 71[0:Res:4.0,57.0] || __P__(skc4,skc5)* -> __P__(skc4,skc4).
+	Given clause: 13[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+	Given clause: 61[0:MRR:50.1,50.2,50.3,44.0,37.0,43.0] QReg(U) || __P__(skc5,U)* -> __O__(skc4,U).
+	Given clause: 99[0:SSi:98.0,4.0,37.0] ||  -> __O__(skc4,skc4)*.
+	Given clause: 58[0:MRR:51.1,51.2,4.0,3.0] Reg(U) || __P__(skc4,U) -> __P__(skc5,U)*.
+	Given clause: 35[0:Res:4.0,19.0] Reg(U) || __O__(U,skc4)* -> __O__(skc4,U)*.
+	Given clause: 15[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+	Given clause: 42[0:Res:3.0,19.0] Reg(U) || __O__(U,skc5)* -> __O__(skc5,U)*.
+	Given clause: 39[0:Res:4.0,19.1] Reg(U) || __O__(skc4,U)* -> __O__(U,skc4)*.
+	Given clause: 46[0:Res:3.0,19.1] Reg(U) || __O__(skc5,U)* -> __O__(U,skc5)*.
+	Given clause: 62[0:MRR:48.0,48.1,48.3,37.0,44.0,43.0] QReg(U) || __P__(skc5,U)* -> __O__(U,skc4).
+	Given clause: 16[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+	Given clause: 59[0:MRR:52.0,52.2,37.0,44.0] QReg(U) || __C__(U,skc5)* -> __C__(U,skc4).
+	Given clause: 111[0:SSi:109.0,3.0,44.0] ||  -> __C__(skc5,skc4)*.
+	Given clause: 57[0:MRR:49.0,49.1,4.0,3.0] Reg(U) || __P__(U,skc5)* -> __P__(U,skc4).
+	Given clause: 101[0:SSi:100.1,12.1] Reg(U) || __P__(skc4,U)* -> __O__(skc4,U).
+	Given clause: 19[0:Inp] Reg(U) Reg(V) || __O__(U,V)* -> __O__(V,U)*.
+	Given clause: 106[0:SSi:105.1,12.1] Reg(U) || __P__(skc4,U)* -> __O__(U,skc4).
+	Given clause: 108[0:SSi:107.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(U))*.
+	Given clause: 120[0:SSi:116.0,4.0,37.0] ||  -> Reg(skf9(skc4))*.
+	Given clause: 121[0:SSi:117.0,3.0,44.0] ||  -> Reg(skf9(skc5))*.
+	Given clause: 17[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+	Given clause: 131[0:SSi:126.1,126.0,4.0,37.0,3.0,44.0] ||  -> __C__(skc4,skc5)*.
+	Given clause: 122[0:SSi:118.1,12.1] Reg(U) ||  -> Reg(skf9(U))*.
+	Given clause: 60[0:MRR:53.0,53.1,37.0,44.0] QReg(U) || __NTP__(U,skc4)* __C__(skc5,U) -> .
+	Given clause: 138[0:MRR:137.0,36.0] || __C__(skc5,skf9(skc4))* -> .
+	Given clause: 18[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+	Given clause: 123[0:SSi:119.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(U)))*.
+	Given clause: 153[0:SSi:149.0,4.0,37.0] ||  -> Reg(skf9(skf9(skc4)))*.
+	Given clause: 154[0:SSi:150.0,3.0,44.0] ||  -> Reg(skf9(skf9(skc5)))*.
+	Given clause: 155[0:SSi:151.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(U)))*.
+	Given clause: 20[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+	Given clause: 160[0:SSi:157.2,157.0,8.0,3.0,44.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) __C__(skf7(U,skc5),skc4)*.
+	Given clause: 167[0:SSi:166.2,166.1,4.0,37.0,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) __C__(skc4,skf7(U,skc5))*.
+	Given clause: 156[0:SSi:152.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(skf9(U))))*.
+	Given clause: 175[0:SSi:171.0,4.0,37.0] ||  -> Reg(skf9(skf9(skf9(skc4))))*.
+	Given clause: 21[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+	Given clause: 176[0:SSi:172.0,3.0,44.0] ||  -> Reg(skf9(skf9(skf9(skc5))))*.
+	Given clause: 177[0:SSi:173.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(skf9(U))))*.
+	Given clause: 182[0:SSi:179.2,179.0,10.0,3.0,44.0,3.0,44.0] QReg(U) ||  -> __P__(skc5,U) __C__(skf5(U,skc5),skc4)*.
+	Given clause: 189[0:SSi:188.2,188.1,4.0,37.0,10.0,3.0,44.0] QReg(U) ||  -> __P__(skc5,U) __C__(skc4,skf5(U,skc5))*.
+	Given clause: 24[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+	Given clause: 168[0:SSi:165.2,165.1,4.0,37.0,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) __C__(skf7(U,skc5),skf7(U,skc5))*.
+	Given clause: 201[0:SSi:198.1,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) Reg(skf7(U,skc5))*.
+	Given clause: 202[0:SSi:197.1,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) Reg(skf9(skf7(U,skc5)))*.
+	Given clause: 203[0:SSi:196.1,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) Reg(skf9(skf9(skf7(U,skc5))))*.
+	Given clause: 23[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+	Given clause: 204[0:SSi:195.1,8.0,3.0,44.0] QReg(U) ||  -> __NTP__(skc5,U) Reg(skf9(skf9(skf9(skf7(U,skc5)))))*.
+	Given clause: 178[0:SSi:174.1,5.0] QReg(U) || __C__(U,U)* -> Reg(skf9(skf9(skf9(skf9(U)))))*.
+	Given clause: 214[0:SSi:209.0,4.0,37.0] ||  -> Reg(skf9(skf9(skf9(skf9(skc4)))))*.
+	Given clause: 215[0:SSi:210.0,3.0,44.0] ||  -> Reg(skf9(skf9(skf9(skf9(skc5)))))*.
+	Given clause: 22[0:Inp] QReg(U) QReg(V) || __O__(skf7(V,U),V)* -> __NTP__(U,V).
+	Given clause: 216[0:SSi:211.1,12.1] Reg(U) ||  -> Reg(skf9(skf9(skf9(skf9(U)))))*.
+	Given clause: 190[0:SSi:187.2,187.1,4.0,37.0,10.0,3.0,44.0] QReg(U) ||  -> __P__(skc5,U) __C__(skf5(U,skc5),skf5(U,skc5))*.
+	Given clause: 226[0:SSi:223.1,10.0,3.0,44.0] QReg(U) ||  -> __P__(skc5,U) Reg(skf5(U,skc5))*.
+	Given clause: 227[0:SSi:222.1,10.0,3.0,44.0] QReg(U) ||  -> __P__(skc5,U) Reg(skf9(skf5(U,skc5)))*.
+	Given clause: 25[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+	Given clause: 236[0:Obv:233.4] QReg(U) ||  -> __P__(U,U)*.
+SPASS V 2.1 
+SPASS beiseite: Proof found.
+Problem: Read from stdin. 
+SPASS derived 121 clauses, backtracked 0 clauses and kept 107 clauses.
+SPASS allocated 686 KBytes.
+SPASS spent	0:00:00.04 on the problem.
+		0:00:00.00 for the input.
+		0:00:00.00 for the FLOTTER CNF translation.
+		0:00:00.00 for inferences.
+		0:00:00.00 for the backtracking.
+		0:00:00.01 for the reduction.
+
+
+Here is a proof with depth 2, length 21 :
+3[0:Inp] ||  -> Reg(skc5)*.
+4[0:Inp] ||  -> Reg(skc4)*.
+6[0:Inp] ||  -> __P__(skc5,skc4)*.
+11[0:Inp] || __O__(skc5,skc4)* -> .
+12[0:Inp] Reg(U) ||  -> QReg(U)*.
+14[0:Inp] Reg(U) QReg(U) ||  -> __C__(U,U)*.
+21[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+25[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+32[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)* __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+33[0:MRR:14.1,12.1] Reg(U) ||  -> __C__(U,U)*.
+37[0:Res:4.0,12.0] ||  -> QReg(skc4)*.
+43[0:Res:3.0,33.0] ||  -> __C__(skc5,skc5)*.
+44[0:Res:3.0,12.0] ||  -> QReg(skc5)*.
+48[0:Res:6.0,32.4] QReg(skc4) QReg(skc5) QReg(U) || __C__(skc5,skc5) __P__(skc5,U)* -> __O__(U,skc4).
+62[0:MRR:48.0,48.1,48.3,37.0,44.0,43.0] QReg(U) || __P__(skc5,U)* -> __O__(U,skc4).
+233[0:Res:21.3,25.2] QReg(U) QReg(U) QReg(U) QReg(U) ||  -> __P__(U,U)* __P__(U,U)*.
+236[0:Obv:233.4] QReg(U) ||  -> __P__(U,U)*.
+237[0:Res:236.1,62.1] QReg(skc5) QReg(skc5) ||  -> __O__(skc5,skc4)*.
+242[0:Obv:237.0] QReg(skc5) ||  -> __O__(skc5,skc4)*.
+243[0:SSi:242.0,3.0,44.0] ||  -> __O__(skc5,skc4)*.
+244[0:MRR:243.0,11.0] ||  -> .
+Formulae used in the proof : P_impl_O declaration0 Ax1 P_def ga_non_empty_sort_QReg O_def
+
+--------------------------SPASS-STOP------------------------------
+")
+"cmps_PP":=
+    (Proved {goalName = "cmps_PP", usedAxioms = ["cmps_PP","P_def","ga_non_empty_sort_QReg","declaration0","Ax1","C_non_null"], proverName = "SPASS", proofTree = (), tacticScript = Tactic_script ""},
+     "
+--------------------------SPASS-START-----------------------------
+Input Problem:
+1[0:Inp] ||  -> Reg(skc9)*.
+2[0:Inp] ||  -> QReg(skc8)*.
+3[0:Inp] ||  -> Reg(skc7)*.
+4[0:Inp] ||  -> Reg(skc6)*.
+5[0:Inp] ||  -> Reg(skc5)*.
+6[0:Inp] ||  -> QReg(skf9(U))*.
+7[0:Inp] ||  -> __P__(skc7,skc6)*.
+8[0:Inp] ||  -> __P__(skc6,skc5)*.
+9[0:Inp] ||  -> QReg(skf8(U,V))*.
+10[0:Inp] ||  -> QReg(skf7(U,V))*.
+11[0:Inp] ||  -> QReg(skf6(U,V))*.
+12[0:Inp] ||  -> QReg(skf5(U,V))*.
+13[0:Inp] || __P__(skc7,skc5)* -> .
+14[0:Inp] || Reg(U)* -> QReg(U).
+15[0:Inp] || __C__(U,U)* QReg(U) -> Reg(U).
+16[0:Inp] || Reg(U) QReg(U) -> __C__(U,U)*.
+17[0:Inp] || __C__(U,U) QReg(U) -> __NTP__(skf9(U),U)*.
+18[0:Inp] || __C__(U,U) QReg(U) -> __C__(skf9(U),skf9(U))*.
+19[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(U,V)*.
+20[0:Inp] || QReg(U) __C__(V,U)* QReg(V) -> __C__(V,V)*.
+21[0:Inp] || Reg(U) __O__(V,U)* Reg(V) -> __O__(U,V)*.
+22[0:Inp] || QReg(U) QReg(V) -> __NTP__(V,U) __C__(skf7(U,V),V)*.
+23[0:Inp] || QReg(U) QReg(V) -> __P__(V,U) __C__(skf5(U,V),V)*.
+24[0:Inp] || QReg(U) __O__(skf7(U,V),U)* QReg(V) -> __NTP__(V,U).
+25[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),U)*.
+26[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __P__(skf6(U,V),V)*.
+27[0:Inp] || QReg(U) __C__(skf5(U,V),U)* QReg(V) -> __P__(V,U).
+28[0:Inp] || QReg(U) __O__(V,U) QReg(V) -> __C__(skf6(U,V),skf6(U,V))*.
+29[0:Inp] || QReg(U) QReg(V) -> equal(V,U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)*.
+30[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __P__(W,U)* QReg(W) -> __C__(V,U)*.
+31[0:Inp] || QReg(U) __C__(V,W)* QReg(V) __NTP__(W,U)* QReg(W) -> __O__(V,U)*.
+32[0:Inp] || QReg(U) __C__(skf8(U,V),U)* __C__(skf8(U,V),V)* QReg(V) -> equal(V,U).
+33[0:Inp] || QReg(U) __P__(V,U)* __P__(V,W)* __C__(V,V)* QReg(V) QReg(W) -> __O__(W,U)*.
+ This is a first-order Non-Horn problem containing equality.
+ This is a problem that contains sort information.
+ All equations are many sorted.
+ The conjecture is ground.
+ Axiom clauses: 27 Conjecture clauses: 6
+ Inferences: IEmS=1 ISoR=1 IEqF=1 ISpR=1 ISpL=1 IORe=1 IOFc=1 
+ Reductions: RFRew=1 RBRew=1 RFMRR=1 RBMRR=1 RObv=1 RUnC=1 RTaut=1 RSST=1 RSSi=1 RFSub=1 RBSub=1 RCon=1 
+ Extras    : Input Saturation, Dynamic Selection, Full Splitting, Full Reduction,  Ratio: 5, FuncWeight: 1, VarWeight: 1
+ Precedence: skf8 > skf7 > skf6 > skf5 > skf3 > skf2 > skf1 > skf0 > skf9 > skf4 > Reg > QReg > __P__ > __O__ > __NTP__ > __C__ > skc9 > skc8 > skc7 > skc6 > skc5 > skc4 > skc3 > skc2 > skc1 > skc0
+ Ordering  : KBO
+Processed Problem:
+
+Worked Off Clauses:
+
+Usable Clauses:
+5[0:Inp] ||  -> Reg(skc5)*.
+4[0:Inp] ||  -> Reg(skc6)*.
+3[0:Inp] ||  -> Reg(skc7)*.
+1[0:Inp] ||  -> Reg(skc9)*.
+2[0:Inp] ||  -> QReg(skc8)*.
+37[0:Res:5.0,14.0] ||  -> QReg(skc5)*.
+41[0:Res:4.0,14.0] ||  -> QReg(skc6)*.
+45[0:Res:3.0,14.0] ||  -> QReg(skc7)*.
+8[0:Inp] ||  -> __P__(skc6,skc5)*.
+7[0:Inp] ||  -> __P__(skc7,skc6)*.
+6[0:Inp] ||  -> QReg(skf9(U))*.
+36[0:Res:5.0,34.0] ||  -> __C__(skc5,skc5)*.
+40[0:Res:4.0,34.0] ||  -> __C__(skc6,skc6)*.
+44[0:Res:3.0,34.0] ||  -> __C__(skc7,skc7)*.
+13[0:Inp] || __P__(skc7,skc5)* -> .
+12[0:Inp] ||  -> QReg(skf5(U,V))*.
+11[0:Inp] ||  -> QReg(skf6(U,V))*.
+10[0:Inp] ||  -> QReg(skf7(U,V))*.
+9[0:Inp] ||  -> QReg(skf8(U,V))*.
+14[0:Inp] Reg(U) ||  -> QReg(U)*.
+55[0:MRR:54.0,54.1,37.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc7)*.
+34[0:MRR:16.1,14.1] Reg(U) ||  -> __C__(U,U)*.
+56[0:MRR:53.0,53.1,37.0,45.0] || __C__(skf5(skc5,skc7),skc5)* -> .
+63[0:Res:5.0,46.0] || __O__(skc7,skc5)* -> __O__(skc5,skc7).
+64[0:Res:5.0,43.0] || __O__(skc5,skc7) -> __O__(skc7,skc5)*.
+65[0:Res:5.0,42.0] || __O__(skc6,skc5)* -> __O__(skc5,skc6).
+66[0:Res:5.0,39.0] || __O__(skc5,skc6) -> __O__(skc6,skc5)*.
+69[0:Res:4.0,46.0] || __O__(skc7,skc6)* -> __O__(skc6,skc7).
+70[0:Res:4.0,43.0] || __O__(skc6,skc7) -> __O__(skc7,skc6)*.
+15[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+59[0:MRR:52.1,52.2,52.3,45.0,41.0,44.0] QReg(U) || __P__(skc7,U)* -> __O__(skc6,U).
+61[0:MRR:49.1,49.2,49.3,41.0,37.0,40.0] QReg(U) || __P__(skc6,U)* -> __O__(skc5,U).
+35[0:Res:5.0,21.0] Reg(U) || __O__(U,skc5)* -> __O__(skc5,U)*.
+39[0:Res:4.0,21.0] Reg(U) || __O__(U,skc6)* -> __O__(skc6,U)*.
+43[0:Res:3.0,21.0] Reg(U) || __O__(U,skc7)* -> __O__(skc7,U)*.
+60[0:MRR:50.0,50.1,50.3,41.0,45.0,44.0] QReg(U) || __P__(skc7,U)* -> __O__(U,skc6).
+62[0:MRR:47.0,47.1,47.3,37.0,41.0,40.0] QReg(U) || __P__(skc6,U)* -> __O__(U,skc5).
+38[0:Res:5.0,21.1] Reg(U) || __O__(skc5,U)* -> __O__(U,skc5)*.
+42[0:Res:4.0,21.1] Reg(U) || __O__(skc6,U)* -> __O__(U,skc6)*.
+46[0:Res:3.0,21.1] Reg(U) || __O__(skc7,U)* -> __O__(U,skc7)*.
+57[0:MRR:48.0,48.2,37.0,41.0] QReg(U) || __C__(U,skc6)* -> __C__(U,skc5).
+58[0:MRR:51.0,51.2,41.0,45.0] QReg(U) || __C__(U,skc7)* -> __C__(U,skc6).
+17[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+18[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+19[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+21[0:Inp] Reg(U) Reg(V) || __O__(U,V)* -> __O__(V,U)*.
+20[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+22[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+23[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+26[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),U)*.
+25[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __P__(skf6(V,U),V)*.
+24[0:Inp] QReg(U) QReg(V) || __O__(skf7(V,U),V)* -> __NTP__(U,V).
+27[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+28[0:Inp] QReg(U) QReg(V) || __O__(U,V) -> __C__(skf6(V,U),skf6(V,U))*.
+29[0:Inp] QReg(U) QReg(V) ||  -> equal(U,V) __C__(skf8(V,U),U)* __C__(skf8(V,U),V)*.
+30[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __P__(U,W)* -> __C__(V,W)*.
+31[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __NTP__(U,W)* -> __O__(V,W)*.
+32[0:Inp] QReg(U) QReg(V) || __C__(skf8(V,U),V)* __C__(skf8(V,U),U)* -> equal(U,V).
+33[0:Inp] QReg(U) QReg(V) QReg(W) || __P__(V,U)* __P__(V,W)* __C__(V,V)* -> __O__(U,W)*.
+	Given clause: 5[0:Inp] ||  -> Reg(skc5)*.
+	Given clause: 4[0:Inp] ||  -> Reg(skc6)*.
+	Given clause: 3[0:Inp] ||  -> Reg(skc7)*.
+	Given clause: 1[0:Inp] ||  -> Reg(skc9)*.
+	Given clause: 2[0:Inp] ||  -> QReg(skc8)*.
+	Given clause: 37[0:Res:5.0,14.0] ||  -> QReg(skc5)*.
+	Given clause: 41[0:Res:4.0,14.0] ||  -> QReg(skc6)*.
+	Given clause: 45[0:Res:3.0,14.0] ||  -> QReg(skc7)*.
+	Given clause: 8[0:Inp] ||  -> __P__(skc6,skc5)*.
+	Given clause: 7[0:Inp] ||  -> __P__(skc7,skc6)*.
+	Given clause: 36[0:Res:5.0,34.0] ||  -> __C__(skc5,skc5)*.
+	Given clause: 40[0:Res:4.0,34.0] ||  -> __C__(skc6,skc6)*.
+	Given clause: 44[0:Res:3.0,34.0] ||  -> __C__(skc7,skc7)*.
+	Given clause: 6[0:Inp] ||  -> QReg(skf9(U))*.
+	Given clause: 13[0:Inp] || __P__(skc7,skc5)* -> .
+	Given clause: 12[0:Inp] ||  -> QReg(skf5(U,V))*.
+	Given clause: 11[0:Inp] ||  -> QReg(skf6(U,V))*.
+	Given clause: 10[0:Inp] ||  -> QReg(skf7(U,V))*.
+	Given clause: 9[0:Inp] ||  -> QReg(skf8(U,V))*.
+	Given clause: 14[0:Inp] Reg(U) ||  -> QReg(U)*.
+	Given clause: 55[0:MRR:54.0,54.1,37.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc7)*.
+	Given clause: 56[0:MRR:53.0,53.1,37.0,45.0] || __C__(skf5(skc5,skc7),skc5)* -> .
+	Given clause: 34[0:MRR:16.1,14.1] Reg(U) ||  -> __C__(U,U)*.
+	Given clause: 63[0:Res:5.0,46.0] || __O__(skc7,skc5)* -> __O__(skc5,skc7).
+	Given clause: 15[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+	Given clause: 64[0:Res:5.0,43.0] || __O__(skc5,skc7) -> __O__(skc7,skc5)*.
+	Given clause: 65[0:Res:5.0,42.0] || __O__(skc6,skc5)* -> __O__(skc5,skc6).
+	Given clause: 66[0:Res:5.0,39.0] || __O__(skc5,skc6) -> __O__(skc6,skc5)*.
+	Given clause: 69[0:Res:4.0,46.0] || __O__(skc7,skc6)* -> __O__(skc6,skc7).
+	Given clause: 17[0:Inp] QReg(U) || __C__(U,U) -> __NTP__(skf9(U),U)*.
+	Given clause: 70[0:Res:4.0,43.0] || __O__(skc6,skc7) -> __O__(skc7,skc6)*.
+	Given clause: 59[0:MRR:52.1,52.2,52.3,45.0,41.0,44.0] QReg(U) || __P__(skc7,U)* -> __O__(skc6,U).
+	Given clause: 104[0:SSi:103.0,4.0,41.0] ||  -> __O__(skc6,skc6)*.
+	Given clause: 61[0:MRR:49.1,49.2,49.3,41.0,37.0,40.0] QReg(U) || __P__(skc6,U)* -> __O__(skc5,U).
+	Given clause: 18[0:Inp] QReg(U) || __C__(U,U) -> __C__(skf9(U),skf9(U))*.
+	Given clause: 106[0:SSi:105.0,5.0,37.0] ||  -> __O__(skc5,skc5)*.
+	Given clause: 35[0:Res:5.0,21.0] Reg(U) || __O__(U,skc5)* -> __O__(skc5,U)*.
+	Given clause: 39[0:Res:4.0,21.0] Reg(U) || __O__(U,skc6)* -> __O__(skc6,U)*.
+	Given clause: 43[0:Res:3.0,21.0] Reg(U) || __O__(U,skc7)* -> __O__(skc7,U)*.
+	Given clause: 19[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(V,U)*.
+	Given clause: 124[0:SSi:117.1,117.0,3.0,45.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skc7,skf5(skc5,skc7))*.
+	Given clause: 60[0:MRR:50.0,50.1,50.3,41.0,45.0,44.0] QReg(U) || __P__(skc7,U)* -> __O__(U,skc6).
+	Given clause: 62[0:MRR:47.0,47.1,47.3,37.0,41.0,40.0] QReg(U) || __P__(skc6,U)* -> __O__(U,skc5).
+	Given clause: 38[0:Res:5.0,21.1] Reg(U) || __O__(skc5,U)* -> __O__(U,skc5)*.
+	Given clause: 21[0:Inp] Reg(U) Reg(V) || __O__(U,V)* -> __O__(V,U)*.
+	Given clause: 42[0:Res:4.0,21.1] Reg(U) || __O__(skc6,U)* -> __O__(U,skc6)*.
+	Given clause: 46[0:Res:3.0,21.1] Reg(U) || __O__(skc7,U)* -> __O__(U,skc7)*.
+	Given clause: 57[0:MRR:48.0,48.2,37.0,41.0] QReg(U) || __C__(U,skc6)* -> __C__(U,skc5).
+	Given clause: 143[0:SSi:141.0,4.0,41.0] ||  -> __C__(skc6,skc5)*.
+	Given clause: 20[0:Inp] QReg(U) QReg(V) || __C__(U,V)* -> __C__(U,U)*.
+	Given clause: 145[0:SSi:144.1,144.0,5.0,37.0,4.0,41.0] ||  -> __C__(skc5,skc6)*.
+	Given clause: 158[0:SSi:150.1,150.0,3.0,45.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skf5(skc5,skc7),skf5(skc5,skc7))*.
+	Given clause: 166[0:SSi:163.0,12.0,5.0,37.0,3.0,45.0] ||  -> Reg(skf5(skc5,skc7))*.
+	Given clause: 58[0:MRR:51.0,51.2,41.0,45.0] QReg(U) || __C__(U,skc7)* -> __C__(U,skc6).
+	Given clause: 22[0:Inp] QReg(U) QReg(V) ||  -> __NTP__(U,V) __C__(skf7(V,U),U)*.
+	Given clause: 172[0:SSi:169.0,3.0,45.0] ||  -> __C__(skc7,skc6)*.
+	Given clause: 187[0:SSi:186.0,3.0,45.0] ||  -> __C__(skc7,skc5)*.
+	Given clause: 188[0:SSi:185.1,185.0,4.0,41.0,3.0,45.0] ||  -> __C__(skc6,skc7)*.
+	Given clause: 191[0:SSi:190.1,190.0,5.0,37.0,3.0,45.0] ||  -> __C__(skc5,skc7)*.
+	Given clause: 23[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+	Given clause: 173[0:SSi:170.0,166.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc6)*.
+SPASS V 2.1 
+SPASS beiseite: Proof found.
+Problem: Read from stdin. 
+SPASS derived 114 clauses, backtracked 0 clauses and kept 82 clauses.
+SPASS allocated 662 KBytes.
+SPASS spent	0:00:00.03 on the problem.
+		0:00:00.00 for the input.
+		0:00:00.00 for the FLOTTER CNF translation.
+		0:00:00.00 for inferences.
+		0:00:00.00 for the backtracking.
+		0:00:00.00 for the reduction.
+
+
+Here is a proof with depth 3, length 33 :
+3[0:Inp] ||  -> Reg(skc7)*.
+4[0:Inp] ||  -> Reg(skc6)*.
+5[0:Inp] ||  -> Reg(skc5)*.
+7[0:Inp] ||  -> __P__(skc7,skc6)*.
+8[0:Inp] ||  -> __P__(skc6,skc5)*.
+12[0:Inp] ||  -> QReg(skf5(U,V))*.
+13[0:Inp] || __P__(skc7,skc5)* -> .
+14[0:Inp] Reg(U) ||  -> QReg(U)*.
+15[0:Inp] QReg(U) || __C__(U,U)* -> Reg(U).
+20[0:Inp] QReg(U) QReg(V) || __C__(U,V)*+ -> __C__(U,U)*.
+23[0:Inp] QReg(U) QReg(V) ||  -> __P__(U,V) __C__(skf5(V,U),U)*.
+27[0:Inp] QReg(U) QReg(V) || __C__(skf5(V,U),V)* -> __P__(U,V).
+30[0:Inp] QReg(U) QReg(V) QReg(W) || __C__(V,U)* __P__(U,W)* -> __C__(V,W)*.
+37[0:Res:5.0,14.0] ||  -> QReg(skc5)*.
+41[0:Res:4.0,14.0] ||  -> QReg(skc6)*.
+45[0:Res:3.0,14.0] ||  -> QReg(skc7)*.
+48[0:Res:8.0,30.3] QReg(skc5) QReg(U) QReg(skc6) || __C__(U,skc6)* -> __C__(U,skc5).
+51[0:Res:7.0,30.3] QReg(skc6) QReg(U) QReg(skc7) || __C__(U,skc7)* -> __C__(U,skc6).
+53[0:Res:27.3,13.0] QReg(skc5) QReg(skc7) || __C__(skf5(skc5,skc7),skc5)* -> .
+54[0:Res:23.2,13.0] QReg(skc5) QReg(skc7) ||  -> __C__(skf5(skc5,skc7),skc7)*.
+55[0:MRR:54.0,54.1,37.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc7)*.
+56[0:MRR:53.0,53.1,37.0,45.0] || __C__(skf5(skc5,skc7),skc5)* -> .
+57[0:MRR:48.0,48.2,37.0,41.0] QReg(U) || __C__(U,skc6)* -> __C__(U,skc5).
+58[0:MRR:51.0,51.2,41.0,45.0] QReg(U) || __C__(U,skc7)* -> __C__(U,skc6).
+150[0:Res:55.0,20.2] QReg(skf5(skc5,skc7)) QReg(skc7) ||  -> __C__(skf5(skc5,skc7),skf5(skc5,skc7))*.
+158[0:SSi:150.1,150.0,3.0,45.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skf5(skc5,skc7),skf5(skc5,skc7))*.
+163[0:Res:158.0,15.1] QReg(skf5(skc5,skc7)) ||  -> Reg(skf5(skc5,skc7))*.
+166[0:SSi:163.0,12.0,5.0,37.0,3.0,45.0] ||  -> Reg(skf5(skc5,skc7))*.
+170[0:Res:55.0,58.1] QReg(skf5(skc5,skc7)) ||  -> __C__(skf5(skc5,skc7),skc6)*.
+173[0:SSi:170.0,166.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc6)*.
+210[0:Res:173.0,57.1] QReg(skf5(skc5,skc7)) ||  -> __C__(skf5(skc5,skc7),skc5)*.
+211[0:SSi:210.0,166.0,12.0,5.0,37.0,3.0,45.0] ||  -> __C__(skf5(skc5,skc7),skc5)*.
+212[0:MRR:211.0,56.0] ||  -> .
+Formulae used in the proof : cmps_PP P_def ga_non_empty_sort_QReg declaration0 Ax1 C_non_null
+
+--------------------------SPASS-STOP------------------------------
+")
+}
