@@ -28,7 +28,7 @@ spec RCC_FO =
      . x C y => y C x						%(C_sym)%
      . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
      . exists z:QReg . forall u:QReg . 
-		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
+		(z C u <=> not u NTP x \/ not u NTP y)		%(cp_ex)% 
      . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
      . exists x:QReg . x C x					%(C_non_triv)%
 
@@ -41,9 +41,63 @@ then %implies
      . x P y /\ y P z => x P z					%(cmps_PP)%
      . x P y => x O y						%(P_impl_O)%
      . x O y => x C y						%(O_impl_C)%
+     . x NTP y => x C y						%(NTP_impl_C)%
+     . x NTP y => x P y						%(NTP_impl_P)%
      . x P y /\ x O z => y O z					%(P_inh_O)%
+     . x P y /\ y P x => x = y					%(extens)%
 end
 
+
+
+
+spec ExtRCCByFuncts[RCC_FO] = %def
+     ops cp: QReg * QReg -> QReg;				%% complement of product
+	 compl__: QReg -> QReg;
+	 sum,prod: QReg * QReg -> QReg;
+	 0,1:QReg
+
+     forall x,y,z: QReg  
+     . cp(x,y) = z <=> forall u:QReg . z C u <=> not u NTP x \/ not u NTP y	%(cp_def)% 
+     . compl(x) = cp(x,x)					%(compl_def)%
+     . sum(x,y) = cp(cp(x,x),cp(y,y))				%(sum_def)%
+     . prod(x,y) = cp(cp(x,y),cp(x,y))				%(prod_def)%
+     . 0 = prod(x,compl(x))					%(0_def)%
+     . 1 = sum(x,compl(x))					%(1_def)%
+
+then %implies
+    forall x,y,z: QReg
+    . cp(x,y) C z <=> not z NTP x \/ not z NTP y		%(cp_def_1)%
+    . x P y <=> cp(x,y) = cp(x,x)				%(cp_P_1)%
+    . x P y => cp(z,y) P cp(x,y)				%(cp_P_2)% 
+    . cp(x,y) = cp(y,x)						%(cp_com)%
+    . sum(x,x) = x						%(sum_idem)%
+    . prod(x,x) = x						%(prod_idem)%
+    . compl(0) = 1						%(0_compl)%
+    . compl(1) = 0						%(1_compl)%
+    . not 0 = 1							%(not_0_eq_1)%
+    . not 0 C 0							%(0_th_non_C)%
+    . 0 P x							%(0_P)%
+    . not 0 in Reg						%(0_th_a)%
+    . x = 0 <=> not x C x					%(0_th_b)%
+    . x in Reg => not x P 0					%(0_th_c)%
+    . x in Reg => not x C 0					%(0_th_c)%
+    . 1 in Reg							%(1_th_a)%
+    . x in Reg => x C 1						%(1_th_b)%
+    . x P 1 							%(1_th_c)%
+    . not x = 0 /\ not x = 1 => x C compl(x)			%(compl_th_a)%
+    . not x = 0 /\ not x = 1 => x O compl(x)			%(compl_th_b)%
+    . compl(x) = y <=> compl(y) = x				%(compl_th_c)%
+    . compl(compl(x)) = x					%(compl_th_d)%
+    . sum(x,y) = y <=> x P y					%(sum_th_a)%
+    . sum(x,y) P z <=> x P z /\ y P z				%(sum_th_b)%
+    . x P sum(x,y) 		 				%(sum_th_c)%
+    . sum(x,y) = sum(y,x)					%(sum_th_d)%
+    . prod(x,y) = x <=> x P y					%(prod_th_a)%
+    . x P z \/ y P z => prod(x,y) P z 				%(prod_th_b)%
+    . prod(x,y) P x		 				%(prod_th_c)%
+    . prod(x,y) = prod(y,x)	 				%(prod_th_d)%
+    
+end
 
 
 spec ExtRCCByRCC5Rels[RCC_FO] = %def 

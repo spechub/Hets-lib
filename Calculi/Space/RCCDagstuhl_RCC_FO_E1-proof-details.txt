@@ -23,9 +23,30 @@ O_impl_C
                      "P_def"
         Prover: SPASS
 
+NTP_impl_C
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "NTP_impl_C", "Ax1", "O_impl_C", "NTP_def",
+                     "C_non_triv"
+        Prover: SPASS
+
+NTP_impl_P
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "NTP_impl_P", "P_def", "C_non_triv", "Ax1",
+                     "C_non_null", "O_impl_C", "NTP_def"
+        Prover: SPASS
+
 P_inh_O
     Com: CASL2SPASS : CASL -> SPASS
         Status: Proved
-        Used axioms: "P_inh_O", "O_def", "C_non_triv", "Ax1", "O_sym",
-                     "cmps_PP"
+        Used axioms: "P_inh_O", "no_atoms", "C_non_triv", "cp_ex", "C_id",
+                     "O_def", "Ax1", "C_non_null", "O_sym", "P_impl_O", "NTP_impl_C",
+                     "NTP_impl_P", "P_def", "cmps_PP"
+        Prover: SPASS
+
+extens
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "extens", "C_id", "C_non_triv", "C_sym", "P_def"
         Prover: SPASS
