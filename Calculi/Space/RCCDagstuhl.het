@@ -27,10 +27,10 @@ spec RCC_FO =
      . x C y => x C x					        %(C_non_null)%
      . x C y => y C x						%(C_sym)%
      . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
-%%     . exists z:QReg . forall u:QReg . 
-%%		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
+     . exists z:QReg . forall u:QReg . 
+		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
      . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
-     . exists x:QReg . x C x
+     . exists x:QReg . x C x					%(C_non_triv)%
 
 then %def
      sort Reg = { x: QReg . x C x }
@@ -40,6 +40,8 @@ then %implies
      . x O y => y O x						%(O_sym)%
      . x P y /\ y P z => x P z					%(cmps_PP)%
      . x P y => x O y						%(P_impl_O)%
+     . x O y => x C y						%(O_impl_C)%
+     . x P y /\ x O z => y O z					%(P_inh_O)%
 end
 
 
@@ -56,10 +58,20 @@ spec ExtRCCByRCC5Rels[RCC_FO] = %def
      . x PPi y  <=> y PP x                                 	%(PPi_def)%
      . x EQ y   <=> x = y	                		%(EQ_def)%
      . x ? y    <=> x DR y \/ x PO y \/ x PP y \/ x PPi y \/ x EQ y 
-								%(?_def)%
+								%(?_RCC5_def)%
 then %implies
      forall x,y,z:Reg 
-     . x ? y							%(triv)%
+     . x ? y							%(?_RCC5)%
+	
+     . x DR y => y DR x						%(sym_DR)%
+     . x PO y => y PO x						%(sym_PO)%
+     . x EQ y => y EQ x						%(sym_EQ)%
+
+     . x DR y => not x PO y /\ not x PP y /\ not x PPi y /\ not x EQ y  %(disj_DR)% 
+     . x PO y => not x DR y /\ not x PP y /\ not x PPi y /\ not x EQ y  %(disj_PO)% 
+     . x PP y => not x DR y /\ not x PO y /\ not x PPi y /\ not x EQ y 	%(disj_PP)% 
+     . x PPi y => not x DR y /\ not x PO y /\ not x PP y /\ not x EQ y	%(disj_PPi)% 
+     . x EQ y => not x DR y /\ not x PO y /\ not x PP y /\ not x PPi y 	%(disj_EQ)% 
 
      . x PP y /\ y PP z => x PP	z				%(cmps_PPPP)%	
      . x PP y /\ y PPi z => x ? z  				%(cmps_PPPPi)%
@@ -80,7 +92,7 @@ then %implies
      . x PO y /\ y EQ z => x PO z				%(cmps_POEQ)%
 
      . x DR y /\ y PP z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPP)%	
-     . x DR y /\ y PPi z => x DR z				%(cmps_DRPi)%
+     . x DR y /\ y PPi z => x DR z				%(cmps_DRPPi)%
      . x DR y /\ y PO z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPO)%
      . x DR y /\ y DR z => x ? z				%(cmps_DRDR)%
      . x DR y /\ y EQ z => x DR	z 				%(cmps_DREQ)%
@@ -95,10 +107,11 @@ end
 
 
 spec ExtRCCByRCC8Rels[RCC_FO] = 	
-     ExtRCCByRCC5Rels[RCC_FO] 
+     ExtRCCByRCC5Rels[RCC_FO] with __?__ |-> __??__
 then %def 
      preds
-	  __EC__,  __DC__, __TPP__, __NTPP__, __TPPi__,  __NTPPi__: Reg * Reg
+	  __EC__,  __DC__, __TPP__, __NTPP__, __TPPi__,  
+		__NTPPi__, __?__: Reg * Reg
 
      forall x,y:Reg 
      .   x EC y   <=>  x C y /\ not x O y	          	%(EC_def)%
@@ -108,9 +121,40 @@ then %def
 								%(NTPP_def)%
      .  x TPPi y  <=> y TPP x                                	%(TPPi_def)%
      . x NTPPi y  <=> y NTPP x	                		%(NTPPi_def)%
+     . x ? y    <=> x DC y \/ x EC y \/ x PO y \/ x TPP y \/ 
+		 x NTPP y \/ x TPPi y \/ x NTPPi y \/ x EQ y    %(?_RCC8_def)%
 
 then %implies
      forall x,y,z:Reg 
+
+     . x DR y <=> x DC y \/ x EC y				%(DR_eq_DC_or_EC)%
+     . x PP y <=> x TPP y \/ x NTPP y				%(PP_eq_TPP_or_NTPP)%
+     . x PPi y <=> x TPPi y \/ x NTPPi y			%(PPi_eq_TPPi_or_NTPPi)%
+
+     . x ? y 							%(?_RCC8)%
+     . x ? y <=> x ?? y						%(?_RCC5_RCC8)%
+
+     . x DC y => y DC x						%(sym_DC)%
+     . x EC y => y EC x						%(sym_EC)%
+
+     . x DC y => not x EC y /\ not x PO y /\ not x TPP y /\ not x NTPP y 
+		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_DC)% 
+     . x EC y => not x DC y /\ not x PO y /\ not x TPP y /\ not x NTPP y 
+		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_EC)% 
+     . x PO y => not x DC y /\ not x EC y /\ not x TPP y /\ not x NTPP y 
+		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_PO)% 
+     . x TPP y => not x DC y /\ not x EC y /\ not x PO y /\ not x NTPP y 
+		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_TPP)% 
+     . x NTPP y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y 
+		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_NTPP)% 
+     . x TPPi y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y 
+		/\ not x NTPP y /\ not x NTPPi y /\ not x EQ y  			%(disj_TPPi)% 
+     . x NTPPi y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y 
+		/\ not x NTPP y /\ not x TPPi y /\ not x EQ y  				%(disj_NTPPi)% 
+     . x EQ y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y 
+		/\ not x NTPP y /\ not x TPPi y /\ not x NTPPi y  			%(disj_EQ)% 
+
+
      . x DC y /\ y DC  z => x ? z 							%(cmps_DCDC)%
      . x DC y /\ y EC  z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z 		%(cmps_DCEC)%
      . x DC y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z 		%(cmps_DCPO)%

@@ -1,0 +1,489 @@
+DR_eq_DC_or_EC
+    Status: Open
+
+PP_eq_TPP_or_NTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "PP_eq_TPP_or_NTPP", "NTPP_def",
+                     "ga_non_empty_sort_Reg", "TPP_def"
+        Prover: SPASS
+
+PPi_eq_TPPi_or_NTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "PPi_eq_TPPi_or_NTPPi", "PPi_def", "NTPPi_def",
+                     "TPPi_def", "PP_eq_TPP_or_NTPP"
+        Prover: SPASS
+
+triv_RCC5_RCC8
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "triv_RCC5_RCC8", "triv", "DC_def", "?_def", "DR_def",
+                     "EC_def", "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "?_def1"
+        Prover: SPASS
+
+sym_DC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "sym_DC", "DC_def", "C_sym"
+        Prover: SPASS
+
+sym_EC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "sym_EC", "DR_def", "C_sym", "O_sym", "EC_def"
+        Prover: SPASS
+
+disj_DC
+    Status: Open
+
+disj_EC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "disj_EC", "DR_def", "C_sym", "P_impl_O", "O_sym",
+                     "EQ_def", "PPi_def", "PP_def", "sym_EQ", "sym_DR", "TPPi_def",
+                     "EC_def", "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "sym_EC",
+                     "disj_DR", "DC_def", "cmps_PPDR"
+        Prover: SPASS
+
+disj_TPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "disj_TPP", "TPP_def", "ga_non_empty_sort_Reg", "Ax1",
+                     "P_impl_O", "PPi_def", "PP_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "disj_PP", "disj_PO", "DC_def", "disj_EC",
+                     "PO_def", "P_def", "ga_non_empty_sort_QReg", "NTPP_def"
+        Prover: SPASS
+
+disj_NTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "disj_NTPP", "Ax1", "P_impl_O", "PPi_def", "PP_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "sym_DC", "disj_PP",
+                     "disj_PO", "DC_def", "disj_EC", "disj_TPP", "PO_def", "P_def",
+                     "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+disj_TPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "disj_TPPi", "DC_def", "EQ_def", "sym_PO",
+                     "NTPPi_def", "TPPi_def", "sym_DC", "disj_EC", "disj_TPP",
+                     "disj_NTPP"
+        Prover: SPASS
+
+disj_NTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "disj_NTPPi", "DC_def", "sym_PO", "NTPPi_def",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "disj_PPi", "disj_EC",
+                     "disj_TPP", "disj_NTPP", "disj_TPPi"
+        Prover: SPASS
+
+cmps_DCDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCDC", "triv", "triv_RCC5_RCC8"
+        Prover: SPASS
+
+cmps_DCEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCEC", "triv", "DC_def", "EQ_def", "PPi_def",
+                     "PP_def", "sym_PO", "sym_DR", "TPPi_def", "EC_def",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "sym_EC", "DR_def", "disj_EC",
+                     "PP_eq_TPP_or_NTPP", "P_def", "ga_non_empty_sort_QReg", "?_def1"
+        Prover: SPASS
+
+cmps_DCPO
+    Status: Open
+
+cmps_DCTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCTPP", "triv", "DC_def", "C_non_null",
+                     "EQ_def", "PPi_def", "PP_def", "sym_PO", "sym_DR", "TPPi_def",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "DR_def", "disj_TPP", "EC_def",
+                     "PP_eq_TPP_or_NTPP", "cmps_EQPPi", "P_def",
+                     "ga_non_empty_sort_QReg", "?_def1"
+        Prover: SPASS
+
+cmps_DCNTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCNTPP", "triv", "DC_def", "EQ_def", "PPi_def",
+                     "PP_def", "sym_PO", "sym_DR", "NTPPi_def", "TPPi_def",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "DR_def", "disj_NTPP",
+                     "disj_NTPPi", "EC_def", "PP_eq_TPP_or_NTPP", "P_def",
+                     "ga_non_empty_sort_QReg", "?_def1"
+        Prover: SPASS
+
+cmps_DCTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCTPPi", "DC_def", "P_impl_O", "PP_def",
+                     "TPPi_def", "PP_eq_TPP_or_NTPP", "disj_TPP", "PO_def", "P_def",
+                     "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+cmps_DCNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_DCNTPPi", "DC_def", "PPi_def", "PP_def",
+                     "PPi_eq_TPPi_or_NTPPi", "P_def", "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+cmps_ECDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECDC", "triv", "DC_def", "C_sym", "EQ_def",
+                     "PP_def", "EC_def", "sym_DC", "DR_def", "PPi_eq_TPPi_or_NTPPi",
+                     "P_def", "ga_non_empty_sort_QReg", "?_def1"
+        Prover: SPASS
+
+cmps_ECEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECEC", "triv", "NTPPi_def", "PP_eq_TPP_or_NTPP",
+                     "triv_RCC5_RCC8", "sym_EC", "PPi_eq_TPPi_or_NTPPi", "NTPP_def",
+                     "ga_non_empty_sort_Reg", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_ECPO
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECPO", "triv", "DR_def", "DC_def", "O_sym",
+                     "EQ_def", "PPi_def", "PO_def", "sym_PO", "sym_DR", "TPPi_def",
+                     "PPi_eq_TPPi_or_NTPPi", "EC_def", "PP_eq_TPP_or_NTPP", "cmps_PPDR",
+                     "cmps_EQDR", "?_def1"
+        Prover: SPASS
+
+cmps_ECTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECTPP", "triv", "DR_def", "P_impl_O", "O_sym",
+                     "EQ_def", "PPi_def", "PP_def", "sym_PO", "sym_DR", "TPPi_def",
+                     "EC_def", "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "sym_EC",
+                     "disj_TPP", "PO_def", "cmps_EQPPi", "P_inh_O", "P_def",
+                     "ga_non_empty_sort_QReg", "?_def1"
+        Prover: SPASS
+
+cmps_ECNTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECNTPP", "triv", "DR_def", "P_impl_O", "O_sym",
+                     "EQ_def", "PPi_def", "PP_def", "sym_PO", "sym_DR", "TPPi_def",
+                     "EC_def", "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "disj_PP",
+                     "disj_NTPP", "PO_def", "cmps_PPDR", "cmps_EQDR", "P_def",
+                     "ga_non_empty_sort_QReg", "NTPP_def", "ga_non_empty_sort_Reg",
+                     "?_def1"
+        Prover: SPASS
+
+cmps_ECTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECTPPi", "DR_def", "DC_def",
+                     "PPi_eq_TPPi_or_NTPPi", "EC_def", "cmps_DRPPi"
+        Prover: SPASS
+
+cmps_ECNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_ECNTPPi", "Ax1", "DR_def", "DC_def", "P_impl_O",
+                     "O_sym", "PPi_def", "PP_def", "NTPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "sym_EC", "PO_def", "EC_def",
+                     "cmps_DCNTPPi", "cmps_PPDR", "P_inh_O", "NTP_def",
+                     "ga_non_empty_sort_QReg", "NTPP_def", "ga_non_empty_sort_Reg"
+        Prover: SPASS
+
+cmps_PODC
+    Status: Open
+
+cmps_POEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_POEC", "triv", "DR_def", "O_sym", "PPi_def",
+                     "PO_def", "PP_def", "sym_DR", "NTPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8", "sym_EC", "EC_def",
+                     "cmps_EQDR", "P_inh_O", "?_def"
+        Prover: SPASS
+
+cmps_POTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_POTPP", "triv", "P_impl_O", "O_sym", "EQ_def",
+                     "PPi_def", "PO_def", "PP_def", "sym_PO", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "DR_def", "disj_PO",
+                     "disj_TPP", "cmps_PP", "P_inh_O", "?_def1"
+        Prover: SPASS
+
+cmps_PONTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_PONTPP", "triv", "P_impl_O", "O_sym", "EQ_def",
+                     "PPi_def", "PO_def", "PP_def", "NTPPi_def", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "DR_def", "disj_PP",
+                     "disj_NTPP", "disj_NTPPi", "cmps_PP", "P_inh_O", "?_def1"
+        Prover: SPASS
+
+cmps_POTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_POTPPi", "triv", "P_impl_O", "O_sym", "EQ_def",
+                     "PPi_def", "PP_def", "sym_DR", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8", "DR_def", "disj_DR",
+                     "disj_TPP", "disj_TPPi", "disj_NTPPi", "cmps_EQPO", "cmps_PPiPO",
+                     "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_PONTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_PONTPPi", "TPP_def", "ga_non_empty_sort_Reg",
+                     "triv", "P_impl_O", "O_sym", "EQ_def", "PPi_def", "PP_def",
+                     "sym_DR", "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8", "P_def",
+                     "ga_non_empty_sort_QReg", "DR_def", "PO_def", "disj_PP", "disj_DR",
+                     "disj_EC", "disj_NTPP", "cmps_ECNTPPi", "cmps_EQPO", "P_inh_O",
+                     "cmps_PPiPO", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_TPPDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPDC", "DC_def", "C_sym", "P_impl_O", "PP_def",
+                     "PP_eq_TPP_or_NTPP", "sym_DC", "disj_TPP", "PO_def", "P_def",
+                     "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+cmps_TPPEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPEC", "DR_def", "DC_def", "O_sym", "sym_DR",
+                     "TPPi_def", "PPi_eq_TPPi_or_NTPPi", "sym_EC", "EC_def",
+                     "cmps_DRPPi"
+        Prover: SPASS
+
+cmps_TPPPO
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPPO", "DC_def", "PP_eq_TPP_or_NTPP", "DR_def",
+                     "EC_def", "cmps_PPPO"
+        Prover: SPASS
+
+cmps_TPPTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPTPP", "PP_eq_TPP_or_NTPP", "cmps_PPPP"
+        Prover: SPASS
+
+cmps_TPPNTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPNTPP", "TPP_def", "ga_non_empty_sort_Reg",
+                     "DC_def", "C_sym", "P_impl_O", "O_sym", "PPi_def", "PP_def",
+                     "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP", "sym_EC", "P_def",
+                     "ga_non_empty_sort_QReg", "PO_def", "disj_PP", "disj_PO",
+                     "disj_EC", "disj_TPP", "disj_NTPP", "disj_TPPi", "disj_NTPPi",
+                     "PPi_eq_TPPi_or_NTPPi", "cmps_TPPDC", "cmps_ECNTPPi", "cmps_PPPP",
+                     "P_inh_O", "cmps_PONTPP", "cmps_POTPP", "cmps_ECNTPP"
+        Prover: SPASS
+
+cmps_TPPTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPTPPi", "TPP_def", "ga_non_empty_sort_Reg",
+                     "triv", "DR_def", "DC_def", "P_impl_O", "O_sym", "EQ_def",
+                     "PPi_def", "PP_def", "sym_EQ", "sym_DR", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8",
+                     "sym_DC", "sym_EC", "disj_PP", "disj_DR", "EC_def", "disj_EC",
+                     "disj_TPP", "PO_def", "cmps_ECNTPPi", "cmps_DCNTPPi", "cmps_PPDR",
+                     "cmps_DRPPi", "P_inh_O", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_TPPNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPNTPPi", "TPP_def", "ga_non_empty_sort_Reg",
+                     "triv", "P_impl_O", "O_sym", "EQ_def", "PPi_def", "PP_def",
+                     "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8", "sym_DC", "P_def",
+                     "ga_non_empty_sort_QReg", "DR_def", "PO_def", "disj_EC",
+                     "disj_NTPP", "disj_NTPPi", "cmps_TPPNTPP", "cmps_ECNTPPi",
+                     "cmps_DCNTPPi", "cmps_EQPP", "P_inh_O", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_NTPPDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPDC", "DC_def", "C_sym", "PP_def",
+                     "PP_eq_TPP_or_NTPP", "sym_DC", "P_def", "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+cmps_NTPPEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPEC", "DR_def", "DC_def", "O_sym", "EQ_def",
+                     "sym_EQ", "sym_DR", "PP_eq_TPP_or_NTPP", "sym_EC", "disj_DR",
+                     "EC_def", "disj_EC", "disj_TPP", "cmps_PPDR", "cmps_ECNTPP"
+        Prover: SPASS
+
+cmps_NTPPPO
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPPO", "triv", "DC_def", "PPi_def", "sym_PO",
+                     "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "P_def", "ga_non_empty_sort_QReg",
+                     "DR_def", "PP_def", "disj_NTPP", "disj_NTPPi", "EC_def",
+                     "cmps_TPPNTPP", "cmps_EQPO", "cmps_PPiPO", "?_def1"
+        Prover: SPASS
+
+cmps_NTPPTPP
+    Status: Open
+
+cmps_NTPPNTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPNTPP", "TPP_def", "ga_non_empty_sort_Reg",
+                     "triv", "DC_def", "P_impl_O", "PPi_def", "PP_def", "sym_PO",
+                     "sym_DR", "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "sym_DC", "sym_EC", "P_def",
+                     "ga_non_empty_sort_QReg", "DR_def", "PO_def", "disj_PP", "disj_PO",
+                     "disj_EC", "disj_TPP", "disj_NTPP", "disj_TPPi", "disj_NTPPi",
+                     "cmps_NTPPDC", "cmps_TPPNTPP", "cmps_ECNTPPi", "cmps_PPPP",
+                     "cmps_PPDR", "?_def1", "cmps_ECNTPP"
+        Prover: SPASS
+
+cmps_NTPPTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPTPPi", "triv", "DC_def", "EQ_def",
+                     "PPi_def", "NTPPi_def", "TPPi_def", "PPi_eq_TPPi_or_NTPPi",
+                     "DR_def", "disj_NTPPi", "EC_def", "PP_eq_TPP_or_NTPP",
+                     "cmps_NTPPNTPP", "cmps_TPPNTPP", "?_def1"
+        Prover: SPASS
+
+cmps_NTPPNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPNTPPi", "triv", "triv_RCC5_RCC8"
+        Prover: SPASS
+
+cmps_TPPiDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiDC", "Ax1", "triv", "DC_def", "C_sym",
+                     "C_non_null", "O_sym", "EQ_def", "PPi_def", "PP_def", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8",
+                     "sym_DC", "disj_TPPi", "PO_def", "cmps_TPPDC", "cmps_EQPPi",
+                     "P_def", "ga_non_empty_sort_QReg", "NTP_def", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_TPPiEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiEC", "triv", "DR_def", "DC_def", "C_sym",
+                     "P_impl_O", "O_sym", "PPi_def", "PP_def", "sym_DR", "EC_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8",
+                     "sym_DC", "sym_EC", "disj_DR", "PO_def", "cmps_EQDR", "P_inh_O",
+                     "P_def", "ga_non_empty_sort_QReg", "?_def"
+        Prover: SPASS
+
+cmps_TPPiPO
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiPO", "PPi_def", "PO_def", "PP_def",
+                     "sym_PO", "NTPPi_def", "TPPi_def", "PPi_eq_TPPi_or_NTPPi",
+                     "disj_PO", "disj_TPPi", "PP_eq_TPP_or_NTPP", "cmps_PPPP",
+                     "cmps_PP", "P_inh_O"
+        Prover: SPASS
+
+cmps_TPPiTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiTPP", "triv", "P_impl_O", "PPi_def",
+                     "PP_def", "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP",
+                     "PPi_eq_TPPi_or_NTPPi", "disj_DR", "disj_NTPP", "disj_NTPPi",
+                     "PO_def", "cmps_TPPNTPP", "cmps_DRPPi", "P_inh_O", "?_def1"
+        Prover: SPASS
+
+cmps_TPPiNTPP
+    Status: Open
+
+cmps_TPPiTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiTPPi", "PPi_def", "NTPPi_def", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "cmps_PPPP"
+        Prover: SPASS
+
+cmps_TPPiNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_TPPiNTPPi", "TPP_def", "ga_non_empty_sort_Reg",
+                     "DR_def", "DC_def", "P_impl_O", "PPi_def", "PP_def", "NTPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "P_def",
+                     "ga_non_empty_sort_QReg", "PO_def", "EC_def", "disj_EC",
+                     "cmps_ECNTPPi", "cmps_DCNTPPi", "cmps_PPPP", "cmps_DRPPi",
+                     "P_inh_O"
+        Prover: SPASS
+
+cmps_NTPPiDC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiDC", "triv", "DC_def", "C_sym",
+                     "C_non_null", "EQ_def", "PPi_def", "PP_def", "TPPi_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8",
+                     "disj_NTPPi", "cmps_TPPiNTPPi", "P_def", "ga_non_empty_sort_QReg",
+                     "?_def"
+        Prover: SPASS
+
+cmps_NTPPiEC
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiEC", "triv", "DC_def", "C_sym", "EQ_def",
+                     "PPi_def", "PP_def", "NTPPi_def", "TPPi_def", "EC_def",
+                     "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "triv_RCC5_RCC8",
+                     "sym_DC", "sym_EC", "disj_NTPPi", "cmps_TPPiNTPPi", "cmps_NTPPEC",
+                     "P_def", "ga_non_empty_sort_QReg", "NTPP_def",
+                     "ga_non_empty_sort_Reg", "?_def1", "?_def"
+        Prover: SPASS
+
+cmps_NTPPiPO
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiPO", "triv", "EQ_def", "PPi_def", "PO_def",
+                     "sym_PO", "NTPPi_def", "TPPi_def", "PPi_eq_TPPi_or_NTPPi",
+                     "DR_def", "disj_NTPPi", "PP_eq_TPP_or_NTPP", "cmps_TPPiNTPPi",
+                     "cmps_NTPPNTPP", "cmps_PPDR", "?_def1"
+        Prover: SPASS
+
+cmps_NTPPiTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiTPP", "triv", "P_impl_O", "EQ_def",
+                     "PP_def", "NTPPi_def", "TPPi_def", "PP_eq_TPP_or_NTPP", "DR_def",
+                     "disj_NTPP", "disj_NTPPi", "PPi_eq_TPPi_or_NTPPi",
+                     "cmps_TPPiNTPPi", "cmps_NTPPNTPP", "cmps_PPDR", "?_def1"
+        Prover: SPASS
+
+cmps_NTPPiNTPP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiNTPP", "triv", "P_impl_O", "PPi_def",
+                     "PP_def", "PP_eq_TPP_or_NTPP", "PPi_eq_TPPi_or_NTPPi", "DR_def",
+                     "cmps_PPDR", "?_def1"
+        Prover: SPASS
+
+cmps_NTPPiTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiTPPi", "NTPPi_def", "TPPi_def",
+                     "cmps_TPPNTPP"
+        Prover: SPASS
+
+cmps_NTPPiNTPPi
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTPPiNTPPi", "NTPPi_def", "cmps_NTPPNTPP"
+        Prover: SPASS
