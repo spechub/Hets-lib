@@ -27,14 +27,16 @@ fun get_axioms (AbsP (_, _, prf)) = get_axioms prf
           name :: get_axioms prf'
       end
 
-fun record name = ()
-(*  let val t = thm name
+fun record1 name = 
+  let val t = thm name
       val p = Thm.proof_of t
       val axs = get_axioms p
   in
   (map writeln axs; ())
   end
-*)
+
+fun record name =
+    record1 name handle _ => ()
 
 fun initialize l = ()
 
