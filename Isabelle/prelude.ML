@@ -10,6 +10,8 @@ end
 
 open Proofterm
 
+infix mem;
+
 fun dest_thm_axm (PThm (nt, prf, _, _)) = (nt, prf)
   | dest_thm_axm (PAxm (n, _, _)) = ((n ^ " (Ax)", []), MinProof ([], [], []))
   | dest_thm_axm _ = (("", []), MinProof ([], [], []))
@@ -28,11 +30,17 @@ fun get_axioms (AbsP (_, _, prf)) = get_axioms prf
       end
 
 fun record1 name = 
-  let val t = thm name
+  let val thy = the_context ()
+      val thms = PureThy.thms_of thy
+  in if name mem (map fst thms) then
+     let
+      val t = thm name
       val p = Thm.proof_of t
       val axs = get_axioms p
-  in
-  (map writeln axs; ())
+     in
+      (map writeln axs; ())
+     end
+     else ()
   end
 
 fun record name =
