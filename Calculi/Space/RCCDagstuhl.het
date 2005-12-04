@@ -45,6 +45,9 @@ then %implies
      . x NTP y => x P y						%(NTP_impl_P)%
      . x P y /\ x O z => y O z					%(P_inh_O)%
      . x P y /\ y P x => x = y					%(extens)%
+     . x NTP y /\ y NTP z => x NTP z				%(NTP_trans)%
+     . x NTP y /\ y P z => x NTP z				%(cmps_NTP_P)%
+     . x P y /\ y NTP z => x NTP z				%(cmps_P_NTP)%
 end
 
 
@@ -52,7 +55,7 @@ end
 
 spec ExtRCCByFuncts[RCC_FO] = %def
      ops cp: QReg * QReg -> QReg;				%% complement of product
-	 compl__: QReg -> QReg;
+	 compl: QReg -> QReg;
 	 sum,prod: QReg * QReg -> QReg;
 	 0,1:QReg
 
@@ -66,9 +69,11 @@ spec ExtRCCByFuncts[RCC_FO] = %def
 
 then %implies
     forall x,y,z: QReg
-    . cp(x,y) C z <=> not z NTP x \/ not z NTP y		%(cp_def_1)%
-    . x P y <=> cp(x,y) = cp(x,x)				%(cp_P_1)%
-    . x P y => cp(z,y) P cp(x,y)				%(cp_P_2)% 
+    . cp(x,y) C z <=> not z NTP x \/ not z NTP y		%(cp_def_a)%
+    . x P y <=> cp(x,y) = cp(x,x)				%(cp_P_a)%
+    . x P y <=> cp(x,y) = cp(x,x)				%(cp_P_b)%
+    . x P y => cp(z,y) P cp(x,y)				%(cp_P_c)%
+    . cp(x,y) = z <=> cp(y,x) =z				%(cp_com_1)% 
     . cp(x,y) = cp(y,x)						%(cp_com)%
     . sum(x,x) = x						%(sum_idem)%
     . prod(x,x) = x						%(prod_idem)%
