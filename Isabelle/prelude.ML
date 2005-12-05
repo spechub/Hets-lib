@@ -1,11 +1,10 @@
 structure Header :
 sig
-val dest_thm_axm : Proofterm.proof -> (string * (string * string list) list) * Proofterm.proof
-val get_axioms : Proofterm.proof -> string list
+(* val dest_thm_axm : Proofterm.proof 
+   -> (string * (string * string list) list) * Proofterm.proof
+   val get_axioms : Proofterm.proof -> string list *)
 val record : string -> unit
-val record1 : string -> unit
 val initialize : string list -> unit 
-val thmlist : string list ref
 end
 
 = struct
@@ -17,7 +16,7 @@ infix mem;
 val thmlist = ref [""]
 
 fun axname s =
-   let val (_,an) = take_prefix  (fn x => x<>".") (explode s)
+   let val (_,an) = take_prefix  (fn x => x <> ".") (explode s)
    in if null an then "" else implode (tl an)
    end
 
@@ -38,7 +37,6 @@ fun get_axioms (AbsP (_, _, prf)) = get_axioms prf
          if axname name mem (!thmlist) then  name :: get_axioms prf' else []
       end
 
-
 fun record1 name = 
   let val thy = the_context ()
       val thms = PureThy.thms_of thy
@@ -46,9 +44,9 @@ fun record1 name =
      let
       val t = thm name
       val p = Thm.proof_of t
-      val axs = map axname (get_axioms p)
-      val txt = foldl (fn (s,t) => s^"\n"^t) "" axs
-      val filename = Context.theory_name thy^"_"^name
+      val axs = filter (fn s => s <> name) (map axname (get_axioms p))
+      val txt = foldl (fn (s,t) => s ^ "\n" ^ t) "" axs
+      val filename = Context.theory_name thy ^ "_" ^ name ^ ".deps"
      in
         File.write (Path.basic filename) txt
      end
