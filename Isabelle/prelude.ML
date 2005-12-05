@@ -46,7 +46,7 @@ fun record1 name =
      let
       val t = thm name
       val p = Thm.proof_of t
-      val _ = writeln (Int.toString (length axs))
+      val axs = map axname (get_axioms p)
       val txt = foldl (fn (s,t) => s^"\n"^t) "" axs
       val filename = Context.theory_name thy^"_"^name
      in
