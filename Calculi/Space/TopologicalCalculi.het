@@ -1,19 +1,19 @@
 library Calculi/Space/TopologicalCalculi
 
 
-from Calculi/Space/RCC5 get RCC5, OpenDiscModelOfRCC5
-from Calculi/Space/RCC8 get RCC8, OpenDiscModelOfRCC8
+from Calculi/Space/RCC5 get RCC5, RCC5Model_OpenDisc
+from Calculi/Space/RCC8 get RCC8, RCC8Model_OpenDisc
 from HasCASL/MetricSpaces get MetricSpace |-> EuclideanPlane
 from HasCASL/TopologicalSpaces get TopologicalSpace_Kuratowski |-> TopologicalSpace
-%from Calculi/Time/IntervalAlgebraLin get IntervalAlgebraLin |-> AllenIA
-%from Calculi/Time/IntervalAlgebraLin get GenerateAllenModelOfIntervalAlgebraLin |-> AllenModelOfIA
-%from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
+from Calculi/Time/IntervalAlgebraLin get IAlin |-> AllenIA
+from Calculi/Time/IntervalAlgebraLin get IAlinModel_Allen |-> AllenModelOfIA
+from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
 
 view RCC5_to_RCC8 :
      RCC5 
 to   { RCC8 
 	then %def
-     	ops dr,pp,ppi:Rel
+     	ops dr,pp,ppi,eq,po:Rel
      	. dr = dc cup ec
      	. pp = tpp cup ntpp
      	. ppi = tppi cup ntppi
@@ -62,7 +62,7 @@ view EuclideanPlane_induces_OpenDiscModelOfRCC5 :
      { RCC5 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } 
 to 
-    OpenDiscModelOfRCC5[EuclideanPlane]
+    RCC5Model_OpenDisc[EuclideanPlane]
 =   
     ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel, 
         id |-> eqRel
@@ -73,7 +73,7 @@ view EuclideanPlane_induces_OpenDiscModelOfRCC8 :
      { RCC8 hide ops __+__,__-__,{},{__}    
 	hide preds __eps__,__isSubsetOf__,isNonEmpty } %% <- Das muss man verbessern, weil wir dann zu viel Theorie verlieren
 to 
-    OpenDiscModelOfRCC8[EuclideanPlane]
+    RCC8Model_OpenDisc[EuclideanPlane]
 =   
     ops dc|->dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel, 
 	tppi|->tppiRel, ntppi|->ntppiRel, eq|->eqRel, 

@@ -11,7 +11,14 @@ version 0.1
 	from his PhD thesis (1997) 
 )%
 
-
+from HasCASL/MetricSpaces get 
+	MetricSpace,
+	ExtMetricSpaceByOpenDiscs,
+	ExtMetricSpaceByClosedDiscs,
+	RichMetricSpace
+%%from Calculi/Space/RCCDagstuhl get 
+%%	RCC5BaseRelationModel_OpenDisc,
+%%	RCC5Model_OpenDisc
 
 
 
@@ -39,6 +46,7 @@ then %implies
      forall x,y,z: Reg  
      . x O y => y O x						%(O_sym)%
      . x P y /\ y P z => x P z					%(cmps_PP)%
+     . x in Reg /\ x P y => x C y				%(P_impl_C)%
      . x P y => x O y						%(P_impl_O)%
      . x O y => x C y						%(O_impl_C)%
      . x NTP y => x C y						%(NTP_impl_C)%
@@ -121,7 +129,7 @@ spec ExtRCCByRCC5Rels[RCC_FO] = %def
 then %implies
      forall x,y,z:Reg 
      . x ? y							%(?_RCC5)%
-	
+
      . x DR y => y DR x						%(sym_DR)%
      . x PO y => y PO x						%(sym_PO)%
      . x EQ y => y EQ x						%(sym_EQ)%
@@ -274,178 +282,21 @@ end
 
 
 
-
-
-
-
-
-
-
-
-%[
-spec RCC_FO = 
-     sort Reg
-     pred __C__: Reg * Reg;
-then local {
-     preds  __P__, __O__, __NTP__: Reg * Reg
-     forall x,y: Reg
-     . x P y   <=> forall z:Reg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:Reg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:Reg .(z C x => z O y)		%(NTP_def)%
-     	} 
-within	{
-     forall x,y: Reg
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:Reg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:Reg . forall u:Reg . 
-		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
-     . x C x => exists z:Reg . (z C z /\ z NTP x) 		%(no_atoms)%
-	}
-end
-
-
-spec RCC_FO1 = 
-     sort Reg
-     pred __C__: Reg * Reg;
-then local {
-     preds  __P__, __O__, __NTP__: Reg * Reg
-within	{
-     forall x,y: Reg
-     . x P y   <=> forall z:Reg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:Reg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:Reg .(z C x => z O y)		%(NTP_def)%
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:Reg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:Reg . forall u:Reg . 
-		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
-     . x C x => exists z:Reg . (z C z /\ z NTP x) 		%(no_atoms)%
-	}
-end
-
-
-
-spec RCC_FO3 = 
-     sort Reg
-     pred __C__: Reg * Reg;
-     preds  __P__, __O__, __NTP__: Reg * Reg
-     forall x,y: Reg
-     . x P y   <=> forall z:Reg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:Reg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:Reg .(z C x => z O y)		%(NTP_def)%
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:Reg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:Reg . forall u:Reg . 
-		(z C u <=> ( not u NTP x \/ not u NTP y))	%(sum_ex)% 
-     . x C x => exists z:Reg . (z C z /\ z NTP x) 		%(no_atoms)%
-then %implies
-     forall x,y,z: Reg  
-     . x O y => y O x						%(O_sym)%
-hide 
-end
-
-spec Ext_RCC_FO[RCC_FO] = %def     
-     preds  __P__, __O__, __NTP__: Reg * Reg
-     forall x,y: Reg
-     . x P y   <=> forall z:Reg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:Reg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:Reg .(z C x => z O y)		%(NTP_def)%
-then %implies
-     forall x,y,z: Reg  
-     . x O y => y O x						%(O_sym)%
-end     
-end     
-
-
-
-      then %implies
-	
-
-	. x P y /\ x C x => x C y			%(RCC_thm_non_null_P_implies_C)%
-	. (exists y:Reg. x C y) => x C x		%(RCC_thm_help_1)%
-	. (exists y:Reg. y C x) => x C x		%(RCC_thm_help_2)%
-	.  x P y /\ (exists z:Reg. z C x) => x C y	%(RCC_thm_help_3)%
-	. x P y /\ y P z => x P z			%(RCC_thm_P_trans)%
-	. x P y /\ y P x => x = y			%(RCC_thm_P_extensionality)%
-
-
-
-
-	forall x,y,z: Reg  
-	. x POv y => y POv x 				%(RCC_thm_PO_sym_PO)%
-	. x DC y => y DC x 				%(RCC_thm_PO_sym_DC)%
-	. x EC y => y EC x 				%(RCC_thm_PO_sym_EC)%
-	. x DR y => y DR x 				%(RCC_thm_PO_sym_DR)%
-	. x EQ y => y EQ x 				%(RCC_thm_PO_sym_EQ)%
-	. x PP y => x P y				%(RCC_thm_PP_subset_P)%
-	. x TPP y => x PP y				%(RCC_thm_TPP_subset_PP)%
-	. x NTPP y => x PP y				%(RCC_thm_NTPP_subset_PP)%
-	. x TPPi y => y PP x				%(RCC_thm_TPPi_subset_Inv_PP)% 
-	. x NTPPi y => y PP x				%(RCC_thm_NTPPi_subset_Inv_PP)%
-	. x PP y => not y P x				%(RCC_thm_PP_subset_Cpl_Inv_P)% 
-	. x P y /\ z C x => z C y			%(RCC_lem_PC_1)%
-	. x PP y => not x EC y				%(RCC_thm_PP_implies_not_EC)%
-	. x PP y /\ x C x => not x DC y			%(RCC_thm_PP_and_NotNull_implies_not_DC)%
-	. x Ov y => x C y				%(RCC_thm_O_subset_C)%
-	. x = y /\ x C x => not x DC y			%(RCC_thm_EQ_and_NotNull_implies_not_DC)%
-	. x = y /\ x C x => not x EC y			%(RCC_thm_EQ_and_NotNull_implies_not_EC)%
-	. x = y /\ x C x => not x TPP y			%(RCC_thm_EQ_and_NotNull_implies_not_TPP)%
-
-end
-
-
-spec RCC_FirstOrder_RelFunc 
-
-     = 
-
-     %% Definitions of algebraic operations  %%
-
-     RCC_FirstOrder_Rel
-
-     then 
-     
-	ops
-		cp: Reg * Reg -> Reg; 
-	     compl: Reg -> Reg;   
-               sum: Reg * Reg -> Reg;
-              prod: Reg * Reg -> Reg;
-                 0: Reg;
-                 1: Reg
-
-	forall x,y,z: Reg
-	. cp(x,y) = z <=> (forall u:Reg . 
-                    (u C z <=> (not(u NTP x) \/ not(u NTP y))))
-	.  compl(x) = cp(x,x)
-	.  sum(x,y) = cp(cp(x,x),cp(y,y))
-	. prod(x,y) = cp(cp(x,y),cp(x,y))
-	.         0 = prod(x,compl(x))
-	.         1 = sum(x,compl(x))
-
-	
-end
-
-from  HasCASL/TopologicalSpaces get RegularClosedSets
-
 logic HasCASL
 
-view RCC_in_Topology_closed : 
-  { RCC_FirstOrder reveal __C__ }
-  to 
-  { RegularClosedSets then
-    pred __C__ (X,Y:RegularClosed) <=> not X disjoint Y
-  } =
-  Reg |-> RegularClosed
-end
+view NN:
+     { RCC_FO } to
+     { ExtMetricSpaceByClosedDiscs[MetricSpace] 
+	then %def
+	type NotEmptyClosedDiscs = {X:ClosedDiscs . not X =emptySet }
+	preds __C__,__O__,__NTP__,__P__: ClosedDiscs * ClosedDiscs
+	forall x,y:ClosedDiscs
+	. x C y <=> not x disjoint y
+	}	
+=    QReg |-> ClosedDiscs, Reg |-> NotEmptyClosedDiscs
+	
 
-view RCC_in_Topology_open : 
-  { RCC_FirstOrder reveal __C__ }
-  to 
-  { RegularClosedSets then
-    pred __C__ (X,Y:RegularOpen) <=> not cls(X) disjoint cls(Y)
-  } =
-  Reg |-> RegularOpen
-end
 
-]%
+
+
+

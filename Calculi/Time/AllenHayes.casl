@@ -98,45 +98,45 @@ version 0.1
 
 spec BaseAllenHayes = 
 
-     sort Interval
-     preds __ M __: Interval * Interval
+     sort Int
+     preds __ M __: Int * Int
 
 then
-     forall x,y,z,u:Interval
+     forall x,y,z,u:Int
 
      %% meeting places are unique:
      . x M y /\ x M u /\ z M y => z M u			%(M1)%
 
      %% meeting places are linearily ordered     
      . x M y /\ z M u =>  x M u 
-		      \/ (exists v:Interval. x M v /\ v M u) 
-		      \/ (exists v:Interval. z M v /\ v M y) 
+		      \/ (exists v:Int. x M v /\ v M u) 
+		      \/ (exists v:Int. z M v /\ v M y) 
 							%(M2a)%
 
      . x M y /\ z M u /\ x M u => 
-			not (exists v:Interval. x M v /\ v M u) 
-		     /\ not (exists v:Interval. z M v /\ v M y) 
+			not (exists v:Int. x M v /\ v M u) 
+		     /\ not (exists v:Int. z M v /\ v M y) 
 							%(M2b)%
 
-     . x M y /\ z M u /\ (exists v:Interval. x M v /\ v M u) => 
+     . x M y /\ z M u /\ (exists v:Int. x M v /\ v M u) => 
 			not (x M u) 
-		     /\ not (exists v:Interval. z M v /\ v M y) 
+		     /\ not (exists v:Int. z M v /\ v M y) 
 							%(M2c)%
 
-     . x M y /\ z M u /\ (exists v:Interval. z M v /\ v M y) => 
+     . x M y /\ z M u /\ (exists v:Int. z M v /\ v M y) => 
 			not (x M u) 
-		     /\ not (exists v:Interval. x M v /\ v M u) 
+		     /\ not (exists v:Int. x M v /\ v M u) 
 							%(M2d)%
 
      %% time is infinite, both to the past and to the future:		
-     . exists y,z:Interval . y M x /\ x M z		%(M3)%
+     . exists y,z:Int . y M x /\ x M z		%(M3)%
 						
      %% we do not care about endpoints of intervals:
      . x M y /\ y M u /\ x M z /\ z M u => y = z	%(M4)%
 
 
 then %implies
-   forall x,y,z:Interval
+   forall x,y,z:Int
    . not (x M x)					%(M_irrefl)%
    . x M y => not (y M x)				%(M_asym)%
    . x M y /\ y M z => not (x M z)			%(M_atrans)% 
@@ -148,20 +148,20 @@ spec ExtBaseAllenHayes [BaseAllenHayes] = %def
      preds  
 	    __ B __, __ O __,  __ S __, __ F __,  __ D __,
 	    __ Bi __, __ Oi __,  __ Si __, __ Fi __, __ Di __,
-	    __ Mi __ : Interval * Interval
+	    __ Mi __ : Int * Int
       
-     forall x,y:Interval
-     . x B y <=> exists z:Interval . x M z /\ z M y     %(B_def)%
-     . x S y <=> exists z:Interval . x M z /\ 
-			(forall u:Interval . y M u <=> z M u)
+     forall x,y:Int
+     . x B y <=> exists z:Int . x M z /\ z M y     %(B_def)%
+     . x S y <=> exists z:Int . x M z /\ 
+			(forall u:Int . y M u <=> z M u)
 							%(S_def)%
-     . x F y <=> exists z:Interval . z M x /\ 
-			(forall u:Interval . u M y <=> u M z)
+     . x F y <=> exists z:Int . z M x /\ 
+			(forall u:Int . u M y <=> u M z)
 							%(F_def)%
-     . x O y <=> exists z,u:Interval . z S x /\ z M y /\ 
+     . x O y <=> exists z,u:Int . z S x /\ z M y /\ 
 			x M u /\ u F y			
 					                %(O_def)%
-     . x D y <=> exists z,u:Interval . z S y /\ z M x /\ 
+     . x D y <=> exists z,u:Int . z S y /\ z M x /\ 
 			x M u /\ u F y	
 					                %(D_def)%
      . x Bi y <=> y B x					%(Bi_def)%
@@ -173,7 +173,7 @@ spec ExtBaseAllenHayes [BaseAllenHayes] = %def
 
 
 then %implies
-     forall x,y:Interval
+     forall x,y:Int
      . x B y \/ x M y \/ x O y \/ x D y \/ x S y \/ x F y \/ x = y \/
 	 x Bi y \/ x Mi y \/ x Oi y \/ x Di y \/ x Si y \/ x Fi y \/ x = y 
 	 						%(All13_JE)%
@@ -184,8 +184,8 @@ spec AllenHayesLadkin =
      BaseAllenHayes
 
 then 
-     forall x,y:Interval
-     . x M y => exists z,u,v:Interval .
+     forall x,y:Int
+     . x M y => exists z,u,v:Int .
 		z M x /\ x M y /\ y M u /\ z M v /\ y M u
 						      %(M5exist)%
 end
@@ -194,11 +194,11 @@ spec AllenHayes =
      BaseAllenHayes
 
 then
-     op __ cup __: Interval * Interval -> Interval
-     %% op __ cup __: Interval * Interval ->? Interval
+     op __ cup __: Int * Int -> Int
+     %% op __ cup __: Int * Int ->? Int
 
-     forall x,y:Interval
-     . x M y => exists z,u:Interval .
+     forall x,y:Int
+     . x M y => exists z,u:Int .
 		z M x /\ x M y /\ y M u /\ z M (x cup y) /\ y M u
 						      %(M5func)%
 then %implies
@@ -224,22 +224,26 @@ spec RichAllenHayesLadkin = ExtAllenHayesLadkin [AllenHayesLadkin]
 spec ConstructPointsFromIntervals =
      AllenHayesLadkin   %%% BaseAllenHayes is not sufficient
 then %def
-     preds  __ __ Equiv __ __: Interval * Interval * Interval * Interval;
-	    __ __ PointLess __ __: Interval * Interval * Interval * Interval
+     preds  __ __ Equiv __ __: Int * Int * Int * Int;
+	    __ __ PointLess __ __: Int * Int * Int * Int
 
 
-     forall x,y,z,u:Interval
+     forall x,y,z,u:Int
      . x y Equiv z u <=> x M y /\ z M u /\ x M u	%(Equiv_def)%
+     . x y PointLess z u <=> (exists r,s,t:Int 
+				    . x y Equiv r s /\ z u Equiv s t)
+							%(PointLess_def)%
 %%     . x y PointLessOrg z u <=> (exists r,s,t:Interval 
 %%				    . x y Equiv r s /\ z u Equiv s t)
 %%							%(PointLessOrg_def)%
-     . x y PointLess z u <=> (exists v:Interval 
+%%     . x y PointLess z u <=> (exists v:Interval 
 				    . x y Equiv x v /\ z u Equiv v u)
-							%(PointLess_def)%
+%%>>>>>>> 1.4
+
 
 
 then %implies
-     forall x,y,z,u,v,w:Interval 
+     forall x,y,z,u,v,w:Int 
      . x M y => x y Equiv x y				%(Equiv_refl)%
      . x y Equiv z u => z u Equiv x y			%(Equiv_sym)%
      . x y Equiv z u /\ z u Equiv v w => x y Equiv v w  %(Equiv_trans)%

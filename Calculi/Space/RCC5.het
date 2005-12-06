@@ -1,3 +1,4 @@
+
 library Calculi/Space/RCC5
 version 0.3
 %% author: S. Wölfl
@@ -38,14 +39,13 @@ from Calculi/Algebra/RelationAlgebraModel get
 	ConstructModelFromBaseRelationModel,
 	CompositionClosedBaseRelationModel,
 	CheckCompositionClosedBaseRelationModel
-from HasCASL/EuclideanSpaces get
-	Real2D,
-	Real3D
+from Calculi/Space/EuclideanSpace get
+	EuclideanSpace2D,
+	EuclideanSpace3D
 from HasCASL/TopologicalSpaces get 
 	RichTopologicalSpace
 from HasCASL/MetricSpaces get 
-	MetricSpace,
-	ExtMetricSpaceByOpenDiscs
+	MetricSpace
 from HasCASL/Set get 
 	Set
 
@@ -193,8 +193,23 @@ logic HasCASL
 
 
 
+spec Discs[MetricSpace] = %def
+local Set
+within
+     op opDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
+     op clDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<=r
+     type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=opDisc(r,x)}
+     type ClosedDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=clDisc(r,x)}
+     preds __disjoint__,__subset__: Set S * Set S
+     ops  cen: OpenDisc -> S;
+	  rad: OpenDisc -> Real
+     forall X:OpenDisc; r:Real; x:S
+     . X = opDisc(r,x) <=> cen(X) = x /\ rad(X) = r
+end
+
+
 spec RCC5BaseRelationModel_OpenDisc[MetricSpace] = %def 
-     BaseRelationModel[OpenDiscs[MetricSpace] fit Elem |-> OpenDisc]  
+     BaseRelationModel[Discs[MetricSpace] fit Elem |-> OpenDisc]  
 then %def
      ops ppRel,ppiRel,poRel,drRel,eqRel:Relation 
      free type BaseRel ::= ppRel | ppiRel | poRel | drRel | eqRel 
@@ -300,10 +315,10 @@ end
 
 %( Special Models )%
 
-%[
 
-view Real2D_Is_EvenLarger:
-     EvenLargerMetricSpace to Real2D
+
+view EuclideanSpace2D_Is_EvenLarger:
+     EvenLargerMetricSpace to EuclideanSpace2D
 =  S |-> Point, d |-> dist
 end
 
@@ -323,7 +338,6 @@ to
     ops pp |-> ppRel, ppi |-> ppiRel, po |-> poRel, dr |-> drRel, eq |-> eqRel
 end
 
-]%
 
 
 
