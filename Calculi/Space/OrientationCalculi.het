@@ -1,0 +1,195 @@
+
+library OrientationCalculi
+version 0.1
+%authors B. Krieg-Brueckner <bkb@informatik.uni-bremen.de>
+%date 26 November 2005
+
+%[
+%%display __* %LATEX \widehat{__}
+%%display ~__ %LATEX -__
+%%display @__ %LATEX \overline{__}
+%%display at__ %LATEX @__
+%%display __-->__ %LATEX __-->__
+%%display __|__ %LATEX __|__
+%%display __++__ %LATEX \Join{__}{__}
+%%display __#__>__ %LATEX __#__>__
+]%
+
+%display __* %LATEX __*
+%display ~__ %LATEX -__
+%display @__ %LATEX \sim__
+%display at__ %LATEX @__
+%display __-->__ %LATEX __-->__
+%display __|__ %LATEX __|__
+%display __++__ %LATEX __++__
+%display __#__>__ %LATEX __#__>__
+
+%display v %LATEX v
+%display w %LATEX w
+
+%prec( {@__} < {~__} )%
+%prec( {__+__, __-__} < {__|__} )%
+%prec( {__|__} < {__++__} )%
+%prec( {__++__} < {__-->__} )%
+
+%left_assoc __+__, __++__
+
+spec EgoOrientation = sort Orientation
+ops front, back: Orientation;
+    ~__, @__ : Orientation -> Orientation;
+    __+__ : Orientation * Orientation -> Orientation,  assoc, comm, unit front;
+    __-__ : Orientation * Orientation -> Orientation;
+forall a, b: Orientation 
+. a + front = a 
+. @a = front - a  . @ @a = a  . a + @a = front 
+. ~a = back + a   . ~ ~a = a  . @~a = ~(@a)  . @~a = back-a
+. @front = front  . @back = back
+then %implies 
+. ~front = back %(1)% . back + back = front %(2)%
+then
+ops right, left: Orientation
+. left = ~right .  left = @right
+then %implies 
+. right + right = back %(3)% . left + right = front %(4)%  
+then
+ops rightFront, rightBack, 
+    leftFront, leftBack: Orientation
+. rightFront + rightFront = right
+. leftFront = @rightFront  . leftBack = @rightBack
+. leftFront = ~rightBack   . rightFront = ~leftBack
+then %implies 
+. rightFront = @leftFront . rightBack = @leftBack
+. rightFront = ~leftBack . leftFront = ~rightBack
+
+spec LocationsAndVectors = EgoOrientation then
+sort Location
+then
+   free type PreVector ::= PV(source,target: Location)
+   sort Vector = {v : PreVector . not source(v) = target(v)}
+   op __-->__ : Location * Location ->? Vector
+
+   forall x,y:Location
+   . def x --> y <=> PV(x,y) in Vector
+   . x --> y = PV(x,y) if def x --> y
+
+ops  -__ :    Vector -> Vector; 
+    __++__ : Vector * Vector -> Vector;  
+    __|__ :  Vector * Vector -> Orientation  
+
+forall v, w: Vector
+. v | w  = ~(v | -w) 
+. v | -w = -v | w 
+. v | w  = ~(w | v)
+. - -v = v
+then %implies 
+forall v, w: Vector
+. v | w = -v | -w 
+. -v | w = ~(v | w) 
+
+spec DoubleCrossOrientation = 
+   LocationsAndVectors then
+sort Orientation < Orientation2
+ops  ~__, @__ : Orientation2 -> Orientation2;
+pred __#__>__ : Vector * Vector * Orientation2
+forall a, b, c, d: Location; o: Orientation2
+. a-->b # c-->d > o => a=c \/ b=c \/ a=d \/ b=d
+ops leftAtEntry, rightAtEntry, 
+    leftAtExit, rightAtExit: Orientation2
+. leftAtExit = ~ rightAtEntry
+. leftAtEntry = ~rightAtExit
+. leftAtExit = @rightAtExit  . leftAtEntry = @rightAtEntry
+
+ops atEntry, atCourse, atExit : Orientation2
+. atExit = ~atEntry   . atCourse = ~atCourse
+. atExit = @atExit    . atEntry = @atEntry    
+. atCourse = @atCourse
+
+forall entry, exit, c: Location; u, v, w: Vector
+. v = entry-->exit /\ w = exit-->c /\ u = entry-->c => 
+   (v#w>leftFront  <=> v|w=leftFront  /\ v|u=leftFront)
+/\ (v#w>left       <=> v|w=left       /\ v|u=leftFront)
+/\ (v#w>leftBack   <=> v|w=leftBack   /\ v|u=leftBack )
+/\ (v#w>front      <=> v|w=front      /\ v|u=front)
+/\ (v#w>back       <=> v|w=back       /\ v|u=back )
+/\ (v#w>rightFront <=> v|w=rightFront /\ v|u=rightFront)
+/\ (v#w>right      <=> v|w=right      /\ v|u=rightFront)
+/\ (v#w>rightBack  <=> v|w=rightBack  /\ v|u=rightBack )
+
+pred at__ : Location  
+forall entry, exit, c: Location; u, v, w: Vector
+. v = entry-->exit /\ w = exit-->c /\ u = entry-->c => 
+   (v#w>leftAtExit   <=> v|w=left      /\ v|u=leftFront)
+/\ (v#w>leftAtEntry  <=> v|w=leftBack  /\ v|u=left )
+/\ (v#w>rightAtExit  <=> v|w=right     /\ v|u=rightFront)
+/\ (v#w>rightAtEntry <=> v|w=rightBack /\ v|u=right )
+
+/\ (v#w>atExit       <=> at exit       /\ v|u=front)
+/\ (v#w>atCourse     <=> v|w=back      /\ v|u=front)
+/\ (v#w>atEntry      <=> at entry      /\ v|u=front)
+
+spec PlacesAndSegments = 
+   DoubleCrossOrientation then
+sort Place < Location;Id    %% navigable
+sort Segment = 
+   {s: Vector . source(s) in Place /\ target(s) in Place}
+ops id: Place -> Id;
+    oOrigin: Place -> Vector;   %% reference Vector
+    oEntry, oExit: Segment -> Orientation;  
+    __-->__: Place * Place -> Segment 
+forall entry, exit: Place 
+. oEntry(entry-->exit) = oOrigin(entry)  | entry-->exit
+. oExit(entry-->exit)  = entry-->exit | oOrigin(exit)
+
+forall a, b, c, d: Place 
+. a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
+. a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
+. oExit(a-->b)  = front <=> a-->b | b-->c = oEntry(b-->c)
+. oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
+
+. id(b) = id(d) /\ a-->b | b-->c = a-->d | d-->c =>  
+ oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+ oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) =>
+ oEntry(b-->c) = oExit(a-->d)+(oEntry(d-->c)-oExit(a-->b))
+
+
+spec RoutePredicates = PlacesAndSegments then
+preds __via__  : Segment * Location;  
+forall a, b, c: Place
+. a-->b via c <=> a-->b # a-->c > atCourse
+then
+sort LROrientation = {o:Orientation2 . o=left \/ o=right}
+preds __ passBy__  : Segment * Location;  
+      __pass__on__,
+      __along__on__ : Segment * Location * Orientation2;
+forall a, b, c: Place; lr: LROrientation
+. a-->b pass c on lr <=> 
+  exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
+. a-->b passBy c <=> 
+  a-->b pass c on left \/ a-->b pass c on right
+. a-->b along c on lr <=> 
+  forall d: Location . a-->b via d => a-->d # d-->c > lr 
+ 
+spec Examples = RoutePredicates then
+sort Landmark < Location
+ops start, p1, p2, p3, door : Place;
+    door, lifts, mainStairs, stugaRoom : Landmark  
+. oEntry(start-->door) = back
+. start-->p1 via door
+. oEntry(p1-->p2) = right
+. p1-->p2 passBy lifts
+. p2-->p3 passBy mainStairs
+. p2-->p3 # p3-->stugaRoom > leftAtExit \/
+  p2-->p3 # p3-->stugaRoom > rightAtExit
+
+spec SecretarysOfficeExample = Examples then
+ops start, p1, p2, p3, p4, room8080 : Place;
+    door8210, lifts, window, door8080, room8080 : Landmark  
+. oEntry(start-->door) = back
+. start-->p1 via door
+. start-->p1 # p1-->lifts > front
+. oEntry(p1-->p2) = right
+. p1-->p2 # p2-->window > front
+. oEntry(p2-->p3) = left
+. oEntry(p3-->p4) = leftFront
+. p3-->p4 # p4-->door8080 > right
+. p4-->room8080 via door8080
