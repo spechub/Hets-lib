@@ -11,7 +11,7 @@ method_setup step = "build_tactic (step_fun)" "((disjI2)+)?,inst r (rcs union (t
 method_setup close= "build_tactic (close_fun)" "((disjI1|disjI2)+)?,((exE|conjE)+)?,force_solve|solve,disji1+,blast"
 method_setup close_or_step= "build_tactic (close_or_step_fun)" "try to close current subgoal, if this fails, step"
 method_setup force_finish = "build_tactic (force_finish_fun)" "force: inst r false,solve1"
-method_setup first_then = "build_tactic (first_then_fun)" "repeat disji2,exi,exi,conji, then execute force_tac the same number of times"
+(*method_setup first_then = "build_tactic (first_then_fun)" "repeat disji2,exi,exi,conji, then execute force_tac the same number of times"*)
 
 typedecl "Elem"
 typedecl "Stream"
@@ -26,7 +26,7 @@ consts
 "zip3" :: "Stream => Stream => Stream => Stream"
 "even" :: "Stream => Stream"
 "zip" :: "Stream => Stream => Stream"
-"odd" :: "Stream => Stream"
+"Odd" :: "Stream => Stream"
 "const" :: "Elem => Stream"
 "swap" :: "Elem => Elem => Stream"
 "iterate" :: "(Elem => Elem) => Elem => Stream"
@@ -68,8 +68,8 @@ third_tl [simp]: "!! s :: Stream . (tl (third s)) = third (tl (tl (tl s)))"
 zip3_hd [simp]: "!! s1 :: Stream . !! s2 :: Stream . !! s3 :: Stream . (hd (zip3 s1 s2 s3)) = (hd s1)"
 zip3_tl [simp]: "!! s1 :: Stream . !! s2 :: Stream . !! s3 :: Stream . (tl (zip3 s1 s2 s3)) = zip3 s2 s3 (tl s1)"
 
-odd_hd [simp]: "!! s :: Stream . (hd (odd s)) = (hd s)"
-odd_tl [simp]: "!! s :: Stream . (tl (odd s)) = odd (tl (tl s))"
+Odd_hd [simp]: "!! s :: Stream . (hd (Odd s)) = (hd s)"
+Odd_tl [simp]: "!! s :: Stream . (tl (Odd s)) = Odd (tl (tl s))" 
 even_hd [simp]: "!! s :: Stream . (hd (even s)) = (hd (tl s))"
 even_tl [simp]: "!! s :: Stream . (tl (even s)) = even (tl (tl s))"
 zip_hd [simp]: "!! s1 :: Stream . !! s2 :: Stream . (hd (zip s1 s2)) = (hd s1)"
@@ -86,23 +86,22 @@ swap_hd [simp] : "!! e1 :: Elem . !! e :: Elem . (hd (swap e1 e2)) = e1"
 swap_tl [simp] : "!! e1 :: Elem . !! e :: Elem . (tl (swap e1 e2)) = (swap e2 e1)"
 
 ga_cogenerated_Stream: "!! R :: Stream => Stream => bool . !! u :: Stream . !! v :: Stream . ! x :: Stream . ! y :: Stream . R x y --> (hd x = hd y & R (tl x) (tl y))  ==> R u v ==> u = v"
-ga_selector_hd: "! X1 :: Elem . ! X2 :: Stream . (hd (cons X1 X2)) = X1"
-ga_selector_tl: "! X1 :: Elem . ! X2 :: Stream . (tl (cons X1 X2)) = X2"
 
-theorem Stream_Zip: "!! s :: Stream . zip (odd s) (even s) = s"
-apply(circular_coinduction)
-(*
+
+theorem Stream_Zip2: "!! s :: Stream . zip (Odd s) (even s) = s"
 apply(coinduction)
 apply(init)
 apply(breakup)
 apply(close_or_step)
 apply(force_finish)
-*)
 done
 
-theorem Stream_Zip3: "!! s :: Stream . ((zip3 (first s) (second s)) (third s)) = s"
+theorem Stream_Zip2a: "!! s :: Stream . zip (Odd s) (even s) = s"
 apply(circular_coinduction)
-(*
+done
+
+
+theorem Stream_Zip3: "!! s :: Stream . ((zip3 (first s) (second s)) (third s)) = s"
 apply(coinduction)
 apply(init)
 apply(breakup)
@@ -110,7 +109,10 @@ apply(close_or_step)
 apply(breakup)
 apply(close_or_step)
 apply(force_finish)
-*)
+done
+
+theorem Stream_Zip3a: "!! s :: Stream . ((zip3 (first s) (second s)) (third s)) = s"
+apply(circular_coinduction)
 done
 
 theorem Stream_Zip4: "!! s :: Stream . ((zip4 (one s) (two s)) (three s) (four s)) = s"
@@ -138,7 +140,7 @@ theorem Stream_Even_Const: "!! e :: Elem . const e = even (const e)"
 apply(circular_coinduction)
 done
 
-theorem Stream_Odd_Swap: "!! e :: Elem . !! f :: Elem . const e = odd (swap e f)"
+theorem Stream_Odd_Swap: "!! e :: Elem . !! f :: Elem . const e = Odd (swap e f)"
 apply(circular_coinduction)
 done
 
@@ -158,9 +160,9 @@ theorem Stream_Const_Swap: "!! a :: Elem . !! b :: Elem . (zip (const a) (const 
 apply(circular_coinduction)
 done
 
-theorem cogenerated_odd_even: 
+theorem cogenerated_Odd_even: 
 "!! R :: Stream => Stream => bool . !! u :: Stream . !! v :: Stream . ! x :: Stream . ! y :: Stream . \
- R x y --> (hd x = hd y & R (odd x) (odd y) & R (even x) (even y))  ==> R u v ==> u = v"
+ R x y --> (hd x = hd y & R (Odd x) (Odd y) & R (even x) (even y))  ==> R u v ==> u = v"
 (*apply(tactic "compose_tac (true,get_ctxt_thm \"ga_cogenerated_Stream\",1) 1")*)
 apply(rule_tac R=R in ga_cogenerated_Stream)
 apply(init)
