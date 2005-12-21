@@ -33,7 +33,7 @@ cofree {
     free type HCap ::= enter | coenter | exit | coopen
     free type Action ::= tau | action(Cap; name :? Name)
     free type HAct ::= haction(HCap; name : Name)
-    free type Concretion ::= conc(State; State)
+    free type Concretion ::= conc(State; State; Set[Name])
     then Set[sort State] and Set[sort Concretion]
     then cotype State ::= (next : Action -> Set[State];
                            harden : HAct -> Set[Concretion]; 
@@ -49,7 +49,8 @@ then op subst : Name * Name * Name -> Name;
         rename : Name * Name * Concretion -> Concretion;
         rename : Name * Name * Set[Concretion] -> Set[Concretion]
      vars a : Action; b : HAct; c : Cap; h : HCap; m,n,o : Name; P,Q: State;
-          C : Concretion; s1,s2 : Set[State]; cs1,cs2 : Set[Concretion]
+          C : Concretion; s1,s2 : Set[State]; cs1,cs2 : Set[Concretion];
+          p : Set[Name]
      . subst(m,n,o) = n when m=o else o
      . subst(m,n,tau) = tau
      . subst(m,n,action(c,o)) = action(c,subst(m,n,o))
@@ -61,7 +62,7 @@ then op subst : Name * Name * Name -> Name;
      . rename(m,n,{P}) = {rename(m,n,P)}
      . rename(m,n,s1 union s2) = 
        rename(m,n,s1) union rename(m,n,s2)
-     . rename(m,n,conc(P,Q)) = conc(rename(m,n,P),rename(m,n,Q))
+     . rename(m,n,conc(P,Q,p)) = conc(rename(m,n,P),rename(m,n,Q),p)
      . rename(m,n,{}:Set[Concretion]) = {}
      . rename(m,n,{C}) = {rename(m,n,C)}
      . rename(m,n,cs1 union cs2) = 
@@ -85,71 +86,77 @@ then op cap : Cap * Name * State -> State
 end
 
 spec NameRestriction = ACDomain[sort Name] and Rename
-then op res : Name * State -> State
-     vars a : Action; b : HAct; n : Name; P, Q : State; c : Concretion 
+then ops res : Name * State -> State;
+         res : Set[Name] * State -> State; 
+     vars a : Action; b : HAct; n : Name; P, Q : State; c : Concretion;
+          p : Set[Name]; p,q : Set[Name] 
      . Q member next(a, res(n, P)) <=> 
         exists R : State . Q = res(n, R) /\ R member next(a, P) /\ not name(a)=n
      . c member harden(b, res(n, P)) <=>
         (exists R, S : State
-         . c = conc(R, res(n, S))
-           /\ conc(R, S) member harden(b, P) 
+         . c = conc(R, res(n, S), p)
+           /\ conc(R, S, p) member harden(b, P) 
            /\ not n member names(R)) \/
         (exists R, S : State
-         . c = conc(res(n, R), S) 
-           /\ conc(R, S) member harden(b, P) 
+         . c = conc(res(n, R), S, p) 
+           /\ conc(R, S, p) member harden(b, P) 
            /\ not n member names(S)) \/
         (exists R, S : State; m : Name
-         . c = conc(rename(n,m,R), rename(n,m,S)) 
-           /\ conc(R, S) member harden(b, P) 
-           /\ not m member names(P)
+         . c = conc(rename(n,m,R), rename(n,m,S), p union {m}) 
+           /\ conc(R, S, p) member harden(b, P) 
+           /\ not m member names(P) union p
+           /\ not n member p
            /\ n member names(S)
            /\ n member names(R))
       . names(res(n, P)) = names(P) - n
+      . res({},P) = P
+      . res({n},P) = res(n,P)
+      . res(p union q,P) = res(p,res(q,P))
 end
 
-spec AmbientAndParallel = Zero
+spec AmbientAndParallel = Zero and NameRestriction
 then ops amb : Name * State -> State;
          __||__ : State * State -> State, assoc  %implied
 vars a : Action; b : HAct; cap : Cap;m, n : Name; P,Q : State; c : Concretion
   . Q member next(tau, amb(n, P)) <=>
-     ( exists P', P'' : State  .
-                 Q = amb(n, P'') || P' /\
-                 conc(P', P'') member  harden(haction(exit, n), P)) \/
+     ( exists P', P'' : State; p: Set[Name]  .
+                 Q = res(p, amb(n, P'') || P') /\
+                 conc(P', P'', p) member  harden(haction(exit, n), P)) \/
      ( exists P' : State  . Q = amb(n, P') /\ P' member next(tau, P))
   . next(action(cap, n), amb(m, P)) = {}
   . c member harden(haction(enter, n), amb(m, P)) <=>
-     ( exists P' : State  . c = conc(amb(m, P'), zero) /\
+     ( exists P' : State . c = conc(amb(m, P'), zero, {}) /\
                           P' member next(action(inCap, n), P))
-  . harden(haction(coenter, n), (amb(n, P))) = {conc(P, zero)}
+  . harden(haction(coenter, n), (amb(n, P))) = {conc(P, zero, {})}
   . c member harden(haction(exit, n), amb(m, P)) <=>
-     ( exists P' : State  . c = conc(amb(m, P'), zero) /\
+     ( exists P' : State  . c = conc(amb(m, P'), zero, {}) /\
                         P' member next(action(out, n), P))
-  . harden(haction(coopen, n), (amb(n, P))) = {conc(P, zero)}
+  . harden(haction(coopen, n), (amb(n, P))) = {conc(P, zero, {})}
   . names(amb(n, P)) = {n} union names(P)
 
 vars a : Action; b : HAct; n : Name; P, Q, R : State; c : Concretion
     . R member next(a, P || Q) <=>
-      (a = tau /\ exists P',Q',Q'' : State  .
-        R = P' || Q' || Q'' /\ P' member next(action(open, n), P) /\
-        conc(Q',Q'') member harden(haction(coopen, n),Q)) \/
-      (a = tau /\  exists Q', P', P'' : State  .
-        R = P' || P'' || Q' /\ Q' member next(action(open, n),Q) /\
-        conc(P', P'') member harden(haction(coopen, n), P)) \/
-      (a = tau /\  exists P', P'',Q',Q'' : State  .
-        R = amb(n, P' || Q') || P'' || Q'' /\
-        conc(P', P'') member harden(haction(enter, n), P) /\
-        conc(Q',Q'') member harden(haction(coenter, n),Q)) \/
-      (a = tau /\  exists P', P'',Q',Q'' : State  .
-         R = amb(n, P' || Q') || P'' || Q'' /\
-         conc(P', P'') member harden(haction(coenter, n), P) /\
-         conc(Q',Q'') member harden(haction(enter, n),Q)) \/
+      (a = tau /\ exists P',Q',Q'' : State; p : Set[Name]  .
+        R = res(p, P' || Q' || Q'') /\ P' member next(action(open, n), P) /\
+        conc(Q',Q'',p) member harden(haction(coopen, n),Q)) \/
+      (a = tau /\  exists Q', P', P'' : State; p : Set[Name]  .
+        R = res(p, P' || P'' || Q') /\ Q' member next(action(open, n),Q) /\
+        conc(P', P'',p) member harden(haction(coopen, n), P)) \/
+      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : Set[Name]  .
+        R = res(p union q,amb(n, P' || Q') || P'' || Q'') /\
+        conc(P', P'',p) member harden(haction(enter, n), P) /\
+        conc(Q',Q'',q) member harden(haction(coenter, n),Q)) \/
+      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : Set[Name]  .
+         R = res(p union q,amb(n, P' || Q') || P'' || Q'') /\
+         conc(P', P'',p) member harden(haction(coenter, n), P) /\
+         conc(Q',Q'',q) member harden(haction(enter, n),Q)) \/
       ( exists P' : State  . R = P' || Q /\ P' member next(a, P)) \/
       ( exists Q' : State  . R = P || Q' /\ Q' member next(a,Q))
     . c member harden(b, (P || Q)) <=>
-        ( exists P', P'' : State  . 
-           c = conc(P', P'' || Q) /\ conc(P', P'') member  harden(b, P)) \/
-        ( exists Q',Q'' : State  . 
-           c = conc(Q', P || Q'') /\ conc(Q',Q'') member harden(b,Q))
+        ( exists P', P'' : State; p : Set[Name]  . 
+           c = conc(P', P'' || Q, p) /\ conc(P', P'', p) member  harden(b, P)) \/
+        ( exists Q',Q'' : State; p : Set[Name]  . 
+           c = conc(Q', P || Q'', p) /\ conc(Q',Q'', p) member harden(b,Q))
     . names(P || Q) = names(P) union names(Q)
 end
 
