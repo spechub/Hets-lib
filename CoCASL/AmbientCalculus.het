@@ -10,34 +10,58 @@ library CoCASL/Examples
 
 logic CoCASL
 
-spec Set[sort Elem] =
+spec FinSet[sort Elem] =
 free {
-    type Set[Elem] ::= {} | {__}(Elem) | __union__(Set[Elem]; Set[Elem])
-    op __union__ : Set[Elem] * Set[Elem] -> Set[Elem], 
+    type FinSet[Elem] ::= {} | {__}(Elem) | __union__(FinSet[Elem]; FinSet[Elem])
+    op __union__ : FinSet[Elem] * FinSet[Elem] -> FinSet[Elem], 
                 assoc, comm, idem, unit {} }
     then
-    pred __member__: Elem * Set[Elem]
-    forall x,y: Elem; M,N: Set[Elem]
+    pred __member__: Elem * FinSet[Elem]
+    forall x,y: Elem; M,N: FinSet[Elem]
     . not x member {}                                
     . x member {y} <=> x=y 
     . x member M union N <=> x member M \/ x member N
     then
-    op __setMinus__, __disjointUnion__ : Set[Elem] * Set[Elem] -> Set[Elem]
-    ops __-__,__+__ : Set[Elem] * Elem -> Set[Elem]
+    op __setMinus__, __disjointUnion__ : FinSet[Elem] * FinSet[Elem] -> FinSet[Elem]
+    ops __-__,__+__ : FinSet[Elem] * Elem -> FinSet[Elem]
 end
 
-spec ACDomain[sort Name] = Set[sort Name] then
+spec CntSet[sort Elem] =
+   cofree cotype Seq[Elem] ::= nil | (head : Elem; tail : Seq[Elem])
+   pred __elem__ : Elem * Seq[Elem]
+   var x:Elem; s:Seq[Elem]
+   . x elem s <=> (x=head(s) \/ x elem tail(s))
+then free {
+   generated type CntSet[Elem] ::= makeSet(Seq[Elem])
+   var s1,s2: Seq[Elem]
+   . s1=s2 <=> forall x:Elem . x elem s1 <=> x elem s2
+  }
+then
+    op {} : CntSet[Elem] = makeSet(nil)
+    op __union__ : CntSet[Elem] * CntSet[Elem] -> CntSet[Elem], 
+                assoc, comm, idem, unit {}
+    pred __member__: Elem * CntSet[Elem]
+    forall x: Elem; s: Seq[Elem]
+    . x member (makeSet (s)) <=> x elem s
+    op {__} : Elem -> CntSet[Elem];
+       __setMinus__, __disjointUnion__ : 
+                   CntSet[Elem] * CntSet[Elem] -> CntSet[Elem]
+    ops __-__,__+__ : CntSet[Elem] * Elem -> CntSet[Elem]
+end
+
+
+spec ACDomain[sort Name] = FinSet[sort Name] then
 cofree {
     sort State
     free type Cap ::= inCap | out | open         
     free type HCap ::= enter | coenter | exit | coopen
     free type Action ::= tau | action(Cap; name :? Name)
     free type HAct ::= haction(HCap; name : Name)
-    free type Concretion ::= conc(State; State; Set[Name])
-    then Set[sort State] and Set[sort Concretion]
-    then cotype State ::= (next : Action -> Set[State];
-                           harden : HAct -> Set[Concretion]; 
-                           names : Set[Name]) }
+    free type Concretion ::= conc(State; State; FinSet[Name])
+    then FinSet[sort State] and CntSet[sort Concretion]
+    then cotype State ::= (next : Action -> FinSet[State];
+                           harden : HAct -> CntSet[Concretion]; 
+                           names : FinSet[Name]) }
 end
 
 spec Rename = ACDomain[sort Name] 
@@ -45,12 +69,12 @@ then op subst : Name * Name * Name -> Name;
         subst : Name * Name * Action -> Action;
         subst : Name * Name * HAct -> HAct;
         rename : Name * Name * State -> State;
-        rename : Name * Name * Set[State] -> Set[State];
+        rename : Name * Name * FinSet[State] -> FinSet[State];
         rename : Name * Name * Concretion -> Concretion;
-        rename : Name * Name * Set[Concretion] -> Set[Concretion]
+        rename : Name * Name * CntSet[Concretion] -> CntSet[Concretion]
      vars a : Action; b : HAct; c : Cap; h : HCap; m,n,o : Name; P,Q: State;
-          C : Concretion; s1,s2 : Set[State]; cs1,cs2 : Set[Concretion];
-          p : Set[Name]
+          C : Concretion; s1,s2 : FinSet[State]; cs1,cs2 : CntSet[Concretion];
+          p : FinSet[Name]
      . subst(m,n,o) = n when m=o else o
      . subst(m,n,tau) = tau
      . subst(m,n,action(c,o)) = action(c,subst(m,n,o))
@@ -58,12 +82,12 @@ then op subst : Name * Name * Name -> Name;
      . next(a, rename(m,n,P)) = rename(m,n,next(subst(m,n,a),P))
      . harden(b, rename(m,n,P)) = rename(m,n,harden(subst(m,n,b),P))
      . names(rename(m,n,P)) = (names(P) - m) + n
-     . rename(m,n,{}:Set[State]) = {}
+     . rename(m,n,{}:FinSet[State]) = {}
      . rename(m,n,{P}) = {rename(m,n,P)}
      . rename(m,n,s1 union s2) = 
        rename(m,n,s1) union rename(m,n,s2)
      . rename(m,n,conc(P,Q,p)) = conc(rename(m,n,P),rename(m,n,Q),p)
-     . rename(m,n,{}:Set[Concretion]) = {}
+     . rename(m,n,{}:CntSet[Concretion]) = {}
      . rename(m,n,{C}) = {rename(m,n,C)}
      . rename(m,n,cs1 union cs2) = 
        rename(m,n,cs1) union rename(m,n,cs2)
@@ -87,9 +111,9 @@ end
 
 spec NameRestriction = ACDomain[sort Name] and Rename
 then ops res : Name * State -> State;
-         res : Set[Name] * State -> State; 
+         res : FinSet[Name] * State -> State; 
      vars a : Action; b : HAct; n : Name; P, Q : State; c : Concretion;
-          p : Set[Name]; p,q : Set[Name] 
+          p : FinSet[Name]; p,q : FinSet[Name] 
      . Q member next(a, res(n, P)) <=> 
         exists R : State . Q = res(n, R) /\ R member next(a, P) /\ not name(a)=n
      . c member harden(b, res(n, P)) <=>
@@ -119,7 +143,7 @@ then ops amb : Name * State -> State;
          __||__ : State * State -> State, assoc  %implied
 vars a : Action; b : HAct; cap : Cap;m, n : Name; P,Q : State; c : Concretion
   . Q member next(tau, amb(n, P)) <=>
-     ( exists P', P'' : State; p: Set[Name]  .
+     ( exists P', P'' : State; p: FinSet[Name]  .
                  Q = res(p, amb(n, P'') || P') /\
                  conc(P', P'', p) member  harden(haction(exit, n), P)) \/
      ( exists P' : State  . Q = amb(n, P') /\ P' member next(tau, P))
@@ -136,26 +160,26 @@ vars a : Action; b : HAct; cap : Cap;m, n : Name; P,Q : State; c : Concretion
 
 vars a : Action; b : HAct; n : Name; P, Q, R : State; c : Concretion
     . R member next(a, P || Q) <=>
-      (a = tau /\ exists P',Q',Q'' : State; p : Set[Name]  .
+      (a = tau /\ exists P',Q',Q'' : State; p : FinSet[Name]  .
         R = res(p, P' || Q' || Q'') /\ P' member next(action(open, n), P) /\
         conc(Q',Q'',p) member harden(haction(coopen, n),Q)) \/
-      (a = tau /\  exists Q', P', P'' : State; p : Set[Name]  .
+      (a = tau /\  exists Q', P', P'' : State; p : FinSet[Name]  .
         R = res(p, P' || P'' || Q') /\ Q' member next(action(open, n),Q) /\
         conc(P', P'',p) member harden(haction(coopen, n), P)) \/
-      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : Set[Name]  .
+      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : FinSet[Name]  .
         R = res(p union q,amb(n, P' || Q') || P'' || Q'') /\
         conc(P', P'',p) member harden(haction(enter, n), P) /\
         conc(Q',Q'',q) member harden(haction(coenter, n),Q)) \/
-      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : Set[Name]  .
+      (a = tau /\  exists P', P'',Q',Q'' : State; p,q : FinSet[Name]  .
          R = res(p union q,amb(n, P' || Q') || P'' || Q'') /\
          conc(P', P'',p) member harden(haction(coenter, n), P) /\
          conc(Q',Q'',q) member harden(haction(enter, n),Q)) \/
       ( exists P' : State  . R = P' || Q /\ P' member next(a, P)) \/
       ( exists Q' : State  . R = P || Q' /\ Q' member next(a,Q))
     . c member harden(b, (P || Q)) <=>
-        ( exists P', P'' : State; p : Set[Name]  . 
+        ( exists P', P'' : State; p : FinSet[Name]  . 
            c = conc(P', P'' || Q, p) /\ conc(P', P'', p) member  harden(b, P)) \/
-        ( exists Q',Q'' : State; p : Set[Name]  . 
+        ( exists Q',Q'' : State; p : FinSet[Name]  . 
            c = conc(Q', P || Q'', p) /\ conc(Q',Q'', p) member harden(b,Q))
     . names(P || Q) = names(P) union names(Q)
 end
