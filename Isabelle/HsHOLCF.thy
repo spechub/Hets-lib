@@ -13,7 +13,8 @@ instance lift :: (type) Eq
 by intro_classes 
 
 constdefs 
-fliftbin :: "('a => 'b => 'c) => 'a lift -> 'b lift -> 'c lift"
+fliftbin :: 
+    "('a::type => 'b::type => 'c::type) => 'a lift -> 'b lift -> 'c lift"
 "fliftbin f == LAM y. LAM x. flift1 (%u. flift2 (%v. f v u)) $ x $ y"  
 
 (* a type of lazy lists (from Fixrec_ex) *)
