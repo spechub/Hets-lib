@@ -1,0 +1,15 @@
+library Haskell version 0.1
+
+from Basic/Numbers get Int
+
+spec Maybe [sort Elem] =
+	free type Maybe[Elem] ::= nothing | just(val :? Elem);
+end
+
+spec HsInt =
+	Int with Int |-> HsInt_t
+end
+
+spec HsUnit =
+	free type HsUnit_t ::= *
+end

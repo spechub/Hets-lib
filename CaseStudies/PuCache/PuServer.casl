@@ -1,0 +1,23 @@
+library PuCache/PuServer version 0.1
+
+from PuCache/PFS_Protocol get PFS_Protocol
+from Basic/StructuredDatatypes version 0.7 get Pair
+
+spec PuServer =
+  PFS_Protocol
+
+and
+
+  Pair [sort PfsServer fit sort S |-> PfsServer]
+       [sort PFS_Return fit sort T |-> PFS_Return]
+
+then
+
+sort PfsServer;
+
+op
+  server_read : PfsServer * PFS_Request -> Pair[PfsServer,PFS_Return]
+
+forall req:PFS_Request; serv1:PfsServer
+. exists ret:PFS_Return; serv2:PfsServer
+  . server_read(serv1,req) = pair(serv2,ret)

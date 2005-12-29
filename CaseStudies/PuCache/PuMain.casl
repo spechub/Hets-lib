@@ -1,0 +1,170 @@
+library PuCache/PuMain version 0.1
+
+from PuCache/PuInterface get PuInterface
+from PuCache/PuReqRead get Cache
+from Misc/Prerequisites get Prerequisites
+from PuCache/PFS_Protocol get PFS_Protocol
+from PuCache/PuServer get PuServer
+from PuCache/PuCacheData get PuCacheData
+
+spec AbsFile = 
+
+  Prerequisites and PFS_Protocol
+
+then
+
+sorts File; 
+ops path: File -> Path;
+    data: File -> Data;
+end
+
+spec PuFile =
+  PuInterface and AbsFile
+then
+ops
+ fh: PuCache * Uid * File ->? Filehandle;
+ find: FiniteMap[Filehandle,PuFileEntry] * File ->? Filehandle;
+ length: PuCache * Filehandle -> Count;	%% remain unspecified
+
+forall f:File; puc: PuCache; uid:Uid; fm:FiniteMap[Filehandle,PuFileEntry];
+       fh: Filehandle; t:PuFileEntry
+. fm = [] <=> not def find(fm,f)
+. find(fm[t/fh],f) = fh
+  when (puc_fileCachedName(t)=path(f)) 
+  else 
+  find(fm,f)
+. fh(puc,uid,f) =
+  find(puc_getFileData(eval(uid,puc_getUserData(puc))),f)
+. second(puc_useCache(puc,uid,fh(puc,uid,f)))=True => 
+  (exists uent:PuUserEntry .
+   (puc_fileCachedName(eval(fh(puc,uid,f),puc_getFileData(uent)))=path(f) 
+   /\ data(pu_read(puc,uid,fh(puc,uid,f),0,length(puc,fh))) = data(f)
+   /\ uent = eval(uid,puc_getUserData(puc))))
+%%. second(puc_useCache(puc,uid,fh(puc,uid,f)))=False => 
+%%  path(f) = [] /\ data(f)= Data(nullPtr)
+%% Stimmt nicht ganz, weil use_Cache auch False zurueckgibt, wenn
+%% Die Serverzeit neuer ist.
+
+end
+
+spec Client =
+
+ PuFile
+
+then
+
+preds
+  inCacheFn: PuCache * Path * Uid;
+  inCache: PuCache * File * Uid;
+  offline: PuCache * Uid;
+  
+op
+  filePuc: PuCache * Path ->? File;
+
+forall puc:PuCache; f:File; uid:Uid
+. inCacheFn(puc,path(f),uid) <=> second(puc_useCache(puc,uid,fh(puc,uid,f)))=True
+. inCache(puc,f,uid) <=> second(puc_useCache(puc,uid,fh(puc,uid,f)))=True
+. puc_userOffline(eval(uid,puc_getUserData(puc))) = True 
+  => offline(puc,uid)
+. (puc_userOffline(eval(uid,puc_getUserData(puc))) = False 
+  \/ puc_getOffline(puc) = False)
+  => not(offline(puc,uid))
+
+. forall u:Uid
+  . second(puc_useCache(puc,u,fh(puc,uid,f)))=False => not def filePuc(puc,path(f))
+. second(puc_useCache(puc,uid,fh(puc,uid,f)))=True => def filePuc(puc,path(f))
+end
+
+spec Server =
+
+ PuServer and AbsFile and PuCacheData
+
+then
+
+preds
+  inSfsFn: PfsServer * Path;
+  inSfs: PfsServer * File;
+
+ops
+  fh: PfsServer * File ->? Filehandle;      %% unspecified
+  length: PfsServer * Filehandle -> Count;  %% unspecified
+  file: PfsServer * Path ->? File;          %% unspecified
+
+forall s:PfsServer; f:File; uid:Uid
+. inSfs(s,f) <=>
+  (err(second(server_read(s,(Req(uid,(ReadArg(fh(s,f),0,length(s,fh(s,f)))))))))
+  = pu_EOK 
+  \/
+  err(second(server_read(s,(Req(uid,(ReadArg(fh(s,f),0,length(s,fh(s,f)))))))))
+  = pu_EACCES)
+. inSfsFn(s,path(f)) <=>
+  (err(second(server_read(s,(Req(uid,(ReadArg(fh(s,f),0,length(s,fh(s,f)))))))))
+  = pu_EOK 
+  \/
+  err(second(server_read(s,(Req(uid,(ReadArg(fh(s,f),0,length(s,fh(s,f)))))))))
+  = pu_EACCES)
+
+end
+
+spec PuMain =
+
+ Client and Server
+
+then
+
+sort 
+  Path;
+
+free type Pfs ::= Pfs (sfs:PfsServer;cfs:PuCache);
+
+preds
+  getAllowed: Pfs * Path * Uid;
+  changed: Pfs * Path * Uid;
+
+ops
+  read: Pfs * Path * Uid ->? Data;
+
+
+forall pfs:Pfs; f:File; uid:Uid
+. err(second(server_read(sfs(pfs),(Req(uid,(ReadArg(fh(sfs(pfs),f),0,
+  length(sfs(pfs),fh(sfs(pfs),f))))))))) = pu_EACCES 
+  => not(getAllowed(pfs,path(f),uid))
+. exists attr:Attributes . puc_canRead(attr,uid) => getAllowed(pfs,path(f),uid)
+  /\ attr = puc_fileAttr(eval(fh(cfs(pfs),uid,f),puc_getFileData(
+   eval(uid,puc_getUserData(cfs(pfs))))))
+. second(puc_useCache(cfs(pfs),uid,fh(cfs(pfs),uid,f)))=True => 
+  not(changed(pfs,path(f),uid))
+
+. read(pfs,path(f),uid) = data(pu_read(cfs(pfs),
+  uid,fh(cfs(pfs),uid,f),0,length(cfs(pfs),fh(cfs(pfs),uid,f))))
+
+end
+
+
+view CacheRefine: Cache to PuMain      =
+sort Pfs |-> Pfs,
+     Serverfs |-> PfsServer,
+     Clientfs |-> PuCache,
+     Fn |-> Path,
+     User |-> Uid,
+     Data |-> Data,
+     File |-> File,
+
+ops getData |-> read, 
+    fn |-> path,
+    data |-> data,
+    fileCfs: Clientfs * Fn ->? File |-> filePuc: PuCache * Path ->? File,
+    file: Serverfs * Fn ->? File |-> file: PfsServer * Path ->? File,
+    Pfs,
+    cfs,
+    sfs,
+preds inCacheFn: Clientfs * Fn * User |-> inCacheFn: PuCache * Path * Uid,
+   inCache: Clientfs * File * User |-> inCache: PuCache * File * Uid,
+   offline |-> offline,
+   inSfsFn: Serverfs * Fn |-> inSfsFn: PfsServer * Path,
+   inSfs: Serverfs * File |-> inSfs: PfsServer * File,
+   getAllowed |-> getAllowed,
+   changed |-> changed
+end
+
+

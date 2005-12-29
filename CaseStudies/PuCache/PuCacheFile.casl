@@ -1,0 +1,40 @@
+library PuCache/PuCacheFile version 0.1
+
+from Basic/StructuredDatatypes version 0.7 get Pair
+from PuCache/PuCacheData get PuCacheData
+
+spec PuCacheFile = 
+  %% Attention: PuCache != Clientfs. Need to specify kind of hard disk behaviour
+  PuCacheData 
+
+and 
+  Pair[sort PuCache fit sort S |-> PuCache]
+	[sort Pu_RetRead fit sort T |-> Pu_RetRead]
+
+then
+
+free type Pu_RetRead	::= Pu_Read (Errno; Attributes; Count; Boolean; Data)
+free type Pu_RetWrite	::= Pu_Write (Errno; Attributes; Count)
+
+ops
+  puc_realRead : PuCache * Pu_RetRead * Uid * Filehandle * Offset * Count 
+      -> Pair [PuCache, Pu_RetRead] ;
+
+forall cache: PuCache; err: Errno; att: Attributes; c,cnt: Count; b: Boolean; 
+  d: Data; uid: Uid; fh: Filehandle; off: Offset
+  %% d im Ergebnis eigentlich Data nullPtr
+. exists realCnt:Count; eof:Boolean; dat:Data .
+  puc_realRead (cache, (Pu_Read (err, att, c, b, d)), uid, fh, off, cnt) =
+    pair(cache,Pu_Read( err, att, 0, False, d))
+  when   (not (err = pu_EOK))
+  else 
+    pair(cache, Pu_Read (err, att, realCnt, eof, dat))
+
+ops
+  puc_realWrite : PuCache * Pu_RetWrite * Uid * Filehandle * Offset * Count 
+      * Data -> PuCache
+
+forall cache:PuCache; err: Errno; att: Attributes; c,cnt: Count; 
+  d: Data; uid: Uid; fh: Filehandle; off: Offset
+. puc_realWrite (cache, (Pu_Write( err, att, c)), uid, fh, off, cnt, d) =
+  cache

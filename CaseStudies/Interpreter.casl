@@ -1,0 +1,211 @@
+library Interpreter
+
+%prec {__+__} < {__*__}
+
+spec Nat =
+
+free type Nat ::= 0 | suc (Nat)
+
+pred __<=__: Nat * Nat
+
+vars m,n: Nat
+. 0 <= n %(Nat_leq_def1)%
+. not (suc(n) <= 0)     %(Nat_leq_def2)%
+. suc(m) <= suc(n) <=> m <= n     %(Nat_leq_def3)%
+
+preds __ <= __, __ < __,
+      __ >= __, __ > __: Nat * Nat
+
+vars x,y: Nat
+. x >= y <=> y <= x     %(Nat_geq_def)%
+. x < y <=> (x <= y /\ not (x=y))     %(Nat_less_def)%
+. x > y <=> y < x     %(Nat_greater_def)%
+
+ops  __+__, 
+     __-__,
+     __*__ : Nat*Nat->Nat
+
+ops  __+__,  __*__ : Nat*Nat->Nat %left assoc
+
+%prec {__+__, __-__} < {__*__}
+
+vars m,n : Nat
+     . 0 + m = m     %(addNat_0)%
+     . suc(n) + m = suc(n + m)     %(addNat_suc)%
+
+     . m - 0 = m     %(sub_0)%
+     . m - n = 0 if n>m     %(sub_suc_1)%
+     . suc(m) - suc(n) = m - n  if n <= m     %(sub_suc_2)%
+
+     . 0 * m = 0     %(multNat_0)%
+     . suc(m) * n = m * n + n     %(multNat_suc)%
+
+ops  1,2,3,4,5,6,7,8,9: Nat;
+     __ @@ __ :  Nat * Nat -> Nat %left assoc
+     %number __ @@ __
+     
+axioms
+     1 = suc (0);     %(digit_def1)%
+     2 = suc (1);     %(digit_def2)%
+     3 = suc (2);     %(digit_def3)%
+     4 = suc (3);     %(digit_def4)%
+     5 = suc (4);     %(digit_def5)%
+     6 = suc (5);     %(digit_def6)%
+     7 = suc (6);     %(digit_def7)%
+     8 = suc (7);     %(digit_def8)%
+     9 = suc (8)     %(digit_def9)%
+var  m,n : Nat
+     . m @@ n = (m * suc(9)) + n     %(sequence_def)%
+
+     . suc(0) = 1     %(make_digit1)%
+     . suc(1) = 2     %(make_digit2)%
+     . suc(2) = 3     %(make_digit3)%
+     . suc(3) = 4     %(make_digit4)%
+     . suc(4) = 5     %(make_digit5)%
+     . suc(5) = 6     %(make_digit6)%
+     . suc(6) = 7     %(make_digit7)%
+     . suc(7) = 8     %(make_digit8)%
+     . suc(8) = 9     %(make_digit9)%
+     . suc(9) = 1@@0     %(make_digit10)%
+     
+     . suc(n@@0) = n@@1     %(make_digit11)%
+     . suc(n@@1) = n@@2     %(make_digit12)%
+     . suc(n@@2) = n@@3     %(make_digit13)%
+     . suc(n@@3) = n@@4     %(make_digit14)%
+     . suc(n@@4) = n@@5     %(make_digit15)%
+     . suc(n@@5) = n@@6     %(make_digit16)%
+     . suc(n@@6) = n@@7     %(make_digit17)%
+     . suc(n@@7) = n@@8     %(make_digit18)%
+     . suc(n@@8) = n@@9     %(make_digit19)%
+     . suc(n@@9) = suc(n)@@0     %(make_digit20)%
+
+end
+
+
+spec Syntax =
+
+sort Nat
+
+free type Variable ::= a | b | c | d | e | f | g
+
+free type 
+  Expression ::=    sort Variable 
+                  | conv(Nat)
+                  | __ + __ (Expression; Expression)
+                  | __ - __ (Expression; Expression)
+                  | __ * __ (Expression; Expression)
+
+free type 
+  Relation ::=   __<__   (Expression; Expression)
+               | __>__   (Expression; Expression)
+               | __==__  (Expression; Expression)
+               | __<=__  (Expression; Expression)
+               | __>=__  (Expression; Expression)
+
+free type 
+  Condition ::=   TRUE
+                | FALSE
+                | sort Relation
+                | NOT__(Condition)
+                | __AND__ (Condition; Condition)
+                | __OR__  (Condition; Condition)              
+
+free type 
+
+  Program ::=   skip
+              | __@__(Statement; Program);
+
+  Statement ::=   sort Assignment
+                | sort Conditional
+                | sort Loop;
+
+  Assignment ::= __:=__(Variable; Expression);
+
+  Conditional ::= IF__THEN__ELSE__FI (Condition;Program;Program);
+
+  Loop ::= WHILE__DO__OD (Condition;Program);
+
+op __@__ : Statement * Program -> Program %right assoc 
+
+%prec {__@__} < { __:=__ }
+
+end
+
+spec States =
+  
+  sort Variable
+  sort Nat
+
+  generated type 
+     State ::= [] | [__/__]__ (Nat;Variable;State)
+
+  vars e,f:Nat; v,w:Variable; s: State
+    . [e/v][f/w]s=[f/w][e/v]s if (not v=w)     %(state_comm)%
+    . [e/v][f/v]s=[e/v]s     %(state_overwrite)%
+
+end
+
+spec Semantics =
+
+  Nat and Syntax and States
+
+then
+
+op eval: Expression * State ->? Nat
+
+vars v,w: Variable; n: Nat; s: State 
+. not def eval(v,[])      %(eval_var_empty)%
+. eval(v, [n/w] s ) = eval(v,s) when not(v=w) else n     %(eval_var_nonEmpty)%
+
+vars n: Nat; s: State
+. eval(conv(n),s)= n     %(eval_nat)%
+
+vars n: Nat; v: Variable; e1,e2: Expression; s: State
+. eval(e1 + e2,s)= eval(e1,s) + eval(e2,s)     %(eval_add)%
+. eval(e1 - e2,s)= eval(e1,s) - eval(e2,s)     %(eval_sub)%
+. eval(e1 * e2,s)= eval(e1,s) * eval(e2,s)     %(eval_mult)%
+
+pred eval: Relation * State
+
+vars  e1,e2: Expression; s:State
+
+. eval(e1 < e2,s)  <=> eval(e1,s) < eval(e2,s)     %(eval_less)%
+. eval(e1 > e2,s)  <=> eval(e1,s) > eval(e2,s)     %(eval_greater)%
+. eval(e1 == e2,s) <=>     
+     eval(e1,s) <= eval(e2,s) /\ eval(e1,s) >= eval(e2,s)  %(eval_equal)%
+
+. eval(e1 <= e2,s) <=> eval(e1,s) <= eval(e2,s)      %(eval_leq)%
+. eval(e1 >= e2,s) <=> eval(e1,s) >= eval(e2,s)      %(eval_geq)%
+
+pred eval: Condition * State
+
+vars c1,c2: Condition; s: State
+. eval(TRUE,s)     %(eval_TRUE)%
+. not eval(FALSE,s)     %(eval_FALSE)%
+. eval(NOT c1,s)    <=> not eval(c1,s)     %(eval_NOT)%
+. eval(c1 AND c2,s) <=> eval(c1,s) /\ eval(c2,s)     %(eval_AND)%
+. eval(c1 OR c2,s)  <=> eval(c1,s) \/ eval(c2,s)     %(eval_OR)%
+
+op execute: Program * State ->? State
+
+op ex: Statement * State ->? State
+
+vars exp:Expression; s:State; v: Variable
+. ex(v:=exp, s) = [eval(exp,s)/v]s     %(ex_assign)%
+
+vars c:Condition; p1,p2:Program; s:State
+. ex(IF c THEN p1 ELSE p2 FI,s) 
+   = execute(p1,s) when eval(c,s) else
+     execute(p2,s)  %(ex_IF)%
+
+vars c:Condition; p:Program; s:State
+. ex(WHILE c DO p OD,s) 
+   = ex(WHILE c DO p OD, execute(p,s)) when eval(c,s) else
+     s        %(ex_WHILE)%
+
+vars st: Statement; p:Program; s:State
+. execute(skip, s)= s     %(execute_skip)%
+. execute(st@p, s) = execute(p,ex(st,s))     %(execute_seq)%
+
+end
+

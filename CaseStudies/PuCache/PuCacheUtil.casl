@@ -1,0 +1,62 @@
+library PuCache/PuCacheUtil version 0.1
+
+from PuCache/PuCacheData get PuCacheData
+
+spec PuCacheUtil = 
+  PuCacheData 
+then
+
+preds
+  puc_haveUser : PuCache * Uid;
+  puc_haveDir : PuUserEntry * Filehandle;
+  puc_haveFile : PuUserEntry * Filehandle;
+  puc_canRead : Attributes * Uid
+  %% Rechte zu spezfizieren geht zu tief ins Detail, ausserdem haben wir 
+  %% zur Zeit keine Rechte modelliert.
+
+ops
+  puc_haveUser : PuCache * Uid -> Boolean;
+  puc_getUser : PuCache * Uid -> PuUserEntry;
+  puc_haveDir : PuUserEntry * Filehandle -> Boolean;
+  puc_haveFile : PuUserEntry * Filehandle -> Boolean;
+  puc_getFile : PuUserEntry * Filehandle -> PuFileEntry;
+  puc_getDir :  PuUserEntry * Filehandle -> PuDirEntry;
+  puc_setFile : PuUserEntry * Filehandle * PuFileEntry -> PuUserEntry;
+  puc_isOwner : Attributes * Uid -> Boolean;
+  puc_setUser : PuCache * Uid * PuUserEntry -> PuCache;
+
+
+forall cache:PuCache; uid:Uid; uent:PuUserEntry; fh:Filehandle; 
+       fileEntry:PuFileEntry; attr:Attributes; user:Uid
+. puc_haveUser (cache, uid) = True when def eval(uid, puc_getUserData(cache)) 
+  else False
+. puc_getUser (cache, uid) = eval (uid , puc_getUserData (cache) )
+. puc_haveDir (uent,fh) = True when def eval(fh, (puc_getDirData(uent)))
+  else False
+. puc_haveFile (uent, fh) = True when def eval(fh, (puc_getFileData(uent)))
+  else False
+. puc_getFile (uent, fh) = eval (fh, puc_getFileData (uent))
+. puc_getDir (uent, fh) = eval(fh, puc_getDirData(uent))
+
+. puc_haveUser(cache,uid) <=> puc_haveUser(cache,uid) = True
+. puc_haveDir(uent,fh) <=> puc_haveDir(uent,fh) = True
+. puc_haveFile(uent,fh) <=> puc_haveFile(uent,fh) = True
+
+%% New Entry is equal to old entry apart from fileEntry 
+. exists newUent:PuUserEntry . 
+  puc_setFile (uent, fh, fileEntry) = newUent /\ 
+    newUent = PuUserEntry(puc_userOffline(uent), puc_userRefresh(uent), 
+			  puc_userOfflineList(uent), puc_userQuota(uent), 
+			  puc_userSafety(uent), puc_userSpace(uent), 
+			  puc_userLastFh(uent), puc_userQueue(uent), 
+			  puc_getDirData(uent), 
+			  puc_getFileData (uent) + [fileEntry/fh])
+. puc_isOwner(attr, user) = True when(uid(attr)=user) 
+                                 else False
+. exists newCache:PuCache
+  . puc_setUser(cache, uid, uent) =
+    newCache /\ (newCache = PuCache(puc_getOffline(cache), 
+      puc_globalQuota(cache), puc_globalSafety(cache), puc_maxUsers(cache), 
+      puc_cacheDir(cache), puc_conflictDir(cache), 
+      puc_getUserData(cache)+[uent/uid]))
+

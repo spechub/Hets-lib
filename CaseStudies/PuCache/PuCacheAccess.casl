@@ -1,0 +1,67 @@
+library PuCache/PuCacheAccess version 0.1
+
+from Basic/StructuredDatatypes get Pair
+from PuCache/PuCacheUtil get PuCacheUtil
+from PuCache/PuCacheData get PuCacheData
+from PuCache/PuDatatypes get PuDatatypes
+
+spec PuCacheAccess = 
+    PuCacheUtil and PuCacheData and PuDatatypes
+and
+    Pair[sort PuUserEntry fit sort S |-> PuUserEntry] 
+        [sort Pu_RetGetMTime fit sort T |-> Pu_RetGetMTime]
+and 
+    Pair[sort PuUserEntry fit sort S |-> PuUserEntry]
+	[sort Pu_RetRead fit sort T |-> Pu_RetRead]
+then
+
+ops
+puc_cacheGetMTime : PuUserEntry * Time * Uid * Filehandle 
+                    -> Pair[PuUserEntry, Pu_RetGetMTime];
+puc_cacheRead : PuUserEntry * Time * Uid * Filehandle * Offset * Count
+                 -> Pair[PuUserEntry, Pu_RetRead];
+
+
+
+forall uent:PuUserEntry; time:Time; uid:Uid; fh:Filehandle; 
+       off:Offset; cnt:Count
+. puc_cacheGetMTime (uent, time, uid, fh) =
+      pair(uent, Pu_GetMTime (pu_EOK, mtime (puc_dirAttr 
+					     (puc_getDir (uent, fh)))))
+      when puc_haveDir (uent, fh) 
+      else (pair  (uent, Pu_GetMTime (pu_EOK, mtime( puc_fileAttr
+					     ( puc_getFile( uent, fh)))))
+       when (puc_haveFile (uent, fh))
+       else pair (uent, Pu_GetMTime (pu_ESTALE, (Time (0, 0)))))
+. exists theFile,newFile:PuFileEntry; theAttr,newAttr:Attributes .  
+  ((theFile = puc_getFile(uent, fh)) 
+  /\ (theAttr = puc_fileAttr (theFile))
+  /\ (newAttr = Attr (fType(theAttr), mode(theAttr), nLink(theAttr), 
+			     uid(theAttr), gid(theAttr), size(theAttr), 
+			     used(theAttr), fsId(theAttr), fileId(theAttr), 
+			     time,  
+			     mtime(theAttr), ctime(theAttr))) 
+  /\  (newFile = PuFileEntry(puc_fileServerTime(theFile), 
+			    puc_fileCachedName(theFile), 
+			    newAttr, 
+			    puc_fileExtAttr(theFile), puc_fileSymlink(theFile),
+			    puc_fileChanged(theFile)))
+  /\ (puc_cacheRead (uent, time, uid, fh, off, cnt) =
+  (pair(puc_setFile (uent, fh, newFile), 
+	 Pu_Read (pu_EOK, puc_fileAttr (theFile), 0, False, Data (nullPtr)))
+	when puc_canRead(theAttr, uid)
+	else
+          pair(uent, Pu_Read (pu_EACCES, theAttr, 0, False, Data(nullPtr)))
+          when (fType(theAttr) = Reg)
+          else
+            pair(uent, Pu_Read(pu_EINVAL, emptyAttributes, 0, False, 
+               Data(nullPtr))))
+  when puc_haveFile (uent, fh)
+  else
+    (pair(uent, Pu_Read (pu_EINVAL, emptyAttributes, 0, False, Data(nullPtr)))
+    when puc_haveDir(uent, fh)
+    else
+      pair(uent, Pu_Read (pu_ESTALE, emptyAttributes, 0, False,
+                                Data (nullPtr))))))
+
+

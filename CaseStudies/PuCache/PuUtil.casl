@@ -1,0 +1,18 @@
+library PuCache/PuUtil 
+
+from Misc/Haskell get Maybe
+from PuCache/PFS_Protocol get PFS_Protocol
+
+spec PuUtil = 
+  PFS_Protocol
+and
+  Maybe[sort PFS_Return fit sort Elem |-> PFS_Return]
+
+then
+ops
+ pu_queryServer : PFS_Request -> Maybe [PFS_Return]
+
+%% Abstract server behaviour: There is always an answer ;)
+forall uid:Uid; fh:Filehandle
+. exists err:Errno; time:Time . 
+  pu_queryServer(Req(uid, GetMTimeArg(fh))) = just(Ret(err,GetMTime(time)))

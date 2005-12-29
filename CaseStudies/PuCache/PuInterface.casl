@@ -1,0 +1,25 @@
+library PuCache/PuInterface version 0.1
+
+from PuCache/PuCacheInterface get PuCacheInterface
+from PuCache/PuServer get PuServer
+
+spec PuInterface =
+
+  PuCacheInterface and PuServer
+
+then
+
+op
+pu_read : PuCache * Uid * Filehandle * Offset * Count -> Pu_RetRead
+
+%%evtl. pair von cache und Pu_RetRead
+
+forall cache:PuCache; uid:Uid; fh:Filehandle; off:Offset; cnt:Count
+. exists res: PFS_Return; serv:PfsServer
+  . (pu_read(cache, uid, fh, off, cnt) = 
+     Pu_Read (err(res), attr(retval(res)), count(retval(res)), 
+            eof(retval(res)), data(retval(res)))
+     when(second(puc_tryRead(cache, uid, fh, off, cnt)) = nothing)
+     else val(second(puc_tryRead(cache, uid, fh, off, cnt))))
+    /\ res = second(server_read(serv, Req(uid, ReadArg(fh, off, cnt))))
+end
