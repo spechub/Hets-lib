@@ -1,3 +1,5 @@
+library Examples/List
+
 spec Elem =
   sort Elem
 end
@@ -7,8 +9,8 @@ spec List[Elem] =
      op __++__ : List[Elem] * List[Elem] -> List[Elem], assoc, unit nil
      op reverse : List[Elem] -> List[Elem]
      vars e:Elem; l,l':List[Elem]
-     . %[concat_def]  cons(e,l) ++ l' = cons(e,l++l')
-     . %[reverse_nl] reverse(nil) = nil
-     . %[reverse_cons] reverse(cons(e,l)) = reverse(l) ++ cons(e,nil)
+     . cons(e,l) ++ l' = cons(e,l++l') %(concat_def)%
+     . reverse(nil) = nil              %(reverse_nl)%
+     . reverse(cons(e,l)) = reverse(l) ++ cons(e,nil)  %(reverse_cons)%
 end
 
