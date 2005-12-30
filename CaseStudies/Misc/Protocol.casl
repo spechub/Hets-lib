@@ -1,10 +1,10 @@
-library Protocol version 0.2
+library CaseStudies/Misc/Protocol version 0.2
 
 from Basic/Numbers version 0.7 get Int
 from Basic/SimpleDatatypes version 0.7 get Boolean
 from Basic/StructuredDatatypes version 0.7 get String, List
 
-from Misc/Prerequisites version 0.1 get Prerequisites
+from CaseStudies/Misc/Prerequisites version 0.1 get Prerequisites
 
 spec Protocol =
 
@@ -54,8 +54,8 @@ spec Protocol =
 	PosixAttributes	::= PAttr (linkmax:Int; name_max:Int; no_trunc:Boolean;
 				  chown_restr:Boolean; case_insens:Boolean; 
 				  case_preserv:Boolean);
-	How		::= Unchecked | Guarded (obj_attr:Attributes) 
-			  | Exclusive (verf:CreateVerf);
+	How		::= Unchecked | Guarded (obj_attr:?Attributes) 
+			  | Exclusive (verf:?CreateVerf);
 	Entry		::= Entry (id:FileId; name:Filename);
 	EntryPlus	::= EntryPlus (id:FileId; name:Filename;
 			               attr:Attributes; fh:Filehandle);
@@ -73,39 +73,39 @@ spec Protocol =
 
   free type	
 	PFS_Request	::= Req (user:Uid; req:PFS_Command);
-	PFS_Command	::= GetAttrArg (fh:Filehandle)
-			  | SetAttrArg (fh:Filehandle; new_attr:Attributes)
-			  | LookupArg (dir_fh:Filehandle; name:Filename)
-			  | AccessArg (fh:Filehandle; req_bits:AccessBits)
-			  | ReadLinkArg (fh:Filehandle)
-			  | ReadArg (fh:Filehandle; off:Offset; cnt:Count)
-			  | WriteArg (fh:Filehandle; off:Offset; cnt:Count; 
-                                      data:Data)
-			  | CreateArg (fh:Filehandle; name:Filename; how:How)
-			  | MkDirArg (dir_fh:Filehandle; name:Filename; 
-                                      new_attr:Attributes)
-			  | SymlinkArg (dir_fh:Filehandle; name:Filename; 
-                                        new_attr:Attributes; path:Path)
-			  | RemoveArg (dir_fh:Filehandle; name:Filename)
-			  | RmDirArg (dir_fh:Filehandle; name:Filename)
-			  | RenameArg (dir_fh1:Filehandle; name:Filename; 
-                                       dir_fh2:Filehandle; new_name:Filename)
-			  | LinkArg (fh1:Filehandle; fh2:Filehandle; 
-                                     name:Filename)
-			  | ReadDirArg (fh:Filehandle)
-			  | ReadDirPlusArg (fh:Filehandle)
-			  | FSStatArg (fh:Filehandle)
-			  | FSInfoArg (fh:Filehandle)
-			  | PathConfArg (fh:Filehandle)
-			  | CommitArg (fh:Filehandle; off:Offset; cnt:Count)
-			  | GetAttrPlusArg (fh:Filehandle)
-			  | SetAttrPlusArg (fh:Filehandle; ex:ExtAttributes) 
+	PFS_Command	::= GetAttrArg (fh:?Filehandle)
+			  | SetAttrArg (fh:?Filehandle; new_attr:?Attributes)
+			  | LookupArg (dir_fh:?Filehandle; name:?Filename)
+			  | AccessArg (fh:?Filehandle; req_bits:?AccessBits)
+			  | ReadLinkArg (fh:?Filehandle)
+			  | ReadArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | WriteArg (fh:?Filehandle; off:?Offset; cnt:?Count; 
+                                      data:?Data)
+			  | CreateArg (fh:?Filehandle; name:?Filename; how:?How)
+			  | MkDirArg (dir_fh:?Filehandle; name:?Filename; 
+                                      new_attr:?Attributes)
+			  | SymlinkArg (dir_fh:?Filehandle; name:?Filename; 
+                                        new_attr:?Attributes; path:?Path)
+			  | RemoveArg (dir_fh:?Filehandle; name:?Filename)
+			  | RmDirArg (dir_fh:?Filehandle; name:?Filename)
+			  | RenameArg (dir_fh1:?Filehandle; name:?Filename; 
+                                       dir_fh2:?Filehandle; new_name:?Filename)
+			  | LinkArg (fh1:?Filehandle; fh2:?Filehandle; 
+                                     name:?Filename)
+			  | ReadDirArg (fh:?Filehandle)
+			  | ReadDirPlusArg (fh:?Filehandle)
+			  | FSStatArg (fh:?Filehandle)
+			  | FSInfoArg (fh:?Filehandle)
+			  | PathConfArg (fh:?Filehandle)
+			  | CommitArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | GetAttrPlusArg (fh:?Filehandle)
+			  | SetAttrPlusArg (fh:?Filehandle; ex:?ExtAttributes) 
 			  | GetOfflineArg
-			  | SetOfflineArg (list:OfflineList)
-			  | GetLockArg (fh:Filehandle)
-			  | SetLockArg (fh:Filehandle; which:LockType)
-			  | MountArg (path:Path)
-			  | UMountArg (fh:Filehandle)
+			  | SetOfflineArg (list:?OfflineList)
+			  | GetLockArg (fh:?Filehandle)
+			  | SetLockArg (fh:?Filehandle; which:?LockType)
+			  | MountArg (path:?Path)
+			  | UMountArg (fh:?Filehandle)
 
   %% -------------------------------------------------------------------------
   %% Return messages to be sent from QM to PU upon a request
@@ -113,38 +113,38 @@ spec Protocol =
 
   free type
         PFS_Return	::= Ret (err:Errno; val:PFS_Answer);
-        PFS_Answer	::= GetAttr (attr:Attributes)
-			  | SetAttr (attr:Attributes)
-			  | Lookup (new_fh:Filehandle; attr:Attributes; 
-                                    dir_attr:Attributes)
-			  | Access (attr:Attributes; ans_bits:AccessBits)
-			  | ReadLink (attr:Attributes; path:Path)
-			  | Read (attr:Attributes; count:Count; eof:Boolean;
-			          data:Data)
-			  | Write (attr:Attributes; count:Count)
-			  | Create (new_fh:Filehandle; attr:Attributes;
-			            dir_attr:Attributes)
-			  | MkDir (new_fh:Filehandle; attr:Attributes;
-			           dir_attr:Attributes)
-			  | Symlink (new_fh:Filehandle; attr:Attributes;
-			             dir_attr:Attributes)
-			  | Remove (dir_attr:Attributes)
-			  | RmDir (dir_attr:Attributes)
-			  | Rename (old_attr:Attributes; new_attr:Attributes)
-			  | Link (attr:Attributes; dir_attr:Attributes)
-			  | ReadDir (attr:Attributes; dirlist:DirList)
-			  | ReadDirPlus (attr:Attributes; dirlist:DirListPlus)
-			  | FSStat (fsinfo:FSStat)
-			  | FSInfo (fsinfo:FSInfo)
-			  | PathConf (attr:Attributes; posix:PosixAttributes)
-			  | Commit (attr:Attributes)
-			  | GetAttrPlus (ex:ExtAttributes)
-        		  | SetAttrPlus (ex:ExtAttributes)
-			  | GetOffline (offline:OfflineList)
-        		  | SetOffline (offline:OfflineList)
-        	  	  | GetLock (which:LockType)
+        PFS_Answer	::= GetAttr (attr:?Attributes)
+			  | SetAttr (attr:?Attributes)
+			  | Lookup (new_fh:?Filehandle; attr:?Attributes; 
+                                    dir_attr:?Attributes)
+			  | Access (attr:?Attributes; ans_bits:?AccessBits)
+			  | ReadLink (attr:?Attributes; path:?Path)
+			  | Read (attr:?Attributes; count:?Count; eof:?Boolean;
+			          data:?Data)
+			  | Write (attr:?Attributes; count:?Count)
+			  | Create (new_fh:?Filehandle; attr:?Attributes;
+			            dir_attr:?Attributes)
+			  | MkDir (new_fh:?Filehandle; attr:?Attributes;
+			           dir_attr:?Attributes)
+			  | Symlink (new_fh:?Filehandle; attr:?Attributes;
+			             dir_attr:?Attributes)
+			  | Remove (dir_attr:?Attributes)
+			  | RmDir (dir_attr:?Attributes)
+			  | Rename (old_attr:?Attributes; new_attr:?Attributes)
+			  | Link (attr:?Attributes; dir_attr:?Attributes)
+			  | ReadDir (attr:?Attributes; dirlist:?DirList)
+			  | ReadDirPlus (attr:?Attributes; dirlist:?DirListPlus)
+			  | FSStat (fsinfo:?FSStat)
+			  | FSInfo (fsinfo:?FSInfo)
+			  | PathConf (attr:?Attributes; posix:?PosixAttributes)
+			  | Commit (attr:?Attributes)
+			  | GetAttrPlus (ex:?ExtAttributes)
+        		  | SetAttrPlus (ex:?ExtAttributes)
+			  | GetOffline (offline:?OfflineList)
+        		  | SetOffline (offline:?OfflineList)
+        	  	  | GetLock (which:?LockType)
         		  | SetLock
-			  | Mount (fh:Filehandle)
+			  | Mount (fh:?Filehandle)
 			  | UMount
 
   %% -------------------------------------------------------------------------
@@ -313,8 +313,8 @@ spec Protocol =
 	PosixAttributes	::= PAttr (linkmax:Int; name_max:Int; no_trunc:Boolean;
 				  chown_restr:Boolean; case_insens:Boolean; 
 				  case_preserv:Boolean);
-	How		::= Unchecked | Guarded (obj_attr:Attributes) 
-			  | Exclusive (verf:CreateVerf);
+	How		::= Unchecked | Guarded (obj_attr:?Attributes) 
+			  | Exclusive (verf:?CreateVerf);
 	Entry		::= Entry (id:FileId; name:Filename);
 	EntryPlus	::= EntryPlus (id:FileId; name:Filename;
 			               attr:Attributes; fh:Filehandle);
@@ -329,39 +329,39 @@ spec Protocol =
 
   free type	
 	PFS_Request	::= Req (user:Uid; req:PFS_Command);
-	PFS_Command	::= GetAttrArg (fh:Filehandle)
-			  | SetAttrArg (fh:Filehandle; attr:Attributes)
-			  | LookupArg (fh:Filehandle; name:Filename)
-			  | AccessArg (fh:Filehandle; bits:AccessBits)
-			  | ReadLinkArg (fh:Filehandle)
-			  | ReadArg (fh:Filehandle; off:Offset; cnt:Count)
-			  | WriteArg (fh:Filehandle; off:Offset; cnt:Count; 
-                                      data:Data)
-			  | CreateArg (fh:Filehandle; name:Filename; how:How)
-			  | MkDirArg (fh:Filehandle; name:Filename; 
-                                      attr:Attributes)
-			  | SymlinkArg (fh:Filehandle; name:Filename; 
-                                        attr:Attributes; path:Path)
-			  | RemoveArg (fh:Filehandle; name:Filename)
-			  | RmDirArg (fh:Filehandle; name:Filename)
-			  | RenameArg (fh1:Filehandle; name1:Filename; 
-                                       fh2:Filehandle; name2:Filename)
-			  | LinkArg (fh1:Filehandle; fh2:Filehandle; 
-                                     name:Filename)
-			  | ReadDirArg (fh:Filehandle)
-			  | ReadDirPlusArg (fh:Filehandle)
-			  | FSStatArg (fh:Filehandle)
-			  | FSInfoArg (fh:Filehandle)
-			  | PathConfArg (fh:Filehandle)
-			  | CommitArg (fh:Filehandle; off:Offset; cnt:Count)
-			  | GetAttrPlusArg (fh:Filehandle)
-			  | SetAttrPlusArg (fh:Filehandle; ex:ExtAttributes) 
+	PFS_Command	::= GetAttrArg (fh:?Filehandle)
+			  | SetAttrArg (fh:?Filehandle; attr:?Attributes)
+			  | LookupArg (fh:?Filehandle; name:?Filename)
+			  | AccessArg (fh:?Filehandle; bits:?AccessBits)
+			  | ReadLinkArg (fh:?Filehandle)
+			  | ReadArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | WriteArg (fh:?Filehandle; off:?Offset; cnt:?Count; 
+                                      data:?Data)
+			  | CreateArg (fh:?Filehandle; name:?Filename; how:?How)
+			  | MkDirArg (fh:?Filehandle; name:?Filename; 
+                                      attr:?Attributes)
+			  | SymlinkArg (fh:?Filehandle; name:?Filename; 
+                                        attr:?Attributes; path:?Path)
+			  | RemoveArg (fh:?Filehandle; name:?Filename)
+			  | RmDirArg (fh:?Filehandle; name:?Filename)
+			  | RenameArg (fh1:?Filehandle; name1:?Filename; 
+                                       fh2:?Filehandle; name2:?Filename)
+			  | LinkArg (fh1:?Filehandle; fh2:?Filehandle; 
+                                     name:?Filename)
+			  | ReadDirArg (fh:?Filehandle)
+			  | ReadDirPlusArg (fh:?Filehandle)
+			  | FSStatArg (fh:?Filehandle)
+			  | FSInfoArg (fh:?Filehandle)
+			  | PathConfArg (fh:?Filehandle)
+			  | CommitArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | GetAttrPlusArg (fh:?Filehandle)
+			  | SetAttrPlusArg (fh:?Filehandle; ex:?ExtAttributes) 
 			  | GetOfflineArg
-			  | SetOfflineArg (list:OfflineList)
-			  | GetLockArg (fh:Filehandle)
-			  | SetLockArg (fh:Filehandle; which:LockType)
-			  | MountArg (path:Path)
-			  | UMountArg (fh:Filehandle)
+			  | SetOfflineArg (list:?OfflineList)
+			  | GetLockArg (fh:?Filehandle)
+			  | SetLockArg (fh:?Filehandle; which:?LockType)
+			  | MountArg (path:?Path)
+			  | UMountArg (fh:?Filehandle)
 
   %% -------------------------------------------------------------------------
   %% Return messages to be sent from QM to PU upon a request
@@ -369,38 +369,38 @@ spec Protocol =
 
   free type
         PFS_Return	::= Ret (err:Errno; val:PFS_Answer);
-        PFS_Answer	::= GetAttr (attr:Attributes)
-			  | SetAttr (attr:Attributes)
-			  | Lookup (dir_attr:Attributes; obj_attr:Attributes;
-			            fh:Filehandle)
-			  | Access (attr:Attributes; bits:AccessBits)
-			  | ReadLink (attr:Attributes; path:Path)
-			  | Read (attr:Attributes; count:Count; eof:Boolean;
-			          data:Data)
-			  | Write (attr:Attributes; count:Count)
-			  | Create (fh:Filehandle; attr:Attributes;
-			            dir_attr:Attributes)
-			  | MkDir (fh:Filehandle; attr:Attributes;
-			           dir_attr:Attributes)
-			  | Symlink (fh:Filehandle; attr:Attributes;
-			             dir_attr:Attributes)
-			  | Remove (attr:Attributes)
-			  | RmDir (attr:Attributes)
-			  | Rename (old_attr:Attributes; new_attr:Attributes)
-			  | Link (attr:Attributes; dir_attr:Attributes)
-			  | ReadDir (attr:Attributes; list:DirList)
-			  | ReadDirPlus (attr:Attributes; list:DirListPlus)
-			  | FSStat (fsinfo:FSStat)
-			  | FSInfo (fsinfo:FSInfo)
-			  | PathConf (attr:Attributes; posix:PosixAttributes)
-			  | Commit (attr:Attributes)
-			  | GetAttrPlus (exta:ExtAttributes)
-        		  | SetAttrPlus (exta:ExtAttributes)
-			  | GetOffline (offline:OfflineList)
-        		  | SetOffline (offline:OfflineList)
-        	  	  | GetLock (which:LockType)
+        PFS_Answer	::= GetAttr (attr:?Attributes)
+			  | SetAttr (attr:?Attributes)
+			  | Lookup (dir_attr:?Attributes; obj_attr:?Attributes;
+			            fh:?Filehandle)
+			  | Access (attr:?Attributes; bits:?AccessBits)
+			  | ReadLink (attr:?Attributes; path:?Path)
+			  | Read (attr:?Attributes; count:?Count; eof:?Boolean;
+			          data:?Data)
+			  | Write (attr:?Attributes; count:?Count)
+			  | Create (fh:?Filehandle; attr:?Attributes;
+			            dir_attr:?Attributes)
+			  | MkDir (fh:?Filehandle; attr:?Attributes;
+			           dir_attr:?Attributes)
+			  | Symlink (fh:?Filehandle; attr:?Attributes;
+			             dir_attr:?Attributes)
+			  | Remove (attr:?Attributes)
+			  | RmDir (attr:?Attributes)
+			  | Rename (old_attr:?Attributes; new_attr:?Attributes)
+			  | Link (attr:?Attributes; dir_attr:?Attributes)
+			  | ReadDir (attr:?Attributes; list:?DirList)
+			  | ReadDirPlus (attr:?Attributes; list:?DirListPlus)
+			  | FSStat (fsinfo:?FSStat)
+			  | FSInfo (fsinfo:?FSInfo)
+			  | PathConf (attr:?Attributes; posix:?PosixAttributes)
+			  | Commit (attr:?Attributes)
+			  | GetAttrPlus (exta:?ExtAttributes)
+        		  | SetAttrPlus (exta:?ExtAttributes)
+			  | GetOffline (offline:?OfflineList)
+        		  | SetOffline (offline:?OfflineList)
+        	  	  | GetLock (which:?LockType)
         		  | SetLock
-			  | Mount (fh:Filehandle)
+			  | Mount (fh:?Filehandle)
 			  | UMount
 
   %% -------------------------------------------------------------------------
