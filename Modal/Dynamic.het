@@ -12,12 +12,38 @@ spec Dynamic =
     forall x,y:Prog . [x seq y]p <=> [x][y]p;
     forall x,y:Prog . [x union y]p <=> [x]p /\ [y]p;
     forall x:Prog . [x*]p => p /\ [x]p;
-    forall x:Prog . [x*]p => [x*][x*]p;
+    forall x:Prog . [x*]p => [x][x*]p;
     forall x:Prog . [x*](p=>[x]p) => (p=>[x*]p);
-    [skip when p else stop]q <=> (p=>q);
+    %%[skip when p else stop]q <=> (p=>q);
     p <=> [skip]p;
     [stop] false
   }
 end
 
-    
+%[
+
+[x*]phi
+
+
+mu X. [x] (X /\ phi)
+
+
+G phi
+[*] phi
+mu X. [] (X /\ phi)
+
+modality t { [t]p=>p }
+modality s { [t]p=>p }
+
+[s]phi
+[t]phi
+
+[]_i 
+
+[s*]phi
+[t*]phi
+
+G[s] phi
+G(t) phi
+
+]%
