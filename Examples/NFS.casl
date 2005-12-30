@@ -1,0 +1,420 @@
+library Examples/NFS
+
+from Basic/Numbers get Int
+from Basic/SimpleDatatypes  get Boolean
+from Basic/StructuredDatatypes get String, List
+
+
+spec Types =
+
+%%--------------------------------------------------------------------------
+%% Datatypes taken from NFSv3 that already exist in the Basic Datatypes,
+%% renamed to their NFSv3 names
+%%---------------------------------------------------------------------------
+
+
+        { Int with Int |-> Errno }
+  and
+        { Int with Int |-> Count }
+  and
+        { Int with Int |-> Offset }
+  and 
+        { Int with Int |-> Mode }
+  and
+        { Int with Int |-> Uid }
+  and
+        { Int with Int |-> Gid }
+  and
+        { Int with Int |-> Size }
+  and
+        { Int with Int |-> Fileid }
+  and
+        { Int with Int |-> AccessBits }
+  and
+        { String with String |-> Filename }
+
+  and
+        { String with String |-> Rdev } 
+  and
+        { String with String |-> Path }
+  and
+        { List[sort Entry fit sort Elem |-> Entry] }
+  and
+        { List[sort Filename fit sort Elem |-> Filename] 
+          with List[Filename] |-> Offlinelist }
+  and
+        { List[{String then 
+                free type ExtAttribute::= ExtAttr (name:String; val:String)}
+                fit sort Elem |-> ExtAttribute ]  
+          with List[ExtAttribute] |-> ExtAttributes }
+  and
+        Boolean
+  and 
+        Int
+end
+
+
+
+%%-----------------------------------------------------------------------------
+%% The possible  NFS3_Error messages
+%%-----------------------------------------------------------------------------
+
+spec NFS_Stat3 = Types then 
+
+ops
+
+    Ok, nfs3err_Perm, nfs3err_Noent, nfs3err_Io, nfs3err_NxIo, nfs3err_Acces,
+    nfs3err_Exist, nfs3err_Xdev, nfs3err_NoDev, nfs3err_NotDir, nfs3err_IsDir,
+    nfs3err_InVal, nfs3err_Fbig, nfs3err_NoSpc, nfs3err_Rofs, nfs3err_Mlink,
+    nfs3err_NameTooLong, nfs3err_NotEmpty, nfs3err_Dquot, nfs3err_Stale,
+    nfs3err_Remote, nfs3err_BadHandel, nfs3err_NotSync, nfs3err_BadCookie,
+    nfs3err_NotSupp, nfs3err_TooSmall, nfs3err_ServerFault, nfs3err_BadType,
+    nfs3err_JukeBox : Errno
+
+
+axiom
+
+Ok                        = 0;
+nfs3err_Perm              = 1;
+nfs3err_Noent             = 2;
+nfs3err_Io                = 5;
+nfs3err_NxIo              = 6; 
+nfs3err_Acces             = 13;
+nfs3err_Exist             = 17;
+nfs3err_Xdev              = 18;
+nfs3err_NoDev             = 19;
+nfs3err_NotDir            = 20;
+nfs3err_IsDir             = 21;
+nfs3err_InVal             = 22; 
+nfs3err_Fbig              = 27;
+nfs3err_NoSpc             = 28;
+nfs3err_Rofs              = 30;
+nfs3err_Mlink             = 31;
+nfs3err_NameTooLong       = 63;
+nfs3err_NotEmpty          = 66;
+nfs3err_Dquot             = 69;
+nfs3err_Stale             = 70;
+nfs3err_Remote            = 71;
+nfs3err_BadHandel         = 10001;
+nfs3err_NotSync           = 10002;
+nfs3err_BadCookie         = 10003;
+nfs3err_NotSupp           = 10004;
+nfs3err_TooSmall          = 10005;
+nfs3err_ServerFault       = 10006;
+nfs3err_BadType           = 10007;
+nfs3err_JukeBox           = 10008
+
+end
+
+
+
+%%-----------------------------------------------------------------------------
+%% The interface between the Client and the NFSD
+%%-----------------------------------------------------------------------------
+
+
+spec NFSD_CLIENT = NFS_Stat3  then
+
+  sorts
+        Filehandle,
+        CreateVerF, 
+        WriteVerF,  
+        Data, 
+        AccessBits,
+        Cookie ,
+        CookieVerf;
+
+
+%[  free type
+
+
+        NFS_Number              ::= Major| Minor;                     
+        
+        NFS_Attributes          ::= Attr(ftype:NFS_FType; 
+                                         mode:Mode; nlink:Int; 
+                                         uid:Uid; gid:Gid; 
+                                         size:Size; used:Size; 
+                                         rdev:Rdev; fsid:Int;         
+                                         fileid:Fileid; atime:NFS_Time; 
+                                         mtime:NFS_Time; ctime:NFS_Time);
+                                         
+                                  
+        NFS_FType               ::= Reg | Dir| Blk| Chr | Lnk | Sock | Fifo; 
+
+        
+        NFS_Time                ::=Time(seconds:Int; nanoseconds:Int);
+        
+        NFS_PosixAttributes     ::= PAttr(linkmax:Int; 
+                                          name_max:Int; 
+                                          no_trunc:Boolean;
+                                          chown_restr:Boolean; 
+                                          case_insens:Boolean; 
+                                          case_preserv:Boolean);
+                                  
+        NFS_How                 ::= Unchecked | Guarded (obj_attr:NFS_Attributes) 
+                                    | Exclusive (verf:CreateVerF);
+                                
+        NFS_DirList             ::= DirList(List[Entry]; eof:Boolean);
+        
+        NFS_Entry               ::= Entry(fileid: Fileid; name: Filename);
+        
+        NFS_FSStat              ::= FSStat(total_bytes:Size;
+                                           free_bytes:Size; 
+                                           avail_bytes:Size; 
+                                           total_files:Size; 
+                                           free_files:Size;
+                                           avail_files:Size;
+                                           invarsec:Int);
+
+       NFS_FSInfo               ::= FSInfo(rtmax:Int;
+                                           rtpref:Int;
+                                           rtmult:Int;
+                                           wtmax:Int;
+                                           wtpref:Int;
+                                           wtmult:Int;
+                                           dtpref:Int;
+                                           maxfilesize:Size;
+                                           time_delta:NFS_Time;
+                                           properties:Int)
+ 
+                                   
+%%-----------------------------------------------------------------------
+%% Return messages to be sent from Client to NFSD expressed as free type
+%%------------------------------------------------------------------------
+
+ free type
+ 
+ 
+        NFS_RetGetAttr  ::= GetAttr (err:Errno; obj_attr:NFS_Attributes);
+
+         
+        NFS_RetSetAttr  ::= SetAttr (err:Errno; old_obj_attr:NFS_Attributes;
+                                                new_obj_attr:NFS_Attributes);
+                                                                
+        NFS_RetLookup   ::= Lookup (err:Errno; dir_attr:NFS_Attributes;
+                                    obj_attr:NFS_Attributes; fh:Filehandle);
+                                    
+        NFS_RetAccess   ::= Access (err:Errno; obj_attr:NFS_Attributes;
+                                    bits:AccessBits);
+
+
+        NFS_RetReadlink ::= Readlink (err:Errno; symlink_attr:NFS_Attributes;
+                                      path:Path);
+                                      
+        NFS_RetRead     ::= Read (err:Errno; file_attr:NFS_Attributes; count:Count;
+                                  eof:Boolean; data:Data);
+                                  
+                                  
+
+        NFS_RetWrite       ::= Write (err:Errno; new_file_attr:NFS_Attributes;
+                                   old_file_attr:NFS_Attributes; 
+                                   verf:WriteVerF; count:Count);
+                                   
+                
+        NFS_RetCreate      ::= Create (err:Errno; fh:Filehandle; 
+                                    attr:NFS_Attributes;
+                                    new_dir_attr:NFS_Attributes;
+                                    old_dir_attr:NFS_Attributes);
+                                    
+        
+        NFS_RetMkDir       ::= MkDir (err:Errno; fh:Filehandle; 
+                                   attr:NFS_Attributes;
+                                   new_dir_attr:NFS_Attributes;
+                                   old_dir_attr:NFS_Attributes);
+
+        
+        NFS_RetSymlink     ::= Symlink (err:Errno; fh:Filehandle; 
+                                     obj_attr:NFS_Attributes;
+                                     new_dir_attr:NFS_Attributes;
+                                     old_dir_attr:NFS_Attributes);
+                                     
+                                             
+        NFS_RetMknod       ::= Mknod (err:Errno; fh:Filehandle; 
+                                   obj_attr:NFS_Attributes;
+                                   new_dir_attr:NFS_Attributes;
+                                   old_dir_attr:NFS_Attributes);
+                                   
+                                           
+        NFS_RetRemove      ::= Remove (err:Errno; new_dir_attr:NFS_Attributes;
+                                    old_dir_attr:NFS_Attributes);
+                                    
+                
+        NFS_RetRmDir       ::= RmDir (err:Errno; new_dir_attr:NFS_Attributes;
+                                   old_dir_attr:NFS_Attributes);
+        
+        
+        NFS_RetRename      ::= Rename (err:Errno; 
+                                   new_fromdir_attr:NFS_Attributes;
+                                   new_todir_attr:NFS_Attributes;
+                                   old_fromdir_attr:NFS_Attributes;
+                                   old_todir_attr:NFS_Attributes);
+                                    
+                                    
+        NFS_RetLink        ::= Link (err:Errno;
+                                  file_attr:NFS_Attributes;
+                                  new_linkdir_attr:NFS_Attributes;
+                                  old_linkdir_attr:NFS_Attributes);
+
+
+        NFS_RetReadDir      ::= ReadDir (err:Errno; dir_attr:NFS_Attributes;
+                                     dirlist:NFS_DirList; cv:CookieVerf);
+                                     
+        NFS_RetReadDirPlus  ::= ReadDirPlus (err:Errno; dir_attr:NFS_Attributes;
+                                            dirlist:NFS_DirList; cv:CookieVerf);
+                                         
+        NFS_RetFSStat       ::= FSStat (err:Errno; obj_attr: NFS_Attributes; 
+                                    fs:NFS_FSStat);
+                                    
+        
+
+                            
+        NFS_RetFSInfo       ::= FSInfo (err:Errno; obj_attr:NFS_Attributes;
+                                    fsinfo:NFS_FSInfo);
+                                    
+
+                
+        NFS_RetPathConf     ::= PathConf (err:Errno; obj_attr:NFS_Attributes;
+                                      posix:NFS_PosixAttributes);
+                                      
+                                              
+        NFS_RetCommit       ::= Commit (err:Errno; new_file_attr:NFS_Attributes;
+                                    old_file_attr:NFS_Attributes; verf:WriteVerF)
+
+                                   
+%%-----------------------------------------------------------------------
+%% Request messages to be sent from Client to NFSD expressed as ops
+%%------------------------------------------------------------------------
+        
+  ops
+        nfs_null        : Errno;
+        
+        nfs_getattr     : Uid * Filehandle -> NFS_RetGetAttr;
+        
+        nfs_setattr     : Uid * Filehandle * NFS_Attributes -> NFS_RetSetAttr;
+        
+        nfs_lookup      : Uid * Filehandle * Filename -> NFS_RetLookup;
+        
+        nfs_access      : Uid * Filehandle * AccessBits -> NFS_RetAccess;
+
+        nfs_readlink    : Uid * Filehandle -> NFS_RetReadlink;
+        
+        nfs_read        : Uid * Filehandle * Offset * Count -> NFS_RetRead;
+        
+        nfs_write       : Uid * Filehandle * Offset * Count * Data -> NFS_RetWrite;
+        
+        nfs_create      : Uid * Filehandle * Filename * NFS_How -> NFS_RetCreate;
+        
+        nfs_mkdir       : Uid * Filehandle * Filename * NFS_Attributes ->NFS_RetMkDir;
+
+        nfs_symlink     : Uid * Filehandle * Filename * NFS_Attributes * 
+                          Path -> NFS_RetSymlink;
+                          
+        nfs_mknod       : Uid * Filehandle * Filename * NFS_FType * NFS_Attributes *
+                          NFS_Number -> NFS_RetMknod;
+                          
+        nfs_remove      : Uid * Filehandle * Filename -> NFS_RetRemove;
+        
+        nfs_rmdir       : Uid * Filehandle * Filename -> NFS_RetRmDir;
+        
+        nfs_rename      : Uid * Filehandle * Filename * Filehandle * Filename ->
+                          NFS_RetRename;
+                          
+        nfs_link        : Uid * Filehandle * Filehandle * Filename -> NFS_RetLink;
+
+        nfs_readdir     : Uid * Filehandle * Count * Cookie * CookieVerf -> 
+                          NFS_RetReadDir;
+                          
+        nfs_readdirplus : Uid * Filehandle * Count * Count  * Cookie * CookieVerf -> 
+                          NFS_RetReadDirPlus;
+                          
+        nfs_fsstat      : Uid * Filehandle -> NFS_RetFSStat;
+        
+        nfs_fsinfo      : Uid * Filehandle -> NFS_RetFSInfo;
+        
+        nfs_pathconf    : Uid * Filehandle -> NFS_RetPathConf;
+        
+        nfs_commit      : Uid * Filehandle * Offset* Count -> NFS_RetCommit;
+
+        
+
+
+
+forall   f, f1, f2:Filehandle; n, n1, n2:Filename; t:NFS_FType; 
+         a:NFS_Attributes; nu: NFS_Number; ac, b:AccessBits;
+         u:Uid; err:Errno; p, p1:Path; c1, c2:Count; 
+         cook:Cookie; cv:CookieVerf; off:Offset; data:Data; 
+         h:NFS_How; posix:NFS_PosixAttributes
+
+
+        . nfs_null : Errno =  nfs_null 
+
+ . def 0 : Errno
+        . Ok = 0
+
+        . exists a1:NFS_Attributes
+        . nfs_getattr(u,f) = GetAttr(err, a1)
+        
+        . exists a1:NFS_Attributes 
+        . nfs_setattr(u,f,a) = SetAttr(err, a1, a1)
+
+        . exists f3:Filehandle; a1,a2:NFS_Attributes
+        . nfs_lookup(u,f,n) = Lookup(err, a2, a1, f3)
+
+        . exists a1:NFS_Attributes; b:AccessBits 
+        . nfs_access(u,f,ac) = Access(err, a1, b)  
+
+        . exists a1:NFS_Attributes; p1:Path 
+        . nfs_readlink(u,f) = ReadLink(err, a1, p1)  
+
+        . exists a1:NFS_Attributes; eof:Boolean; data1:Data; c3:Count
+        . nfs_read(u, f, off, c1) = Read(err, a1, c3, eof, data1)  
+
+        . exists a1:NFS_Attributes; verf:WriteVerF; c3:Count
+        . nfs_write(u, f, off, c1, data) = Write(err, a1, a1, verf,c3)  
+
+        . exists a1, a2:NFS_Attributes; f3:Filehandle 
+        . nfs_create(u, f, n, h) = Create(err, f3, a1, a2, a2)  
+
+        . exists a1, a2:NFS_Attributes; f3:Filehandle
+        . nfs_mkdir(u, f, n, a) = Mkdir(err, f3, a1, a2, a2) 
+        
+        . exists a1,a2:NFS_Attributes; f1:Filehandle 
+        . nfs_symlink(u,f,n,a,p) = Symlink(err,f1,a1,a2,a2)
+        
+%%        . exists f1:Filehandle; a1:NFS_Attributes 
+%%        . nfs_mknod(u, f, n, t, a, nu) = Mknod(nfs3err_NotSupp, f1, a1, a2, a2) 
+          
+        . exists a2:NFS_Attributes 
+        . nfs_remove(u, f, n) = Remove(err, a2, a2)  
+          
+        . exists a2:NFS_Attributes 
+        . nfs_rmdir(u, f, n) = RmDir(err, a2, a2)  
+                
+        . exists a1,a2:NFS_Attributes 
+        . nfs_rename(u, f1, n2, f2, n2) = Rename(err, a1,a2, a1,a2)
+           
+        . exists a1,a2:NFS_Attributes 
+        . nfs_link(u, f1, f2, n) = Link(err, a1,a2,a2)   
+          
+        . exists a1:NFS_Attributes; dl:NFS_DirList; cv1:CookieVerf 
+        . nfs_readdir(u, f, c1, cook, cv)= ReadDir(err,a1, dl, cv1)   
+           
+        . exists a1:NFS_Attributes; dl:NFS_DirList; cv1:CookieVerf 
+        . nfs_readdirplus(u, f, c1, c2, cook, cv)= ReadDirPlus(err, a1, dl, cv1)   
+           
+        . exists a1:NFS_Attributes; fsi:NFS_FSInfo 
+        . nfs_fsstat(u, f) = FSStat(err, a1, fsi)  
+  
+        . exists a1:NFS_Attributes; fsi:NFS_FSInfo
+        . nfs_fsinfo(u, f) = FSInfo(err, a1, fsi )   
+           
+        . exists  posix1:NFS_PosixAttributes; a1:NFS_Attributes
+        . nfs_pathconf(u, f) = PathConf(err, a1, posix1 )   
+                   
+        . exists  a1:NFS_Attributes; verf:WriteVerF 
+        . nfs_commit(u, f, off, c1) = Commit(err, a1, a1, verf)     
+
+end
+
+
+]%

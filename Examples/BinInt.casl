@@ -1,0 +1,58 @@
+library Examples/BinInt
+
+from Basic/Numbers get Nat, Int
+
+spec BigInt = 
+  Nat
+then
+  free type Int ::= p(Nat) | n(Pos)
+  ops 0:Int;
+      pre,suc : Int->Int
+  forall x:Nat
+  . 0 = p(0)
+  . suc(p(x)) = p(suc(x))
+  . suc(n(suc(0))) = p(0)
+  . suc(n(suc(suc(x)))) = n(suc(x))
+  . pre(p(suc(x))) = p(x)
+  . pre(p(0)) = n(suc(0))
+  . pre(n(suc(x))) = n(suc(suc(x)))
+end
+
+spec HInt = BigInt hide sorts Pos, Nat, ops p,n
+end
+
+spec Int1 = Int
+  then ops pre,suc:Int->Int
+  forall i : Int
+  . suc(i) = i+1
+  . pre(i) = i-1
+  reveal sort Int, ops 0:Int,pre:Int->Int,suc:Int->Int
+end
+
+view v : HInt to Int1 %% = Int |-> Int, suc |-> suc
+end
+
+%% implementation of hidden abstract constructors in terms of concrete ops
+spec IntHInt = Int1
+then %cons
+{ closed {BigInt with sort Int |-> HInt}
+then
+  ops h : HInt -> Int;   
+      p : Nat -> Int;
+      n : Pos -> Int
+  forall i:HInt; x:Nat; y:Pos
+  . h(0) = 0
+  . h(suc(i)) = suc(h(i))
+  . h(pre(i)) = pre(h(i))
+  . p(x) = h(p(x))
+  . n(y) = h(n(y))
+}
+end
+
+view v1: Int1 to IntHInt %% = Int |-> HInt
+end
+
+%[ Alternative approach:
+use (partial) abstraction function, mapping constructor terms
+to terms involving the exported operations only
+]%

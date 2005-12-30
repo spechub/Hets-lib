@@ -5,12 +5,43 @@ spec Elem =
 end
 
 spec List[Elem] = 
-     free type List[Elem] ::= nil | cons(Elem; List[Elem])
-     op __++__ : List[Elem] * List[Elem] -> List[Elem], assoc, unit nil
-     op reverse : List[Elem] -> List[Elem]
-     vars e:Elem; l,l':List[Elem]
-     . cons(e,l) ++ l' = cons(e,l++l') %(concat_def)%
-     . reverse(nil) = nil              %(reverse_nl)%
-     . reverse(cons(e,l)) = reverse(l) ++ cons(e,nil)  %(reverse_cons)%
+  free type
+    List[Elem] ::=  [] |  __ :: __ (Elem; List[Elem])
+
+  ops __ ++ __ : List[Elem] * List[Elem] -> List[Elem];
+      reverse:     List[Elem] -> List[Elem];
+
+  pred null : List[Elem]
+
+  forall x,y: Elem;  K,L: List[Elem]
+  . [] ++ K = K                       %(concat_nil_List)%
+  . (x::L) ++ K = x :: (L ++ K)       %(concat_NeList_List)%
+  . reverse([])=[]                          %(reverse_nil)%
+  . reverse(x::L) = reverse(L) ++ (x::[])   %(reverse_NeList)%
+  . null(L) <=> L=[]     %(null)%
+
+then %implies
+  forall K,L: List[Elem]
+  . reverse(K++L) = reverse(L)++reverse(K)
+  . null(L) <=> null(reverse(L))
 end
 
+spec Monoid =
+  sort Elem
+  ops  e: Elem;
+       __ * __:Elem * Elem -> Elem, assoc, unit e
+end
+
+view MonoidAsList : Monoid to List[sort Elem] =
+   Elem |-> List[Elem],
+   e |-> [],
+   __*__ |-> __++__
+end
+
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+end
+
+spec NatList =
+  List[Nat]
+end

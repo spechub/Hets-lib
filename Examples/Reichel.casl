@@ -1,0 +1,161 @@
+library Examples/Reichel
+
+%% from H. Reichel,
+%% Initial Computability, Algebraic Specifications and Partial Algebras
+%% Oxford Science Publications 1987
+
+spec Natsub = 
+ 
+sorts	pos,nat; 
+	pos < nat 
+ops	zero : nat; 
+	succ : nat -> pos; 
+	predec : pos -> nat; 
+	predec : nat ->? nat 
+pred	odd : nat 
+	 
+var	n:nat 
+axioms	not odd(zero); 
+	odd(succ(zero)); 
+	odd(succ(succ(n))) <=> odd(n) 
+	 
+sorts	Odd = {n:nat . odd(n)} 
+ 
+end
+  
+spec Nat = 
+
+sorts 	nat  
+ops     zero:nat; 
+	succ:nat->nat  
+	 
+ops     __+__:nat*nat->nat; 
+	__*__:nat*nat->nat;  
+axioms	forall n:nat. zero+n=n; 
+	forall m,n:nat. succ(m)+n=succ(m+n); 
+	forall n:nat. zero*n=zero; 
+	forall m,n:nat. succ(m)*n=n + (m*n); 
+ 
+end 
+  
+ 
+spec Rseq = 
+ 
+sorts 	nat 
+ops   	zero:nat; 
+	succ:nat->nat 
+	 
+sorts	rseq 
+ops	nil:rseq; 
+	__ +__:nat*rseq->?rseq 
+pred	__e__:nat*rseq; 
+vars	x,y:nat; r:rseq 
+axioms	def x+r <=> not (x e r);   
+	not (x e nil); 
+	not (x e r) => (y e (x +r) <=> x=y) 
+end
+
+spec DGraph_with_paths = 
+ 
+sorts	edges, nodes 
+ops	begin,theend : edges->nodes 
+ 
+sorts	path 
+ops	nil : nodes->path; 
+	__+__ : path*edges->path; 
+	begin,theend : path->nodes 
+vars	n:nodes; p,p1:path; e:edges 
+axioms	def (p+e) <=> theend(p)=begin(e); 
+	begin(nil(n))=n; 
+	theend(nil(n))=n; 
+	p1 =e= p+e => begin(p1)=begin(p); 
+	p1 =e= p+e => theend(p1)=theend(e)        
+end
+
+spec Decreasing_edge_valued_trees = 
+ 
+sorts 	nat 
+ops   	zero:nat; 
+	succ:nat->nat;
+	__+__:nat*nat->nat
+	 
+ops	max:nat*nat->nat; 
+pred	__<__:nat*nat 
+vars	x,y:nat 
+axioms	not (x<zero); 
+	zero<succ(x); 
+	x<y <=> succ(x)<succ(y); 
+	max(x,x)=x; 
+	max(x,y)=max(y,x); 
+	x<y => max(x,y)=y ;
+
+	x+zero=zero;
+        x+succ(y)=succ(x+y)
+ 
+sorts	tree,treeseq 
+ops	nil:treeseq; 
+	add:treeseq*tree*nat ->? treeseq; 
+	combine:treeseq->tree; 
+	t_attr:tree->nat; 
+	seq_attr:treeseq->nat 
+vars	n:nat; r:tree; s,s1,s2:treeseq 
+axioms	def add(s,r,n) <=> t_attr(r) < n; 
+	seq_attr(nil) = zero; 
+	t_attr(combine(s)) = seq_attr(s); 
+	s1=add(s2,r,n) => seq_attr(s1)=max(seq_attr(s2),n) 
+	 
+ops	depth:tree->nat; 
+	depth:treeseq->nat 
+vars	n:nat; r:tree; s:treeseq 
+axioms	depth(combine(nil))=zero; 
+	depth(nil)=zero; 
+	t_attr(r)<n => depth(combine(add(s,r,n)))=succ(depth(s)); 
+	t_attr(r)<n => depth(add(s,r,n))=max(depth(s),depth(r)) 
+	 
+op	add:nat*nat->nat 
+axioms	forall n:nat. add(zero,n)=n; 
+	forall m,n:nat. add(succ(m),n)=succ(add(m,n)) 
+ 
+ops	sum:tree->nat; 
+	sum:treeseq->nat 
+vars	x,y:nat; r:tree; s:treeseq 
+axioms	sum(combine(s))=sum(s); 
+	sum(nil)=zero; 
+	t_attr(r)<n => sum(add(s,r,x)) =(sum(s)+sum(r))+x 
+end 
+ 
+ 
+	 
+spec While = 
+ 
+sorts	M 
+pred	p : M; 
+ops	f,g : M ->? M; 
+	while : M ->? M 
+var	x:M 
+axioms	not p(x) => while(x)=f(x); 
+	p(x) => while(x)=while(g(x))  
+ 
+ 
+end
+spec Cardinality = 
+ 
+sorts 	nat 
+ops   	zero:nat; 
+	succ:nat->nat 
+	 
+sorts	sets 
+ops	empty:sets; 
+	union:sets*nat->sets; 
+	card:sets->nat; 
+pred	elem:nat*sets 
+vars	x,y:nat; m:sets 
+axioms	union(union(m,x),x)=union(m,x); 
+	union(union(m,x),y)=union(union(m,y),x); 
+	not elem(x,empty); 
+	elem(x,union(m,x)); 
+	not elem(y,m) => (elem(y,union(m,x)) <=> x=y); 
+	card(empty)=zero; 
+	not elem(x,m) => card(union(m,x)) = succ(card(m)) 
+end
+
