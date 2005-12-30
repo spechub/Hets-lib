@@ -1,4 +1,4 @@
-library TestStruct
+library TestSuite/Correct/TestStruct
 
 %% Provided by Till Mossakowski
 
@@ -23,7 +23,7 @@ spec sp1 =
   pred p:s*s} } with sort s|->t, op f|->g, pred p|->q
   reveal g hide g
   and
-  local sp within op f:s->s
+  local sorts t,u op f:u->t within sort u
   then sort s; op h:s->s with s|->t, h:s->s |-> k:t->t
 end
 
@@ -81,26 +81,26 @@ end
 
 %% Views as fitting args
  
-spec sp [sort s,t; op f:s->?t] =
+spec sp' [sort s,t; op f:s->?t] =
 sort t
 end
 
-spec sp1 =
-  sp [sort t,u; op g:u->t   fit sort s|-> u, op f:s->?t |->g:u->t ]
+spec sp'1 =
+  sp' [sort t,u; op g:u->t   fit sort s|-> u, op f:s->?t |->g:u->t ]
 end
 
-view v : {sort s; op f:s->?s} to {sort s; op g:s->s} =
-sort s|-> s, op f:s->?s |->g:s->s
+view v : {sorts s,t; op f:s->?t} to {sort s; op g:s->s} =
+sorts s|-> s, t |-> s, op f:s->?t |->g:s->s
 end
 
-spec sp1a = sp[view v]
+spec sp'1a = sp'[view v]
 end
 
-spec sp2 = sort s; op f:s->?s; sort t with sort s|-> s, op f |->g
+spec sp'2 = sort s; op f:s->?s; sort t with sort s|-> s, op f |->g
 and sort s; op g:s->s
 end
 
-spec sp3 = sort s ; op f:s->s
+spec sp'3 = sort s ; op f:s->s
 and sort s; op f:s->?s
 end
 
