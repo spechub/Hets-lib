@@ -9,13 +9,14 @@ end
 spec sp1 =
   sp0
 then
-  forall x:s . x=x
+  forall x:s . x=x %(refl)%
 end
 
 spec sp2 =
   sp0
 then
  sort t
+ . true
 end
 
 view v1 : sp1 to sp2 end

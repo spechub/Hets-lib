@@ -4,20 +4,21 @@ spec sp = {}
 then %cons
   free type Nat ::= 0 | suc(Nat)
 %% problem: termination proof of the following:
-%[  op __+__ : Nat*Nat->Nat
+  op __+__ : Nat*Nat->Nat
   forall x,y:Nat
   . x+x=x
-  . x+suc(y)=suc(x+y)   ]%
+  . x+suc(y)=suc(x+y)   
 end
 
 spec sp1 = sp 
-%[the following leads to
-  Warning, Nat is not freely generated
-but the link is conservative!
-]%
 then %cons
   free type Bool ::= True | False
 end
+
+%[
+__==__(x,y) -> af2(x,x,y);
+af2(y,x,y) -> True;
+]%
 
 spec predicateDefinitionConsistent = {}
 then %cons
@@ -51,12 +52,16 @@ spec terminating = {}
 then %cons
   free type Nat ::= 0 | suc(Nat)
   op __+__ : Nat*Nat->Nat
+  pred __>__ : Nat*Nat
   forall x,y:Nat
   . x>0 => x+0=x
   . x=0 => x+0=0 
   . x+suc(y)=suc(x+y)
 end
-%[ this should generate a proof obligation 
+%[ the patterns on the left hand side overlap
+      x+0        . x>0 => x+0=x
+      x+0        . x=0 => x+0=0 
+this should generate a proof obligation 
 "forall x:Nat . not (x>0) /\ (x=0)"
-This is another output of the algorithm
+This formula is another output of the algorithm
 ]%
