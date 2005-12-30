@@ -1,0 +1,68 @@
+library Examples/Architectural
+
+%{  The example at the end of this section illustrates the difference
+    between the structure of specifications and the architectural
+    specification of structure.
+
+    It is more efficient to implement successor in terms of (binary)
+    addition, while it is easier to specify addition in terms of
+    successor than in terms of binary addition. Thus, the structure of
+    the implementation differs from the structure of the
+    specification:
+
+    We have that Efficient_Add_Num is a refinement of Add_Num. }%
+
+
+from Examples/Simple get Monoid
+
+spec Num =
+  sort  Num
+  ops   z     : Num;
+  succ  : Num  -> Num
+end
+
+
+spec Num_Monoid =
+  Monoid with Elem   |->  Num, n   |->  z, __*__   |->  __+__
+
+
+spec Add_Num =
+  Num and Num_Monoid
+then
+  forall  x,y : Num   ·   x+succ(y) = succ(x+y)
+end
+
+
+spec Add_Num_Efficiently =
+  generated type Num ::= z  |  e  |  __0(Num)  |  __1(Num)
+  ops __+__ , __ ++ __ : Num×Num  -> Num
+    %{ __+__ is binary addition; __ ++ __ is binary addition with carry. }%
+
+  forall  x,y : Num
+  ·   z 0=z                            ·   z 1=e
+  ·   x 0 + y 0=(x + y) 0              ·   x 0  ++  y 0=(x + y) 1
+  ·   x 0 + y 1=(x + y) 1              ·   x 0  ++  y 1=(x  ++  y) 0
+  ·   x 1 + y 0=(x + y) 1              ·   x 1  ++  y 0=(x  ++  y) 0
+  ·   x 1 + y 1=(x  ++  y) 0           ·   x 1  ++  y 1=(x  ++  y) 1
+end
+
+
+arch spec Efficient_Add_Num =
+units
+           N :  Add_Num_Efficiently;
+           M :  { op succ(n:Num):Num = n+e } given N
+result
+           M hide e, __0,__1,__ ++ __
+end
+
+
+
+
+
+
+
+
+
+
+
+

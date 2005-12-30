@@ -1,0 +1,49 @@
+library Examples/Simple 
+  
+ %display __=<__ %LATEX __ < __
+ %display __>=__ %LATEX __ > __ 
+ %left_assoc __*__
+
+spec Total_Order = 
+  sort Elem 
+  pred __ <= __ : Elem × Elem 
+  forall  x,y,z : Elem
+  . x  <= x                               %(reflexive)%
+  . x=y  if x  <= y   /\  y  <= x    %(anti_symmetric)%
+  . x  <= z  if x  <= y   /\  y <= z     %(transitive)%
+  . x  <= y   \/  y  <= x                     %(total)%
+
+spec Monoid = 
+  sort Elem 
+  ops  n : Elem; 
+       __*__ : Elem × Elem  -> Elem, unit n 
+       %% Alternatively, just specify the corresponding axioms:
+       forall  x ,y,z : Elem 
+       .  n*x=x             %(1)%
+       .  x*n=x             %(2)%
+       .  x*y*z=x*(y*z)   %(3)%
+         
+spec Nat = 
+ free 
+ { 
+       sorts Nat; 
+             Zero,Pos < Nat 
+       ops   zero : Zero; 
+             succ__ : Nat -> Pos 
+ } 
+ then 
+       op pre__ : Pos -> Nat 
+       forall  x : Nat 
+       . pre(succ x)=x 
+ then 
+ local pred odd__ : Nat 
+       forall  x : Nat 
+       . not odd zero 
+       . odd(succ x) <=> not odd x 
+ within 
+       sort Odd = {n:Nat . odd n} 
+ then
+   sort Nat<Int
+   op zero:Int
+   . def zero 
+
