@@ -32,17 +32,17 @@ spec CntSet[sort Elem] =
    var x:Elem; s:Seq[Elem]
    . x elem s <=> (x=head(s) \/ x elem tail(s))
 then free {
-   generated type CntSet[Elem] ::= makeSet(Seq[Elem])
+   generated type CntSet[Elem] ::= mkSet(Seq[Elem])
    var s1,s2: Seq[Elem]
-   . s1=s2 <=> forall x:Elem . x elem s1 <=> x elem s2
+   . mkSet(s1)=mkSet(s2) <=> forall x:Elem . x elem s1 <=> x elem s2
   }
 then
-    op {} : CntSet[Elem] = makeSet(nil)
+    op {} : CntSet[Elem] = mkSet(nil)
     op __union__ : CntSet[Elem] * CntSet[Elem] -> CntSet[Elem], 
                 assoc, comm, idem, unit {}
     pred __member__: Elem * CntSet[Elem]
     forall x: Elem; s: Seq[Elem]
-    . x member (makeSet (s)) <=> x elem s
+    . x member (mkSet (s)) <=> x elem s
     op {__} : Elem -> CntSet[Elem];
        __setMinus__, __disjointUnion__ : 
                    CntSet[Elem] * CntSet[Elem] -> CntSet[Elem]
