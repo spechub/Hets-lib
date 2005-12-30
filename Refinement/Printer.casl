@@ -1,0 +1,64 @@
+library Refinement/Printer
+
+%% example of an emergent property of an architectural design
+
+from Basic/Numbers get Nat
+
+%% Some rather silly specification of printers, documents and scheduling
+
+spec Printer =
+  pred twoSided : ()
+  %%...
+end
+
+spec TwoSidedPrinter =
+  Printer then
+  . twoSided
+end
+
+spec Document = 
+  Nat then
+  sort Document
+  op pages : Document -> Nat
+  pred short : Document
+  forall d:Document
+  . short(d) <=> pages(d)<=8
+end
+
+spec Schedule[Printer] =
+  Document
+then
+  sort Output
+  ops schedule : Document -> Output;
+      pages : Output -> Nat
+  forall d:Document
+  . pages(schedule(d)) = suc(pages(d)) div 2
+             when twoSided else pages(d)
+  pred short : Output
+  forall o:Output
+  . short(o) <=> pages(o) <= 6
+end
+
+arch spec PrintDoc =
+  units P : Printer;
+        S : Printer -> Schedule[Printer]
+  result S[P]
+end
+
+
+%% Let us refine to a particular design...
+refinement TwoSidedPrintDoc =
+  arch spec PrintDoc then {P to TwoSidedPrinter}
+end
+
+%% Now we can state that this particular design satisfies an emergent property
+
+spec Emergent[Printer] =
+  Schedule[Printer]
+then
+   forall d:Document 
+   . short(d) => short(schedule(d))
+end
+
+refinement R = Emergent[Printer] refined to TwoSidedPrintDoc
+end

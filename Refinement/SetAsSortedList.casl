@@ -1,0 +1,159 @@
+library Refinement/SetAsSortedList
+
+%right_assoc __::__
+
+spec Set [sort Elem] =
+    generated type Set[Elem] ::= empty | insert(Elem; Set[Elem])
+    pred __is_in__ : Elem * Set[Elem]
+    forall e, e':Elem; S, S':Set[Elem]
+    . not (e is_in empty)
+    . (e is_in insert (e', S)) <=> e = e' \/ (e is_in S)
+    . S = S' <=> forall x:Elem . (x is_in S) <=> (x is_in S')
+                                                   %(equal_sets)%
+end
+
+
+spec TotalOrder =
+  sort Elem
+  pred __<=__ : Elem * Elem
+  forall x,y,z : Elem
+  . x <= x                         %(reflexive)%
+  . x <= z if x <= y /\ y <= z     %(transitive)%
+  . x = y if x <= y /\ y <= x      %(antisymmetric)%
+  . x <= y \/ y <= x               %(dichotomous)%
+end
+
+spec List[TotalOrder] = 
+  free type List[Elem] ::= [] | __::__(head:?Elem; tail:?List[Elem])
+then
+  preds __is_in__ : Elem * List[Elem];
+        is_ordered : List[Elem]
+  vars x,y:Elem; L,L1,L2:List[Elem]
+  . not x is_in []
+  . x is_in (y::L) <=> x=y \/ y is_in L
+  . is_ordered([])
+  . is_ordered(x::[])
+  . is_ordered(x::y::L) <=> x<=y /\ is_ordered(y::L)
+end
+
+spec SortedList[TotalOrder] =
+  List[TotalOrder]
+then
+  sort SortedList[Elem] = {l:List[Elem] . is_ordered(l)}
+  ops [] : SortedList[Elem];
+      insert : Elem * SortedList[Elem] -> SortedList[Elem];
+      head : SortedList[Elem] ->? Elem;
+      tail : SortedList[Elem] ->? SortedList[Elem]
+  pred __is_in__ : Elem * SortedList[Elem]
+  forall x,y:Elem; L:SortedList[Elem]
+  . insert(x,[]) = x::[]
+  . insert(x,L) = (x::L when x<=head(L) else head(L)::insert(x,tail(L)) ) as SortedList[Elem]
+hide List[Elem]
+end
+
+%[
+view v : Set[TotalOrder] to SortedList[TotalOrder] = Set[Elem] |-> SortedList[Elem], empty |-> []
+end
+
+unit spec USet = TotalOrder -> Set[TotalOrder]
+end
+
+unit spec USortedList = TotalOrder -> SortedList[TotalOrder]
+end
+
+refinement R = 
+  USet
+  behaviourally refined via Set[Elem] |-> SortedList[Elem], empty |-> [] 
+  to USortedList
+end
+
+refinement R' = 
+  TotalOrder -> Set[TotalOrder]
+  behaviourally refined via Set[Elem] |-> SortedList[Elem], empty |-> [] 
+  to TotalOrder -> SortedList[TotalOrder]
+end
+
+refinement R1 = 
+  Set[TotalOrder] 
+  behaviourally refined via Set[Elem] |-> SortedList[Elem], empty |-> [] 
+  to SortedList[TotalOrder]
+end
+
+
+  
+spec ObsQuotientSet =
+  sort Elem
+  type Set[Elem] ::= empty | insert(Elem; Set[Elem])
+  pred __is_in__ : Elem * Set[Elem]
+then
+  sort GSet < Set[Elem]
+  generated type GSet ::= empty | insert(Elem; GSet)
+  free types 
+    obs[Set] ::= insert1(obs[Set]; Elem) | isIn(Elem)
+  pred apply : obs[Set] * GSet
+  forall os:obs[Set]; e:Elem; s:GSet
+  . apply(insert1(os,e),s) <=> apply(os,insert(e,s))
+  . apply(isIn(e),s) <=> e is_in s
+then 
+  generated type QSet ::= empty | insert(Elem;QSet)
+  pred __is_in__ : Elem * QSet
+  op q : GSet -> QSet
+  forall e:Elem; s,s1,s2:GSet
+  . q(empty) = empty
+  . q(insert(e,s)) = insert(e,q(s))
+  . q(s1)=q(s2) <=> (forall os:obs[Set] . apply(os,s1)<=>apply(os,s2))
+end
+
+
+spec Nat = 
+  free type Nat ::= 0 | Succ(pre:?Nat)
+  preds __<=__ : Nat*Nat;
+        __==__ : Nat*Nat
+  forall x,y:Nat
+  . 0 <= x
+  . not Succ(x) <= 0
+  . Succ(x)<=Succ(y) <=> x<=y
+  . 0 == 0
+  . not 0 == Succ(x)
+  . not Succ(x) == 0
+  . Succ(x) == Succ(y) <=> x == y
+end
+
+spec ObsQuotientSetNat =
+  Set[Nat]
+then
+  free types 
+    obs[Nat] ::= eq1(Nat) | eq2(Nat) | Succ1(obs[Nat]) | pre1(obs[Nat]) 
+               | insert2(obs[Set]; Set[Nat]) | isIn2(Set[Nat]);
+    obs[Set] ::= insert1(obs[Set]; Nat) | isIn1(Nat)
+  preds apply : obs[Nat] * Nat;
+        apply : obs[Set] * Set[Nat]
+  forall on:obs[Nat]; os:obs[Set]; m,n:Nat; s:Set[Nat]
+  . apply(eq1(m),n) <=> m==n
+  . apply(eq2(n),m) <=> m==n
+  . apply(Succ1(on),m) <=> apply(on,Succ(m))
+  . apply(pre1(on),m) <=> apply(on,pre(m))
+  . apply(insert1(os,n),s) <=> apply(os,insert(n,s))
+  . apply(insert2(os,s),n) <=> apply(os,insert(n,s))
+  . apply(isIn1(n),s) <=> n is_in s
+  . apply(isIn2(s),n) <=> n is_in s
+then 
+  generated type QSet ::= empty | insert(Nat;QSet)
+%%  sort QSet < List[Nat]
+  pred __is_in__ : Nat * QSet
+  op q : Set[Nat] ->? QSet
+  forall n:Nat; s,s1,s2:Set[Nat]
+  . q(empty) = empty
+  . def q(s) => q(insert(n,s)) = insert(n,q(s))
+  %% . def q(s) => (def insert(x,s) <=> def insert(x,q(s)))
+  . q(s1)=q(s2) <=> (forall os:obs[Set] . apply(os,s1)<=>apply(os,s2))
+end
+
+spec SetNat = Set[Nat]
+
+view v1 : Set[Nat] to ObsQuotientSetNat =
+  Set[Nat] |-> QSet
+end
+
+
+]%
