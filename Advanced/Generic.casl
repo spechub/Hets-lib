@@ -1,6 +1,6 @@
-library Sample/Generic 
+library Examples/Generic 
 
-from Sample/Simple get Total_Order, Nat 
+from Examples/Simple get Total_Order, Nat 
 
 spec Elem = 
      sort Elem 
@@ -49,104 +49,63 @@ spec List_with_Order [Total_Order] =
  hide insert 
 end 
        
-spec 
-     Ordered_Nat = 
-     Nat 
- then 
-      preds  
-            __ <= __ , __ >= __ : Nat × Nat 
+spec Ordered_Nat = 
+  Nat 
+then 
+  preds __ <= __ , __ >= __ : Nat × Nat 
 
-      forall  m,n : Nat 
-        ·   zero  <= n 
-        ·   ¬  (succ m  <= zero) 
-        ·   succ m  <= succ n   <=>  m  <= n 
-        ·   m  >= n   <=>  n  <= m 
-
- end 
-       
+  forall  m,n : Nat 
+  · zero  <= n 
+  · ¬ (succ m  <= zero) 
+  · succ m  <= succ n   <=>  m  <= n 
+  · m  >= n   <=>  n  <= m 
+end 
 
        
- spec 
-     Nat_List_with_Reverse_Orders = 
-     List_with_Order [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ <= 
-__ ] 
- and 
+spec Nat_List_with_Reverse_Orders = 
+  List_with_Order 
+     [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ <=__ ] 
+and 
+  List_with_Order 
+     [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ >= __] 
+then 
+  forall l : List[Nat] · order[__ >= __](l) = reverse(order[__ <= __](l)) 
+end 
+       
       
-     List_with_Order [Ordered_Nat fit Elem   |->  Nat, __ <= __   |->  __ >= 
-__] 
- then 
-      
-      forall  l : List[Nat]   ·   order[__ >= __](l) = reverse(order[__ <=
-__](l)) 
+spec Non_Empty_List [Elem] = 
+  free type 
+     NeList[Elem] ::= sort Elem  |  __ __(Elem; NeList[Elem]) 
+  ops first : NeList[Elem]  -> Elem;
+      rest : NeList[Elem] ->? NeList[Elem] 
+%[
+%% currently not doable for mixfix analysis
+  forall  e : Elem; l : NeList[Elem] 
+  · first(e) = e 
+  · first(e l) = e 
+  · ¬  def rest(e) 
+  · rest(e l) = l 
+]%
+end
 
- end 
+
+spec Path = 
+  Non_Empty_List [sort Name] 
+    with NeList[Name] |->  Path,
+         __ __  |->  __/__ ,
+         first  |->  the_first_name_of__ ,
+         rest   |->  the_last_part_of__ 
+then 
+  ops the_first_part_of__  : Path ->? Path;
+      the_last_name_of__  : Path -> Name 
+  forall  n : Name; p : Path 
+  · def (the_first_part_of p)   <=>  ¬  (p in Name)
+  · ¬  (p in Name)   =>  the_first_part_of (n/p)  =e= n/the_first_part_of p
+  · p in Name   =>  the_first_part_of (n/p)  =e= n
+  · the_last_name_of n = n 
+  · the_last_name_of (n/p) = the_last_name_of p 
+end 
        
-
-       
- spec 
-     Non_Empty_List [Elem] = 
-      free type 
-              NeList[Elem] ::= sort Elem  |  __ __(Elem; NeList[Elem]) 
-      ops  
-                
-              first 
-                  : NeList[Elem]  -> 
-                                    Elem;
-              rest 
-                  : NeList[Elem]  ->? 
-                                    NeList[Elem] 
-
-
-      forall  e : Elem; l : NeList[Elem] 
-        ·   first(e) = e 
-                                   ·   first(e l) = e 
-        ·   ¬  def rest(e) 
-                                   ·   rest(e l) = l 
-
- end 
-       
-
-       
- spec 
-     Path = 
-     Non_Empty_List [sort Name] 
-      with 
-          NeList[Name] 
-                         |->  
-                            Path,
-          __ __ 
-                         |->  
-                            __/__ ,
-          first 
-                         |->  
-                            the_first_name_of__ ,
-          rest 
-                         |->  
-                            the_last_part_of__ 
-
-
- then 
-      ops  
-          the_first_part_of__ 
-                            : Path ->? 
-                                     Path;
-          the_last_name_of__ 
-                            : Path -> 
-                                     Name 
-
-
-      forall  n : Name; p : Path 
-        ·   def (the_first_part_of p)   <=>  ¬  (p in Name)
-        ·   ¬  (p in Name)   =>  the_first_part_of (n/p)  =e= n/the_first_part_of p
-        ·   p in Name   =>  the_first_part_of (n/p)  =e= n
-        ·   the_last_name_of n = n 
-        ·   the_last_name_of (n/p) = the_last_name_of p 
-
- end 
-       
-
-
- 
 
 spec Name = sort Name 
  %% ...
@@ -155,58 +114,45 @@ spec Name = sort Name
 spec Content = sort Content 
  %% ...
 
-
   
- spec 
-     File = 
-     Name and Content 
- then 
-       
-      generated type 
-                   File ::= <__ dot __> ( 
+spec File = 
+  Name and Content 
+then 
+  generated type 
+ File ::= <__ dot __> ( 
                    the_name_of__:Name;
                    the_content_of__:Content) 
-
-
- end 
+end 
        
-
        
- view 
-     Nat_as_Elem : Elem to Nat = 
-     Elem   |->  Nat 
+view Nat_as_Elem : Elem to Nat = 
+   Elem   |->  Nat 
 
        
- view 
-     List_as_Elem [Elem] : Elem to List [Elem] = 
-     Elem   |->  List[Elem] 
+view List_as_Elem [Elem] : Elem to List [Elem] = 
+   Elem   |->  List[Elem] 
 
        
- spec 
-     List_of_List_of_List_of_Nat = 
-     List [view List_as_Elem [view List_as_Elem [view Nat_as_Elem]]] 
+spec List_of_List_of_List_of_Nat = 
+   List [view List_as_Elem [view List_as_Elem [view Nat_as_Elem]]] 
 
        
- view 
-     Ordered_Nat_as_Total_Order : 
-     Total_Order to Ordered_Nat = 
-      %{ 
-          Ordered_Nat_as_Total_Order can be seen as the requirement that 
-          Ordered_Nat indeed specifies a partial order. Thus defining the view 
-          would be significant even if the following instantiation were to be omitted. }%
-     Elem   |->  Nat 
+view Ordered_Nat_as_Total_Order : 
+   Total_Order to Ordered_Nat = 
+    %{ 
+      Ordered_Nat_as_Total_Order can be seen as the requirement that 
+      Ordered_Nat indeed specifies a partial order. Thus defining the view 
+      would be significant even if the following instantiation were to be omitted. }%
+   Elem   |->  Nat 
 
 
-
-
-       
- spec Nat_List_with_Order = 
+spec Nat_List_with_Order = 
    List_with_Order [view Ordered_Nat_as_Total_Order] 
 
        
- spec Bounded_List [Elem] [op bound : Nat] given Nat = 
+spec Bounded_List [Elem] [op bound : Nat] given Nat = 
    List [Elem] and Ordered_Nat 
- then 
+then 
    op length : List[Elem]  -> Nat 
 
    forall  e:Elem; l:List[Elem] 
