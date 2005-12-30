@@ -1,0 +1,59 @@
+library TestSubsorts
+
+%% Correct, due to overloading relation
+spec sp1 =
+  sorts s < t
+  ops c:s; c:t
+  . def c
+end
+
+%% Incorrect: ill-typed
+%[
+spec sp2 =
+  sorts s , t
+  ops c:s; d:t
+  . c=d
+end
+]%
+
+%% Incorrect: ambiguous
+%[
+spec sp3 =
+  sorts s , t
+  ops c:s; c:t
+  . def c
+end
+]%
+
+%% Correct: common supersort
+spec sp4 =
+  sorts s < u; t < u
+  ops c:s; d:t
+  . c=d
+end
+
+%% Correct due to overloading relation for ops
+spec sp5 =
+  sorts s < u; t < u; r < s; r < t
+  ops f:s->s; f:t->t
+  forall x:r
+  . f(x) = x
+end
+
+%% Correct due to overloading relation for preds
+spec sp6 =
+  sorts s < u; t < u; r < s; r < t
+  preds p:s; p:t
+  forall x:r
+  . p(x)
+end
+
+%% Incorrect: ambiguous
+%[
+spec sp7 =
+  sorts s , t
+  ops c:s; c:t
+  preds p:s; p:t
+  . p(c)
+end
+]%
