@@ -1,7 +1,7 @@
-library PuCache/PFS_Protocol
+library CaseStudies/PuCache/PFS_Protocol
 
 from Basic/StructuredDatatypes get String, List
-from Misc/Prerequisites get Prerequisites
+from CaseStudies/Misc/Prerequisites get Prerequisites
 
 spec PFS_Protocol = 
   String and Prerequisites
@@ -19,6 +19,9 @@ free type FType ::= FTypeUndef | Reg | Dir | Lnk | Sock | Fifo
 
 free type Data ::= Data (Ptr)
 
+free type Time ::= Time (seconds     : Int;
+                  nanoSeconds : Int)
+
 free type Attributes ::= Attr (fType : FType; mode : Mode;   nLink  : Int;
                         uid   : Uid;   gid  : Gid;    size   : Size;
                         used  : Size;  fsId : Int; fileId : FileId;
@@ -35,24 +38,24 @@ forall a:Attributes
 free type ExtAttribute ::= ExtAttr (name : String;
                              val  : String)
 
-free type Time ::= Time (seconds     : Int;
-                  nanoSeconds : Int)
+
+free type PFS_Answer ::= GetMTime(time:?Time) 
+                         | Read (attr:?Attributes; count:?Count; eof:?Boolean;
+			         data:?Data)
 
 free type PFS_Return ::= Ret (err    : Errno;
 		       retval : PFS_Answer)
 
 
-free type PFS_Answer ::= GetMTime(time:Time) 
-                         | Read (attr:Attributes; count:Count; eof:Boolean;
-			         data:Data)
 %% and lots more - originally
 
+
+free type PFS_Command ::= GetMTimeArg (fh:Filehandle)
+                          | ReadArg (fh:Filehandle; off:?Offset; cnt:?Count)
 
 free type PFS_Request ::= Req (user : Uid;
 			req  : PFS_Command)
 
-free type PFS_Command ::= GetMTimeArg (fh:Filehandle)
-                          | ReadArg (fh:Filehandle; off:Offset; cnt:Count)
 
 %% and lots more - originally
 

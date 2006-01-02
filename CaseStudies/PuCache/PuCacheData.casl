@@ -1,23 +1,23 @@
-library PuCache/PuCacheData version 0.1
+library CaseStudies/PuCache/PuCacheData version 0.1
 
-from Basic/StructuredDatatypes version 0.7 get FiniteMap
+from Basic/StructuredDatatypes version 0.7 get Map
 from Basic/StructuredDatatypes version 0.7 get List
-from Misc/Haskell version 0.1 get Maybe
-from PuCache/PFS_Protocol get PFS_Protocol
+from CaseStudies/Misc/Haskell version 0.1 get Maybe
+from CaseStudies/PuCache/PFS_Protocol get PFS_Protocol
 
 spec PuCacheData = 
   PFS_Protocol 
 and
-  FiniteMap[sort Uid fit sort S |-> Uid]
+  Map[sort Uid fit sort S |-> Uid]
 	   [sort PuUserEntry fit sort T |-> PuUserEntry] 
 and
-  FiniteMap[sort Filehandle fit sort S |-> Filehandle]
+  Map[sort Filehandle fit sort S |-> Filehandle]
            [sort PuFileEntry fit sort T |-> PuFileEntry] 
 and
-  FiniteMap [sort Filehandle fit sort S |-> Filehandle]
+  Map [sort Filehandle fit sort S |-> Filehandle]
             [sort PuDirEntry fit sort T |-> PuDirEntry]
 and
-  FiniteMap [sort Filename fit sort S |-> Filename]
+  Map [sort Filename fit sort S |-> Filename]
             [sort Filehandle fit sort T |-> Filehandle]
 and 
   List [sort PFS_Command fit sort Elem |-> PFS_Command]
@@ -44,7 +44,7 @@ free type PuCache ::= PuCache ( puc_getOffline   : Boolean;
 			 puc_maxUsers     : Int;
 			 puc_cacheDir     : Path;
 			 puc_conflictDir  : Path;
-                         puc_getUserData  : FiniteMap[Uid,PuUserEntry] )
+                         puc_getUserData  : Map[Uid,PuUserEntry] )
 %% deriving Eq 
 
 free type PuUserEntry ::= PuUserEntry ( puc_userOffline     : Boolean;
@@ -55,15 +55,15 @@ free type PuUserEntry ::= PuUserEntry ( puc_userOffline     : Boolean;
                           puc_userSpace       : Int;
 			  puc_userLastFh      : Int;
 		          puc_userQueue       : List[PFS_Command];
-                          puc_getDirData      : FiniteMap[Filehandle, PuDirEntry];
-                          puc_getFileData     : FiniteMap[Filehandle, PuFileEntry])
+                          puc_getDirData      : Map[Filehandle, PuDirEntry];
+                          puc_getFileData     : Map[Filehandle, PuFileEntry])
 %%                   deriving Eq
 
 free type  PuDirEntry ::= PuDirEntry ( puc_dirName    : Path;
                                puc_dirAttr    : Attributes;
                                puc_dirExtAttr : ExtAttributes;
-                               puc_dirSubDirs : FiniteMap[Filename, Filehandle];
-                               puc_dirFiles   : FiniteMap[Filename, Filehandle];
+                               puc_dirSubDirs : Map[Filename, Filehandle];
+                               puc_dirFiles   : Map[Filename, Filehandle];
 			       puc_dirGen     : Int;
                                puc_dirChanged : Boolean )
 %%                  deriving Eq
@@ -84,5 +84,5 @@ ops
 
 op puc_emptyCache : PuCache;
 axiom
-puc_emptyCache = PuCache(True, 0, 0, 0, "", "", [])
+puc_emptyCache = PuCache(True, 0, 0, 0, "", "", empty)
 

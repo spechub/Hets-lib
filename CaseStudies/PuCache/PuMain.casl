@@ -1,11 +1,11 @@
-library PuCache/PuMain version 0.1
+library CaseStudies/PuCache/PuMain version 0.1
 
-from PuCache/PuInterface get PuInterface
-from PuCache/PuReqRead get Cache
-from Misc/Prerequisites get Prerequisites
-from PuCache/PFS_Protocol get PFS_Protocol
-from PuCache/PuServer get PuServer
-from PuCache/PuCacheData get PuCacheData
+from CaseStudies/PuCache/PuInterface get PuInterface
+from CaseStudies/PuCache/PuReqRead get Cache
+from CaseStudies/Misc/Prerequisites get Prerequisites
+from CaseStudies/PuCache/PFS_Protocol get PFS_Protocol
+from CaseStudies/PuCache/PuServer get PuServer
+from CaseStudies/PuCache/PuCacheData get PuCacheData
 
 spec AbsFile = 
 
@@ -23,23 +23,23 @@ spec PuFile =
 then
 ops
  fh: PuCache * Uid * File ->? Filehandle;
- find: FiniteMap[Filehandle,PuFileEntry] * File ->? Filehandle;
+ find: Map[Filehandle,PuFileEntry] * File ->? Filehandle;
  length: PuCache * Filehandle -> Count;	%% remain unspecified
 
-forall f:File; puc: PuCache; uid:Uid; fm:FiniteMap[Filehandle,PuFileEntry];
+forall f:File; puc: PuCache; uid:Uid; fm:Map[Filehandle,PuFileEntry];
        fh: Filehandle; t:PuFileEntry
-. fm = [] <=> not def find(fm,f)
+. fm = empty <=> not def find(fm,f)
 . find(fm[t/fh],f) = fh
   when (puc_fileCachedName(t)=path(f)) 
   else 
   find(fm,f)
 . fh(puc,uid,f) =
-  find(puc_getFileData(eval(uid,puc_getUserData(puc))),f)
+  find(puc_getFileData(lookup(uid,puc_getUserData(puc))),f)
 . second(puc_useCache(puc,uid,fh(puc,uid,f)))=True => 
   (exists uent:PuUserEntry .
-   (puc_fileCachedName(eval(fh(puc,uid,f),puc_getFileData(uent)))=path(f) 
+   (puc_fileCachedName(lookup(fh(puc,uid,f),puc_getFileData(uent)))=path(f) 
    /\ data(pu_read(puc,uid,fh(puc,uid,f),0,length(puc,fh))) = data(f)
-   /\ uent = eval(uid,puc_getUserData(puc))))
+   /\ uent = lookup(uid,puc_getUserData(puc))))
 %%. second(puc_useCache(puc,uid,fh(puc,uid,f)))=False => 
 %%  path(f) = [] /\ data(f)= Data(nullPtr)
 %% Stimmt nicht ganz, weil use_Cache auch False zurueckgibt, wenn
@@ -64,9 +64,9 @@ op
 forall puc:PuCache; f:File; uid:Uid
 . inCacheFn(puc,path(f),uid) <=> second(puc_useCache(puc,uid,fh(puc,uid,f)))=True
 . inCache(puc,f,uid) <=> second(puc_useCache(puc,uid,fh(puc,uid,f)))=True
-. puc_userOffline(eval(uid,puc_getUserData(puc))) = True 
+. puc_userOffline(lookup(uid,puc_getUserData(puc))) = True 
   => offline(puc,uid)
-. (puc_userOffline(eval(uid,puc_getUserData(puc))) = False 
+. (puc_userOffline(lookup(uid,puc_getUserData(puc))) = False 
   \/ puc_getOffline(puc) = False)
   => not(offline(puc,uid))
 
@@ -130,8 +130,8 @@ forall pfs:Pfs; f:File; uid:Uid
   length(sfs(pfs),fh(sfs(pfs),f))))))))) = pu_EACCES 
   => not(getAllowed(pfs,path(f),uid))
 . exists attr:Attributes . puc_canRead(attr,uid) => getAllowed(pfs,path(f),uid)
-  /\ attr = puc_fileAttr(eval(fh(cfs(pfs),uid,f),puc_getFileData(
-   eval(uid,puc_getUserData(cfs(pfs))))))
+  /\ attr = puc_fileAttr(lookup(fh(cfs(pfs),uid,f),puc_getFileData(
+   lookup(uid,puc_getUserData(cfs(pfs))))))
 . second(puc_useCache(cfs(pfs),uid,fh(cfs(pfs),uid,f)))=True => 
   not(changed(pfs,path(f),uid))
 

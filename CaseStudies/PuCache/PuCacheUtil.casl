@@ -1,6 +1,6 @@
-library PuCache/PuCacheUtil version 0.1
+library CaseStudies/PuCache/PuCacheUtil version 0.1
 
-from PuCache/PuCacheData get PuCacheData
+from CaseStudies/PuCache/PuCacheData get PuCacheData
 
 spec PuCacheUtil = 
   PuCacheData 
@@ -28,15 +28,15 @@ ops
 
 forall cache:PuCache; uid:Uid; uent:PuUserEntry; fh:Filehandle; 
        fileEntry:PuFileEntry; attr:Attributes; user:Uid
-. puc_haveUser (cache, uid) = True when def eval(uid, puc_getUserData(cache)) 
+. puc_haveUser (cache, uid) = True when def lookup(uid, puc_getUserData(cache)) 
   else False
-. puc_getUser (cache, uid) = eval (uid , puc_getUserData (cache) )
-. puc_haveDir (uent,fh) = True when def eval(fh, (puc_getDirData(uent)))
+. puc_getUser (cache, uid) = lookup (uid , puc_getUserData (cache) )
+. puc_haveDir (uent,fh) = True when def lookup(fh, (puc_getDirData(uent)))
   else False
-. puc_haveFile (uent, fh) = True when def eval(fh, (puc_getFileData(uent)))
+. puc_haveFile (uent, fh) = True when def lookup(fh, (puc_getFileData(uent)))
   else False
-. puc_getFile (uent, fh) = eval (fh, puc_getFileData (uent))
-. puc_getDir (uent, fh) = eval(fh, puc_getDirData(uent))
+. puc_getFile (uent, fh) = lookup (fh, puc_getFileData (uent))
+. puc_getDir (uent, fh) = lookup(fh, puc_getDirData(uent))
 
 . puc_haveUser(cache,uid) <=> puc_haveUser(cache,uid) = True
 . puc_haveDir(uent,fh) <=> puc_haveDir(uent,fh) = True
