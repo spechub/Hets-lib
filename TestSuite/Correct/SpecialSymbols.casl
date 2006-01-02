@@ -7,14 +7,14 @@ spec sp1 =
   forall x:s . x × x = x
 end
 
-spec sp1 =
+spec sp2 =
   sort s
   op __×__ : s * s -> s
   forall x:s . x * x = x
 end
 
-unit spec usp1 = sp × sp -> sp
+unit spec usp1 = sp1 × sp1 -> sp1
 end
 
-unit spec usp2 = sp * sp -> sp
+unit spec usp2 = sp2 * sp2 -> sp2
 end
