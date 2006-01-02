@@ -1,0 +1,20 @@
+library SpecialSymbols
+
+spec sp1 =
+  sort s
+  op __*__ : s * s -> s
+  op __*__ : s × s -> s
+  forall x:s . x × x = x
+end
+
+spec sp1 =
+  sort s
+  op __×__ : s * s -> s
+  forall x:s . x * x = x
+end
+
+unit spec usp1 = sp × sp -> sp
+end
+
+unit spec usp2 = sp * sp -> sp
+end
