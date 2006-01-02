@@ -10,7 +10,9 @@ end
 spec sp2 =
   sort s
   op __×__ : s * s -> s
+  op __×*×__ : s * s -> s
   forall x:s . x * x = x
+  forall x:s . x *×* x = x
 end
 
 unit spec usp1 = sp1 × sp1 -> sp1
