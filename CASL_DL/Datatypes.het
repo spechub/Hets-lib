@@ -1,0 +1,64 @@
+
+library CASL_DL/Datatypes version 0.1
+
+%date 09.02.2006
+%author Klaus Lüttich <luettich@tzi.de>
+
+%number __@@__
+%string emptyString, __:@:__
+
+%[
+
+from Basic/Numbers get Int
+%% from Basic/SimpleDatatypes get Boolean
+from Basic/StructuredDatatypes get String
+
+spec Minimal =
+     Int reveal ops __@@__,0,1,2,3,4,5,6,7,8,9,-__,
+	        sorts Nat,Pos,Int
+	 with Int |-> integer,
+              Nat |-> nonNegativeInteger,
+              Pos |-> positiveInteger
+and String hide sorts Nat,Pos,
+		preds isDigit,isEmpty,isLetter,isPrintable,__eps__,
+		ops rest,reverse,last,front,first,__++__,__+__
+           with String |-> string
+then free type DATA ::= sorts integer,string 
+]%
+logic CASL_DL
+
+spec IntegerLiteral =
+     sort nonNegativeInteger
+     ops 1,2,3,4,5,6,7,8,9,0 : nonNegativeInteger;
+	 __@@__ : nonNegativeInteger * nonNegativeInteger 
+	        -> nonNegativeInteger
+     free type integer ::= sorts nonNegativeInteger 
+			 | -__(nonNegativeInteger)
+     sort positiveInteger = { y : nonNegativeInteger 
+			     . not y = 0}
+     sorts nonPositiveInteger <  integer;
+           negativeInteger < integer 
+
+     . - 0 = 0
+spec IntExamples =
+     IntegerLiteral
+then 
+     ops x01,x02 : positiveInteger;
+	 x03,x04 : nonNegativeInteger;
+	 x05,x06 : nonPositiveInteger;
+	 x07,x08 : negativeInteger;
+	 x09,x10 : integer
+     . x01 = 12
+     . x02 = 0
+
+     . x03 = 0
+     . x04 = 111
+
+     . x07 = - 0
+     . x08 = -44
+
+     . x05 = - 11
+     . x06 = 0
+
+     . x09 = 44
+     . x10 = -33
