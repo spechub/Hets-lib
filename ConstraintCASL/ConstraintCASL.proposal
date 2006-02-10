@@ -1,0 +1,278 @@
+
+
+logic ConstraintCASL
+
+spec RCC8Base =
+     sort Elem
+     preds __DC__,__EC__,__PO__,__NTPP__,__TPP__:Elem * Elem;
+	   %( -- infix Notationen zur Beschreibung der 
+		 Basisrelationen zugelassen; 
+              -- auch mehrsortige Relationen, zB Punkt-Interval-Kalkül;
+              -- Relationen beliebiger Stellenzahl 
+	   )%
+      
+	  __NTPPi__: Elem * Elem, inv __NTPP__;
+          __TPPi__: Elem * Elem, inv __TPP__;  
+	  %(inv besagt im Grunde das, was unten unter "Inverses" steht)%
+
+	  __EQ__: Elem*Elem, id
+          %(eq besagt: phi(x) => phi(y) fuer alle Formeln der Sprache, d.h. 
+		Substituierbarkeit des Identischen; wird benötigt, da wir
+		nicht unbedingt davon ausgehen können,
+		dass die Identität zum Alphabet der Sprache gehört)% 
+
+	%%  __?__: Elem*Elem, universal    Logische
+     vars x,y,z:Elem
+     %(Inverses)%
+     . x NTPPi y -||- y NTPP x
+     . x TPPi y -||- y TPP x
+
+     %(Universal)%
+     . x ? y |- x DC,EC,PO,NTPP,TPP,NTPPi,TPPi,EQ y
+
+     . x EQ y -||- x id y
+end
+
+spec RCC8Weak =
+  RCC8Base
+then minimal
+     %(Composition)%
+     %% Problem hier: Folgende Formeln sind keine CSP-Formeln.
+     . x DC y , y DC z |- x DC,EC,PO,NTPP,TPP,NTPPi,TPPi,EQ z 	%(cmps_dcdc)%
+     . x DC y , y EC z |- x DC,EC,PO,TPP,NTPP z  		%(cmps_dcec)%
+     . x DC y , y PO z |- x DC,EC,PO,TPP,NTPP z			%(cmps_dcpo)%
+     . x DC y , y TPP z |- x DC,EC,PO,TPP,NTPP z		%(cmps_dctpp)%
+     . x DC y , y NTPP z |- x DC,EC,PO,TPP,NTPP z		%(cmps_dcntpp)%
+     . x DC y , y TPPi z |- x DC z				%(cmps_dctppi)%
+     . x DC y , y NTPPi z |- x DC z				%(cmps_dcntppi)%
+
+     . x EC y , y DC z |- x DC,EC,PO,TPPi,NTPPi z		%(cmps_ecdc)%
+     . x EC y , y EC z |- x DC,EC,PO,TPP,TPPi,EQ z	 	%(cmps_ecec)%
+     . x EC y , y PO z |- x DC,EC,PO,TPP,NTPP z		%(cmps_ecpo)%
+     . x EC y , y TPP z |- x EC,PO,TPP,NTPP z			%(cmps_ectpp)%
+     . x EC y , y NTPP z |- x PO,TPP,NTPP z			%(cmps_ecntpp)%
+     . x EC y , y TPPi z |- x DC,EC z				%(cmps_ectppi)%
+     . x EC y, y NTPPi z |- x DC z				%(cmps_ecntppi)%
+     %(etc.)%
+      %tractable EC,DC (branching factor??) 
+      %tractable DR,DC
+
+     %(Strukturelle Regeln, die wir nicht angeben muessen, sondern durch ConstraintCASL 
+	von selbst verstehen:)     %(Strukturelle Regeln, die wir nicht angeben muessen, sondern durch ConstraintCASL 
+	von selbst verstehen:)
+
+
+then %implies
+     %(zB eine triviale Folgerung wie)%
+     . x EC y , y TPPi,NTPPi z |- x DC,EC z			
+     %(etc.)%
+end
+
+
+spec RCC8Strong =
+  RCC8Base
+then strong
+     %(Composition)%
+     %% Problem hier: Folgende Formeln sind keine CSP-Formeln.
+     . x DC y , y DC z |- x DC,EC,PO,NTPP,TPP,NTPPi,TPPi,EQ z 	%(cmps_dcdc)%
+     . x DC y , y EC z |- x DC,EC,PO,TPP,NTPP z  		%(cmps_dcec)%
+     . x DC y , y PO z |- x DC,EC,PO,TPP,NTPP z			%(cmps_dcpo)%
+     . x DC y , y TPP z |- x DC,EC,PO,TPP,NTPP z		%(cmps_dctpp)%
+     . x DC y , y NTPP z |- x DC,EC,PO,TPP,NTPP z		%(cmps_dcntpp)%
+     . x DC y , y TPPi z |- x DC z				%(cmps_dctppi)%
+     . x DC y , y NTPPi z |- x DC z				%(cmps_dcntppi)%
+
+     . x EC y , y DC z |- x DC,EC,PO,TPPi,NTPPi z		%(cmps_ecdc)%
+     . x EC y , y EC z |- x DC,EC,PO,TPP,TPPi,EQ z	 	%(cmps_ecec)%
+     . x EC y , y PO z |- x DC,EC,PO,TPP,NTPP z		%(cmps_ecpo)%
+     . x EC y , y TPP z |- x EC,PO,TPP,NTPP z			%(cmps_ectpp)%
+     . x EC y , y NTPP z |- x PO,TPP,NTPP z			%(cmps_ecntpp)%
+     . x EC y , y TPPi z |- x DC,EC z				%(cmps_ectppi)%
+     . x EC y, y NTPPi z |- x DC z				%(cmps_ecntppi)%
+     %(etc.)%
+      %tractable EC,DC
+     
+     %(Strukturelle Regeln, die wir nicht angeben muessen, sondern durch ConstraintCASL 
+	von selbst verstehen:)     %(Strukturelle Regeln, die wir nicht angeben muessen, sondern durch ConstraintCASL 
+	von selbst verstehen:)
+
+
+then %implies
+     %(zB eine triviale Folgerung wie)%
+     . x EC y , y TPPi,NTPPi z |- x DC,EC z			
+     %(etc.)%
+end
+
+
+%()%
+
+
+
+%(Beispiel für eine def. Erweiterung:)%
+
+spec ExtRCC8ByRelations[RCC8] = %def
+     preds __PP__: Elem * Elem;
+	__PPi__: Elem * Elem, inv __PP__
+     forall x,y:Elem
+     . x PP y -||- x TPP,NTPP y	 
+     %%alternativ
+     pred __PP__(x,y:Elem) -||- x TPP,NTPP y	 
+end
+
+
+%( Ein Beispiel )%
+
+spec CSPExample1[RCC8] =
+     ops a,b,c:Elem
+     . a DC,EC,EQ b
+     . b TPP,TPPi c 
+     %(oder auch:)%
+     . a DC,EC,EQ b . b TPP,TPPi c . a EQ b
+     %(aber NICHT:)%
+     . a DC,EC,EQ b \/ b TPP,TPPi c /\ a EQ b
+then %implies
+    %% dies entspricht der Entailment Relation
+    %% SAT würde Consistency checking entsprechen.
+    ....
+end
+
+
+%( Wir könnten dann von einem Constraint-Solver oder nach trivialer
+   Übersetzung nach FO mit SPASS prüfen lassen, ob dies widerspruchsfrei ist. 
+)%
+
+
+
+
+from Calculi/Space/RCC8 get RCC8Model 
+
+logic HasCASL
+%( Der folgende view besagt nun, dass die Logic aus spec RCC8
+	widerspruchsfrei bzgl. Standardmodellen ist: )%
+
+view RCC8_in_RCC8Model[MetricSpace] :
+     RCC8 to RCC8Model[MetricSpace]
+= Elem |-> OpenDiscs, ...
+end   
+
+
+logic HasCASL
+
+
+spec TopologicalSpace
+
+	sort Elem
+	...
+      type RegularClosedSet
+       ....
+end  
+
+spec RCC8ToplogicalModel = 
+     TopologicalSpace 
+	then %def
+	preds __DC__(s1,s2:RegularClosedSet) <=> ....
+	oder
+	forall 
+	. ... 
+	reveal RegularClosedSet |-> Region, __DC__, ....	
+end
+ 
+logic ConstraintCASL
+
+view RCC8Weak to RCC8ToplogicalModel = logic ConstraintCASL2HasCASL, Elem |-> Region
+end
+
+view RCC8Strong to RCC8UnitDiskModel = logic ConstraintCASL2HasCASL, Elem |-> Region
+end
+
+
+%% das nicht
+spec RCC8Interpretation = 
+     data RCC8Model 
+then %implies
+   RCC8
+end
+
+spec CSPExample1 = 
+   RCC8
+then %cons
+     ops a,b,c:Elem
+     . a DC,EC,EQ b
+     . b TPP,TPPi c 
+     %(oder auch:)%
+     . a DC,EC,EQ b /\ b TPP,TPPi c a EQ b
+     %(aber NICHT:)%
+%%     . a DC,EC,EQ b \/ b TPP,TPPi c a EQ b
+end
+
+
+%% spec RCC8Adequacy[MetricSpaces]:
+%%     RCC
+%% end
+
+
+Institution:
+Signature
+Language(Sentences)
+Model
+Satisfaction
+
+Signature: 
+==========
+wie FOL     a EQ f(b,c)
+
+
+Language: 
+========= 
+	Terms: t <- Variables, Constants, Functionapplications
+	Formulae: phi ::=  R(t_1,t_2,...,t_{n},t') ; oder t_1 R t_2 
+				where R = {} | ? | id | r_1,...,r_n
+				and ex. w in S^* with r_1,...,r_n in R_{w^*} 
+			  	complement???
+
+			  | phi . phi' 
+
+	Regel(Satz):   phi_1,...,phi_n |- psi
+                     | phi -||- psi
+  
+
+%%		     x	r cmps r' y  <=> x r z . z r y 
+%%(if phi and phi' are not quantified)
+%%For QCSP(??)		  ex x phi, fa x phi ???
+
+Hier schlage ich vor(?):    Set of relations form a Boolean algebra
+			 relation algebras? nein, höchstens als partielle Funktion falls
+			 Komposition mengentheoretisch interpretiert.
+  
+Models: 
+=======
+Standardmodelle wie in FOL. 
+
+Sehr spezifische Modelle, auch Modelle höherer Ordnung, ueber views bzw.
+Logik-Projektionen erhaltbar.
+
+Satisfaction: 
+=============
+"wie in FOL"
+
+
+Idee ist: 
+=========
+Mit jeder CSP-Sprache muss man auch eine Modellklasse spezifieren.
+Und die Interpretation der Relationen festlegen.  Falls man Komposition hinzunimmt, 
+dann gibt es mehrere Möglichkeiten, Interpretation der Komposition festzulegen.
+
+a) Vielleicht irgendwie minimal (d.h axiomatisch über Eigenschaften)????
+b> Sprachl.: partielle Funktion; semant.: mengentheoret. Komposition
+c) Sprachl.: totale Funktion;    semant.: weak compositions, d.h. wir 
+					   ordnen jeder sprachlichen 
+					   Composition die Interpretation der 
+					   stärksten Relation zu, die die mengentheoret.
+					   Komposition dieser Relationen enthält.
+		 
+
+
+
+
+
+
