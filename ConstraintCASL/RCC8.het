@@ -35,8 +35,8 @@ version 0.3
 spec RCC8Base =
      sort Elem
      preds __DC__,__EC__,__PO__,__NTPP__,__TPP__:Elem * Elem;
-	  __NTPPi__: Elem * Elem, inv __NTPP__;
-          __TPPi__: Elem * Elem, inv __TPP__;  
+	  __NTPPi__: Elem * Elem %%, inv __NTPP__;
+          __TPPi__: Elem * Elem %%, inv __TPP__;  
 	  %(inv besagt im Grunde das, was unten unter "Inverses" steht)%
 
 	  __EQ__: Elem*Elem, id
@@ -45,7 +45,7 @@ spec RCC8Base =
 		nicht unbedingt davon ausgehen können,
 		dass die Identität zum Alphabet der Sprache gehört)% 
 
-	  __?__: Elem*Elem, universal
+	  __?__: Elem*Elem %%, universal
      vars x,y,z:Elem
      %(Inverse)%
      . x NTPPi y -||- y NTPP x
@@ -56,16 +56,16 @@ spec RCC8Base =
      . x EQ y -||- y EQ x
 
      %(Universal)%
+     . |- x ? y
      . x ? y |- x DC,EC,PO,NTPP,TPP,NTPPi,TPPi,EQ y
 
-     . x EQ y -||- x id y
+     . x EQ y -||- x = y
 end
 
 spec RCC8Weak =
   RCC8Base
 then minimal
      %(Composition)%
-
      . x DC y , y DC z |- x ? z 			%(cmps_DCDC)%
      . x DC y , y EC  z |- x DC,EC,PO,TPP,NTPP z 	%(cmps_DCEC)%
      . x DC y , y PO z |- x DC,EC,PO,TPP,NTPP z		%(cmps_DCPO)%
@@ -123,9 +123,9 @@ then minimal
      . x NTPPi y , y NTPPi z |- x NTPPi z		%(cmps_NTPPiNTPPi)%
 end
 
-
-
-
-
-
-
+spec RCC8Example =
+  RCC8Weak then %implies
+  var x,y,z,v: Elem 
+  . x PO y, x NTPP z, v TPP y, v TPP z
+end
+  

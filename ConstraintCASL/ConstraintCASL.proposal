@@ -219,24 +219,26 @@ Satisfaction
 
 Signature: 
 ==========
-wie FOL     a EQ f(b,c)
+wie FOL    
 
 
 Language: 
 ========= 
-	Terms: t <- Variables, Constants, Functionapplications
-	Formulae: phi ::=  R(t_1,t_2,...,t_{n},t') ; oder t_1 R t_2 
-				where R = {} | ? | id | r_1,...,r_n
-				and ex. w in S^* with r_1,...,r_n in R_{w^*} 
-			  	complement???
+	Terms: as in CASL (Variables, Constants, Functionapplications)
+	Formulae: 
+          TERM ::= %% see CASL syntax (CASL/Formula.hs, term)
+          ATOM ::=  REL ( TERM , ... , TERM )
+                    |  TERM REL TERM
+          REL ::= {} | = 
+                | ID             %% see CASL syntax (CASL/Formula.hs, parseId)
+                | REL , ... , REL                 %% disjunction
+                | ~ REL
+                | ( REL )
+          CONJUNCTION ::= ATOM , ... , ATOM       %% conjunction
+          FORMULA ::= CONJUNCTION `|-` CONJUNCTION
+                    | CONJUNCTION `-||-` CONJUNCTION
+                    | `|-` CONJUNCTION
 
-			  | phi . phi' 
-
-	Regel(Satz):   phi_1,...,phi_n |- psi
-                     | phi -||- psi
-  
-
-%%		     x	r cmps r' y  <=> x r z . z r y 
 %%(if phi and phi' are not quantified)
 %%For QCSP(??)		  ex x phi, fa x phi ???
 
