@@ -4,6 +4,7 @@ version 0.3
 %% date: 10-02-2006
 %% 
 
+logic ConstraintCASL
 
 %(  Part I: Symbolic Level
 
@@ -64,7 +65,7 @@ end
 
 spec RCC8Weak =
   RCC8Base
-then minimal
+then %%minimal
      %(Composition)%
      . x DC y , y DC z |- x ? z 			%(cmps_DCDC)%
      . x DC y , y EC  z |- x DC,EC,PO,TPP,NTPP z 	%(cmps_DCEC)%
