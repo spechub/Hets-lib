@@ -1,0 +1,61 @@
+library HasCASL/MetricSpaces2
+
+%% version without use of subsorts
+
+%author: T. Mossakowski, S. Wölfl
+%date: 2005-10-11
+
+from HasCASL/Real get Real
+
+logic HasCASL
+
+spec MetricSpace =
+     Real
+then
+     sort S
+     op d:S*S->Real
+     var x,y,z:S
+     . d(x,y) = 0 <=> x = y
+     . d(x,y) = d(y,x)
+     . d(x,z) <= d(x,y) + d(y,z)
+end
+
+spec ExtMetricSpaceByOpenDiscs[MetricSpace] =
+  op openDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<r
+  type OpenDiscs
+  op inj : OpenDiscs -> Pred S
+  forall X:Pred S
+  . (exists d:OpenDiscs . inj(d)=X)
+     <=> (exists x:S;r:Real . X=openDisc(x,r))
+end
+
+spec ExtMetricSpaceByOpenSets[MetricSpace] =
+     ExtMetricSpaceByOpenDiscs[MetricSpace] 
+then %def
+     pred Open : Pred S 
+     type OpenSets
+     op inj : OpenSets -> Pred S
+     forall X:Pred S
+     . (exists d:OpenSets . inj(d)=X) <=> Open(X)
+     . Open(X) . forall x:S . X x => 
+			exists r:Real .
+                           forall s:S . openDisc(x,r) s => X s
+end
+
+spec ExtMetricSpaceByClosedDiscs[MetricSpace] = 
+  op closedDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<=r
+  type ClosedDiscs
+  op inj : ClosedDiscs -> Pred S
+  forall X:Pred S
+  . (exists d:ClosedDiscs . inj(d)=X)
+     <=> (exists x:S;r:Real . X=closedDisc(x,r))
+end
+
+spec RichMetricSpace = 
+    ExtMetricSpaceByOpenDiscs[MetricSpace]
+and
+    ExtMetricSpaceByClosedDiscs[MetricSpace]
+end
+
+
+
