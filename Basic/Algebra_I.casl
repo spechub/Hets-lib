@@ -29,7 +29,7 @@ spec Group =
      Monoid
 then
      forall x: Elem
-     . exists x': Elem . x' * x = e
+     . exists x': Elem . x' * x = e   %(inv_Group)%
 end
 
 spec AbelianGroup =
@@ -71,10 +71,11 @@ then
 end
 
 spec ConstructField =
-     CommutativeRing
+{     CommutativeRing
 then
-     . not e = 0
-     sort NonZeroElem = { x: Elem . not x = 0 }
+     . not e = 0 %(zeroNeqOne_Field)%
+     sort NonZeroElem = { x: Elem . not x = 0 } %(NonZeroElem_def)%
+}
 and
      {Group with sort Elem |-> NonZeroElem, ops e, __*__}
 end
@@ -147,15 +148,16 @@ spec ExtRing  [Ring ] given Int = %mono
      ExtAbelianGroup [view AbelianGroup_in_Ring_add]
      with ops inv     |-> -__,
               __ / __ |-> __ - __,
-              __ ^ __ |-> __ times __
+              __ ^ __ : Elem * Nat -> Elem |-> __ times __,
+              __ ^ __ : Elem * Int -> Elem |-> __ times __
 and
      ExtMonoid[Monoid]
      with op  __ ^ __
 and
      preds isIrred, isUnit: Elem
-     sorts NonZero[Elem] = { x: Elem . not x = 0 };
-           RUnit[Elem] = { x: Elem . isUnit(x) };
-           Irred[Elem] = { x: Elem . isIrred(x) }
+     sorts NonZero[Elem] = { x: Elem . not x = 0 } %(NonZero[Elem]_def)%;
+           RUnit[Elem] = { x: Elem . isUnit(x) } %(RUnit_def)%;
+           Irred[Elem] = { x: Elem . isIrred(x) } %(Irred_def)%
      forall x,y: Elem
      . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
                                                 %(isUnit_def_Ring)%
