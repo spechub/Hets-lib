@@ -37,7 +37,7 @@ then %def
      op inj : OpenSets -> Pred S
      forall X:Pred S
      . (exists d:OpenSets . inj(d)=X) <=> Open(X)
-     . Open(X) . forall x:S . X x => 
+     . Open(X) <=> forall x:S . X x => 
 			exists r:Real .
                            forall s:S . openDisc(x,r) s => X s
 end
