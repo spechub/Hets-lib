@@ -48,7 +48,7 @@ spec ExtMetricSpaceByClosedDiscs[MetricSpace] =
   op inj : ClosedDiscs -> Pred S
   forall X:Pred S
   . (exists d:ClosedDiscs . inj(d)=X)
-     <=> (exists x:S;r:Real . X=closedDisc(x,r))
+     <=> (exists x:S;r:Real . not r=0 /\ X=closedDisc(x,r))
 end
 
 spec RichMetricSpace = 

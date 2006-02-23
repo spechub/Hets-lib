@@ -47,7 +47,8 @@ end
 
 spec ExtMetricSpaceByClosedDiscs[MetricSpace] given Set = 
   op closedDisc(x:S;r:Real) : Set S = \y:S . d(x,y)<=r
-  type ClosedDiscs = {X:Set S . exists x:S;r:Real . X=closedDisc(x,r)}
+  type ClosedDiscs = 
+        {X:Set S . exists x:S;r:Real . not r=0 /\ X=closedDisc(x,r)}
 end
 
 spec RichMetricSpace = 
