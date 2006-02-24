@@ -46,15 +46,13 @@ then %def
 end
 
 spec ExtMetricSpaceByClosedDiscs[MetricSpace] = 
-  op closedDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<=r 
-						%(EMSCD_closedDisc_def)%
-  type ClosedDiscs
-  op inj : ClosedDiscs -> Pred S
-  forall X:Pred S; a,b: ClosedDiscs
-  . (exists d:ClosedDiscs . inj(d)=X)
-     <=> (exists x:S;r:Real . not r=0 /\ X=closedDisc(x,r))
-						%(EMSCD_inj_ran)%
-  . inj a = inj b => a = b			%(EMSCD_inj_inj)%
+  type ClosedDisc ::= closedDisc(S;Real)
+  op rep : ClosedDisc -> Pred S
+  forall x,y:S; r:Real; a,b: ClosedDisc
+  . r > 0 => rep (closedDisc(x,r)) y <=> d(x,y)<=r %(EMSCD_rep_pos)%
+  . not (rep (closedDisc(x,0)) y)		%(EMSCD_rep_0)%
+  . rep a = rep b => a = b			%(EMSCD_rep_inj)%
+  . exists z:S; t:Real. a = closedDisc(z,t)
 end
 
 spec RichMetricSpace = 

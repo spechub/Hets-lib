@@ -293,13 +293,13 @@ view NN:
      { RCC_FO } to
      { ExtMetricSpaceByClosedDiscs[MetricSpace] 
 	then %def
-	preds __C__,__O__,__NTP__,__P__: ClosedDiscs * ClosedDiscs;
-        pred nonempty(x:ClosedDiscs) <=> x C x;
-	forall x,y:ClosedDiscs
-	. x C y <=> exists s:S . inj(x) s /\ inj(y) s           %(C_def)%
-        . x P y   <=> forall z:ClosedDiscs .(z C x => z C y)	%(P_def)%
-        . x O y   <=> exists z:ClosedDiscs .(z C z /\ z P x /\ z P y) %(O_def)%
-        . x NTP y <=> forall z:ClosedDiscs .(z C x => z O y)	%(NTP_def)%
+	preds __C__,__O__,__NTP__,__P__: ClosedDisc * ClosedDisc;
+        pred nonempty(x:ClosedDisc) <=> x C x;
+	forall x,y:ClosedDisc
+	. x C y <=> exists s:S . rep(x) s /\ rep(y) s           %(C_def)%
+        . x P y   <=> forall z:ClosedDisc .(z C x => z C y)	%(P_def)%
+        . x O y   <=> exists z:ClosedDisc .(z C z /\ z P x /\ z P y) %(O_def)%
+        . x NTP y <=> forall z:ClosedDisc .(z C x => z O y)	%(NTP_def)%
 	}	
-=    QReg |-> ClosedDiscs
+=    QReg |-> ClosedDisc
 	
