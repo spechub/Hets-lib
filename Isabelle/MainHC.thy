@@ -35,4 +35,9 @@ primrec
                              None => None
                            | Some y => Some (x,y))"
 
+
+lemma some_inj : "Some x = Some y ==> x = y"
+apply (auto)
+done
+
 end

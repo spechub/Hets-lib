@@ -15,18 +15,19 @@ then
      sort S
      op d:S*S->Real
      var x,y,z:S
-     . d(x,y) = 0 <=> x = y
-     . d(x,y) = d(y,x)
-     . d(x,z) <= d(x,y) + d(y,z)
+     . d(x,y) = 0 <=> x = y		%(MS_pos_definite)%
+     . d(x,y) = d(y,x)			%(MS_symm)%
+     . d(x,z) <= d(x,y) + d(y,z)	%(MS_triangle)%
 end
 
 spec ExtMetricSpaceByOpenDiscs[MetricSpace] =
-  op openDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<r
+  op openDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<r  %(EMSOD_openDisc_def)%
   type OpenDiscs
   op inj : OpenDiscs -> Pred S
-  forall X:Pred S
+  forall X:Pred S; a,b: OpenDiscs
   . (exists d:OpenDiscs . inj(d)=X)
-     <=> (exists x:S;r:Real . X=openDisc(x,r))
+     <=> (exists x:S;r:Real . X=openDisc(x,r)) %(EMSOD_inj_ran)%
+  . inj a = inj b => a = b		%(EMSOD_inj_inj)%
 end
 
 spec ExtMetricSpaceByOpenSets[MetricSpace] =
@@ -35,20 +36,25 @@ then %def
      pred Open : Pred S 
      type OpenSets
      op inj : OpenSets -> Pred S
-     forall X:Pred S
-     . (exists d:OpenSets . inj(d)=X) <=> Open(X)
+     forall X:Pred S; a,b: OpenSets
+     . (exists d:OpenSets . inj(d)=X) <=> Open(X) %(EMSOS_inj_ran)%
      . Open(X) <=> forall x:S . X x => 
 			exists r:Real .
                            forall s:S . openDisc(x,r) s => X s
+						%(EMSOS_Open_def)%
+     . inj a = inj b => a = b			%(EMSOS_inj_inj)%
 end
 
 spec ExtMetricSpaceByClosedDiscs[MetricSpace] = 
-  op closedDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<=r
+  op closedDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<=r 
+						%(EMSCD_closedDisc_def)%
   type ClosedDiscs
   op inj : ClosedDiscs -> Pred S
-  forall X:Pred S
+  forall X:Pred S; a,b: ClosedDiscs
   . (exists d:ClosedDiscs . inj(d)=X)
      <=> (exists x:S;r:Real . not r=0 /\ X=closedDisc(x,r))
+						%(EMSCD_inj_ran)%
+  . inj a = inj b => a = b			%(EMSCD_inj_inj)%
 end
 
 spec RichMetricSpace = 
