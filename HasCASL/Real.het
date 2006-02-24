@@ -94,7 +94,8 @@ then %def
         __/__: Real * Real ->? Real;     
 	sqr__: Real -> Real;
 	sqrt__: Real ->? Real;
-	2    : Real      
+	2    : Real;
+	half : Real -> Real
      forall r,r',r'':Real
      . | r | = max(r,-r)		%(Real_abs_def)%
      . sqr(r) = r * r			%(Real_sqr_def)%
@@ -104,6 +105,7 @@ then %def
      . r-r' = r + -r' 			%(Real_minus_def)%
      . not def(r/0)      		%(Real_divide_dom)%
      . r/r' = r'' <=> r'' * r' = r	%(Real_divide_def)%
+     . 2 * half(r) = r			%(Real_half_def)%
 end
 
 

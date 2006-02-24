@@ -14,12 +14,12 @@ version 0.1
 
 from HasCASL/MetricSpaces2 get 
 	MetricSpace,
-	%%ExtMetricSpaceByOpenDiscs,
-	ExtMetricSpaceByClosedDiscs
+	%%ExtMetricSpaceByOpenBalls,
+	ExtMetricSpaceByClosedBalls
 	%%RichMetricSpace
 %%from Calculi/Space/RCCDagstuhl get 
-%%	RCC5BaseRelationModel_OpenDisc,
-%%	RCC5Model_OpenDisc
+%%	RCC5BaseRelationModel_OpenBall,
+%%	RCC5Model_OpenBall
 
 
 
@@ -291,15 +291,15 @@ logic HasCASL
 
 view NN:
      { RCC_FO } to
-     { ExtMetricSpaceByClosedDiscs[MetricSpace] 
+     { ExtMetricSpaceByClosedBalls[MetricSpace] 
 	then %def
-	preds __C__,__O__,__NTP__,__P__: ClosedDisc * ClosedDisc;
-        pred nonempty(x:ClosedDisc) <=> x C x;
-	forall x,y:ClosedDisc
+	preds __C__,__O__,__NTP__,__P__: ClosedBall * ClosedBall;
+        pred nonempty(x:ClosedBall) <=> x C x;
+	forall x,y:ClosedBall
 	. x C y <=> exists s:S . rep(x) s /\ rep(y) s           %(C_def)%
-        . x P y   <=> forall z:ClosedDisc .(z C x => z C y)	%(P_def)%
-        . x O y   <=> exists z:ClosedDisc .(z C z /\ z P x /\ z P y) %(O_def)%
-        . x NTP y <=> forall z:ClosedDisc .(z C x => z O y)	%(NTP_def)%
+        . x P y   <=> forall z:ClosedBall .(z C x => z C y)	%(P_def)%
+        . x O y   <=> exists z:ClosedBall .(z C z /\ z P x /\ z P y) %(O_def)%
+        . x NTP y <=> forall z:ClosedBall .(z C x => z O y)	%(NTP_def)%
 	}	
-=    QReg |-> ClosedDisc
+=    QReg |-> ClosedBall
 	

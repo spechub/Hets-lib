@@ -20,18 +20,18 @@ then
      . d(x,z) <= d(x,y) + d(y,z)	%(MS_triangle)%
 end
 
-spec ExtMetricSpaceByOpenDiscs[MetricSpace] =
-  op openDisc(x:S;r:Real) : Pred S = \y:S . d(x,y)<r  %(EMSOD_openDisc_def)%
-  type OpenDiscs
-  op inj : OpenDiscs -> Pred S
-  forall X:Pred S; a,b: OpenDiscs
-  . (exists d:OpenDiscs . inj(d)=X)
-     <=> (exists x:S;r:Real . X=openDisc(x,r)) %(EMSOD_inj_ran)%
+spec ExtMetricSpaceByOpenBalls[MetricSpace] =
+  op openBall(x:S;r:Real) : Pred S = \y:S . d(x,y)<r  %(EMSOD_openBall_def)%
+  type OpenBall
+  op inj : OpenBall -> Pred S
+  forall X:Pred S; a,b: OpenBall
+  . (exists d:OpenBall . inj(d)=X)
+     <=> (exists x:S;r:Real . X=openBall(x,r)) %(EMSOD_inj_ran)%
   . inj a = inj b => a = b		%(EMSOD_inj_inj)%
 end
 
 spec ExtMetricSpaceByOpenSets[MetricSpace] =
-     ExtMetricSpaceByOpenDiscs[MetricSpace] 
+     ExtMetricSpaceByOpenBalls[MetricSpace] 
 then %def
      pred Open : Pred S 
      type OpenSets
@@ -40,25 +40,26 @@ then %def
      . (exists d:OpenSets . inj(d)=X) <=> Open(X) %(EMSOS_inj_ran)%
      . Open(X) <=> forall x:S . X x => 
 			exists r:Real .
-                           forall s:S . openDisc(x,r) s => X s
+                           forall s:S . openBall(x,r) s => X s
 						%(EMSOS_Open_def)%
      . inj a = inj b => a = b			%(EMSOS_inj_inj)%
 end
 
-spec ExtMetricSpaceByClosedDiscs[MetricSpace] = 
-  type ClosedDisc ::= closedDisc(S;Real)
-  op rep : ClosedDisc -> Pred S
-  forall x,y:S; r:Real; a,b: ClosedDisc
-  . r > 0 => rep (closedDisc(x,r)) y <=> d(x,y)<=r %(EMSCD_rep_pos)%
-  . not (rep (closedDisc(x,0)) y)		%(EMSCD_rep_0)%
+spec ExtMetricSpaceByClosedBalls[MetricSpace] = 
+  sort ClosedBall 
+  ops closedBall: S*Real -> ClosedBall;
+      rep : ClosedBall -> Pred S
+  forall x,y:S; r:Real; a,b: ClosedBall
+  . r > 0 => rep (closedBall(x,r)) y <=> d(x,y)<=r %(EMSCD_rep_pos)%
+  . not r > 0 => not (rep (closedBall(x,0)) y)		%(EMSCD_rep_0)%
   . rep a = rep b => a = b			%(EMSCD_rep_inj)%
-  . exists z:S; t:Real. a = closedDisc(z,t)
+  . exists z:S; t:Real. a = closedBall(z,t)
 end
 
 spec RichMetricSpace = 
-    ExtMetricSpaceByOpenDiscs[MetricSpace]
+    ExtMetricSpaceByOpenBalls[MetricSpace]
 and
-    ExtMetricSpaceByClosedDiscs[MetricSpace]
+    ExtMetricSpaceByClosedBalls[MetricSpace]
 end
 
 
