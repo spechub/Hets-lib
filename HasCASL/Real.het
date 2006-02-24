@@ -106,6 +106,10 @@ then %def
      . not def(r/0)      		%(Real_divide_dom)%
      . r/r' = r'' <=> r'' * r' = r	%(Real_divide_def)%
      . 2 * half(r) = r			%(Real_half_def)%
+then %implies
+  forall r,s: Real
+  . r > 0 => half(r) > 0		%(Real_half_pos)%
+  . not s <= r => s - r > 0		%(Real_minus_pos)%
 end
 
 

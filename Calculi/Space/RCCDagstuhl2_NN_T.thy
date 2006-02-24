@@ -3,7 +3,7 @@ imports "/home/lschrode/CS/CASL/CASL-lib/Isabelle/MainHC"
 uses "/home/lschrode/CS/CASL/CASL-lib/Isabelle/prelude"
 begin
 
-ML "Header.initialize [\"P_def_1\",\"O_def_1\",\"NTP_def_1\",\"C_non_null\",\"C_sym\",\"C_id\",\"cp_ex\",\"no_atoms\",\"C_non_triv\",\"Ax1\",\"def_nonempty\",\"C_def\",\"P_def\",\"O_def\",\"NTP_def\",\"MS_pos_definite\",\"MS_symm\",\"MS_triangle\",\"Real_abs_def\",\"Real_sqr_def\",\"Real_sqrt_dom\",\"Real_sqrt_def\",\"Real_2_def\",\"Real_minus_def\",\"Real_divide_dom\",\"Real_divide_def\",\"Real_half_def\",\"ga_Nat\",\"Real_ub_def\",\"Real_lb_def\",\"Real_inf_def\",\"Real_sup_def\",\"Real_isBounded_defCBrX\",\"Real_inj_0\",\"Real_inj_suc\",\"Real_archimedian\",\"FWO_plus\",\"FWO_times\",\"Field_unary_minus_def\",\"dichotomy_TotalOrder\",\"antisym\",\"trans\",\"refl\",\"min_inf_relation\",\"max_sup_relation\",\"ga_comm_min\",\"ga_comm_max\",\"ga_assoc_min\",\"ga_assoc_max\",\"min_def_ExtTotalOrder\",\"max_def_ExtTotalOrder\",\"ga_comm_inf\",\"ga_comm_sup\",\"inf_def_ExtPartialOrder\",\"sup_def_ExtPartialOrder\",\"geq_def_ExtPartialOrder\",\"less_def_ExtPartialOrder\",\"greater_def_ExtPartialOrder\",\"EMSCD_rep_pos\",\"EMSCD_rep_0\",\"EMSCD_rep_inj\",\"Ax4\",\"ga_Nat_1\"]"
+ML "Header.initialize [\"P_def_1\",\"O_def_1\",\"NTP_def_1\",\"C_non_null\",\"C_sym\",\"C_id\",\"cp_ex\",\"no_atoms\",\"C_non_triv\",\"Ax1\",\"def_nonempty\",\"C_def\",\"P_def\",\"O_def\",\"NTP_def\",\"MS_pos_definite\",\"MS_symm\",\"MS_triangle\",\"Real_half_pos\",\"Real_minus_pos\",\"Real_abs_def\",\"Real_sqr_def\",\"Real_sqrt_dom\",\"Real_sqrt_def\",\"Real_2_def\",\"Real_minus_def\",\"Real_divide_dom\",\"Real_divide_def\",\"Real_half_def\",\"ga_Nat\",\"Real_ub_def\",\"Real_lb_def\",\"Real_inf_def\",\"Real_sup_def\",\"Real_isBounded_defCBrX\",\"Real_inj_0\",\"Real_inj_suc\",\"Real_archimedian\",\"FWO_plus\",\"FWO_times\",\"Field_unary_minus_def\",\"dichotomy_TotalOrder\",\"antisym\",\"trans\",\"refl\",\"min_inf_relation\",\"max_sup_relation\",\"ga_comm_min\",\"ga_comm_max\",\"ga_assoc_min\",\"ga_assoc_max\",\"min_def_ExtTotalOrder\",\"max_def_ExtTotalOrder\",\"ga_comm_inf\",\"ga_comm_sup\",\"inf_def_ExtPartialOrder\",\"sup_def_ExtPartialOrder\",\"geq_def_ExtPartialOrder\",\"less_def_ExtPartialOrder\",\"greater_def_ExtPartialOrder\",\"EMSCD_rep_pos\",\"EMSCD_rep_0\",\"EMSCD_rep_inj\",\"Ax4\",\"ga_Nat_1\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -81,6 +81,10 @@ MS_pos_definite [simp] : "op = (apt (Some d) (pair (Some x) (Some y))) (Some X0_
 MS_symm [simp] : "op = (apt (Some d) (pair (Some x) (Some y))) (apt (Some d) (pair (Some y) (Some x)))"
 
 MS_triangle [simp] : "pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some z))) (apt (Some XXPlusXXX) (pair (apt (Some d) (pair (Some x) (Some y))) (apt (Some d) (pair (Some y) (Some z))))))"
+
+Real_half_pos [simp] : "pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp (Some XXGtXXX) (pair (apt (Some half) (Some r)) (Some X0_2))"
+
+Real_minus_pos [simp] : "~ pApp (Some XXLtXEqXXX_3) (pair (Some s) (Some r)) --> pApp (Some XXGtXXX) (pair (apt (Some XXMinusXXX) (pair (Some s) (Some r))) (Some X0_2))"
 
 Real_abs_def [simp] : "op = (apt (Some VBarX__VBarX) (Some r)) (apt (Some maxX) (pair (Some r) (apt (Some MinusXXX) (Some r))))"
 
@@ -162,9 +166,9 @@ less_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXLtXXX) (pair (Some x) (So
 
 greater_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXGtXXX) (pair (Some x) (Some y)) = pApp (Some XXLtXXX) (pair (Some y) (Some x))"
 
-EMSCD_rep_pos [simp] : "(pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y)) = pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some y))) (Some r))"
+EMSCD_rep_pos [simp] : "pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y) = pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some y))) (Some r))"
 
-EMSCD_rep_0 [simp] : "~ pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> ~ pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some X0_2)))) (Some y)"
+EMSCD_rep_0 [simp] : "~ pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> ~ pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y)"
 
 EMSCD_rep_inj : "op = (apt (Some rep) (Some a)) (apt (Some rep) (Some b)) --> op = (Some a) (Some b)"
 
@@ -177,12 +181,13 @@ lemmas C_def' = C_def [simplified]
 lemmas O_def' = O_def [simplified]
 lemmas NTP_def' = NTP_def [simplified]
 lemmas Ax4' = Ax4 [simplified]
-lemmas EMSCD_rep_pos' = EMSCD_rep_pos [simplified]
-lemmas EMSCD_rep_0' = EMSCD_rep_0 [simplified]
-
-thm EMSCD_rep_pos [simplified]
-thm mp
-thm EMSCD_rep_pos [simplified, THEN mp]
+lemmas EMSCD_rep_pos' = EMSCD_rep_pos [simplified, THEN mp]
+lemmas EMSCD_rep_0' = EMSCD_rep_0 [simplified, THEN mp]
+lemmas Real_minus_pos' = Real_minus_pos [simplified, THEN mp]
+lemmas Real_half_pos' = Real_half_pos [simplified, THEN mp]
+lemmas MS_triangle' = MS_triangle [simplified, THEN allI, THEN allI, THEN allI]
+lemmas FWO_plus' = FWO_plus [simplified]
+lemmas trans' = trans [simplified]
 
 
 
@@ -237,15 +242,51 @@ apply (subst not_iff)
 apply (case_tac "XXGtXXX (ta,X0_2)")
 defer
 apply (simp)
-apply(force)
+apply (force)
+defer
 apply (rule_tac x="closedBall(xa,half (XXMinusXXX (d(za,xa),ta)))" in exI)
+apply (rule iffI)
+apply (subst not_ex)
+apply (rule allI)
+apply (simp)
+apply (frule Real_minus_pos')
+apply (drule_tac r1="XXMinusXXX (d (za, xa), ta)" in Real_half_pos')
+apply (simp)
+apply (rule impI)
+apply (rule notI)
+apply (insert MS_triangle' [of  "%xa xb xc. xa", of  "%xa xb xc. xb", of  "%xa xb xc. xc"])
+apply (drule_tac x="za" in spec)
+apply (drule_tac x="xa" in spec)
+apply (drule_tac x="xb" in spec)
+apply (insert FWO_plus')
+apply (drule_tac x="d(za,xb)" in spec)
+apply (drule_tac x="ta" in spec)
+apply (simp)
+apply (drule_tac x="d(xb,xa)" in spec)
+apply (insert trans')
+apply (drule_tac x="d (za, xa)" in spec)
+apply (drule_tac x="XXPlusXXX (d (za, xb), d (xb, xa))" in spec)
+apply (drule_tac x="XXPlusXXX (ta, d (xb, xa))" in spec)
+apply (simp)
+
+
+
+apply (force)
+apply (clarify)
+apply (rule_tac x="xa" in exI)
+
+
+apply (simp)
+apply (force)
+thm 
+apply(force)
 apply (subst not_iff)
 apply (auto)
 apply (simp add: EMSCD_rep_def)
 apply (clarify)
 
 
-apply (rule_tac "x= exI 
+apply (rule_tac "x=g" in exI)
 apply (clarify)
 
 thm contrapos_pp
