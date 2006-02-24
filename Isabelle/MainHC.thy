@@ -7,8 +7,7 @@ primrec
                             None => None
                           | Some x' => f x')"
 
-consts apt :: "('a => 'b) option => 'a o
-ption => 'b option"
+consts apt :: "('a => 'b) option => 'a option => 'b option"
 primrec
   "apt None a = None"
   "apt (Some f) x = (case x of 
