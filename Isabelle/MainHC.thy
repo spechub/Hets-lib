@@ -7,7 +7,8 @@ primrec
                             None => None
                           | Some x' => f x')"
 
-consts apt :: "('a => 'b) option => 'a option => 'b option"
+consts apt :: "('a => 'b) option => 'a o
+ption => 'b option"
 primrec
   "apt None a = None"
   "apt (Some f) x = (case x of 
@@ -19,7 +20,7 @@ primrec
   "pApp None a = False"
   "pApp (Some f) x = (case x of
                              None => False
-                           | Some x' => True)"
+                           | Some y => f y)"
 
 
 consts defOp :: "'a option => bool"
