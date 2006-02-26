@@ -35,9 +35,9 @@ spec RCC_FO =
      . x C y => x C x					        %(C_non_null)%
      . x C y => y C x						%(C_sym)%
      . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:QReg . forall u:QReg . 
-		(z C u <=> not u NTP x \/ not u NTP y)		%(cp_ex)% 
-     . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
+%%     . exists z:QReg . forall u:QReg . 
+%%		(z C u <=> not u NTP x \/ not u NTP y)		%(cp_ex)% 
+%%     . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
      . exists x:QReg . x C x					%(C_non_triv)%
 
 then pred nonempty(x:QReg) <=> x C x

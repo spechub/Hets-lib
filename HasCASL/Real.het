@@ -107,9 +107,16 @@ then %def
      . r/r' = r'' <=> r'' * r' = r	%(Real_divide_def)%
      . 2 * half(r) = r			%(Real_half_def)%
 then %implies
-  forall r,s: Real
-  . r > 0 => half(r) > 0		%(Real_half_pos)%
-  . not s <= r => s - r > 0		%(Real_minus_pos)%
+     forall a,b,c,e,r,s:Real
+     . 1>0                              %(one_greater_zero)%
+     . 0<=1                             %(zero_leq_one)%
+     . r>0 => half(r)>0                 %(half_gt_zero)%
+     . r<=s => s+(half(r-s))<=s         %(half_plus_minus)%
+     . a<=b /\ c<=e => a+c<=b+e         %(add_monotone)%
+     . not (a<=b) => a-b>0              %(sub_leq)%
+     . a<=half(a-b)+b => a<=b           %(half_leq)%
+     . 0<=r => 0<=half(r)               %(half_leq_zero)%
+     . a+b=b+a                          %(comm_add)%
 end
 
 

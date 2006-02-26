@@ -13,9 +13,9 @@ version 0.1
 
 from HasCASL/MetricSpaces get 
 	MetricSpace,
-	ExtMetricSpaceByOpenDiscs,
-	ExtMetricSpaceByClosedDiscs,
-	RichMetricSpace
+	%%ExtMetricSpaceByOpenDiscs,
+	ExtMetricSpaceByClosedDiscs
+	%%RichMetricSpace
 %%from Calculi/Space/RCCDagstuhl get 
 %%	RCC5BaseRelationModel_OpenDisc,
 %%	RCC5Model_OpenDisc
@@ -46,7 +46,7 @@ then %implies
      forall x,y,z: Reg  
      . x O y => y O x						%(O_sym)%
      . x P y /\ y P z => x P z					%(cmps_PP)%
-     . x in Reg /\ x P y => x C y				%(P_impl_C)%
+     . x P y => x C y						%(P_impl_C)%
      . x P y => x O y						%(P_impl_O)%
      . x O y => x C y						%(O_impl_C)%
      . x NTP y => x C y						%(NTP_impl_C)%
@@ -288,12 +288,12 @@ view NN:
      { RCC_FO } to
      { ExtMetricSpaceByClosedDiscs[MetricSpace] 
 	then %def
-	type NotEmptyClosedDiscs = {X:ClosedDiscs . not X =emptySet }
+	type NonEmptyClosedDiscs = {X:ClosedDiscs . not X =emptySet }
 	preds __C__,__O__,__NTP__,__P__: ClosedDiscs * ClosedDiscs
 	forall x,y:ClosedDiscs
 	. x C y <=> not x disjoint y
 	}	
-=    QReg |-> ClosedDiscs, Reg |-> NotEmptyClosedDiscs
+=    QReg |-> ClosedDiscs, Reg |-> NonEmptyClosedDiscs
 	
 
 

@@ -18,6 +18,10 @@ then
      . d(x,y) = 0 <=> x = y		%(MS_pos_definite)%
      . d(x,y) = d(y,x)			%(MS_symm)%
      . d(x,z) <= d(x,y) + d(y,z)	%(MS_triangle)%
+then %implies
+     var x,y:S
+     . 0 <= d(x,y)                      %(MS_pos)%
+     . d(x,x) = 0                       %(MS_zero)%
 end
 
 spec ExtMetricSpaceByOpenBalls[MetricSpace] =
