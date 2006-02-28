@@ -129,7 +129,7 @@ end
 spec ExtEuclideanVectorSpaceByNorm[EuclideanVectorSpace] = %def
      op ||__|| : Space -> Real
      forall v: Space
-     . || v || = sqr(<v # v>)
+     . || v || = sqrt(<v # v>)
 then %implies
      forall v,w: Space; r: Real
      . | <v # w> | <= || v || * || w ||   		%(cauchy-schwarz)%
