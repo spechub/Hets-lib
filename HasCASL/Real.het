@@ -92,15 +92,15 @@ then %def
         __-__: Real * Real -> Real;
 	|__| : Real -> Real;      
         __/__: Real * Real ->? Real;     
-	qdr__: Real -> Real;
+	sqr__: Real -> Real;
 	sqrt__: Real ->? Real;
 	2    : Real;
 	half : Real -> Real
      forall r,r',r'':Real
      . | r | = max(r,-r)		%(Real_abs_def)%
-     . qdr(r) = r * r			%(Real_qdr_def)%
+     . sqr(r) = r * r			%(Real_sqr_def)%
      . def sqrt(r) <=> r >= 0		%(Real_sqrt_dom)%
-     . sqrt(qdr(r)) = | r |  		%(Real_sqrt_def)%
+     . sqrt(sqr(r)) = | r |  		%(Real_sqrt_def)%
      . 2 = 1 + 1   			%(Real_2_def)%
      . r-r' = r + -r' 			%(Real_minus_def)%
      . not def(r/0)      		%(Real_divide_dom)%

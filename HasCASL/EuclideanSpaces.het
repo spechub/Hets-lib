@@ -133,8 +133,8 @@ spec ExtEuclideanVectorSpaceByNorm[EuclideanVectorSpace] = %def
 then %implies
      forall v,w: Space; r: Real
      . | <v # w> | <= || v || * || w ||   		%(cauchy-schwarz)%
-     . qdr(||v + w||) = qdr(||v||) + qdr(||w||) + <v # w> + <w # v> %(pythagoras)%  
-     . qdr(||v + w||) + qdr(||v + -1 * w||) = 2 * (qdr(||v||) + qdr(||w||))  %(parallel)%
+     . sqr(||v + w||) = sqr(||v||) + sqr(||w||) + <v # w> + <w # v> %(pythagoras)%  
+     . sqr(||v + w||) + sqr(||v + -1 * w||) = 2 * (sqr(||v||) + sqr(||w||))  %(parallel)%
 end
 
 
