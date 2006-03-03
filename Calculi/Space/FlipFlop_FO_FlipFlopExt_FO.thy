@@ -1,7 +1,3 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
-
 theory FlipFlop_FO_FlipFlopExt_FO = Main:
 
 typedecl "Point"
