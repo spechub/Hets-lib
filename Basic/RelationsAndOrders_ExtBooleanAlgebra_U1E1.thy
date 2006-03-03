@@ -1,6 +1,6 @@
 theory RelationsAndOrders_ExtBooleanAlgebra_U1E1
 imports Main
-uses "/home/till/CASL/CASL-lib/Isabelle/prelude"
+uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize [\"de_Morgan1\",\"de_Morgan2\",\"compl_def_ExtBooleanAlgebra\",\"involution_compl_ExtBooleanAlgebra\",\"ga_idem___cup__\",\"ga_idem___cap__\",\"uniqueComplement_BooleanAlgebra\",\"ga_assoc___cap__\",\"ga_comm___cap__\",\"ga_right_unit___cap__\",\"ga_left_unit___cap__\",\"ga_assoc___cup__\",\"ga_comm___cup__\",\"ga_right_unit___cup__\",\"ga_left_unit___cup__\",\"absorption_def1\",\"absorption_def2\",\"zeroAndCap\",\"oneAndCup\",\"distr1_BooleanAlgebra\",\"distr2_BooleanAlgebra\",\"inverse_BooleanAlgebra\"]"
