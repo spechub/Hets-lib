@@ -231,7 +231,7 @@ spec List [sort Elem] given Nat = %mono
      . reverse([])=[]                          %(reverse_nil)%
      . reverse(x::L) = reverse(L) ++ [x]       %(reverse_NeList)%
 
-     . def L!n <=> #L >= n                     %(index_dom)% %implied
+     . def L!n <=> #L >= suc(n)                     %(index_dom)% %implied
      . not def[]!n                             %(index_nil)%
      . (x :: L)!0 = x                          %(index_0)%
      . (x :: L)!suc(p) = L!p                   %(index_suc)%
@@ -259,6 +259,8 @@ then %implies
      . first(L)::rest(L) = L if not isEmpty(L)  %(first_rest)%
      . front(L)+ last(L) = L if not isEmpty(L)  %(front_last)%
 
+then %implies
+     . false
 end
 
 view Monoid_in_List  [sort Elem] given Nat:
