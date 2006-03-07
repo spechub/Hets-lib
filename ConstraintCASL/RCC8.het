@@ -36,11 +36,11 @@ logic ConstraintCASL
 spec RCC8Base =
      sort Elem
      preds __DC__,__EC__,__PO__,__NTPP__,__TPP__:Elem * Elem;
-	  __NTPPi__: Elem * Elem %%, inv __NTPP__;
-          __TPPi__: Elem * Elem %%, inv __TPP__;  
+	  __NTPPi__: Elem * Elem; %%, inv __NTPP__;
+          __TPPi__: Elem * Elem; %%, inv __TPP__;  
 	  %(inv besagt im Grunde das, was unten unter "Inverses" steht)%
 
-	  __EQ__: Elem*Elem, id
+	  __EQ__: Elem*Elem; %%, id
           %(eq besagt: phi(x) => phi(y) fuer alle Formeln der Sprache, d.h. 
 		Substituierbarkeit des Identischen; wird benötigt, da wir
 		nicht unbedingt davon ausgehen können,

@@ -226,7 +226,8 @@ Language:
 ========= 
 	Terms: as in CASL (Variables, Constants, Functionapplications)
 	Formulae: 
-          TERM ::= %% see CASL syntax (CASL/Formula.hs, term)
+          TERM ::= ID
+                 | ID ( TERM , ... , TERM )
           ATOM ::=  REL ( TERM , ... , TERM )
                     |  TERM REL TERM
           REL ::= {} | = 
