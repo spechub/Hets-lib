@@ -127,7 +127,7 @@ spec Nat = %mono
      . t * (r + s) = (t * r) + (t * s)  %(distr2_Nat)% %implied
 
 then %mono
-     sort Pos = { p: Nat . p > 0 }
+     sort Pos = { p: Nat . p > 0 } %(Pos_def)%
      ops   suc: Nat -> Pos; 
            1: Pos = suc(0);             %(1_as_Pos_def)%
            __*__: Pos * Pos -> Pos;
