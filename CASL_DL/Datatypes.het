@@ -27,7 +27,13 @@ and String hide sorts Nat,Pos,
            with String |-> string
 then free type DATA ::= sorts integer,string 
 ]%
-logic CASL_DL
+logic CASL
+
+spec BooleanLiteral =
+%[--%% Basic Spec Begin %%--]%
+     sort boolean < DATA 
+     op True,False:boolean
+end
 
 spec IntegerLiteral =
      sort nonNegativeInteger < integer;
@@ -242,9 +248,11 @@ spec StringLiteral =
        'ý' : Char;            %(DL_printable_253)%
        'þ' : Char;            %(DL_printable_254)%
        'ÿ' : Char;            %(DL_printable_255)%
+%[--%% Basic Spec End %%--]%
 end
 
-spec DL_Literal =
-     StringLiteral and IntegerLiteral
+spec DL_Literal = StringLiteral 
+and IntegerLiteral 
+and BooleanLiteral
 end
 
