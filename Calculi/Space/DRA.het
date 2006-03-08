@@ -11,18 +11,38 @@ Calculi}%
 %left_assoc __cup__
 %prec {__cup__} < {__cmps__}
 
-from Calculi/Algebra/RelationAlgebraSymbolic get
+from Calculi/Algebra/BooleanAlgebra get 
+	BooleanAlgebraWithCompl,
+	ExtBooleanAlgebraByOrderRelations,
+	AtomicBooleanAlgebra 
+from Calculi/Algebra/RelationAlgebra get 
+	AtomicRelationAlgebra,
+	IntegralRelationAlgebra,
+	SymmetricRelationAlgebra
+from Calculi/Algebra/RelationAlgebraSymbolic get 
 	CompositionTable,
-     	GenerateRelationAlgebra,
-	RelationBase,
-	SetRepresentationOfRelations
-from Calculi/Algebra/RelationAlgebraModel get
+	GroundingCompositionTable,	
+	SetRepresentationOfRelations,		
+	ConstructPseudoRelationAlgebra,
+	ConstructExtPseudoRelationAlgebra
+from Calculi/Algebra/RelationAlgebraModel get 
+	BinaryRelations,
 	AlgebraOfBinaryRelations,
-	GeneratePreModelFromBaseRelationModel,
 	JEPDBaseRelationModel,
-	Relation
-from Calculi/Algebra/RelationAlgebra get RelationAlgebra,
-        AtomicRelationAlgebra
+	BaseRelationModel,
+	ConstructPseudoModelFromBaseRelationModel,
+	ConstructModelFromBaseRelationModel,
+	CompositionClosedBaseRelationModel,
+	CheckCompositionClosedBaseRelationModel
+from Calculi/Space/EuclideanSpace get
+	EuclideanSpace2D,
+	EuclideanSpace3D
+from HasCASL/TopologicalSpaces get 
+	RichTopologicalSpace
+from HasCASL/MetricSpaces get 
+	MetricSpace
+from HasCASL/Set get 
+	Set
 
 
 spec BaseRelationsOfDRAc = %mono 
@@ -38,26 +58,18 @@ spec CompositionTableOfDRAc =
 	 llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses : BaseRel
 and 
     CompositionTable
-
+    %(sjw: unvollständig?)%
 end
 
-spec RelationBaseOfDRAc =
+
+spec BooleanAlgebraOfDRAcRelations =
      SetRepresentationOfRelations[BaseRelationsOfDRAc]
-and
-     CompositionTableOfDRAc
 end
-
-
-view RelationBaseOfDRAc_as_RelationBase[BaseRelationsOfDRAc] :
-     RelationBase[sort BaseRel] to RelationBaseOfDRAc
-= 
-     op id: BaseRel |-> sese
-end 
 
 
 spec DRAc =
-     GenerateRelationAlgebra[RelationBaseOfDRAc fit op id:BaseRel |->
-     sese:BaseRel]
+     ConstructPseudoRelationAlgebra[BaseRelationsOfDRAc]
+	[CompositionTableOfDRAc fit op id:BaseRel |-> sese:BaseRel]
 end
 
 
@@ -90,113 +102,105 @@ then
 %% the converses
   %% the reverse case could be got by idempotency
 
-. conv(rrll) = llrr
-. conv(llrr) = rrll
+. inv(rrll) = llrr
+. inv(llrr) = rrll
 
-. conv(rrrl) = rlrr
-. conv(rrlr) = lrrr 
-. conv(rlrr) = rrrl
-. conv(rllr) = lrrl
-. conv(rlll) = llrl
-. conv(lrrr) = rrlr
-. conv(lrrl) = rllr
-. conv(lrll) = lllr
-. conv(llrl) = rlll
-. conv(lllr) = lrll
+. inv(rrrl) = rlrr
+. inv(rrlr) = lrrr 
+. inv(rlrr) = rrrl
+. inv(rllr) = lrrl
+. inv(rlll) = llrl
+. inv(lrrr) = rrlr
+. inv(lrrl) = rllr
+. inv(lrll) = lllr
+. inv(llrl) = rlll
+. inv(lllr) = lrll
 
-. conv(ells) = lsel
-. conv(errs) = rser
-. conv(lere) = rele
-. conv(rele) = lere
-. conv(slsr) = srsl
-. conv(srsl) = slsr
-. conv(lsel) = ells
-. conv(rser) = errs
+. inv(ells) = lsel
+. inv(errs) = rser
+. inv(lere) = rele
+. inv(rele) = lere
+. inv(slsr) = srsl
+. inv(srsl) = slsr
+. inv(lsel) = ells
+. inv(rser) = errs
 
-. conv(ffbb) = bbff
-. conv(efbs) = bsef
-. conv(ifbi) = biif
-. conv(bfii) = iibf
-. conv(sfsi) = sisf
-. conv(beie) = iebe 
-. conv(bbff) = ffbb
-. conv(bsef) = efbs
-. conv(biif) = ifbi
-. conv(iibf) = bfii
-. conv(sisf) = sfsi
-. conv(iebe) = beie
+. inv(ffbb) = bbff
+. inv(efbs) = bsef
+. inv(ifbi) = biif
+. inv(bfii) = iibf
+. inv(sfsi) = sisf
+. inv(beie) = iebe 
+. inv(bbff) = ffbb
+. inv(bsef) = efbs
+. inv(biif) = ifbi
+. inv(iibf) = bfii
+. inv(sisf) = sfsi
+. inv(iebe) = beie
 
-. conv(fbii) = iifb
-. conv(fsei) = eifs
-. conv(ebis) = iseb
-. conv(iifb) = fbii
-. conv(eifs) = fsei
-. conv(iseb) = ebis
+. inv(fbii) = iifb
+. inv(fsei) = eifs
+. inv(ebis) = iseb
+. inv(iifb) = fbii
+. inv(eifs) = fsei
+. inv(iseb) = ebis
 
-. conv(lllb) = lbll
-. conv(llfl) = flll
-. conv(llbr) = brll
-. conv(llrf) = rfll
-. conv(lirl) = rlli
-. conv(lfrr) = rrlf
-. conv(lril) = illr
-. conv(lrri) = rilr
-. conv(blrr) = rrbl
-. conv(irrl) = rlir
-. conv(frrr) = rrfr
-. conv(rbrr) = rrrb
+. inv(lllb) = lbll
+. inv(llfl) = flll
+. inv(llbr) = brll
+. inv(llrf) = rfll
+. inv(lirl) = rlli
+. inv(lfrr) = rrlf
+. inv(lril) = illr
+. inv(lrri) = rilr
+. inv(blrr) = rrbl
+. inv(irrl) = rlir
+. inv(frrr) = rrfr
+. inv(rbrr) = rrrb
 
-. conv(lbll) = lllb 
-. conv(flll) = llfl
-. conv(brll) = llbr
-. conv(rfll) = llrf
-. conv(rlli) = lirl
-. conv(rrlf) = lfrr
-. conv(illr) = lril
-. conv(rilr) = lrri
-. conv(rrbl) = blrr
-. conv(rlir) = irrl
-. conv(rrfr) = frrr
-. conv(rrrb) = rbrr
+. inv(lbll) = lllb 
+. inv(flll) = llfl
+. inv(brll) = llbr
+. inv(rfll) = llrf
+. inv(rlli) = lirl
+. inv(rrlf) = lfrr
+. inv(illr) = lril
+. inv(rilr) = lrri
+. inv(rrbl) = blrr
+. inv(rlir) = irrl
+. inv(rrfr) = frrr
+. inv(rrrb) = rbrr
 
   %% symmetric relations
-. conv(rrrr) = rrrr
-. conv(llll) = llll
+. inv(rrrr) = rrrr
+. inv(llll) = llll
 
-. conv(eses) = eses
+. inv(eses) = eses
 
-. conv(ffff) = ffff
-. conv(fefe) = fefe
-. conv(fifi) = fifi
-. conv(bbbb) = bbbb
-. conv(sbsb) = sbsb
-. conv(ibib) = ibib 
+. inv(ffff) = ffff
+. inv(fefe) = fefe
+. inv(fifi) = fifi
+. inv(bbbb) = bbbb
+. inv(sbsb) = sbsb
+. inv(ibib) = ibib 
 
 
 %% compostion table - external from semantics!
-
+	
 %% komplette kompositionstabelle wird später hier noch eingefügt
 
+    %(sjw: unvollständig)%
 end
 
 
-spec RelationBaseOfDRAf =
+spec BooleanAlgebraOfDRAfRelations =
      SetRepresentationOfRelations[BaseRelationsOfDRAf]
-and
-     CompositionTableOfDRAf
 end
 
 
-view RelationBaseOfDRAf_as_RelationBase[BaseRelationsOfDRAf] :
-     RelationBase[sort BaseRel] to RelationBaseOfDRAf
-= 
-     op id: BaseRel |-> sese
-end 
-
-
-spec DRAf =
-     GenerateRelationAlgebra[RelationBaseOfDRAf fit op id:BaseRel |->
-     sese:BaseRel]
+spec DRAf =     
+	ConstructPseudoRelationAlgebra[BaseRelationsOfDRAf]
+	[CompositionTableOfDRAf fit op id:BaseRel |-> sese:BaseRel]
 end
 
 
@@ -236,98 +240,98 @@ then
 %% the converses
   %% the reverse case could be got by idempotency
 
-. conv(rrrrp) = rrrrn
-. conv(rrrrn) = rrrrp
+. inv(rrrrp) = rrrrn
+. inv(rrrrn) = rrrrp
 
-. conv(rrllp) = llrrn
-. conv(rrllP) = llrrP
-. conv(rrlln) = llrrp
+. inv(rrllp) = llrrn
+. inv(rrllP) = llrrP
+. inv(rrlln) = llrrp
 
-. conv(llrrp) = rrlln
-. conv(llrrP) = rrllP
-. conv(llrrn) = rrllp
+. inv(llrrp) = rrlln
+. inv(llrrP) = rrllP
+. inv(llrrn) = rrllp
 
-. conv(llllp) = lllln
-. conv(lllln) = llllp
+. inv(llllp) = lllln
+. inv(lllln) = llllp
 
-. conv(rrrln) = rlrrp
-. conv(rrlrp) = lrrrn 
-. conv(rlrrp) = rrrln
-. conv(rllrp) = lrrln
-. conv(rlllp) = llrln
-. conv(lrrrn) = rrlrp
-. conv(lrrln) = rllrp
-. conv(lrlln) = lllrp
-. conv(llrln) = rlllp
-. conv(lllrp) = lrlln
+. inv(rrrln) = rlrrp
+. inv(rrlrp) = lrrrn 
+. inv(rlrrp) = rrrln
+. inv(rllrp) = lrrln
+. inv(rlllp) = llrln
+. inv(lrrrn) = rrlrp
+. inv(lrrln) = rllrp
+. inv(lrlln) = lllrp
+. inv(llrln) = rlllp
+. inv(lllrp) = lrlln
 
-. conv(ellsp) = lseln
-. conv(errsn) = rserp
-. conv(leren) = relep
-. conv(relep) = leren
-. conv(slsrp) = srsln
-. conv(srsln) = slsrp
-. conv(lseln) = ellsp
-. conv(rserp) = errsn
+. inv(ellsp) = lseln
+. inv(errsn) = rserp
+. inv(leren) = relep
+. inv(relep) = leren
+. inv(slsrp) = srsln
+. inv(srsln) = slsrp
+. inv(lseln) = ellsp
+. inv(rserp) = errsn
 
-. conv(ffbbP) = bbffP
-. conv(efbsP) = bsefP
-. conv(ifbiP) = biifP
-. conv(bfiiP) = iibfP
-. conv(sfsiP) = sisfP
-. conv(beieP) = iebeP 
-. conv(bbffP) = ffbbP
-. conv(bsefP) = efbsP
-. conv(biifP) = ifbiP
-. conv(iibfP) = bfiiP
-. conv(sisfP) = sfsiP
-. conv(iebeP) = beieP
+. inv(ffbbP) = bbffP
+. inv(efbsP) = bsefP
+. inv(ifbiP) = biifP
+. inv(bfiiP) = iibfP
+. inv(sfsiP) = sisfP
+. inv(beieP) = iebeP 
+. inv(bbffP) = ffbbP
+. inv(bsefP) = efbsP
+. inv(biifP) = ifbiP
+. inv(iibfP) = bfiiP
+. inv(sisfP) = sfsiP
+. inv(iebeP) = beieP
 
-. conv(fbiiA) = iifbA
-. conv(fseiA) = eifsA
-. conv(ebisA) = isebA
-. conv(iifbA) = fbiiA
-. conv(eifsA) = fseiA
-. conv(isebA) = ebisA
+. inv(fbiiA) = iifbA
+. inv(fseiA) = eifsA
+. inv(ebisA) = isebA
+. inv(iifbA) = fbiiA
+. inv(eifsA) = fseiA
+. inv(isebA) = ebisA
 
-. conv(lllbp) = lblln
-. conv(llfln) = flllp
-. conv(llbrp) = brlln
-. conv(llrfn) = rfllp
-. conv(lirln) = rllip
-. conv(lfrrn) = rrlfp
-. conv(lriln) = illrp
-. conv(lrrin) = rilrp
-. conv(blrrp) = rrbln
-. conv(irrln) = rlirp
-. conv(frrrn) = rrfrp
-. conv(rbrrp) = rrrbn
+. inv(lllbp) = lblln
+. inv(llfln) = flllp
+. inv(llbrp) = brlln
+. inv(llrfn) = rfllp
+. inv(lirln) = rllip
+. inv(lfrrn) = rrlfp
+. inv(lriln) = illrp
+. inv(lrrin) = rilrp
+. inv(blrrp) = rrbln
+. inv(irrln) = rlirp
+. inv(frrrn) = rrfrp
+. inv(rbrrp) = rrrbn
 
-. conv(lblln) = lllbp 
-. conv(flllp) = llfln
-. conv(brlln) = llbrp
-. conv(rfllp) = llrfn
-. conv(rllip) = lirln
-. conv(rrlfp) = lfrrn
-. conv(illrp) = lriln
-. conv(rilrp) = lrrin
-. conv(rrbln) = blrrp
-. conv(rlirp) = irrln
-. conv(rrfrp) = frrrn
-. conv(rrrbn) = rbrrp
+. inv(lblln) = lllbp 
+. inv(flllp) = llfln
+. inv(brlln) = llbrp
+. inv(rfllp) = llrfn
+. inv(rllip) = lirln
+. inv(rrlfp) = lfrrn
+. inv(illrp) = lriln
+. inv(rilrp) = lrrin
+. inv(rrbln) = blrrp
+. inv(rlirp) = irrln
+. inv(rrfrp) = frrrn
+. inv(rrrbn) = rbrrp
 
   %% symmetric relations
-. conv(rrrrA) = rrrrA
-. conv(llllA) = llllA
+. inv(rrrrA) = rrrrA
+. inv(llllA) = llllA
 
-. conv(esesA) = esesA
+. inv(esesA) = esesA
 
-. conv(ffffA) = ffffA
-. conv(fefeA) = fefeA
-. conv(fifiA) = fifiA
-. conv(bbbbA) = bbbbA
-. conv(sbsbA) = sbsbA
-. conv(ibibA) = ibibA 
+. inv(ffffA) = ffffA
+. inv(fefeA) = fefeA
+. inv(fifiA) = fifiA
+. inv(bbbbA) = bbbbA
+. inv(sbsbA) = sbsbA
+. inv(ibibA) = ibibA 
 
 
 %% some stuff from compostion table - external from semantics!
@@ -340,25 +344,18 @@ then
 
 end
 
-spec RelationBaseOfDRAfp =
+
+spec BooleanAlgebraOfDRAfpRelations =
      SetRepresentationOfRelations[BaseRelationsOfDRAfp]
-and
-     CompositionTableOfDRAfp
-end
-
-
-view RelationBaseOfDRAfp_as_RelationBase[BaseRelationsOfDRAfp] :
-     RelationBase[sort BaseRel] to RelationBaseOfDRAfp
-= 
-     op id: BaseRel |-> seseP
 end
 
 
 spec DRAfp =
-     GenerateRelationAlgebra[RelationBaseOfDRAfp fit op id:BaseRel |->
-     seseP:BaseRel]
+     ConstructPseudoRelationAlgebra[BaseRelationsOfDRAfp]
+	[CompositionTableOfDRAfp fit op id:BaseRel |-> seseP:BaseRel]
 end
 
+%( Error DRA.het: Ambiguous symbol map (sjw: keine Ahnung)
 
 view DRAf2fp_Refinement: 
      {DRAf with rrrl|->rrrln, rrlr|->rrlrp,
@@ -409,7 +406,10 @@ to   { DRAfp then %def
 =    sort BaseRel |-> Rel
  
 end
+)%
 
+
+%( Error DRA.het:412.1-465.1, Ambiguous symbol map (sjw: keine Ahnung)
 
 view DRAf2c_Embedding: 
      { DRAf then %def
@@ -465,6 +465,7 @@ view DRAf2c_Embedding:
 to   DRAc 
 
 end
+)%
 
 
 %{ Die relationale Algebra der DRA-Kalküle wird im folgenden als eine
@@ -481,7 +482,7 @@ spec DRAfBaseRelationPreModel =
      type Dipol ::= [__ __](s : Point; e : Point)
 
 then 
-     JEPDBaseRelationModel[sort Dipol]
+     BaseRelationModel[sort Dipol]
 
 then
      ops rrrr,rrrl,rrlr,rrll,rlrr,rllr,rlll,lrrr,lrrl,lrll,llrr,llrl,lllr,
@@ -507,18 +508,22 @@ end
 
 
 spec DRAfPreModel  = 
-     GeneratePreModelFromBaseRelationModel[DRAfBaseRelationPreModel 
+     ConstructModelFromBaseRelationModel[DRAfBaseRelationPreModel 
 					fit sort Elem |-> Dipol]
 then
      ops sese: Rel;
-	 conv: Rel -> Rel;
-	 conv: BaseRel -> BaseRel
+	 inv: Rel -> Rel;
+	 inv: BaseRel -> BaseRel
 then 
      ops __cmps__ : Rel * Rel -> Rel;
 	 __cmps__ : BaseRel * BaseRel -> Rel
 end
 
 
+%( Error DRA.het:523.1-531.1, No symbol mapping found for:
+	{ op id |-> op sese }
+	sjw: keine Ahnung 
+	
 view DRAfPreModel_induces_DRAfRelationAlgebra :
      { DRAf hide ops __+__,__-__,{},{__}
             hide preds __eps__,__isSubsetOf__,isNonEmpty }
@@ -528,7 +533,7 @@ to
      op id |-> sese
 
 end
-
+)%
 
 %{ Der nächste Schritt wäre die geometrische Interpretation der
 Basisrelationen, um ein konkretes Modell zu erhalten:
