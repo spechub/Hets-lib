@@ -157,7 +157,6 @@ and
      preds isIrred, isUnit: Elem
      sorts NonZero[Elem] = { x: Elem . not x = 0 } %(NonZero[Elem]_def)%;
            RUnit[Elem] = { x: Elem . isUnit(x) } %(RUnit_def)%;
-           Irred[Elem] = { x: Elem . isIrred(x) } %(Irred_def)%
      forall x,y: Elem
      . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
                                                 %(isUnit_def_Ring)%
