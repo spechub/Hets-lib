@@ -1,0 +1,257 @@
+sort U
+ops AMRadioStation, AMRadioSystem, ArtificialSatellite,
+    BinaryPredicate, BroadcastingStation, CableTelevisionSystem,
+    Communication, CommunicationDevice, CommunicationRadio,
+    CommunicationSatellite, CommunicationSatelliteForArea,
+    CommunicationSystem, EngineeringComponent, EnglishLanguage,
+    Eutelsat, FMRadioStation, FMRadioSystem, GeopoliticalArea, Human,
+    Inmarsat, Integer, Intelsat, Internet, InternetServiceProvider,
+    InternetUser, Intersputnik, MainTelephoneLine, MobileCellPhone,
+    Orbita, Radio, RadioStation, RadioSystem, Satellite,
+    ShortwaveRadioStation, ShortwaveRadioSystem, StationaryArtifact,
+    SymbolicString, Telephone, TelephoneSystem, Television,
+    TelevisionStation, TelevisionSystem, TernaryPredicate, a_1, a_2,
+    a_3, a_Quot_T_V_Quot, a_Quot_c_e_l_l_Space_p_h_o_n_e_Quot,
+    a_Quot_c_o_m_m_u_n_i_c_a_t_i_o_n_s_Space_s_a_t_e_l_l_i_t_e_Quot,
+    a_Quot_m_a_i_n_Space_t_e_l_e_p_h_o_n_e_Space_l_i_n_e_Quot,
+    a_Quot_r_a_d_i_o_Quot, a_Quot_s_a_t_e_l_l_i_t_e_Quot,
+    a_Quot_t_e_l_e_p_h_o_n_e_Quot, a_Quot_t_e_l_e_v_i_s_i_o_n_Quot,
+    instrument, internetCountryCode
+        : U;
+    CardinalityFn : U -> U;
+    KappaFn, engineeringSubcomponent, instance, located : U * U -> U;
+    a_a_n_d : U * U * U * U -> U
+preds agent, engineeringSubcomponent, instance, instrument,
+      relatedInternalConcept, subclass : U * U;
+      CommunicationSatelliteForArea, capability, domain, domainSubclass,
+      synonymousExternalConcept : U * U * U
+vars vAREA, vDEVICE, vINDIVIDUAL, vINTEGER, vLINE, vPART, vPHONE,
+     vPROCESS, vSAT, vSATELLITE, vSATELLITETYPE, vSTATION, vSYSTEM: U
+. subclass(CommunicationDevice, EngineeringComponent)
+%{CommunicationDevice
+"A &%CommunicationDevice is a &%Device
+which serves at the &%instrument in a &%Communication &%Process by allowing
+the communicated message to be conveyed between the participants."}%
+. relatedInternalConcept(Communication, CommunicationDevice)
+. instance(vDEVICE, CommunicationDevice) =>
+      capability(Communication, instrument, vDEVICE)
+. subclass(CommunicationSystem, CommunicationDevice)
+%{CommunicationSystem
+"A &%CommunicationSystem is a 
+&%CommunicationDevice with various &%engineeringSubcomponents."}%
+. subclass(CommunicationRadio, CommunicationDevice)
+%{CommunicationRadio
+"Relatively low power broadcasting
+devices designed for voice communication among specialized groups
+in which each receiver also has the power to transmit, unlike
+broadcast radio where most components transmitting or receiving on
+a given frequency or set of frequencies are receivers only.  This 
+includes unlicensed walkie-talkies, public safety radios, military
+communication systems and CB radios."}%
+. subclass(TelephoneSystem, CommunicationSystem)
+%{TelephoneSystem
+"A &%TelephoneSystem consists of a complete
+interconnection of &%Telephones, &%MainTelephoneLines, and other components
+that work together to make telephonic communication possible from point to
+point in a given area."}%
+. synonymousExternalConcept(a_Quot_t_e_l_e_p_h_o_n_e_Quot,
+                            Telephone, EnglishLanguage)
+. instance(vSYSTEM, TelephoneSystem) =>
+      exists vPHONE: U
+          . instance(vPHONE, Telephone)
+            /\ engineeringSubcomponent(vPHONE, vSYSTEM)
+. subclass(MainTelephoneLine, CommunicationDevice)
+. synonymousExternalConcept(a_Quot_m_a_i_n_Space_t_e_l_e_p_h_o_n_e_Space_l_i_n_e_Quot,
+                            MainTelephoneLine, EnglishLanguage)
+%{MainTelephoneLine
+"A &%MainTelephoneLine is one 
+&%engineeringSubcomponent of a &%TelephoneSystem used for voice communication 
+or computer data transfer."}%
+. instance(vSYSTEM, TelephoneSystem) =>
+      exists vLINE: U
+          . instance(vLINE, MainTelephoneLine)
+            /\ engineeringSubcomponent(vLINE, vSYSTEM)
+. subclass(MobileCellPhone, Telephone)
+. synonymousExternalConcept(a_Quot_c_e_l_l_Space_p_h_o_n_e_Quot,
+                            MobileCellPhone, EnglishLanguage)
+%{MobileCellPhone
+"A &%Telephone that can be used without
+connection to a &%MainTelephoneLine."}%
+. subclass(ArtificialSatellite, Satellite)
+. subclass(ArtificialSatellite, EngineeringComponent)
+. synonymousExternalConcept(a_Quot_s_a_t_e_l_l_i_t_e_Quot,
+                            ArtificialSatellite, EnglishLanguage)
+%{ArtificialSatellite
+"An &%ArtificialSatellite is a &%Device
+that orbits the earth in space and performs various functions such as
+aiding in communication, photographing the earth's surface, and others."}%
+. subclass(CommunicationSatellite, ArtificialSatellite)
+. subclass(CommunicationSatellite, CommunicationDevice)
+. synonymousExternalConcept(a_Quot_c_o_m_m_u_n_i_c_a_t_i_o_n_s_Space_s_a_t_e_l_l_i_t_e_Quot,
+                            CommunicationSatellite, EnglishLanguage)
+%{CommunicationSatellite
+"A &%CommunicationSatellite is an
+&%ArtificialSatellite that serves as one &%engineeringSubcomponent of a 
+&%CommunicationSystem."}%
+. instance(vSAT, CommunicationSatellite) =>
+      exists vSYSTEM: U
+          . instance(vSYSTEM, CommunicationSystem)
+            /\ engineeringSubcomponent(vSAT, vSYSTEM)
+. instance(CommunicationSatelliteForArea, TernaryPredicate)
+. domain(CommunicationSatelliteForArea, a_1, GeopoliticalArea)
+. domainSubclass(CommunicationSatelliteForArea, a_2, Satellite)
+. domain(CommunicationSatelliteForArea, a_3, Integer)
+%{CommunicationSatelliteForArea
+"The expression
+(CommunicationSatelliteForArea ?AREA ?SATELLITE ?INTEGER) means that 
+?INTEGER number of &%CommunicationSatellites of the type ?SATELLITE serve
+as an &%engineeringSubcomponent of a &%TelephoneSystem of the GeopoliticalArea
+?AREA."}%
+. CommunicationSatelliteForArea(vAREA, vSATELLITETYPE, vINTEGER) =>
+      vINTEGER =
+          CardinalityFn(KappaFn(vSATELLITE,
+                                a_a_n_d(instance(vSATELLITE, vSATELLITETYPE),
+                                        instance(vSYSTEM, CommunicationSystem),
+                                        located(vSYSTEM, vAREA),
+                                        engineeringSubcomponent(vSATELLITE,
+                                                                vSYSTEM))))
+. subclass(Eutelsat, CommunicationSatellite)
+%{Eutelsat
+"An &%Eutelsat is one type of 
+&%CommunicationSatellite."}%
+. subclass(Inmarsat, CommunicationSatellite)
+%{Inmarsat
+"An &%Inmarsat is one type of 
+&%CommunicationSatellite."}%
+. subclass(Intelsat, CommunicationSatellite)
+%{Intelsat
+"An &%Intelsat is one type of 
+&%CommunicationSatellite."}%
+. subclass(Intersputnik, CommunicationSatellite)
+%{Intersputnik
+"An &%Intersputnik is one type of 
+&%CommunicationSatellite."}%
+. subclass(Orbita, CommunicationSatellite)
+%{Orbita
+"An &%Orbita is one type of 
+&%CommunicationSatellite."}%
+. instance(BroadcastingStation, StationaryArtifact)
+. engineeringSubcomponent(BroadcastingStation, CommunicationSystem)
+%{BroadcastingStation
+"A &%BroadcastingStation is
+an &%engineeringSubcomponent of either a &%TelevisionSystem or
+a &%RadioStation."}%
+. instance(vSTATION, BroadcastingStation) =>
+      instance(vSTATION, TelevisionStation)
+      \/ instance(vSTATION, RadioStation)
+. subclass(RadioSystem, CommunicationSystem)
+%{RadioSystem
+"A &%RadioSystem consists of &%Radios, 
+&%RadioStations, and other components that work together to make 
+radio broadcasting possible in a given area."}%
+. subclass(AMRadioSystem, RadioSystem)
+%{AMRadioSystem
+"An &%AMRadioSystem consists of &%Radios, 
+&%AMRadioStations, and other components that work together to make 
+AM radio broadcasting possible in a given area."}%
+. subclass(FMRadioSystem, RadioSystem)
+%{FMRadioSystem
+"A &%FMRadioSystem consists of &%Radios, 
+&%FMRadioStations, and other components that work together to make 
+FM radio broadcasting possible in a given area."}%
+. subclass(ShortwaveRadioSystem, RadioSystem)
+%{ShortwaveRadioSystem
+"A &%ShortwaveRadioSystem consists 
+of &%Radios, &%ShortwaveRadioStations, and other components that work 
+together to make shortwave radio broadcasting possible in a given area."}%
+. subclass(RadioStation, BroadcastingStation)
+. subclass(BroadcastingStation, EngineeringComponent)
+. engineeringSubcomponent(RadioStation, RadioSystem)
+%{RadioStation
+"A &%RadioStation is an 
+&%engineeringSubcomponent of a &%RadioSystem."}%
+. subclass(AMRadioStation, RadioStation)
+. engineeringSubcomponent(AMRadioStation, RadioSystem)
+%{AMRadioStation
+"An &%AMRadioStation is an 
+&%engineeringSubcomponent of an &%AMRadioSystem."}%
+. subclass(FMRadioStation, RadioStation)
+. engineeringSubcomponent(FMRadioStation, RadioSystem)
+%{FMRadioStation
+"A &%FMRadioStation is an 
+&%engineeringSubcomponent of an &%FMRadioSystem."}%
+. subclass(ShortwaveRadioStation, RadioStation)
+. engineeringSubcomponent(ShortwaveRadioStation, RadioSystem)
+%{ShortwaveRadioStation
+"A &%ShortwaveRadioStation 
+is an &%engineeringSubcomponent of a &%ShortwaveRadioSystem."}%
+. subclass(Radio, EngineeringComponent)
+. synonymousExternalConcept(a_Quot_r_a_d_i_o_Quot, Radio,
+                            EnglishLanguage)
+%{Radio
+"A &%Radio is a &%Device for receiving radio
+broadcast signals from a &%RadioStation."}%
+. instance(vSYSTEM, RadioSystem) =>
+      exists vDEVICE: U
+          . instance(vDEVICE, Radio)
+            /\ engineeringSubcomponent(vDEVICE, vSYSTEM)
+. subclass(TelevisionSystem, CommunicationSystem)
+%{TelevisionSystem
+"A system for &%Broadcasting and 
+receiving television signals."}%
+. subclass(TelevisionStation, BroadcastingStation)
+. engineeringSubcomponent(TelevisionStation, TelevisionSystem)
+%{TelevisionStation
+"A &%TelevisionStation is an 
+&%engineeringSubcomponent of a &%TelevisionSystem."}%
+. instance(vSYSTEM, TelevisionSystem) =>
+      exists vSTATION: U
+          . instance(vSTATION, TelevisionStation)
+            /\ engineeringSubcomponent(vSTATION, vSYSTEM)
+. subclass(CableTelevisionSystem, CommunicationSystem)
+%{CableTelevisionSystem
+"A &%CableTelevisionSystem
+is a &%CommunicationSystem for cable television."}%
+. subclass(Television, EngineeringComponent)
+. synonymousExternalConcept(a_Quot_t_e_l_e_v_i_s_i_o_n_Quot,
+                            Television, EnglishLanguage)
+. synonymousExternalConcept(a_Quot_T_V_Quot, Television,
+                            EnglishLanguage)
+%{Television
+"A &%Television is a &%Device for receiving 
+television broadcast signals from a &%TelevisionStation or signals
+transmitted through a cable from a &%CableTelevisionSystem."}%
+. instance(vSYSTEM, TelevisionSystem) =>
+      exists vDEVICE: U
+          . instance(vDEVICE, Television)
+            /\ engineeringSubcomponent(vDEVICE, vSYSTEM)
+. instance(vSYSTEM, CableTelevisionSystem) =>
+      exists vDEVICE: U
+          . instance(vDEVICE, Television)
+            /\ engineeringSubcomponent(vDEVICE, vSYSTEM)
+. instance(Internet, CommunicationSystem)
+%{Internet
+"The &%Internet is a &%CommunicationSystem
+for the rapid delivery of information between computers."}%
+. instance(internetCountryCode, BinaryPredicate)
+. domain(internetCountryCode, a_1, GeopoliticalArea)
+. domain(internetCountryCode, a_2, SymbolicString)
+%{internetCountryCode
+"(internetCountryCode ?AREA ?CODE)
+relates a &%GeopoliticalArea to the &%SymbolicString ?CODE used to
+identify the ?AREA on internet websites."}%
+. subclass(InternetServiceProvider, CommunicationSystem)
+. engineeringSubcomponent(InternetServiceProvider, Internet)
+%{InternetServiceProvider
+"An &%InternetServiceProvider
+serves as an &%engineeringSubcomponent of the &%Internet for a given
+area."}%
+. instance(vPART, InternetServiceProvider) =>
+      engineeringSubcomponent(vPART, Internet)
+. subclass(InternetUser, Human)
+%{InternetUser
+"An &%InternetUser is an individual who
+uses the &%Internet."}%
+. instance(vINDIVIDUAL, InternetUser) =>
+      exists vPROCESS: U
+          . agent(vPROCESS, vINDIVIDUAL) /\ instrument(vPROCESS, Internet)

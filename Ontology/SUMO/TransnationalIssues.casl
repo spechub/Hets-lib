@@ -1,0 +1,67 @@
+sort U
+ops AfghanUnitedNationsStatus, BinaryPredicate, Cannabis, Cocaine,
+    CompoundSubstance, DepressantDrug, Disagreeing, GeographicArea,
+    GeopoliticalArea, Hallucinogen, Hashish, Heroin, IllicitDrug,
+    IllicitDrugMoneyLaunderingArea, IllicitSyntheticDrug,
+    InternationalDispute, IslamicMilitancy, Marijuana,
+    MaritimeBoundaryDispute, Methamphetamine, Nation, Process,
+    StimulantDrug, TernaryPredicate, TerritorialDispute, a_1, a_2, a_3,
+    disputedPossession, drugShipmentDestination, illicitDrugConsumer,
+    illicitDrugProducer, illicitDrugShipmentDestination,
+    illicitDrugTransshipmentPoint, internationalDispute
+        : U
+preds agent, instance, subclass : U * U;
+      domain, domainSubclass : U * U * U
+vars vAG1, vAG2, vD: U
+. instance(internationalDispute, BinaryPredicate)
+. domain(internationalDispute, a_1, GeopoliticalArea)
+. domain(internationalDispute, a_2, GeopoliticalArea)
+. subclass(InternationalDispute, Disagreeing)
+%{InternationalDispute
+"A &%Disagreeing between
+&%Nations."}%
+. instance(vD, InternationalDispute) =>
+      exists vAG1: U; vAG2: U
+          . instance(vAG1, Nation)
+            /\ instance(vAG2, Nation)
+            /\ not vAG1 = vAG2
+            /\ agent(vD, vAG1)
+            /\ agent(vD, vAG2)
+. subclass(MaritimeBoundaryDispute, InternationalDispute)
+. subclass(TerritorialDispute, InternationalDispute)
+. instance(disputedPossession, TernaryPredicate)
+. domain(disputedPossession, a_1, GeopoliticalArea)
+. domain(disputedPossession, a_2, GeopoliticalArea)
+. domain(disputedPossession, a_3, GeopoliticalArea)
+. subclass(IslamicMilitancy, Process)
+. subclass(AfghanUnitedNationsStatus, Process)
+. instance(illicitDrugConsumer, BinaryPredicate)
+. domain(illicitDrugConsumer, a_1, GeopoliticalArea)
+. domainSubclass(illicitDrugConsumer, a_2, IllicitDrug)
+. instance(illicitDrugProducer, BinaryPredicate)
+. domain(illicitDrugProducer, a_1, GeopoliticalArea)
+. domainSubclass(illicitDrugProducer, a_2, IllicitDrug)
+. instance(drugShipmentDestination, TernaryPredicate)
+. domain(drugShipmentDestination, a_1, GeopoliticalArea)
+. domainSubclass(drugShipmentDestination, a_2, IllicitDrug)
+. domain(drugShipmentDestination, a_3, GeopoliticalArea)
+. instance(illicitDrugShipmentDestination, TernaryPredicate)
+. domain(illicitDrugShipmentDestination, a_1, GeopoliticalArea)
+. domainSubclass(illicitDrugShipmentDestination, a_2, IllicitDrug)
+. domain(illicitDrugShipmentDestination, a_3, GeopoliticalArea)
+. instance(illicitDrugTransshipmentPoint, TernaryPredicate)
+. domain(illicitDrugTransshipmentPoint, a_1, GeopoliticalArea)
+. domainSubclass(illicitDrugTransshipmentPoint, a_2, IllicitDrug)
+. domain(illicitDrugTransshipmentPoint, a_3, GeopoliticalArea)
+. subclass(IllicitDrugMoneyLaunderingArea, GeographicArea)
+. subclass(IllicitDrug, CompoundSubstance)
+. subclass(Cannabis, IllicitDrug)
+. subclass(Cocaine, IllicitDrug)
+. subclass(DepressantDrug, IllicitDrug)
+. subclass(Hallucinogen, IllicitDrug)
+. subclass(Hashish, IllicitDrug)
+. subclass(Heroin, IllicitDrug)
+. subclass(IllicitSyntheticDrug, IllicitDrug)
+. subclass(Marijuana, IllicitDrug)
+. subclass(Methamphetamine, IllicitDrug)
+. subclass(StimulantDrug, IllicitDrug)
