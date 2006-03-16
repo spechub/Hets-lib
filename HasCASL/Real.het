@@ -23,8 +23,13 @@ spec  FieldWithOrdering =
     Field and TotalOrder
 then
     vars a, b, c:Elem
-    . (a + c) <= (b + c) if a <= b		%(FWO_plus)%
-    . (a * c) <= (b * c) if a <= b /\ 0 <= c	%(FWO_times)%
+    . (a + c) <= (b + c) if a <= b		%(FWO_plus_left)%
+    . (a * c) <= (b * c) if a <= b /\ 0 <= c	%(FWO_times_left)%
+then %implies
+    vars a, b, c, d: Elem
+    . (a + b) <= (a + c) if b <= c		%(FWO_plus_right)%
+    . (a * b) <= (a * c) if b <= c /\ 0 <= a	%(FWO_times_right)%
+    . (a + b) <= (c + d) if a <= c /\ b <= d	%(FWO_plus)%
 end
 
 
@@ -117,6 +122,10 @@ then %implies
      . a<=half(a-b)+b => a<=b           %(half_leq)%
      . 0<=r => 0<=half(r)               %(half_leq_zero)%
      . a+b=b+a                          %(comm_add)%
+  . half(r+s) = half(r) + half(s)	%(Real_half_plus)%
+  . half(r-s) = half(r) - half(s)	%(Real_half_minus)%
+  . r - half(r) = half(r)		%(Real_minus_half)%
+  . half(r) <= half (s) <=> r <= s	%(Real_half_monot)% 
 end
 
 

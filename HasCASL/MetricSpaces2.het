@@ -54,10 +54,16 @@ spec ExtMetricSpaceByClosedBalls[MetricSpace] =
   ops closedBall: S*Real -> ClosedBall;
       rep : ClosedBall -> Pred S
   forall x,y:S; r:Real; a,b: ClosedBall
-  . r > 0 => (rep (closedBall(x,r)) y <=> d(x,y)<=r) %(EMSCD_rep_pos)%
-  . not r > 0 => not (rep (closedBall(x,r)) y)		%(EMSCD_rep_0)%
-  . rep a = rep b => a = b			%(EMSCD_rep_inj)%
+  . r > 0 => (rep (closedBall(x,r)) y <=> d(x,y)<=r) %(EMSCB_rep_pos)%
+  . not r > 0 => not (rep (closedBall(x,r)) y)		%(EMSCB_rep_0)%
+  . rep a = rep b => a = b			%(EMSCB_rep_inj)%
   . exists z:S; t:Real. a = closedBall(z,t)
+then %implies
+  forall x,y:S; r: Real; a: ClosedBall
+  . r > 0 => rep (closedBall (x,r)) x;		%(EMSCB_center)%
+  forall x:S; a: ClosedBall
+  . not rep a x => exists r:Real. forall y:S. 
+	not (rep (closedBall (x,r)) y /\ not rep a y)	%(EMSCB_closed)%
 end
 
 spec RichMetricSpace = 
