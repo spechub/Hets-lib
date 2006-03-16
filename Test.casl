@@ -1,0 +1,34 @@
+library Test
+
+spec TarskiBase =
+  sort Object
+  pred Tet, Cube, Dodec : Object
+end
+
+spec Tarski =
+  TarskiBase
+then
+  pred Smaller, Greater : Object * Object
+  forall x,y,z : Object
+  . not Smaller(x,x)                              %(irrefl)%
+  . Smaller(x,y) /\ Smaller(y,z) => Smaller(x,z)  %(trans)%
+  . Greater(x,y) <=> Smaller(y,x)
+end
+
+spec IrreflexiveRel =
+  sort Elem
+  pred __<__ : Elem*Elem
+  forall x : Elem
+  . not x < x          %(irrefl_PO)%
+end
+
+spec StrictPartialOrder =
+  IrreflexiveRel
+then
+  forall x,y,z:Elem
+  . x<y /\ y<z => x<z    %(transPO)%
+end
+
+view GreaterPO : StrictPartialOrder to Tarski  =
+  Elem |-> Object, __<__ |-> Greater
+end
