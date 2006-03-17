@@ -342,7 +342,7 @@ proof
 			have s_within_dist:
 			  "XXLtXEqXXX_3 (d(s,p),
 			  half (XXMinusXXX (d (qy, p), ry)))" by simp
-			with s_within_ry MS_triangle' [of "qy" "p" "s"] 
+(*			with s_within_ry MS_triangle' [of "qy" "p" "s"] 
 			  trans[simplified]
 			  of "d(qy,p)" "XXPlusXXX(d(qy,s),d(s,p))"]
 			FWO_plus[simplified] 
@@ -355,8 +355,8 @@ proof
 			  apply (rule conjI)
 			  apply (assumption)
 			  apply (rule FWO_plus[simplified,THEN spec, THEN spec, THEN spec, THEN spec, THEN mp]) 
-			  apply (rule conjI)
-			  
+			  apply (rule conjI)*)
+oops			  
 			  
 			  
 			  
