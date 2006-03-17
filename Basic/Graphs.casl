@@ -54,7 +54,6 @@ spec Graph[sort NodeId][sort EdgeId] =
          /\ (forall e:EdgeId . e isIn g <=> e isIn g') 
          /\ (forall e:EdgeId . source(e,g) = source(e,g'))
          /\ (forall e:EdgeId . target(e,g) = target(e,g')) %(extensionality)%
-. false %implied
 end
 
 %% Some basic operations and predicates on graphs
