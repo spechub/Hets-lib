@@ -703,7 +703,7 @@ then %def
         __eps__ : Elem * NTree2[Elem];
         __ is __ branching: NTree2[Elem] * Nat 
 
-  ops   branches: NTree2[Elem] -> NonEmptyList[NonEmptyNTree2[Elem]];
+  ops   branches: NTree2[Elem] ->? NonEmptyList[NonEmptyNTree2[Elem]];
         h: List[NonEmptyNTree2[Elem]] * Nat -> Nat; %% helps defining height
         height: NTree2[Elem] -> Nat;
         l: List[NonEmptyNTree2[Elem]] -> Set[Elem]; %% helps defining leaves
@@ -758,7 +758,6 @@ then %def
   . leaves(leaf(x)) = {x}                  %(leaves_leaf_nTree2)%
   . leaves(nTree(L)) = l(L)                %(leaves_nTree_nTree2)%
   . leaves(nil) = {}                       %(leaves_nil_nTree2)%
-   
 end
 
 spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] = %mono
