@@ -30,26 +30,31 @@ spec Graph[sort NodeId][sort EdgeId] =
   forall n,n1,s,t,s1,t1,s2,t2:NodeId; e,e1,e2:EdgeId; g,g':Graph
   . def addEdge(s,t,e,g) <=> not e isIn g                   %(dom_addEdge)%
   . not n isIn emptyGraph                               %(isIn_emptyGraph)%
-  . n isIn addNode(n1,g) <=> n=n1 \/ n isIn g              %(isIn_addNode)%
-  . n isIn addEdge(s,t,e,g) <=> n=s \/ n=t \/ n isIn g     %(isIn_addEdge)%
+  . n isIn addNode(n1,g) <=> n=n1 \/ n isIn g             %(isIn_addNode1)%
+  . def addEdge(s,t,e,g) => 
+    (n isIn addEdge(s,t,e,g) <=> n=s \/ n=t \/ n isIn g)  %(isIn_addEdge1)%
   . not e isIn emptyGraph                               %(isIn_emptyGraph)%
-  . e isIn addNode(n,g) <=> e isIn g                       %(isIn_addNode)%
-  . e1 isIn addEdge(s2,t2,e2,g) <=>
-      (e1=e2 \/ e1 isIn g)                                 %(isIn_addEdge)%
+  . e isIn addNode(n,g) <=> e isIn g                      %(isIn_addNode2)%
+  . def addEdge(s2,t2,e2,g) =>
+     (e1 isIn addEdge(s2,t2,e2,g) <=>
+      (e1=e2 \/ e1 isIn g))                               %(isIn_addEdge2)%
   . not def source(e,emptyGraph)                           %(source_empty)%
   . source(e,addNode(n,g)) = source(e,g)                 %(source_addNode)%
-  . source(e1,addEdge(s,t,e2,g)) = 
-      s when e1=e2 else source(e1,g)                     %(source_addEdge)%
+  . def addEdge(s,t,e2,g) =>
+     (source(e1,addEdge(s,t,e2,g)) = 
+       s when e1=e2 else source(e1,g))                   %(source_addEdge)%
   . not def target(e,emptyGraph)                           %(target_empty)%
   . target(e,addNode(n,g)) = target(e,g)                 %(target_addNode)%
-  . target(e1,addEdge(s,t,e2,g)) = 
-      t when e1=e2 else target(e1,g)                     %(target_addEdge)%
+  . def addEdge(s,t,e2,g) =>
+     (target(e1,addEdge(s,t,e2,g)) = 
+      t when e1=e2 else target(e1,g))                    %(target_addEdge)%
   . e::s-->t isIn g <=> e isIn g /\ source(e,g)=s /\ target(e,g)=t
                                                                %(isIn_def)%
   . g=g' <=> (forall n:NodeId . n isIn g <=> n isIn g')
          /\ (forall e:EdgeId . e isIn g <=> e isIn g') 
          /\ (forall e:EdgeId . source(e,g) = source(e,g'))
          /\ (forall e:EdgeId . target(e,g) = target(e,g')) %(extensionality)%
+. false %implied
 end
 
 %% Some basic operations and predicates on graphs
