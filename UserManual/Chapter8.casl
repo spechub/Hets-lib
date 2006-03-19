@@ -17,13 +17,13 @@ spec Cont [Elem] =
     ops choose : Cont[Elem] ->? Elem;
 	delete : Elem * Cont[Elem] -> Cont[Elem]
     forall e, e':Elem; C:Cont[Elem]
-    . empty is_empty
-    . not insert(e, C) is_empty
-    . not e is_in empty
-    . e is_in insert(e', C) <=> e = e' \/ e is_in C
-    . def choose(C) <=> not C is_empty
-    . def choose(C) => choose(C) is_in C
-    . e is_in delete(e', C) <=> e is_in C /\ not e = e'
+    . empty is_empty                        %(is_empty_empty)%
+    . not insert(e, C) is_empty             %(is_empty_insert)%
+    . not e is_in empty                     %(is_in_empty)%
+    . e is_in insert(e', C) <=> e = e' \/ e is_in C  %(is_in_insert)%
+    . def choose(C) <=> not C is_empty               %(choose_dom)%
+    . def choose(C) => choose(C) is_in C             %(is_in_choose)%
+    . e is_in delete(e', C) <=> e is_in C /\ not e = e'   %(is_in_delete)%
 end
 
 spec Cont_Diff [Elem] =
@@ -78,13 +78,15 @@ spec Cont_Diff_1 =
 then
     op diff : Cont[Nat] * Cont[Nat] -> Cont[Nat]
     forall x, y:Nat; C, C':Cont[Nat]
-    . diff(C, empty) = C
-    . diff(empty, C') = empty
-    . diff(insert(x, C), insert(y, C')) =
+    . diff(C, empty) = C   %(diff_empty_right)%
+    . diff(empty, C') = empty  %(diff_empty_left)%
+    . not x is_in C =>
+      diff(insert(x, C), insert(y, C')) =
 	  insert(x, diff(C, insert(y, C')))
-	      when x < y else diff(C, C') when x = y else diff(insert(x, C), C')
-    . x is_in diff(C, C') <=> x is_in C /\ not x is_in C'
+	      when x < y else diff(C, C') when x = y else diff(insert(x, C), C')  %(diff_insert)%
+    . x is_in diff(C, C') <=> x is_in C /\ not x is_in C'  %(in_diff)%
 end
+
 
 arch spec Inconsistent =
     units
