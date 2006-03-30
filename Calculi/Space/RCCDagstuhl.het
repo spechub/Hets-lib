@@ -25,21 +25,23 @@ from HasCASL/MetricSpaces get
 spec RCC_FO = 
      sort QReg
      pred __C__: QReg * QReg;
-     preds  __P__, __O__, __NTP__: QReg * QReg
 
+     forall x,y: QReg
+     . x C y => x C x					        %(C_non_null)%
+     . x C y => y C x						%(C_sym)%
+     . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
+     . exists x:QReg . x C x					%(C_non_triv)%
+
+end
+
+spec ExtRCC_FO =
+     RCC_FO
+then %def
+     preds  __P__, __O__, __NTP__: QReg * QReg
      forall x,y: QReg
      . x P y   <=> forall z:QReg .(z C x => z C y)		%(P_def)%
      . x O y   <=> exists z:QReg .(z C z /\ z P x /\ z P y)	%(O_def)%
      . x NTP y <=> forall z:QReg .(z C x => z O y)		%(NTP_def)%
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists z:QReg . forall u:QReg . 
-		(z C u <=> not u NTP x \/ not u NTP y)		%(cp_ex)% 
-     . x C x => exists z:QReg . (z C z /\ z NTP x) 		%(no_atoms)%
-     . exists x:QReg . x C x					%(C_non_triv)%
-
-then %def
      sort Reg = { x: QReg . x C x }
 
 then %implies
@@ -61,7 +63,7 @@ end
 
 
 
-spec ExtRCCByFuncts[RCC_FO] = %def
+spec ExtRCCByFuncts[ExtRCC_FO] = %def
      ops cp: QReg * QReg -> QReg;				%% complement of product
 	 compl: QReg -> QReg;
 	 sum,prod: QReg * QReg -> QReg;
@@ -113,7 +115,7 @@ then %implies
 end
 
 
-spec ExtRCCByRCC5Rels[RCC_FO] = %def 
+spec ExtRCCByRCC5Rels[ExtRCC_FO] = %def 
      preds
 	  __PP__,  __PO__,  __EQ__, 
 	  __DR__,  __PPi__, __?__: Reg * Reg
@@ -173,8 +175,8 @@ then %implies
 end
 
 
-spec ExtRCCByRCC8Rels[RCC_FO] = 	
-     ExtRCCByRCC5Rels[RCC_FO] with __?__ |-> __??__
+spec ExtRCCByRCC8Rels[ExtRCC_FO] = 	
+     ExtRCCByRCC5Rels[ExtRCC_FO] with __?__ |-> __??__
 then %def 
      preds
 	  __EC__,  __DC__, __TPP__, __NTPP__, __TPPi__,  
@@ -288,12 +290,11 @@ view NN:
      { RCC_FO } to
      { ExtMetricSpaceByClosedDiscs[MetricSpace] 
 	then %def
-	type NonEmptyClosedDiscs = {X:ClosedDiscs . not X =emptySet }
-	preds __C__,__O__,__NTP__,__P__: ClosedDiscs * ClosedDiscs
+	pred __C__: ClosedDiscs * ClosedDiscs
 	forall x,y:ClosedDiscs
 	. x C y <=> not x disjoint y
 	}	
-=    QReg |-> ClosedDiscs, Reg |-> NonEmptyClosedDiscs
+=    QReg |-> ClosedDiscs
 	
 
 
