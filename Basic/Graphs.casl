@@ -150,25 +150,31 @@ end
 
 %% The subsort of symmetric (= undirected) graphs
 spec SymmetricGraph[sort NodeId][sort EdgeId] =
-  Graph[sort NodeId][sort EdgeId]
+  free type SymEdgeId ::= left(EdgeId) | right(EdgeId)
+then
+  Graph[sort NodeId][sort SymEdgeId]
 then
   sort SymmetricGraph =                           
        {g:Graph . forall s,t:NodeId; e:EdgeId . 
-                    e::s-->t isIn g <=> e::t-->s isIn g}
+                    left(e)::s-->t isIn g <=> right(e)::t-->s isIn g}
                                                   %(SymmetricGraph_def)%
   type SymmetricGraph ::= emptyGraph
-            | addNode(node :? NodeId; graph :? SymmetricGraph)
+%[            | addNode(node :? NodeId; graph :? SymmetricGraph)
             | addEdgeSym(source,target :? NodeId; 
-                         edge :? EdgeId; graph :? SymmetricGraph)
+                         edge :? EdgeId; graph :? SymmetricGraph)?
   preds __isIn__ : NodeId * SymmetricGraph;
+        __isIn__ : EdgeId * SymmetricGraph;
         __::__-->__ isIn __ : 
                    EdgeId * NodeId * NodeId * SymmetricGraph
   forall s,t:NodeId; e:EdgeId; g:SymmetricGraph
   . addEdgeSym(s,t,e,g) = 
-      addEdge(s,t,e,addEdge(t,s,e,g)) as SymmetricGraph  %(addEdge_def)%
-  %% the other operations and predicates are determined
-  %% by the overloading relations
+      addEdge(s,t,left(e),addEdge(t,s,right(e),g)) as SymmetricGraph  
+                                                            %(addEdge_def)%
+  . e isIn g <=> left(e) isIn g                         %(isIn_def1)
+  . e::s-->t isIn g <=> 
+      (left(e)::s-->t isIn g \/ left(e)::t-->s isIn g)  %(isIn_def2)%
 end
+]%
 
 spec SymmetricClosure[sort NodeId][sort EdgeId] =
   RichGraph[sort NodeId][sort EdgeId]
