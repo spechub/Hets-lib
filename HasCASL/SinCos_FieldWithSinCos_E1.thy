@@ -1,6 +1,6 @@
 theory SinCos_FieldWithSinCos_E1
 imports Main
-uses "/home/till/CASL/CASL-lib/Isabelle/prelude"
+uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize [\"th_sc1\",\"ga_nonEmpty\",\"ga_notDefBottom\",\"ga_totality\",\"ga_totality_1\",\"ga_totality_2\",\"ga_totality_3\",\"ga_totality_4\",\"ga_totality_5\",\"ga_totality_6\",\"ga_totality_7\",\"ga_totality_8\",\"ga_totality_9\",\"ga_strictness\",\"ga_strictness_1\",\"Ax1\",\"Ax2\",\"th_ef1\",\"th_ef2\",\"th_ef3\",\"th_ef4\",\"Ax1_1\",\"Ax2_1\",\"Ax3\",\"Ax4\",\"Ax5\",\"th_f0\",\"th_f1\",\"th_f2\",\"th_f3\",\"th_f4\",\"th_f5\",\"th_f6_h\",\"th_f6\",\"th_f7\",\"th_f8\",\"th_f10\",\"th_f11\",\"th_f12\",\"ga_assoc___PlusX__\",\"ga_comm___PlusX__\",\"ga_right_unit___PlusX__\",\"ga_left_unit___PlusX__\",\"ga_assoc___xX__\",\"ga_comm___xX__\",\"ga_right_unit___xX__\",\"ga_left_unit___xX__\",\"Ax9\",\"Ax10\",\"Ax11\",\"Ax12\",\"Ax13\"]"
