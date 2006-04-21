@@ -3,10 +3,7 @@ imports "$HETS_LIB/Isabelle/MainHC"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
-
-ML "Header.initialize [\"P_def_1\",\"O_def_1\",\"NTP_def_1\",\"C_non_null\",\"C_sym\",\"C_id\",\"C_non_triv\",\"Ax1\",\"def_nonempty\",\"C_def\",\"P_def\",\"O_def\",\"NTP_def\",\"MS_pos\",\"MS_zero\",\"MS_pos_definite\",\"MS_symm\",\"MS_triangle\",\"one_greater_zero\",\"zero_leq_one\",\"half_gt_zero\",\"half_plus_minus\",\"add_monotone\",\"sub_leq\",\"half_leq\",\"half_leq_zero\",\"comm_add\",\"Real_abs_def\",\"Real_sqr_def\",\"Real_sqrt_dom\",\"Real_sqrt_def\",\"Real_2_def\",\"Real_minus_def\",\"Real_divide_dom\",\"Real_divide_def\",\"Real_half_def\",\"ga_Nat\",\"Real_ub_def\",\"Real_lb_def\",\"Real_inf_def\",\"Real_sup_def\",\"Real_isBounded_defCBrX\",\"Real_inj_0\",\"Real_inj_suc\",\"Real_archimedian\",\"FWO_plus\",\"FWO_times\",\"Field_unary_minus_def\",\"dichotomy_TotalOrder\",\"antisym\",\"trans\",\"refl\",\"min_inf_relation\",\"max_sup_relation\",\"ga_comm_min\",\"ga_comm_max\",\"ga_assoc_min\",\"ga_assoc_max\",\"min_def_ExtTotalOrder\",\"max_def_ExtTotalOrder\",\"ga_comm_inf\",\"ga_comm_sup\",\"inf_def_ExtPartialOrder\",\"sup_def_ExtPartialOrder\",\"geq_def_ExtPartialOrder\",\"less_def_ExtPartialOrder\",\"greater_def_ExtPartialOrder\",\"EMSCD_rep_pos\",\"EMSCD_rep_0\",\"EMSCD_rep_inj\",\"Ax4\",\"ga_Nat_1\"]"
-
-
+ML "Header.initialize [\"C_non_null\",\"C_sym\",\"C_id\",\"C_non_triv\",\"def_nonempty\",\"C_def\",\"MS_pos\",\"MS_zero\",\"MS_pos_definite\",\"MS_symm\",\"MS_triangle\",\"one_greater_zero\",\"zero_leq_one\",\"half_gt_zero\",\"half_plus_minus\",\"add_monotone\",\"sub_leq\",\"half_leq\",\"half_leq_zero\",\"comm_add\",\"Real_half_plus\",\"Real_half_minus\",\"Real_minus_half\",\"Real_half_monot\",\"Real_abs_def\",\"Real_sqr_def\",\"Real_sqrt_dom\",\"Real_sqrt_def\",\"Real_2_def\",\"Real_minus_def\",\"Real_divide_dom\",\"Real_divide_def\",\"Real_half_def\",\"ga_Nat\",\"Real_ub_def\",\"Real_lb_def\",\"Real_inf_def\",\"Real_sup_def\",\"Real_isBounded_defCBrX\",\"Real_inj_0\",\"Real_inj_suc\",\"Real_archimedian\",\"FWO_plus_right\",\"FWO_times_right\",\"FWO_plus\",\"FWO_plus_left\",\"FWO_times_left\",\"Field_unary_minus_def\",\"dichotomy_TotalOrder\",\"antisym\",\"trans\",\"refl\",\"min_inf_relation\",\"max_sup_relation\",\"ga_comm_min\",\"ga_comm_max\",\"ga_assoc_min\",\"ga_assoc_max\",\"min_def_ExtTotalOrder\",\"max_def_ExtTotalOrder\",\"ga_comm_inf\",\"ga_comm_sup\",\"inf_def_ExtPartialOrder\",\"sup_def_ExtPartialOrder\",\"geq_def_ExtPartialOrder\",\"less_def_ExtPartialOrder\",\"greater_def_ExtPartialOrder\",\"EMSCB_center\",\"EMSCB_closed\",\"EMSCB_rep_pos\",\"EMSCB_rep_0\",\"EMSCB_rep_inj\",\"Ax4\",\"ga_Nat_1\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -28,9 +25,6 @@ XXLtXEqXXX_2 :: "Real * (Real => bool) => bool"
 XXLtXEqXXX_3 :: "Real * Real => bool"
 XXLtXXX :: "Real * Real => bool"
 XXMinusXXX :: "Real * Real => Real"
-XXNTPXX :: "ClosedBall * ClosedBall => bool"
-XXOXXX :: "ClosedBall * ClosedBall => bool"
-XXPXX :: "ClosedBall * ClosedBall => bool"
 XXPlusXXX :: "Real * Real => Real"
 XXSlashXXX :: "Real * Real => Real option"
 XXxXXX :: "Real * Real => Real"
@@ -72,12 +66,6 @@ axioms
 def_nonempty : "ALL x. pApp (Some nonempty) (Some x) = pApp (Some XXCXX) (pair (Some x) (Some x))"
 
 C_def : "pApp (Some XXCXX) (pair (Some x) (Some y)) = (EX s. pApp (apt (Some rep) (Some x)) (Some s) & pApp (apt (Some rep) (Some y)) (Some s))"
-
-P_def : "pApp (Some XXPXX) (pair (Some x) (Some y)) = (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) --> pApp (Some XXCXX) (pair (Some z) (Some y)))"
-
-O_def : "pApp (Some XXOXXX) (pair (Some x) (Some y)) = (EX z. (pApp (Some XXCXX) (pair (Some z) (Some z)) & pApp (Some XXPXX) (pair (Some z) (Some x))) & pApp (Some XXPXX) (pair (Some z) (Some y)))"
-
-NTP_def : "pApp (Some XXNTPXX) (pair (Some x) (Some y)) = (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) --> pApp (Some XXOXXX) (pair (Some z) (Some y)))"
 
 MS_pos [simp] : "pApp (Some XXLtXEqXXX_3) (pair (Some X0_2) (apt (Some d) (pair (Some x) (Some y))))"
 
@@ -195,28 +183,25 @@ less_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXLtXXX) (pair (Some x) (So
 
 greater_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXGtXXX) (pair (Some x) (Some y)) = pApp (Some XXLtXXX) (pair (Some y) (Some x))"
 
-EMSCD_rep_pos [simp] : "pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y) = pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some y))) (Some r))"
+EMSCB_rep_pos [simp] : "pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y) = pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some y))) (Some r))"
 
-EMSCD_rep_0 [simp] : "~ pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> ~ pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y)"
+EMSCB_rep_0 [simp] : "~ pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> ~ pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y)"
 
-EMSCD_rep_inj : "apt (Some rep) (Some a) = apt (Some rep) (Some b) --> Some a = Some b"
+EMSCB_rep_inj : "apt (Some rep) (Some a) = apt (Some rep) (Some b) --> Some a = Some b"
 
 Ax4 : "EX z. EX t. Some a = apt (Some closedBall) (pair (Some z) (Some t))"
 
 ga_Nat_1 [simp] : "True"
 
-lemmas P_def' = P_def [simplified]
 lemmas C_def' = C_def [simplified]
-lemmas O_def' = O_def [simplified]
-lemmas NTP_def' = NTP_def [simplified]
 lemmas Ax4' = Ax4 [simplified]
-lemmas EMSCD_rep_pos' = EMSCD_rep_pos [simplified]
-lemmas EMSCD_rep_0' = EMSCD_rep_0 [simplified, THEN mp]
+lemmas EMSCB_rep_pos' = EMSCB_rep_pos [simplified]
+lemmas EMSCB_rep_0' = EMSCB_rep_0 [simplified, THEN mp]
 (*lemmas Real_minus_pos' = Real_minus_pos [simplified, THEN mp]
 lemmas Real_half_pos' = Real_half_pos [simplified, THEN mp]*)
 lemmas MS_triangle' = MS_triangle [simplified]
 lemmas FWO_plus_left' = FWO_plus_left [simplified]
-lemmas EMSCD_rep_inj' = EMSCD_rep_inj [simplified]
+lemmas EMSCB_rep_inj' = EMSCB_rep_inj [simplified]
 (*lemmas MS_identity' = MS_identity [simplified] *)
 lemmas MS_pos_definite' = MS_pos_definite [simplified]
 lemmas less_def_ExtPartialOrder' = less_def_ExtPartialOrder [simplified]
@@ -231,29 +216,9 @@ lemmas half_gt_zero' = half_gt_zero[simplified, THEN mp]
 lemmas half_leq_zero' = half_leq_zero[simplified, THEN mp]
 lemmas comm_add' = comm_add[simplified]
 
-declare P_def' [simp]
 declare C_def' [simp]
-declare O_def' [simp]
-declare NTP_def' [simp]
-declare EMSCD_rep_pos' [simp]
-declare EMSCD_rep_0' [simp]
-
-
-
-theorem P_def_1 : "ALL x. ALL y. pApp (Some XXPXX) (pair (Some x) (Some y)) = (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) --> pApp (Some XXCXX) (pair (Some z) (Some y)))"
-by auto
-
-ML "Header.record \"P_def_1\""
-
-theorem O_def_1 : "ALL x. ALL y. pApp (Some XXOXXX) (pair (Some x) (Some y)) = (EX z. pApp (Some XXCXX) (pair (Some z) (Some z)) & pApp (Some XXPXX) (pair (Some z) (Some x)) & pApp (Some XXPXX) (pair (Some z) (Some y)))"
-by auto
-
-ML "Header.record \"O_def_1\""
-
-theorem NTP_def_1 : "ALL x. ALL y. pApp (Some XXNTPXX) (pair (Some x) (Some y)) = (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) --> pApp (Some XXOXXX) (pair (Some z) (Some y)))"
-by auto
-
-ML "Header.record \"NTP_def_1\""
+declare EMSCB_rep_pos' [simp]
+declare EMSCB_rep_0' [simp]
 
 theorem C_non_null : "ALL x. ALL y. pApp (Some XXCXX) (pair (Some x) (Some y)) --> pApp (Some XXCXX) (pair (Some x) (Some x))"
 by auto
@@ -286,7 +251,7 @@ proof
 	  then show "x=y"
 	    proof (rule contrapos_pp)
 	      assume "x~=y"
-	      with EMSCD_rep_inj' have "rep x ~= rep y" by blast
+	      with EMSCB_rep_inj' have "rep x ~= rep y" by blast
 	      with ext [of "rep x"]  obtain p where sep: "rep x p ~= rep y p" 
 		by blast
 	      moreover from Ax4' obtain qx rx 
@@ -301,12 +266,12 @@ proof
 		case True
 		note outerTrue = True
 		with sep have p_notin_y: "~ rep y p" by blast
-		from True EMSCD_rep_0' coordx have rx_pos: "XXGtXXX (rx,X0_2)"
+		from True EMSCB_rep_0' coordx have rx_pos: "XXGtXXX (rx,X0_2)"
 		  by blast
 		show ?thesis
 		  proof (cases "XXGtXXX (ry,X0_2)")
 		    case True
-		    with coordy p_notin_y EMSCD_rep_pos'
+		    with coordy p_notin_y EMSCB_rep_pos'
 		    have p_outside_ry: "~XXLtXEqXXX_3 (d(qy,p),ry)"
 		      by blast
 		    with sub_leq'
@@ -316,7 +281,7 @@ proof
 		    have pos_half_dist: "XXGtXXX 
 		      (half(XXMinusXXX(d(qy,p),ry)),X0_2)"
 		      by blast
-		    with EMSCD_rep_pos' MS_zero[simplified] less_def_ExtPartialOrder'
+		    with EMSCB_rep_pos' MS_zero[simplified] less_def_ExtPartialOrder'
 		       greater_def_ExtPartialOrder' 
 		    have "rep (closedBall 
 		      (p,half(XXMinusXXX(d(qy,p),ry)))) p"
@@ -397,7 +362,7 @@ apply (subst not_iff)
 apply (case_tac "XXGtXXX (ta,X0_2)")
 apply (rule_tac x="closedBall(xa,half (XXMinusXXX (d(za,xa),ta)))" in exI)
 apply(auto)
-apply((drule EMSCD_rep_pos [simplified, THEN swap])+)
+apply((drule EMSCB_rep_pos [simplified, THEN swap])+)
 apply(rule_tac P="XXLtXEqXXX_3 (d (za, xa), ta)" in notE)
 apply(assumption)
 apply(rule half_leq')
@@ -415,7 +380,7 @@ apply(assumption+)
 
 apply(rule_tac x="xa" in exI)
 apply(simp)
-apply(rule EMSCD_rep_pos [simplified, THEN mp, THEN iffD2])
+apply(rule EMSCB_rep_pos [simplified, THEN mp, THEN iffD2])
 apply(rule half_gt_zero')
 apply(rule sub_leq')
 apply(assumption)
@@ -435,7 +400,7 @@ done
 theorem C_id : "ALL x. ALL y. (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) = pApp (Some XXCXX) (pair (Some z) (Some y))) --> Some x = Some y"
 apply (simp del: C_def C_def')
 apply (auto)
-apply (rule EMSCD_rep_inj [THEN mp, simplified])
+apply (rule EMSCB_rep_inj [THEN mp, simplified])
 apply (rule ext)
 apply (auto)
 apply (rule_tac x="x" in C_id_lemma)
@@ -450,7 +415,7 @@ theorem C_non_triv : "EX x. pApp (Some XXCXX) (pair (Some x) (Some x))"
 apply auto
 apply (rule exI)
 apply (rule exI)
-apply (rule EMSCD_rep_pos [THEN mp, simplified, THEN iffD2])
+apply (rule EMSCB_rep_pos [THEN mp, simplified, THEN iffD2])
 apply(rule one_greater_zero [simplified])
 apply(rule iffD2)
 apply(rule arg_cong)
