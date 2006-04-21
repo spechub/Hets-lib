@@ -61,15 +61,15 @@ apply (auto)
 done
 
 
-instance ClosedBall::type
+instance ClosedBall:: type
 by intro_classes
-instance Real::type
+instance Real:: type
 by intro_classes
-instance S::type
+instance S:: type
 by intro_classes
 
 axioms
-def_nonempty : "ALL x. op = (pApp (Some nonempty) (Some x)) (pApp (Some XXCXX) (pair (Some x) (Some x)))"
+def_nonempty : "ALL x. pApp (Some nonempty) (Some x) = pApp (Some XXCXX) (pair (Some x) (Some x))"
 
 C_def : "pApp (Some XXCXX) (pair (Some x) (Some y)) = (EX s. pApp (apt (Some rep) (Some x)) (Some s) & pApp (apt (Some rep) (Some y)) (Some s))"
 
@@ -81,11 +81,11 @@ NTP_def : "pApp (Some XXNTPXX) (pair (Some x) (Some y)) = (ALL z. pApp (Some XXC
 
 MS_pos [simp] : "pApp (Some XXLtXEqXXX_3) (pair (Some X0_2) (apt (Some d) (pair (Some x) (Some y))))"
 
-MS_zero [simp] : "op = (apt (Some d) (pair (Some x) (Some x))) (Some X0_2)"
+MS_zero [simp] : "apt (Some d) (pair (Some x) (Some x)) = Some X0_2"
 
-MS_pos_definite [simp] : "op = (apt (Some d) (pair (Some x) (Some y))) (Some X0_2) = op = (Some x) (Some y)"
+MS_pos_definite [simp] : "apt (Some d) (pair (Some x) (Some y)) = Some X0_2 = (Some x = Some y)"
 
-MS_symm [simp] : "op = (apt (Some d) (pair (Some x) (Some y))) (apt (Some d) (pair (Some y) (Some x)))"
+MS_symm [simp] : "apt (Some d) (pair (Some x) (Some y)) = apt (Some d) (pair (Some y) (Some x))"
 
 MS_triangle [simp] : "pApp (Some XXLtXEqXXX_3) (pair (apt (Some d) (pair (Some x) (Some z))) (apt (Some XXPlusXXX) (pair (apt (Some d) (pair (Some x) (Some y))) (apt (Some d) (pair (Some y) (Some z))))))"
 
@@ -105,25 +105,25 @@ half_leq [simp] : "pApp (Some XXLtXEqXXX_3) (pair (Some a) (apt (Some XXPlusXXX)
 
 half_leq_zero [simp] : "pApp (Some XXLtXEqXXX_3) (pair (Some X0_2) (Some r)) --> pApp (Some XXLtXEqXXX_3) (pair (Some X0_2) (apt (Some half) (Some r)))"
 
-comm_add [simp] : "op = (apt (Some XXPlusXXX) (pair (Some a) (Some b))) (apt (Some XXPlusXXX) (pair (Some b) (Some a)))"
+comm_add [simp] : "apt (Some XXPlusXXX) (pair (Some a) (Some b)) = apt (Some XXPlusXXX) (pair (Some b) (Some a))"
 
-Real_abs_def [simp] : "op = (apt (Some VBarX__VBarX) (Some r)) (apt (Some maxX) (pair (Some r) (apt (Some MinusXXX) (Some r))))"
+Real_abs_def [simp] : "apt (Some VBarX__VBarX) (Some r) = apt (Some maxX) (pair (Some r) (apt (Some MinusXXX) (Some r)))"
 
-Real_sqr_def [simp] : "op = (apt (Some sqrXX) (Some r)) (apt (Some XXxXXX) (pair (Some r) (Some r)))"
+Real_sqr_def [simp] : "apt (Some sqrXX) (Some r) = apt (Some XXxXXX) (pair (Some r) (Some r))"
 
 Real_sqrt_dom [simp] : "defOp (app (Some sqrtXX) (Some r)) = pApp (Some XXGtXEqXXX) (pair (Some r) (Some X0_2))"
 
-Real_sqrt_def [simp] : "op = (app (Some sqrtXX) (apt (Some sqrXX) (Some r))) (apt (Some VBarX__VBarX) (Some r))"
+Real_sqrt_def [simp] : "app (Some sqrtXX) (apt (Some sqrXX) (Some r)) = apt (Some VBarX__VBarX) (Some r)"
 
-Real_2_def [simp] : "op = (Some X2) (apt (Some XXPlusXXX) (pair (Some X1) (Some X1)))"
+Real_2_def [simp] : "Some X2 = apt (Some XXPlusXXX) (pair (Some X1) (Some X1))"
 
-Real_minus_def [simp] : "op = (apt (Some XXMinusXXX) (pair (Some r) (Some r'))) (apt (Some XXPlusXXX) (pair (Some r) (apt (Some MinusXXX) (Some r'))))"
+Real_minus_def [simp] : "apt (Some XXMinusXXX) (pair (Some r) (Some r')) = apt (Some XXPlusXXX) (pair (Some r) (apt (Some MinusXXX) (Some r')))"
 
 Real_divide_dom [simp] : "~ defOp (app (Some XXSlashXXX) (pair (Some r) (Some X0_2)))"
 
-Real_divide_def [simp] : "op = (app (Some XXSlashXXX) (pair (Some r) (Some r'))) (Some r'') = op = (apt (Some XXxXXX) (pair (Some r'') (Some r'))) (Some r)"
+Real_divide_def [simp] : "app (Some XXSlashXXX) (pair (Some r) (Some r')) = Some r'' = (apt (Some XXxXXX) (pair (Some r'') (Some r')) = Some r)"
 
-Real_half_def [simp] : "op = (apt (Some XXxXXX) (pair (Some X2) (apt (Some half) (Some r)))) (Some r)"
+Real_half_def [simp] : "apt (Some XXxXXX) (pair (Some X2) (apt (Some half) (Some r))) = Some r"
 
 ga_Nat [simp] : "True"
 
@@ -131,15 +131,15 @@ Real_ub_def : "pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some r)) = (ALL s. pApp 
 
 Real_lb_def : "pApp (Some XXLtXEqXXX_2) (pair (Some r) (Some M)) = (ALL s. pApp (Some M) (Some s) --> pApp (Some XXLtXEqXXX_3) (pair (Some r) (Some s)))"
 
-Real_inf_def : "op = (app (Some inf_1) (Some M)) (Some r) = (pApp (Some XXLtXEqXXX_2) (pair (Some r) (Some M)) & (ALL s. pApp (Some XXLtXEqXXX_2) (pair (Some s) (Some M)) --> pApp (Some XXLtXEqXXX_3) (pair (Some s) (Some r))))"
+Real_inf_def : "app (Some inf_1) (Some M) = Some r = (pApp (Some XXLtXEqXXX_2) (pair (Some r) (Some M)) & (ALL s. pApp (Some XXLtXEqXXX_2) (pair (Some s) (Some M)) --> pApp (Some XXLtXEqXXX_3) (pair (Some s) (Some r))))"
 
-Real_sup_def : "op = (app (Some sup_1) (Some M)) (Some r) = (pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some r)) & (ALL s. pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some s)) --> pApp (Some XXLtXEqXXX_3) (pair (Some r) (Some s))))"
+Real_sup_def : "app (Some sup_1) (Some M) = Some r = (pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some r)) & (ALL s. pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some s)) --> pApp (Some XXLtXEqXXX_3) (pair (Some r) (Some s))))"
 
 Real_isBounded_defCBrX : "pApp (Some isBounded) (Some M) = (EX ub. EX lb. pApp (Some XXLtXEqXXX_2) (pair (Some lb) (Some M)) & pApp (Some XXLtXEqXXX_1) (pair (Some M) (Some ub)))"
 
-Real_inj_0 [simp] : "op = (apt (Some injX) (Some X0_1)) (Some X0_2)"
+Real_inj_0 [simp] : "apt (Some injX) (Some X0_1) = Some X0_2"
 
-Real_inj_suc [simp] : "op = (apt (Some injX) (apt (Some suc) (Some nX))) (apt (Some XXPlusXXX) (pair (Some X1) (apt (Some injX) (Some nX))))"
+Real_inj_suc [simp] : "apt (Some injX) (apt (Some suc) (Some nX)) = apt (Some XXPlusXXX) (pair (Some X1) (apt (Some injX) (Some nX)))"
 
 Real_archimedian : "EX nX. pApp (Some XXLtXEqXXX_3) (pair (Some r) (apt (Some injX) (Some nX)))"
 
@@ -155,43 +155,43 @@ FWO_plus : "ALL a. ALL b. ALL c. ALL d. pApp (Some XXLtXEqXXX_3) (pair (Some a) 
 
 FWO_times_left : "ALL a. ALL b. ALL c. pApp (Some XXLtXEqXXX_3) (pair (Some a) (Some b)) & pApp (Some XXLtXEqXXX_3) (pair (Some X0_2) (Some c)) --> pApp (Some XXLtXEqXXX_3) (pair (apt (Some XXxXXX) (pair (Some a) (Some c))) (apt (Some XXxXXX) (pair (Some b) (Some c))))"
 
-Field_unary_minus_def : "ALL x. op = (apt (Some XXPlusXXX) (pair (apt (Some MinusXXX) (Some x)) (Some x))) (Some X0_2)"
+Field_unary_minus_def : "ALL x. apt (Some XXPlusXXX) (pair (apt (Some MinusXXX) (Some x)) (Some x)) = Some X0_2"
 
 dichotomy_TotalOrder : "ALL x. ALL y. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) | pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some x))"
 
-antisym : "ALL x. ALL y. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some x)) --> op = (Some x) (Some y)"
+antisym : "ALL x. ALL y. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some x)) --> Some x = Some y"
 
 trans : "ALL x. ALL y. ALL z. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some z)) --> pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some z))"
 
 refl : "ALL x. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some x))"
 
-min_inf_relation : "ALL x. ALL y. op = (apt (Some minX) (pair (Some x) (Some y))) (app (Some inf_2) (pair (Some x) (Some y)))"
+min_inf_relation : "ALL x. ALL y. apt (Some minX) (pair (Some x) (Some y)) = app (Some inf_2) (pair (Some x) (Some y))"
 
-max_sup_relation : "ALL x. ALL y. op = (apt (Some maxX) (pair (Some x) (Some y))) (app (Some sup_2) (pair (Some x) (Some y)))"
+max_sup_relation : "ALL x. ALL y. apt (Some maxX) (pair (Some x) (Some y)) = app (Some sup_2) (pair (Some x) (Some y))"
 
-ga_comm_min : "ALL x. ALL y. op = (apt (Some minX) (pair (Some x) (Some y))) (apt (Some minX) (pair (Some y) (Some x)))"
+ga_comm_min : "ALL x. ALL y. apt (Some minX) (pair (Some x) (Some y)) = apt (Some minX) (pair (Some y) (Some x))"
 
-ga_comm_max : "ALL x. ALL y. op = (apt (Some maxX) (pair (Some x) (Some y))) (apt (Some maxX) (pair (Some y) (Some x)))"
+ga_comm_max : "ALL x. ALL y. apt (Some maxX) (pair (Some x) (Some y)) = apt (Some maxX) (pair (Some y) (Some x))"
 
-ga_assoc_min : "ALL x. ALL y. ALL z. op = (apt (Some minX) (pair (Some x) (apt (Some minX) (pair (Some y) (Some z))))) (apt (Some minX) (pair (apt (Some minX) (pair (Some x) (Some y))) (Some z)))"
+ga_assoc_min : "ALL x. ALL y. ALL z. apt (Some minX) (pair (Some x) (apt (Some minX) (pair (Some y) (Some z)))) = apt (Some minX) (pair (apt (Some minX) (pair (Some x) (Some y))) (Some z))"
 
-ga_assoc_max : "ALL x. ALL y. ALL z. op = (apt (Some maxX) (pair (Some x) (apt (Some maxX) (pair (Some y) (Some z))))) (apt (Some maxX) (pair (apt (Some maxX) (pair (Some x) (Some y))) (Some z)))"
+ga_assoc_max : "ALL x. ALL y. ALL z. apt (Some maxX) (pair (Some x) (apt (Some maxX) (pair (Some y) (Some z)))) = apt (Some maxX) (pair (apt (Some maxX) (pair (Some x) (Some y))) (Some z))"
 
-min_def_ExtTotalOrder : "ALL x. ALL y. op = (apt (Some minX) (pair (Some x) (Some y))) (if pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) then Some x else Some y)"
+min_def_ExtTotalOrder : "ALL x. ALL y. apt (Some minX) (pair (Some x) (Some y)) = (if pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) then Some x else Some y)"
 
-max_def_ExtTotalOrder : "ALL x. ALL y. op = (apt (Some maxX) (pair (Some x) (Some y))) (if pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) then Some y else Some x)"
+max_def_ExtTotalOrder : "ALL x. ALL y. apt (Some maxX) (pair (Some x) (Some y)) = (if pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) then Some y else Some x)"
 
-ga_comm_inf : "ALL x. ALL y. op = (app (Some inf_2) (pair (Some x) (Some y))) (app (Some inf_2) (pair (Some y) (Some x)))"
+ga_comm_inf : "ALL x. ALL y. app (Some inf_2) (pair (Some x) (Some y)) = app (Some inf_2) (pair (Some y) (Some x))"
 
-ga_comm_sup : "ALL x. ALL y. op = (app (Some sup_2) (pair (Some x) (Some y))) (app (Some sup_2) (pair (Some y) (Some x)))"
+ga_comm_sup : "ALL x. ALL y. app (Some sup_2) (pair (Some x) (Some y)) = app (Some sup_2) (pair (Some y) (Some x))"
 
-inf_def_ExtPartialOrder : "ALL x. ALL y. ALL z. op = (app (Some inf_2) (pair (Some x) (Some y))) (Some z) = (pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some x)) & pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some y)) & (ALL t. pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some x)) & pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some y)) --> pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some z))))"
+inf_def_ExtPartialOrder : "ALL x. ALL y. ALL z. app (Some inf_2) (pair (Some x) (Some y)) = Some z = (pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some x)) & pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some y)) & (ALL t. pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some x)) & pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some y)) --> pApp (Some XXLtXEqXXX_3) (pair (Some t) (Some z))))"
 
-sup_def_ExtPartialOrder : "ALL x. ALL y. ALL z. op = (app (Some sup_2) (pair (Some x) (Some y))) (Some z) = (pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some z)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some z)) & (ALL t. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some t)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some t)) --> pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some t))))"
+sup_def_ExtPartialOrder : "ALL x. ALL y. ALL z. app (Some sup_2) (pair (Some x) (Some y)) = Some z = (pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some z)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some z)) & (ALL t. pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some t)) & pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some t)) --> pApp (Some XXLtXEqXXX_3) (pair (Some z) (Some t))))"
 
 geq_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXGtXEqXXX) (pair (Some x) (Some y)) = pApp (Some XXLtXEqXXX_3) (pair (Some y) (Some x))"
 
-less_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXLtXXX) (pair (Some x) (Some y)) = (pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) & ~ op = (Some x) (Some y))"
+less_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXLtXXX) (pair (Some x) (Some y)) = (pApp (Some XXLtXEqXXX_3) (pair (Some x) (Some y)) & ~ Some x = Some y)"
 
 greater_def_ExtPartialOrder : "ALL x. ALL y. pApp (Some XXGtXXX) (pair (Some x) (Some y)) = pApp (Some XXLtXXX) (pair (Some y) (Some x))"
 
@@ -199,9 +199,9 @@ EMSCD_rep_pos [simp] : "pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> pApp
 
 EMSCD_rep_0 [simp] : "~ pApp (Some XXGtXXX) (pair (Some r) (Some X0_2)) --> ~ pApp (apt (Some rep) (apt (Some closedBall) (pair (Some x) (Some r)))) (Some y)"
 
-EMSCD_rep_inj : "op = (apt (Some rep) (Some a)) (apt (Some rep) (Some b)) --> op = (Some a) (Some b)"
+EMSCD_rep_inj : "apt (Some rep) (Some a) = apt (Some rep) (Some b) --> Some a = Some b"
 
-Ax4 : "EX z. EX t. op = (Some a) (apt (Some closedBall) (pair (Some z) (Some t)))"
+Ax4 : "EX z. EX t. Some a = apt (Some closedBall) (pair (Some z) (Some t))"
 
 ga_Nat_1 [simp] : "True"
 
@@ -264,7 +264,6 @@ theorem C_sym : "ALL x. ALL y. pApp (Some XXCXX) (pair (Some x) (Some y)) --> pA
 by auto
 
 ML "Header.record \"C_sym\""
-
 
 theorem C_id : "ALL x. ALL y. (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) = pApp (Some XXCXX) (pair (Some z) (Some y))) --> op = (Some x) (Some y)" 
 
@@ -433,7 +432,7 @@ apply(rule reflLemma)
 apply(rule MS_symm')
 done
 
-theorem C_id : "ALL x. ALL y. (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) = pApp (Some XXCXX) (pair (Some z) (Some y))) --> op = (Some x) (Some y)"
+theorem C_id : "ALL x. ALL y. (ALL z. pApp (Some XXCXX) (pair (Some z) (Some x)) = pApp (Some XXCXX) (pair (Some z) (Some y))) --> Some x = Some y"
 apply (simp del: C_def C_def')
 apply (auto)
 apply (rule EMSCD_rep_inj [THEN mp, simplified])
@@ -444,7 +443,6 @@ apply(auto)
 apply (rule_tac x="y" in C_id_lemma)
 apply(auto)
 done
-
 
 ML "Header.record \"C_id\""
 
