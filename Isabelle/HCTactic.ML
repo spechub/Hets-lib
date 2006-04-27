@@ -42,7 +42,7 @@ fun get_assums t =
 
 fun get_assumNum th =
   let
-    val l = (get_assums o strip_meta o nth_elem) (0, prems_of th)   
+    val l = (get_assums o strip_meta o Library.nth_elem) (0, prems_of th)   
   in
     getDefOpNum l
   end
