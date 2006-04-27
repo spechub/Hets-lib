@@ -1,8 +1,7 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
+theory Foldl3_FoldlImpl_Proofs
+imports "$HETS_LIB/Isabelle/MainHC"
+begin
 
-theory Foldl3_FoldlImpl = MainHC:
 datatype 'a List = nil | cons 'a "'a List"
 
 consts
