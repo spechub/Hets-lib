@@ -1,6 +1,7 @@
-theory MainHCPlus = Main:
+theory MainHCPlus = Main
 
-use "HCTactic.ML"
+files ("$HETS_LIB/Isabelle/HCTactic.ML"):
+use "$HETS_LIB/Isabelle/HCTactic.ML";
 
 (* Operator definitions for encoding *)
 consts app :: "('a => 'b option) option => 'a option => 'b option"
