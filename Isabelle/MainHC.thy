@@ -1,5 +1,19 @@
 theory MainHC = Main:
 
+constdefs
+uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
+"uncurryOp f p == f (fst p) (snd p)"
+
+pairL :: "'a option => 'b => ('a * 'b) option"
+"pairL l b == case l of 
+                None => None
+              | Some a => Some (a, b)"
+
+pairR :: "'a => 'b option => ('a * 'b) option"
+"pairR a r == case r of 
+                None => None
+              | Some b => Some (a, b)"
+
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"
