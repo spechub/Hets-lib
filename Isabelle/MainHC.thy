@@ -1,4 +1,6 @@
-theory MainHC = Main:
+theory MainHC
+imports Main
+begin
 
 constdefs
 uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
@@ -30,20 +32,6 @@ appl5 :: "('a => 'b option) option => 'a => 'b option"
     None => None
   | Some f => f a"
 
-app :: "('a => 'b option) option => 'a option => 'b option"
-"app s t == case s of
-    None => None
-  | Some f => (case t of
-      None => None
-    | Some a => f a)"
-
-apt :: "('a => 'b) option => 'a option => 'b option"
-"apt s t == case s of
-    None => None
-  | Some f => (case t of
-      None => None
-    | Some a => Some (f a))"
-
 appl7 :: "('a => 'b) option => 'a => 'b option"
 "appl7 s a == case s of
     None => None
@@ -59,15 +47,29 @@ pApp2 :: "('a => bool) => 'a option => bool"
     None => False
   | Some a => f a"
 
-pApp :: "('a => bool) option => 'a option => bool"
-"pApp s t == case s of
-    None => False
-  | Some f => (case t of
-      None => False
-    | Some a => f a)"
-
 defOp1 :: "'a => bool"
 "defOp1 a == True"
+
+consts app :: "('a => 'b option) option => 'a option => 'b option"
+primrec
+  "app None a = None"
+  "app (Some f) x = (case x of
+                            None => None
+                          | Some x' => f x')"
+
+consts apt :: "('a => 'b) option => 'a option => 'b option"
+primrec
+  "apt None a = None"
+  "apt (Some f) x = (case x of
+                            None => None
+                          | Some x' => Some (f x'))"
+
+consts pApp :: "('a => bool) option => 'a option => bool"
+primrec
+  "pApp None a = False"
+  "pApp (Some f) x = (case x of
+                             None => False
+                           | Some y => f y)"
 
 consts defOp :: "'a option => bool"
 primrec
