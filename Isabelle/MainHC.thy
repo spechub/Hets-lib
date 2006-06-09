@@ -57,15 +57,17 @@ mapSome :: "('a => 'b) => 'a option => 'b option"
     None => None 
   | Some a => Some (f a)" 
 
+mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
+"mapFst f p == (f (fst p), snd p)" 
+
+mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
+"mapSnd f p == (fst p, f (snd p))" 
+
 liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
 "liftFst f g p == f (flipOp (curryOp g) (snd p)) (fst p)"
 
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
 "liftSnd f g p == f (curryOp g (fst p)) (snd p)"
-
-liftPair :: "(('a => 'c) => 'd => 'e) => (('b => 'e) => 'f => 'g) 
-             => ('a * 'b => 'c) => 'd * 'f => 'g"
-"liftPair f g == liftSnd g o liftFst f"
 
 pairL :: "'a option => 'b => ('a * 'b) option"
 "pairL l b == case l of 
@@ -76,9 +78,6 @@ pairR :: "'a => 'b option => ('a * 'b) option"
 "pairR a r == case r of 
     None => None
   | Some b => Some (a, b)"
-
-lift :: "('a option => 'b option) => 'a => 'b option"
-"lift g a == g (Some a)"
 
 appl1 :: "('a => 'b option) => 'a option => 'b option"
 "appl1 f s == case s of
