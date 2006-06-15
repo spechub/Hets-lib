@@ -1,0 +1,18 @@
+use Basic/Numbers
+dg auto Nat_E2 -> Nat_E1
+dg basic Nat_E1
+show-theroy
+translate Isabelle
+show-theory
+prover Isabelle
+proof-script min_0
+theorem min_0 : "min(m, 0) = 0" 
+by auto
+end-script
+proof-script div_mod_Nat
+theorem div_mod_Nat : "~ n = 0 --> m = ((m div n) * n) + (m mod n)"
+by auto
+end-script
+dg auto
+
+
