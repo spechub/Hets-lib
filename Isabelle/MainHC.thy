@@ -3,10 +3,35 @@ imports Main
 begin
 
 constdefs
-unpackOp :: "(('a => 'b) => 'c => 'd) => ('a => 'b) option => 'c => 'd option"
-"unpackOp c s a == case s of
+unpackOption :: "(('a => 'b option) => 'c => 'd option) 
+            => ('a => 'b option) option => 'c => 'd option"
+"unpackOption c s a == case s of
+    None => None
+  | Some f => c f a"
+
+unpackBool :: "(('a => bool) => 'c => bool) 
+            => ('a => bool) option => 'c => bool"
+"unpackBool c s a == case s of
+    None => False
+  | Some f => c f a"
+
+unpack2option :: "(('a => 'b) => 'c => 'd) 
+            => ('a => 'b) option => 'c => 'd option"
+"unpack2option c s a == case s of
     None => None
   | Some f => Some (c f a)"
+
+option2bool :: "'a option => bool"
+"option2bool s == case s of 
+    None => False
+  | Some a => True"
+
+unpack2bool :: "(('a => unit) => 'c => unit) 
+            => ('a => unit) option => 'c => bool"
+"unpack2bool c s a == option2bool s"
+
+flipComp :: "('a => 'b) => ('b => 'c) => 'a => 'c"
+"flipComp f g x == g (f x)"    
 
 uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 "uncurryOp f p == f (fst p) (snd p)"
@@ -16,11 +41,6 @@ curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 
 flipOp :: "('a => 'b => 'c) => 'b => 'a => 'c" 
 "flipOp f a b == f b a"
-
-option2bool :: "'a option => bool"
-"option2bool s == case s of 
-    None => False
-  | Some a => True"
 
 bool2option :: "bool => unit option"
 "bool2option b == if b then Some () else None"
