@@ -3,35 +3,35 @@ imports Main
 begin
 
 constdefs
-unpackOption :: "(('a => 'b option) => 'c => 'd option) 
+unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
 "unpackOption c s a == case s of
     None => None
   | Some f => c f a"
 
-unpackBool :: "(('a => bool) => 'c => bool) 
+unpackBool :: "(('a => bool) => 'c => bool)
             => ('a => bool) option => 'c => bool"
 "unpackBool c s a == case s of
     None => False
   | Some f => c f a"
 
-unpack2option :: "(('a => 'b) => 'c => 'd) 
+unpack2option :: "(('a => 'b) => 'c => 'd)
             => ('a => 'b) option => 'c => 'd option"
 "unpack2option c s a == case s of
     None => None
   | Some f => Some (c f a)"
 
 option2bool :: "'a option => bool"
-"option2bool s == case s of 
+"option2bool s == case s of
     None => False
   | Some a => True"
 
-unpack2bool :: "(('a => unit) => 'c => unit) 
+unpack2bool :: "(('a => unit) => 'c => unit)
             => ('a => unit) option => 'c => bool"
 "unpack2bool c s a == option2bool s"
 
 flipComp :: "('a => 'b) => ('b => 'c) => 'a => 'c"
-"flipComp f g x == g (f x)"    
+"flipComp f g x == g (f x)"
 
 uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 "uncurryOp f p == f (fst p) (snd p)"
@@ -39,63 +39,63 @@ uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 "curryOp f a b == f (a, b)"
 
-flipOp :: "('a => 'b => 'c) => 'b => 'a => 'c" 
-"flipOp f a b == f b a"
+flipCurryOp :: "('a * 'b => 'c) => 'b => 'a => 'c"
+"flipCurryOp f a b == f (b, a)"
 
 bool2option :: "bool => unit option"
 "bool2option b == if b then Some () else None"
 
-liftUnit2unit :: "('a => 'b) => bool => bool" 
+liftUnit2unit :: "('a => 'b) => bool => bool"
 "liftUnit2unit f b == b"
 
-liftUnit2bool :: "(unit => bool) => bool => bool" 
+liftUnit2bool :: "(unit => bool) => bool => bool"
 "liftUnit2bool f b == if b then f () else False"
 
-liftUnit2option :: "(unit => 'a option) => bool => 'a option" 
+liftUnit2option :: "(unit => 'a option) => bool => 'a option"
 "liftUnit2option f b == if b then f () else None"
 
-liftUnit :: "(unit => 'a) => bool => 'a option" 
+liftUnit :: "(unit => 'a) => bool => 'a option"
 "liftUnit f b == if b then Some (f ()) else None"
 
-lift2unit :: "('b => 'c) => ('a option => bool)" 
+lift2unit :: "('b => 'c) => ('a option => bool)"
 "lift2unit f == option2bool"
 
 (* pApp2 *)
-lift2bool :: "('a => bool) => 'a option => bool" 
+lift2bool :: "('a => bool) => 'a option => bool"
 "lift2bool f s == case s of
     None => False
   | Some a => f a"
 
 (* appl1 *)
-lift2option :: "('a => 'b option) => 'a option => 'b option" 
+lift2option :: "('a => 'b option) => 'a option => 'b option"
 "lift2option f s == case s of
     None => None
   | Some a => f a"
 
 mapSome :: "('a => 'b) => 'a option => 'b option"
-"mapSome f s == case s of 
-    None => None 
-  | Some a => Some (f a)" 
+"mapSome f s == case s of
+    None => None
+  | Some a => Some (f a)"
 
 mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
-"mapFst f p == (f (fst p), snd p)" 
+"mapFst f p == (f (fst p), snd p)"
 
 mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
-"mapSnd f p == (fst p, f (snd p))" 
+"mapSnd f p == (fst p, f (snd p))"
 
 liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
-"liftFst f g p == f (flipOp (curryOp g) (snd p)) (fst p)"
+"liftFst f g p == f (flipCurryOp g (snd p)) (fst p)"
 
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
 "liftSnd f g p == f (curryOp g (fst p)) (snd p)"
 
 pairL :: "'a option => 'b => ('a * 'b) option"
-"pairL l b == case l of 
+"pairL l b == case l of
     None => None
   | Some a => Some (a, b)"
 
 pairR :: "'a => 'b option => ('a * 'b) option"
-"pairR a r == case r of 
+"pairR a r == case r of
     None => None
   | Some b => Some (a, b)"
 
