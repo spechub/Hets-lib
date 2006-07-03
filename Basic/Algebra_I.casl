@@ -329,7 +329,7 @@ sort Z[n]
 ops [__]: Int -> Z[n];
     __+__, __*__: Z[n] * Z[n] -> Z[n];
     0, e: Z[n]
-vars k,l: Int; x: Z[n]
+forall k,l: Int; x: Z[n]
 . [k] = [l] <=> (k-l) mod n = 0
 . exists m: Int. [m] = x
 . [k] + [l] = [k + l]
@@ -340,7 +340,7 @@ view CommutativeRing_in_ResidueClassRing[op n: Int] given Int:
 sort Elem |-> Z[n]
 
 spec Prime[op n:Int] given Int =
-var m: Int
+forall m: Int
 . n mod m = 0 => m = 1 \/ m = n
 
 spec ResidueClassField[Prime[op n: Int]] given Int =
