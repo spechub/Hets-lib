@@ -60,13 +60,11 @@ liftUnit :: "(unit => 'a) => bool => 'a option"
 lift2unit :: "('b => 'c) => ('a option => bool)"
 "lift2unit f == option2bool"
 
-(* pApp2 *)
 lift2bool :: "('a => bool) => 'a option => bool"
 "lift2bool f s == case s of
     None => False
   | Some a => f a"
 
-(* appl1 *)
 lift2option :: "('a => 'b option) => 'a option => 'b option"
 "lift2option f s == case s of
     None => None
@@ -88,46 +86,6 @@ liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
 
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
 "liftSnd f g p == f (curryOp g (fst p)) (snd p)"
-
-pairL :: "'a option => 'b => ('a * 'b) option"
-"pairL l b == case l of
-    None => None
-  | Some a => Some (a, b)"
-
-pairR :: "'a => 'b option => ('a * 'b) option"
-"pairR a r == case r of
-    None => None
-  | Some b => Some (a, b)"
-
-appl1 :: "('a => 'b option) => 'a option => 'b option"
-"appl1 f s == case s of
-    None => None
-  | Some a => f a"
-
-appl3 :: "('a => 'b) => 'a option => 'b option"
-"appl3 f s == case s of
-    None => None
-  | Some a => Some (f a)"
-
-appl5 :: "('a => 'b option) option => 'a => 'b option"
-"appl5 s a == case s of
-    None => None
-  | Some f => f a"
-
-appl7 :: "('a => 'b) option => 'a => 'b option"
-"appl7 s a == case s of
-    None => None
-  | Some f => Some (f a)"
-
-pApp1 :: "('a => bool) option => 'a => bool"
-"pApp1 s a == case s of
-    None => False
-  | Some f => f a"
-
-pApp2 :: "('a => bool) => 'a option => bool"
-"pApp2 f s == case s of
-    None => False
-  | Some a => f a"
 
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
