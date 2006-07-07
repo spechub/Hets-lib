@@ -4,18 +4,19 @@ begin
 
 constdefs
 
-ifImplOp :: "bool => bool => bool"
-"ifImplOp a b == b --> a"
+ifImplOp :: "bool * bool => bool"
+"ifImplOp p == snd p --> fst p"
 
-exEqualOp :: "'a option => 'a option => bool"
-"exEqualOp m s == case m of
+exEqualOp :: "'a option * 'a option => bool"
+"exEqualOp p == case fst p of
     None => False
-  | Some a => (case s of
+  | Some a => (case snd p of
       None => False
     | Some b => a = b)"
 
-ifThenElseOp :: "bool => 'a => 'a => 'a"
-"ifThenElseOp b t e == if b then t else e"
+whenElseOp :: "'a option * bool * 'a option => 'a option"
+"whenElseOp t == case t of
+    (t, b, e) => if b then t else e"
 
 unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
