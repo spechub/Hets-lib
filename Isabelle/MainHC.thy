@@ -3,6 +3,20 @@ imports Main
 begin
 
 constdefs
+
+ifImplOp :: "bool => bool => bool"
+"ifImplOp a b == b --> a"
+
+exEqualOp :: "'a option => 'a option => bool"
+"exEqualOp m s == case m of
+    None => False
+  | Some a => (case s of
+      None => False
+    | Some b => a = b)"
+
+ifThenElseOp :: "bool => 'a => 'a => 'a"
+"ifThenElseOp b t e == if b then t else e"
+
 unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
 "unpackOption c s a == case s of
