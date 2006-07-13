@@ -16,7 +16,7 @@ spec Field =
 then %def
      op -__: Elem -> Elem
      forall x: Elem
-     . -x + x = 0	%(Field_unary_minus_def)%
+     . -x + x = 0	%(Field_unary_minus_idef)%
 end
 
 spec  FieldWithOrdering =
@@ -105,12 +105,12 @@ then %def
      . | r | = max(r,-r)		%(Real_abs_def)%
      . sqr(r) = r * r			%(Real_sqr_def)%
      . def sqrt(r) <=> r >= 0		%(Real_sqrt_dom)%
-     . sqrt(sqr(r)) = | r |  		%(Real_sqrt_def)%
+     . sqrt(sqr(r)) = | r |  		%(Real_sqrt_idef)%
      . 2 = 1 + 1   			%(Real_2_def)%
      . r-r' = r + -r' 			%(Real_minus_def)%
      . not def(r/0)      		%(Real_divide_dom)%
-     . r/r' = r'' <=> r'' * r' = r	%(Real_divide_def)%
-     . 2 * half(r) = r			%(Real_half_def)%
+     . r/r' = r'' <=> r'' * r' = r	%(Real_divide_idef)%
+     . 2 * half(r) = r			%(Real_half_idef)%
 then %implies
      forall a,b,c,e,r,s:Real
      . 1>0                              %(one_greater_zero)%
