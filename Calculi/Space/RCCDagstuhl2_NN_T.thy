@@ -68,17 +68,6 @@ sqrtXX :: "Real => Real option"
 sup_1 :: "(Real => bool) => Real option"
 sup_2 :: "Real * Real => Real option"
 
-lemma case_Nat_SomeProm [simp]:" (case caseVar of X0_1 => Some (x)
-   | suc nat => Some (s nat)
-) =
-Some (case caseVar of X0_1 => x
-   | suc nat => s nat
-)"
-apply (case_tac caseVar)
-apply (auto)
-done
-
-
 instance ClosedBall:: type
 by intro_classes
 instance Real:: type
