@@ -1,8 +1,6 @@
 structure Header :
 sig
-(* val dest_thm_axm : Proofterm.proof 
-   -> (string * (string * string list) list) * Proofterm.proof
-   val get_axioms : Proofterm.proof -> string list *)
+(* val get_axioms : string -> string list *)
 val record : string -> unit
 val initialize : string list -> unit 
 end
@@ -13,40 +11,32 @@ open Proofterm
 
 infix mem;
 
-val thmlist = ref [""]
+val thmlist = ref [""];
+val thyname = ref ""
 
 fun axname s =
    let val (_,an) = take_prefix  (fn x => x <> ".") (explode s)
    in if null an then "" else implode (tl an)
    end
 
-fun dest_thm_axm (PThm (nt, prf, _, _)) = (nt, prf)
-  | dest_thm_axm (PAxm (n, _, _)) = ((n, []), MinProof ([], [], []))
-  | dest_thm_axm _ = (("", []), MinProof ([], [], []))
-
-fun get_axioms (AbsP (_, _, prf)) = get_axioms prf
-  | get_axioms (Abst (_, _, prf)) = get_axioms prf
-  | get_axioms (prf1 %% prf2) = get_axioms prf1 @ get_axioms prf2
-  | get_axioms (prf % _) = get_axioms prf
-  | get_axioms (MinProof (thms, axms, _)) = 
-      List.concat (map (get_axioms o Proofterm.proof_of_min_thm) thms) @
-      List.concat (map (get_axioms o Proofterm.proof_of_min_axm) axms) 
-  | get_axioms prf = 
-      let val ((name, tags), prf') = dest_thm_axm prf
-      in
-         if axname name mem (!thmlist) then  name :: get_axioms prf' else []
-      end
+fun get_axioms name = 
+     let val (l, r) = List.partition (fn s => s mem (!thmlist))
+                      (filter (fn s => s <> name)
+                      (filter (String.isPrefix (!thyname))
+                       (Symtab.keys (thms_of_proof 
+                                    (Thm.proof_of (thm name)) Symtab.empty))))
+     in if null r then l
+        else l @ List.concat (map get_axioms r)
+     end
 
 fun record1 name = 
   let val thy = the_context ()
       val thms = PureThy.thms_of thy
   in if name mem (map (axname o fst) thms) then
      let
-      val t = thm name
-      val p = Thm.proof_of t
-      val axs = filter (fn s => s <> name) (map axname (get_axioms p))
-      val txt = foldl (fn (s,t) => s ^ "\n" ^ t) "" axs
-      val filename = Context.theory_name thy ^ "_" ^ name ^ ".deps"
+      val axs = map axname (get_axioms (!thyname ^ "." ^ name))
+      val txt = foldl (fn (s, t) => s ^ "\n" ^ t) "" axs
+      val filename = !thyname ^ "_" ^ name ^ ".deps"
      in
         File.write (Path.basic filename) txt
      end
@@ -56,7 +46,11 @@ fun record1 name =
 fun record name =
     record1 name handle _ => ()
 
-fun initialize l = (thmlist := l)
+fun initialize l = 
+    let val thy = Context.theory_name (the_context ()) 
+    in thmlist := map (fn s => thy ^ "." ^ s) l;
+       thyname := thy
+    end
 
 end;
 
