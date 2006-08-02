@@ -4,30 +4,30 @@ uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize 
-    [\"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\", 
-     \"def_nonempty\", \"C_def\", \"MS_pos\", \"MS_zero\", 
-     \"MS_pos_definite\", \"MS_symm\", \"MS_triangle\", 
-     \"one_greater_zero\", \"zero_leq_one\", \"half_gt_zero\", 
-     \"half_plus_minus\", \"add_monotone\", \"sub_leq\", \"half_leq\", 
-     \"half_leq_zero\", \"comm_add\", \"Real_half_plus\", 
-     \"Real_half_minus\", \"Real_minus_half\", \"Real_half_monot\", 
-     \"Real_abs_def\", \"Real_sqr_def\", \"Real_sqrt_dom\", 
-     \"Real_sqrt_idef\", \"Real_2_def\", \"Real_minus_def\", 
-     \"Real_divide_dom\", \"Real_divide_idef\", \"Real_half_idef\", 
-     \"Real_ub_def\", \"Real_lb_def\", \"Real_inf_def\", 
-     \"Real_sup_def\", \"Real_isBounded_defCBrX\", \"Real_inj_0\", 
-     \"Real_inj_suc\", \"Real_archimedian\", \"FWO_plus_right\", 
-     \"FWO_times_right\", \"FWO_plus\", \"FWO_plus_left\", 
-     \"FWO_times_left\", \"Field_unary_minus_idef\", 
-     \"dichotomy_TotalOrder\", \"antisym\", \"trans\", \"refl\", 
-     \"min_inf_relation\", \"max_sup_relation\", \"ga_comm_min\", 
-     \"ga_comm_max\", \"ga_assoc_min\", \"ga_assoc_max\", 
-     \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\", 
-     \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\", 
-     \"sup_def_ExtPartialOrder\", \"geq_def_ExtPartialOrder\", 
+    [\"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\", \"refl\", 
+     \"trans\", \"antisym\", \"geq_def_ExtPartialOrder\", 
      \"less_def_ExtPartialOrder\", \"greater_def_ExtPartialOrder\", 
-     \"EMSCB_center\", \"EMSCB_closed\", \"EMSCB_rep_pos\", 
-     \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\"]"
+     \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\", 
+     \"sup_def_ExtPartialOrder\", \"dichotomy_TotalOrder\", 
+     \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\", 
+     \"ga_assoc_max\", \"min_def_ExtTotalOrder\", 
+     \"max_def_ExtTotalOrder\", \"min_inf_relation\", 
+     \"max_sup_relation\", \"Field_unary_minus_idef\", 
+     \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\", 
+     \"FWO_times_right\", \"FWO_plus\", \"ga_Nat\", \"Real_ub_def\", 
+     \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\", 
+     \"Real_isBounded_defCBrX\", \"Real_inj_0\", \"Real_inj_suc\", 
+     \"Real_archimedian\", \"Real_abs_def\", \"Real_sqr_def\", 
+     \"Real_sqrt_dom\", \"Real_sqrt_idef\", \"Real_2_def\", 
+     \"Real_minus_def\", \"Real_divide_dom\", \"Real_divide_idef\", 
+     \"Real_half_idef\", \"one_greater_zero\", \"zero_leq_one\", 
+     \"half_gt_zero\", \"half_plus_minus\", \"add_monotone\", 
+     \"sub_leq\", \"half_leq\", \"half_leq_zero\", \"comm_add\", 
+     \"Real_half_plus\", \"Real_half_minus\", \"Real_minus_half\", 
+     \"Real_half_monot\", \"MS_pos_definite\", \"MS_symm\", 
+     \"MS_triangle\", \"MS_pos\", \"MS_zero\", \"EMSCB_rep_pos\", 
+     \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\", \"EMSCB_center\", 
+     \"EMSCB_closed\", \"def_nonempty\", \"C_def\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -78,19 +78,122 @@ instance S:: type
 by intro_classes
 
 axioms
-def_nonempty : "ALL x. nonempty(x) = x C x"
+refl [simp] : "ALL x. x <=_3 x"
 
-C_def : "x C y = (EX s. rep x s & rep y s)"
+trans : "ALL x. ALL y. ALL z. x <=_3 y & y <=_3 z --> x <=_3 z"
 
-MS_pos [simp] : "0'' <=_3 d (x, y)"
+antisym : "ALL x. ALL y. x <=_3 y & y <=_3 x --> x = y"
 
-MS_zero [simp] : "d (x, x) = 0''"
+geq_def_ExtPartialOrder : "ALL x. ALL y. x >=' y = y <=_3 x"
 
-MS_pos_definite [simp] : "d (x, y) = 0'' = (x = y)"
+less_def_ExtPartialOrder : 
+"ALL x. ALL y. x <' y = (x <=_3 y & ~ x = y)"
 
-MS_symm : "d (x, y) = d (y, x)"
+greater_def_ExtPartialOrder : "ALL x. ALL y. x >' y = y <' x"
 
-MS_triangle [simp] : "d (x, z) <=_3 (d (x, y) +' d (y, z))"
+ga_comm_inf : "ALL x. ALL y. inf_2 (x, y) = inf_2 (y, x)"
+
+ga_comm_sup : "ALL x. ALL y. sup_2 (x, y) = sup_2 (y, x)"
+
+inf_def_ExtPartialOrder : 
+"ALL x. 
+ ALL y. 
+ ALL z. 
+ inf_2 (x, y) = Some z = 
+ (z <=_3 x & z <=_3 y & (ALL t. t <=_3 x & t <=_3 y --> t <=_3 z))"
+
+sup_def_ExtPartialOrder : 
+"ALL x. 
+ ALL y. 
+ ALL z. 
+ sup_2 (x, y) = Some z = 
+ (x <=_3 z & y <=_3 z & (ALL t. x <=_3 t & y <=_3 t --> z <=_3 t))"
+
+dichotomy_TotalOrder [simp] : "ALL x. ALL y. x <=_3 y | y <=_3 x"
+
+ga_comm_min : "ALL x. ALL y. minX (x, y) = minX (y, x)"
+
+ga_comm_max : "ALL x. ALL y. maxX (x, y) = maxX (y, x)"
+
+ga_assoc_min : 
+"ALL x. 
+ ALL y. ALL z. minX (x, minX (y, z)) = minX (minX (x, y), z)"
+
+ga_assoc_max : 
+"ALL x. 
+ ALL y. ALL z. maxX (x, maxX (y, z)) = maxX (maxX (x, y), z)"
+
+min_def_ExtTotalOrder : 
+"ALL x. ALL y. minX (x, y) = (if x <=_3 y then x else y)"
+
+max_def_ExtTotalOrder : 
+"ALL x. ALL y. maxX (x, y) = (if x <=_3 y then y else x)"
+
+min_inf_relation [simp] : 
+"ALL x. ALL y. Some (minX (x, y)) = inf_2 (x, y)"
+
+max_sup_relation [simp] : 
+"ALL x. ALL y. Some (maxX (x, y)) = sup_2 (x, y)"
+
+Field_unary_minus_idef [simp] : "ALL x. -' x +' x = 0''"
+
+FWO_plus_left [simp] : 
+"ALL a. ALL b. ALL c. a <=_3 b --> (a +' c) <=_3 (b +' c)"
+
+FWO_times_left : 
+"ALL a. 
+ ALL b. ALL c. a <=_3 b & 0'' <=_3 c --> (a *' c) <=_3 (b *' c)"
+
+FWO_plus_right [simp] : 
+"ALL a. ALL b. ALL c. b <=_3 c --> (a +' b) <=_3 (a +' c)"
+
+FWO_times_right : 
+"ALL a. 
+ ALL b. ALL c. b <=_3 c & 0'' <=_3 a --> (a *' b) <=_3 (a *' c)"
+
+FWO_plus : 
+"ALL a. 
+ ALL b. 
+ ALL c. ALL d. a <=_3 c & b <=_3 d --> (a +' b) <=_3 (c +' d)"
+
+ga_Nat [simp] : "True"
+
+Real_ub_def : "M <=' r = (ALL s. M s --> s <=_3 r)"
+
+Real_lb_def : "r <='' M = (ALL s. M s --> r <=_3 s)"
+
+Real_inf_def : 
+"inf(M) = Some r = (r <='' M & (ALL s. s <='' M --> s <=_3 r))"
+
+Real_sup_def : 
+"sup(M) = Some r = (M <=' r & (ALL s. M <=' s --> r <=_3 s))"
+
+Real_isBounded_defCBrX : 
+"isBounded(M) = (EX ub. EX lb. lb <='' M & M <=' ub)"
+
+Real_inj_0 [simp] : "inj'(0') = 0''"
+
+Real_inj_suc : "inj'(suc(nX)) = 1' +' inj'(nX)"
+
+Real_archimedian : "EX nX. r <=_3 inj'(nX)"
+
+Real_abs_def : "| r | = maxX (r, -' r)"
+
+Real_sqr_def : "sqr r = r *' r"
+
+Real_sqrt_dom : "defOp (sqrt r) = r >=' 0''"
+
+Real_sqrt_idef : "sqrt sqr r = Some ( | r | )"
+
+Real_2_def : "2 = 1' +' 1'"
+
+Real_minus_def : "r -' r' = r +' -' r'"
+
+Real_divide_dom [simp] : "~ defOp (r /' 0'')"
+
+Real_divide_idef [simp] : "r /' r' = Some r'' = (r'' *' r' = r)"
+
+Real_half_idef [simp] : "2 *' half(r) = r"
 
 one_greater_zero [simp] : "1' >' 0''"
 
@@ -118,126 +221,15 @@ Real_minus_half [simp] : "r -' half(r) = half(r)"
 
 Real_half_monot [simp] : "half(r) <=_3 half(s) = r <=_3 s"
 
-Real_abs_def : "| r | = maxX (r, -' r)"
+MS_pos_definite [simp] : "d (x, y) = 0'' = (x = y)"
 
-Real_sqr_def : "sqr r = r *' r"
+MS_symm : "d (x, y) = d (y, x)"
 
-Real_sqrt_dom : "defOp (sqrt r) = r >=' 0''"
+MS_triangle [simp] : "d (x, z) <=_3 (d (x, y) +' d (y, z))"
 
-Real_sqrt_idef : "sqrt sqr r = Some ( | r | )"
+MS_pos [simp] : "0'' <=_3 d (x, y)"
 
-Real_2_def : "2 = 1' +' 1'"
-
-Real_minus_def : "r -' r' = r +' -' r'"
-
-Real_divide_dom [simp] : "~ defOp (r /' 0'')"
-
-Real_divide_idef [simp] : "r /' r' = Some r'' = (r'' *' r' = r)"
-
-Real_half_idef [simp] : "2 *' half(r) = r"
-
-Real_ub_def : "M <=' r = (ALL s. M s --> s <=_3 r)"
-
-Real_lb_def : "r <='' M = (ALL s. M s --> r <=_3 s)"
-
-Real_inf_def : 
-"inf(M) = Some r = (r <='' M & (ALL s. s <='' M --> s <=_3 r))"
-
-Real_sup_def : 
-"sup(M) = Some r = (M <=' r & (ALL s. M <=' s --> r <=_3 s))"
-
-Real_isBounded_defCBrX : 
-"isBounded(M) = (EX ub. EX lb. lb <='' M & M <=' ub)"
-
-Real_inj_0 [simp] : "inj'(0') = 0''"
-
-Real_inj_suc : "inj'(suc(nX)) = 1' +' inj'(nX)"
-
-Real_archimedian : "EX nX. r <=_3 inj'(nX)"
-
-FWO_plus_right [simp] : 
-"ALL a. ALL b. ALL c. b <=_3 c --> (a +' b) <=_3 (a +' c)"
-
-FWO_times_right : 
-"ALL a. 
- ALL b. ALL c. b <=_3 c & 0'' <=_3 a --> (a *' b) <=_3 (a *' c)"
-
-FWO_plus : 
-"ALL a. 
- ALL b. 
- ALL c. ALL d. a <=_3 c & b <=_3 d --> (a +' b) <=_3 (c +' d)"
-
-FWO_plus_left [simp] : 
-"ALL a. ALL b. ALL c. a <=_3 b --> (a +' c) <=_3 (b +' c)"
-
-FWO_times_left : 
-"ALL a. 
- ALL b. ALL c. a <=_3 b & 0'' <=_3 c --> (a *' c) <=_3 (b *' c)"
-
-Field_unary_minus_idef [simp] : "ALL x. -' x +' x = 0''"
-
-dichotomy_TotalOrder [simp] : "ALL x. ALL y. x <=_3 y | y <=_3 x"
-
-antisym : "ALL x. ALL y. x <=_3 y & y <=_3 x --> x = y"
-
-trans : "ALL x. ALL y. ALL z. x <=_3 y & y <=_3 z --> x <=_3 z"
-
-refl [simp] : "ALL x. x <=_3 x"
-
-min_inf_relation [simp] : 
-"ALL x. ALL y. Some (minX (x, y)) = inf_2 (x, y)"
-
-max_sup_relation [simp] : 
-"ALL x. ALL y. Some (maxX (x, y)) = sup_2 (x, y)"
-
-ga_comm_min : "ALL x. ALL y. minX (x, y) = minX (y, x)"
-
-ga_comm_max : "ALL x. ALL y. maxX (x, y) = maxX (y, x)"
-
-ga_assoc_min : 
-"ALL x. 
- ALL y. ALL z. minX (x, minX (y, z)) = minX (minX (x, y), z)"
-
-ga_assoc_max : 
-"ALL x. 
- ALL y. ALL z. maxX (x, maxX (y, z)) = maxX (maxX (x, y), z)"
-
-min_def_ExtTotalOrder : 
-"ALL x. ALL y. minX (x, y) = (if x <=_3 y then x else y)"
-
-max_def_ExtTotalOrder : 
-"ALL x. ALL y. maxX (x, y) = (if x <=_3 y then y else x)"
-
-ga_comm_inf : "ALL x. ALL y. inf_2 (x, y) = inf_2 (y, x)"
-
-ga_comm_sup : "ALL x. ALL y. sup_2 (x, y) = sup_2 (y, x)"
-
-inf_def_ExtPartialOrder : 
-"ALL x. 
- ALL y. 
- ALL z. 
- inf_2 (x, y) = Some z = 
- (z <=_3 x & z <=_3 y & (ALL t. t <=_3 x & t <=_3 y --> t <=_3 z))"
-
-sup_def_ExtPartialOrder : 
-"ALL x. 
- ALL y. 
- ALL z. 
- sup_2 (x, y) = Some z = 
- (x <=_3 z & y <=_3 z & (ALL t. x <=_3 t & y <=_3 t --> z <=_3 t))"
-
-geq_def_ExtPartialOrder : "ALL x. ALL y. x >=' y = y <=_3 x"
-
-less_def_ExtPartialOrder : 
-"ALL x. ALL y. x <' y = (x <=_3 y & ~ x = y)"
-
-greater_def_ExtPartialOrder : "ALL x. ALL y. x >' y = y <' x"
-
-EMSCB_center [simp] : "r >' 0'' --> rep (closedBall (x, r)) x"
-
-EMSCB_closed [simp] : 
-"~ rep a x --> 
- (EX r. ALL y. ~ (rep (closedBall (x, r)) y & ~ rep a y))"
+MS_zero [simp] : "d (x, x) = 0''"
 
 EMSCB_rep_pos [simp] : 
 "r >' 0'' --> rep (closedBall (x, r)) y = d (x, y) <=_3 r"
@@ -247,6 +239,16 @@ EMSCB_rep_0 [simp] : "~ r >' 0'' --> ~ rep (closedBall (x, r)) y"
 EMSCB_rep_inj : "rep a = rep b --> a = b"
 
 Ax4 : "EX z. EX t. a = closedBall (z, t)"
+
+EMSCB_center [simp] : "r >' 0'' --> rep (closedBall (x, r)) x"
+
+EMSCB_closed [simp] : 
+"~ rep a x --> 
+ (EX r. ALL y. ~ (rep (closedBall (x, r)) y & ~ rep a y))"
+
+def_nonempty : "ALL x. nonempty(x) = x C x"
+
+C_def : "x C y = (EX s. rep x s & rep y s)"
 
 theorem C_non_null : "ALL x. ALL y. x C y --> x C x"
 using C_def by auto
