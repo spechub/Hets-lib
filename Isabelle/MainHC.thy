@@ -4,6 +4,9 @@ begin
 
 constdefs
 
+flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
+"flip f a b == f b a"
+
 ifImplOp :: "bool * bool => bool"
 "ifImplOp p == snd p --> fst p"
 
