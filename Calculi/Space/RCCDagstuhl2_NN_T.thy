@@ -52,21 +52,21 @@ XXMinusXXX :: "Real => Real => Real" ("(_ -''/ _)" [54,54] 52)
 XXPlusXXX :: "Real => Real => Real" ("(_ +''/ _)" [54,54] 52)
 XXSlashXXX :: "Real => Real => Real option" ("(_ '/''/ _)" [54,54] 52)
 XXxXXX :: "Real => Real => Real" ("(_ *''/ _)" [54,54] 52)
-closedBall :: "S * Real => ClosedBall"
-d :: "S * S => Real"
+closedBall :: "S => Real => ClosedBall" ("closedBall'(_,/ _')" [10,10] 999)
+d :: "S => S => Real" ("d'(_,/ _')" [10,10] 999)
 half :: "Real => Real" ("half'(_')" [10] 999)
 inf_1 :: "(Real => bool) => Real option" ("inf'(_')" [10] 999)
-inf_2 :: "Real * Real => Real option"
+inf_2 :: "Real => Real => Real option" ("inf'''(_,/ _')" [10,10] 999)
 injX :: "Nat => Real" ("inj'''(_')" [10] 999)
 isBounded :: "(Real => bool) => bool" ("isBounded'(_')" [10] 999)
-maxX :: "Real * Real => Real"
-minX :: "Real * Real => Real"
+maxX :: "Real => Real => Real" ("max'''(_,/ _')" [10,10] 999)
+minX :: "Real => Real => Real" ("min'''(_,/ _')" [10,10] 999)
 nonempty :: "ClosedBall => bool" ("nonempty'(_')" [10] 999)
 rep :: "ClosedBall => S => bool"
 sqrXX :: "Real => Real" ("(sqr/ _)" [56] 56)
 sqrtXX :: "Real => Real option" ("(sqrt/ _)" [56] 56)
 sup_1 :: "(Real => bool) => Real option" ("sup'(_')" [10] 999)
-sup_2 :: "Real * Real => Real option"
+sup_2 :: "Real => Real => Real option" ("sup'''(_,/ _')" [10,10] 999)
 
 instance ClosedBall:: type
 by intro_classes
@@ -91,49 +91,47 @@ less_def_ExtPartialOrder :
 
 greater_def_ExtPartialOrder : "ALL x. ALL y. x >' y = y <' x"
 
-ga_comm_inf : "ALL x. ALL y. inf_2 (x, y) = inf_2 (y, x)"
+ga_comm_inf : "ALL x. ALL y. inf'(x, y) = inf'(y, x)"
 
-ga_comm_sup : "ALL x. ALL y. sup_2 (x, y) = sup_2 (y, x)"
+ga_comm_sup : "ALL x. ALL y. sup'(x, y) = sup'(y, x)"
 
 inf_def_ExtPartialOrder :
 "ALL x.
  ALL y.
  ALL z.
- inf_2 (x, y) = Some z =
+ inf'(x, y) = Some z =
  (z <=_3 x & z <=_3 y & (ALL t. t <=_3 x & t <=_3 y --> t <=_3 z))"
 
 sup_def_ExtPartialOrder :
 "ALL x.
  ALL y.
  ALL z.
- sup_2 (x, y) = Some z =
+ sup'(x, y) = Some z =
  (x <=_3 z & y <=_3 z & (ALL t. x <=_3 t & y <=_3 t --> z <=_3 t))"
 
 dichotomy_TotalOrder [simp] : "ALL x. ALL y. x <=_3 y | y <=_3 x"
 
-ga_comm_min : "ALL x. ALL y. minX (x, y) = minX (y, x)"
+ga_comm_min : "ALL x. ALL y. min'(x, y) = min'(y, x)"
 
-ga_comm_max : "ALL x. ALL y. maxX (x, y) = maxX (y, x)"
+ga_comm_max : "ALL x. ALL y. max'(x, y) = max'(y, x)"
 
 ga_assoc_min :
-"ALL x.
- ALL y. ALL z. minX (x, minX (y, z)) = minX (minX (x, y), z)"
+"ALL x. ALL y. ALL z. min'(x, min'(y, z)) = min'(min'(x, y), z)"
 
 ga_assoc_max :
-"ALL x.
- ALL y. ALL z. maxX (x, maxX (y, z)) = maxX (maxX (x, y), z)"
+"ALL x. ALL y. ALL z. max'(x, max'(y, z)) = max'(max'(x, y), z)"
 
 min_def_ExtTotalOrder :
-"ALL x. ALL y. minX (x, y) = (if x <=_3 y then x else y)"
+"ALL x. ALL y. min'(x, y) = (if x <=_3 y then x else y)"
 
 max_def_ExtTotalOrder :
-"ALL x. ALL y. maxX (x, y) = (if x <=_3 y then y else x)"
+"ALL x. ALL y. max'(x, y) = (if x <=_3 y then y else x)"
 
 min_inf_relation [simp] :
-"ALL x. ALL y. Some (minX (x, y)) = inf_2 (x, y)"
+"ALL x. ALL y. Some (min'(x, y)) = inf'(x, y)"
 
 max_sup_relation [simp] :
-"ALL x. ALL y. Some (maxX (x, y)) = sup_2 (x, y)"
+"ALL x. ALL y. Some (max'(x, y)) = sup'(x, y)"
 
 Field_unary_minus_idef [simp] : "ALL x. -' x +' x = 0''"
 
@@ -177,7 +175,7 @@ Real_inj_suc : "inj'(suc(nX)) = 1' +' inj'(nX)"
 
 Real_archimedian : "EX nX. r <=_3 inj'(nX)"
 
-Real_abs_def : "| r | = maxX (r, -' r)"
+Real_abs_def : "| r | = max'(r, -' r)"
 
 Real_sqr_def : "sqr r = r *' r"
 
@@ -221,30 +219,30 @@ Real_minus_half [simp] : "r -' half(r) = half(r)"
 
 Real_half_monot [simp] : "half(r) <=_3 half(s) = r <=_3 s"
 
-MS_pos_definite [simp] : "d (x, y) = 0'' = (x = y)"
+MS_pos_definite [simp] : "d(x, y) = 0'' = (x = y)"
 
-MS_symm : "d (x, y) = d (y, x)"
+MS_symm : "d(x, y) = d(y, x)"
 
-MS_triangle [simp] : "d (x, z) <=_3 (d (x, y) +' d (y, z))"
+MS_triangle [simp] : "d(x, z) <=_3 (d(x, y) +' d(y, z))"
 
-MS_pos [simp] : "0'' <=_3 d (x, y)"
+MS_pos [simp] : "0'' <=_3 d(x, y)"
 
-MS_zero [simp] : "d (x, x) = 0''"
+MS_zero [simp] : "d(x, x) = 0''"
 
 EMSCB_rep_pos [simp] :
-"r >' 0'' --> rep (closedBall (x, r)) y = d (x, y) <=_3 r"
+"r >' 0'' --> rep (closedBall(x, r)) y = d(x, y) <=_3 r"
 
-EMSCB_rep_0 [simp] : "~ r >' 0'' --> ~ rep (closedBall (x, r)) y"
+EMSCB_rep_0 [simp] : "~ r >' 0'' --> ~ rep (closedBall(x, r)) y"
 
 EMSCB_rep_inj : "rep a = rep b --> a = b"
 
-Ax4 : "EX z. EX t. a = closedBall (z, t)"
+Ax4 : "EX z. EX t. a = closedBall(z, t)"
 
-EMSCB_center [simp] : "r >' 0'' --> rep (closedBall (x, r)) x"
+EMSCB_center [simp] : "r >' 0'' --> rep (closedBall(x, r)) x"
 
 EMSCB_closed [simp] :
 "~ rep a x -->
- (EX r. ALL y. ~ (rep (closedBall (x, r)) y & ~ rep a y))"
+ (EX r. ALL y. ~ (rep (closedBall(x, r)) y & ~ rep a y))"
 
 def_nonempty : "ALL x. nonempty(x) = x C x"
 
@@ -270,7 +268,7 @@ lemma reflLemma : "x=y ==> x <=_3 y"
 using refl by auto
 
 lemma MS_triangle_rev :
-"d (x, z) <=_3 (d (x, y) +' d (z, y))"
+"d(x, z) <=_3 (d(x, y) +' d(z, y))"
 by (simp add: MS_symm)
 
 lemma C_id_lemma : "!!x y xa. \ 
@@ -287,10 +285,10 @@ apply (erule exE)
 apply (erule exE)
 apply (subst not_iff)
 apply (case_tac "ta >' 0''")
-apply (rule_tac x="closedBall(xa, half (d (za, xa) -' ta))" in exI)
+apply (rule_tac x="closedBall(xa, half (d(za, xa) -' ta))" in exI)
 apply(auto)
 apply((drule EMSCB_rep_pos [THEN swap])+)
-apply(rule_tac P="d (za, xa) <=_3 ta" in notE)
+apply(rule_tac P="d(za, xa) <=_3 ta" in notE)
 apply(assumption)
 apply(rule half_leq [THEN mp])
 apply(rule trans [THEN spec, THEN spec, THEN spec, THEN mp])
