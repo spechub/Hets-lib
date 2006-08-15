@@ -17,9 +17,9 @@ exEqualOp :: "'a option * 'a option => bool"
       None => False
     | Some b => a = b)"
 
-whenElseOp :: "'a option * bool * 'a option => 'a option"
+whenElseOp :: "('a option * bool) * 'a option => 'a option"
 "whenElseOp t == case t of
-    (t, b, e) => if b then t else e"
+    (p, e) => if snd p then fst p else e"
 
 unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
