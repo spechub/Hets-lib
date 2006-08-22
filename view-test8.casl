@@ -1,0 +1,18 @@
+library ViewTest8
+
+spec PartialOrder =
+     sort Elem
+     pred __ ~ __: Elem * Elem
+     forall x,y,z:Elem
+     . x ~ x                        %(refl)%
+     with pred __ ~ __ |-> __ <= __
+end
+
+spec BooleanAlgebra =
+     sort Elem
+     pred __ <= __: Elem * Elem;
+end
+
+view PartialOrder_in_BooleanAlgebra :
+   PartialOrder to BooleanAlgebra
+end
