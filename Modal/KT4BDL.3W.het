@@ -1,0 +1,17 @@
+library Modal/KT4BDLW.3
+
+logic Modal
+
+spec KT4BDLW.3 =
+	modality <> {
+			[](p => q) => ([]p => []q); %(K)%
+			<>p <=> not [] not p; %(Dual)%
+			p => <> p; %(T)%
+			<> <> p => <> p %(4)%
+			p => [] <> p; %(B)%
+			[] p => <> p; %(D)%
+			[]([] p => p) => [] p; %(L)%
+			<> p /\ <> q => <>(p /\ <> q) \/ <> (p /\ q) \/ <> (q /\ <> p); %(.3)%
+			[]([]A => A) => [] A; %(W)%
+			}
+end

@@ -1,0 +1,14 @@
+library Modal/TemporalLogic
+
+logic Modal
+
+spec Temporal_Logic =
+	modalities [P],[F] {
+			[P](p => q) => ([P] p => [P] q); %(Kp)%
+			[F](p => q) => ([F] p => [F] q); %(Kf)%
+			p => [P] <F> A; %(Cp)%
+			p => [F] <P> A; %(Cf)%
+			[P] p => [P] [P] p %(4p)%
+			[F] p => [F] [F] p %(4f)%
+			}
+end
