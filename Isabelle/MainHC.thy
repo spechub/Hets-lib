@@ -48,17 +48,11 @@ unpack2bool :: "(('a => unit) => 'c => unit)
             => ('a => unit) option => 'c => bool"
 "unpack2bool c s a == option2bool s"
 
-flipComp :: "('a => 'b) => ('b => 'c) => 'a => 'c"
-"flipComp f g x == g (f x)"
-
 uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 "uncurryOp f p == f (fst p) (snd p)"
 
 curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 "curryOp f a b == f (a, b)"
-
-flipCurryOp :: "('a * 'b => 'c) => 'b => 'a => 'c"
-"flipCurryOp f a b == f (b, a)"
 
 bool2option :: "bool => unit option"
 "bool2option b == if b then Some () else None"
@@ -100,10 +94,18 @@ mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 "mapSnd f p == (fst p, f (snd p))"
 
 liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
-"liftFst f g p == f (flipCurryOp g (snd p)) (fst p)"
+"liftFst f g p == f (flip (curryOp g) (snd p)) (fst p)"
 
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
 "liftSnd f g p == f (curryOp g (fst p)) (snd p)"
+
+liftCurSnd ::
+"(('b => 'c) => 'f => 'g) => ('a => 'b => 'c) => 'a => 'f => 'g"
+"liftCurSnd f g a == f (g a)"
+
+liftCurFst ::
+"(('a => 'c) => 'd => 'e) => ('a => 'b => 'c) => 'd => 'b => 'e"
+"liftCurFst f g a == (flip f a o flip g)"
 
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
