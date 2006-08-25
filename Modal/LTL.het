@@ -3,14 +3,13 @@ library Modal/LTL
 logic Modal
 
 spec LTL =
-	modalities [P],[F] {
-			[P](p => q) => ([P] p => [P] q); %(Kp)%
-			[F](p => q) => ([F] p => [F] q); %(Kf)%
-			p => [P] <F> A; %(Cp)%
-			p => [F] <P> A; %(Cf)%
-			[P] p => [P] [P] p %(4p)%
-			[F] p => [F] [F] p %(4f)%
-			([P] p /\ p /\ [F] p) => [P] [F] p;
-			([P] p /\ p /\ [F] p) => [F] [P] p;
-			}
+	modalities [],X,U {
+				[](A => B)=>([]A=>[]B) %(K)%;
+				X(A => B)=>(X A => X B) %(Ko)%;
+				X not A <=> not X A %(Fun)%;
+				[]A => A /\ X [] A %(Mix)%;
+				[](A=>X A)=>(A=> [] A)) %(Ind)%;
+				A U B => <> A %(U1)%;
+				A U B => B \/ (A /\ X (A U B)) %(U2)%
+				}
 end

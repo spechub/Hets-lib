@@ -10,7 +10,7 @@ spec ABLP =
   pred __==>__ : Principal * Principal
   forall A,B,C : Principal
   . (A|B) & C = (A&C) | (B&C)
-  term modality Principal {
+  modality [__] {
     forall A,B : Principal . [A & B] s <=> [A] s /\ [B] s;
     forall A,B : Principal . [B|A] s <=> [B] [A] s;
     forall A,B : Principal . A==>B => [A] s => [B] s
