@@ -124,7 +124,7 @@ then
   forall s:Set S; f:Nat->?S 
   . finiteDomain f <=> exists n:Nat . forall m:Nat . def f m => m<n
   . isFinite s <=> 
-     exists f:Nat->?S . finiteDomain f /\ range f subset s
+     exists f:Nat->?S . finiteDomain f /\ s subset range f
 end
 
 spec SumNatSet =
