@@ -68,16 +68,18 @@ then %def
   . removeNode(n,addNode(n1,g)) =
       removeNode(n,g) when n=n1
       else addNode(n1,removeNode(n,g))            %(removeNode_addNode)%
-  . removeNode(n,addEdge(n1,n2,e,g)) =
-      removeNode(n,g) when n=n1 \/ n=n2
-      else addEdge(n1,n2,e,removeNode(n,g))       %(removeNode_addEdge)%
+  . def addEdge(n1,n2,e,g) => 
+      removeNode(n,addEdge(n1,n2,e,g)) =
+        removeNode(n,g) when n=n1 \/ n=n2
+        else addEdge(n1,n2,e,removeNode(n,g))     %(removeNode_addEdge)%
 
   . removeEdge(e,emptyGraph) = emptyGraph      %(removeEdge_emtpyGraph)%
   . removeEdge(e,addNode(n1,g)) =
       addNode(n1,removeEdge(e,g))                 %(removeEdge_addNode)%
-  . removeEdge(e,addEdge(n1,n2,e1,g)) =
-      removeEdge(e,g) when e=e1
-      else addEdge(n1,n2,e1,removeEdge(e,g))      %(removeEdge_addEdge)%
+  . def addEdge(n1,n2,e,g) => 
+      removeEdge(e,addEdge(n1,n2,e1,g)) =
+        removeEdge(e,g) when e=e1
+        else addEdge(n1,n2,e1,removeEdge(e,g))    %(removeEdge_addEdge)%
 
   pred symmetric(g:Graph) <=> 
     forall n1,n2:NodeId; e:EdgeId .
