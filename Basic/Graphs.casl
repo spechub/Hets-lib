@@ -76,7 +76,7 @@ then %def
   . removeEdge(e,emptyGraph) = emptyGraph      %(removeEdge_emtpyGraph)%
   . removeEdge(e,addNode(n1,g)) =
       addNode(n1,removeEdge(e,g))                 %(removeEdge_addNode)%
-  . def addEdge(n1,n2,e,g) => 
+  . def addEdge(n1,n2,e1,g) => 
       removeEdge(e,addEdge(n1,n2,e1,g)) =
         removeEdge(e,g) when e=e1
         else addEdge(n1,n2,e1,removeEdge(e,g))    %(removeEdge_addEdge)%
@@ -407,8 +407,9 @@ then
      preds __isIn__ : EdgeLabel * Graph;
            __::__-->__ isIn__ : EdgeLabel * NodeId * NodeId * Graph
      forall n,n1,n2: NodeId; el,el': EdgeLabel; g: Graph 
-     . addEdge(n1,n2,el,g) = addEdge(n1,n2,EI(n1,el,n2),g)
-                                                     %(addEdgeNU_def)%
+     . addEdge(n1,n2,el,g) =
+         g when el :: n1 --> n2 isIn g
+         else addEdge(n1,n2,EI(n1,el,n2),g)          %(addEdgeNU_def)%
      . el' isIn removeEdgeLabel(el,g) <=>
        (el' isIn g /\ not el=el')             %(removeEdgeLabel_def1)%
      . n isIn removeEdgeLabel(el,g) <=> n isIn g
