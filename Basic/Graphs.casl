@@ -78,7 +78,7 @@ then %def
       addNode(n1,removeEdge(e,g))                 %(removeEdge_addNode)%
   . def addEdge(n1,n2,e1,g) => 
       removeEdge(e,addEdge(n1,n2,e1,g)) =
-        removeEdge(e,g) when e=e1
+        g when e=e1
         else addEdge(n1,n2,e1,removeEdge(e,g))    %(removeEdge_addEdge)%
 
   pred symmetric(g:Graph) <=> 
