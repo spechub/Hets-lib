@@ -16,7 +16,7 @@ ML "Header.initialize
      \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\",
      \"FWO_times_right\", \"FWO_plus\", \"ga_Nat\", \"Real_ub_def\",
      \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\",
-     \"Real_isBounded_defCBrX\", \"Real_inj_0\", \"Real_inj_suc\",
+     \"Real_isBounded_defXCBr\", \"Real_inj_0\", \"Real_inj_suc\",
      \"Real_archimedian\", \"Real_abs_def\", \"Real_sqr_def\",
      \"Real_sqrt_dom\", \"Real_sqrt_idef\", \"Real_2_def\",
      \"Real_minus_def\", \"Real_divide_dom\", \"Real_divide_idef\",
@@ -33,40 +33,40 @@ typedecl ClosedBall
 typedecl Real
 typedecl S
 
-datatype Nat = X0_1 ("0''") | suc "Nat" ("suc'(_')" [10] 999)
+datatype Nat = X0X1 ("0''") | X_suc "Nat" ("suc/'(_')" [10] 999)
 
 consts
-MinusXXX :: "Real => Real" ("(-''/ _)" [56] 56)
-VBarX__VBarX :: "Real => Real" ("(|/ _ |)" [10] 999)
-X0_2 :: "Real" ("0''''")
+X0X2 :: "Real" ("0''''")
 X1 :: "Real" ("1''")
 X2 :: "Real" ("2")
-XXCXX :: "ClosedBall => ClosedBall => bool" ("(_ C/ _)" [54,54] 52)
-XXGtXEqXXX :: "Real => Real => bool" ("(_ >=''/ _)" [54,54] 52)
-XXGtXXX :: "Real => Real => bool" ("(_ >''/ _)" [54,54] 52)
-XXLtXEqXXX_1 :: "(Real => bool) => Real => bool" ("(_ <=''/ _)" [54,54] 52)
-XXLtXEqXXX_2 :: "Real => (Real => bool) => bool" ("(_ <=''''/ _)" [54,54] 52)
-XXLtXEqXXX_3 :: "Real => Real => bool" ("(_ <='_3/ _)" [54,54] 52)
-XXLtXXX :: "Real => Real => bool" ("(_ <''/ _)" [54,54] 52)
-XXMinusXXX :: "Real => Real => Real" ("(_ -''/ _)" [54,54] 52)
-XXPlusXXX :: "Real => Real => Real" ("(_ +''/ _)" [54,54] 52)
-XXSlashXXX :: "Real => Real => Real option" ("(_ '/''/ _)" [54,54] 52)
-XXxXXX :: "Real => Real => Real" ("(_ *''/ _)" [54,54] 52)
-closedBall :: "S => Real => ClosedBall" ("closedBall'(_,/ _')" [10,10] 999)
-d :: "S => S => Real" ("d'(_,/ _')" [10,10] 999)
-half :: "Real => Real" ("half'(_')" [10] 999)
-inf_1 :: "(Real => bool) => Real option" ("inf'(_')" [10] 999)
-inf_2 :: "Real => Real => Real option" ("inf'''(_,/ _')" [10,10] 999)
-injX :: "Nat => Real" ("inj'''(_')" [10] 999)
-isBounded :: "(Real => bool) => bool" ("isBounded'(_')" [10] 999)
-maxX :: "Real => Real => Real" ("max'''(_,/ _')" [10,10] 999)
-minX :: "Real => Real => Real" ("min'''(_,/ _')" [10,10] 999)
-nonempty :: "ClosedBall => bool" ("nonempty'(_')" [10] 999)
+XMinus__X :: "Real => Real" ("(-''/ _)" [56] 56)
+XVBar__XVBar :: "Real => Real" ("(|/ _/ |)" [10] 999)
+X__C__X :: "ClosedBall => ClosedBall => bool" ("(_/ C/ _)" [44,44] 42)
+X__XGtXEq__X :: "Real => Real => bool" ("(_/ >=''/ _)" [44,44] 42)
+X__XGt__X :: "Real => Real => bool" ("(_/ >''/ _)" [44,44] 42)
+X__XLtXEq__XX1 :: "(Real => bool) => Real => bool" ("(_/ <=''/ _)" [44,44] 42)
+X__XLtXEq__XX2 :: "Real => (Real => bool) => bool" ("(_/ <=''''/ _)" [44,44] 42)
+X__XLtXEq__XX3 :: "Real => Real => bool" ("(_/ <='_3/ _)" [44,44] 42)
+X__XLt__X :: "Real => Real => bool" ("(_/ <''/ _)" [44,44] 42)
+X__XMinus__X :: "Real => Real => Real" ("(_/ -''/ _)" [54,54] 52)
+X__XPlus__X :: "Real => Real => Real" ("(_/ +''/ _)" [54,54] 52)
+X__XSlash__X :: "Real => Real => Real option" ("(_/ '/''/ _)" [54,54] 52)
+X__Xx__X :: "Real => Real => Real" ("(_/ *''/ _)" [54,54] 52)
+X_closedBall :: "S => Real => ClosedBall" ("closedBall/'(_,/ _')" [10,10] 999)
+X_d :: "S => S => Real" ("d/'(_,/ _')" [10,10] 999)
+X_half :: "Real => Real" ("half/'(_')" [10] 999)
+X_inj :: "Nat => Real" ("inj''/'(_')" [10] 999)
+X_isBounded :: "(Real => bool) => bool" ("isBounded/'(_')" [10] 999)
+X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [10,10] 999)
+X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [10,10] 999)
+X_nonempty :: "ClosedBall => bool" ("nonempty/'(_')" [10] 999)
+infX1 :: "(Real => bool) => Real option" ("inf/'(_')" [10] 999)
+infX2 :: "Real => Real => Real option" ("inf''/'(_,/ _')" [10,10] 999)
 rep :: "ClosedBall => S => bool"
-sqrXX :: "Real => Real" ("(sqr/ _)" [56] 56)
-sqrtXX :: "Real => Real option" ("(sqrt/ _)" [56] 56)
-sup_1 :: "(Real => bool) => Real option" ("sup'(_')" [10] 999)
-sup_2 :: "Real => Real => Real option" ("sup'''(_,/ _')" [10,10] 999)
+sqr__X :: "Real => Real" ("(sqr/ _)" [56] 56)
+sqrt__X :: "Real => Real option" ("(sqrt/ _)" [56] 56)
+supX1 :: "(Real => bool) => Real option" ("sup/'(_')" [10] 999)
+supX2 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [10,10] 999)
 
 instance ClosedBall:: type
 by intro_classes
@@ -84,12 +84,12 @@ trans : "ALL x. ALL y. ALL z. x <=_3 y & y <=_3 z --> x <=_3 z"
 
 antisym : "ALL x. ALL y. x <=_3 y & y <=_3 x --> x = y"
 
-geq_def_ExtPartialOrder : "ALL x. ALL y. x >=' y = y <=_3 x"
+geq_def_ExtPartialOrder : "ALL x. ALL y. (x >=' y) = (y <=_3 x)"
 
 less_def_ExtPartialOrder :
-"ALL x. ALL y. x <' y = (x <=_3 y & ~ x = y)"
+"ALL x. ALL y. (x <' y) = (x <=_3 y & ~ x = y)"
 
-greater_def_ExtPartialOrder : "ALL x. ALL y. x >' y = y <' x"
+greater_def_ExtPartialOrder : "ALL x. ALL y. (x >' y) = (y <' x)"
 
 ga_comm_inf : "ALL x. ALL y. inf'(x, y) = inf'(y, x)"
 
@@ -136,29 +136,27 @@ max_sup_relation [simp] :
 Field_unary_minus_idef [simp] : "ALL x. -' x +' x = 0''"
 
 FWO_plus_left [simp] :
-"ALL a. ALL b. ALL c. a <=_3 b --> (a +' c) <=_3 (b +' c)"
+"ALL a. ALL b. ALL c. a <=_3 b --> a +' c <=_3 b +' c"
 
 FWO_times_left :
-"ALL a.
- ALL b. ALL c. a <=_3 b & 0'' <=_3 c --> (a *' c) <=_3 (b *' c)"
+"ALL a. ALL b. ALL c. a <=_3 b & 0'' <=_3 c --> a *' c <=_3 b *' c"
 
 FWO_plus_right [simp] :
-"ALL a. ALL b. ALL c. b <=_3 c --> (a +' b) <=_3 (a +' c)"
+"ALL a. ALL b. ALL c. b <=_3 c --> a +' b <=_3 a +' c"
 
 FWO_times_right :
-"ALL a.
- ALL b. ALL c. b <=_3 c & 0'' <=_3 a --> (a *' b) <=_3 (a *' c)"
+"ALL a. ALL b. ALL c. b <=_3 c & 0'' <=_3 a --> a *' b <=_3 a *' c"
 
 FWO_plus :
 "ALL a.
  ALL b.
- ALL c. ALL d. a <=_3 c & b <=_3 d --> (a +' b) <=_3 (c +' d)"
+ ALL c. ALL X_d. a <=_3 c & b <=_3 X_d --> a +' b <=_3 c +' X_d"
 
 ga_Nat [simp] : "True"
 
-Real_ub_def : "M <=' r = (ALL s. M s --> s <=_3 r)"
+Real_ub_def : "(M <=' r) = (ALL s. M s --> s <=_3 r)"
 
-Real_lb_def : "r <='' M = (ALL s. M s --> r <=_3 s)"
+Real_lb_def : "(r <='' M) = (ALL s. M s --> r <=_3 s)"
 
 Real_inf_def :
 "inf(M) = Some r = (r <='' M & (ALL s. s <='' M --> s <=_3 r))"
@@ -166,20 +164,20 @@ Real_inf_def :
 Real_sup_def :
 "sup(M) = Some r = (M <=' r & (ALL s. M <=' s --> r <=_3 s))"
 
-Real_isBounded_defCBrX :
+Real_isBounded_defXCBr :
 "isBounded(M) = (EX ub. EX lb. lb <='' M & M <=' ub)"
 
 Real_inj_0 [simp] : "inj'(0') = 0''"
 
-Real_inj_suc : "inj'(suc(nX)) = 1' +' inj'(nX)"
+Real_inj_suc : "inj'(suc(X_n)) = 1' +' inj'(X_n)"
 
-Real_archimedian : "EX nX. r <=_3 inj'(nX)"
+Real_archimedian : "EX X_n. r <=_3 inj'(X_n)"
 
 Real_abs_def : "| r | = max'(r, -' r)"
 
 Real_sqr_def : "sqr r = r *' r"
 
-Real_sqrt_dom : "defOp (sqrt r) = r >=' 0''"
+Real_sqrt_dom : "defOp (sqrt r) = (r >=' 0'')"
 
 Real_sqrt_idef : "sqrt sqr r = Some ( | r | )"
 
@@ -199,13 +197,13 @@ zero_leq_one [simp] : "0'' <=_3 1'"
 
 half_gt_zero : "r >' 0'' --> half(r) >' 0''"
 
-half_plus_minus [simp] : "r <=_3 s --> (s +' half(r -' s)) <=_3 s"
+half_plus_minus [simp] : "r <=_3 s --> s +' half(r -' s) <=_3 s"
 
-add_monotone : "a <=_3 b & c <=_3 e --> (a +' c) <=_3 (b +' e)"
+add_monotone : "a <=_3 b & c <=_3 e --> a +' c <=_3 b +' e"
 
-sub_leq [simp] : "~ a <=_3 b --> (a -' b) >' 0''"
+sub_leq [simp] : "~ a <=_3 b --> a -' b >' 0''"
 
-half_leq : "a <=_3 (half(a -' b) +' b) --> a <=_3 b"
+half_leq : "a <=_3 half(a -' b) +' b --> a <=_3 b"
 
 half_leq_zero [simp] : "0'' <=_3 r --> 0'' <=_3 half(r)"
 
@@ -217,20 +215,20 @@ Real_half_minus : "half(r -' s) = half(r) -' half(s)"
 
 Real_minus_half [simp] : "r -' half(r) = half(r)"
 
-Real_half_monot [simp] : "half(r) <=_3 half(s) = r <=_3 s"
+Real_half_monot [simp] : "(half(r) <=_3 half(s)) = (r <=_3 s)"
 
 MS_pos_definite [simp] : "d(x, y) = 0'' = (x = y)"
 
 MS_symm : "d(x, y) = d(y, x)"
 
-MS_triangle [simp] : "d(x, z) <=_3 (d(x, y) +' d(y, z))"
+MS_triangle [simp] : "d(x, z) <=_3 d(x, y) +' d(y, z)"
 
 MS_pos [simp] : "0'' <=_3 d(x, y)"
 
 MS_zero [simp] : "d(x, x) = 0''"
 
 EMSCB_rep_pos [simp] :
-"r >' 0'' --> rep (closedBall(x, r)) y = d(x, y) <=_3 r"
+"r >' 0'' --> rep (closedBall(x, r)) y = (d(x, y) <=_3 r)"
 
 EMSCB_rep_0 [simp] : "~ r >' 0'' --> ~ rep (closedBall(x, r)) y"
 
@@ -244,9 +242,9 @@ EMSCB_closed [simp] :
 "~ rep a x -->
  (EX r. ALL y. ~ (rep (closedBall(x, r)) y & ~ rep a y))"
 
-def_nonempty : "ALL x. nonempty(x) = x C x"
+def_nonempty : "ALL x. nonempty(x) = (x C x)"
 
-C_def : "x C y = (EX s. rep x s & rep y s)"
+C_def : "(x C y) = (EX s. rep x s & rep y s)"
 
 theorem C_non_null : "ALL x. ALL y. x C y --> x C x"
 using C_def by auto
@@ -322,7 +320,7 @@ apply(rule reflLemma)
 apply(rule MS_symm)
 done
 
-theorem C_id : "ALL x. ALL y. (ALL z. z C x = z C y) --> x = y"
+theorem C_id : "ALL x. ALL y. (ALL z. (z C x) = (z C y)) --> x = y"
 apply (auto simp add: C_def)
 apply (rule EMSCB_rep_inj [THEN mp])
 apply (rule ext)
