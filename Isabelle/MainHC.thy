@@ -99,14 +99,6 @@ liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
 "liftSnd f g p == f (curryOp g (fst p)) (snd p)"
 
-liftCurSnd ::
-"(('b => 'c) => 'f => 'g) => ('a => 'b => 'c) => 'a => 'f => 'g"
-"liftCurSnd f g a == f (g a)"
-
-liftCurFst ::
-"(('a => 'c) => 'd => 'e) => ('a => 'b => 'c) => 'd => 'b => 'e"
-"liftCurFst f g a == (flip f a o flip g)"
-
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"
