@@ -255,4 +255,26 @@ result
   WhsFun[QueuesFun[OrderAlg] and InvoiceFun[OrderAlg and StockAlg]]
 end
 
+%% Architectural Specification, simplified version without imports ----
+%{ Since the imports are entirely included in the actual arguments, 
+   and their specifications are entirely included in the parameter specs,
+   we can also omit the imports entirely
+}%
+
+arch spec Warehouse_simplified =
+units
+  NatAlg : Nat;
+  ProductAlg : PRODUCT;
+  OrderFun : { Nat and PRODUCT } -> ORDER';
+  OrderAlg = OrderFun[NatAlg and ProductAlg];
+  StockFun : { Nat and PRODUCT } -> STOCK;
+  StockAlg = StockFun[NatAlg and ProductAlg];
+  InvoiceFun : { ORDER' and STOCK } -> INVOICE';
+  QueuesFun : ORDER -> QUEUES;
+  WhsFun : { QUEUES and INVOICE' } -> WHS';
+
+result
+  WhsFun[QueuesFun[OrderAlg] and InvoiceFun[OrderAlg and StockAlg]]
+end
+
 %% End of the example ------------------------------------------------
