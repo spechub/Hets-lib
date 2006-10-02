@@ -94,10 +94,10 @@ mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 "mapSnd f p == (fst p, f (snd p))"
 
 liftFst :: "(('a => 'c) => 'd => 'e) => ('a * 'b => 'c) => 'd * 'b => 'e"
-"liftFst f g p == f (flip (curryOp g) (snd p)) (fst p)"
+"liftFst f g == uncurryOp (flip (f o (flip (curryOp g))))"
 
 liftSnd :: "(('b => 'c) => 'f => 'g) => ('a * 'b => 'c) => 'a * 'f => 'g"
-"liftSnd f g p == f (curryOp g (fst p)) (snd p)"
+"liftSnd f g == uncurryOp (f o curryOp g)"
 
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
