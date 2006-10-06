@@ -22,7 +22,12 @@ prover SPASS
 prove-all excluding-theorems time-limit 30
 prove-all excluding-theorems
  time-limit 20
- begin-script Auto end-script
+ begin-script 
+  Auto=0 
+  IEmS=1 ISoR=1 IEqR=1 IEqF=1 ISpR=1 ISpL=1 IORe=1 IOFc=1 
+  RFRew=1 RBRew=1 RFMRR=1 RBMRR=1 RObv=1 RUnC=1 RTaut=1 RSST=1 
+    RSSi=1 RFSub=1 RBSub=1 RAED=1 RCon=1 
+ end-script
 prove-all excluding-theorems excluding C_non_mull C_sym C_id C_non_triv
 prove cmps_DCEC 
 prove DR_eq_DC_or_EC 
