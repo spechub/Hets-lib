@@ -1,0 +1,137 @@
+use Calculi/Space/RCCVerification
+dg-all auto 
+
+dg basic ExtRCC_FO_E1
+translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+prover SPASS
+prove-all 
+
+dg basic ExtRCCByRCC5Rels_E1
+translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+prover SPASS
+prove-all {del axioms C_non_null C_non_triv}
+
+dg basic ExtRCCByRCC8Rels_E1
+translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+prover SPASS
+set time-limit 30
+set include-theorems false
+prove-all  
+prove cmps_DCEC {set include-theorems true
+    set time-limit 10} begin-script
+    Auto=0 SatInput=1 IORe=1 
+    RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
+ end-script
+
+set include-theorems true 
+
+prove-all {set time-limit 30} begin-script
+    Auto=0 SatInput=1 IORe=1 
+    RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
+ end-script
+prove-all {set time-limit 70}
+prove-all {set time-limit 200}
+
+dg basic NN_T
+translate PCoClTyConsHOL2IsabelleHOL
+prover Isabelle
+prove C_id
+begin-script 
+
+lemma swap : "A --> B=D ==> B ==> A-->D"
+by auto
+
+lemma impLemma : "[| A; A==>B; B-->D|] ==> D"
+by auto
+
+lemma reflLemma : "x=y ==> x <=_3 y"
+using refl by auto
+
+lemma MS_triangle_rev :
+"d(x, z) <=_3 (d(x, y) +' d(z, y))"
+by (simp add: MS_symm)
+
+lemma C_id_lemma : "!!x y xa. \ 
+       ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s) \
+       ==> rep x xa ==> rep y xa"
+apply (erule contrapos_pp)
+apply (subst not_all)
+apply (insert Ax4 [THEN allI, of "%x. x"])
+apply (frule_tac x="x" in spec)
+apply (drule_tac x="y" in spec)
+apply (erule exE)
+apply (erule exE)
+apply (erule exE)
+apply (erule exE)
+apply (subst not_iff)
+apply (case_tac "ta >' 0''")
+apply (rule_tac x="closedBall(xa, half (d(za, xa) -' ta))" in exI)
+apply(auto)
+apply((drule EMSCB_rep_pos [THEN swap])+)
+apply(rule_tac P="d(za, xa) <=_3 ta" in notE)
+apply(assumption)
+apply(rule half_leq [THEN mp])
+apply(rule trans [THEN spec, THEN spec, THEN spec, THEN mp])
+apply(rule conjI)
+defer
+apply(rule add_monotone [THEN mp])
+apply(rule conjI)
+apply(erule mp)
+back
+apply(insert sub_leq [THEN mp])
+apply(rule half_gt_zero [THEN mp])
+apply(rule sub_leq [THEN mp])
+apply(assumption+)
+
+apply(rule_tac x="xa" in exI)
+apply simp
+apply(rule EMSCB_rep_pos [THEN mp, THEN iffD2])
+apply(rule half_gt_zero [THEN mp])
+apply(rule sub_leq [THEN mp])
+apply(assumption)
+apply simp
+apply(rule half_leq_zero [THEN mp])
+apply(drule sub_leq [THEN mp])
+apply(simp add: greater_def_ExtPartialOrder
+                less_def_ExtPartialOrder)
+apply(rule trans [THEN spec, THEN spec, THEN spec, THEN mp])
+apply(rule conjI)
+defer
+apply(rule MS_triangle_rev)
+apply(rule reflLemma)
+apply(rule MS_symm)
+done
+
+theorem C_id : "ALL x. ALL y. (ALL z. z C x = z C y) --> x = y"
+apply (auto simp add: C_def)
+apply (rule EMSCB_rep_inj [THEN mp])
+apply (rule ext)
+apply (auto)
+apply (rule_tac x="x" in C_id_lemma)
+apply(auto)
+apply (rule_tac x="y" in C_id_lemma)
+apply(auto)
+done
+
+end-script
+
+prove C_non_triv 
+begin-script 
+
+theorem C_non_triv : "EX x. x C x"
+apply (simp add: C_def)
+apply (rule exI)
+apply (rule exI)
+apply (rule EMSCB_rep_pos [THEN mp, THEN iffD2])
+apply(rule one_greater_zero)
+apply(rule iffD2)
+apply(rule arg_cong)
+back
+back
+defer
+apply(rule zero_leq_one)
+apply auto
+done
+
+end-script
+
