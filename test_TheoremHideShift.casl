@@ -1,0 +1,18 @@
+library test_TheoremHideShift
+
+spec target =
+  sort s
+  ops a:s;
+      f:s->s
+  . f(a)=a
+  hide a
+end
+
+spec source =
+  sort s
+  op f:s->s
+  . exists x:s . f(x)=x
+end
+
+view v : source to target
+end
