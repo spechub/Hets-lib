@@ -1,0 +1,31 @@
+library test_HideTheoremShift
+
+spec PreSource =
+  sort s
+  ops f,g:s->s
+  . exists x:s . g(x)=x   %(exists fixpoint of g)%
+end
+
+spec Source =
+  PreSource
+  hide g
+end
+
+spec Target =
+  sort s
+  op f:s->s
+  . exists x:s . f(x)=x  %(exists fixpoint of f)%
+end
+
+spec Target' =
+  Target
+then %cons
+  op h(x:s):s = f(x) %(h_def)%
+end
+
+view w : PreSource to Target' =
+  f |-> f, g |-> h
+end
+
+view v : Source to Target
+end
