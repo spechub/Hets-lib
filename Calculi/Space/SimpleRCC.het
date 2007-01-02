@@ -1,0 +1,48 @@
+library SimpleRCC
+
+spec RCC_FO =
+     sort Reg
+     pred __C__ : Reg * Reg;
+
+     forall x, y, z : Reg
+     . x C x                                                 %(C_reflex)%
+     . x C y => y C x                                           %(C_sym)%
+     . (z C x <=> z C y) => x = y                                %(C_id)%
+
+spec ExtRCC_FO = RCC_FO then %def
+     preds  __P__ : Reg * Reg
+     forall x, y, z : Reg
+     . (z C x => z C y) <=> x P y                               %(P_def)%
+     . x P y => x C y                               %(P_impl_C)% %implied
+
+view Trivial: RCC_FO to ExtRCC_FO
+
+from HasCASL/Real get Real
+
+logic HasCASL
+
+spec MetricSpace = Real then
+     sort Space
+     op d : Space * Space -> Real
+     var x, y, z : Space
+     . d(x, y) = 0 <=> x = y                                    %(MS_id)%
+     . d(x, y) = d(y, x)                                       %(MS_sym)%
+     . d(x, z) <= d(x, y) + d(y, z)                       %(MS_triangle)%
+
+spec ClosedBall = MetricSpace then %def
+  sort ClosedBall
+  ops closedBall : Space * Real ->? ClosedBall;
+      rep : ClosedBall -> Pred Space
+  forall x, y : Space;  r : Real;  a, b : ClosedBall
+  . r > 0 => (rep (closedBall(x, r)) y <=> d(x, y) <= r)   %(CB_rep_pos)%
+  . r > 0 <=> def closedBall(x, r)                             %(CB_def)%
+  . rep a = rep b => a = b                                      %(CB_id)%
+  . exists z : Space;  t: Real. a = closedBall(z,t)
+
+view RCC_FO_in_ClosedBall:
+     RCC_FO to 
+     { ClosedBall then %def
+         pred __C__ : ClosedBall * ClosedBall
+         forall x, y : ClosedBall
+         . x C y <=> exists s : Space . rep x s /\ rep y s      %(C_def)%
+     } = Reg |-> ClosedBall  
