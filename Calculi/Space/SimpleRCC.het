@@ -15,13 +15,16 @@ spec ExtRCC_FO = RCC_FO then %def
      . (z C x => z C y) <=> x P y                               %(P_def)%
      . x P y => x C y                               %(P_impl_C)% %implied
 
-view Trivial: RCC_FO to ExtRCC_FO
+%%view Trivial: RCC_FO to ExtRCC_FO
 
 spec Real =
      sort Real
      op __ + __ : Real * Real -> Real;
         0 : Real
      pred __<=__, __>__ : Real * Real
+     forall s, r : Real
+     . s <= r <=> r > s \/ r = s
+     . not (r > r)
 
 spec MetricSpace = Real then
      sort Space
