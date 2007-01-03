@@ -19,9 +19,12 @@ spec ExtRCC_FO = RCC_FO then %def
 
 spec Real =
      sort Real
-     op __ + __ : Real * Real -> Real;
-        0 : Real
-     pred __<=__, __>__ : Real * Real
+     ops 0 : Real;
+         __ + __ : Real * Real -> Real, comm, assoc, unit 0
+     preds __<=__, __>__ : Real * Real
+     forall s, r : Real
+     . s <= r <=> r > s \/ r = s
+     . not r > r 
 
 spec MetricSpace = Real then
      sort Space
