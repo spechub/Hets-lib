@@ -17,14 +17,16 @@ spec ExtRCC_FO = RCC_FO then %def
 
 view Trivial: RCC_FO to ExtRCC_FO
 
-from HasCASL/Real get Real
-
-logic HasCASL
+spec Real =
+     sort Real
+     op __ + __ : Real * Real -> Real;
+        0 : Real
+     pred __<=__, __>__ : Real * Real
 
 spec MetricSpace = Real then
      sort Space
      op d : Space * Space -> Real
-     var x, y, z : Space
+     forall x, y, z : Space
      . d(x, y) = 0 <=> x = y                                    %(MS_id)%
      . d(x, y) = d(y, x)                                       %(MS_sym)%
      . d(x, z) <= d(x, y) + d(y, z)                       %(MS_triangle)%
@@ -32,11 +34,11 @@ spec MetricSpace = Real then
 spec ClosedBall = MetricSpace then %def
   sort ClosedBall
   ops closedBall : Space * Real ->? ClosedBall;
-      rep : ClosedBall -> Pred Space
+  pred rep : ClosedBall * Space
   forall x, y : Space;  r : Real;  a, b : ClosedBall
-  . r > 0 => (rep (closedBall(x, r)) y <=> d(x, y) <= r)   %(CB_rep_pos)%
+  . r > 0 => (rep (closedBall(x, r), y) <=> d(x, y) <= r)  %(CB_rep_pos)%
   . r > 0 <=> def closedBall(x, r)                             %(CB_def)%
-  . rep a = rep b => a = b                                      %(CB_id)%
+  . (rep (a, x) <=> rep (b, x)) => a = b                        %(CB_id)%
   . exists z : Space;  t: Real. a = closedBall(z,t)
 
 view RCC_FO_in_ClosedBall:
@@ -44,5 +46,5 @@ view RCC_FO_in_ClosedBall:
      { ClosedBall then %def
          pred __C__ : ClosedBall * ClosedBall
          forall x, y : ClosedBall
-         . x C y <=> exists s : Space . rep x s /\ rep y s      %(C_def)%
+         . x C y <=> exists s : Space . rep(x, s) /\ rep(y, s)  %(C_def)%
      } = Reg |-> ClosedBall  
