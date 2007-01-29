@@ -10,28 +10,28 @@ version 0.2
 %left_assoc __ + __, __ * __, __ ^ __
 
 
-from Basic/RelationsAndOrders get 
-	TotalOrder,ExtTotalOrder,RichTotalOrder
+from Basic/RelationsAndOrders get
+        TotalOrder, ExtTotalOrder, RichTotalOrder
 from Basic/Numbers get Nat, Int, Rat
-from Basic/Algebra_I get 
-	AbelianGroup, ExtAbelianGroup,
-	AbelianGroup_in_ConstructField,
-	Field |-> FieldFromAlgebra_I,
-	Ring,ExtRing
-from  HasCASL/Real get
-	RichOrderedField  
+from Basic/Algebra_I get
+        AbelianGroup, ExtAbelianGroup,
+        AbelianGroup_in_ConstructField,
+        Field |-> FieldFromAlgebra_I,
+        Ring, ExtRing
+from HasCASL/Real get
+        RichOrderedField
 from HasCASL/Real get Real
 
 
-spec Field_test =
-     sort Elem		    
-     ops 
-   	0,1 : Elem;
+spec Field =
+     sort Elem
+     ops
+        0,1 : Elem;
         __ + __: Elem * Elem -> Elem, assoc, comm, unit 0;
-	__ * __: Elem * Elem -> Elem, assoc, comm, unit 1;
-	-__:Elem -> Elem;
-        inv__:Elem ->? Elem
-     forall x,y,z:Elem
+        __ * __: Elem * Elem -> Elem, assoc, comm, unit 1;
+        -__ : Elem -> Elem;
+        inv__ : Elem ->? Elem
+     forall x, y, z : Elem
      . not 0 = 1
      . x + -x = 0
      . def(inv x) <=> not x = 0
@@ -40,54 +40,46 @@ spec Field_test =
 
 then %implies
      forall x,y,z: Elem
-     . - (- x) = x 			%(th_f0)%
-     . -x = -1 * x			%(th_f1)%
-     . 0 * x  = 0			%(th_f2)%
-     . 1 * x = x			%(th_f3)%
-     . (-x) * y = -(x * y)		%(th_f4)%
-     . x * y = 0 => x = 0 \/ y = 0	%(th_f5)%
-     . (y+z) * x = x * (y+z)		%(th_f6_h)%
-     . (y+z) * x = y * x  + z * x 	%(th_f6)% 
-     . inv(inv(x)) = x if def(inv(x)) /\ def(inv(inv(x)))   
-					%(th_f7)%
-     . -1 * -1 = 1  			%(th_f8)%
-     . x * -y = -(x * y)		%(th_f10)%
-     . (-x) * (-y) = - (- (x * y))	%(th_f11)%   
-     . (-x) * (-y) = x * y 		%(th_f12)%   
+     . - (- x) = x                      %(th_f0)%
+     . -x = -1 * x                      %(th_f1)%
+     . 0 * x  = 0                       %(th_f2)%
+     . 1 * x = x                        %(th_f3)%
+     . (-x) * y = -(x * y)              %(th_f4)%
+     . x * y = 0 => x = 0 \/ y = 0      %(th_f5)%
+     . (y+z) * x = x * (y+z)            %(th_f6_h)%
+     . (y+z) * x = y * x  + z * x       %(th_f6)%
+     . inv(inv(x)) = x if def(inv(x)) /\ def(inv(inv(x)))
+                                        %(th_f7)%
+     . -1 * -1 = 1                      %(th_f8)%
+     . x * -y = -(x * y)                %(th_f10)%
+     . (-x) * (-y) = - (- (x * y))      %(th_f11)%
+     . (-x) * (-y) = x * y              %(th_f12)%
 end
 
 
-spec ExtField_test[Field_test] = %def
+spec ExtField[Field] = %def
      ops 2:Elem;
-	__-__: Elem * Elem -> Elem;
-        qdr__: Elem -> Elem;
-        __/__: Elem * Elem ->? Elem     
+        __-__: Elem * Elem -> Elem;
+        sqr__: Elem -> Elem;
+        __/__: Elem * Elem ->? Elem
      forall x,y,z: Elem
      . 2:Elem = 1:Elem + 1:Elem
      . x-y = x + -y
-     . qdr(x) = x * x
-     . def(x/y) <=> not y =0  
+     . sqr(x) = x * x
+     . def(x/y) <=> not y =0
      . x/y = inv(y) *  x if def(x/y)
-then %implies     
+then %implies
      forall x,y,z: Elem
-     . 2 * x = x + x				 %(th_ef1)%
-     . qdr(x + y) = qdr(x) + 2 * x * y + qdr(y)	 %(th_ef2)%
-     . qdr(x - y) = qdr(x) + -2 * x * y + qdr(y) %(th_ef3)%
-     . (x + y) * (x - y) = qdr(x) - qdr(y)	 %(th_ef4)%
+     . 2 * x = x + x                             %(th_ef1)%
+     . sqr(x + y) = sqr(x) + 2 * x * y + sqr(y)  %(th_ef2)%
+     . sqr(x - y) = sqr(x) + -2 * x * y + sqr(y) %(th_ef3)%
+     . (x + y) * (x - y) = sqr(x) - sqr(y)       %(th_ef4)%
 end
 
 
-spec Field = Field_test
-end
-
-
-spec RichField = ExtField_test[Field_test]
-
-
-
-spec FieldWithSinCos = 
-     RichField 
-then 
+spec FieldWithSinCos =
+     ExtField[Field]
+then
      ops sin__,cos__ : Elem -> Elem
      forall x,y: Elem
      . sin(x - y) = (sin x * cos y) - (cos x * sin y)
@@ -96,119 +88,97 @@ then %implies
      forall x,y: Elem
      . sin(x-x)=0                                               %(sin_minus1)%
      . sin(x-x)=sin(0)                                          %(sin_minus2)%
-     . sin(0) = 0					 	%(th_sc1)%
-     . cos(0) = 1						%(th_sc2)%
-     . qdr(sin(x)) + qdr(cos(x)) = 1				%(th_sc3)%
-     . cos(-x) = cos x						%(th_sc4)%
-     . sin(-x) = - (sin x)					%(th_sc5)%
-     . sin(x + y) = (sin x * cos y) + (cos x * sin y)		%(th_sc6)%
-     . cos(x + y) = (cos x * cos y) - (sin x * sin y)		%(th_sc7)%
-     . sin(2 * x) = 2 * sin x * cos x				%(th_sc8)%
-     . cos(2 * x) = qdr(cos x) - qdr(sin x)			%(th_sc9)%
-     . cos(2 * x) = (2 * qdr(cos x)) - 1			%(th_sc10)%
-     . cos(2 * x) = 1 - (2 * qdr(sin x))			%(th_sc11)%
-     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)		%(th_sc12)%
-     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)		%(th_sc13)%
-     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)		%(th_sc14)%
-     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)		%(th_sc15)%
-     . cos x - cos y =  0   					%(SollteNichtGelten)%
-     . cos x = sin x						%(Ebenso Nicht)%
+     . sin(0) = 0                                               %(th_sc1)%
+     . cos(0) = 1                                               %(th_sc2)%
+     . sqr(sin(x)) + sqr(cos(x)) = 1                            %(th_sc3)%
+     . cos(-x) = cos x                                          %(th_sc4)%
+     . sin(-x) = - (sin x)                                      %(th_sc5)%
+     . sin(x + y) = (sin x * cos y) + (cos x * sin y)           %(th_sc6)%
+     . cos(x + y) = (cos x * cos y) - (sin x * sin y)           %(th_sc7)%
+     . sin(2 * x) = 2 * sin x * cos x                           %(th_sc8)%
+     . cos(2 * x) = sqr(cos x) - sqr(sin x)                     %(th_sc9)%
+     . cos(2 * x) = (2 * sqr(cos x)) - 1                        %(th_sc10)%
+     . cos(2 * x) = 1 - (2 * sqr(sin x))                        %(th_sc11)%
+     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)         %(th_sc12)%
+     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)         %(th_sc13)%
+     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)         %(th_sc14)%
+     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)         %(th_sc15)%
+     . exists x, y : Elem . not (cos x - cos y = 0)             %(triv_sc16)%
+     . exists x : Elem . not (cos x = sin x)                    %(triv_sc17)%
 
 
-%[then %def]%
-%[     ops tan__: Elem ->? Elem]%
-%[     forall x: Elem]%
-%[     . def tan x <=> not cos x = 0]%
-%[     . tan x * cos x = sin x
-       laesst sich noch beliebig erweitern ...
-]%
+then %def
+     ops tan__: Elem ->? Elem
+     forall x: Elem
+     . def tan x <=> not cos x = 0
+     . tan x * cos x = sin x
+       %[laesst sich noch beliebig erweitern ... ]%
 
-%[then %implies]%
-%[     forall x,y: Elem]%
-%[     . tan(x + y) = (tan x + tan y)/(1 - tan x * tan y) ]%
-         
-end 
+then %implies
+     forall x,y: Elem
+     . tan(x + y) = (tan x + tan y)/(1 - tan x * tan y)
 
-%[     
-  
+end
+
 
 logic HasCASL
 
 
-spec RealsWithSinCos1 = 
-<<<<<<< SinCos.het
-     Real 
-     %% RichOrderedField with Elem |-> Real
+spec RealWithInv =
+     Real
 then %def
-     ops 	
-        __-__: Real * Real -> Real;
-	|__| : Real -> Real;      
-        __/__: Real * Real ->? Real;     
-	qdr__: Real -> Real;
-	sqr__: Real ->? Real;
-	2    : Real      
-     forall r,r',r'':Real
-     . | r | = max(r,-r)
-     . qdr(r) = r * r
-     . def sqr(r) <=> r >= 0
-     . sqr(qdr(r)) = | r |  
-     . 2 = 1 + 1   
-     . r-r' = r + -r' 
-     . not def(r/0)      
-     . r/r' = r'' <=> r'' * r' = r
-=======
-     Real 
->>>>>>> 1.4
+     op inv__ : Real -> Real
+     . forall x: Real . inv x = 1 / x
+
+
+spec RealsWithSinCos1 =
+     RealWithInv
 then %def
-     ops sin__,cos__ : Real -> Real
+     ops sin__, cos__, tan__ : Real -> Real
 
     forall x,y: Real
-    . forall e:Real . e > 0 => exists d:Real . d > 0 /\ 
-	forall y:Real .  |(x - y)| < d  => |(sin x - sin y)| < e  
-    . forall e:Real . e > 0 => exists d:Real . d > 0 /\ 
-	forall y:Real .  | (x - y) | < d  => | (cos x - cos y) | < e  
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\
+        forall y:Real .  |(x - y)| < d  => |(sin x - sin y)| < e
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\
+        forall y:Real .  | (x - y) | < d  => | (cos x - cos y) | < e
     . sin(x - y) = (sin x * cos y) - (cos x * sin y)
     . cos(x - y) = (cos x * cos y) + (sin x * sin y)
-    . forall e:Real . e > 0 => 
-	exists y:Real . y > 0 /\ |1 - sin(y)/y| < e
+    . forall e:Real . e > 0 =>
+        exists y:Real . y > 0 /\ |1 - sin(y)/y| < e
 end
 
-%( Es gibt einen Satz aus der Analysis, der besagt, dass ein Paar stetiger
-   reelle Funktionen, die die Gleichungen aus FieldWithSinCos erfüllen, 
+%[ Es gibt einen Satz aus der Analysis, der besagt, dass ein Paar stetiger
+   reelle Funktionen, die die Gleichungen aus FieldWithSinCos erfüllen,
    sowie lim_(a->0)(sin(a)/a) = 1 genau das Paar (sin,cos) sein muss.
    Daher obiges %def
-)%
+]%
 
 view FieldWithSinCos_in_RealsWithSinCos1 :
-     FieldWithSinCos to RealsWithSinCos1 
+     FieldWithSinCos to RealsWithSinCos1
 =    Elem |-> Real
 end
 
 
-%( Damit bekommt man die Theoreme aus FieldWithSinCos, die sich 
-   leicht (zu leicht???) mit SPASS beweisen lassen.
-)%
+%[ Damit bekommt man die Theoreme aus FieldWithSinCos, die sich
+   leicht (zu leicht???) mit SPASS beweisen lassen. ]%
 
 
 from HasCASL/EuclideanSpaces get Real2D
 
-spec RealsWithSinCos2 = 
-  Real 
+spec RealsWithSinCos2 =
+  RealWithInv
 then %def
 local Real2D
 within
-     ops sin__,cos__ : Real -> Real
-	%( .... 
-           hier kommt noch die geometrische Interpretation der 
-	   cosinus als Winkel zwischen zwei Vektoren, die bei der 
-	   Definition des Skalarprodukt im Real2D definiert wird.
-	)%
+     ops sin__, cos__, tan__ : Real -> Real
+        %[ ....
+           hier kommt noch die geometrische Interpretation der
+           cosinus als Winkel zwischen zwei Vektoren, die bei der
+           Definition des Skalarprodukt im Real2D definiert wird. ]%
 
 end
 
 view FieldWithSinCos_in_RealsWithSinCos2 :
-     FieldWithSinCos to RealsWithSinCos2 
+     FieldWithSinCos to RealsWithSinCos2
 =    Elem |-> Real
 end
-]%
-
