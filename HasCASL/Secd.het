@@ -7,9 +7,6 @@ version 0.1
 %right_assoc __ :: __
 
 from Basic/Numbers get Nat
-%% from Basic/SimpleDatatypes get Boolean
-
-%% from Basic/StructuredDatatypes get List
 
 logic HasCASL
 
@@ -138,7 +135,7 @@ then %implies
   . reducesTo = tc leftRel
 
 view TermReduction : Reduction to LeftReduction =
-  sort Expr |-> ClosedTerm
+  type Expr |-> ClosedTerm
 
 spec Closure = Term then 
 free types Env ::= Empty | Add Variable TermEnv Env ;
@@ -174,7 +171,7 @@ program repeat p s = s when p s else repeat p(step s);
    steps p s = 0 when p s else 1 + steps p(step s) 
 
   view DumpStep : Step to Dump =
-      sort State |-> Dump
+      type State |-> Dump
 
 spec SecdMachine = Repeat[view DumpStep] then 
 ops load : ClosedTerm -> Dump;
@@ -190,7 +187,7 @@ program load a = ([], Empty, a :: []) :: [];
  count = steps isFinal
 
 view Secd : Machine[Run] to SecdMachine =
-     sorts State |-> Dump, Expr |-> ClosedTerm
+     types State |-> Dump, Expr |-> ClosedTerm
 
 spec Time = Eval[view TermReduction] and Nat then 
 op time : ClosedTerm -> Nat 
@@ -203,4 +200,4 @@ spec TermEvalBySecdExec =
      Time and Execution[view Secd]
 
 view Implementation : EvalByTimedExec to TermEvalBySecdExec =
-      sorts State |-> Dump, Expr |-> ClosedTerm
+      types State |-> Dump, Expr |-> ClosedTerm
