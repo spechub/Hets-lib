@@ -1,0 +1,66 @@
+logic HasCASL
+
+spec CompId =
+vars a,b,c: Type; x: a; f: a -> b; g: b -> c
+ops __ comp __: (b -> c) * (a -> b) -> a -> c;
+    id: a -> a
+. id x = x
+. (g comp f) x = g (f x)
+
+spec Functor = CompId then
+class Functor < Type -> Type {
+vars a,b,c: Type; F: Functor; f: a -> b; g: b -> c
+op map: (a -> b) -> F a -> F b
+. map id = id: F a -> F a
+. (map (g comp f)):(F a -> F c)  = (map g) comp (map f) }
+
+spec Bifunctor = Functor then
+class Bifunctor < Type -> Functor {
+vars a,b,c,d: Type; F: Bifunctor; f: a -> b; g: b -> c
+op parmap: (a -> b) -> F a d -> F b d
+. parmap id = id: F a d -> F a d
+. parmap (g comp f):(F a d -> F c d) = (parmap g) comp (parmap f) }
+
+spec PolyFunctors = Functor then
+class PolyFunctor < Functor
+vars F,G: PolyFunctor; a,b: Type
+types Const a, Id, Sum F G, Prod F G, exp F a: PolyFunctor;
+types Const a b:= a;
+type Id b:= b;
+type Sum F G b ::= inl (F b) | inr (G b)
+vars f: (F b) ->? a; g: G b ->? a; h: (Sum F G) b  ->? a
+op sumcase: (F b ->? a) -> (G b ->? a) -> (Sum F G) b  ->? a
+. h = sumcase f g <=> 
+      (forall x: F b; y: G b. h (inl x) = f x /\ h (inr y)= g y) 
+type Prod F G b ::= pair (outl: F b; outr: G b)
+. forall z: (Prod F G) b. exists x:F b;y:G b. z=pair(x,y)
+type exp F a b:= a -> F b
+var k: a -> b; 
+. map k: (Sum F G) a -> (Sum F G) b  = 
+sumcase (inl comp (map k)) (inr comp (map k))
+class PolyBifunctor < Type -> PolyFunctor
+
+spec Algebra = PolyFunctors then
+var F: Functor; a,b: Type 
+type Alg F a := F a -> a
+op __:: __->__: Pred((a -> b) * (Alg F a) * (Alg F b))
+var f: a->b; alpha: Alg F a;  beta: Alg F b
+. f:: alpha -> beta <=> beta comp (map f) = f comp alpha
+type AlgMor F a b = 
+{(f,alpha,beta):(a -> b) * (Alg F a) * (Alg F b).
+		        f:: alpha -> beta }
+class DTFunctor < Functor {
+var F: DTFunctor; a:Type
+type InitialCarrier F
+ops initialAlg: Alg F (InitialCarrier F);
+    fold: Alg F a -> InitialCarrier F -> a
+var alpha: Alg F a; g: InitialCarrier F -> a
+.  g::initialAlg -> alpha  <=> g = fold alpha 
+}
+class PolyFunctor < DTFunctor
+var G: PolyBifunctor
+type ParamDT G a := InitialCarrier (G a)
+type  ParamDT G: DTFunctor
+var  l: ParamDT G a; b: Type; f: a -> b
+. def map f l
+%% f = fold initialAlg 
