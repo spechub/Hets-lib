@@ -122,6 +122,7 @@ end
 spec SimpleGraph =
   RichDirectedGraph
 then
+  var N, E : Type
   type SimpleGraph N E = {(nn,source,target):Graph N E .
                           forall e1,e2:E . source e1 = source e2
                                           /\ target e1 = target e2 => e1=e2 }
@@ -139,6 +140,7 @@ then
        /\ forall e:E1 . e isIn edges g1 =>
           (   hn(sourceMap g1 e) = sourceMap g2 (he e)
            /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
+  var N, E : Type
   type HomHom E N := Hom E N E N
   ops undefined : a; 
       dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
