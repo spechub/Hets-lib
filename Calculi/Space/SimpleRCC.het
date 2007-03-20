@@ -1,53 +1,48 @@
 library SimpleRCC
 
 spec RCC_FO =
-     sort Reg
-     pred __C__ : Reg * Reg;
+     sort Region
+     pred __C__ : Region * Region;
 
-     forall x, y : Reg
+     forall x, y : Region
      . x C x                                                 %(C_reflex)%
      . x C y => y C x                                           %(C_sym)%
-     . (forall z : Reg . z C x <=> z C y) => x = y               %(C_id)%
+     . (forall z : Region . z C x <=> z C y) => x = y            %(C_id)%
 
 spec ExtRCC_FO = RCC_FO then %def
-     preds  __P__ : Reg * Reg
-     forall x, y : Reg
-     . (forall z : Reg . z C x => z C y) <=> x P y              %(P_def)%
+     preds  __P__ : Region * Region
+     forall x, y : Region
+     . (forall z : Region . z C x => z C y) <=> x P y           %(P_def)%
      . x P y => x C y                               %(P_impl_C)% %implied
 
-%% view Trivial: RCC_FO to ExtRCC_FO
+logic HasCASL
 
-spec Real =
-     sort Real
-     ops 0 : Real;
-         __ + __ : Real * Real -> Real, comm, assoc, unit 0
-     preds __<=__, __>__ : Real * Real
-     forall s, r : Real
-     . s <= r <=> r > s \/ r = s
-     . not r > r 
+from HasCASL/Real get Real
 
 spec MetricSpace = Real then
      sort Space
-     op d : Space * Space -> Real
+     op distance : Space * Space -> Real
      forall x, y, z : Space
-     . d(x, y) = 0 <=> x = y                                    %(MS_id)%
-     . d(x, y) = d(y, x)                                       %(MS_sym)%
-     . d(x, z) <= d(x, y) + d(y, z)                       %(MS_triangle)%
+     . distance(x, y) = 0 <=> x = y                             %(MS_id)%
+     . distance(x, y) = distance(y, x)                         %(MS_sym)%
+     . distance(x, z) <= distance(x, y) + distance(y, z)  %(MS_triangle)%
 
 spec ClosedBall = MetricSpace then %def
   sort ClosedBall
   ops closedBall : Space * Real ->? ClosedBall;
-  pred rep : ClosedBall * Space
+  pred covers : ClosedBall * Space
   forall x, y : Space;  r : Real;  a, b : ClosedBall
-  . r > 0 => (rep (closedBall(x, r), y) <=> d(x, y) <= r)  %(CB_rep_pos)%
+  . r > 0 /\ a = closedBall(x, r) 
+    => (covers (a, y) <=> distance(x, y) <= r)          %(CB_covers_pos)%
   . r > 0 <=> def closedBall(x, r)                             %(CB_def)%
-  . (forall z : Space . rep (a, z) <=> rep (b, z)) => a = b     %(CB_id)%
+  . (forall z : Space . covers (a, z) <=> covers (b, z)) 
+    => a = b                                                    %(CB_id)%
   . exists z : Space; t : Real . a = closedBall(z,t)
 
 view RCC_FO_in_ClosedBall:
      RCC_FO to 
      { ClosedBall then %def
          pred __C__ : ClosedBall * ClosedBall
-         forall x, y : ClosedBall
-         . x C y <=> exists s : Space . rep(x, s) /\ rep(y, s)  %(C_def)%
-     } = Reg |-> ClosedBall  
+         forall a, b : ClosedBall
+         . a C b <=> exists x : Space . covers(a, x) /\ covers(b, x)  %(C_def)%
+     } = Region |-> ClosedBall
