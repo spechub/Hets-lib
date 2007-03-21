@@ -19,12 +19,14 @@ fun axname s =
    in if null an then "" else implode (tl an)
    end
 
-fun get_axioms name = 
+fun get_axioms name =
      let val (l, r) = List.partition (fn s => s mem (!thmlist))
-                      (filter (fn s => s <> name)
-                      (filter (String.isPrefix (!thyname))
+               (filter (fn s => s <> name)
+               (filter (fn s => length (filter 
+                          (fn c => c = ".") (explode s)) < 2)
+               (filter (String.isPrefix (!thyname))
                        (Symtab.keys (thms_of_proof 
-                                    (Thm.proof_of (thm name)) Symtab.empty))))
+                                    (Thm.proof_of (thm name)) Symtab.empty)))))
      in if null r then l
         else l @ List.concat (map get_axioms r)
      end
