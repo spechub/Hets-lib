@@ -1,0 +1,71 @@
+library Calculi/Space/Domain_of_DRA
+version 0.0
+
+%author: Dominik Luecke
+%date: 2007-05-07
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __, __ ^ __
+
+%%Domain for the DRA calculi
+
+%%We consider a normed vector space over a totally ordered field
+
+logic CASL
+
+spec Field =
+     sort Elem
+     ops 0     : Elem;
+	 1     : Elem;
+	 __+__ : Elem * Elem -> Elem, assoc, comm, unit 0;
+	 __*__ : Elem * Elem -> Elem, assoc, comm, unit 1;
+	 -__   : Elem -> Elem
+     forall a,b,c : Elem
+     . a * ( a + c ) = ( a * b ) + ( a * c )           %(distribution)%
+     forall a : Elem 
+     . exists b : Elem . a + b = 0                     %(additive_inverse)%
+     . exists b : Elem . not ( b = 0 ) => a * b = 1    %(mult_inverse)%
+     then %implies
+     forall a, b : Elem
+     . ((- a ) + a = 0 )  /\ (exists b : Elem . a + b = 0) => (b = - a)    %(thm_inverse)%
+     . a * 0 = 0                                                           %(thm_mult_with_inverse)%
+     . (- 0 ) = 0                                                          %(0_is_self_inverse)%
+     . - ( - a ) = a                                                       %(double_inverse)%
+     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)%
+end
+
+spec TotalOrder = 
+     sort Elem
+     pred __ <= __ : Elem * Elem;
+	  __<__    : Elem * Elem
+     forall a, b, c : Elem
+     . a <= a                                %(order_reflex)%
+     . a <= b /\ b <= a => a = b             %(order_antisymmetric)%
+     . a <=b /\ b <= c => a <= c             %(order_transitive)%
+     . a <= b \/ b <= a                      %(order_total)%
+     . a < b <=> a <= b /\ not ( a = b )     %(def_<)%
+end
+
+spec TotallyOrderedField = 
+     Field and TotalOrder
+     then
+     forall a : Elem
+     . 0 <= 1
+     . a <= 0 <=> 0 <= ( - a )
+     then %implies
+     forall a : Elem
+     . ( - a ) <= 0 <=> 0 <= a               %(thm_order)%
+end 
+
+spec Point[sort Elem] =
+     free type Point ::= /__ __\ (x : Elem; y : Elem)
+end
+
+spec PointsOverField =
+     Point[TotallyOrderedField]
+     then 
+     pred __<=__ : Point * Point
+     forall a,b : Point
+     . (a <= b) <=> (x(a) <= x(b)) /\ (y(a) <= y(b))
+end
