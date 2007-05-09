@@ -67,5 +67,58 @@ spec PointsOverField =
      then 
      pred __<=__ : Point * Point
      forall a,b : Point
-     . (a <= b) <=> (x(a) <= x(b)) /\ (y(a) <= y(b))
+     . (a <= b) <=> ((x(a) <= x(b)) /\ (y(a) <= y(b)))
+     %{
+     then %implies
+     . exists c, d : Point . not (c <= d) /\ not (d <= c)
+     }%
+end
+
+spec VectorSpace[sort Space] = 
+     Field
+     then
+     ops __+__ : Space * Space -> Space;
+	 __*__ : Elem * Space -> Space;
+	 -__   : Space -> Space;
+	 0     : Space
+     forall a, b, c : Space; e, f : Elem
+     . a + ( b + c ) = ( a + b ) + c                 %(ax_asoc)%
+     . a + b = b + a                                 %(ax_commut)%
+     . a + 0 = a                                     %(ax_0)%
+     . exists d : Space . a + d = 0                  %(ax_inverse)%
+     . e * ( a + b ) = e * a + e * b                 %(ax_distri_1)%
+     . ( e + f ) * a = e * a + f * a                 %(ax_distri_2)%
+     . e * ( f * a) = ( e * f ) * a                  %(ax_mult)%
+     . 1 * a = a
+     then %implies
+     forall a, b : Space
+     . ((- a ) + a = 0 )  /\ (exists b : Space . a + b = 0) => (b = - a)    %(thm_inverse)%
+end
+
+spec Vector =
+     TotallyOrderedField
+     then
+     free type Vector ::= [[__ __]](xc : Elem; yc : Elem) 
+     then
+     VectorSpace[sort Vector]
+     then
+     ops <__||__> : Vector * Vector -> Elem;
+	 ||__||   : Vector -> Elem
+     forall a, b : Vector
+     . <a||b> = xc(a) * xc(b) + yc(a) * yc(b)      %(def_inner_prod)%
+     . ||a|| * ||a|| = <a||a>                      %(def_norm)%
+     then %implies
+     forall a,b : Vector
+     . <0||0> = 0                                  %(thm_zero)%
+     . 0 <= ||a||                                  %(thm_norm>=0)%
+     . <a||b> = <b||a>                             %(thm_commut)%
+     . <a || a> = 0 => a = 0                       %(thm_x=0)%
+end 
+
+spec PointToVector =
+     Vector 
+     then PointsOverField
+     then
+     forall a,b : Point
+     . exists c : Vector . c = [[x(a)+(-x(b)) y(a)+(-y(b))]]
 end
