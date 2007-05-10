@@ -39,7 +39,7 @@ then %implies
 
   forall x,y:BaseRel; u:GenRel
   . not x = y => x cap y = 0	%(PairwiseDisjoint)%
-  . exists z:BaseRel . z eps u	%(JointlyExhaustive)%
+  . not u=0 => exists z:BaseRel . z eps u	%(JointlyExhaustive)%
 end
 
 %% Definitions of the relations between point and dipoles as basis for
