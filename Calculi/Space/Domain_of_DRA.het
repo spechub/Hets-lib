@@ -25,10 +25,10 @@ spec Field =
      . a * ( a + c ) = ( a * b ) + ( a * c )           %(distribution)%
      forall a : Elem 
      . exists b : Elem . a + b = 0                     %(additive_inverse)%
-     . exists b : Elem . not ( b = 0 ) => a * b = 1    %(mult_inverse)%
+     . not ( a = 0 ) => (exists b : Elem . not ( b = 0 ) => a * b = 1)    %(mult_inverse)%
      then %implies
      forall a, b : Elem
-     . ((- a ) + a = 0 )  /\ (exists b : Elem . a + b = 0) => (b = - a)    %(thm_inverse)%
+     . ((- a ) + a = 0 )  /\ (forall c : Elem . (a + c = 0) => (c = - a))    %(thm_inverse)%
      . a * 0 = 0                                                           %(thm_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
@@ -54,8 +54,9 @@ spec TotallyOrderedField =
      . 0 <= 1
      . a <= 0 <=> 0 <= ( - a )
      then %implies
-     forall a : Elem
+     forall a,b,c,d : Elem
      . ( - a ) <= 0 <=> 0 <= a               %(thm_order)%
+     . a <= b /\ c <= d => a + c <= c + d    %(thm_order_+)%
 end 
 
 spec Point[sort Elem] =
@@ -68,10 +69,6 @@ spec PointsOverField =
      pred __<=__ : Point * Point
      forall a,b : Point
      . (a <= b) <=> ((x(a) <= x(b)) /\ (y(a) <= y(b)))
-     %{
-     then %implies
-     . exists c, d : Point . not (c <= d) /\ not (d <= c)
-     }%
 end
 
 spec VectorSpace[sort Space] = 
@@ -92,7 +89,7 @@ spec VectorSpace[sort Space] =
      . 1 * a = a
      then %implies
      forall a, b : Space
-     . ((- a ) + a = 0 )  /\ (exists b : Space . a + b = 0) => (b = - a)    %(thm_inverse)%
+     . ((- a ) + a = 0 )  /\ (forall c : Space . ( a + c = 0) => (c = - a))    %(thm_inverse)%
 end
 
 spec Vector =
@@ -115,22 +112,50 @@ spec Vector =
      . <a || a> = 0 => a = 0                       %(thm_x=0)%
 end 
 
-spec PointToVector =
+%% This spec is intended to be part of the interface from DRA to 
+%% its domain
+spec PointsToVector =
      Vector 
      then PointsOverField
      then
-     forall a,b : Point
-     . exists c : Vector . c = [[x(a)+(-x(b)) y(a)+(-y(b))]]
+     %% we consider s_a, e_a and a point pt in the 
+     %% terminology of Moratz, Renz, Wolter:
+     %% Qualitative Spatial Reasoing about Line Segments
+     %% We are using a dipol and a point to calculate a 
+     %% orthogonal coordinate system with basis in the 
+     %% start point of the dipol
+     ops A  : Vector;
+     ops Ap : Vector;
+     ops P  : Vector;
+     ops s_A : Point;
+     ops e_A : Point;
+     ops pt  : Point
+     . not ( s_A = e_A) => A  = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
+     . not ( s_A = e_A) => Ap = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
+     . not ( s_A = e_A) => P  = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
+     . < A || Ap > = 0                       %(thm_orthogonal)% %implied
+     
+     
 end
 
+%% The definition of the 7 Dipol-Point relations via vectors
 spec Vector_Vector_Relations =
-     Vector
-     then 
-     pred vr : Vector * Vector;
-	  vl : Vector * Vector;
-	  vs : Vector * Vector;	  
-	  ve : Vector * Vector;
-	  vb : Vector * Vector;
-	  vi : Vector * Vector;
-	  vf : Vector * Vector;
+     PointsToVector
+     then
+     TotallyOrderedField
+     then
+     pred __vr__ : Vector * Vector;
+	  __vl__ : Vector * Vector;
+	  __vs__ : Vector * Vector;	  
+	  __ve__ : Vector * Vector;
+	  __vb__ : Vector * Vector;
+	  __vi__ : Vector * Vector;
+	  __vf__ : Vector * Vector;
+     . A vr P <=> 0 < < Ap || P > 
+     . A vl P <=> < Ap || P > < 0 
+     . A vb P <=> < A || P > = -(||A|| * ||P||)
+     . A ve P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| = ||P||)
+     . A vf P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| < ||P||)
+     . A vi P <=> (< A || P > = ||A|| * ||P||) /\ (||P|| < ||A||)
+     . A vs P <=> (0 = ||P||)
 end
