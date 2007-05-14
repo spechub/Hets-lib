@@ -2,7 +2,7 @@ library Calculi/Space/DRA_X
 version 0.0
 
 from Basic/StructuredDatatypes get Set
-from Calculi/Space/Domain_of_DRA get Vector_Vector_Relations
+from Calculi/Space/Domain_of_DRA get VectorVectorRelationsHiding
 
 %author: Dominik Luecke
 %date: 2007-04-30
@@ -309,8 +309,25 @@ spec DRA72Composition[sort Point] =
 
 end
 
-view DRA72_In_Domain : DipolRelations[sort Point] to
-     Vector_Vector_Relations = 
-     Point |-> Point, Dipol |-> Dipol, r |-> dr, l |-> dl,
-     s |-> ds, e |-> de, b |-> db, i |-> di, f |-> df
+spec DRA72CompositionHiding[sort Point] =
+     DRA72Composition[sort Point] hide Nat, BaseRelation24, Pos, 
+			   DipolRelation24, DipolPointRelation24,
+			   rrrr, rrrl, rrlr, rrll, rlrr, rllr,
+			   rlll, lrrr, lrrl, lrll, llrr, llrl,
+			   lllr, llll, ells, eses, errs, lere,
+			   rele, slsr, srsl, lsel, rser, sese,
+			   ffbb, efbs, ifbi, bfii, sfsi, beie,
+			   bbff, bsef, biif, iibf, sisf, iebe, 
+			   ffff, fefe, fifi, fbii, fsei, ebis,
+			   iifb, eifs, iseb, bbbb, sbsb, ibib,
+			   lllb, llfl, llbr, llrf, lirl, lfrr,
+			   lril, lrri, blrr, irrl, frrr, rbrr,
+			   lbll, flll, brll, rfll, rlli, rrlf,
+			   illr, rilr, rrbl, rlir, rrfr, rrrb,
+			   BaseRelation72, 0, 1, compl
+end
+
+view DRA72_In_Domain : DRA72CompositionHiding[sort Point] to
+     VectorVectorRelationsHiding = r |-> dr, l |-> dl, s |-> ds,
+     e |-> de, b |-> db, i |-> di, f |-> df
 end

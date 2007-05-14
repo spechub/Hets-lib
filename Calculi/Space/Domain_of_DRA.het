@@ -1,6 +1,8 @@
 library Calculi/Space/Domain_of_DRA
 version 0.0
 
+from Basic/StructuredDatatypes get Set
+
 %author: Dominik Luecke
 %date: 2007-05-07
 
@@ -139,8 +141,6 @@ spec PointsToVector =
      . not ( s_A = e_A) => Ap = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
      . not ( s_A = e_A) => P  = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
      . < A || Ap > = 0                       %(thm_orthogonal)% %implied
-     
-     
 end
 
 %% The definition of the 7 Dipol-Point relations via vectors
@@ -164,7 +164,7 @@ spec Vector_Vector_Relations =
 	  __dpe__ : Dipol * Point;
 	  __dpb__ : Dipol * Point;
 	  __dpi__ : Dipol * Point;
-	  __dpf__ : Dipol * Point	  
+	  __dpf__ : Dipol * Point 	  
      then
      free type DipolDipolRelation72 ::= <<__ __ __ __>> (fst: DipolPointRelations;
 							    snd: DipolPointRelations;
@@ -199,4 +199,12 @@ spec Vector_Vector_Relations =
      . Dp1 dpb ptp <=> >> Dp1 db ptp <<
      . Dp1 dpi ptp <=> >> Dp1 di ptp <<     
      . Dp1 dpf ptp <=> >> Dp1 df ptp <<    
+     then
+     Set[sort DipolDipolRelation72 fit Elem |-> DipolDipolRelation72] with
+     Set[DipolDipolRelation72] |-> GenRel,
+      __union__ |-> __union__, __intersection__ |-> __cap__
+end
+
+spec VectorVectorRelationsHiding =
+     Vector_Vector_Relations hide Vector, Elem, Nat, Pos
 end
