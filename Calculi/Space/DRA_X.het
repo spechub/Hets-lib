@@ -2,11 +2,11 @@ library Calculi/Space/DRA_X
 version 0.0
 
 from Basic/StructuredDatatypes get Set
+from Calculi/Space/Domain_of_DRA get Vector_Vector_Relations
 
 %author: Dominik Luecke
 %date: 2007-04-30
 %% Dipol Calculus with 72 relations (DRA 72)
-
 
 %% General relations are sets of BaseRelations... 
 spec SetOfBaseRels[sort BaseRel] = 
@@ -194,11 +194,11 @@ spec DipolRelations[sort Point] =
      . rlir = <<r l i r>>
      . rrfr = <<r r f r>>
      . rrrb = <<r r r b>>
-     forall a,b : Dipol; rel : BaseRelation72
-     . > a rel b < <=> (>> a fst(rel) sp(b) << /\
-	                >> a snd(rel) ep(b) << /\
-		        >> b trd(rel) sp(a) << /\
-	                >> b frt(rel) ep(a) << 
+     forall Dp1,Dp2 : Dipol; rel : BaseRelation72
+     . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
+	                >> Dp1 snd(rel) ep(Dp2) << /\
+		        >> Dp1 trd(rel) sp(Dp2) << /\
+	                >> Dp1 frt(rel) ep(Dp2) << 
 		       )
 end
 
@@ -307,4 +307,10 @@ spec DRA72Composition[sort Point] =
      %% compostion table - automatically generated
 
 
+end
+
+view DRA72_In_Domain : DipolRelations[sort Point] to
+     Vector_Vector_Relations = 
+     Point |-> Point, Dipol |-> Dipol, r |-> dr, l |-> dl,
+     s |-> ds, e |-> de, b |-> db, i |-> di, f |-> df
 end

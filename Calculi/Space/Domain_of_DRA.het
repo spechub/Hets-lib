@@ -118,6 +118,8 @@ spec PointsToVector =
      Vector 
      then PointsOverField
      then
+     type Dipol ::= [<__ __>] (sp : Point; ep : Point)
+     then
      %% we consider s_a, e_a and a point pt in the 
      %% terminology of Moratz, Renz, Wolter:
      %% Qualitative Spatial Reasoing about Line Segments
@@ -129,7 +131,10 @@ spec PointsToVector =
      ops P  : Vector;
      ops s_A : Point;
      ops e_A : Point;
-     ops pt  : Point
+     ops pt  : Point;
+     ops Dp : Dipol 
+     . s_A = sp(Dp)
+     . e_A = ep(Dp)
      . not ( s_A = e_A) => A  = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
      . not ( s_A = e_A) => Ap = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
      . not ( s_A = e_A) => P  = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
@@ -144,6 +149,8 @@ spec Vector_Vector_Relations =
      then
      TotallyOrderedField
      then
+     free type DipolPointRelations ::= dr | dl | ds | de | db | di | df
+     then
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -151,6 +158,20 @@ spec Vector_Vector_Relations =
 	  __vb__ : Vector * Vector;
 	  __vi__ : Vector * Vector;
 	  __vf__ : Vector * Vector;
+	  __dpr__ : Dipol * Point;
+	  __dpl__ : Dipol * Point;
+	  __dps__ : Dipol * Point;	  
+	  __dpe__ : Dipol * Point;
+	  __dpb__ : Dipol * Point;
+	  __dpi__ : Dipol * Point;
+	  __dpf__ : Dipol * Point	  
+     then
+     free type DipolDipolRelation72 ::= <<__ __ __ __>> (fst: DipolPointRelations;
+							    snd: DipolPointRelations;
+							    trd: DipolPointRelations; 
+							    frt: DipolPointRelations)
+     pred >__ __ __< : Dipol * DipolDipolRelation72 * Dipol
+     pred >>__ __ __<< : Dipol * DipolPointRelations * Point
      . A vr P <=> 0 < < Ap || P > 
      . A vl P <=> < Ap || P > < 0 
      . A vb P <=> < A || P > = -(||A|| * ||P||)
@@ -158,4 +179,24 @@ spec Vector_Vector_Relations =
      . A vf P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| < ||P||)
      . A vi P <=> (< A || P > = ||A|| * ||P||) /\ (||P|| < ||A||)
      . A vs P <=> (0 = ||P||)
+     . Dp dpr pt <=> A vr P
+     . Dp dpl pt <=> A vl P 
+     . Dp dps pt <=> A vs P
+     . Dp dpe pt <=> A ve P
+     . Dp dpb pt <=> A vb P
+     . Dp dpi pt <=> A vi P
+     . Dp dpf pt <=> A vf P
+     forall Dp1, Dp2 : Dipol; rel : DipolDipolRelation72; ptp : Point
+     . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
+	                >> Dp1 snd(rel) ep(Dp2) << /\
+		        >> Dp1 trd(rel) sp(Dp2) << /\
+	                >> Dp1 frt(rel) ep(Dp2) << 
+		       )
+     . Dp1 dpr ptp <=> >> Dp1 dr ptp <<
+     . Dp1 dpl ptp <=> >> Dp1 dl ptp <<     
+     . Dp1 dps ptp <=> >> Dp1 ds ptp <<     
+     . Dp1 dpe ptp <=> >> Dp1 de ptp <<
+     . Dp1 dpb ptp <=> >> Dp1 db ptp <<
+     . Dp1 dpi ptp <=> >> Dp1 di ptp <<     
+     . Dp1 dpf ptp <=> >> Dp1 df ptp <<    
 end
