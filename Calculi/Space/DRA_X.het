@@ -10,34 +10,29 @@ from Basic/StructuredDatatypes get Set
 %% General relations are sets of BaseRelations... 
 spec SetOfBaseRels[sort BaseRel] = 
      Set[sort BaseRel fit Elem |-> BaseRel] with Set[BaseRel] |-> GenRel,
-      __union__ |-> __union__, __intersection__ |-> __cap__
-then
+      __union__ |-> __union__
+     then
      sort BaseRel < GenRel
-then
-  sort BaseRel < GenRel
-   ops id : BaseRel;
-       1  : GenRel;
-       0  : GenRel = {};
-       compl: GenRel -> GenRel;
-       conv: BaseRel -> BaseRel;
-       __cmps__ : BaseRel * BaseRel -> GenRel
+     ops id : BaseRel;
+	  1  : GenRel;
+	  0  : GenRel = {};
+	  compl: GenRel -> GenRel;
+	  conv: BaseRel -> BaseRel;
+	  __cmps__ : BaseRel * BaseRel -> GenRel
+     forall x:BaseRel; u:GenRel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . compl(u) = 1 - u
 
-  forall x:BaseRel; u:GenRel
-  . x = {x}
-  . x eps 1
-  . not x eps 0
-  . compl(u) = 1 - u
+     . x cmps id = x
+     . id cmps x = x
 
-  . x cmps id = x
-  . id cmps x = x
-
-  . conv(id) = id
-  . conv(conv(x)) = x
-
+     . conv(id) = id
+     . conv(conv(x)) = x
 then %implies
-
   forall x,y:BaseRel; u:GenRel
-  . not x = y => x cap y = 0	%(PairwiseDisjoint)%
+  . not x = y => x intersection y = 0	        %(PairwiseDisjoint)%
   . not u=0 => exists z:BaseRel . z eps u	%(JointlyExhaustive)%
 end
 
@@ -54,7 +49,7 @@ end
 %% DRA 72. Subsorting is used extensively
 spec DipolRelations[sort Point] =
      DipolPointRelation [sort Point]
-     then
+     then %cons
      free type DipolRelation72 ::= <<__ __ __ __>>(fst:DipolPointRelation72; 
 					       snd:DipolPointRelation72; 
 					       trd: DipolPointRelation72; 
@@ -109,6 +104,7 @@ spec DipolRelations[sort Point] =
 			    x = <<r r b l>> \/ x = <<r l i r>> \/
 			    x = <<r r f r>> \/ x = <<r r r b>>
 			    }
+     %% Shortcuts for the relations... just for your convenience
      op rrrr, rrrl, rrlr, rrll, rlrr, rllr,
 	rlll, lrrr, lrrl, lrll, llrr, llrl,
 	lllr, llll, ells, eses, errs, lere,
@@ -193,6 +189,7 @@ spec DipolRelations[sort Point] =
      . rlir = <<r l i r>>
      . rrfr = <<r r f r>>
      . rrrb = <<r r r b>>
+     %% Definition of Dipol Relations by Dipol point relations
      forall Dp1,Dp2 : Dipol; rel : BaseRelation72
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
@@ -203,7 +200,7 @@ end
 
 spec DRA72Composition[sort Point] =
      DipolRelations[sort Point]
-     then
+     then %cons
      SetOfBaseRels[sort BaseRelation72]
      then
      %% universal relation
@@ -312,8 +309,6 @@ end
 
 %%We consider a normed vector space over a totally ordered field
 
-logic CASL
-
 spec Field =
      sort Elem
      ops 0     : Elem;
@@ -365,7 +360,7 @@ end
 
 spec PointsOverField =
      Point[TotallyOrderedField]
-     then 
+     then %cons 
      pred __<=__ : Point * Point
      forall a,b : Point
      . (a <= b) <=> ((x(a) <= x(b)) /\ (y(a) <= y(b)))
@@ -394,7 +389,7 @@ end
 
 spec Vector =
      TotallyOrderedField
-     then
+     then %cons
      free type Vector ::= [[__ __]](xc : Elem; yc : Elem) 
      then
      VectorSpace[sort Vector]
@@ -419,7 +414,6 @@ spec PointsToVector =
      then PointsOverField
      then
      type Dipol ::= [<__ __>] (sp : Point; ep : Point)
-     then
      %% we consider s_a, e_a and a point pt in the 
      %% terminology of Moratz, Renz, Wolter:
      %% Qualitative Spatial Reasoing about Line Segments
@@ -429,10 +423,13 @@ spec PointsToVector =
      ops A  : Vector;
      ops Ap : Vector;
      ops P  : Vector;
+     ops pt  : Point;
+     ops Dp : Dipol; 
      ops s_A : Point;
      ops e_A : Point;
-     ops pt  : Point;
-     ops Dp : Dipol 
+     forall Dpt : Dipol; ptt : Point
+     . pt = ptt
+     . Dp = Dpt
      . s_A = sp(Dp)
      . e_A = ep(Dp)
      . not ( s_A = e_A) => A  = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
@@ -442,13 +439,15 @@ spec PointsToVector =
 end
 
 %% The definition of the 7 Dipol-Point relations via vectors
+%% we are stating this under the assumption, that
+%% < A || B > = || A || * || B || * cos \phi which is known to be 
+%% true for the 2D-Vector space over real numbers
 spec Vector_Vector_Relations =
      PointsToVector
      then
      TotallyOrderedField
-     then
+     then %cons
      free type DipolPointRelations ::= dr | dl | ds | de | db | di | df
-     then
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -463,7 +462,6 @@ spec Vector_Vector_Relations =
 	  __dpb__ : Dipol * Point;
 	  __dpi__ : Dipol * Point;
 	  __dpf__ : Dipol * Point 	  
-     then
      free type DipolDipolRelation72 ::= <<__ __ __ __>> (fst: DipolPointRelations;
 							    snd: DipolPointRelations;
 							    trd: DipolPointRelations; 
@@ -497,15 +495,18 @@ spec Vector_Vector_Relations =
      . Dp1 dpb ptp <=> >> Dp1 db ptp <<
      . Dp1 dpi ptp <=> >> Dp1 di ptp <<     
      . Dp1 dpf ptp <=> >> Dp1 df ptp <<    
-     then
+     then %cons
      Set[sort DipolDipolRelation72 fit Elem |-> DipolDipolRelation72] with
      Set[DipolDipolRelation72] |-> GenRel,
-      __union__ |-> __union__, __intersection__ |-> __cap__
+      __union__ |-> __union__
+then %cons
+     ops 0 : GenRel = {}
 end
 
-
+%% We need to make the signatures compatible. Let's hope that we
+%% are not hiding too much. 
 spec DRA72CompositionHiding[sort Point] =
-     DRA72Composition[sort Point] hide Nat, BaseRelation24, Pos, 
+     DRA72Composition[sort Point] hide BaseRelation24, 
 			   DipolRelation24, DipolPointRelation24,
 			   rrrr, rrrl, rrlr, rrll, rlrr, rllr,
 			   rlll, lrrr, lrrl, lrll, llrr, llrl,
@@ -519,11 +520,11 @@ spec DRA72CompositionHiding[sort Point] =
 			   lril, lrri, blrr, irrl, frrr, rbrr,
 			   lbll, flll, brll, rfll, rlli, rrlf,
 			   illr, rilr, rrbl, rlir, rrfr, rrrb,
-			   BaseRelation72, 0, 1, compl
+			   BaseRelation72, 1, compl
 end
 
 spec VectorVectorRelationsHiding =
-     Vector_Vector_Relations hide Vector, Elem, Nat, Pos
+     Vector_Vector_Relations hide Vector, Elem
 end
 
 view DRA72_In_Domain : DRA72CompositionHiding[sort Point] to
