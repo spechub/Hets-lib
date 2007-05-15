@@ -200,9 +200,9 @@ end
 
 spec DRA72Composition[sort Point] =
      DipolRelations[sort Point]
-     then %cons
+     then 
      SetOfBaseRels[sort BaseRelation72]
-     then
+     then 
      %% universal relation
      . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
 		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
@@ -495,13 +495,18 @@ spec Vector_Vector_Relations =
      . Dp1 dpb ptp <=> >> Dp1 db ptp <<
      . Dp1 dpi ptp <=> >> Dp1 di ptp <<     
      . Dp1 dpf ptp <=> >> Dp1 df ptp <<    
-     then %cons
+end
+
+spec Vector_Vector_Relation_Sets =
+     Vector_Vector_Relations
+     then 
      Set[sort DipolDipolRelation72 fit Elem |-> DipolDipolRelation72] with
      Set[DipolDipolRelation72] |-> GenRel,
       __union__ |-> __union__
-then %cons
+     then %cons
      ops 0 : GenRel = {}
 end
+
 
 %% We need to make the signatures compatible. Let's hope that we
 %% are not hiding too much. 
@@ -524,7 +529,7 @@ spec DRA72CompositionHiding[sort Point] =
 end
 
 spec VectorVectorRelationsHiding =
-     Vector_Vector_Relations hide Vector, Elem
+     Vector_Vector_Relation_Sets hide Vector, Elem
 end
 
 view DRA72_In_Domain : DRA72CompositionHiding[sort Point] to
