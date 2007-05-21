@@ -1,5 +1,5 @@
 library Calculi/Space/DRA_X
-version 0.0
+version 0.1
 
 from Basic/StructuredDatatypes get Set
 
@@ -36,31 +36,16 @@ then %implies
   . not u=0 => exists z:BaseRel . z eps u	%(JointlyExhaustive)%
 end
 
-%% Definitions of the relations between point and dipoles as basis for
-%% DRA 24 and DRA 72
-spec DipolPointRelation[sort Point] =
+%% Definitions for the 24 relations of DRA 24.
+spec DipolRelations24[sort Point] =
      type Dipol ::= [__ __](sp : Point; ep : Point)
-     free type DipolPointRelation72 ::= r | l | e | s | b | i | f
-     sort DipolPointRelation24 < DipolPointRelation72
      free type DipolPointRelation24 ::= r | l | e | s
-end  
-
-%% Definitions of the 24 relations of DRA 24 and 72 relations of
-%% DRA 72. Subsorting is used extensively
-spec DipolRelations[sort Point] =
-     DipolPointRelation [sort Point]
-     then %cons
-     free type DipolRelation72 ::= <<__ __ __ __>>(fst:DipolPointRelation72; 
-					       snd:DipolPointRelation72; 
-					       trd: DipolPointRelation72; 
-					       frt: DipolPointRelation72)
-     sort DipolRelation24 < DipolRelation72
      free type DipolRelation24 ::= <<__ __ __ __>>(fst:DipolPointRelation24; 
 					       snd:DipolPointRelation24; 
 					       trd: DipolPointRelation24; 
-					       frt: DipolPointRelation24)     
-     pred >__ __ __< : Dipol * DipolRelation72 * Dipol
-     pred >>__ __ __<< : Dipol * DipolPointRelation72 * Point
+					       frt: DipolPointRelation24)
+     pred >__ __ __< : Dipol * DipolRelation24 * Dipol
+     pred >>__ __ __<< : Dipol * DipolPointRelation24 * Point  
      %% DRA 24 Relations
      sort BaseRelation24 = {x : DipolRelation24 .
 			    x = <<r r r r>> \/ x = <<r r r l>> \/
@@ -76,6 +61,58 @@ spec DipolRelations[sort Point] =
 			    x = <<s r s l>> \/ x = <<l s e l>> \/
 			    x = <<r s e r>> \/ x = <<s e s e>> 
 			   }
+     %% Definition of Dipol Relations by Dipol point relations
+     forall Dp1,Dp2 : Dipol; rel : BaseRelation24
+     . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
+	                >> Dp1 snd(rel) ep(Dp2) << /\
+		        >> Dp1 trd(rel) sp(Dp2) << /\
+	                >> Dp1 frt(rel) ep(Dp2) << 
+		       ) 
+     op rrrr, rrrl, rrlr, rrll, rlrr, rllr,
+	rlll, lrrr, lrrl, lrll, llrr, llrl,
+	lllr, llll, ells, eses, errs, lere,
+	rele, slsr, srsl, lsel, rser, sese,
+	ffbb, efbs : BaseRelation24
+     . rrrr = <<r r r r>>
+     . rrrl = <<r r r l>>
+     . rrlr = <<r r l r>>
+     . rrll = <<r r l l>>
+     . rlrr = <<r l r r>>
+     . rllr = <<r l l r>>
+     . rlll = <<r l l l>>
+     . lrrr = <<l r r r>>
+     . lrrl = <<l r r l>>
+     . lrll = <<l r l l>>
+     . llrr = <<l l r r>>
+     . llrl = <<l l r l>>
+     . lllr = <<l l l r>>
+     . llll = <<l l l l>>
+     . ells = <<e l l s>>
+     . eses = <<e s e s>>
+     . errs = <<e r r s>>
+     . lere = <<l e r e>>
+     . rele = <<r e l e>>
+     . slsr = <<s l s r>>
+     . srsl = <<s r s l>>
+     . lsel = <<l s e l>>
+     . rser = <<r s e r>>
+     . sese = <<s e s e>>
+end
+
+%% Definitions for 72 relations of DRA 72.
+%% Subsorting is used extensively
+spec DipolRelations[sort Point] =
+     DipolRelations24 [sort Point]
+     then %cons
+     free type DipolPointRelation72 ::= r | l | e | s | b | i | f
+     sort DipolPointRelation24 < DipolPointRelation72
+     free type DipolRelation72 ::= <<__ __ __ __>>(fst:DipolPointRelation72; 
+					       snd:DipolPointRelation72; 
+					       trd: DipolPointRelation72; 
+					       frt: DipolPointRelation72)
+     sort DipolRelation24 < DipolRelation72
+     pred >__ __ __< : Dipol * DipolRelation72 * Dipol
+     pred >>__ __ __<< : Dipol * DipolPointRelation72 * Point
      %% DRA 72 Relations
      sort BaseRelation72 = {x : DipolRelation72 .
 			    x in BaseRelation24 \/
@@ -104,6 +141,13 @@ spec DipolRelations[sort Point] =
 			    x = <<r r b l>> \/ x = <<r l i r>> \/
 			    x = <<r r f r>> \/ x = <<r r r b>>
 			    }
+     %% Definition of Dipol Relations by Dipol point relations
+     forall Dp1,Dp2 : Dipol; rel : BaseRelation72
+     . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
+	                >> Dp1 snd(rel) ep(Dp2) << /\
+		        >> Dp1 trd(rel) sp(Dp2) << /\
+	                >> Dp1 frt(rel) ep(Dp2) << 
+		       )
      %% Shortcuts for the relations... just for your convenience
      op rrrr, rrrl, rrlr, rrll, rlrr, rllr,
 	rlll, lrrr, lrrl, lrll, llrr, llrl,
@@ -189,78 +233,19 @@ spec DipolRelations[sort Point] =
      . rlir = <<r l i r>>
      . rrfr = <<r r f r>>
      . rrrb = <<r r r b>>
-     %% Definition of Dipol Relations by Dipol point relations
-     forall Dp1,Dp2 : Dipol; rel : BaseRelation72
-     . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
-	                >> Dp1 snd(rel) ep(Dp2) << /\
-		        >> Dp1 trd(rel) sp(Dp2) << /\
-	                >> Dp1 frt(rel) ep(Dp2) << 
-		       )
 end
 
 spec DRA24Composition[sort Point] = 
-     DipolRelations[sort Point] hide BaseRelation72, DipolPointRelation72, 
-			 DipolRelation
+     DipolRelations24[sort Point]
      then
      SetOfBaseRels[sort BaseRelation24]
      then 
-     op rrrr, rrrl, rrlr, rrll, rlrr, rllr,
-	rlll, lrrr, lrrl, lrll, llrr, llrl,
-	lllr, llll, ells, eses, errs, lere,
-	rele, slsr, srsl, lsel, rser, sese,
-	ffbb, efbs : BaseRelation24
-     . rrrr = <<r r r r>>
-     . rrrl = <<r r r l>>
-     . rrlr = <<r r l r>>
-     . rrll = <<r r l l>>
-     . rlrr = <<r l r r>>
-     . rllr = <<r l l r>>
-     . rlll = <<r l l l>>
-     . lrrr = <<l r r r>>
-     . lrrl = <<l r r l>>
-     . lrll = <<l r l l>>
-     . llrr = <<l l r r>>
-     . llrl = <<l l r l>>
-     . lllr = <<l l l r>>
-     . llll = <<l l l l>>
-     . ells = <<e l l s>>
-     . eses = <<e s e s>>
-     . errs = <<e r r s>>
-     . lere = <<l e r e>>
-     . rele = <<r e l e>>
-     . slsr = <<s l s r>>
-     . srsl = <<s r s l>>
-     . lsel = <<l s e l>>
-     . rser = <<r s e r>>
-     . sese = <<s e s e>>
      %% universal relation
      . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
 		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
 		(lllr union (ells union (errs union (lere union (rele union (slsr union
 		(srsl union (lsel union (rser union (sese union
 		eses)))))))))))))))))))))))
-     
-end
-
-spec DRA72Composition[sort Point] =
-     DipolRelations[sort Point]
-     then 
-     SetOfBaseRels[sort BaseRelation72]
-     then 
-     %% universal relation
-     . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
-		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
-		(lllr union (ells union (errs union (lere union (rele union (slsr union
-		(srsl union (lsel union (rser union (sese union (eses union (ffbb union
-		(efbs union (ifbi union (bfii union (sfsi union (beie union (bbff union
-		(bsef union (biif union (iibf union (sisf union (iebe union (ffff union
-		(fefe union (fifi union (fbii union (fsei union (ebis union (iifb union
-		(eifs union (iseb union (bbbb union (sbsb union (ibib union (lllb union
-		(llfl union (llbr union (llrf union (lirl union (lfrr union (lril union
-		(lrri union (blrr union (irrl union (frrr union (rbrr union (lbll union
-		(flll union (brll union (rfll union (rlli union (rrlf union (illr union
-		(rilr union (rrbl union (rlir union (rrfr union rrrb)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
-
      %% the converses
      . conv(rrll) = llrr
      . conv(llrr) = rrll
@@ -283,7 +268,35 @@ spec DRA72Composition[sort Point] =
      . conv(slsr) = srsl
      . conv(srsl) = slsr
      . conv(lsel) = ells
-     . conv(rser) = errs
+     . conv(rser) = errs     
+
+     %% symmetric relations
+     . conv(rrrr) = rrrr
+     . conv(llll) = llll
+       
+     . conv(eses) = eses
+     . conv(sese) = sese
+end
+
+spec DRA72Composition[sort Point] =
+     DipolRelations[sort Point]
+     then 
+     SetOfBaseRels[sort BaseRelation72]
+     then 
+     %% universal relation
+     . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
+		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
+		(lllr union (ells union (errs union (lere union (rele union (slsr union
+		(srsl union (lsel union (rser union (sese union (eses union (ffbb union
+		(efbs union (ifbi union (bfii union (sfsi union (beie union (bbff union
+		(bsef union (biif union (iibf union (sisf union (iebe union (ffff union
+		(fefe union (fifi union (fbii union (fsei union (ebis union (iifb union
+		(eifs union (iseb union (bbbb union (sbsb union (ibib union (lllb union
+		(llfl union (llbr union (llrf union (lirl union (lfrr union (lril union
+		(lrri union (blrr union (irrl union (frrr union (rbrr union (lbll union
+		(flll union (brll union (rfll union (rlli union (rrlf union (illr union
+		(rilr union (rrbl union (rlir union (rrfr union rrrb)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
 
      . conv(ffbb) = bbff
      . conv(efbs) = bsef
@@ -330,19 +343,16 @@ spec DRA72Composition[sort Point] =
      . conv(rlir) = irrl
      . conv(rrfr) = frrr
      . conv(rrrb) = rbrr
-
-     %% symmetric relations
-     . conv(rrrr) = rrrr
-     . conv(llll) = llll
        
-     . conv(eses) = eses
-		  
-     . conv(ffff) = ffff
-     . conv(fefe) = fefe
+     %% symmetric relations
+
      . conv(fifi) = fifi
      . conv(bbbb) = bbbb
      . conv(sbsb) = sbsb
      . conv(ibib) = ibib 
+
+     . conv(ffff) = ffff
+     . conv(fefe) = fefe
 
      %% compostion table - automatically generated
 
@@ -374,6 +384,7 @@ spec Field =
      . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)%
 end
 
+%% as the name says it... A total order 
 spec TotalOrder = 
      sort Elem
      pred __ <= __ : Elem * Elem;
@@ -398,10 +409,12 @@ spec TotallyOrderedField =
      . a <= b /\ c <= d => a + c <= c + d    %(thm_order_+)%
 end 
 
+%% Spec for points
 spec Point[sort Elem] =
      free type Point ::= /__ __\ (x : Elem; y : Elem)
 end
 
+%% We need to consider points over a totally ordered field
 spec PointsOverField =
      Point[TotallyOrderedField]
      then %cons 
@@ -464,22 +477,19 @@ spec PointsToVector =
      %% We are using a dipol and a point to calculate a 
      %% orthogonal coordinate system with basis in the 
      %% start point of the dipol
-     ops A  : Vector;
-     ops Ap : Vector;
-     ops P  : Vector;
-     ops pt  : Point;
-     ops Dp : Dipol; 
-     ops s_A : Point;
-     ops e_A : Point;
-     forall Dpt : Dipol; ptt : Point
-     . pt = ptt
-     . Dp = Dpt
+     ops A  : Dipol -> Vector;
+     ops Ap : Dipol -> Vector;
+     ops P  : Dipol * Point -> Vector;
+     var pt  : Point;
+     var Dp : Dipol; 
+     var s_A : Point;
+     var e_A : Point;
      . s_A = sp(Dp)
      . e_A = ep(Dp)
-     . not ( s_A = e_A) => A  = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
-     . not ( s_A = e_A) => Ap = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
-     . not ( s_A = e_A) => P  = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
-     . < A || Ap > = 0                       %(thm_orthogonal)% %implied
+     . not ( s_A = e_A) => A(Dp)      = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
+     . not ( s_A = e_A) => Ap(Dp)     = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
+     . not ( s_A = e_A) => P (Dp, pt) = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
+     . < A(Dp) || Ap(Dp) > = 0                    %(thm_orthogonal)% %implied
 end
 
 %% The definition of the 7 Dipol-Point relations via vectors
@@ -490,8 +500,16 @@ spec Vector_Vector_Relations72 =
      PointsToVector
      then
      TotallyOrderedField
+     then 
+     DipolRelations[Point[TotallyOrderedField]]
      then %cons
-     free type DipolPointRelations ::= dr | dl | ds | de | db | di | df
+     var pt  : Point;
+     var Dp : Dipol; 
+     var s_A : Point;
+     var e_A : Point;
+     free type DipolPointRelation24 ::= r | l | s | e
+     sort DipolPointRelation24 < DipolPointRelation72
+     free type DipolPointRelation72 ::= r | l | s | e | b | i | f
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -506,51 +524,52 @@ spec Vector_Vector_Relations72 =
 	  __dpb__ : Dipol * Point;
 	  __dpi__ : Dipol * Point;
 	  __dpf__ : Dipol * Point 	  
-     free type DipolDipolRelation72 ::= <<__ __ __ __>> (fst: DipolPointRelations;
-							    snd: DipolPointRelations;
-							    trd: DipolPointRelations; 
-							    frt: DipolPointRelations)
-     pred >__ __ __< : Dipol * DipolDipolRelation72 * Dipol
-     pred >>__ __ __<< : Dipol * DipolPointRelations * Point
-     . A vr P <=> 0 < < Ap || P > 
-     . A vl P <=> < Ap || P > < 0 
-     . A vb P <=> < A || P > = -(||A|| * ||P||)
-     . A ve P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| = ||P||)
-     . A vf P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| < ||P||)
-     . A vi P <=> (< A || P > = ||A|| * ||P||) /\ (||P|| < ||A||)
-     . A vs P <=> (0 = ||P||)
-     . Dp dpr pt <=> A vr P
-     . Dp dpl pt <=> A vl P 
-     . Dp dps pt <=> A vs P
-     . Dp dpe pt <=> A ve P
-     . Dp dpb pt <=> A vb P
-     . Dp dpi pt <=> A vi P
-     . Dp dpf pt <=> A vf P
-     forall Dp1, Dp2 : Dipol; rel : DipolDipolRelation72; ptp : Point
+     . A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) > 
+     . A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0 
+     . A (Dp) vb P (Dp, pt) <=> < A (Dp)|| P (Dp, pt) > = -(||A (Dp)|| * ||P (Dp, pt)||)
+     . A (Dp) ve P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| = ||P (Dp, pt)||)
+     . A (Dp) vf P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| < ||P (Dp, pt)||)
+     . A (Dp) vi P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||P (Dp, pt)|| < ||A (Dp)||)
+     . A (Dp) vs P (Dp, pt) <=> (0 = ||P (Dp, pt)||)
+     . Dp dpr pt <=> A (Dp)vr P (Dp, pt) 
+     . Dp dpl pt <=> A (Dp)vl P (Dp, pt) 
+     . Dp dps pt <=> A (Dp)vs P (Dp, pt) 
+     . Dp dpe pt <=> A (Dp)ve P (Dp, pt) 
+     . Dp dpb pt <=> A (Dp)vb P (Dp, pt) 
+     . Dp dpi pt <=> A (Dp)vi P (Dp, pt) 
+     . Dp dpf pt <=> A (Dp)vf P (Dp, pt) 
+     forall Dp1, Dp2 : Dipol; rel : DipolRelation72; ptp : Point
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp1 trd(rel) sp(Dp2) << /\
 	                >> Dp1 frt(rel) ep(Dp2) << 
 		       )
-     . Dp1 dpr ptp <=> >> Dp1 dr ptp <<
-     . Dp1 dpl ptp <=> >> Dp1 dl ptp <<     
-     . Dp1 dps ptp <=> >> Dp1 ds ptp <<     
-     . Dp1 dpe ptp <=> >> Dp1 de ptp <<
-     . Dp1 dpb ptp <=> >> Dp1 db ptp <<
-     . Dp1 dpi ptp <=> >> Dp1 di ptp <<     
-     . Dp1 dpf ptp <=> >> Dp1 df ptp <<    
+     . Dp1 dpr ptp <=> >> Dp1 r ptp <<
+     . Dp1 dpl ptp <=> >> Dp1 l ptp <<     
+     . Dp1 dps ptp <=> >> Dp1 s ptp <<     
+     . Dp1 dpe ptp <=> >> Dp1 e ptp <<
+     . Dp1 dpb ptp <=> >> Dp1 b ptp <<
+     . Dp1 dpi ptp <=> >> Dp1 i ptp <<     
+     . Dp1 dpf ptp <=> >> Dp1 f ptp <<    
 end
 
 %% The definition of the 7 Dipol-Point relations via vectors
 %% we are stating this under the assumption, that
 %% < A || B > = || A || * || B || * cos \phi which is known to be 
 %% true for the 2D-Vector space over real numbers
+%% In DRA24 not more than 2 different points are allowed to be on 
+%% a line
 spec Vector_Vector_Relations24 =
      PointsToVector
      then
      TotallyOrderedField
+     then
+     DipolRelations24[Point[TotallyOrderedField]] 
      then %cons
-     free type DipolPointRelations ::= dr | dl | ds | de 
+     var pt  : Point;
+     var Dp : Dipol; 
+     var s_A : Point;
+     var e_A : Point;
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -559,40 +578,37 @@ spec Vector_Vector_Relations24 =
 	  __dpl__ : Dipol * Point;
 	  __dps__ : Dipol * Point;	  
 	  __dpe__ : Dipol * Point	  
-     free type DipolDipolRelation24 ::= <<__ __ __ __>> (fst: DipolPointRelations;
-							    snd: DipolPointRelations;
-							    trd: DipolPointRelations; 
-							    frt: DipolPointRelations)
-     pred >__ __ __< : Dipol * DipolDipolRelation24 * Dipol
-     pred >>__ __ __<< : Dipol * DipolPointRelations * Point
+     pred >__ __ __< : Dipol * DipolRelation24 * Dipol
+     pred >>__ __ __<< : Dipol * DipolPointRelation24 * Point
      %% Assure that not more than 3 differnt points are on a single line
-     . not (< A || P > = ||A|| * ||P||) /\ (not (||A|| = ||P||) \/ not (||P|| = 0))
-     . A vr P <=> 0 < < Ap || P > 
-     . A vl P <=> < Ap || P > < 0 
-     . A ve P <=> (< A || P > = ||A|| * ||P||) /\ (||A|| = ||P||)
-     . A vs P <=> (0 = ||P||)
-     . Dp dpr pt <=> A vr P
-     . Dp dpl pt <=> A vl P 
-     . Dp dps pt <=> A vs P
-     . Dp dpe pt <=> A ve P
-     forall Dp1, Dp2 : Dipol; rel : DipolDipolRelation24; ptp : Point
+     . not (< A (Dp)|| P (Dp, pt) > = ||A (Dp)|| * ||P (Dp, pt)||) /\ (not (||A (Dp)|| = ||P (Dp, pt)||) \/ not (||P (Dp, pt)|| = 0))
+     . A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) > 
+     . A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0 
+     . A (Dp) ve P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A (Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| = ||P (Dp, pt)||)
+     . A (Dp) vs P (Dp, pt) <=> (0 = ||P (Dp, pt)||)
+     . Dp dpr pt <=> A (Dp)vr P (Dp, pt) 
+     . Dp dpl pt <=> A (Dp)vl P (Dp, pt) 
+     . Dp dps pt <=> A (Dp)vs P (Dp, pt) 
+     . Dp dpe pt <=> A (Dp)ve P (Dp, pt) 
+     forall Dp1, Dp2 : Dipol; rel : DipolRelation24; ptp : Point
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp1 trd(rel) sp(Dp2) << /\
 	                >> Dp1 frt(rel) ep(Dp2) << 
 		       )
-     . Dp1 dpr ptp <=> >> Dp1 dr ptp <<
-     . Dp1 dpl ptp <=> >> Dp1 dl ptp <<     
-     . Dp1 dps ptp <=> >> Dp1 ds ptp <<     
-     . Dp1 dpe ptp <=> >> Dp1 de ptp <<
+     . Dp1 dpr ptp <=> >> Dp1 r ptp <<
+     . Dp1 dpl ptp <=> >> Dp1 l ptp <<     
+     . Dp1 dps ptp <=> >> Dp1 s ptp <<     
+     . Dp1 dpe ptp <=> >> Dp1 e ptp <<
 end
+
+%% We are considering all relations as sets of
+%% base relations
 
 spec Vector_Vector_Relation_Sets24 =
      Vector_Vector_Relations24
      then 
-     Set[sort DipolDipolRelation24 fit Elem |-> DipolDipolRelation24] with
-     Set[DipolDipolRelation24] |-> GenRel,
-      __union__ |-> __union__
+     SetOfBaseRels[sort BaseRelation24]
      then %cons
      ops 0 : GenRel = {}
 end
@@ -601,60 +617,17 @@ end
 spec Vector_Vector_Relation_Sets72 =
      Vector_Vector_Relations72
      then 
-     Set[sort DipolDipolRelation72 fit Elem |-> DipolDipolRelation72] with
-     Set[DipolDipolRelation72] |-> GenRel,
-      __union__ |-> __union__
+     SetOfBaseRels[sort BaseRelation72]
      then %cons
      ops 0 : GenRel = {}
 end
 
+%% Our two interesting views
 
-%% We need to make the signatures compatible. Let's hope that we
-%% are not hiding too much. 
-spec DRA24CompositionHiding[sort Point] =
-     DRA24Composition[sort Point] hide BaseRelation72, 
-			   DipolRelation72, DipolPointRelation72,
-			   rrrr, rrrl, rrlr, rrll, rlrr, rllr,
-			   rlll, lrrr, lrrl, lrll, llrr, llrl,
-			   lllr, llll, ells, eses, errs, lere,
-			   rele, slsr, srsl, lsel, rser, sese,
-			   BaseRelation24, 1, compl
+view DRA72_In_Domain : DRA72Composition[sort Point] to
+     Vector_Vector_Relation_Sets72 = [__ __] |-> [<__ __>] 
 end
 
-spec VectorVectorRelationsHiding24 =
-     Vector_Vector_Relation_Sets24 hide Vector, Elem
-end
-
-%% We need to make the signatures compatible. Let's hope that we
-%% are not hiding too much. 
-spec DRA72CompositionHiding[sort Point] =
-     DRA72Composition[sort Point] hide BaseRelation24, 
-			   DipolRelation24, DipolPointRelation24,
-			   rrrr, rrrl, rrlr, rrll, rlrr, rllr,
-			   rlll, lrrr, lrrl, lrll, llrr, llrl,
-			   lllr, llll, ells, eses, errs, lere,
-			   rele, slsr, srsl, lsel, rser, sese,
-			   ffbb, efbs, ifbi, bfii, sfsi, beie,
-			   bbff, bsef, biif, iibf, sisf, iebe, 
-			   ffff, fefe, fifi, fbii, fsei, ebis,
-			   iifb, eifs, iseb, bbbb, sbsb, ibib,
-			   lllb, llfl, llbr, llrf, lirl, lfrr,
-			   lril, lrri, blrr, irrl, frrr, rbrr,
-			   lbll, flll, brll, rfll, rlli, rrlf,
-			   illr, rilr, rrbl, rlir, rrfr, rrrb,
-			   BaseRelation72, 1, compl
-end
-
-spec VectorVectorRelationsHiding72 =
-     Vector_Vector_Relation_Sets72 hide Vector, Elem
-end
-
-view DRA72_In_Domain : DRA72CompositionHiding[sort Point] to
-     VectorVectorRelationsHiding72 = r |-> dr, l |-> dl, s |-> ds,
-     e |-> de, b |-> db, i |-> di, f |-> df
-end
-
-view DRA24_In_Domain : DRA24CompositionHiding[sort Point] to
-     VectorVectorRelationsHiding24 = r |-> dr, l |-> dl, s |-> ds,
-     e |-> de
+view DRA24_In_Domain : DRA24Composition[sort Point] to
+     Vector_Vector_Relation_Sets24
 end
