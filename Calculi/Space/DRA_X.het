@@ -1,46 +1,26 @@
 library Calculi/Space/DRA_X
 version 0.1
 
-from Basic/StructuredDatatypes get Set
-
 %author: Dominik Luecke
 %date: 2007-04-30
+
+%prec( 
+  {__ + __ } < 
+  { __*__} 
+)%
+
+
+%left_assoc __ + __, __ - __
+%left_assoc __union__, __intersection__
+%left_assoc __ + __, __ * __
+
 %% Dipol Calculus with 72 relations (DRA 72)
-
-%% General relations are sets of BaseRelations... 
-spec SetOfBaseRels[sort BaseRel] = 
-     Set[sort BaseRel fit Elem |-> BaseRel] with Set[BaseRel] |-> GenRel,
-      __union__ |-> __union__
-     then
-     sort BaseRel < GenRel
-     ops id : BaseRel;
-	  1  : GenRel;
-	  0  : GenRel = {};
-	  compl: GenRel -> GenRel;
-	  conv: BaseRel -> BaseRel;
-	  __cmps__ : BaseRel * BaseRel -> GenRel
-     forall x:BaseRel; u:GenRel
-     . x = {x}
-     . x eps 1
-     . not x eps 0
-     . compl(u) = 1 - u
-
-     . x cmps id = x
-     . id cmps x = x
-
-     . conv(id) = id
-     . conv(conv(x)) = x
-then %implies
-  forall x,y:BaseRel; u:GenRel
-  . not x = y => x intersection y = 0	        %(PairwiseDisjoint)%
-  . not u=0 => exists z:BaseRel . z eps u	%(JointlyExhaustive)%
-end
 
 %% Definitions for the 24 relations of DRA 24.
 spec DipolRelations24[sort Point] =
      type Dipol ::= [__ __](sp : Point; ep : Point)
-     free type DipolPointRelation24 ::= r | l | e | s
-     free type DipolRelation24 ::= <<__ __ __ __>>(fst:DipolPointRelation24; 
+     type DipolPointRelation24 ::= r | l | e | s
+     type DipolRelation24 ::= <<__ __ __ __>>(fst:DipolPointRelation24; 
 					       snd:DipolPointRelation24; 
 					       trd: DipolPointRelation24; 
 					       frt: DipolPointRelation24)
@@ -101,15 +81,15 @@ end
 
 %% Definitions for 72 relations of DRA 72.
 %% Subsorting is used extensively
-spec DipolRelations[sort Point] =
+spec DipolRelations72[sort Point] =
      DipolRelations24 [sort Point]
-     then %cons
-     free type DipolPointRelation72 ::= r | l | e | s | b | i | f
+     then  
+     type DipolPointRelation72 ::= r | l | e | s | b | i | f
      sort DipolPointRelation24 < DipolPointRelation72
-     free type DipolRelation72 ::= <<__ __ __ __>>(fst:DipolPointRelation72; 
-					       snd:DipolPointRelation72; 
-					       trd: DipolPointRelation72; 
-					       frt: DipolPointRelation72)
+     type DipolRelation72 ::= <<__ __ __ __>>(fst:DipolPointRelation72; 
+					      snd:DipolPointRelation72; 
+					      trd: DipolPointRelation72; 
+					      frt: DipolPointRelation72)
      sort DipolRelation24 < DipolRelation72
      pred >__ __ __< : Dipol * DipolRelation72 * Dipol
      pred >>__ __ __<< : Dipol * DipolPointRelation72 * Point
@@ -237,122 +217,727 @@ end
 
 spec DRA24Composition[sort Point] = 
      DipolRelations24[sort Point]
-     then
-     SetOfBaseRels[sort BaseRelation24]
-     then 
-     %% universal relation
-     . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
-		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
-		(lllr union (ells union (errs union (lere union (rele union (slsr union
-		(srsl union (lsel union (rser union (sese union
-		eses)))))))))))))))))))))))
+     then    
+     forall a, b, c : Dipol; rel1, rel2 : BaseRelation24
+     . exists rel : BaseRelation24. > a rel b <
+     . >a rel1 b < /\ > a rel2 b < => rel1 = rel2
+     . >a rrrr b < \/ > a rrll b < \/ > a llrr b< \/ >a llll b < \/ >a rrrl b < \/ > a rrlr b< \/
+       >a rlrr b < \/ > a rllr b < \/ > a rlll b< \/ >a lrrr b < \/ >a lrrl b < \/ > a lrll b< \/ 
+       >a llrl b < \/ > a lllr b < \/ > a ells b< \/ >a errs b < \/ >a lere b < \/ > a rele b< \/ 
+       >a slsr b < \/ > a srsl b < \/ > a lsel b< \/ >a rser b < \/ >a sese b < \/ > a eses b<    %(DRA24_Universal)%
      %% the converses
-     . conv(rrll) = llrr
-     . conv(llrr) = rrll
+     . >a rrll b < => >b llrr a<
+     . >a llrr b < => >b rrll a<
 
-     . conv(rrrl) = rlrr
-     . conv(rrlr) = lrrr 
-     . conv(rlrr) = rrrl
-     . conv(rllr) = lrrl
-     . conv(rlll) = llrl
-     . conv(lrrr) = rrlr
-     . conv(lrrl) = rllr
-     . conv(lrll) = lllr
-     . conv(llrl) = rlll
-     . conv(lllr) = lrll
+     . >a rrrl b < => >b rlrr a<
+     . >a rrlr b < => >b lrrr a<
+     . >a rlrr b < => >b rrrl a<
+     . >a rllr b < => >b lrrl a<
+     . >a rlll b < => >b llrl a<
+     . >a lrrr b < => >b rrlr a<
+     . >a lrrl b < => >b rllr a<
+     . >a lrll b < => >b lllr a<
+     . >a llrl b < => >b rlll a<
+     . >a lllr b < => >b lrll a<
 
-     . conv(ells) = lsel
-     . conv(errs) = rser
-     . conv(lere) = rele
-     . conv(rele) = lere
-     . conv(slsr) = srsl
-     . conv(srsl) = slsr
-     . conv(lsel) = ells
-     . conv(rser) = errs     
+     . >a ells b < => >b lsel a<
+     . >a errs b < => >b rser a<
+     . >a lere b < => >b rele a<
+     . >a rele b < => >b lere a<
+     . >a slsr b < => >b srsl a<
+     . >a srsl b < => >b slsr a<
+     . >a lsel b < => >b ells a<
+     . >a rser b < => >b errs a<     
 
      %% symmetric relations
-     . conv(rrrr) = rrrr
-     . conv(llll) = llll
+     . >a rrrr b < => >b rrrr a<
+     . >a llll b < => >b llll a<
        
-     . conv(eses) = eses
-     . conv(sese) = sese
+     . >a eses b < => >b eses a<
+     . >a sese b < => >b sese a<    
+     %% Composition automatically generated from SparQ
+   . ( > a rrrr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition1)%
+   . ( > a rrrr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition2)%
+   . ( > a rrrr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition3)%
+   . ( > a rrrr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition4)%
+   . ( > a rrrr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition5)%
+   . ( > a rrrr b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition6)%
+   . ( > a rrrr b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition7)%
+   . ( > a rrrr b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition8)%
+   . ( > a rrrr b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition9)%
+   . ( > a rrrr b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition10)%
+   . ( > a rrrr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition11)%
+   . ( > a rrrr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llll c < ) %(DRA24_Composition12)%
+   . ( > a rrrr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llll c < ) %(DRA24_Composition13)%
+   . ( > a rrrr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition14)%
+   . ( > a rrrr b < /\ > b ells  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < ) %(DRA24_Composition15)%
+   . ( > a rrrr b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition16)%
+   . ( > a rrrr b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < ) %(DRA24_Composition17)%
+   . ( > a rrrr b < /\ > b rele  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition18)%
+   . ( > a rrrr b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < ) %(DRA24_Composition19)%
+   . ( > a rrrr b < /\ > b srsl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition20)%
+   . ( > a rrrr b < /\ > b lsel  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < ) %(DRA24_Composition21)%
+   . ( > a rrrr b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition22)%
+   . ( > a rrrr b < /\ > b sese  c < )  => ( > a rrrr c < ) %(DRA24_Composition23)%
+   . ( > a rrrr b < /\ > b eses  c < )  => ( > a rrll c < ) %(DRA24_Composition24)%
+   . ( > a rrrl b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition25)%
+   . ( > a rrrl b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition26)%
+   . ( > a rrrl b < /\ > b rrlr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition27)%
+   . ( > a rrrl b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition28)%
+   . ( > a rrrl b < /\ > b rlrr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition29)%
+   . ( > a rrrl b < /\ > b rllr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition30)%
+   . ( > a rrrl b < /\ > b rlll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition31)%
+   . ( > a rrrl b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition32)%
+   . ( > a rrrl b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition33)%
+   . ( > a rrrl b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition34)%
+   . ( > a rrrl b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition35)%
+   . ( > a rrrl b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition36)%
+   . ( > a rrrl b < /\ > b lllr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition37)%
+   . ( > a rrrl b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition38)%
+   . ( > a rrrl b < /\ > b ells  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition39)%
+   . ( > a rrrl b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition40)%
+   . ( > a rrrl b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition41)%
+   . ( > a rrrl b < /\ > b rele  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition42)%
+   . ( > a rrrl b < /\ > b slsr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition43)%
+   . ( > a rrrl b < /\ > b srsl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition44)%
+   . ( > a rrrl b < /\ > b lsel  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition45)%
+   . ( > a rrrl b < /\ > b rser  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition46)%
+   . ( > a rrrl b < /\ > b sese  c < )  => ( > a rrrl c < ) %(DRA24_Composition47)%
+   . ( > a rrrl b < /\ > b eses  c < )  => ( > a rrlr c < ) %(DRA24_Composition48)%
+   . ( > a rrlr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition49)%
+   . ( > a rrlr b < /\ > b rrrl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition50)%
+   . ( > a rrlr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition51)%
+   . ( > a rrlr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition52)%
+   . ( > a rrlr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition53)%
+   . ( > a rrlr b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition54)%
+   . ( > a rrlr b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition55)%
+   . ( > a rrlr b < /\ > b lrrr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition56)%
+   . ( > a rrlr b < /\ > b lrrl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition57)%
+   . ( > a rrlr b < /\ > b lrll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition58)%
+   . ( > a rrlr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition59)%
+   . ( > a rrlr b < /\ > b llrl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition60)%
+   . ( > a rrlr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition61)%
+   . ( > a rrlr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition62)%
+   . ( > a rrlr b < /\ > b ells  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition63)%
+   . ( > a rrlr b < /\ > b errs  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition64)%
+   . ( > a rrlr b < /\ > b lere  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition65)%
+   . ( > a rrlr b < /\ > b rele  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition66)%
+   . ( > a rrlr b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition67)%
+   . ( > a rrlr b < /\ > b srsl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition68)%
+   . ( > a rrlr b < /\ > b lsel  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition69)%
+   . ( > a rrlr b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition70)%
+   . ( > a rrlr b < /\ > b sese  c < )  => ( > a rrlr c < ) %(DRA24_Composition71)%
+   . ( > a rrlr b < /\ > b eses  c < )  => ( > a rrrl c < ) %(DRA24_Composition72)%
+   . ( > a rrll b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition73)%
+   . ( > a rrll b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llll c < ) %(DRA24_Composition74)%
+   . ( > a rrll b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llll c < ) %(DRA24_Composition75)%
+   . ( > a rrll b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition76)%
+   . ( > a rrll b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition77)%
+   . ( > a rrll b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition78)%
+   . ( > a rrll b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition79)%
+   . ( > a rrll b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition80)%
+   . ( > a rrll b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition81)%
+   . ( > a rrll b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition82)%
+   . ( > a rrll b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition83)%
+   . ( > a rrll b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition84)%
+   . ( > a rrll b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition85)%
+   . ( > a rrll b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition86)%
+   . ( > a rrll b < /\ > b ells  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition87)%
+   . ( > a rrll b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < ) %(DRA24_Composition88)%
+   . ( > a rrll b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition89)%
+   . ( > a rrll b < /\ > b rele  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < ) %(DRA24_Composition90)%
+   . ( > a rrll b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition91)%
+   . ( > a rrll b < /\ > b srsl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < ) %(DRA24_Composition92)%
+   . ( > a rrll b < /\ > b lsel  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition93)%
+   . ( > a rrll b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < ) %(DRA24_Composition94)%
+   . ( > a rrll b < /\ > b sese  c < )  => ( > a rrll c < ) %(DRA24_Composition95)%
+   . ( > a rrll b < /\ > b eses  c < )  => ( > a rrrr c < ) %(DRA24_Composition96)%
+   . ( > a rlrr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition97)%
+   . ( > a rlrr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition98)%
+   . ( > a rlrr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition99)%
+   . ( > a rlrr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition100)%
+   . ( > a rlrr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition101)%
+   . ( > a rlrr b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition102)%
+   . ( > a rlrr b < /\ > b rlll  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition103)%
+   . ( > a rlrr b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition104)%
+   . ( > a rlrr b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition105)%
+   . ( > a rlrr b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition106)%
+   . ( > a rlrr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition107)%
+   . ( > a rlrr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition108)%
+   . ( > a rlrr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition109)%
+   . ( > a rlrr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition110)%
+   . ( > a rlrr b < /\ > b ells  c < )  => ( > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition111)%
+   . ( > a rlrr b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition112)%
+   . ( > a rlrr b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition113)%
+   . ( > a rlrr b < /\ > b rele  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition114)%
+   . ( > a rlrr b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < ) %(DRA24_Composition115)%
+   . ( > a rlrr b < /\ > b srsl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition116)%
+   . ( > a rlrr b < /\ > b lsel  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrll c < ) %(DRA24_Composition117)%
+   . ( > a rlrr b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition118)%
+   . ( > a rlrr b < /\ > b sese  c < )  => ( > a rlrr c < ) %(DRA24_Composition119)%
+   . ( > a rlrr b < /\ > b eses  c < )  => ( > a lrll c < ) %(DRA24_Composition120)%
+   . ( > a rllr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition121)%
+   . ( > a rllr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition122)%
+   . ( > a rllr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition123)%
+   . ( > a rllr b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition124)%
+   . ( > a rllr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition125)%
+   . ( > a rllr b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition126)%
+   . ( > a rllr b < /\ > b rlll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition127)%
+   . ( > a rllr b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition128)%
+   . ( > a rllr b < /\ > b lrrl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition129)%
+   . ( > a rllr b < /\ > b lrll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition130)%
+   . ( > a rllr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition131)%
+   . ( > a rllr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition132)%
+   . ( > a rllr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition133)%
+   . ( > a rllr b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition134)%
+   . ( > a rllr b < /\ > b ells  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition135)%
+   . ( > a rllr b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition136)%
+   . ( > a rllr b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition137)%
+   . ( > a rllr b < /\ > b rele  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition138)%
+   . ( > a rllr b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition139)%
+   . ( > a rllr b < /\ > b srsl  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition140)%
+   . ( > a rllr b < /\ > b lsel  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition141)%
+   . ( > a rllr b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition142)%
+   . ( > a rllr b < /\ > b sese  c < )  => ( > a rllr c < ) %(DRA24_Composition143)%
+   . ( > a rllr b < /\ > b eses  c < )  => ( > a lrrl c < ) %(DRA24_Composition144)%
+   . ( > a rlll b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition145)%
+   . ( > a rlll b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition146)%
+   . ( > a rlll b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition147)%
+   . ( > a rlll b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition148)%
+   . ( > a rlll b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition149)%
+   . ( > a rlll b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition150)%
+   . ( > a rlll b < /\ > b rlll  c < )  => ( > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition151)%
+   . ( > a rlll b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition152)%
+   . ( > a rlll b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition153)%
+   . ( > a rlll b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition154)%
+   . ( > a rlll b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition155)%
+   . ( > a rlll b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition156)%
+   . ( > a rlll b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition157)%
+   . ( > a rlll b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition158)%
+   . ( > a rlll b < /\ > b ells  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition159)%
+   . ( > a rlll b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition160)%
+   . ( > a rlll b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition161)%
+   . ( > a rlll b < /\ > b rele  c < )  => ( > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition162)%
+   . ( > a rlll b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition163)%
+   . ( > a rlll b < /\ > b srsl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < ) %(DRA24_Composition164)%
+   . ( > a rlll b < /\ > b lsel  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition165)%
+   . ( > a rlll b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < ) %(DRA24_Composition166)%
+   . ( > a rlll b < /\ > b sese  c < )  => ( > a rlll c < ) %(DRA24_Composition167)%
+   . ( > a rlll b < /\ > b eses  c < )  => ( > a lrrr c < ) %(DRA24_Composition168)%
+   . ( > a lrrr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition169)%
+   . ( > a lrrr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition170)%
+   . ( > a lrrr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition171)%
+   . ( > a lrrr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition172)%
+   . ( > a lrrr b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition173)%
+   . ( > a lrrr b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition174)%
+   . ( > a lrrr b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition175)%
+   . ( > a lrrr b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition176)%
+   . ( > a lrrr b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition177)%
+   . ( > a lrrr b < /\ > b lrll  c < )  => ( > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition178)%
+   . ( > a lrrr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition179)%
+   . ( > a lrrr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition180)%
+   . ( > a lrrr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition181)%
+   . ( > a lrrr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition182)%
+   . ( > a lrrr b < /\ > b ells  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlll c < ) %(DRA24_Composition183)%
+   . ( > a lrrr b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition184)%
+   . ( > a lrrr b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrr c < ) %(DRA24_Composition185)%
+   . ( > a lrrr b < /\ > b rele  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition186)%
+   . ( > a lrrr b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition187)%
+   . ( > a lrrr b < /\ > b srsl  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition188)%
+   . ( > a lrrr b < /\ > b lsel  c < )  => ( > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition189)%
+   . ( > a lrrr b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition190)%
+   . ( > a lrrr b < /\ > b sese  c < )  => ( > a lrrr c < ) %(DRA24_Composition191)%
+   . ( > a lrrr b < /\ > b eses  c < )  => ( > a rlll c < ) %(DRA24_Composition192)%
+   . ( > a lrrl b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition193)%
+   . ( > a lrrl b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition194)%
+   . ( > a lrrl b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition195)%
+   . ( > a lrrl b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition196)%
+   . ( > a lrrl b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition197)%
+   . ( > a lrrl b < /\ > b rllr  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition198)%
+   . ( > a lrrl b < /\ > b rlll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a rele c < \/ > a srsl c < ) %(DRA24_Composition199)%
+   . ( > a lrrl b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < \/ > a rser c < ) %(DRA24_Composition200)%
+   . ( > a lrrl b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition201)%
+   . ( > a lrrl b < /\ > b lrll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition202)%
+   . ( > a lrrl b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition203)%
+   . ( > a lrrl b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition204)%
+   . ( > a lrrl b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition205)%
+   . ( > a lrrl b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition206)%
+   . ( > a lrrl b < /\ > b ells  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition207)%
+   . ( > a lrrl b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition208)%
+   . ( > a lrrl b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition209)%
+   . ( > a lrrl b < /\ > b rele  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition210)%
+   . ( > a lrrl b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition211)%
+   . ( > a lrrl b < /\ > b srsl  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition212)%
+   . ( > a lrrl b < /\ > b lsel  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition213)%
+   . ( > a lrrl b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition214)%
+   . ( > a lrrl b < /\ > b sese  c < )  => ( > a lrrl c < ) %(DRA24_Composition215)%
+   . ( > a lrrl b < /\ > b eses  c < )  => ( > a rllr c < ) %(DRA24_Composition216)%
+   . ( > a lrll b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition217)%
+   . ( > a lrll b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition218)%
+   . ( > a lrll b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition219)%
+   . ( > a lrll b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition220)%
+   . ( > a lrll b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition221)%
+   . ( > a lrll b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition222)%
+   . ( > a lrll b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition223)%
+   . ( > a lrll b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition224)%
+   . ( > a lrll b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition225)%
+   . ( > a lrll b < /\ > b lrll  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition226)%
+   . ( > a lrll b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition227)%
+   . ( > a lrll b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition228)%
+   . ( > a lrll b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition229)%
+   . ( > a lrll b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition230)%
+   . ( > a lrll b < /\ > b ells  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < \/ > a rser c < ) %(DRA24_Composition231)%
+   . ( > a lrll b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < ) %(DRA24_Composition232)%
+   . ( > a lrll b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a errs c < \/ > a srsl c < ) %(DRA24_Composition233)%
+   . ( > a lrll b < /\ > b rele  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a lrll c < ) %(DRA24_Composition234)%
+   . ( > a lrll b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition235)%
+   . ( > a lrll b < /\ > b srsl  c < )  => ( > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition236)%
+   . ( > a lrll b < /\ > b lsel  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition237)%
+   . ( > a lrll b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition238)%
+   . ( > a lrll b < /\ > b sese  c < )  => ( > a lrll c < ) %(DRA24_Composition239)%
+   . ( > a lrll b < /\ > b eses  c < )  => ( > a rlrr c < ) %(DRA24_Composition240)%
+   . ( > a llrr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition241)%
+   . ( > a llrr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition242)%
+   . ( > a llrr b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition243)%
+   . ( > a llrr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition244)%
+   . ( > a llrr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition245)%
+   . ( > a llrr b < /\ > b rllr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition246)%
+   . ( > a llrr b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition247)%
+   . ( > a llrr b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition248)%
+   . ( > a llrr b < /\ > b lrrl  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition249)%
+   . ( > a llrr b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition250)%
+   . ( > a llrr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition251)%
+   . ( > a llrr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition252)%
+   . ( > a llrr b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition253)%
+   . ( > a llrr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition254)%
+   . ( > a llrr b < /\ > b ells  c < )  => ( > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition255)%
+   . ( > a llrr b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition256)%
+   . ( > a llrr b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition257)%
+   . ( > a llrr b < /\ > b rele  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition258)%
+   . ( > a llrr b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition259)%
+   . ( > a llrr b < /\ > b srsl  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition260)%
+   . ( > a llrr b < /\ > b lsel  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition261)%
+   . ( > a llrr b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition262)%
+   . ( > a llrr b < /\ > b sese  c < )  => ( > a llrr c < ) %(DRA24_Composition263)%
+   . ( > a llrr b < /\ > b eses  c < )  => ( > a llll c < ) %(DRA24_Composition264)%
+   . ( > a llrl b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition265)%
+   . ( > a llrl b < /\ > b rrrl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition266)%
+   . ( > a llrl b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition267)%
+   . ( > a llrl b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition268)%
+   . ( > a llrl b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition269)%
+   . ( > a llrl b < /\ > b rllr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition270)%
+   . ( > a llrl b < /\ > b rlll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition271)%
+   . ( > a llrl b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition272)%
+   . ( > a llrl b < /\ > b lrrl  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition273)%
+   . ( > a llrl b < /\ > b lrll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition274)%
+   . ( > a llrl b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition275)%
+   . ( > a llrl b < /\ > b llrl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition276)%
+   . ( > a llrl b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition277)%
+   . ( > a llrl b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition278)%
+   . ( > a llrl b < /\ > b ells  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition279)%
+   . ( > a llrl b < /\ > b errs  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition280)%
+   . ( > a llrl b < /\ > b lere  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition281)%
+   . ( > a llrl b < /\ > b rele  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition282)%
+   . ( > a llrl b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition283)%
+   . ( > a llrl b < /\ > b srsl  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition284)%
+   . ( > a llrl b < /\ > b lsel  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition285)%
+   . ( > a llrl b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition286)%
+   . ( > a llrl b < /\ > b sese  c < )  => ( > a llrl c < ) %(DRA24_Composition287)%
+   . ( > a llrl b < /\ > b eses  c < )  => ( > a lllr c < ) %(DRA24_Composition288)%
+   . ( > a lllr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition289)%
+   . ( > a lllr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition290)%
+   . ( > a lllr b < /\ > b rrlr  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition291)%
+   . ( > a lllr b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < ) %(DRA24_Composition292)%
+   . ( > a lllr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition293)%
+   . ( > a lllr b < /\ > b rllr  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition294)%
+   . ( > a lllr b < /\ > b rlll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a lsel c < ) %(DRA24_Composition295)%
+   . ( > a lllr b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition296)%
+   . ( > a lllr b < /\ > b lrrl  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a slsr c < ) %(DRA24_Composition297)%
+   . ( > a lllr b < /\ > b lrll  c < )  => ( > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition298)%
+   . ( > a lllr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition299)%
+   . ( > a lllr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition300)%
+   . ( > a lllr b < /\ > b lllr  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition301)%
+   . ( > a lllr b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition302)%
+   . ( > a lllr b < /\ > b ells  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition303)%
+   . ( > a lllr b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition304)%
+   . ( > a lllr b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition305)%
+   . ( > a lllr b < /\ > b rele  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition306)%
+   . ( > a lllr b < /\ > b slsr  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition307)%
+   . ( > a lllr b < /\ > b srsl  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a lere c < ) %(DRA24_Composition308)%
+   . ( > a lllr b < /\ > b lsel  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition309)%
+   . ( > a lllr b < /\ > b rser  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition310)%
+   . ( > a lllr b < /\ > b sese  c < )  => ( > a lllr c < ) %(DRA24_Composition311)%
+   . ( > a lllr b < /\ > b eses  c < )  => ( > a llrl c < ) %(DRA24_Composition312)%
+   . ( > a llll b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition313)%
+   . ( > a llll b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition314)%
+   . ( > a llll b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition315)%
+   . ( > a llll b < /\ > b rrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition316)%
+   . ( > a llll b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition317)%
+   . ( > a llll b < /\ > b rllr  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition318)%
+   . ( > a llll b < /\ > b rlll  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a rele c < \/ > a lsel c < \/ > a rser c < ) %(DRA24_Composition319)%
+   . ( > a llll b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition320)%
+   . ( > a llll b < /\ > b lrrl  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition321)%
+   . ( > a llll b < /\ > b lrll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a slsr c < \/ > a srsl c < ) %(DRA24_Composition322)%
+   . ( > a llll b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition323)%
+   . ( > a llll b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition324)%
+   . ( > a llll b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a errs c < \/ > a lere c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition325)%
+   . ( > a llll b < /\ > b llll  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rrlr c < \/ > a rrll c < \/ > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a errs c < \/ > a lere c < \/ > a rele c < \/ > a slsr c < \/ > a srsl c < \/ > a lsel c < \/ > a rser c < \/ > a sese c < ) %(DRA24_Composition326)%
+   . ( > a llll b < /\ > b ells  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition327)%
+   . ( > a llll b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition328)%
+   . ( > a llll b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition329)%
+   . ( > a llll b < /\ > b rele  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition330)%
+   . ( > a llll b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < \/ > a lere c < \/ > a lsel c < ) %(DRA24_Composition331)%
+   . ( > a llll b < /\ > b srsl  c < )  => ( > a lrrr c < \/ > a lrll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition332)%
+   . ( > a llll b < /\ > b lsel  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a rlll c < \/ > a llrr c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a slsr c < ) %(DRA24_Composition333)%
+   . ( > a llll b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rlll c < \/ > a llrr c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition334)%
+   . ( > a llll b < /\ > b sese  c < )  => ( > a llll c < ) %(DRA24_Composition335)%
+   . ( > a llll b < /\ > b eses  c < )  => ( > a llrr c < ) %(DRA24_Composition336)%
+   . ( > a ells b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition337)%
+   . ( > a ells b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition338)%
+   . ( > a ells b < /\ > b rrlr  c < )  => ( > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition339)%
+   . ( > a ells b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition340)%
+   . ( > a ells b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition341)%
+   . ( > a ells b < /\ > b rllr  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition342)%
+   . ( > a ells b < /\ > b rlll  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition343)%
+   . ( > a ells b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition344)%
+   . ( > a ells b < /\ > b lrrl  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition345)%
+   . ( > a ells b < /\ > b lrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition346)%
+   . ( > a ells b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition347)%
+   . ( > a ells b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition348)%
+   . ( > a ells b < /\ > b lllr  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition349)%
+   . ( > a ells b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition350)%
+   . ( > a ells b < /\ > b ells  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition351)%
+   . ( > a ells b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition352)%
+   . ( > a ells b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition353)%
+   . ( > a ells b < /\ > b rele  c < )  => ( > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition354)%
+   . ( > a ells b < /\ > b slsr  c < )  => ( > a ells c < \/ > a errs c < \/ > a eses c < ) %(DRA24_Composition355)%
+   . ( > a ells b < /\ > b srsl  c < )  => ( > a ells c < \/ > a errs c < ) %(DRA24_Composition356)%
+   . ( > a ells b < /\ > b lsel  c < )  => ( > a lere c < \/ > a rele c < \/ > a sese c < ) %(DRA24_Composition357)%
+   . ( > a ells b < /\ > b rser  c < )  => ( > a lere c < \/ > a rele c < ) %(DRA24_Composition358)%
+   . ( > a ells b < /\ > b sese  c < )  => ( > a ells c < ) %(DRA24_Composition359)%
+   . ( > a ells b < /\ > b eses  c < )  => ( > a lere c < ) %(DRA24_Composition360)%
+   . ( > a errs b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition361)%
+   . ( > a errs b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition362)%
+   . ( > a errs b < /\ > b rrlr  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition363)%
+   . ( > a errs b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition364)%
+   . ( > a errs b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition365)%
+   . ( > a errs b < /\ > b rllr  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition366)%
+   . ( > a errs b < /\ > b rlll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition367)%
+   . ( > a errs b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition368)%
+   . ( > a errs b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition369)%
+   . ( > a errs b < /\ > b lrll  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition370)%
+   . ( > a errs b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition371)%
+   . ( > a errs b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < ) %(DRA24_Composition372)%
+   . ( > a errs b < /\ > b lllr  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llll c < ) %(DRA24_Composition373)%
+   . ( > a errs b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition374)%
+   . ( > a errs b < /\ > b ells  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < ) %(DRA24_Composition375)%
+   . ( > a errs b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition376)%
+   . ( > a errs b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < ) %(DRA24_Composition377)%
+   . ( > a errs b < /\ > b rele  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition378)%
+   . ( > a errs b < /\ > b slsr  c < )  => ( > a ells c < \/ > a errs c < ) %(DRA24_Composition379)%
+   . ( > a errs b < /\ > b srsl  c < )  => ( > a ells c < \/ > a errs c < \/ > a eses c < ) %(DRA24_Composition380)%
+   . ( > a errs b < /\ > b lsel  c < )  => ( > a lere c < \/ > a rele c < ) %(DRA24_Composition381)%
+   . ( > a errs b < /\ > b rser  c < )  => ( > a lere c < \/ > a rele c < \/ > a sese c < ) %(DRA24_Composition382)%
+   . ( > a errs b < /\ > b sese  c < )  => ( > a errs c < ) %(DRA24_Composition383)%
+   . ( > a errs b < /\ > b eses  c < )  => ( > a rele c < ) %(DRA24_Composition384)%
+   . ( > a lere b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition385)%
+   . ( > a lere b < /\ > b rrrl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition386)%
+   . ( > a lere b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition387)%
+   . ( > a lere b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition388)%
+   . ( > a lere b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition389)%
+   . ( > a lere b < /\ > b rllr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition390)%
+   . ( > a lere b < /\ > b rlll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition391)%
+   . ( > a lere b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition392)%
+   . ( > a lere b < /\ > b lrrl  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition393)%
+   . ( > a lere b < /\ > b lrll  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition394)%
+   . ( > a lere b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition395)%
+   . ( > a lere b < /\ > b llrl  c < )  => ( > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition396)%
+   . ( > a lere b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition397)%
+   . ( > a lere b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition398)%
+   . ( > a lere b < /\ > b ells  c < )  => ( > a ells c < \/ > a errs c < ) %(DRA24_Composition399)%
+   . ( > a lere b < /\ > b errs  c < )  => ( > a ells c < \/ > a errs c < \/ > a eses c < ) %(DRA24_Composition400)%
+   . ( > a lere b < /\ > b lere  c < )  => ( > a lere c < \/ > a rele c < ) %(DRA24_Composition401)%
+   . ( > a lere b < /\ > b rele  c < )  => ( > a lere c < \/ > a rele c < \/ > a sese c < ) %(DRA24_Composition402)%
+   . ( > a lere b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition403)%
+   . ( > a lere b < /\ > b srsl  c < )  => ( > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition404)%
+   . ( > a lere b < /\ > b lsel  c < )  => ( > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition405)%
+   . ( > a lere b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition406)%
+   . ( > a lere b < /\ > b sese  c < )  => ( > a lere c < ) %(DRA24_Composition407)%
+   . ( > a lere b < /\ > b eses  c < )  => ( > a ells c < ) %(DRA24_Composition408)%
+   . ( > a rele b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < ) %(DRA24_Composition409)%
+   . ( > a rele b < /\ > b rrrl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llll c < ) %(DRA24_Composition410)%
+   . ( > a rele b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < \/ > a llrr c < ) %(DRA24_Composition411)%
+   . ( > a rele b < /\ > b rrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a llrl c < \/ > a llll c < ) %(DRA24_Composition412)%
+   . ( > a rele b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition413)%
+   . ( > a rele b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a rser c < ) %(DRA24_Composition414)%
+   . ( > a rele b < /\ > b rlll  c < )  => ( > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a lsel c < ) %(DRA24_Composition415)%
+   . ( > a rele b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a rllr c < \/ > a lrrr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < ) %(DRA24_Composition416)%
+   . ( > a rele b < /\ > b lrrl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition417)%
+   . ( > a rele b < /\ > b lrll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition418)%
+   . ( > a rele b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition419)%
+   . ( > a rele b < /\ > b llrl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition420)%
+   . ( > a rele b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a llrr c < \/ > a lllr c < \/ > a slsr c < \/ > a rser c < ) %(DRA24_Composition421)%
+   . ( > a rele b < /\ > b llll  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a llrl c < \/ > a llll c < \/ > a srsl c < \/ > a lsel c < ) %(DRA24_Composition422)%
+   . ( > a rele b < /\ > b ells  c < )  => ( > a ells c < \/ > a errs c < \/ > a eses c < ) %(DRA24_Composition423)%
+   . ( > a rele b < /\ > b errs  c < )  => ( > a ells c < \/ > a errs c < ) %(DRA24_Composition424)%
+   . ( > a rele b < /\ > b lere  c < )  => ( > a lere c < \/ > a rele c < \/ > a sese c < ) %(DRA24_Composition425)%
+   . ( > a rele b < /\ > b rele  c < )  => ( > a lere c < \/ > a rele c < ) %(DRA24_Composition426)%
+   . ( > a rele b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a rlrr c < \/ > a rllr c < \/ > a rser c < ) %(DRA24_Composition427)%
+   . ( > a rele b < /\ > b srsl  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a rlll c < ) %(DRA24_Composition428)%
+   . ( > a rele b < /\ > b lsel  c < )  => ( > a rrrl c < \/ > a rrll c < \/ > a lrrl c < \/ > a lrll c < \/ > a srsl c < ) %(DRA24_Composition429)%
+   . ( > a rele b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrlr c < \/ > a lrrr c < ) %(DRA24_Composition430)%
+   . ( > a rele b < /\ > b sese  c < )  => ( > a rele c < ) %(DRA24_Composition431)%
+   . ( > a rele b < /\ > b eses  c < )  => ( > a errs c < ) %(DRA24_Composition432)%
+   . ( > a slsr b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition433)%
+   . ( > a slsr b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition434)%
+   . ( > a slsr b < /\ > b rrlr  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition435)%
+   . ( > a slsr b < /\ > b rrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition436)%
+   . ( > a slsr b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition437)%
+   . ( > a slsr b < /\ > b rllr  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition438)%
+   . ( > a slsr b < /\ > b rlll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition439)%
+   . ( > a slsr b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition440)%
+   . ( > a slsr b < /\ > b lrrl  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition441)%
+   . ( > a slsr b < /\ > b lrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition442)%
+   . ( > a slsr b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition443)%
+   . ( > a slsr b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition444)%
+   . ( > a slsr b < /\ > b lllr  c < )  => ( > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition445)%
+   . ( > a slsr b < /\ > b llll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition446)%
+   . ( > a slsr b < /\ > b ells  c < )  => ( > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition447)%
+   . ( > a slsr b < /\ > b errs  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition448)%
+   . ( > a slsr b < /\ > b lere  c < )  => ( > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition449)%
+   . ( > a slsr b < /\ > b rele  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition450)%
+   . ( > a slsr b < /\ > b slsr  c < )  => ( > a slsr c < \/ > a srsl c < ) %(DRA24_Composition451)%
+   . ( > a slsr b < /\ > b srsl  c < )  => ( > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition452)%
+   . ( > a slsr b < /\ > b lsel  c < )  => ( > a lsel c < \/ > a rser c < ) %(DRA24_Composition453)%
+   . ( > a slsr b < /\ > b rser  c < )  => ( > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition454)%
+   . ( > a slsr b < /\ > b sese  c < )  => ( > a slsr c < ) %(DRA24_Composition455)%
+   . ( > a slsr b < /\ > b eses  c < )  => ( > a lsel c < ) %(DRA24_Composition456)%
+   . ( > a srsl b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition457)%
+   . ( > a srsl b < /\ > b rrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < ) %(DRA24_Composition458)%
+   . ( > a srsl b < /\ > b rrlr  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a llll c < ) %(DRA24_Composition459)%
+   . ( > a srsl b < /\ > b rrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition460)%
+   . ( > a srsl b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition461)%
+   . ( > a srsl b < /\ > b rllr  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition462)%
+   . ( > a srsl b < /\ > b rlll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition463)%
+   . ( > a srsl b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition464)%
+   . ( > a srsl b < /\ > b lrrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition465)%
+   . ( > a srsl b < /\ > b lrll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition466)%
+   . ( > a srsl b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition467)%
+   . ( > a srsl b < /\ > b llrl  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition468)%
+   . ( > a srsl b < /\ > b lllr  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition469)%
+   . ( > a srsl b < /\ > b llll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition470)%
+   . ( > a srsl b < /\ > b ells  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition471)%
+   . ( > a srsl b < /\ > b errs  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < ) %(DRA24_Composition472)%
+   . ( > a srsl b < /\ > b lere  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition473)%
+   . ( > a srsl b < /\ > b rele  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < ) %(DRA24_Composition474)%
+   . ( > a srsl b < /\ > b slsr  c < )  => ( > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition475)%
+   . ( > a srsl b < /\ > b srsl  c < )  => ( > a slsr c < \/ > a srsl c < ) %(DRA24_Composition476)%
+   . ( > a srsl b < /\ > b lsel  c < )  => ( > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition477)%
+   . ( > a srsl b < /\ > b rser  c < )  => ( > a lsel c < \/ > a rser c < ) %(DRA24_Composition478)%
+   . ( > a srsl b < /\ > b sese  c < )  => ( > a srsl c < ) %(DRA24_Composition479)%
+   . ( > a srsl b < /\ > b eses  c < )  => ( > a rser c < ) %(DRA24_Composition480)%
+   . ( > a lsel b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition481)%
+   . ( > a lsel b < /\ > b rrrl  c < )  => ( > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition482)%
+   . ( > a lsel b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition483)%
+   . ( > a lsel b < /\ > b rrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition484)%
+   . ( > a lsel b < /\ > b rlrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition485)%
+   . ( > a lsel b < /\ > b rllr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition486)%
+   . ( > a lsel b < /\ > b rlll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition487)%
+   . ( > a lsel b < /\ > b lrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition488)%
+   . ( > a lsel b < /\ > b lrrl  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition489)%
+   . ( > a lsel b < /\ > b lrll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition490)%
+   . ( > a lsel b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition491)%
+   . ( > a lsel b < /\ > b llrl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition492)%
+   . ( > a lsel b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition493)%
+   . ( > a lsel b < /\ > b llll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition494)%
+   . ( > a lsel b < /\ > b ells  c < )  => ( > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition495)%
+   . ( > a lsel b < /\ > b errs  c < )  => ( > a slsr c < \/ > a srsl c < ) %(DRA24_Composition496)%
+   . ( > a lsel b < /\ > b lere  c < )  => ( > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition497)%
+   . ( > a lsel b < /\ > b rele  c < )  => ( > a lsel c < \/ > a rser c < ) %(DRA24_Composition498)%
+   . ( > a lsel b < /\ > b slsr  c < )  => ( > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition499)%
+   . ( > a lsel b < /\ > b srsl  c < )  => ( > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition500)%
+   . ( > a lsel b < /\ > b lsel  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition501)%
+   . ( > a lsel b < /\ > b rser  c < )  => ( > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition502)%
+   . ( > a lsel b < /\ > b sese  c < )  => ( > a lsel c < ) %(DRA24_Composition503)%
+   . ( > a lsel b < /\ > b eses  c < )  => ( > a slsr c < ) %(DRA24_Composition504)%
+   . ( > a rser b < /\ > b rrrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition505)%
+   . ( > a rser b < /\ > b rrrl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition506)%
+   . ( > a rser b < /\ > b rrlr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a errs c < \/ > a lere c < ) %(DRA24_Composition507)%
+   . ( > a rser b < /\ > b rrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < \/ > a rele c < ) %(DRA24_Composition508)%
+   . ( > a rser b < /\ > b rlrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition509)%
+   . ( > a rser b < /\ > b rllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition510)%
+   . ( > a rser b < /\ > b rlll  c < )  => ( > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < \/ > a ells c < ) %(DRA24_Composition511)%
+   . ( > a rser b < /\ > b lrrr  c < )  => ( > a rlrr c < \/ > a lrrr c < \/ > a lrrl c < \/ > a llrr c < \/ > a llrl c < \/ > a lere c < ) %(DRA24_Composition512)%
+   . ( > a rser b < /\ > b lrrl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition513)%
+   . ( > a rser b < /\ > b lrll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a lrll c < \/ > a rele c < ) %(DRA24_Composition514)%
+   . ( > a rser b < /\ > b llrr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < \/ > a llrl c < ) %(DRA24_Composition515)%
+   . ( > a rser b < /\ > b llrl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a llll c < ) %(DRA24_Composition516)%
+   . ( > a rser b < /\ > b lllr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < \/ > a llrr c < ) %(DRA24_Composition517)%
+   . ( > a rser b < /\ > b llll  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < \/ > a lllr c < \/ > a llll c < ) %(DRA24_Composition518)%
+   . ( > a rser b < /\ > b ells  c < )  => ( > a slsr c < \/ > a srsl c < ) %(DRA24_Composition519)%
+   . ( > a rser b < /\ > b errs  c < )  => ( > a slsr c < \/ > a srsl c < \/ > a sese c < ) %(DRA24_Composition520)%
+   . ( > a rser b < /\ > b lere  c < )  => ( > a lsel c < \/ > a rser c < ) %(DRA24_Composition521)%
+   . ( > a rser b < /\ > b rele  c < )  => ( > a lsel c < \/ > a rser c < \/ > a eses c < ) %(DRA24_Composition522)%
+   . ( > a rser b < /\ > b slsr  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a rlrr c < ) %(DRA24_Composition523)%
+   . ( > a rser b < /\ > b srsl  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a rllr c < \/ > a rlll c < \/ > a rele c < ) %(DRA24_Composition524)%
+   . ( > a rser b < /\ > b lsel  c < )  => ( > a rrlr c < \/ > a rrll c < \/ > a lrll c < ) %(DRA24_Composition525)%
+   . ( > a rser b < /\ > b rser  c < )  => ( > a rrrr c < \/ > a rrrl c < \/ > a lrrr c < \/ > a lrrl c < \/ > a errs c < ) %(DRA24_Composition526)%
+   . ( > a rser b < /\ > b sese  c < )  => ( > a rser c < ) %(DRA24_Composition527)%
+   . ( > a rser b < /\ > b eses  c < )  => ( > a srsl c < ) %(DRA24_Composition528)%
+   . ( > a sese b < /\ > b rrrr  c < )  => ( > a rrrr c < ) %(DRA24_Composition529)%
+   . ( > a sese b < /\ > b rrrl  c < )  => ( > a rrrl c < ) %(DRA24_Composition530)%
+   . ( > a sese b < /\ > b rrlr  c < )  => ( > a rrlr c < ) %(DRA24_Composition531)%
+   . ( > a sese b < /\ > b rrll  c < )  => ( > a rrll c < ) %(DRA24_Composition532)%
+   . ( > a sese b < /\ > b rlrr  c < )  => ( > a rlrr c < ) %(DRA24_Composition533)%
+   . ( > a sese b < /\ > b rllr  c < )  => ( > a rllr c < ) %(DRA24_Composition534)%
+   . ( > a sese b < /\ > b rlll  c < )  => ( > a rlll c < ) %(DRA24_Composition535)%
+   . ( > a sese b < /\ > b lrrr  c < )  => ( > a lrrr c < ) %(DRA24_Composition536)%
+   . ( > a sese b < /\ > b lrrl  c < )  => ( > a lrrl c < ) %(DRA24_Composition537)%
+   . ( > a sese b < /\ > b lrll  c < )  => ( > a lrll c < ) %(DRA24_Composition538)%
+   . ( > a sese b < /\ > b llrr  c < )  => ( > a llrr c < ) %(DRA24_Composition539)%
+   . ( > a sese b < /\ > b llrl  c < )  => ( > a llrl c < ) %(DRA24_Composition540)%
+   . ( > a sese b < /\ > b lllr  c < )  => ( > a lllr c < ) %(DRA24_Composition541)%
+   . ( > a sese b < /\ > b llll  c < )  => ( > a llll c < ) %(DRA24_Composition542)%
+   . ( > a sese b < /\ > b ells  c < )  => ( > a ells c < ) %(DRA24_Composition543)%
+   . ( > a sese b < /\ > b errs  c < )  => ( > a errs c < ) %(DRA24_Composition544)%
+   . ( > a sese b < /\ > b lere  c < )  => ( > a lere c < ) %(DRA24_Composition545)%
+   . ( > a sese b < /\ > b rele  c < )  => ( > a rele c < ) %(DRA24_Composition546)%
+   . ( > a sese b < /\ > b slsr  c < )  => ( > a slsr c < ) %(DRA24_Composition547)%
+   . ( > a sese b < /\ > b srsl  c < )  => ( > a srsl c < ) %(DRA24_Composition548)%
+   . ( > a sese b < /\ > b lsel  c < )  => ( > a lsel c < ) %(DRA24_Composition549)%
+   . ( > a sese b < /\ > b rser  c < )  => ( > a rser c < ) %(DRA24_Composition550)%
+   . ( > a sese b < /\ > b sese  c < )  => ( > a sese c < ) %(DRA24_Composition551)%
+   . ( > a sese b < /\ > b eses  c < )  => ( > a eses c < ) %(DRA24_Composition552)%
+   . ( > a eses b < /\ > b rrrr  c < )  => ( > a llrr c < ) %(DRA24_Composition553)%
+   . ( > a eses b < /\ > b rrrl  c < )  => ( > a lllr c < ) %(DRA24_Composition554)%
+   . ( > a eses b < /\ > b rrlr  c < )  => ( > a llrl c < ) %(DRA24_Composition555)%
+   . ( > a eses b < /\ > b rrll  c < )  => ( > a llll c < ) %(DRA24_Composition556)%
+   . ( > a eses b < /\ > b rlrr  c < )  => ( > a lrrr c < ) %(DRA24_Composition557)%
+   . ( > a eses b < /\ > b rllr  c < )  => ( > a lrrl c < ) %(DRA24_Composition558)%
+   . ( > a eses b < /\ > b rlll  c < )  => ( > a lrll c < ) %(DRA24_Composition559)%
+   . ( > a eses b < /\ > b lrrr  c < )  => ( > a rlrr c < ) %(DRA24_Composition560)%
+   . ( > a eses b < /\ > b lrrl  c < )  => ( > a rllr c < ) %(DRA24_Composition561)%
+   . ( > a eses b < /\ > b lrll  c < )  => ( > a rlll c < ) %(DRA24_Composition562)%
+   . ( > a eses b < /\ > b llrr  c < )  => ( > a rrrr c < ) %(DRA24_Composition563)%
+   . ( > a eses b < /\ > b llrl  c < )  => ( > a rrlr c < ) %(DRA24_Composition564)%
+   . ( > a eses b < /\ > b lllr  c < )  => ( > a rrrl c < ) %(DRA24_Composition565)%
+   . ( > a eses b < /\ > b llll  c < )  => ( > a rrll c < ) %(DRA24_Composition566)%
+   . ( > a eses b < /\ > b ells  c < )  => ( > a srsl c < ) %(DRA24_Composition567)%
+   . ( > a eses b < /\ > b errs  c < )  => ( > a slsr c < ) %(DRA24_Composition568)%
+   . ( > a eses b < /\ > b lere  c < )  => ( > a rser c < ) %(DRA24_Composition569)%
+   . ( > a eses b < /\ > b rele  c < )  => ( > a lsel c < ) %(DRA24_Composition570)%
+   . ( > a eses b < /\ > b slsr  c < )  => ( > a errs c < ) %(DRA24_Composition571)%
+   . ( > a eses b < /\ > b srsl  c < )  => ( > a ells c < ) %(DRA24_Composition572)%
+   . ( > a eses b < /\ > b lsel  c < )  => ( > a rele c < ) %(DRA24_Composition573)%
+   . ( > a eses b < /\ > b rser  c < )  => ( > a lere c < ) %(DRA24_Composition574)%
+   . ( > a eses b < /\ > b sese  c < )  => ( > a eses c < ) %(DRA24_Composition575)%
+   . ( > a eses b < /\ > b eses  c < )  => ( > a sese c < ) %(DRA24_Composition576)%
 end
 
 spec DRA72Composition[sort Point] =
-     DipolRelations[sort Point]
+     DipolRelations72[sort Point]
      then 
-     SetOfBaseRels[sort BaseRelation72]
-     then 
-     %% universal relation
-     . 1 = (rrrr union (rrll union (llrr union (llll union (rrrl union (rrlr union (rlrr union
-		(rllr union (rlll union (lrrr union (lrrl union (lrll union (llrl union
-		(lllr union (ells union (errs union (lere union (rele union (slsr union
-		(srsl union (lsel union (rser union (sese union (eses union (ffbb union
-		(efbs union (ifbi union (bfii union (sfsi union (beie union (bbff union
-		(bsef union (biif union (iibf union (sisf union (iebe union (ffff union
-		(fefe union (fifi union (fbii union (fsei union (ebis union (iifb union
-		(eifs union (iseb union (bbbb union (sbsb union (ibib union (lllb union
-		(llfl union (llbr union (llrf union (lirl union (lfrr union (lril union
-		(lrri union (blrr union (irrl union (frrr union (rbrr union (lbll union
-		(flll union (brll union (rfll union (rlli union (rrlf union (illr union
-		(rilr union (rrbl union (rlir union (rrfr union rrrb)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+     %% universal relation     
+     forall a, b : Dipol; rel1, rel2 : BaseRelation72
+     . exists rel : BaseRelation24. > a rel b <
+     . >a rel1 b < /\ > a rel2 b < => rel1 = rel2
+     . > a rrrr b < \/ > a rrll b < \/ > a llrr b < \/ > a llll b < \/ > a rrrl b < \/ > a rrlr b < \/ 
+       > a rlrr b < \/ > a rllr b < \/ > a rlll b < \/ > a lrrr b < \/ > a lrrl b < \/ > a lrll b < \/ 
+       > a llrl b < \/ > a lllr b < \/ > a ells b < \/ > a errs b < \/ > a lere b < \/ > a rele b < \/ 
+       > a slsr b < \/ > a srsl b < \/ > a lsel b < \/ > a rser b < \/ > a sese b < \/ > a eses b < \/
+       > a ffbb b < \/ > a efbs b < \/ > a ifbi b < \/ > a bfii b < \/ > a sfsi b < \/ > a beie b < \/
+       > a bbff b < \/ > a bsef b < \/ > a biif b < \/ > a iibf b < \/ > a sisf b < \/ > a iebe b < \/
+       > a ffff b < \/ > a fefe b < \/ > a fifi b < \/ > a fbii b < \/ > a fsei b < \/ > a ebis b < \/
+       > a iifb b < \/ > a eifs b < \/ > a iseb b < \/ > a bbbb b < \/ > a sbsb b < \/ > a ibib b < \/
+       > a lllb b < \/ > a llfl b < \/ > a llbr b < \/ > a llrf b < \/ > a lirl b < \/ > a lfrr b < \/ 
+       > a lril b < \/ > a lrri b < \/ > a blrr b < \/ > a irrl b < \/ > a frrr b < \/ > a rbrr b < \/
+       > a lbll b < \/ > a flll b < \/ > a brll b < \/ > a rfll b < \/ > a rlli b < \/ > a rrlf b < \/
+       > a illr b < \/ > a rilr b < \/ > a rrbl b < \/ > a rlir b < \/ > a rrfr b < \/ > a rrrb b <            %(Dra72_universal)%
+    
+     . > a ffbb b < => > a bbff b <
+     . > a efbs b < => > a bsef b <
+     . > a ifbi b < => > a biif b <
+     . > a bfii b < => > a iibf b <
+     . > a sfsi b < => > a sisf b <
+     . > a beie b < => > a iebe b < 
+     . > a bbff b < => > a ffbb b <
+     . > a bsef b < => > a efbs b <
+     . > a biif b < => > a ifbi b <
+     . > a iibf b < => > a bfii b <
+     . > a sisf b < => > a sfsi b <
+     . > a iebe b < => > a beie b <
+     
+     . > a fbii b < => > a iifb b <
+     . > a fsei b < => > a eifs b <
+     . > a ebis b < => > a iseb b <
+     . > a iifb b < => > a fbii b <
+     . > a eifs b < => > a fsei b <
+     . > a iseb b < => > a ebis b <
 
+     . > a lllb b < => > a lbll b <
+     . > a llfl b < => > a flll b <
+     . > a llbr b < => > a brll b <
+     . > a llrf b < => > a rfll b <
+     . > a lirl b < => > a rlli b <
+     . > a lfrr b < => > a rrlf b <
+     . > a lril b < => > a illr b <
+     . > a lrri b < => > a rilr b <
+     . > a blrr b < => > a rrbl b <
+     . > a irrl b < => > a rlir b <
+     . > a frrr b < => > a rrfr b <
+     . > a rbrr b < => > a rrrb b <
 
-     . conv(ffbb) = bbff
-     . conv(efbs) = bsef
-     . conv(ifbi) = biif
-     . conv(bfii) = iibf
-     . conv(sfsi) = sisf
-     . conv(beie) = iebe 
-     . conv(bbff) = ffbb
-     . conv(bsef) = efbs
-     . conv(biif) = ifbi
-     . conv(iibf) = bfii
-     . conv(sisf) = sfsi
-     . conv(iebe) = beie
+     . > a lbll b < => > a lllb b < 
+     . > a flll b < => > a llfl b <
+     . > a brll b < => > a llbr b <
+     . > a rfll b < => > a llrf b <
+     . > a rlli b < => > a lirl b <
+     . > a rrlf b < => > a lfrr b <
+     . > a illr b < => > a lril b <
+     . > a rilr b < => > a lrri b <
+     . > a rrbl b < => > a blrr b <
+     . > a rlir b < => > a irrl b <
+     . > a rrfr b < => > a frrr b <
+     . > a rrrb b < => > a rbrr b <
 
-     . conv(fbii) = iifb
-     . conv(fsei) = eifs
-     . conv(ebis) = iseb
-     . conv(iifb) = fbii
-     . conv(eifs) = fsei
-     . conv(iseb) = ebis
+     %% the converses
+     . > a rrll b < => > a llrr b <
+     . > a llrr b < => > a rrll b <
 
-     . conv(lllb) = lbll
-     . conv(llfl) = flll
-     . conv(llbr) = brll
-     . conv(llrf) = rfll
-     . conv(lirl) = rlli
-     . conv(lfrr) = rrlf
-     . conv(lril) = illr
-     . conv(lrri) = rilr
-     . conv(blrr) = rrbl
-     . conv(irrl) = rlir
-     . conv(frrr) = rrfr
-     . conv(rbrr) = rrrb
+     . > a rrrl b < => > a rlrr b <
+     . > a rrlr b < => > a lrrr b < 
+     . > a rlrr b < => > a rrrl b <
+     . > a rllr b < => > a lrrl b <
+     . > a rlll b < => > a llrl b <
+     . > a lrrr b < => > a rrlr b <
+     . > a lrrl b < => > a rllr b <
+     . > a lrll b < => > a lllr b <
+     . > a llrl b < => > a rlll b <
+     . > a lllr b < => > a lrll b <
 
-     . conv(lbll) = lllb 
-     . conv(flll) = llfl
-     . conv(brll) = llbr
-     . conv(rfll) = llrf
-     . conv(rlli) = lirl
-     . conv(rrlf) = lfrr
-     . conv(illr) = lril
-     . conv(rilr) = lrri
-     . conv(rrbl) = blrr
-     . conv(rlir) = irrl
-     . conv(rrfr) = frrr
-     . conv(rrrb) = rbrr
-       
+     . > a ells b < => > a lsel b <
+     . > a errs b < => > a rser b <
+     . > a lere b < => > a rele b <
+     . > a rele b < => > a lere b <
+     . > a slsr b < => > a srsl b <
+     . > a srsl b < => > a slsr b <
+     . > a lsel b < => > a ells b <
+     . > a rser b < => > a errs b <     
+
      %% symmetric relations
+     . > a rrrr b < => > a rrrr b <
+     . > a llll b < => > a llll b <
+       
+     . > a eses b < => > a eses b <
+     . > a sese b < => > a sese b <
 
-     . conv(fifi) = fifi
-     . conv(bbbb) = bbbb
-     . conv(sbsb) = sbsb
-     . conv(ibib) = ibib 
+     . > a fifi b < => > a fifi b <
+     . > a bbbb b < => > a bbbb b <
+     . > a sbsb b < => > a sbsb b <
+     . > a ibib b < => > a ibib b < 
 
-     . conv(ffff) = ffff
-     . conv(fefe) = fefe
+     . > a ffff b < => > a ffff b <
+     . > a fefe b < => > a fefe b <
 
      %% compostion table - automatically generated
 
@@ -411,13 +996,13 @@ end
 
 %% Spec for points
 spec Point[sort Elem] =
-     free type Point ::= /__ __\ (x : Elem; y : Elem)
+     type Point ::= /__ __\ (x : Elem; y : Elem)
 end
 
 %% We need to consider points over a totally ordered field
 spec PointsOverField =
      Point[TotallyOrderedField]
-     then %cons 
+     then   
      pred __<=__ : Point * Point
      forall a,b : Point
      . (a <= b) <=> ((x(a) <= x(b)) /\ (y(a) <= y(b)))
@@ -435,8 +1020,8 @@ spec VectorSpace[sort Space] =
      . a + b = b + a                                 %(ax_commut)%
      . a + 0 = a                                     %(ax_0)%
      . exists d : Space . a + d = 0                  %(ax_inverse)%
-     . e * ( a + b ) = e * a + e * b                 %(ax_distri_1)%
-     . ( e + f ) * a = e * a + f * a                 %(ax_distri_2)%
+     . e * ( a + b ) = (e * a) + (e * b)             %(ax_distri_1)%
+     . ( e + f ) * a = (e * a) + (f * a)             %(ax_distri_2)%
      . e * ( f * a) = ( e * f ) * a                  %(ax_mult)%
      . 1 * a = a
      then %implies
@@ -446,15 +1031,15 @@ end
 
 spec Vector =
      TotallyOrderedField
-     then %cons
-     free type Vector ::= [[__ __]](xc : Elem; yc : Elem) 
+     then  
+     type Vector ::= [[__ __]](xc : Elem; yc : Elem) 
      then
      VectorSpace[sort Vector]
      then
      ops <__||__> : Vector * Vector -> Elem;
 	 ||__||   : Vector -> Elem
      forall a, b : Vector
-     . <a||b> = xc(a) * xc(b) + yc(a) * yc(b)      %(def_inner_prod)%
+     . <a||b> = (xc(a) * xc(b)) + (yc(a) * yc(b))  %(def_inner_prod)%
      . ||a|| * ||a|| = <a||a>                      %(def_norm)%
      then %implies
      forall a,b : Vector
@@ -480,15 +1065,10 @@ spec PointsToVector =
      ops A  : Dipol -> Vector;
      ops Ap : Dipol -> Vector;
      ops P  : Dipol * Point -> Vector;
-     var pt  : Point;
-     var Dp : Dipol; 
-     var s_A : Point;
-     var e_A : Point;
-     . s_A = sp(Dp)
-     . e_A = ep(Dp)
-     . not ( s_A = e_A) => A(Dp)      = [[x(e_A)+(-x(s_A)) y(e_A)+(-y(s_A))]]
-     . not ( s_A = e_A) => Ap(Dp)     = [[y(e_A)+(-y(s_A)) x(s_A)+(-x(e_A))]]
-     . not ( s_A = e_A) => P (Dp, pt) = [[x(pt)+(-x(s_A))   y(pt)+(-y(s_A))]]
+     forall pt: Point; Dp: Dipol
+     . not ( sp(Dp) = ep(Dp)) => A(Dp)      = [[x(ep(Dp))+(-x(sp(Dp))) y(ep(Dp))+(-y(sp(Dp)))]]
+     . not ( sp(Dp) = ep(Dp)) => Ap(Dp)     = [[y(ep(Dp))+(-y(sp(Dp))) x(sp(Dp))+(-x(ep(Dp)))]]
+     . not ( sp(Dp) = ep(Dp)) => P (Dp, pt) = [[x(pt)+(-x(sp(Dp)))   y(pt)+(-y(sp(Dp)))]]
      . < A(Dp) || Ap(Dp) > = 0                    %(thm_orthogonal)% %implied
 end
 
@@ -501,15 +1081,11 @@ spec Vector_Vector_Relations72 =
      then
      TotallyOrderedField
      then 
-     DipolRelations[Point[TotallyOrderedField]]
-     then %cons
-     var pt  : Point;
-     var Dp : Dipol; 
-     var s_A : Point;
-     var e_A : Point;
-     free type DipolPointRelation24 ::= r | l | s | e
+     DipolRelations72[Point[TotallyOrderedField]]
+     then  
+     type DipolPointRelation24 ::= r | l | s | e
      sort DipolPointRelation24 < DipolPointRelation72
-     free type DipolPointRelation72 ::= r | l | s | e | b | i | f
+     type DipolPointRelation72 ::= r | l | s | e | b | i | f
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -523,14 +1099,17 @@ spec Vector_Vector_Relations72 =
 	  __dpe__ : Dipol * Point;
 	  __dpb__ : Dipol * Point;
 	  __dpi__ : Dipol * Point;
-	  __dpf__ : Dipol * Point 	  
-     . A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) > 
-     . A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0 
-     . A (Dp) vb P (Dp, pt) <=> < A (Dp)|| P (Dp, pt) > = -(||A (Dp)|| * ||P (Dp, pt)||)
-     . A (Dp) ve P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| = ||P (Dp, pt)||)
-     . A (Dp) vf P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| < ||P (Dp, pt)||)
-     . A (Dp) vi P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||P (Dp, pt)|| < ||A (Dp)||)
-     . A (Dp) vs P (Dp, pt) <=> (0 = ||P (Dp, pt)||)
+	  __dpf__ : Dipol * Point;
+	  prem__  : Dipol
+     forall pt: Point; Dp: Dipol
+     . prem (Dp) <=> not ||A(Dp)|| = 0
+     . prem (Dp) => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                                               %(def_vr)%
+     . prem (Dp) => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                                               %(def_vl)%
+     . prem (Dp) => (A (Dp) vb P (Dp, pt) <=> < A (Dp)|| P (Dp, pt) > = -(||A (Dp)|| * ||P (Dp, pt)||))                                   %(def_vb)%
+     . prem (Dp) => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt))                                                                              %(def_ve)%
+     . prem (Dp) => (A (Dp) vf P (Dp, pt) <=> ((< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| < ||P (Dp, pt)||)))  %(def_vf)%
+     . prem (Dp) => (A (Dp) vi P (Dp, pt) <=> ((< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||P (Dp, pt)|| < ||A (Dp)||)))  %(def_vi)%
+     . prem (Dp) => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt))                                                                                %(def_vs)%
      . Dp dpr pt <=> A (Dp)vr P (Dp, pt) 
      . Dp dpl pt <=> A (Dp)vl P (Dp, pt) 
      . Dp dps pt <=> A (Dp)vs P (Dp, pt) 
@@ -565,11 +1144,7 @@ spec Vector_Vector_Relations24 =
      TotallyOrderedField
      then
      DipolRelations24[Point[TotallyOrderedField]] 
-     then %cons
-     var pt  : Point;
-     var Dp : Dipol; 
-     var s_A : Point;
-     var e_A : Point;
+     then  
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
@@ -577,57 +1152,40 @@ spec Vector_Vector_Relations24 =
 	  __dpr__ : Dipol * Point;
 	  __dpl__ : Dipol * Point;
 	  __dps__ : Dipol * Point;	  
-	  __dpe__ : Dipol * Point	  
+	  __dpe__ : Dipol * Point;
+	  prem    : Dipol * Point
      pred >__ __ __< : Dipol * DipolRelation24 * Dipol
      pred >>__ __ __<< : Dipol * DipolPointRelation24 * Point
      %% Assure that not more than 3 differnt points are on a single line
-     . not (< A (Dp)|| P (Dp, pt) > = ||A (Dp)|| * ||P (Dp, pt)||) /\ (not (||A (Dp)|| = ||P (Dp, pt)||) \/ not (||P (Dp, pt)|| = 0))
-     . A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) > 
-     . A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0 
-     . A (Dp) ve P (Dp, pt) <=> (< A (Dp)|| P (Dp, pt) > = ||A (Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| = ||P (Dp, pt)||)
-     . A (Dp) vs P (Dp, pt) <=> (0 = ||P (Dp, pt)||)
-     . Dp dpr pt <=> A (Dp)vr P (Dp, pt) 
-     . Dp dpl pt <=> A (Dp)vl P (Dp, pt) 
-     . Dp dps pt <=> A (Dp)vs P (Dp, pt) 
-     . Dp dpe pt <=> A (Dp)ve P (Dp, pt) 
-     forall Dp1, Dp2 : Dipol; rel : DipolRelation24; ptp : Point
+     forall pt: Point; Dp: Dipol
+     . prem (Dp, pt) <=> not (< Ap (Dp)|| P (Dp, pt) > = 0) \/ (ep(Dp) = pt ) \/ (sp(Dp) = pt)                                        %(general_pos)%
+     . prem (Dp, pt) => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                                         %(def_r)%
+     . prem (Dp, pt) => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                                         %(def_l)%
+     . prem (Dp, pt) => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt))                                                                        %(def_e)%
+     . prem (Dp, pt) => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt))                                                                        %(def_s)% 
+     . Dp dpr pt <=> A (Dp)vr P (Dp, pt)                                                                                              %(def_dpr)%
+     . Dp dpl pt <=> A (Dp)vl P (Dp, pt)                                                                                              %(def_dpl)%
+     . Dp dps pt <=> A (Dp)vs P (Dp, pt)                                                                                              %(def_dps)%
+     . Dp dpe pt <=> A (Dp)ve P (Dp, pt)                                                                                              %(def_dpe)%
+
+     forall Dp1, Dp2 : Dipol; rel : DipolRelation24; ptp : Point                                                                      %(def_dipole_dipole)%
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp1 trd(rel) sp(Dp2) << /\
 	                >> Dp1 frt(rel) ep(Dp2) << 
 		       )
-     . Dp1 dpr ptp <=> >> Dp1 r ptp <<
-     . Dp1 dpl ptp <=> >> Dp1 l ptp <<     
-     . Dp1 dps ptp <=> >> Dp1 s ptp <<     
-     . Dp1 dpe ptp <=> >> Dp1 e ptp <<
-end
-
-%% We are considering all relations as sets of
-%% base relations
-
-spec Vector_Vector_Relation_Sets24 =
-     Vector_Vector_Relations24
-     then 
-     SetOfBaseRels[sort BaseRelation24]
-     then %cons
-     ops 0 : GenRel = {}
-end
-
-
-spec Vector_Vector_Relation_Sets72 =
-     Vector_Vector_Relations72
-     then 
-     SetOfBaseRels[sort BaseRelation72]
-     then %cons
-     ops 0 : GenRel = {}
+     . Dp1 dpr ptp <=> >> Dp1 r ptp <<                                                                                               %(map_r)%
+     . Dp1 dpl ptp <=> >> Dp1 l ptp <<                                                                                               %(map_l)%
+     . Dp1 dps ptp <=> >> Dp1 s ptp <<                                                                                               %(map_s)%
+     . Dp1 dpe ptp <=> >> Dp1 e ptp <<                                                                                               %(map_e)%
 end
 
 %% Our two interesting views
 
 view DRA72_In_Domain : DRA72Composition[sort Point] to
-     Vector_Vector_Relation_Sets72 = [__ __] |-> [<__ __>] 
+     Vector_Vector_Relations72 = [__ __] |-> [<__ __>] 
 end
 
 view DRA24_In_Domain : DRA24Composition[sort Point] to
-     Vector_Vector_Relation_Sets24
+     Vector_Vector_Relations24
 end
