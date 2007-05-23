@@ -42,11 +42,14 @@ spec DipolRelations24[sort Point] =
 			    x = <<r s e r>> \/ x = <<s e s e>> 
 			   }
      %% Definition of Dipol Relations by Dipol point relations
-     forall Dp1,Dp2 : Dipol; rel : BaseRelation24; rel1, rel2 : DipolPointRelation24
+     forall Dp1,Dp2 : Dipol; rel : BaseRelation24; rel1, rel2 : DipolPointRelation24; pt : Point
+     . (sp(Dp1) = ep(Dp1)) => not (>> Dp1 rel1 pt <<)
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp1 trd(rel) sp(Dp2) << /\
-	                >> Dp1 frt(rel) ep(Dp2) << 
+	                >> Dp1 frt(rel) ep(Dp2) << /\
+			    not (sp(Dp1)) = (ep(Dp1)) /\
+			    not (sp(Dp2)) = (ep(Dp2)) 
 		       ) 
      . >> Dp1 rel1 sp(Dp2) << /\ >> Dp1 rel2 sp(Dp2) << => rel1 = rel2                      %(ax_unique_1)%
      . >> Dp1 rel1 ep(Dp2) << /\ >> Dp1 rel2 ep(Dp2) << => rel1 = rel2                      %(ax_unique_2)%
@@ -126,11 +129,14 @@ spec DipolRelations72[sort Point] =
 			    x = <<r r f r>> \/ x = <<r r r b>>
 			    }
      %% Definition of Dipol Relations by Dipol point relations
-     forall Dp1,Dp2 : Dipol; rel : BaseRelation72; rel1, rel2 : DipolPointRelation72
+     forall Dp1,Dp2 : Dipol; rel : BaseRelation72; rel1, rel2 : DipolPointRelation72; pt : Point
+     . (sp(Dp1) = ep(Dp1)) => not (>> Dp1 rel1 pt <<)
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp1 trd(rel) sp(Dp2) << /\
-	                >> Dp1 frt(rel) ep(Dp2) << 
+	                >> Dp1 frt(rel) ep(Dp2) << /\
+			    not (sp(Dp1)) = (ep(Dp1)) /\
+			    not (sp(Dp2)) = (ep(Dp2)) 
 		       )
      . >> Dp1 rel1 sp(Dp2) << /\ >> Dp1 rel2 sp(Dp2) << => rel1 = rel2                      %(ax_unique_1)%
      . >> Dp1 rel1 ep(Dp2) << /\ >> Dp1 rel2 ep(Dp2) << => rel1 = rel2                      %(ax_unique_2)%
@@ -227,6 +233,16 @@ spec DRA24Composition[sort Point] =
      DipolRelations24[sort Point]
      then    
      forall a, b, c : Dipol; rel1, rel2 : BaseRelation24
+
+     %% disable include preceeding theorems in next proof attempt for better results
+
+     %% the converses... these ones need to be proven first
+     . >a eses b < => >b eses a<                                                                  %(DRA24_Conv_eses)%
+     . >a sese b < => >b sese a<                                                                  %(DRA24_Conv_sese)%
+     . >a rlll b < => >b llrl a<                                                                  %(DRA24_Conv_rlll)%
+     . >a lere b < => >b rele a<                                                                  %(DRA24_Conv_lere)%
+     . >a rele b < => >b lere a<                                                                  %(DRA24_Conv_rele)%
+
      . exists rel : BaseRelation24. > a rel b <                             %(DRA24_JE)%
      . >a rel1 b < /\ > a rel2 b < => rel1 = rel2                           %(DRA24_PD)%
 
@@ -237,35 +253,25 @@ spec DRA24Composition[sort Point] =
        >a llrl b < \/ > a lllr b < \/ > a ells b< \/ >a errs b < \/ >a lere b < \/ > a rele b< \/ 
        >a slsr b < \/ > a srsl b < \/ > a lsel b< \/ >a rser b < \/ >a sese b < \/ > a eses b<    %(DRA24_Universal)%
 
-     %% symmetric relations
+     %% the converses
      . >a llll b < => >b llll a<                                                                  %(DRA24_Conv_llll)%
      . >a rrrr b < => >b rrrr a<                                                                  %(DRA24_Conv_rrrr)%
-       
-     . >a eses b < => >b eses a<                                                                  %(DRA24_Conv_eses)%
-     . >a sese b < => >b sese a<                                                                  %(DRA24_Conv_sese)%
-
-     %% the converses
+     . >a ells b < => >b lsel a<                                                                  %(DRA24_Conv_ells)%
+     . >a errs b < => >b rser a<                                                                  %(DRA24_Conv_errs)%
+     . >a lsel b < => >b ells a<                                                                  %(DRA24_Conv_lsel)%       
      . >a rrll b < => >b llrr a<                                                                  %(DRA24_Conv_rrll)%
      . >a llrr b < => >b rrll a<                                                                  %(DRA24_Conv_llrr)%
-
      . >a rrrl b < => >b rlrr a<                                                                  %(DRA24_Conv_rrrl)%
      . >a rrlr b < => >b lrrr a<                                                                  %(DRA24_Conv_rrlr)%
      . >a rlrr b < => >b rrrl a<                                                                  %(DRA24_Conv_rlrr)%
      . >a rllr b < => >b lrrl a<                                                                  %(DRA24_Conv_rllr)%
-     . >a rlll b < => >b llrl a<                                                                  %(DRA24_Conv_rlll)%
      . >a lrrr b < => >b rrlr a<                                                                  %(DRA24_Conv_lrrr)%
      . >a lrrl b < => >b rllr a<                                                                  %(DRA24_Conv_lrrl)%
      . >a lrll b < => >b lllr a<                                                                  %(DRA24_Conv_lrll)%
      . >a llrl b < => >b rlll a<                                                                  %(DRA24_Conv_llrl)%
      . >a lllr b < => >b lrll a<                                                                  %(DRA24_Conv_lllr)%
-
-     . >a ells b < => >b lsel a<                                                                  %(DRA24_Conv_ells)%
-     . >a errs b < => >b rser a<                                                                  %(DRA24_Conv_errs)%
-     . >a lere b < => >b rele a<                                                                  %(DRA24_Conv_lere)%
-     . >a rele b < => >b lere a<                                                                  %(DRA24_Conv_rele)%
      . >a slsr b < => >b srsl a<                                                                  %(DRA24_Conv_srsl)%
      . >a srsl b < => >b slsr a<                                                                  %(DRA24_Conv_slsr)%
-     . >a lsel b < => >b ells a<                                                                  %(DRA24_Conv_lsel)%
      . >a rser b < => >b errs a<                                                                  %(DRA24_Conv_rser)%
 
      .  > a rrrr b < => not ( > a rrrl b < ) /\ not ( > a rrlr b < ) /\ not ( > a rrll b < ) /\ not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < )%(DRA24_PD_rrrr)%
@@ -1180,10 +1186,12 @@ spec PointsToVector =
      ops A  : Dipol -> Vector;
      ops Ap : Dipol -> Vector;
      ops P  : Dipol * Point -> Vector;
+     preds prem : Dipol
      forall pt: Point; Dp: Dipol
-     . not ( sp(Dp) = ep(Dp)) => A(Dp)      = [[x(ep(Dp))+(-x(sp(Dp))) y(ep(Dp))+(-y(sp(Dp)))]]
-     . not ( sp(Dp) = ep(Dp)) => Ap(Dp)     = [[y(ep(Dp))+(-y(sp(Dp))) x(sp(Dp))+(-x(ep(Dp)))]]
-     . not ( sp(Dp) = ep(Dp)) => P (Dp, pt) = [[x(pt)+(-x(sp(Dp)))   y(pt)+(-y(sp(Dp)))]]
+     . prem (Dp) <=> not (sp(Dp) = ep(Dp))
+     . prem (Dp) => A(Dp)      = [[x(ep(Dp))+(-x(sp(Dp))) y(ep(Dp))+(-y(sp(Dp)))]]
+     . prem (Dp) => Ap(Dp)     = [[y(ep(Dp))+(-y(sp(Dp))) x(sp(Dp))+(-x(ep(Dp)))]]
+     . prem (Dp) => P (Dp, pt) = [[x(pt)+(-x(sp(Dp)))   y(pt)+(-y(sp(Dp)))]]
      . < A(Dp) || Ap(Dp) > = 0                    %(thm_orthogonal)% %implied
 end
 
@@ -1232,12 +1240,15 @@ spec Vector_Vector_Relations72 =
      . Dp dpb pt <=> A (Dp)vb P (Dp, pt) 
      . Dp dpi pt <=> A (Dp)vi P (Dp, pt) 
      . Dp dpf pt <=> A (Dp)vf P (Dp, pt) 
-     forall Dp1, Dp2 : Dipol; rel : DipolRelation72; ptp : Point
+     forall Dp1, Dp2 : Dipol; rel : DipolRelation72; ptp : Point; relp: DipolPointRelation72
+     . (ep(Dp1) = sp(Dp1)) => not (>> Dp1 relp ptp <<)
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
-	                >> Dp1 snd(rel) ep(Dp2) << /\
-		        >> Dp1 trd(rel) sp(Dp2) << /\
-	                >> Dp1 frt(rel) ep(Dp2) << 
-		       )
+	                    >> Dp1 snd(rel) ep(Dp2) << /\
+		            >> Dp1 trd(rel) sp(Dp2) << /\
+	                    >> Dp1 frt(rel) ep(Dp2) << /\
+			    not (sp(Dp1)) = (ep(Dp1)) /\
+			    not (sp(Dp2)) = (ep(Dp2)) 
+			   )
      . Dp1 dpr ptp <=> >> Dp1 r ptp <<
      . Dp1 dpl ptp <=> >> Dp1 l ptp <<     
      . Dp1 dps ptp <=> >> Dp1 s ptp <<     
@@ -1268,27 +1279,41 @@ spec Vector_Vector_Relations24 =
 	  __dpl__ : Dipol * Point;
 	  __dps__ : Dipol * Point;	  
 	  __dpe__ : Dipol * Point;
-	  prem    : Dipol * Point
+	  prem    : Dipol * Point;
+	  premP   : Dipol * Point;
+	  premQ   : Dipol * Point;
+	  premG   : Dipol * Point;
+	  premLA  : Dipol
      pred >__ __ __< : Dipol * DipolRelation24 * Dipol
      pred >>__ __ __<< : Dipol * DipolPointRelation24 * Point
      %% Assure that not more than 3 differnt points are on a single line
      forall pt: Point; Dp: Dipol
-     . prem (Dp, pt) <=> not (< Ap (Dp)|| P (Dp, pt) > = 0) \/ (ep(Dp) = pt ) \/ (sp(Dp) = pt)                                        %(general_pos)%
-     . prem (Dp, pt) => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                                         %(def_r)%
-     . prem (Dp, pt) => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                                         %(def_l)%
-     . prem (Dp, pt) => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt))                                                                        %(def_e)%
-     . prem (Dp, pt) => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt))                                                                        %(def_s)% 
+     . premLA (Dp)   <=> not (ep(Dp) = sp(Dp))                                                                                        %(prem_len_A)%
+     . premG(Dp, pt) <=> not (< Ap (Dp)|| P (Dp, pt) > = 0) \/ (ep(Dp) = pt ) \/ (sp(Dp) = pt)                                        %(general_pos)%
+     . prem (Dp, pt) <=> (premLA (Dp) /\ premG (Dp, pt))
+     . premP(Dp, pt) <=> not ((ep(Dp) = pt ) \/ (sp(Dp) = pt))  
+     . premQ(Dp, pt) <=> (ep(Dp) = pt ) \/ (sp(Dp) = pt) 
+     . (prem (Dp, pt) /\ premP (Dp, pt)) => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                   %(def_r)%
+     . (prem (Dp, pt) /\ premP (Dp, pt)) => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                   %(def_l)%
+     . (prem (Dp, pt) /\ premQ (Dp, pt)) => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt) /\ not (sp(Dp) = pt))                             %(def_e)%
+     . (prem (Dp, pt) /\ premQ (Dp, pt)) => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt) /\ not (ep(Dp) = pt))                             %(def_s)% 
+     %% problem is here :(
+     . (prem (Dp, pt) /\ premQ (Dp, pt)) => ((A(Dp) ve P (Dp, pt)) => not (A (Dp) vs P (Dp, pt)))       %(ve_xor_vs)% %implied
+     . (prem (Dp, pt) /\ premQ (Dp, pt)) => ((A (Dp) vs P (Dp, pt)) => not (A (Dp) ve P (Dp, pt)))       %(vs_xor_ve)% %implied
      . Dp dpr pt <=> A (Dp)vr P (Dp, pt)                                                                                              %(def_dpr)%
      . Dp dpl pt <=> A (Dp)vl P (Dp, pt)                                                                                              %(def_dpl)%
      . Dp dps pt <=> A (Dp)vs P (Dp, pt)                                                                                              %(def_dps)%
      . Dp dpe pt <=> A (Dp)ve P (Dp, pt)                                                                                              %(def_dpe)%
 
-     forall Dp1, Dp2 : Dipol; rel : DipolRelation24; ptp : Point                                                                      %(def_dipole_dipole)%
+     forall Dp1, Dp2 : Dipol; rel : DipolRelation24; ptp : Point; relp : DipolPointRelation24                                         %(def_dipole_dipole)%
+     . (ep(Dp1) = sp(Dp1)) => not (>> Dp1 relp ptp <<)
      . > Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
-	                >> Dp1 snd(rel) ep(Dp2) << /\
-		        >> Dp1 trd(rel) sp(Dp2) << /\
-	                >> Dp1 frt(rel) ep(Dp2) << 
-		       )
+	                    >> Dp1 snd(rel) ep(Dp2) << /\
+		            >> Dp1 trd(rel) sp(Dp2) << /\
+	                    >> Dp1 frt(rel) ep(Dp2) << /\
+			    not (sp(Dp1)) = (ep(Dp1)) /\
+			    not (sp(Dp2)) = (ep(Dp2))  
+			   )
      . Dp1 dpr ptp <=> >> Dp1 r ptp <<                                                                                               %(map_r)%
      . Dp1 dpl ptp <=> >> Dp1 l ptp <<                                                                                               %(map_l)%
      . Dp1 dps ptp <=> >> Dp1 s ptp <<                                                                                               %(map_s)%
