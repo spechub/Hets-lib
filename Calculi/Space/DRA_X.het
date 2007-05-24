@@ -249,7 +249,7 @@ spec DRA24Composition[sort Point] =
      . Dipole (a) /\ Dipole (b) /\ Dipole (c) => 
        exists rel : BaseRelation24. > a rel b <                                                    %(DRA24_JE)%
      . Dipole (a) /\ Dipole (b) /\ Dipole (c) =>
-	  >a rel1 b < /\ > a rel2 b < => rel1 = rel2                                               %(DRA24_PD)%
+	  >a rel1 b < /\ > a rel2 b < /\ not (a = b) => rel1 = rel2                                               %(DRA24_PD)%
 
      %% universal relation
 
@@ -282,7 +282,7 @@ spec DRA24Composition[sort Point] =
 
      %% pairwise disjointness -- automatically generated
 
-     . Dipole (a) /\ Dipole (b) => ( > a rrrr b < => not ( > a rrrl b < ) /\ not ( > a rrlr b < ) /\ not ( > a rrll b < ) /\ not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < ) )%(DRA24_PD_rrrr)%
+     . Dipole (a) /\ Dipole (b) => ( > a rrrr b < => not (  > a rrrl b < ) /\ not ( > a rrlr b < ) /\ not ( > a rrll b < ) /\ not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < ) )%(DRA24_PD_rrrr)%
      . Dipole (a) /\ Dipole (b) => ( > a rrrl b < => not ( > a rrlr b < ) /\ not ( > a rrll b < ) /\ not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < ) /\ not ( > a rrrr b < ) )                %(DRA24_PD_rrrl)%
      . Dipole (a) /\ Dipole (b) => ( > a rrlr b < => not ( > a rrll b < ) /\ not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < ) /\ not ( > a rrrr b < ) /\ not ( > a rrrl b < ) )                %(DRA24_PD_rrlr)%
      . Dipole (a) /\ Dipole (b) => ( > a rrll b < => not ( > a rlrr b < ) /\ not ( > a rllr b < ) /\ not ( > a rlll b < ) /\ not ( > a lrrr b < ) /\ not ( > a lrrl b < ) /\ not ( > a lrll b < ) /\ not ( > a llrr b < ) /\ not ( > a llrl b < ) /\ not ( > a lllr b < ) /\ not ( > a llll b < ) /\ not ( > a ells b < ) /\ not ( > a eses b < ) /\ not ( > a errs b < ) /\ not ( > a lere b < ) /\ not ( > a rele b < ) /\ not ( > a slsr b < ) /\ not ( > a srsl b < ) /\ not ( > a lsel b < ) /\ not ( > a rser b < ) /\ not ( > a sese b < ) /\ not ( > a ffbb b < ) /\ not ( > a efbs b < ) /\ not ( > a rrrr b < ) /\ not ( > a rrrl b < ) /\ not ( > a rrlr b < ) )                %(DRA24_PD_rrll)%
@@ -994,7 +994,8 @@ spec DRA72Composition[sort Point] =
      . Dipole (a) /\ Dipole (b) => (> a ffff b < => > a ffff b <)
      . Dipole (a) /\ Dipole (b) => (> a fefe b < => > a fefe b <)
 
-     . Dipole (a) /\ Dipole (b) => (>a rel1 b < /\ > a rel2 b < => rel1 = rel2)           %(DRA72_PD)%
+     . Dipole (a) /\ Dipole (b) => (>a rel1 b < /\ > a rel2 b < /\ not (a = b))
+	  => (rel1 = rel2)           %(DRA72_PD)%
    
      %% Disjointness -- automatically generated --      
 
@@ -1083,18 +1084,39 @@ end
 spec Field =
      sort Elem
      ops 0     : Elem;
-	 1     : Elem;
-	 __+__ : Elem * Elem -> Elem, assoc, comm, unit 0;
-	 __*__ : Elem * Elem -> Elem, assoc, comm, unit 1;
+     ops 1     : Elem;
+     ops __+__ : Elem * Elem -> Elem, assoc, comm, unit 0;
+     ops __*__ : Elem * Elem -> Elem, assoc, comm, unit 1;
 	 -__   : Elem -> Elem
+     . exists d,e,f,g,h,i : Elem . not (d = 0) /\ not (d = 1) /\ 
+           not (e = 0) /\ not (e = 1) /\
+	   not (f = 0) /\ not (f = 1) /\
+           not (g = 0) /\ not (g = 1) /\
+           not (h = 0) /\ not (h = 1) /\
+           not (i = 0) /\ not (i = 1) /\
+	   not (d = e) /\ not (d = f) /\
+	   not (d = g) /\ not (d = h) /\ 
+	   not (d = i) /\ not (e = f) /\
+	   not (e = g) /\ not (e = h) /\
+           not (e = i) /\ not (f = g) /\                  
+	   not (f = g) /\ not (f = h) /\
+	   not (f = i) /\ not (g = h) /\
+	   not (g = i) /\ not (h = i)                  %(ax_elements)%
+     forall a,b : Elem
+     . (not (a = 0 ) /\ not ( b = 0) /\ not (a = 1 ) /\ not ( b = 1)) => 
+	  (exists c : Elem . a * b = c /\ not (c = a) /\ not (c = b))  %(ax_mult_closure)%
+     . (not (a = 0 ) /\ not ( b = 0) => 
+	exists c : Elem . a + b = c /\ not (c = a) /\ not (c = b))     %(ax_add_closure)%
      forall a,b,c : Elem
-     . a * ( a + c ) = ( a * b ) + ( a * c )           %(distribution)%
+     . exists d : Elem . a * ( a + c ) = d
+     . exists d : Elem . ( a * b ) + ( a * c ) = d
+     . a * ( b + c ) = ( a * b ) + ( a * c )           %(distribution)%
      forall a : Elem 
      . exists b : Elem . a + b = 0                     %(additive_inverse)%
      . not ( a = 0 ) => (exists b : Elem . not ( b = 0 ) => a * b = 1)    %(mult_inverse)%
-     then %implies
      forall a, b : Elem
-     . ((- a ) + a = 0 )  /\ (forall c : Elem . (a + c = 0) => (c = - a))    %(thm_inverse)%
+     . a + b = 0 => b = - a                            %(thm_inverse)%
+     . exists c : Elem . c = - a
      . a * 0 = 0                                                           %(thm_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
@@ -1112,18 +1134,21 @@ spec TotalOrder =
      . a <=b /\ b <= c => a <= c             %(order_transitive)%
      . a <= b \/ b <= a                      %(order_total)%
      . a < b <=> a <= b /\ not ( a = b )     %(def_<)%
+     . exists d :Elem . c < d                %(enough_elements)%
 end
 
 spec TotallyOrderedField = 
      Field and TotalOrder
      then
-     forall a : Elem
+     forall a,b,c,d : Elem
      . 0 <= 1
      . a <= 0 <=> 0 <= ( - a )
+     . a <= b /\ c <= d => a + c <= c + d    %(ax_order_+)%
      then %implies
-     forall a,b,c,d : Elem
+     forall a,b,c,d : Elem     
+     . (0 < a) => (exists e :Elem . (e < 0) /\ (a + e = 0))
+     . (a < 0) => (exists e :Elem . (0 < e) /\ (a + e = 0))
      . ( - a ) <= 0 <=> 0 <= a               %(thm_order)%
-     . a <= b /\ c <= d => a + c <= c + d    %(thm_order_+)%
 end 
 
 %% Spec for points
@@ -1156,9 +1181,7 @@ spec VectorSpace[sort Space] =
      . ( e + f ) * a = (e * a) + (f * a)             %(ax_distri_2)%
      . e * ( f * a) = ( e * f ) * a                  %(ax_mult)%
      . 1 * a = a
-     then %implies
-     forall a, b : Space
-     . ((- a ) + a = 0 )  /\ (forall c : Space . ( a + c = 0) => (c = - a))    %(thm_inverse)%
+     . a + b = 0 => b = - a                            %(thm_inverse)%
 end
 
 spec Vector =
@@ -1184,8 +1207,9 @@ end
 %% This spec is intended to be part of the interface from DRA to 
 %% its domain
 spec PointsToVector =
+     PointsOverField 
+     then
      Vector 
-     then PointsOverField
      then
      type PairOfPoints ::= [<__ __>] (sp : Point; ep : Point)
      %% we consider s_a, e_a and a point pt in the 
@@ -1204,6 +1228,8 @@ spec PointsToVector =
      . Dipole (Dp)  => (Ap(Dp)     = [[y(ep(Dp))+(-y(sp(Dp))) x(sp(Dp))+(-x(ep(Dp)))]])
      . Dipole (Dp)  => (P (Dp, pt) = [[x(pt)+(-x(sp(Dp)))   y(pt)+(-y(sp(Dp)))]])
      . Dipole (Dp)  => (< A(Dp) || Ap(Dp) > = 0)                    %(thm_orthogonal)% %implied
+     . Dipole (Dp)  => not (||A(Dp)|| = 0)                          %(thm_length_A)% %implied
+     . Dipole (Dp)  => not (||Ap(Dp)|| = 0)                         %(thm_length_Ap)% %implied
 end
 
 %% The definition of the 7 Dipole-Point relations via vectors
