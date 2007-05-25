@@ -1123,7 +1123,7 @@ end
 
 %% Spec for points
 spec Point[sort Elem] =
-     type Point ::= /__ __\ (x : Elem; y : Elem)
+     type Point ::= /__ __\ (xc : Elem; yc : Elem)
 end
 
 %% We need to consider points over a totally ordered field
@@ -1132,7 +1132,7 @@ spec PointsOverField =
      then   
      pred __<=__ : Point * Point
      forall a,b : Point
-     . (a <= b) <=> ((x(a) <= x(b)) /\ (y(a) <= y(b)))
+     . (a <= b) <=> ((xc(a) <= xc(b)) /\ (yc(a) <= yc(b)))
 end
 
 spec VectorSpace[sort Space] = 
@@ -1194,9 +1194,9 @@ spec PointsToVector =
      pred Dipole : PairOfPoints 
      forall pt: Point; Dp: PairOfPoints
      . Dipole (Dp) <=> (not (sp(Dp) = ep(Dp)))
-     . Dipole (Dp)  => (A(Dp)      = [[x(ep(Dp))+(-x(sp(Dp))) y(ep(Dp))+(-y(sp(Dp)))]])
-     . Dipole (Dp)  => (Ap(Dp)     = [[y(ep(Dp))+(-y(sp(Dp))) x(sp(Dp))+(-x(ep(Dp)))]])
-     . Dipole (Dp)  => (P (Dp, pt) = [[x(pt)+(-x(sp(Dp)))   y(pt)+(-y(sp(Dp)))]])
+     . Dipole (Dp)  => (A(Dp)      = [[xc(ep(Dp))+(-xc(sp(Dp))) yc(ep(Dp))+(-yc(sp(Dp)))]])
+     . Dipole (Dp)  => (Ap(Dp)     = [[yc(ep(Dp))+(-yc(sp(Dp))) xc(sp(Dp))+(-xc(ep(Dp)))]])
+     . Dipole (Dp)  => (P (Dp, pt) = [[xc(pt)+(-xc(sp(Dp)))     yc(pt)+(-yc(sp(Dp)))]])
      . Dipole (Dp)  => (< A(Dp) || Ap(Dp) > = 0)                    %(thm_orthogonal)% %implied
      . Dipole (Dp)  => not (||A(Dp)|| = 0)                          %(thm_length_A)% %implied
      . Dipole (Dp)  => not (||Ap(Dp)|| = 0)                         %(thm_length_Ap)% %implied
