@@ -1,5 +1,5 @@
 theory HsHOLCF
-imports Abstraction
+imports "$ISABELLE_HOME/src/HOLCF/IOA/meta_theory/Abstraction"
 begin
 
 types
