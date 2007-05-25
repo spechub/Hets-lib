@@ -14,6 +14,9 @@ version 0.1
 %left_assoc __union__, __intersection__
 %left_assoc __ + __, __ * __
 
+from Basic/Algebra_I get ConstructField
+from Basic/RelationsAndOrders get TotalOrder
+
 %% Dipole Calculus with 72 relations (DRA 72)
 
 
@@ -1081,74 +1084,41 @@ end
 
 %%We consider a normed vector space over a totally ordered field
 
-spec Field =
-     sort Elem
-     ops 0     : Elem;
-     ops 1     : Elem;
-     ops __+__ : Elem * Elem -> Elem, assoc, comm, unit 0;
-     ops __*__ : Elem * Elem -> Elem, assoc, comm, unit 1;
-	 -__   : Elem -> Elem
-     . exists d,e,f,g,h,i : Elem . not (d = 0) /\ not (d = 1) /\ 
-           not (e = 0) /\ not (e = 1) /\
-	   not (f = 0) /\ not (f = 1) /\
-           not (g = 0) /\ not (g = 1) /\
-           not (h = 0) /\ not (h = 1) /\
-           not (i = 0) /\ not (i = 1) /\
-	   not (d = e) /\ not (d = f) /\
-	   not (d = g) /\ not (d = h) /\ 
-	   not (d = i) /\ not (e = f) /\
-	   not (e = g) /\ not (e = h) /\
-           not (e = i) /\ not (f = g) /\                  
-	   not (f = g) /\ not (f = h) /\
-	   not (f = i) /\ not (g = h) /\
-	   not (g = i) /\ not (h = i)                  %(ax_elements)%
-     forall a,b : Elem
-     . (not (a = 0 ) /\ not ( b = 0) /\ not (a = 1 ) /\ not ( b = 1)) => 
-	  (exists c : Elem . a * b = c /\ not (c = a) /\ not (c = b))  %(ax_mult_closure)%
-     . (not (a = 0 ) /\ not ( b = 0) => 
-	exists c : Elem . a + b = c /\ not (c = a) /\ not (c = b))     %(ax_add_closure)%
-     forall a,b,c : Elem
-     . exists d : Elem . a * ( a + c ) = d
-     . exists d : Elem . ( a * b ) + ( a * c ) = d
-     . a * ( b + c ) = ( a * b ) + ( a * c )           %(distribution)%
-     forall a : Elem 
-     . exists b : Elem . a + b = 0                     %(additive_inverse)%
-     . not ( a = 0 ) => (exists b : Elem . not ( b = 0 ) => a * b = 1)    %(mult_inverse)%
+
+spec FieldWithMinus =
+     ConstructField with e |-> 1 
+     then
+     ops -__   : Elem -> Elem
+     . 0 + 0 = 0                                      %(thm_0+0=0)% %implied
+     . not ( 1 + 1 = 0 )                              %(thm_e+e=0)% %implied
+     forall a : Elem
+     . exists b : Elem . (a + b) = 0                  %implied
+     . exists b : Elem . not ( b = 1 ) /\ not (b = 0) %implied
      forall a, b : Elem
-     . a + b = 0 => b = - a                            %(thm_inverse)%
-     . exists c : Elem . c = - a
+     . exists e : Elem . a + e = 0                                         %implied
+     . (a + b) = 0 => -a = b /\ -b = a                                     %(ax_inverses)%
      . a * 0 = 0                                                           %(thm_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
-     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)%
-end
-
-%% as the name says it... A total order 
-spec TotalOrder = 
-     sort Elem
-     pred __ <= __ : Elem * Elem;
-	  __<__    : Elem * Elem
-     forall a, b, c : Elem
-     . a <= a                                %(order_reflex)%
-     . a <= b /\ b <= a => a = b             %(order_antisymmetric)%
-     . a <=b /\ b <= c => a <= c             %(order_transitive)%
-     . a <= b \/ b <= a                      %(order_total)%
-     . a < b <=> a <= b /\ not ( a = b )     %(def_<)%
-     . exists d :Elem . c < d                %(enough_elements)%
+     . (-1) * a = -a 
+     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)% 
 end
 
 spec TotallyOrderedField = 
-     Field and TotalOrder
-     then
+     FieldWithMinus and TotalOrder
+     then 
+     pred __<__ : Elem * Elem
      forall a,b,c,d : Elem
-     . 0 <= 1
-     . a <= 0 <=> 0 <= ( - a )
-     . a <= b /\ c <= d => a + c <= c + d    %(ax_order_+)%
+     . a < b <=> a <= b /\ not a = b          %(ax_def_<)%
+     . 0 < 1                                  %(ax_0_lt_1)%
+     . a <= 0 <=> 0 <= ( - a )                %(ax_inverse_with_different_sign)% 
+     %[
+     . ( a + b = c ) => (a <= c) /\ (b <= c)  %(ax_def_via_+)%     
+     ]%
+     . a <= b /\ c <= d => a + c <= b + d     %(ax_order_+)%
      then %implies
      forall a,b,c,d : Elem     
-     . (0 < a) => (exists e :Elem . (e < 0) /\ (a + e = 0))
-     . (a < 0) => (exists e :Elem . (0 < e) /\ (a + e = 0))
-     . ( - a ) <= 0 <=> 0 <= a               %(thm_order)%
+     . ( - a ) <= 0 <=> 0 <= a                %(thm_order)%
 end 
 
 %% Spec for points
@@ -1166,7 +1136,7 @@ spec PointsOverField =
 end
 
 spec VectorSpace[sort Space] = 
-     Field
+     FieldWithMinus
      then
      ops __+__ : Space * Space -> Space;
 	 __*__ : Elem * Space -> Space;
