@@ -1096,8 +1096,8 @@ spec FieldWithMinus =
      . exists b : Elem . not ( b = 1 ) /\ not (b = 0) %implied
      forall a, b : Elem
      . exists e : Elem . a + e = 0                                         %implied
-     . (a + b) = 0 => -a = b /\ -b = a                                     %(ax_inverses)%
-     . a * 0 = 0                                                           %(thm_mult_with_inverse)%
+     . (a + (-a)) = 0                                                      %(ax_inverse)%
+     . a * 0 = 0                                                           %(ax_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
      . (-1) * a = -a 
@@ -1111,13 +1111,10 @@ spec TotallyOrderedField =
      forall a,b,c,d : Elem
      . a < b <=> a <= b /\ not a = b          %(ax_def_<)%
      . 0 < 1                                  %(ax_0_lt_1)%
-     . a <= 0 <=> 0 <= ( - a )                %(ax_inverse_with_different_sign)% 
-     %[
-     . ( a + b = c ) => (a <= c) /\ (b <= c)  %(ax_def_via_+)%     
-     ]%
+     . a <= 0 <=> 0 <= ( - a )                %(ax_inverse_with_different_sign)%  
      . a <= b /\ c <= d => a + c <= b + d     %(ax_order_+)%
      then %implies
-     forall a,b,c,d : Elem     
+     forall a : Elem     
      . ( - a ) <= 0 <=> 0 <= a                %(thm_order)%
 end 
 
