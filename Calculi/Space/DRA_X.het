@@ -1089,18 +1089,20 @@ spec FieldWithMinus =
      ConstructField with e |-> 1 
      then
      ops -__   : Elem -> Elem
-     . 0 + 0 = 0                                      %(thm_0+0=0)% %implied
-     . not ( 1 + 1 = 0 )                              %(thm_e+e=0)% %implied
+     . 0 + 0 = 0                                                           %(thm_0+0=0)%         %implied
+     . 1 + (-1) = 0                                                        %(1-1=0)%
+     . not ( 1 + 1 = 0 )                                                   %(not_1+1=0)% 
      forall a : Elem
-     . exists b : Elem . (a + b) = 0                  %implied
-     . exists b : Elem . not ( b = 1 ) /\ not (b = 0) %implied
+     . (-1)*(-1) = 1                                                       %(double_minus)%      %implied
+     . exists b : Elem . (a + b) = 0                                       %(thm_ex_a+b=0)%      %implied
+     . exists b : Elem . not ( b = 1 ) /\ not (b = 0)                      %(thm_some_elements)% %implied
      forall a, b : Elem
-     . exists e : Elem . a + e = 0                                         %implied
+     . a + b = 1 => a + b + (-1) = 0                                       %(ax_1_to_zero)%
      . (a + (-a)) = 0                                                      %(ax_inverse)%
      . a * 0 = 0                                                           %(ax_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
-     . (-1) * a = -a 
+     . (-1) * a = -a                                                       %(-1_*_a=-a)%
      . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)% 
 end
 
@@ -1109,13 +1111,19 @@ spec TotallyOrderedField =
      then 
      pred __<__ : Elem * Elem
      forall a,b,c,d : Elem
-     . a < b <=> a <= b /\ not a = b          %(ax_def_<)%
-     . 0 < 1                                  %(ax_0_lt_1)%
-     . a <= 0 <=> 0 <= ( - a )                %(ax_inverse_with_different_sign)%  
-     . a <= b /\ c <= d => a + c <= b + d     %(ax_order_+)%
+     . a < b <=> a <= b /\ not a = b           %(ax_def_<)%
+     . 0 < 1                                   %(ax_0_lt_1)%
+     . 0 <= a * a                              %(ax_square)%
+     . (a <= b) <=> (exists e : Elem . a + (e * e) = b)  %(ax_def_<=)%
+     . a <= 0 <=> 0 <= ( - a )                 %(ax_inverse_with_different_sign)%  
+     . a <= b /\ c <= d => a + c <= b + d      %(ax_order_+)%
+     . a + b <= 1 <=> a + b + (-1) <= 0        %(thm_a+b<=1<=>a+b+-1<=0)%
+     . 1 <= a + b <=> 0 <= a + b + (-1)        %(thm_1<=a+b)%
      then %implies
-     forall a : Elem     
-     . ( - a ) <= 0 <=> 0 <= a                %(thm_order)%
+     forall a,b : Elem 
+     . 0 <= (- a) * (- a )                     %(thm_square)%
+     . ( - a ) <= 0 <=> 0 <= a                 %(thm_order)%
+     . a = b <=> a + (- b) = 0                 %(thm_a-b=0)%
 end 
 
 %% Spec for points
@@ -1160,12 +1168,13 @@ spec Vector =
      then
      ops <__||__> : Vector * Vector -> Elem;
 	 ||__||   : Vector -> Elem
+     . 0 : Vector = [[ 0 0 ]]
      forall a, b : Vector
      . <a||b> = (xc(a) * xc(b)) + (yc(a) * yc(b))  %(def_inner_prod)%
      . ||a|| * ||a|| = <a||a>                      %(def_norm)%
      then %implies
      forall a,b : Vector
-     . <0||0> = 0                                  %(thm_zero)%
+     . < 0 || 0 > = 0                              %(thm_zero)%
      . 0 <= ||a||                                  %(thm_norm>=0)%
      . <a||b> = <b||a>                             %(thm_commut)%
      . <a || a> = 0 => a = 0                       %(thm_x=0)%
