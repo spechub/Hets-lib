@@ -22,12 +22,12 @@ from Basic/RelationsAndOrders get TotalOrder
 
 %% Definitions for the 24 relations of DRA 24.
 spec DipoleRelations24[sort Point] =
-     type PairOfPoints ::= [__ __](sp : Point; ep : Point)        
+     free type PairOfPoints ::= [__ __](sp : Point; ep : Point)        
      type DipolePointRelation24 ::= r | l | e | s
-     type DipoleRelation24 ::= <<__ __ __ __>>(fst:DipolePointRelation24; 
-					       snd:DipolePointRelation24; 
-					       trd: DipolePointRelation24; 
-					       frt: DipolePointRelation24)
+     free type DipoleRelation24 ::= <<__ __ __ __>>(fst:DipolePointRelation24; 
+						    snd:DipolePointRelation24; 
+						    trd: DipolePointRelation24;
+						    frt: DipolePointRelation24)
      pred >__ __ __< : PairOfPoints * DipoleRelation24 * PairOfPoints
      pred >>__ __ __<< : PairOfPoints * DipolePointRelation24 * Point  
      %% DRA 24 Relations
@@ -99,10 +99,10 @@ spec DipoleRelations72[sort Point] =
      then  
      type DipolePointRelation72 ::= r | l | e | s | b | i | f
      sort DipolePointRelation24 < DipolePointRelation72
-     type DipoleRelation72 ::= <<__ __ __ __>>(fst:DipolePointRelation72; 
-					      snd:DipolePointRelation72; 
-					      trd: DipolePointRelation72; 
-					      frt: DipolePointRelation72)
+     free type DipoleRelation72 ::= <<__ __ __ __>>(fst:DipolePointRelation72; 
+						    snd:DipolePointRelation72; 
+						    trd: DipolePointRelation72;
+						    frt: DipolePointRelation72)
      sort DipoleRelation24 < DipoleRelation72
      pred >__ __ __< : PairOfPoints * DipoleRelation72 * PairOfPoints
      pred >>__ __ __<< : PairOfPoints * DipolePointRelation72 * Point
@@ -1102,6 +1102,7 @@ spec FieldWithMinus =
      . a * 0 = 0                                                           %(ax_mult_with_inverse)%
      . (- 0 ) = 0                                                          %(0_is_self_inverse)%
      . - ( - a ) = a                                                       %(double_inverse)%
+     . not ( a = 0 ) => not ( -a = a)                                      %(only_0_is_self_inverse)%
      . (-1) * a = -a                                                       %(-1_*_a=-a)%
      . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)% 
 end
@@ -1109,16 +1110,23 @@ end
 spec TotallyOrderedField = 
      FieldWithMinus and TotalOrder
      then 
-     pred __<__ : Elem * Elem
+     pred __<__ : Elem * Elem;
+     ops sqrt__:  Elem -> Elem;
+     ops abs__ :  Elem -> Elem
      forall a,b,c,d : Elem
-     . a < b <=> a <= b /\ not a = b           %(ax_def_<)%
-     . 0 < 1                                   %(ax_0_lt_1)%
-     . 0 <= a * a                              %(ax_square)%
+     . a < b <=> a <= b /\ not a = b            %(ax_def_<)%
+     . 0 < 1                                    %(ax_0_lt_1)%
+     . 0 <= a * a                               %(ax_square)%
      . (a <= b) <=> (exists e : Elem . a + (e * e) = b)  %(ax_def_<=)%
-     . a <= 0 <=> 0 <= ( - a )                 %(ax_inverse_with_different_sign)%  
-     . a <= b /\ c <= d => a + c <= b + d      %(ax_order_+)%
-     . a + b <= 1 <=> a + b + (-1) <= 0        %(thm_a+b<=1<=>a+b+-1<=0)%
-     . 1 <= a + b <=> 0 <= a + b + (-1)        %(thm_1<=a+b)%
+     . a <= 0 <=> 0 <= ( - a )                  %(ax_inverse_with_different_sign)%  
+     . a <= b /\ c <= d => a + c <= b + d       %(ax_order_+)%
+     . a + b <= 1 <=> a + b + (-1) <= 0         %(thm_a+b<=1<=>a+b+-1<=0)%
+     . 1 <= a + b <=> 0 <= a + b + (-1)         %(thm_1<=a+b)%
+     . 0 <= a => abs(a) = a                     %(def_abs)%
+     . a <  0 => abs(a) = -a                    %def_abs2)%
+     . sqrt(a * a) = abs(a)                     %(def_sqrt)%
+     . 0 <= a => (exists e : Elem . e = sqrt a) %(thm_sqrt)% 
+     . 0 <= a /\ 0 <= b /\ a + b = 0 => a = 0 /\ b = 0 %(ax_zero_stuff)%
      then %implies
      forall a,b : Elem 
      . 0 <= (- a) * (- a )                     %(thm_square)%
@@ -1128,7 +1136,7 @@ end
 
 %% Spec for points
 spec Point[sort Elem] =
-     type Point ::= /__ __\ (xc : Elem; yc : Elem)
+     free type Point ::= /__ __\ (xc : Elem; yc : Elem)
 end
 
 %% We need to consider points over a totally ordered field
@@ -1146,7 +1154,7 @@ spec VectorSpace[sort Space] =
      ops __+__ : Space * Space -> Space;
 	 __*__ : Elem * Space -> Space;
 	 -__   : Space -> Space;
-	 0     : Space
+	 0     : Space;
      forall a, b, c : Space; e, f : Elem
      . a + ( b + c ) = ( a + b ) + c                 %(ax_asoc)%
      . a + b = b + a                                 %(ax_commut)%
@@ -1156,7 +1164,7 @@ spec VectorSpace[sort Space] =
      . ( e + f ) * a = (e * a) + (f * a)             %(ax_distri_2)%
      . e * ( f * a) = ( e * f ) * a                  %(ax_mult)%
      . 1 * a = a
-     . a + b = 0 => b = - a                            %(thm_inverse)%
+     . a + b = 0 => b = - a                          %(thm_inverse)%
 end
 
 spec Vector =
@@ -1167,11 +1175,14 @@ spec Vector =
      VectorSpace[sort Vector]
      then
      ops <__||__> : Vector * Vector -> Elem;
-	 ||__||   : Vector -> Elem
-     . 0 : Vector = [[ 0 0 ]]
-     forall a, b : Vector
+	 ||__||   : Vector -> Elem;
+     . 0 : Vector = [[ 0 0 ]]                      %(def_zero_vector)%
+     forall a, b : Vector; e, f : Elem
+     . xc([[e f]]) = e                             %(def_pr0)%
+     . yc([[e f]]) = f                             %(def_pr1)%
      . <a||b> = (xc(a) * xc(b)) + (yc(a) * yc(b))  %(def_inner_prod)%
-     . ||a|| * ||a|| = <a||a>                      %(def_norm)%
+     . 0 <= <a||a>                                 %(ax_inner_prod)%
+     . ||a|| = sqrt(<a||a>)                        %(def_norm)%
      then %implies
      forall a,b : Vector
      . < 0 || 0 > = 0                              %(thm_zero)%
@@ -1187,7 +1198,7 @@ spec PointsToVector =
      then
      Vector 
      then
-     type PairOfPoints ::= [<__ __>] (sp : Point; ep : Point)
+     free type PairOfPoints ::= [<__ __>] (sp : Point; ep : Point)
      %% we consider s_a, e_a and a point pt in the 
      %% terminology of Moratz, Renz, Wolter:
      %% Qualitative Spatial Reasoing about Line Segments
