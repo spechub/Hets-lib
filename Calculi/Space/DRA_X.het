@@ -11484,49 +11484,63 @@ spec FieldWithMinus =
      ConstructField with e |-> 1 
      then
      ops -__   : Elem -> Elem
-     . 0 + 0 = 0                                                           %(thm_0+0=0)%         %implied
-     . 1 + (-1) = 0                                                        %(1-1=0)%
-     . not ( 1 + 1 = 0 )                                                   %(not_1+1=0)% 
-     forall a : Elem
-     . (-1)*(-1) = 1                                                       %(double_minus)%      %implied
-     . exists b : Elem . (a + b) = 0                                       %(thm_ex_a+b=0)%      %implied
-     . exists b : Elem . not ( b = 1 ) /\ not (b = 0)                      %(thm_some_elements)% %implied
      forall a, b : Elem
-     . a + b = 1 => a + b + (-1) = 0                                       %(ax_1_to_zero)%
-     . (a + (-a)) = 0                                                      %(ax_inverse)%
-     . a * 0 = 0                                                           %(ax_mult_with_inverse)%
-     . (- 0 ) = 0                                                          %(0_is_self_inverse)%
-     . - ( - a ) = a                                                       %(double_inverse)%
+     %% Definition of the unary inverse operation
+     . (a + (-a)) = 0                                                      %(ax_inverse)%        
      . not ( a = 0 ) => not ( -a = a)                                      %(only_0_is_self_inverse)%
-     . (-1) * a = -a                                                       %(-1_*_a=-a)%
-     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)% 
+     . (-1)*(-1) = 1                                                       %(double_minus)% 
+     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)%    
+     %% Some theorems to assure that some proterties are fulfilled
+     . a * 0 = 0                                                           %(thm_mult_with_inverse)% %implied
+     . not ( 1 + 1 = 0 )                                                   %(not_1+1=0)%             %implied    
+     . (- 0 ) = 0                                                          %(0_is_self_inverse)%     %implied
+     . - ( - a ) = a                                                       %(double_inverse)%        %implied 
+     . exists b : Elem . (a + b) = 0                                       %(thm_ex_a+b=0)%          %implied
+     . exists b : Elem . not ( b = 1 ) /\ not (b = 0)                      %(thm_some_elements)%     %implied 
+     . 0 + 0 = 0                                                           %(thm_0+0=0)%             %implied
+     . a + b = 1 => a + b + (-1) = 0                                       %(thm_1_to_zero)%         %implied
+     . (-1) * a = -a                                                       %(-1_*_a=-a)%             %implied
+     . 1 + (-1) = 0                                                        %(1-1=0)%                 %implied
 end
 
 spec TotallyOrderedField = 
      FieldWithMinus and TotalOrder
      then 
      pred __<__ : Elem * Elem;
-     ops sqrt__:  Elem -> Elem;
+     pred Pos : Elem;
+     ops sqrt__:  Elem ->? Elem;
      ops abs__ :  Elem -> Elem
      forall a,b,c,d : Elem
-     . a < b <=> a <= b /\ not a = b            %(ax_def_<)%
-     . 0 < 1                                    %(ax_0_lt_1)%
-     . 0 <= a * a                               %(ax_square)%
-     . (a <= b) <=> (exists e : Elem . a + (e * e) = b)  %(ax_def_<=)%
-     . a <= 0 <=> 0 <= ( - a )                  %(ax_inverse_with_different_sign)%  
+     %% Definition of the order relation on the field
+     . Pos(a) <=> 0 <= a                        %(TO_def_positive_number)%
+     . Pos(a) /\ Pos(b) => Pos(a*b)             %(TO_plus)%
+     . Pos(a) /\ Pos(b) => Pos(a+b)             %(TO_times)%
+     . Pos(a) /\ Pos(-a) => a = 0               %(TO_mutex)%
+     . Pos(a) \/ Pos(-a)                        %(TO_exhaust)%
+     . a <= b  <=> Pos(b + -a)                  %(TO_def_<=_in_field)%
+     %% Definition of <
+     . a < b <=> a <= b /\ not a = b            %(TO_def_<)%
      . a <= b /\ c <= d => a + c <= b + d       %(ax_order_+)%
-     . a + b <= 1 <=> a + b + (-1) <= 0         %(thm_a+b<=1<=>a+b+-1<=0)%
-     . 1 <= a + b <=> 0 <= a + b + (-1)         %(thm_1<=a+b)%
+     %% Some additional porverties
+     . a + b <= 1 <=> a + b + (-1) <= 0         %(ax_a+b<=1<=>a+b+-1<=0)% 
+     . 1 <= a + b <=> 0 <= a + b + (-1)         %(ax_1<=a+b)%  
+     %% Definition of sqrt... It needs the order for definedness
      . 0 <= a => abs(a) = a                     %(def_abs)%
-     . a <  0 => abs(a) = -a                    %def_abs2)%
+     . a <  0 => abs(a) = -a                    %(def_abs2)%
      . sqrt(a * a) = abs(a)                     %(def_sqrt)%
-     . 0 <= a => (exists e : Elem . e = sqrt a) %(thm_sqrt)% 
-     . 0 <= a /\ 0 <= b /\ a + b = 0 => a = 0 /\ b = 0 %(ax_zero_stuff)%
-     then %implies
-     forall a,b : Elem 
-     . 0 <= (- a) * (- a )                     %(thm_square)%
-     . ( - a ) <= 0 <=> 0 <= a                 %(thm_order)%
-     . a = b <=> a + (- b) = 0                 %(thm_a-b=0)%
+     . def(sqrt(a)) <=> 0 <= a                  %(definedness_of_sqrt)%
+     %% Some theorems to assure that some proterties are fulfilled
+     . 0 <= a /\ 0 <= b /\ a + b = 0 => a = 0 /\ b = 0 
+                                                %(thm_a<=0/\b<=0a+b=0=>a=0)% %implied
+     . a <= 0 <=> 0 <= ( - a )                  %(thm_inverse_with_different_sign)% %implied
+     . 0 < 1                                    %(thm_0_lt_1)%         %implied
+     . 0 <= a => (exists e : Elem . e = sqrt a) %(thm_sqrt)%           %implied
+     . 0 <= a * a                               %(thm_square1)%        %implied
+     . 0 <= (- a) * (- a )                      %(thm_square2)%        %implied
+     %% This theorem may need more than 20secs to be proved
+     . (- a) * a <= 0                           %(thm_-a*a)%           %implied
+     . ( - a ) <= 0 <=> 0 <= a                  %(thm_order)%          %implied
+     . a = b <=> a + (- b) = 0                  %(thm_a-b=0)%          %implied
 end 
 
 %% Spec for points
