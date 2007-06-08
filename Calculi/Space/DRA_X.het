@@ -11544,8 +11544,12 @@ spec TotallyOrderedField =
      . a <= b  <=> Pos(b + -a)                  %(TO_def_<=_in_field)%
      %% Definition of <
      . a < b <=> a <= b /\ not a = b            %(TO_def_<)%
-     . a <= b /\ c <= d => a + c <= b + d       %(ax_order_+)%
-     %% More about addition
+     %% More about addition and multiplication
+     . (a + c) <= (b + c) if a <= b              %(O_plus_left)%
+     . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(O_times_left)%
+     . (a + b) <= (a + c) if b <= c              %(O_plus_right)%
+     . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(O_times_right)%
+     . (a + b) <= (c + d) if a <= c /\ b <= d    %(O_plus)%
      . Pos (a) /\ not Pos (b) /\ abs(a) < abs (b) =>
        not Pos (a + b)                          %(TO_plus_3)%
      . Pos (a) /\ not Pos (b) /\ abs(b) <= abs (a) =>
@@ -11554,16 +11558,13 @@ spec TotallyOrderedField =
        Pos (a + b)                              %(TO_plus_5)%
      . not Pos(a) /\ Pos(b) /\ abs(b) < abs (a) =>
        not Pos (a + b)                          %(TO_plus_6)%
-     %% Some additional porverties
-     . a + b <= 1 <=> a + b + (-1) <= 0         %(ax_a+b<=1<=>a+b+-1<=0)% 
-     . 1 <= a + b <=> 0 <= a + b + (-1)         %(ax_1<=a+b)%  
      %% Definition of sqrt... It needs the order for definedness
      . 0 <= a => abs(a) = a                     %(def_abs)%
      . a <  0 => abs(a) = -a                    %(def_abs2)%
      . def(sqrt(a)) <=> 0 <= a                  %(definedness_of_sqrt)%
      . def(sqrt(a * a)) => sqrt(a * a) = abs(a) %(def_sqrt)%
      . def(sqrt(a))  => 0 <= (sqrt(a))          %(sqrt_is_positive)%
-     %% Some theorems to assure that some proterties are fulfilled
+     %% Some theorems to assure that some properties are fulfilled
      . 0 <= a /\ 0 <= b /\ a + b = 0 => a = 0 /\ b = 0 
                                                 %(thm_a<=0/\b<=0a+b=0=>a=0)% %implied
      . a <= 0 <=> 0 <= ( - a )                  %(thm_inverse_with_different_sign)% %implied
@@ -11644,7 +11645,56 @@ spec Vector =
      forall a,b : Vector
      . < 0 || 0 > = 0                              %(thm_zero)%
      . <a||b> = <b||a>                             %(thm_commut)%
-     . <a || a> = 0 => a = 0                       %(thm_x=0)%
+     . <a || a> = 0 <=> a = 0                      %(thm_x=0)%
+     %% Lemmas for inner product
+     %% all Pos = zero Neg
+     . 0 < xc(a) /\ 0 < yc(a) /\ 0 < xc(b) /\ 0 < yc(b) => 
+	  0 < < a || b >                           %(thm_inner_prod_1)%
+     %% all Neg = zero Pos
+     . xc(a) < 0 /\ yc(a) < 0 /\ xc(b) < 0 /\ yc(b) < 0 =>
+	  0 < < a || b >                           %(thm_inner_prod_2)%
+     %% one Pos = three Neg
+     . 0 < xc(a) /\ yc(a) < 0 /\ xc(b) < 0 /\ yc(b) < 0 => 
+          (< a || b > < 0 <=>  yc(a) * yc(b) < xc(a) * xc(b))
+	                                           %(thm_inner_prod_3)%
+     .  xc(a) < 0 /\ yc(a) < 0 /\ 0 < xc(b) /\ yc(b) < 0 => 
+          (< a || b > < 0 <=>  yc(a) * yc(b) < xc(a) * xc(b))
+	                                           %(thm_inner_prod_4)%
+     .  xc(a) <0 /\ 0 < yc(a) /\ xc(b) < 0 /\ yc(b) < 0 => 
+          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
+	                                           %(thm_inner_prod_5)%
+     .  xc(a) < 0 /\ yc(a) < 0 /\  xc(b) < 0 /\ 0 < yc(b) => 
+          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
+	                                           %(thm_inner_prod_6)%  
+     %% one Neg = three Pos
+     .  xc(a) < 0 /\ 0 < yc(a)  /\ 0 < xc(b) /\ 0 < yc(b) => 
+          (< a || b > < 0 <=> yc(a) * yc(b) < xc(a) * xc(b))
+	                                           %(thm_inner_prod_7)%
+     .  0 < xc(a) /\ yc(a) < 0 /\ 0 < xc(b) /\ 0 < yc(b) => 
+          (< a || b > < 0 <=> yc(a) * yc(b) < xc(a) * xc(b))
+	                                           %(thm_inner_prod_8)%
+     .  0 < xc(a) /\ 0 < yc(a) /\ xc(b) < 0  /\ 0 < yc(b) => 
+          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
+	                                           %(thm_inner_prod_9)%
+     .  0 < xc(a) /\ 0 < yc(a) /\  0 < xc(b)  /\  yc(b) < 0 => 
+          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
+	                                           %(thm_inner_prod_10)%  
+     %% two Neg = two Pos
+     .  xc(a) < 0 /\ yc(a) < 0 /\ 0 < xc (b) /\ 0 < yc(b) =>
+	  < a || b > < 0                           %(thm_inner_prod_11)%  
+     .  0 < xc(a) /\ 0 < yc(a) /\  xc (b) < 0 /\  yc(b) < 0=>
+	  < a || b > < 0                           %(thm_inner_prod_12)%
+     .  xc(a) < 0 /\ 0 < yc(a) /\  xc (b) < 0 /\ 0 < yc(b) =>
+	  0 < < a || b >                           %(thm_inner_prod_13)%  
+     .  0 < xc(a) /\  yc(a) < 0 /\  0 < xc (b) /\  yc(b) < 0 =>
+	  0 < < a || b >                           %(thm_inner_prod_14)% 
+     . 0 < xc(a) /\ yc(a) < 0 /\ xc(b) < 0 /\ 0 < yc(b) =>
+	  < a || b > < 0                           %(thm_inner_prod_15)%
+     .  xc(a) < 0 /\ 0 < yc(a) /\ 0 < xc(b) /\  yc(b) < 0 =>
+	  < a || b > < 0                           %(thm_inner_prod_16)% 
+     %% Equal zero
+     . < a || b > = 0 <=> xc(a) * xc(b) = - yc(a) * yc(b)
+                                                   %(thm_inner_prod_17)%
 end 
 
 %% This spec is intended to be part of the interface from DRA to 
@@ -11814,3 +11864,4 @@ end
 view DRA24_In_Domain : DRA24Composition[sort Point] to
      Vector_Vector_Relations24
 end
+
