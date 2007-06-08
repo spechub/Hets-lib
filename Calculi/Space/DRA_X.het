@@ -29,7 +29,8 @@ spec DipoleRelations24[sort Point] =
 						    trd: DipolePointRelation24;
 						    frt: DipolePointRelation24)
      pred >__ __ __< : PairOfPoints * DipoleRelation24 * PairOfPoints
-     pred >>__ __ __<< : PairOfPoints * DipolePointRelation24 * Point  
+     pred >>__ __ __<< : PairOfPoints * DipolePointRelation24 * Point
+     pred DpPoint : PairOfPoints * Point
      %% DRA 24 Relations
      pred Dipole : PairOfPoints
      sort BaseRelation24 = {x : DipoleRelation24 .
@@ -53,7 +54,11 @@ spec DipoleRelations24[sort Point] =
        (> Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp2 trd(rel) sp(Dp1) << /\
-	                >> Dp2 frt(rel) ep(Dp1) << 
+	                >> Dp2 frt(rel) ep(Dp1) << /\
+			     DpPoint (Dp1, sp(Dp1)) /\
+			     DpPoint (Dp1, ep(Dp1)) /\
+			     DpPoint (Dp2, sp(Dp2)) /\
+			     DpPoint (Dp2, ep(Dp2))
 		       )) %(Dipole_Dipole_rel24_def_on_point_rels)%
      op rrrr, rrrl, rrlr, rrll, rlrr, rllr,
 	rlll, lrrr, lrrl, lrll, llrr, llrl,
@@ -100,6 +105,7 @@ spec DipoleRelations72[sort Point] =
      sort DipoleRelation24 < DipoleRelation72
      pred >__ __ __< : PairOfPoints * DipoleRelation72 * PairOfPoints
      pred >>__ __ __<< : PairOfPoints * DipolePointRelation72 * Point
+     pred DpPoint : PairOfPoints * Point
      %% DRA 72 Relations
      sort BaseRelation72 = {x : DipoleRelation72 .
 			    x in BaseRelation24 \/
@@ -135,7 +141,11 @@ spec DipoleRelations72[sort Point] =
        (> Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
 		        >> Dp2 trd(rel) sp(Dp1) << /\
-	                >> Dp2 frt(rel) ep(Dp1) <<  
+	                >> Dp2 frt(rel) ep(Dp1) << /\
+			     DpPoint (Dp1, sp(Dp1)) /\
+			     DpPoint (Dp1, ep(Dp1)) /\
+			     DpPoint (Dp2, sp(Dp2)) /\
+			     DpPoint (Dp2, ep(Dp2)) 
 		       )) %(Dipole_Dipole_rel24_def_on_point_rels)%
      . >> Dp1 rel1 sp(Dp2) << /\ >> Dp1 rel2 sp(Dp2) << => rel1 = rel2                      %(ax_unique_1)%
      . >> Dp1 rel1 ep(Dp2) << /\ >> Dp1 rel2 ep(Dp2) << => rel1 = rel2                      %(ax_unique_2)%
@@ -231,16 +241,17 @@ end
 spec DRA24Composition[sort Point] = 
      DipoleRelations24[sort Point]
      then    
-     pred premG   : PairOfPoints * Point;
+     pred genPosDpPt   : PairOfPoints * Point;
 	  genPos : PairOfPoints * PairOfPoints
 
      forall a, b, c : PairOfPoints; rel1, rel2 : BaseRelation24
-     . Dipole (a) /\ Dipole(b) => (genPos(a,b) <=> premG(a,sp(b)) /\ premG(a,ep(b)) /\ premG(b,sp(a)) /\ premG(b,ep(a))) %(genPos_def)%
+     . Dipole (a) /\ Dipole(b) => 
+	  (genPos(a,b) <=> genPosDpPt(a,sp(b)) /\ genPosDpPt(a,ep(b)) /\ genPosDpPt(b,sp(a)) /\ genPosDpPt(b,ep(a))) %(genPos_def)%
 
      %% disable include preceeding theorems in next proof attempt for better results
 
      . Dipole (a) /\ Dipole (b) /\ genPos(a,b)  => 
-       exists rel : BaseRelation24. > a rel b <                                                    %(DRA24_JE)%
+       exists rel : BaseRelation24. > a rel b <                                                                   %(DRA24_JE)%
      . Dipole (a) /\ Dipole (b) /\ genPos(a,b) =>
 	  >a rel1 b < /\ > a rel2 b < /\ not (a = b) => rel1 = rel2                                               %(DRA24_PD)%
 
@@ -11682,21 +11693,37 @@ spec Vector_Vector_Relations72 =
 	  __vb__ : Vector * Vector;
 	  __vi__ : Vector * Vector;
 	  __vf__ : Vector * Vector;
-     forall pt: Point; Dp: PairOfPoints
-     . Dipole (Dp)  => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                                               %(def_vr)%
-     . Dipole (Dp)  => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                                               %(def_vl)%
-     . Dipole (Dp)  => (A (Dp) vb P (Dp, pt) <=> < A (Dp)|| P (Dp, pt) > = -(||A (Dp)|| * ||P (Dp, pt)||))                                   %(def_vb)%
-     . Dipole (Dp)  => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt))                                                                              %(def_ve)%
-     . Dipole (Dp)  => (A (Dp) vf P (Dp, pt) <=> ((< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||A (Dp)|| < ||P (Dp, pt)||)))  %(def_vf)%
-     . Dipole (Dp)  => (A (Dp) vi P (Dp, pt) <=> ((< A (Dp)|| P (Dp, pt) > = ||A(Dp)|| * ||P (Dp, pt)||) /\ (||P (Dp, pt)|| < ||A (Dp)||)))  %(def_vi)%
-     . Dipole (Dp)  => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt))                                                                              %(def_vs)%
-     . Dipole (Dp)  => (>> Dp r pt << <=> A (Dp)vr P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp l pt << <=> A (Dp)vl P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp s pt << <=> A (Dp)vs P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp e pt <<  => A (Dp)ve P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp b pt << <=> A (Dp)vb P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp i pt << <=> A (Dp)vi P (Dp, pt)) 
-     . Dipole (Dp)  => (>> Dp f pt << <=> A (Dp)vf P (Dp, pt)) 
+	  DpPoint : PairOfPoints * Point
+     forall pt: Point; Dp1, Dp2 : PairOfPoints
+     . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
+	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) >)                                                                   %(def_vr)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (A (Dp1) vl P (Dp1, pt) <=> < Ap (Dp1)|| P (Dp1, pt) > < 0)                                                                   %(def_vl)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (A (Dp1) vb P (Dp1, pt) <=> < A (Dp1)|| P (Dp1, pt) > = -(||A (Dp1)|| * ||P (Dp1, pt)||))                                     %(def_vb)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (A (Dp1) ve P (Dp1, pt) <=> (ep(Dp1) = pt))                                                                                   %(def_ve)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (A (Dp1) vf P (Dp1, pt) <=> ((< A (Dp1)|| P (Dp1, pt) > = ||A(Dp1)|| * ||P (Dp1, pt)||) /\ (||A (Dp1)|| < ||P (Dp1, pt)||)))  %(def_vf)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
+	  (A (Dp1) vi P (Dp1, pt) <=> ((< A (Dp1)|| P (Dp1, pt) > = ||A(Dp1)|| * ||P (Dp1, pt)||) /\ (||P (Dp1, pt)|| < ||A (Dp1)||)))  %(def_vi)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt))                                                                                   %(def_vs)%
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 r pt << <=> A (Dp1) vr P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 l pt << <=> A (Dp1) vl P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 s pt << <=> A (Dp1) vs P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 e pt <<  => A (Dp1) ve P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 b pt << <=> A (Dp1) vb P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 i pt << <=> A (Dp1) vi P (Dp1, pt)) 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+	  (>> Dp1 f pt << <=> A (Dp1) vf P (Dp1, pt)) 
 end
 
 %% The definition of the 7 Dipole-Point relations via vectors
@@ -11716,30 +11743,65 @@ spec Vector_Vector_Relations24 =
 	  __vl__ : Vector * Vector;
 	  __vs__ : Vector * Vector;	  
 	  __ve__ : Vector * Vector;
-	  prem    : PairOfPoints * Point;
-	  premP   : PairOfPoints * Point;
-	  premG   : PairOfPoints * Point;
+	  genPosDpPt  : PairOfPoints * Point;
+	  DpPoint : PairOfPoints * Point
      %% Assure that not more than 2 differnt points are on a single line
-     forall pt: Point; Dp: PairOfPoints  
-     . premG (Dp, pt) <=> not (< Ap (Dp)|| P (Dp, pt) > = 0) \/ (ep(Dp) = pt ) \/ (sp(Dp) = pt)                                       %(general_pos)%
-     . prem  (Dp, pt) <=> Dipole (Dp) /\ premG (Dp, pt)
-     . premP(Dp, pt) <=> not ((ep(Dp) = pt ) \/ (sp(Dp) = pt))  
-     . (prem (Dp, pt) /\ premP (Dp, pt)) => (A (Dp) vr P (Dp, pt) <=> 0 < < Ap (Dp)|| P (Dp, pt) >)                                   %(def_r)%
-     . (prem (Dp, pt) /\ premP (Dp, pt)) => (A (Dp) vl P (Dp, pt) <=> < Ap (Dp)|| P (Dp, pt) > < 0)                                   %(def_l)%
-     . (prem (Dp, pt) /\ not premP (Dp, pt)) => (A (Dp) ve P (Dp, pt) <=> (ep(Dp) = pt) /\ not (sp(Dp) = pt))                         %(def_e)%
-     . (prem (Dp, pt) /\ not premP (Dp, pt)) => (A (Dp) vs P (Dp, pt) <=> (sp(Dp) = pt) /\ not (ep(Dp) = pt))                         %(def_s)% 
-     . (prem (Dp, pt) /\ not premP (Dp, pt)) => ((A(Dp) ve P (Dp, pt)) => not (A (Dp) vs P (Dp, pt)))       %(ve_xor_vs)% %implied
-     . (prem (Dp, pt) /\ not premP (Dp, pt)) => ((A (Dp) vs P (Dp, pt)) => not (A (Dp) ve P (Dp, pt)))       %(vs_xor_ve)% %implied
-     . Dipole(Dp) => (>> Dp r pt << <=> A (Dp)vr P (Dp, pt))                                                                              %(def_dpr)%
-     . Dipole(Dp) => (>> Dp l pt << <=> A (Dp)vl P (Dp, pt))                                                                              %(def_dpl)%
-     . Dipole(Dp) => (>> Dp s pt << <=> A (Dp)vs P (Dp, pt))                                                                              %(def_dps)%
-     . Dipole(Dp) => (>> Dp e pt << <=> A (Dp)ve P (Dp, pt))                                                                              %(def_dpe)%
-
+     forall Dp1, Dp2 : PairOfPoints; pt : Point
+     . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
+     . genPosDpPt (Dp1, pt) <=> not (< Ap (Dp1)|| P (Dp1, pt) > = 0) \/ (ep(Dp1) = pt ) \/ (sp(Dp1) = pt)               %(general_pos)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) > /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))        %(def_r)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) vl P (Dp1, pt) <=> < Ap (Dp1)|| P (Dp1, pt) > < 0 /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))       %(def_l)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) ve P (Dp1, pt) <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                             %(def_e)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                             %(def_s)% 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ((A(Dp1) ve P (Dp1, pt)) => not (A (Dp1) vs P (Dp1, pt)))                                         %(ve_xor_vs)% %implied
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ((A (Dp1) vs P (Dp1, pt)) => not (A (Dp1) ve P (Dp1, pt)))                                        %(vs_xor_ve)% %implied
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) =>  
+	  (>> Dp1 r pt << <=> A (Dp1)vr P (Dp1, pt))                                                                   %(def_dpr)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (>> Dp1 l pt << <=> A (Dp1)vl P (Dp1, pt))                                                                   %(def_dpl)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (>> Dp1 s pt << <=> A (Dp1)vs P (Dp1, pt))                                                                   %(def_dps)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  (>> Dp1 e pt << <=> A (Dp1)ve P (Dp1, pt))                                                                   %(def_dpe)%
+     %% Some shortcuts
+       then %implies
+     forall Dp1, Dp2 : PairOfPoints; pt : Point
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ 
+	   vr $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ 
+	   <=> 0 < < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ || 
+	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > /\ 
+	   not ep(Dp1) = pt  /\  
+	   not (sp(Dp1) = pt))                                                                                         %(def_r_ur)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vl
+	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
+	   < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ ||
+	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > < 0 /\ 
+	   not ep(Dp1) = pt  /\  
+	   not (sp(Dp1) = pt))                                                                                         %(def_l_ur)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ ve 
+	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
+	   (ep(Dp1) = pt) /\ 
+	   not (sp(Dp1) = pt))                                                                                         %(def_e_ur)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vs 
+	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
+	   (sp(Dp1) = pt) /\ 
+	   not (ep(Dp1) = pt))                                                                                         %(def_s_ur)% 
      then %def
      pred  genPos : PairOfPoints * PairOfPoints
 
      forall a, b : PairOfPoints
-     . Dipole (a) /\ Dipole(b) => (genPos(a,b) <=> premG(a,sp(b)) /\ premG(a,ep(b)) /\ premG(b,sp(a)) /\ premG(b,ep(a))) %(genPos_def)%
+     . Dipole (a) /\ Dipole(b) => 
+	  (genPos(a,b) <=> genPosDpPt(a,sp(b)) /\ genPosDpPt(a,ep(b)) /\ genPosDpPt(b,sp(a)) /\ genPosDpPt(b,ep(a)))   %(genPos_def)%
 
 end
 
