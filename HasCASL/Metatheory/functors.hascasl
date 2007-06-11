@@ -62,5 +62,4 @@ var G: PolyBifunctor
 type ParamDT G a := InitialCarrier (G a)
 type  ParamDT G: DTFunctor
 var  l: ParamDT G a; b: Type; f: a -> b
-. def map f l
-%% f = fold initialAlg 
+. map f l = fold (initialAlg comp (parmap f)) l
