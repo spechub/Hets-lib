@@ -21,7 +21,7 @@ op parmap: (a -> b) -> F a d -> F b d
 . parmap id = id: F a d -> F a d
 . parmap (g comp f):(F a d -> F c d) = (parmap g) comp (parmap f) }
 
-spec PolyFunctors = Functor then
+spec PolyFunctors = Bifunctor then
 class PolyFunctor < Functor
 vars F,G: PolyFunctor; a,b: Type
 types Const a, Id, Sum F G, Prod F G, exp F a: PolyFunctor;
@@ -38,7 +38,7 @@ type exp F a b:= a -> F b
 var k: a -> b; 
 . map k: (Sum F G) a -> (Sum F G) b  = 
 sumcase (inl comp (map k)) (inr comp (map k))
-class PolyBifunctor < Type -> PolyFunctor
+class PolyBifunctor < Type -> PolyFunctor; PolyBifunctor < Bifunctor
 
 spec Algebra = PolyFunctors then
 var F: Functor; a,b: Type 
