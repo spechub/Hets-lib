@@ -14,8 +14,8 @@ version 0.1
 %left_assoc __union__, __intersection__
 %left_assoc __ + __, __ * __
 
-from Basic/Algebra_I get ConstructField
-from Basic/RelationsAndOrders get TotalOrder
+from Basic/Algebra_I get Field |-> BasicField
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 
 %% Dipole Calculus with 72 relations (DRA 72)
 
@@ -11482,102 +11482,157 @@ spec DRA72Composition[sort Point] =
                     /\ not ( > a rrfr b < ) )                %(DRA72_PD_rrrb)%
 
      %% compostion table - automatically generated
-
-
 end
 
 %%Domain for the DRA calculi
 
 %%We consider a normed vector space over a totally ordered field
 
-
-spec FieldWithMinus =
-     ConstructField with e |-> 1 
-     then
-     ops -__   : Elem -> Elem
-     forall a, b, c, d : Elem
-     %% Definition of the unary inverse operation
-     . (a + (-a)) = 0                                                      %(ax_inverse)%        
-     . ( a = (-a)) <=> a = 0                                               %(only_0_is_self_inverse)%
-     . (-1)*(-1) = 1                                                       %(double_minus)% 
-     . - ( a + b ) = ( - a ) + ( - b )                                     %(distri_inverse)%
-     . ( a * b ) * ( c * d ) = ( a * c ) * ( b * d )                       %(mult_helper)%
-     %% Some theorems to assure that some proterties are fulfilled
-     . a * 0 = 0                                                           %(thm_mult_with_inverse)% %implied
-     . not ( 1 + 1 = 0 )                                                   %(not_1+1=0)%             %implied    
-     . (- 0 ) = 0                                                          %(0_is_self_inverse)%     %implied
-     . - ( - a ) = a                                                       %(double_inverse)%        %implied 
-     . exists b : Elem . (a + b) = 0                                       %(thm_ex_a+b=0)%          %implied
-     . exists b : Elem . not ( b = 1 ) /\ not (b = 0)                      %(thm_some_elements)%     %implied 
-     . 0 + 0 = 0                                                           %(thm_0+0=0)%             %implied
-     . a + b = 1 => a + b + (-1) = 0                                       %(thm_1_to_zero)%         %implied
-     . -a = (-1) * a                                                       %(-1_*_a=-a)%             %implied
-     . 1 + (-1) = 0                                                        %(1-1=0)%                 %implied
-     . a * b = 0 <=> a = 0 \/ b = 0                                        %(a*b=0)%                 %implied
-     %% Provable by Isabelle
-     . (a + b) * (c + d) = a * c + a * d + b * c + b * d                   %(distri_twice)%          %implied   
-     . ( - 1 ) * a + a = 0                                                 %(-1*a+a=0)%              %implied 
-     . ( - 1) * a * b + a * b = 0                                          %(zero_addition)%         %implied
+spec Field =
+     BasicField with op e |-> 1
+then %def
+     op -__: Elem -> Elem
+     forall x: Elem
+     . -x + x = 0       %(Field_unary_minus_idef)%
 end
 
-spec TotallyOrderedField = 
-     FieldWithMinus and TotalOrder
-     then 
-     pred __<__ : Elem * Elem;
-     pred Pos : Elem;
-     ops sqrt__:  Elem ->? Elem;
-     ops abs__ :  Elem -> Elem
-     forall a,b,c,d : Elem
-     %% Definition of the order relation on the field
-     . Pos(a) <=> 0 <= a                        %(TO_def_positive_number)%
-     . Pos(a) /\ Pos(b) => Pos(a*b)             %(TO_times)%
-     . not Pos(a) /\ not Pos (b) => Pos(a * b)  %(TO_times_-)%
-     . Pos(a) /\ Pos(b) => Pos(a+b)             %(TO_plus_1)%
-     . not Pos(a) /\ not Pos (b) => 
-       not Pos ( a + b)                         %(TO_plus_2)%
-     . not Pos(a) /\ Pos (b) /\ not b = 0 =>
-       not Pos(a * b)                           %(TO_<0_1)%
-     . Pos(a) /\ not Pos (b) /\ not a = 0 =>
-       not Pos(a * b)                           %(TO_<0_2)%
-     . Pos(a) /\ Pos(-a) => a = 0               %(TO_mutex)%
-     . Pos(a) \/ Pos(-a)                        %(TO_exhaust)%
-     . a <= b  <=> Pos(b + -a)                  %(TO_def_<=_in_field)%
-     %% Definition of <
-     . a < b <=> a <= b /\ not a = b            %(TO_def_<)%
-     %% More about addition and multiplication
-     . (a + c) <= (b + c) if a <= b              %(O_plus_left)%
-     . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(O_times_left)%
-     . (a + b) <= (a + c) if b <= c              %(O_plus_right)%
-     . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(O_times_right)%
-     . (a + b) <= (c + d) if a <= c /\ b <= d    %(O_plus)%
-     . Pos (a) /\ not Pos (b) /\ abs(a) < abs (b) =>
-       not Pos (a + b)                          %(TO_plus_3)%
-     . Pos (a) /\ not Pos (b) /\ abs(b) <= abs (a) =>
-       Pos (a + b)                              %(TO_plus_4)%
-     . not Pos(a) /\ Pos(b) /\ abs(a) <= abs (b) =>
-       Pos (a + b)                              %(TO_plus_5)%
-     . not Pos(a) /\ Pos(b) /\ abs(b) < abs (a) =>
-       not Pos (a + b)                          %(TO_plus_6)%
-     %% Definition of sqrt... It needs the order for definedness
-     . 0 <= a => abs(a) = a                     %(def_abs)%
-     . a <  0 => abs(a) = -a                    %(def_abs2)%
-     . def(sqrt(a)) <=> 0 <= a                  %(definedness_of_sqrt)%
-     . def(sqrt(a * a)) => sqrt(a * a) = abs(a) %(def_sqrt)%
-     . def(sqrt(a))  => 0 <= (sqrt(a))          %(sqrt_is_positive)%
-     %% Some theorems to assure that some properties are fulfilled
-     . 0 <= a /\ 0 <= b /\ a + b = 0 => a = 0 /\ b = 0 
-                                                %(thm_a<=0/\b<=0a+b=0=>a=0)% %implied
-     . a <= 0 <=> 0 <= ( - a )                  %(thm_inverse_with_different_sign)% %implied
-     . 0 < 1                                    %(thm_0_lt_1)%         %implied
-     . 0 <= a => (exists e : Elem . e = sqrt a) %(thm_sqrt)%           %implied
-     . 0 <= a * a                               %(thm_square1)%        %implied
-     . 0 <= (- a) * (- a )                      %(thm_square2)%        %implied
-     %% This theorem may need more than 20secs to be proved
-     . (- a) * a <= 0                           %(thm_-a*a)%           %implied
-     . ( - a ) <= 0 <=> 0 <= a                  %(thm_order)%          %implied
-     . a = b <=> a + (- b) = 0                  %(thm_a-b=0)%          %implied
-     . not ( a = b ) => not (a + (-1) * b = 0)  %(thm_aeqb_helper2)%   %implied
-end 
+spec FieldWithOrdering =
+     Field and TotalOrder
+then
+    vars a, b, c:Elem
+    . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
+    . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(FWO_times_left)%
+then %implies
+    vars a, b, c, d: Elem
+    . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%
+    . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(FWO_times_right)%
+    . (a + b) <= (c + d) if a <= c /\ b <= d    %(FWO_plus)%
+end
+
+
+spec OrderedField =
+     Field
+then
+     pred Pos: Elem
+     forall x,y: Elem
+     . Pos(x) /\ Pos(y) => Pos(x*y)             %(OF_plus)%
+     . Pos(x) /\ Pos(y) => Pos(x+y)             %(OF_times)%
+     . Pos(x) /\ Pos(-x) => x = 0               %(OF_mutex)%
+     . Pos(x) \/ Pos(-x)                        %(OF_exhaust)%
+end
+
+view OrderedField_in_FieldWithOrdering :
+      OrderedField to
+     { FieldWithOrdering then %def
+       pred Pos: Elem
+       forall x: Elem
+       . Pos(x) <=> 0 <= x
+     }
+end
+
+view FieldWithOrdering_in_OrderedField :
+      FieldWithOrdering to
+     { OrderedField then %def
+       pred __<=__: Elem * Elem
+       forall x,y: Elem
+       . x <= y  <=> Pos(y + -x)
+     }
+end
+
+spec ExtOrderedField[FieldWithOrdering] =
+     ExtTotalOrder[TotalOrder]
+end
+
+spec RichOrderedField = ExtOrderedField[FieldWithOrdering]
+
+spec PreReal =
+     RichOrderedField with Elem |-> PreReal
+then
+  free type Nat ::= 0 | suc(Nat)
+  ops inj:        Nat -> PreReal
+   forall r,s:PreReal; n: Nat 
+   . inj(0) = 0                                   %(PreReal_inj_0)%
+   . inj (suc (n)) = 1 + inj (n)                    %(PreReal_inj_suc)%
+   . exists n: Nat. r <= inj (n)                  %(PreReal_archimedian)%
+then %def
+     ops
+        __-__: PreReal * PreReal -> PreReal;
+        |__| : PreReal -> PreReal;
+        __/__: PreReal * PreReal ->? PreReal;
+        sqr__: PreReal -> PreReal;
+        sqrt__: PreReal ->? PreReal;
+        2    : PreReal;
+        half : PreReal -> PreReal
+     forall r,r',r'':PreReal
+     . | r | = max(r,-r)                %(PreReal_abs_def)%
+     . sqr(r) = r * r                   %(PreReal_sqr_def)%
+     . def sqrt(r) <=> r >= 0           %(PreReal_sqrt_dom)%
+     . sqrt(sqr(r)) = | r |             %(PreReal_sqrt_idef)%
+     . 2 = 1 + 1                        %(PreReal_2_def)%
+     . r-r' = r + -r'                   %(PreReal_minus_def)%
+     . 2 * half(r) = r                  %(PreReal_half_idef)%
+     . not def(r/0)                     %(Real_divide_dom)%
+     . def (r/r') <=> 
+       (exists r'' : PreReal . r/r' = r'') %(Real_devide_def)%
+     . def(r/r') => (r/r' = r'' 
+	  <=> r'' * r' = r)              %(Real_divide_idef)%
+
+then %implies
+     forall a,b,c,e,r,s:PreReal
+     . 1>0                              %(one_greater_zero)%
+     . 0<=1                             %(zero_leq_one)%
+     . r>0 => half(r)>0                 %(half_gt_zero)%
+     . r<=s => s+(half(r-s))<=s         %(half_plus_minus)%
+     . a<=b /\ c<=e => a+c<=b+e         %(add_monotone)%
+     . not (a<=b) => a-b>0              %(sub_leq)%
+     . a<=half(a-b)+b => a<=b           %(half_leq)%
+     . 0<=r => 0<=half(r)               %(half_leq_zero)%
+     . a+b=b+a                          %(comm_add)%
+  . half(r+s) = half(r) + half(s)       %(PreReal_half_plus)%
+  . half(r-s) = half(r) - half(s)       %(PreReal_half_minus)%
+  . r - half(r) = half(r)               %(PreReal_minus_half)%
+  . half(r) <= half (s) <=> r <= s      %(PreReal_half_monot)%
+end
+
+
+spec FieldWithValuation =
+     Field
+and  PreReal
+then
+     op val: Elem -> PreReal
+     forall x,y:Elem
+     . val(x) >= 0              %(non-negative)%
+     . val(x) = 0 <=> x = 0     %(pos-definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= val(x) + val(y) %(triangle)%
+then %implies
+     . val(1) = 1
+end
+
+
+spec FieldWithArchimedianValuation =
+     Field
+and  PreReal
+then
+     op val: Elem -> PreReal
+     forall x,y:Elem
+     . val(x) >= 0              %(non-negative)%
+     . val(x) = 0 <=> x = 0     %(pos-definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= max(val(x),val(y)) %(ultra)%
+end
+
+view FieldWithValuation_in_FieldWithArchimedianValuation :
+     FieldWithValuation
+to   FieldWithArchimedianValuation
+end
+
+
+view PreReal_as_FieldWithArchimedianValuation :
+     FieldWithArchimedianValuation to PreReal
+=    Elem |-> PreReal, val |-> |__|
+end
+
 
 %% Spec for points
 spec Point[sort Elem] =
@@ -11586,7 +11641,7 @@ end
 
 %% We need to consider points over a totally ordered field
 spec PointsOverField =
-     Point[TotallyOrderedField]
+     Point[PreReal with PreReal |-> Elem]
      then   
      pred __<=__ : Point * Point
      forall a,b : Point
@@ -11596,7 +11651,8 @@ spec PointsOverField =
 end
 
 spec VectorSpace[sort Space] = 
-     FieldWithMinus
+     %%FieldWithMinus
+     PreReal with PreReal |-> Elem
      then
      ops __+__ : Space * Space -> Space;
 	 __*__ : Elem * Space -> Space;
@@ -11615,7 +11671,7 @@ spec VectorSpace[sort Space] =
 end
 
 spec Vector =
-     TotallyOrderedField
+     PreReal with PreReal|-> Elem
      then  
      free type Vector ::= $$__ __$$(xc : Elem; yc : Elem) 
      then
@@ -11637,7 +11693,7 @@ spec Vector =
      . ||a|| = sqrt(<a||a>)                        %(def_norm)%
      . a = 0 \/ b = 0 => < a || b > = 0            %(hermitan)%      
      %% Additional properties of norm
-     . || e * a || = abs(e) * || a ||              %(pos_homogenity)%
+     . || e * a || = | (e) | * || a ||             %(pos_homogenity)%
      . || a + b || <= || a || + || b ||            %(triange_inequality)%
      . || a || = 0 <=> a = 0                       %(positive_definedness)%
      . 0 <= ||a||                                  %(norm>=0)%
@@ -11732,9 +11788,9 @@ end
 spec Vector_Vector_Relations72 =
      PointsToVector
      then
-     TotallyOrderedField
+     PreReal with PreReal |-> Elem
      then 
-     DipoleRelations72[Point[TotallyOrderedField]]
+     DipoleRelations72[Point[PreReal with PreReal |-> Elem]]
      then  
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
@@ -11748,31 +11804,31 @@ spec Vector_Vector_Relations72 =
      . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
      . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) >)                                                                   %(def_vr)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vl P (Dp1, pt) <=> < Ap (Dp1)|| P (Dp1, pt) > < 0)                                                                   %(def_vl)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vb P (Dp1, pt) <=> < A (Dp1)|| P (Dp1, pt) > = -(||A (Dp1)|| * ||P (Dp1, pt)||))                                     %(def_vb)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) ve P (Dp1, pt) <=> (ep(Dp1) = pt))                                                                                   %(def_ve)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vf P (Dp1, pt) <=> ((< A (Dp1)|| P (Dp1, pt) > = ||A(Dp1)|| * ||P (Dp1, pt)||) /\ (||A (Dp1)|| < ||P (Dp1, pt)||)))  %(def_vf)%
      . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vi P (Dp1, pt) <=> ((< A (Dp1)|| P (Dp1, pt) > = ||A(Dp1)|| * ||P (Dp1, pt)||) /\ (||P (Dp1, pt)|| < ||A (Dp1)||)))  %(def_vi)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt))                                                                                   %(def_vs)%
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 r pt << <=> A (Dp1) vr P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 l pt << <=> A (Dp1) vl P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 s pt << <=> A (Dp1) vs P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 e pt <<  => A (Dp1) ve P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 b pt << <=> A (Dp1) vb P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 i pt << <=> A (Dp1) vi P (Dp1, pt)) 
-     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt)  => 
+     . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 f pt << <=> A (Dp1) vf P (Dp1, pt)) 
 end
 
@@ -11785,73 +11841,85 @@ end
 spec Vector_Vector_Relations24 =
      PointsToVector
      then
-     TotallyOrderedField
+     PreReal with PreReal |-> Elem
      then
-     DipoleRelations24[Point[TotallyOrderedField]] 
+     DipoleRelations24[Point[PreReal with PreReal |-> Elem]] 
      then  
      pred __vr__ : Vector * Vector;
 	  __vl__ : Vector * Vector;
+	  %[
 	  __vs__ : Vector * Vector;	  
 	  __ve__ : Vector * Vector;
+	  ]%
 	  genPosDpPt  : PairOfPoints * Point;
-	  DpPoint : PairOfPoints * Point
+	  DpPoint : PairOfPoints * Point;
+          genPos : PairOfPoints * PairOfPoints
+
      %% Assure that not more than 2 differnt points are on a single line
      forall Dp1, Dp2 : PairOfPoints; pt : Point
      . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
-     . genPosDpPt (Dp1, pt) <=> not (< Ap (Dp1)|| P (Dp1, pt) > = 0) \/ (ep(Dp1) = pt ) \/ (sp(Dp1) = pt)               %(general_pos)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) > /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))        %(def_r)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . Dipole (Dp1) => 
+	  (genPosDpPt (Dp1, pt) <=> not (< Ap (Dp1)|| P (Dp1, pt) > = 0) \/ (ep(Dp1) = pt ) \/ (sp(Dp1) = pt))          %(general_pos)%
+     . Dipole (Dp1) /\ Dipole(Dp2) => 
+	  (genPos(Dp1,Dp2) <=> genPosDpPt(Dp1,sp(Dp2)) /\ genPosDpPt(Dp1,ep(Dp2)) /\ genPosDpPt(Dp2,sp(Dp1)) 
+	   /\ genPosDpPt(Dp2,ep(Dp1)))                                                                                  %(genPos_def)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) > /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))       %(def_r)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  (A (Dp1) vl P (Dp1, pt) <=> < Ap (Dp1)|| P (Dp1, pt) > < 0 /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))       %(def_l)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     %[
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  (A (Dp1) ve P (Dp1, pt) <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                             %(def_e)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                             %(def_s)% 
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                             %(def_s)%
+     
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ((A(Dp1) ve P (Dp1, pt)) => not (A (Dp1) vs P (Dp1, pt)))                                         %(ve_xor_vs)% %implied
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ((A (Dp1) vs P (Dp1, pt)) => not (A (Dp1) ve P (Dp1, pt)))                                        %(vs_xor_ve)% %implied
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) =>  
+     ]%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  ((A(Dp1) vr P (Dp1, pt)) => not (A (Dp1) vl P (Dp1, pt)))                                         %(vr_xor_vl)% %implied
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  ((A (Dp1) vl P (Dp1, pt)) => not (A (Dp1) vr P (Dp1, pt)))                                        %(vl_xor_vr)% %implied
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) =>  
 	  (>> Dp1 r pt << <=> A (Dp1)vr P (Dp1, pt))                                                                   %(def_dpr)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  (>> Dp1 l pt << <=> A (Dp1)vl P (Dp1, pt))                                                                   %(def_dpl)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 s pt << <=> A (Dp1)vs P (Dp1, pt))                                                                   %(def_dps)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 e pt << <=> A (Dp1)ve P (Dp1, pt))                                                                   %(def_dpe)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  (>> Dp1 s pt << <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                                    %(def_dps)%
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
+	  (>> Dp1 e pt << <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                                    %(def_dpe)%
      %% Some shortcuts
-       then %implies
+     then %implies
      forall Dp1, Dp2 : PairOfPoints; pt : Point
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ 
 	   vr $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ 
 	   <=> 0 < < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ || 
 	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > /\ 
 	   not ep(Dp1) = pt  /\  
 	   not (sp(Dp1) = pt))                                                                                         %(def_r_ur)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vl
 	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
 	   < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ ||
 	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > < 0 /\ 
 	   not ep(Dp1) = pt  /\  
 	   not (sp(Dp1) = pt))                                                                                         %(def_l_ur)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     %[
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ ve 
 	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
 	   (ep(Dp1) = pt) /\ 
 	   not (sp(Dp1) = pt))                                                                                         %(def_e_ur)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPosDpPt (Dp1, pt) /\ DpPoint(Dp2, pt)) => 
+     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vs 
 	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
 	   (sp(Dp1) = pt) /\ 
 	   not (ep(Dp1) = pt))                                                                                         %(def_s_ur)% 
-     then %def
-     pred  genPos : PairOfPoints * PairOfPoints
+     ]%
 
-     forall a, b : PairOfPoints
-     . Dipole (a) /\ Dipole(b) => 
-	  (genPos(a,b) <=> genPosDpPt(a,sp(b)) /\ genPosDpPt(a,ep(b)) /\ genPosDpPt(b,sp(a)) /\ genPosDpPt(b,ep(a)))   %(genPos_def)%
 
 end
 
