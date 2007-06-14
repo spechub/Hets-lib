@@ -49,7 +49,7 @@ spec DipoleRelations24[sort Point] =
 			   } %(BaseRelation24_def)%
      %% Definition of Dipole Relations by Dipole point relations
      forall Dp1,Dp2 : PairOfPoints; rel : BaseRelation24; rel1, rel2 : DipolePointRelation24; pt : Point
-     . Dipole (Dp1) <=> not (sp(Dp1) = ep(Dp1)) %(Dipole_def)%
+     . Dipole (Dp1) <=> not (sp(Dp1) = ep(Dp1))                                            %(Dipole_def)%
      . Dipole(Dp1) /\ Dipole(Dp2) =>
        (> Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
@@ -245,9 +245,6 @@ spec DRA24Composition[sort Point] =
 	  genPos : PairOfPoints * PairOfPoints
 
      forall a, b, c : PairOfPoints; rel1, rel2 : BaseRelation24
-     . Dipole (a) /\ Dipole(b) => 
-	  (genPos(a,b) <=> genPosDpPt(a,sp(b)) /\ genPosDpPt(a,ep(b)) /\ genPosDpPt(b,sp(a)) /\ genPosDpPt(b,ep(a))) %(genPos_def)%
-
      %% disable include preceeding theorems in next proof attempt for better results
 
      . Dipole (a) /\ Dipole (b) /\ genPos(a,b)  => 
@@ -11492,8 +11489,8 @@ spec Field =
      BasicField with op e |-> 1
 then %def
      op -__: Elem -> Elem
-     forall x: Elem
-     . -x + x = 0       %(Field_unary_minus_idef)%
+     forall xc: Elem
+     . -xc + xc = 0       %(Field_unary_minus_idef)%
 end
 
 spec FieldWithOrdering =
@@ -11514,19 +11511,19 @@ spec OrderedField =
      Field
 then
      pred Pos: Elem
-     forall x,y: Elem
-     . Pos(x) /\ Pos(y) => Pos(x*y)             %(OF_plus)%
-     . Pos(x) /\ Pos(y) => Pos(x+y)             %(OF_times)%
-     . Pos(x) /\ Pos(-x) => x = 0               %(OF_mutex)%
-     . Pos(x) \/ Pos(-x)                        %(OF_exhaust)%
+     forall xc,yc: Elem
+     . Pos(xc) /\ Pos(yc) => Pos(xc*yc)         %(OF_plus)%
+     . Pos(xc) /\ Pos(yc) => Pos(xc+yc)         %(OF_times)%
+     . Pos(xc) /\ Pos(-xc) => xc = 0            %(OF_mutex)%
+     . Pos(xc) \/ Pos(-xc)                      %(OF_exhaust)%
 end
 
 view OrderedField_in_FieldWithOrdering :
       OrderedField to
      { FieldWithOrdering then %def
        pred Pos: Elem
-       forall x: Elem
-       . Pos(x) <=> 0 <= x
+       forall xc: Elem
+       . Pos(xc) <=> 0 <= xc
      }
 end
 
@@ -11534,8 +11531,8 @@ view FieldWithOrdering_in_OrderedField :
       FieldWithOrdering to
      { OrderedField then %def
        pred __<=__: Elem * Elem
-       forall x,y: Elem
-       . x <= y  <=> Pos(y + -x)
+       forall xc,yc: Elem
+       . xc <= yc  <=> Pos(yc + -xc)
      }
 end
 
@@ -11571,11 +11568,9 @@ then %def
      . 2 = 1 + 1                        %(PreReal_2_def)%
      . r-r' = r + -r'                   %(PreReal_minus_def)%
      . 2 * half(r) = r                  %(PreReal_half_idef)%
-     . not def(r/0)                     %(Real_divide_dom)%
-     . def (r/r') <=> 
-       (exists r'' : PreReal . r/r' = r'') %(Real_devide_def)%
-     . def(r/r') => (r/r' = r'' 
-	  <=> r'' * r' = r)              %(Real_divide_idef)%
+     . def (r/r') <=> not (r' = 0)      %(Real_devide_dom)%
+     . def(r/r') => (exists r'' : PreReal . r/r' = r'' /\
+	(r/r' = r'' <=> r'' * r' = r))  %(Real_divide_idef)%
 
 then %implies
      forall a,b,c,e,r,s:PreReal
@@ -11588,51 +11583,27 @@ then %implies
      . a<=half(a-b)+b => a<=b           %(half_leq)%
      . 0<=r => 0<=half(r)               %(half_leq_zero)%
      . a+b=b+a                          %(comm_add)%
-  . half(r+s) = half(r) + half(s)       %(PreReal_half_plus)%
-  . half(r-s) = half(r) - half(s)       %(PreReal_half_minus)%
-  . r - half(r) = half(r)               %(PreReal_minus_half)%
-  . half(r) <= half (s) <=> r <= s      %(PreReal_half_monot)%
-end
-
-
-spec FieldWithValuation =
-     Field
-and  PreReal
-then
-     op val: Elem -> PreReal
-     forall x,y:Elem
-     . val(x) >= 0              %(non-negative)%
-     . val(x) = 0 <=> x = 0     %(pos-definite)%
-     . val(x * y) = val(x) * val(y) %(multiplic)%
-     . val(x + y) <= val(x) + val(y) %(triangle)%
+     . half(r+s) = half(r) + half(s)    %(PreReal_half_plus)%
+     . half(r-s) = half(r) - half(s)    %(PreReal_half_minus)%
+     . r - half(r) = half(r)            %(PreReal_minus_half)%
+     . half(r) <= half (s) <=> r <= s   %(PreReal_half_monot)%
+     %[
 then %implies
-     . val(1) = 1
+     forall a,b,c,d,e,f,g,h : PreReal
+     . (a + b) * (c + d) = 
+       a*c + a * d + b * c + b * d      %(PreReal_double_distri)%
+     . ((a + b) * (c + d)) + ((e + f) * (g + h)) = 
+       a*c + a * d + b * c + b * d +
+       e*g + e * h + f * g + f * g      %(PreReal_multi_distri)%
+     . a + b = 0 <=> a = - b            %(PreReal_Minus_thm1)%
+     . not (a + b = 0) <=> not (a = -b) %(PreReal_Minus_thm2)%
+     . not (0 = a + b) <=> not (-b = a) %(PreReal_Minus_thm3)%
+     . ((-1) * a) * ((-1)* b) = a * b   %(Pre_Real_Minus_thm3)%
+     . - ((-1) * a) = a                 %(Pre_Real_Minus_thm4)%
+     . a + b <= 0 <=> a <= - b          %(Pre_Real_le_helper1)%
+     . 0 <= a + b <=> - b <= a          %(Pre_Real_le_helper2)%
+     ]%
 end
-
-
-spec FieldWithArchimedianValuation =
-     Field
-and  PreReal
-then
-     op val: Elem -> PreReal
-     forall x,y:Elem
-     . val(x) >= 0              %(non-negative)%
-     . val(x) = 0 <=> x = 0     %(pos-definite)%
-     . val(x * y) = val(x) * val(y) %(multiplic)%
-     . val(x + y) <= max(val(x),val(y)) %(ultra)%
-end
-
-view FieldWithValuation_in_FieldWithArchimedianValuation :
-     FieldWithValuation
-to   FieldWithArchimedianValuation
-end
-
-
-view PreReal_as_FieldWithArchimedianValuation :
-     FieldWithArchimedianValuation to PreReal
-=    Elem |-> PreReal, val |-> |__|
-end
-
 
 %% Spec for points
 spec Point[sort Elem] =
@@ -11642,12 +11613,14 @@ end
 %% We need to consider points over a totally ordered field
 spec PointsOverField =
      Point[PreReal with PreReal |-> Elem]
+     %[
      then   
      pred __<=__ : Point * Point
      forall a,b : Point
      . (a = b) <=> ((xc(a) = xc(b)) /\ (yc(a) = yc(b)))
      . not (a = b) <=> (not (xc(a) = xc(b)) \/ not (yc(a) = yc(b)))
      . (a <= b) <=> ((xc(a) <= xc(b)) /\ (yc(a) <= yc(b)))
+     ]%
 end
 
 spec VectorSpace[sort Space] = 
@@ -11676,6 +11649,7 @@ spec Vector =
      free type Vector ::= $$__ __$$(xc : Elem; yc : Elem) 
      then
      VectorSpace[sort Vector]
+     %[
      then
      ops <__||__> : Vector * Vector -> Elem;
 	 ||__||   : Vector -> Elem;
@@ -11702,55 +11676,11 @@ spec Vector =
      . < 0 || 0 > = 0                              %(thm_zero)%
      . <a||b> = <b||a>                             %(thm_commut)%
      . <a || a> = 0 <=> a = 0                      %(thm_x=0)%
-     %% Lemmas for inner product
-     %% all Pos = zero Neg
-     . 0 < xc(a) /\ 0 < yc(a) /\ 0 < xc(b) /\ 0 < yc(b) => 
-	  0 < < a || b >                           %(thm_inner_prod_1)%
-     %% all Neg = zero Pos
-     . xc(a) < 0 /\ yc(a) < 0 /\ xc(b) < 0 /\ yc(b) < 0 =>
-	  0 < < a || b >                           %(thm_inner_prod_2)%
-     %% one Pos = three Neg
-     . 0 < xc(a) /\ yc(a) < 0 /\ xc(b) < 0 /\ yc(b) < 0 => 
-          (< a || b > < 0 <=>  yc(a) * yc(b) < xc(a) * xc(b))
-	                                           %(thm_inner_prod_3)%
-     .  xc(a) < 0 /\ yc(a) < 0 /\ 0 < xc(b) /\ yc(b) < 0 => 
-          (< a || b > < 0 <=>  yc(a) * yc(b) < xc(a) * xc(b))
-	                                           %(thm_inner_prod_4)%
-     .  xc(a) <0 /\ 0 < yc(a) /\ xc(b) < 0 /\ yc(b) < 0 => 
-          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
-	                                           %(thm_inner_prod_5)%
-     .  xc(a) < 0 /\ yc(a) < 0 /\  xc(b) < 0 /\ 0 < yc(b) => 
-          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
-	                                           %(thm_inner_prod_6)%  
-     %% one Neg = three Pos
-     .  xc(a) < 0 /\ 0 < yc(a)  /\ 0 < xc(b) /\ 0 < yc(b) => 
-          (< a || b > < 0 <=> yc(a) * yc(b) < xc(a) * xc(b))
-	                                           %(thm_inner_prod_7)%
-     .  0 < xc(a) /\ yc(a) < 0 /\ 0 < xc(b) /\ 0 < yc(b) => 
-          (< a || b > < 0 <=> yc(a) * yc(b) < xc(a) * xc(b))
-	                                           %(thm_inner_prod_8)%
-     .  0 < xc(a) /\ 0 < yc(a) /\ xc(b) < 0  /\ 0 < yc(b) => 
-          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
-	                                           %(thm_inner_prod_9)%
-     .  0 < xc(a) /\ 0 < yc(a) /\  0 < xc(b)  /\  yc(b) < 0 => 
-          (< a || b > < 0 <=> xc(a) * xc(b) < yc(a) * yc(b))
-	                                           %(thm_inner_prod_10)%  
-     %% two Neg = two Pos
-     .  xc(a) < 0 /\ yc(a) < 0 /\ 0 < xc (b) /\ 0 < yc(b) =>
-	  < a || b > < 0                           %(thm_inner_prod_11)%  
-     .  0 < xc(a) /\ 0 < yc(a) /\  xc (b) < 0 /\  yc(b) < 0=>
-	  < a || b > < 0                           %(thm_inner_prod_12)%
-     .  xc(a) < 0 /\ 0 < yc(a) /\  xc (b) < 0 /\ 0 < yc(b) =>
-	  0 < < a || b >                           %(thm_inner_prod_13)%  
-     .  0 < xc(a) /\  yc(a) < 0 /\  0 < xc (b) /\  yc(b) < 0 =>
-	  0 < < a || b >                           %(thm_inner_prod_14)% 
-     . 0 < xc(a) /\ yc(a) < 0 /\ xc(b) < 0 /\ 0 < yc(b) =>
-	  < a || b > < 0                           %(thm_inner_prod_15)%
-     .  xc(a) < 0 /\ 0 < yc(a) /\ 0 < xc(b) /\  yc(b) < 0 =>
-	  < a || b > < 0                           %(thm_inner_prod_16)% 
-     %% Equal zero
-     . < a || b > = 0 <=> xc(a) * xc(b) = - yc(a) * yc(b)
-                                                   %(thm_inner_prod_17)%
+     ]%
+end
+
+spec VectorWithHelpers = 
+     Vector 
 end 
 
 %% This spec is intended to be part of the interface from DRA to 
@@ -11758,7 +11688,7 @@ end
 spec PointsToVector =
      PointsOverField 
      then
-     Vector 
+     VectorWithHelpers
      then
      free type PairOfPoints ::= $__ __$ (sp : Point; ep : Point)
      %% we consider s_a, e_a and a point pt in the 
@@ -11773,12 +11703,12 @@ spec PointsToVector =
      pred Dipole : PairOfPoints 
      forall pt: Point; Dp: PairOfPoints
      . Dipole (Dp) <=> (not (sp(Dp) = ep(Dp)))
-     . Dipole (Dp)  => (A(Dp)      = $$xc(ep(Dp))+((-1) * xc(sp(Dp))) yc(ep(Dp))+((-1) * yc(sp(Dp)))$$)
-     . Dipole (Dp)  => (Ap(Dp)     = $$yc(ep(Dp))+((-1) * yc(sp(Dp))) xc(sp(Dp))+((-1) * xc(ep(Dp)))$$)
-     . Dipole (Dp)  => (P (Dp, pt) = $$xc(pt)+((-1) * xc(sp(Dp)))     yc(pt)+((-1) * yc(sp(Dp)))$$)
-     . Dipole (Dp)  => (< A(Dp) || Ap(Dp) > = 0)                    %(thm_orthogonal)% %implied
-     . Dipole (Dp)  => not (||A(Dp)|| = 0)                          %(thm_length_A)% %implied
-     . Dipole (Dp)  => not (||Ap(Dp)|| = 0)                         %(thm_length_Ap)% %implied
+     . Dipole (Dp)  => (A(Dp)      = $$xc(ep(Dp))+((-1) * xc(sp(Dp))) yc(ep(Dp))+((-1) * yc(sp(Dp)))$$) %(ADp_def)%
+     . Dipole (Dp)  => (Ap(Dp)     = $$yc(ep(Dp))+((-1) * yc(sp(Dp))) xc(sp(Dp))+((-1) * xc(ep(Dp)))$$) %(ApDp_def)%
+     . Dipole (Dp)  => (P (Dp, pt) = $$xc(pt)+((-1) * xc(sp(Dp)))     yc(pt)+((-1) * yc(sp(Dp)))$$)     %(PDppt_def)%
+     %[
+     . Dipole (Dp)  => (< A(Dp) || Ap(Dp) > = 0)                                                        %(thm_orthogonal)% %implied
+     ]%
 end
 
 %% The definition of the 7 Dipole-Point relations via vectors
@@ -11800,6 +11730,7 @@ spec Vector_Vector_Relations72 =
 	  __vi__ : Vector * Vector;
 	  __vf__ : Vector * Vector;
 	  DpPoint : PairOfPoints * Point
+     %[
      forall pt: Point; Dp1, Dp2 : PairOfPoints
      . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
      . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
@@ -11830,6 +11761,7 @@ spec Vector_Vector_Relations72 =
 	  (>> Dp1 i pt << <=> A (Dp1) vi P (Dp1, pt)) 
      . Dipole (Dp1) /\ Dipole (Dp2) /\ DpPoint(Dp2, pt) => 
 	  (>> Dp1 f pt << <=> A (Dp1) vf P (Dp1, pt)) 
+     ]%
 end
 
 %% The definition of the 7 Dipole-Point relations via vectors
@@ -11845,82 +11777,36 @@ spec Vector_Vector_Relations24 =
      then
      DipoleRelations24[Point[PreReal with PreReal |-> Elem]] 
      then  
-     pred __vr__ : Vector * Vector;
-	  __vl__ : Vector * Vector;
-	  %[
-	  __vs__ : Vector * Vector;	  
-	  __ve__ : Vector * Vector;
-	  ]%
-	  genPosDpPt  : PairOfPoints * Point;
+     pred genPosDpPt  : PairOfPoints * Point;
 	  DpPoint : PairOfPoints * Point;
           genPos : PairOfPoints * PairOfPoints
 
      %% Assure that not more than 2 differnt points are on a single line
      forall Dp1, Dp2 : PairOfPoints; pt : Point
-     . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)
+     . DpPoint (Dp2, pt) <=> pt = ep(Dp2) \/ pt = sp (Dp2)                                                             %(def_DpPoint)%
      . Dipole (Dp1) => 
-	  (genPosDpPt (Dp1, pt) <=> not (< Ap (Dp1)|| P (Dp1, pt) > = 0) \/ (ep(Dp1) = pt ) \/ (sp(Dp1) = pt))          %(general_pos)%
+	  (genPosDpPt (Dp1, pt) <=> 
+	   not ((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt))) = 0) 
+	   \/ (ep(Dp1) = pt ) \/ (sp(Dp1) = pt))                                                                       %(general_pos)%
      . Dipole (Dp1) /\ Dipole(Dp2) => 
 	  (genPos(Dp1,Dp2) <=> genPosDpPt(Dp1,sp(Dp2)) /\ genPosDpPt(Dp1,ep(Dp2)) /\ genPosDpPt(Dp2,sp(Dp1)) 
 	   /\ genPosDpPt(Dp2,ep(Dp1)))                                                                                  %(genPos_def)%
+     . Dipole (Dp1) /\ Dipole(Dp2) =>
+       (genPos (Dp1, Dp2) <=> genPos(Dp2, Dp1))                                                                         %(genPos_sym)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) vr P (Dp1, pt) <=> 0 < < Ap (Dp1)|| P (Dp1, pt) > /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))       %(def_r)%
+	  (>> Dp1 r pt << <=> 
+	   (exists v : Elem . not v = 0 /\ 
+	   (((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) - (v * v)) = 0)                                  
+	   /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))                                                                 %(def_r)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) vl P (Dp1, pt) <=> < Ap (Dp1)|| P (Dp1, pt) > < 0 /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))       %(def_l)%
-     %[
+	  (>> Dp1 l pt << <=> 
+	   (exists v : Elem . not v = 0 /\ 
+	   (((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) + (v * v)) = 0)                                  
+	   /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))                                                                %(def_l)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) ve P (Dp1, pt) <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                             %(def_e)%
+	  (>> Dp1 s pt << <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                                    %(def_s)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (A (Dp1) vs P (Dp1, pt) <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                             %(def_s)%
-     
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ((A(Dp1) ve P (Dp1, pt)) => not (A (Dp1) vs P (Dp1, pt)))                                         %(ve_xor_vs)% %implied
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ((A (Dp1) vs P (Dp1, pt)) => not (A (Dp1) ve P (Dp1, pt)))                                        %(vs_xor_ve)% %implied
-     ]%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ((A(Dp1) vr P (Dp1, pt)) => not (A (Dp1) vl P (Dp1, pt)))                                         %(vr_xor_vl)% %implied
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ((A (Dp1) vl P (Dp1, pt)) => not (A (Dp1) vr P (Dp1, pt)))                                        %(vl_xor_vr)% %implied
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) =>  
-	  (>> Dp1 r pt << <=> A (Dp1)vr P (Dp1, pt))                                                                   %(def_dpr)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 l pt << <=> A (Dp1)vl P (Dp1, pt))                                                                   %(def_dpl)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 s pt << <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                                    %(def_dps)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 e pt << <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                                    %(def_dpe)%
-     %% Some shortcuts
-     then %implies
-     forall Dp1, Dp2 : PairOfPoints; pt : Point
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ 
-	   vr $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ 
-	   <=> 0 < < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ || 
-	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > /\ 
-	   not ep(Dp1) = pt  /\  
-	   not (sp(Dp1) = pt))                                                                                         %(def_r_ur)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vl
-	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
-	   < $$yc(ep(Dp1))+((-1) * yc(sp(Dp1))) xc(sp(Dp1))+((-1) * xc(ep(Dp1)))$$ ||
-	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ > < 0 /\ 
-	   not ep(Dp1) = pt  /\  
-	   not (sp(Dp1) = pt))                                                                                         %(def_l_ur)%
-     %[
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ ve 
-	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
-	   (ep(Dp1) = pt) /\ 
-	   not (sp(Dp1) = pt))                                                                                         %(def_e_ur)%
-     . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  ($$xc(ep(Dp1))+((-1) * xc(sp(Dp1))) yc(ep(Dp1))+((-1) * yc(sp(Dp1)))$$ vs 
-	   $$xc(pt)+((-1) * xc(sp(Dp1)))     yc(pt)+((-1) * yc(sp(Dp1)))$$ <=> 
-	   (sp(Dp1) = pt) /\ 
-	   not (ep(Dp1) = pt))                                                                                         %(def_s_ur)% 
-     ]%
-
-
+	  (>> Dp1 e pt << <=> (ep(Dp1) = pt) /\ not (sp(Dp1) = pt))                                                    %(def_e)%
 end
 
 %% Our two interesting views
@@ -11932,4 +11818,3 @@ end
 view DRA24_In_Domain : DRA24Composition[sort Point] to
      Vector_Vector_Relations24
 end
-
