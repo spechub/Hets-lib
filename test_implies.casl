@@ -1,0 +1,18 @@
+library test_implies
+
+spec sp1 =
+  sort s
+  op f:s->s
+  forall x:s . f(x) = x  %(base)%
+then %implies
+  forall x:s . x = f(x) %(implied)%
+end
+
+spec sp2 =
+  sort s
+  op f:s->s
+  forall x,y:s . x=y %(spax2)%
+end
+
+view v : sp1 to sp2 
+end
