@@ -14,10 +14,10 @@ var    x, y, z: a
 . x <= y /\ y <= x => x = y  
 }
 
-var a, b: +Ord
+var a, b: Ord
 type  instances a * b: Ord
-vars  v, w: b
-. (x, v) <= (y, w) <=> x <= y /\ v <= w
+vars  x, z: a; y, w: b
+. (x, y) <= (z, w) <=> x <= z /\ y <= w
 
 type  instance Unit: Ord
 . () <= ()

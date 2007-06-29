@@ -2,6 +2,8 @@ library HasCASL/Metatheory/Monad
 
 logic HasCASL
 
+%[from HasCASL/Metatheory/Functor get Functor]%
+
 spec Functor =
 class Functor : Type -> Type {
 vars  f: Functor; a, b, c: Type
@@ -9,8 +11,6 @@ op    map : (a -> b) -> f a -> f b
 vars  x: f a; f: a -> b; g: b -> c
 . map (\ y: a .! y) x = x
 . map (\ y: a .! g (f y)) x = map g (map f x) }
-
-%[from HasCASL/Metatheory/Functor get Functor]%
 
 spec Monad = Functor then
 class Monad : Type -> Type {
@@ -36,3 +36,5 @@ op    lift: m a -> t m a
 vars  x: a; p: m a; b: Type; q: a -> m b
 . lift (ret x) = ret x : t m a
 . lift (p >>= q) = lift p >>= \ y: a .! lift (q y) : t m b }
+
+spec State = Monad then {}
