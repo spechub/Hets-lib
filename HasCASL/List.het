@@ -57,9 +57,9 @@ spec List = Nat and Bool and Composition then
         z,s  : b; 
         zs   : List b; 
         ps   : List (a * b)
-  . length Nil = 0                         %(length_nil)%
+  . length (Nil : List a) = 0              %(length_nil)%
   . length (Cons x xs) = Suc(length xs)    %(length_cons)%
-  . not def head Nil                       %(not_def_head)%
+  . not def head (Nil : List a)            %(not_def_head)%
   . head (Cons x xs) = x                   %(head_def)%
   . foldr (f, s, Nil) = s                  %(foldr_nil)%
   . foldr (f, s, Cons x xs) 
@@ -77,12 +77,12 @@ spec List = Nat and Bool and Composition then
                       filter (p, xs)       %(filter_cons)%
   . Nil ++ l = l                           %(++_nil)%
   . (Cons x xs) ++ l = Cons x (xs ++ l)    %(++_cons)%
-  . zip (Nil, l) = Nil                     %(zip_nil)%
+  . zip (Nil : List a, l) = Nil            %(zip_nil)%
   . zip (Cons x xs, l) = 
       case l of Nil       -> Nil
               | Cons y ys -> 
                   Cons (x,y) (zip (xs, ys)) %(zip_cons)%
-  . unzip Nil = (Nil, Nil)                  %(unzip_nil)%
+  . unzip (Nil : List (a * b)) = (Nil, Nil) %(unzip_nil)%
   . unzip (Cons (x,z) ps) = 
       let (ys, zs) = unzip ps 
         in (Cons x ys, Cons z zs)           %(unzip_cons)%

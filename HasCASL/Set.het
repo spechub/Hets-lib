@@ -97,7 +97,7 @@ spec Map =
   . x isIn dom f <=> def f x
   . y isIn range f <=> exists x:S . f x = y
   . y isIn image f s <=> exists x:S . x isIn s /\ f x = y
-  . not def emptyMap x
+  . not def (emptyMap x : T)
   . f :: s --> t <=> forall x:S . x isIn s => f x isIn t
   . (f[x/y]) x' = y when x=x' else f x
   . (f - x) x' = undef() when x=x' else f x

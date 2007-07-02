@@ -12,7 +12,7 @@ ops  inl: a -> Sum a b;
 vars f: a ->? c; g: b ->? c; h: Sum a b ->? c;
 . h = sumcase f g <=> 
   forall x: a; y: b . h (inl x) = f x /\ h (inr y) = g y
-. not def bot
+. not def (bot : ?a)
 . sumcase inl inr = \ z : Sum a b . z %implied
 
 then %def
