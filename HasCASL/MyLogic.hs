@@ -3,7 +3,7 @@ Module      :  $Header$
 Copyright   :  (c) Christian Maeder and Uni Bremen 2003
 Licence     :  similar to LGPL, see HetCATS/LICENCE.txt or LIZENZ.txt
 
-Maintainer  :  maeder@tzi.de
+Maintainer  :  Christian.Maeder@dfki.de
 Stability   :  experimental
 Portability :  portable 
 
