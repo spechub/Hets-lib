@@ -1,6 +1,6 @@
 library HasCASL/Metatheory/Ord
 
-%display __<=__    %LATEX __\leq__
+%display __<=__ %LATEX __\leq__
 
 logic HasCASL
 
@@ -11,7 +11,7 @@ fun    __<=__ : Pred (a * a)
 var    x, y, z: a
 . x <= x
 . x <= y /\ y <= z => x <= z
-. x <= y /\ y <= x => x = y  
+. x <= y /\ y <= x => x = y
 }
 
 var a, b: Ord
@@ -24,4 +24,4 @@ type  instance Unit: Ord
 
 type  instance ?a: Ord
 vars  x, y: ?a
-. x <= y %% <=> def x() => x() <= y()
+. x <= y <=> def x() => x() <= y()
