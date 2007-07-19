@@ -93,6 +93,11 @@ mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
 mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 "mapSnd f p == (fst p, f (snd p))"
 
+defOp :: "'a option => bool"
+"defOp s == case s of
+    None => False
+  | Some a => True"
+
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"
@@ -113,11 +118,6 @@ primrec
   "pApp (Some f) x = (case x of
                              None => False
                            | Some y => f y)"
-
-consts defOp :: "'a option => bool"
-primrec
-  "defOp (Some x) = True"
-  "defOp None     = False"
 
 consts pair :: "'a option => 'b option => ('a * 'b) option"
 primrec
