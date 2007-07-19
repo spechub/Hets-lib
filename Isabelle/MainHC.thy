@@ -98,6 +98,8 @@ defOp :: "'a option => bool"
     None => False
   | Some a => True"
 
+declare defOp_def [simp]
+
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"
