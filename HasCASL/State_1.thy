@@ -1,8 +1,8 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
+theory State_1
+imports "$HETS_LIB/Isabelle/MainHC"
+uses "$HETS_LIB/Isabelle/prelude"
+begin
 
-theory State_1 = MainHC:
 typedecl "S"
 
 consts

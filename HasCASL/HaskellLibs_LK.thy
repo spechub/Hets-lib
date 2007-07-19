@@ -1,8 +1,7 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\");
-case hetsLib of NONE => add_path \".\"
-| SOME s => add_path (s ^ \"/Isabelle\")"
-
-theory HaskellLibs = MainHCPlus:
+theory HaskellLibs_LK
+imports "$HETS_LIB/Isabelle/MainHCPlus"
+uses "$HETS_LIB/Isabelle/prelude"
+begin
 
 datatype 'a List = Nil | Cons 'a "'a List"
 
@@ -18,7 +17,7 @@ map_nil: "app (Some map) (pair (Some g) (Some Nil)) = (Some Nil)"
 map_cons: "app (Some map) (pair (Some g) (apt (apt (Some Cons) (Some x)) (Some xs))) = apt (apt (Some Cons) (app (Some g) (Some x))) (app (Some map) (pair (Some g) (Some xs)))"
 
 
-theorem induct_List_pl: "P (Some HaskellLibs.List.Nil) ==>
+theorem induct_List_pl: "P (Some HaskellLibs_LK.List.Nil) ==>
   (!!a List. P (Some List) ==> P (apt (apt (Some Cons) (Some a)) (Some List)))
    ==> P (Some List)"
 apply auto

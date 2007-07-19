@@ -1,8 +1,8 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
+theory HaskellLibs_1
+imports "$HETS_LIB/Isabelle/MainHC"
+uses "$HETS_LIB/Isabelle/prelude"
+begin
 
-theory HaskellLibs_5 = MainHC:
 datatype Nat = X0 | Suc "Nat"
 
 datatype 'a List = Nil | Cons 'a "'a List"

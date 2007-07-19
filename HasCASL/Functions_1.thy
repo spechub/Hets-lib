@@ -1,8 +1,8 @@
-ML "val hetsLib = (OS.Process.getEnv \"HETS_LIB\"); 
-case hetsLib of NONE => add_path \".\" 
-| SOME s => add_path (s ^ \"/Isabelle\")"
+theory Functions_1
+imports "$HETS_LIB/Isabelle/MainHC"
+uses "$HETS_LIB/Isabelle/prelude"
+begin
 
-theory Functions_1 = MainHC:
 consts
 "id" :: "'a => 'a option"  
 "o_X" :: "(('b => 'c option) * ('a => 'b option)) => ('a => 'c option)" 
