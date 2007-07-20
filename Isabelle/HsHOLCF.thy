@@ -1,6 +1,17 @@
 theory HsHOLCF
-imports "$ISABELLE_HOME/src/HOLCF/IOA/meta_theory/Abstraction"
+imports Abstraction
 begin
+
+(*
+axclass BoolC < type
+axclass IntC < type
+
+instance bool:: BoolC
+by intro_classes
+
+instance int:: IntC
+by intro_classes
+*)
 
 types
 dInt = "int lift"
@@ -19,9 +30,9 @@ hEq :: "'a -> 'a -> tr"
 hNEq :: "'a -> 'a -> tr"
 
 axclass Eq < pcpo
-  eqAx: "ALL x::bool. 
-       hEq $ p $ q = neg $ (hNEq $ p $ q)"
-(*       (hEq $ p $ q = Def x) = (hNEq $ p $ q = Def (~x))" *)
+  eqAx: "hEq $ p $ q = neg $ (hNEq $ p $ q)"
+(*  ALL x::bool.      
+        (hEq $ p $ q = Def x) = (hNEq $ p $ q = Def (~x))" *)
 
 constdefs
 holEq :: "('a::flat) => 'a => tr"
@@ -110,13 +121,45 @@ apply (unfold neg_def)
 apply auto
 done
 
-(* seq *)
+lemma double_neg: "x = neg $ (neg $ x)"
+apply (rule_tac p = "x" in trE)
+apply (simp add: Exh_tr neg_thms trE)
+apply auto
+done
 
-(*
+(* llist *)
+
+domain ('a::pcpo) llist = lNil | "###" (lazy lHd :: 'a) 
+                       (lazy lTl :: "'a llist") (infixr 65)
+
 constdefs
-seq_el :: "('a::pcpo) seq => nat => 'a"
-"seq_el xs n == slast $ ((seq_take n) $ xs)"
-*)
+llEq :: "('a::Eq) llist -> 'a llist -> tr"
+"llEq == fix $ (LAM hh (xs::('a::Eq) llist) ys.
+  if (xs = UU) | (ys = UU) then UU
+  else case xs of 
+       lNil => case ys of 
+           lNil => TT
+          | w###ws => if (w = UU) then UU
+                    else FF
+      | z###zs => if (z = UU) then UU
+          else case ys of
+              lNil => FF
+             | w###ws => if (w = UU) then UU
+                    else (hEq $ z $ w) andalso (hh $ zs $ ws))"
+
+defs
+llist_hEq_def: "hEq == llEq"
+llist_hNEq_def: "hNEq == LAM x y. neg $ (llEq $ x $ y)"
+
+instance llist :: (Eq) Eq 
+apply (intro_classes)
+apply (unfold llist_hEq_def llist_hNEq_def)
+apply auto
+apply (simp add:double_neg)
+done
+
+
+(* seq  - not used *)
 
 constdefs
 shEq :: "('a::Eq) seq -> 'a seq -> tr"
@@ -137,17 +180,17 @@ defs
 seq_hEq_def: "hEq == shEq"
 seq_hNEq_def: "hNEq == LAM x y. neg $ (shEq $ x $ y)"
 
-lemma double_neg: "x = neg $ (neg $ x)"
-apply (rule_tac p = "x" in trE)
-apply (simp add: Exh_tr neg_thms trE)
-apply auto
-done
-
 instance seq :: (Eq) Eq 
 apply (intro_classes)
 apply (unfold seq_hEq_def seq_hNEq_def)
 apply auto
 apply (simp add:double_neg)
 done
+
+(*
+constdefs
+seq_el :: "('a::pcpo) seq => nat => 'a"
+"seq_el xs n == slast $ ((seq_take n) $ xs)"
+*)
 
 end
