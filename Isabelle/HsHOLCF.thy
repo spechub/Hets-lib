@@ -1,5 +1,5 @@
 theory HsHOLCF
-imports Abstraction
+imports "$ISABELLE_HOME/src/HOLCF/IOA/meta_theory/Abstraction"
 begin
 
 (*
@@ -16,14 +16,14 @@ by intro_classes
 types
 dInt = "int lift"
 
-constdefs 
-fliftbin :: 
+constdefs
+fliftbin ::
 "('a => 'b => 'c) => ('a lift -> 'b lift -> 'c lift)"
-"fliftbin f == flift1 (%x. flift2 (f x))"  
+"fliftbin f == flift1 (%x. flift2 (f x))"
 
-fliftbinA :: 
+fliftbinA ::
 "(('a::pcpo) => ('b::pcpo) => ('c::type)) => ('a -> 'b -> 'c lift)"
-"fliftbinA f == LAM y. (LAM x. (Def (f y x)))"  
+"fliftbinA f == LAM y. (LAM x. (Def (f y x)))"
 
 consts
 hEq :: "'a -> 'a -> tr"
@@ -31,7 +31,7 @@ hNEq :: "'a -> 'a -> tr"
 
 axclass Eq < pcpo
   eqAx: "hEq $ p $ q = neg $ (hNEq $ p $ q)"
-(*  ALL x::bool.      
+(*  ALL x::bool.
         (hEq $ p $ q = Def x) = (hNEq $ p $ q = Def (~x))" *)
 
 constdefs
@@ -44,7 +44,7 @@ holNEq :: "('a::flat) => 'a => tr"
 
 (* auxiliary *)
 
-lemma beta2_cfun: 
+lemma beta2_cfun:
   "(ALL x. cont (f x)) --> cont (%w1. (LAM w2. f w1 w2)) --> (LAM w1 w2. f w1 w2) $ z1 $ z2 = f z1 z2"
 apply auto
 done
@@ -129,15 +129,15 @@ done
 
 (* llist *)
 
-domain ('a::pcpo) llist = lNil | "###" (lazy lHd :: 'a) 
+domain ('a::pcpo) llist = lNil | "###" (lazy lHd :: 'a)
                        (lazy lTl :: "'a llist") (infixr 65)
 
 constdefs
 llEq :: "('a::Eq) llist -> 'a llist -> tr"
 "llEq == fix $ (LAM hh (xs::('a::Eq) llist) ys.
   if (xs = UU) | (ys = UU) then UU
-  else case xs of 
-       lNil => case ys of 
+  else case xs of
+       lNil => case ys of
            lNil => TT
           | w###ws => if (w = UU) then UU
                     else FF
@@ -151,7 +151,7 @@ defs
 llist_hEq_def: "hEq == llEq"
 llist_hNEq_def: "hNEq == LAM x y. neg $ (llEq $ x $ y)"
 
-instance llist :: (Eq) Eq 
+instance llist :: (Eq) Eq
 apply (intro_classes)
 apply (unfold llist_hEq_def llist_hNEq_def)
 apply auto
@@ -165,8 +165,8 @@ constdefs
 shEq :: "('a::Eq) seq -> 'a seq -> tr"
 "shEq == fix $ (LAM hh (xs::('a::Eq) seq) ys.
   if (xs = UU) | (ys = UU) then UU
-  else case xs of 
-       nil => case ys of 
+  else case xs of
+       nil => case ys of
            nil => TT
           | w##ws => if (w = UU) then UU
                     else FF
@@ -180,7 +180,7 @@ defs
 seq_hEq_def: "hEq == shEq"
 seq_hNEq_def: "hNEq == LAM x y. neg $ (shEq $ x $ y)"
 
-instance seq :: (Eq) Eq 
+instance seq :: (Eq) Eq
 apply (intro_classes)
 apply (unfold seq_hEq_def seq_hNEq_def)
 apply auto
