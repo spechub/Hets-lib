@@ -2,17 +2,17 @@ use Calculi/Space/RCCVerification
 dg-all auto 
 
 dg basic ExtRCC_FO_E1
-translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+translate SuleCFOL2SoftFOL
 prover SPASS
 prove-all 
 
 dg basic ExtRCCByRCC5Rels_E1
-translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+translate SuleCFOL2SoftFOL
 prover SPASS
 prove-all {del axioms C_non_null C_non_triv}
 
 dg basic ExtRCCByRCC8Rels_E1
-translate SuleCFOL2SoftFOL : CASL -> SoftFOL
+translate SuleCFOL2SoftFOL
 prover SPASS
 set time-limit 30
 set include-theorems false
@@ -35,7 +35,8 @@ prove-all {set time-limit 200}
 dg basic NN_T
 translate PCoClTyConsHOL2IsabelleHOL
 prover Isabelle
-prove C_id
+set goals C_id
+prove
 begin-script 
 
 lemma swap : "A --> B=D ==> B ==> A-->D"
@@ -115,7 +116,8 @@ done
 
 end-script
 
-prove C_non_triv 
+set goals C_non_triv 
+prove 
 begin-script 
 
 theorem C_non_triv : "EX x. x C x"
