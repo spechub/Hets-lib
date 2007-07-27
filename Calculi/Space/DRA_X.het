@@ -49,7 +49,6 @@ spec DipoleRelations24[sort Point] =
 			   } %(BaseRelation24_def)%
      %% Definition of Dipole Relations by Dipole point relations
      forall Dp1,Dp2 : PairOfPoints; rel : BaseRelation24; rel1, rel2 : DipolePointRelation24; pt : Point
-     . Dipole (Dp1) <=> not (sp(Dp1) = ep(Dp1))                                            %(Dipole_def)%
      . Dipole(Dp1) /\ Dipole(Dp2) =>
        (> Dp1 rel Dp2 < <=> (>> Dp1 fst(rel) sp(Dp2) << /\
 	                >> Dp1 snd(rel) ep(Dp2) << /\
@@ -11561,6 +11560,9 @@ then %def
         sqr__: PreReal -> PreReal;
         sqrt__: PreReal ->? PreReal;
         2    : PreReal;
+	3    : PreReal;
+        4    : PreReal;
+        5    : PreReal;
         half : PreReal -> PreReal
      forall r,r',r'':PreReal
      . | r | = max(r,-r)                %(PreReal_abs_def)%
@@ -11568,6 +11570,9 @@ then %def
      . def sqrt(r) <=> r >= 0           %(PreReal_sqrt_dom)%
      . sqrt(sqr(r)) = | r |             %(PreReal_sqrt_idef)%
      . 2 = 1 + 1                        %(PreReal_2_def)%
+     . 3 = 2 + 1                        %(PreReal_3_def)%
+     . 4 = 3 + 1                        %(PreReal_4_def)%
+     . 5 = 4 + 1                        %(PreReal_5_def)%
      . r-r' = r + -r'                   %(PreReal_minus_def)%
      . 2 * half(r) = r                  %(PreReal_half_idef)%
      . -1 * r = -r                      %(PreReal_inverse_prop)%
@@ -11692,9 +11697,14 @@ spec PointsToVector =
      ops A  : PairOfPoints -> Vector;
      ops Ap : PairOfPoints -> Vector;
      ops P  : PairOfPoints * Point -> Vector;
-     pred Dipole : PairOfPoints 
-     forall pt: Point; Dp: PairOfPoints
-     . Dipole (Dp) <=> (not (sp(Dp) = ep(Dp)))
+     pred Dipole : PairOfPoints; 
+     pred inRange : Elem;
+     forall pt: Point; Dp: PairOfPoints; a : Elem
+     . inRange(a) <=> a = -5 \/ a = -4 \/ a = -3 \/
+       a = -2 \/ a = -1 \/ a = 0 \/ a = 1 \/ a = 2 \/
+       a = 3 \/ a = 4 \/ a = 5                                                                          %(range_def)%
+     . Dipole (Dp) <=> not (sp(Dp) = ep(Dp)) /\ inRange(xc(sp(Dp))) /\ inRange(xc(ep(Dp))) /\           %(Dipole_def)%
+       inRange(yc(sp(Dp))) /\ inRange(yc(ep(Dp)))
      . Dipole (Dp)  => (A(Dp)      = $$xc(ep(Dp))+((-1) * xc(sp(Dp))) yc(ep(Dp))+((-1) * yc(sp(Dp)))$$) %(ADp_def)%
      . Dipole (Dp)  => (Ap(Dp)     = $$yc(ep(Dp))+((-1) * yc(sp(Dp))) xc(sp(Dp))+((-1) * xc(ep(Dp)))$$) %(ApDp_def)%
      . Dipole (Dp)  => (P (Dp, pt) = $$xc(pt)+((-1) * xc(sp(Dp)))     yc(pt)+((-1) * yc(sp(Dp)))$$)     %(PDppt_def)%
@@ -11789,14 +11799,12 @@ spec Vector_Vector_Relations24 =
      . Dipole (Dp1) /\ Dipole(Dp2) =>
        (genPos (Dp1, Dp2) <=> genPos(Dp2, Dp1))                                                                         %(genPos_sym)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 r pt << <=> 
-	   (exists v : Elem . not v = 0 /\ 
-	   (((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) - (v * v)) = 0)                                  
+	  (>> Dp1 r pt << <=>
+	   ((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) > 0                                  
 	   /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))                                                                 %(def_r)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
-	  (>> Dp1 l pt << <=> 
-	   (exists v : Elem . not v = 0 /\ 
-	   (((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) + (v * v)) = 0)                                  
+	  (>> Dp1 l pt << <=>  
+	   ((xc(Ap(Dp1)) * xc(P (Dp1, pt))) + (yc(Ap(Dp1)) * yc(P (Dp1, pt)))) < 0                                  
 	   /\ not ep(Dp1) = pt  /\  not (sp(Dp1) = pt))                                                                %(def_l)%
      . (Dipole (Dp1) /\ Dipole(Dp2) /\ genPos (Dp1, Dp2) /\ DpPoint(Dp2, pt)) => 
 	  (>> Dp1 s pt << <=> (sp(Dp1) = pt) /\ not (ep(Dp1) = pt))                                                    %(def_s)%
