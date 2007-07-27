@@ -66,3 +66,9 @@ spec CondensedSemanticsCross=
 	  (PositionRelativeTo_A(StartB) = Front)
 
 end
+
+spec CondensedSemanticsCrossMirror = 
+     CondensedSemanticsCross with Segment1start |-> Segment3end,  Segment1end|-> Segment3start,  Segment3start|-> Segment1end, Segment3end |-> Segment1start
+end 
+     
+     %% Die anderen Faelle sind symmetrisch
