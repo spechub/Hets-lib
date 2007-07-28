@@ -190,14 +190,25 @@ lliftbin ::
 "('a::type => 'b::type => 'c::type) => ('a lift --> 'b lift --> 'c lift)"
 "lliftbin f == cont2lifted2 (flift1 (%x. flift2 (f x)))"
 
+(* lazy products *)
 
+domain ('a,'b) lprod = lpair (lazy lfst :: 'a) (lazy lsnd :: 'b)
+
+(* lift constructors and selectors *)
+constdefs
+  llpair :: "'a --> 'b --> ('a,'b) lprod"
+  "llpair == cont2lifted2 lpair"
+  llfst :: "('a, 'b) lprod --> 'a"
+  "llfst == cont2lifted lfst"
+  llsnd :: "('a, 'b) lprod --> 'b"
+  "llsnd == cont2lifted lsnd"
 
 (* lazy lists *)
 
-domain ('a::pcpo) llist = lNil | "###" (lazy lHd :: 'a)
+domain 'a llist = lNil | "###" (lazy lHd :: 'a)
                        (lazy lTl :: "'a llist") (infixr 65)
 
-(* lift constructors and selcetors *)
+(* lift constructors and selectors *)
 constdefs
   llCons :: "'a --> 'a llist --> 'a llist"
   "llCons == cont2lifted2 (op ###)"
