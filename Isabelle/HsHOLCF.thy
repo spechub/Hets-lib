@@ -13,6 +13,9 @@ instance int:: IntC
 by intro_classes
 *)
 
+
+(* lifting of HOL types to flat domains *)
+
 types
 dInt = "int lift"
 
@@ -127,10 +130,83 @@ apply (simp add: Exh_tr neg_thms trE)
 apply auto
 done
 
-(* llist *)
+
+(* lifted function types *)
+
+defaultsort pcpo
+
+domain 'a Lift = Lift (lazy 'a)
+
+types  ('a, 'b) "-->"    = "('a -> 'b) Lift" (infixr 0)
+
+constdefs
+  liftedApp :: "('a --> 'b) => ('a => 'b)" ("_$$_" [999,1000] 999)
+                                                (* application *)
+  "liftedApp f x == case f of
+                     Lift $ g => g $ x"
+constdefs
+  liftedLam :: "('a => 'b) => ('a --> 'b)" (binder "Lam " 10)
+                                                (* abstraction *)
+  "liftedLam f == Lift $ (LAM x . f x)"
+
+lemmas Lift.rews [simp]
+
+lemma cont2cont_liftedApp [simp]:
+  "[| cont f; cont t |] ==> cont (%x. f x $$ (t x))"
+  apply (simp add: liftedApp_def)
+done
+
+lemma cont2cont_liftedLam [simp]:
+  "[| !!x. cont (%y. c x y); !!y. cont (%x. c x y) |]
+   ==> cont (%x. Lam y. c x y)"
+  apply (simp add: liftedLam_def)
+  done
+
+lemma beta[simp] : "cont t ==> (Lam x . t x) $$ u = t u "
+by (auto simp add: liftedApp_def liftedLam_def)
+
+(* lifting of HOLCF continuous functions *)
+
+constdefs
+  lifted2cont :: "('a --> 'b) => ('a -> 'b)"
+  "lifted2cont f == LAM x . f $$ x"
+  cont2lifted :: "('a -> 'b) => ('a --> 'b)"
+  "cont2lifted f == Lam x . f $ x"
+  cont2lifted2 :: "('a -> 'b -> 'c) => ('a --> 'b --> 'c)"
+  "cont2lifted2 f == Lam x . Lam y. f $ x $ y"
+
+  ltror :: "tr --> tr --> tr"
+  "ltror == cont2lifted2 tror"
+  lhEq :: "'a --> 'a --> tr"
+  "lhEq == cont2lifted2 hEq"
+  lhNEq :: "'a --> 'a --> tr"
+  "lhNEq == cont2lifted2 hNEq"
+
+
+(* lifting of HOL functions *)
+
+constdefs
+lliftbin ::
+"('a::type => 'b::type => 'c::type) => ('a lift --> 'b lift --> 'c lift)"
+"lliftbin f == cont2lifted2 (flift1 (%x. flift2 (f x)))"
+
+
+
+(* lazy lists *)
 
 domain ('a::pcpo) llist = lNil | "###" (lazy lHd :: 'a)
                        (lazy lTl :: "'a llist") (infixr 65)
+
+(* lift constructors and selcetors *)
+constdefs
+  llCons :: "'a --> 'a llist --> 'a llist"
+  "llCons == cont2lifted2 (op ###)"
+  llHd :: "'a llist --> 'a"
+  "llHd == cont2lifted lHd"
+  llTl :: "'a llist --> 'a llist"
+  "llTl == cont2lifted lTl"
+
+lemmas llCons_def [simp]
 
 constdefs
 llEq :: "('a::Eq) llist -> 'a llist -> tr"
