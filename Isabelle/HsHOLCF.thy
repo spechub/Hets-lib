@@ -218,6 +218,7 @@ constdefs
   "llTl == cont2lifted lTl"
 
 lemmas llCons_def [simp]
+lemmas llist.rews [simp]  
 
 constdefs
 llEq :: "('a::Eq) llist -> 'a llist -> tr"
