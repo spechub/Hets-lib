@@ -14,7 +14,7 @@ op     undefined: ?a
 type   Chain a = {s: Nat ->? a . forall n: Nat . def s n => s n <= s (n + 1)}
 fun    sup: Chain a ->? a
 var    x: ?a; c: Chain a
-. sup c <= x <=> forall n: Nat . c n <= x
+. sup c <=[?a] x <=> forall n: Nat . c n <=[?a] x
 }
 
 class Cppo < Cpo {
