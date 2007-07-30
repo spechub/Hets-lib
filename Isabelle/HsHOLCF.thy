@@ -135,9 +135,9 @@ done
 
 defaultsort pcpo
 
-domain 'a Lift = Lift (lazy 'a)
-
-types  ('a, 'b) "-->"    = "('a -> 'b) Lift" (infixr 0)
+domain ('a, 'b)  LiftedCFun  = Lift (lazy "'a -> 'b")  
+syntax 
+  "LiftedCFun"  :: "[type, type] => type"      ("(_ --> _)" [1,0]0)
 
 constdefs
   liftedApp :: "('a --> 'b) => ('a => 'b)" ("_$$_" [999,1000] 999)
@@ -149,7 +149,7 @@ constdefs
                                                 (* abstraction *)
   "liftedLam f == Lift $ (LAM x . f x)"
 
-lemmas Lift.rews [simp]
+lemmas LiftedCFun.rews [simp]
 
 lemma cont2cont_liftedApp [simp]:
   "[| cont f; cont t |] ==> cont (%x. f x $$ (t x))"
@@ -192,16 +192,12 @@ lliftbin ::
 
 (* lazy products *)
 
-domain ('a,'b) lprod = lpair (lazy lfst :: 'a) (lazy lsnd :: 'b)
+domain ('a,'b) lprod = lpair (lazy 'a) (lazy 'b)
 
 (* lift constructors and selectors *)
 constdefs
   llpair :: "'a --> 'b --> ('a,'b) lprod"
   "llpair == cont2lifted2 lpair"
-  llfst :: "('a, 'b) lprod --> 'a"
-  "llfst == cont2lifted lfst"
-  llsnd :: "('a, 'b) lprod --> 'b"
-  "llsnd == cont2lifted lsnd"
 
 (* lazy lists *)
 
