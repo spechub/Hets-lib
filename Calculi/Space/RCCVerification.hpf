@@ -1,43 +1,71 @@
 use Calculi/Space/RCCVerification
 dg-all auto 
 
+
+# Test 1
 dg basic ExtRCC_FO_E1
-translate SuleCFOL2SoftFOL
+translate SuleCFOL2SoftFOL 
 prover SPASS
 prove-all 
 
+# Test 2
 dg basic ExtRCCByRCC5Rels_E1
-translate SuleCFOL2SoftFOL
+translate SuleCFOL2SoftFOL 
 prover SPASS
-prove-all {del axioms C_non_null C_non_triv}
+del axioms C_non_null C_non_triv
+set time-limit 10
 
+prove-all
+
+# Test 3
 dg basic ExtRCCByRCC8Rels_E1
-translate SuleCFOL2SoftFOL
+translate SuleCFOL2SoftFOL 
 prover SPASS
-set time-limit 30
 set include-theorems false
-prove-all  
-prove cmps_DCEC {set include-theorems true
-    set time-limit 10} begin-script
-    Auto=0 SatInput=1 IORe=1 
-    RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
- end-script
+set time-limit 30
 
+prove-all
+
+# Test 4
+set goals cmps_DCEC
+set include-theorems true
+begin-script
+Time limit: 10
+Auto=0 SatInput=1 IORe=1 
+RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
+end-script
+prove
+    
+
+# Test 5
 set include-theorems true 
+begin-script
+Time limit: 30
+Auto=0 SatInput=1 IORe=1 
+RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
+end-script
+prove-all
+    
+# Test 6
+begin-script
+Time limit: 70
+end-script
+prove-all
 
-prove-all {set time-limit 30} begin-script
-    Auto=0 SatInput=1 IORe=1 
-    RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
- end-script
-prove-all {set time-limit 70}
-prove-all {set time-limit 200}
+# Test 7
+begin-script
+Time limit: 200
+end-script
 
+prove-all
+
+
+# Test 8
 dg basic NN_T
 translate PCoClTyConsHOL2IsabelleHOL
 prover Isabelle
 set goals C_id
-prove
-begin-script 
+begin-script
 
 lemma swap : "A --> B=D ==> B ==> A-->D"
 by auto
@@ -114,11 +142,14 @@ apply (rule_tac x="y" in C_id_lemma)
 apply(auto)
 done
 
-end-script
 
-set goals C_non_triv 
+end-script
 prove 
-begin-script 
+
+
+# Test 9
+set goals C_non_triv
+begin-script
 
 theorem C_non_triv : "EX x. x C x"
 apply (simp add: C_def)
@@ -134,6 +165,7 @@ defer
 apply(rule zero_leq_one)
 apply auto
 done
-
 end-script
+prove 
+
 
