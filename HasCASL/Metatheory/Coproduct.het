@@ -1,8 +1,12 @@
 library HasCASL/Metatheory/Coproduct
 
+%display __<=__ %LATEX __\sqsubseteq__
+
+%prec {__when__else__} <> {if__then__else__}
+
 logic HasCASL
 
-spec Coproduct =
+spec Sums =
 vars a, b, c: Type
 type Sum a b
 ops  inl: a -> Sum a b;
@@ -29,3 +33,13 @@ ops  True, False: Bool;
      . True = inl ()
      . False = inr ()
      . if p then x else w = sumcase (\ . x) (\ . w) p
+
+spec While = Sums with Bool, if__then__else__ then
+type s
+ops  while: (s -> Bool) -> (s ->? s) -> s ->? s
+fun  __ res __: ?s * ?s -> s
+pred __ <= __ (q, r: s ->? s) <=> forall y: s . q y = r y res q y
+vars b: s -> Bool; p: s ->? s; x: s
+. let F = \ (q: s ->? s) (x: s) . if b x then x else q (p x);
+      w = while b p
+  in F w = w /\ forall q: s ->? s . F q = q => w <= q
