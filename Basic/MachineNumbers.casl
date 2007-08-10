@@ -53,7 +53,7 @@ then %def
       __ mod __ : CARDINAL * CARDINAL ->? CARDINAL;
 
   . maxCardinal = (2 ^ WordLength) -? 1                  %(maxCardinal_Nat)%
-  . maxCardinal = natToCard(maxCardinal)            %(maxCardinal_CARDINAL)%   
+  . maxCardinal = natToCard(maxCardinal);           %(maxCardinal_CARDINAL)%   
   forall x,y: CARDINAL
   . natToCard(0) = 0                                      %(def_0_CARDINAL)%
   . natToCard(1) = 1                                      %(def_1_CARDINAL)%
@@ -115,7 +115,7 @@ then %def
   . maxInteger= (2 ^ (WordLength-?1))-1                      %(maxInteger_Int)%
   . minInteger= -(2 ^ (WordLength-?1))                       %(minInteger_Int)%
   . maxInteger=intToInteger(maxInteger)                  %(maxInteger_INTEGER)%
-  . minInteger=intToInteger(minInteger)                  %(minInteger_INTEGER)%
+  . minInteger=intToInteger(minInteger);                 %(minInteger_INTEGER)%
   forall x,y: INTEGER
   . intToInteger(0) = 0                                       %(def_0_INTEGER)%
   . intToInteger(1) = 1                                       %(def_1_INTEGER)%
@@ -168,11 +168,11 @@ then %mono
       minInteger: Int;
       TCtoInt : TwoComplement -> Int
   . maxInteger= (2 ^ (WordLength-?1))-1            %(maxInteger_Int)%
-  . minInteger= -(2 ^ (WordLength-?1))             %(minInteger_Int)%
+  . minInteger= -(2 ^ (WordLength-?1));            %(minInteger_Int)%
   forall x,y:Int; i:TwoComplement
   . intToTC(x) = intToTC(x+ 2^WordLength)               %(cycle_max)%
   . intToTC(x) = intToTC(y) => x-y mod 2^WordLength = 0 %(cycle_min)%
-  . TCtoInt(intToTC(x)) = x if minInteger<=x /\ x<=maxInteger
+  . TCtoInt(intToTC(x)) = x if minInteger<=x /\ x<=maxInteger;
 then %def
   %% The predicates and operations are just inherited from Int.
   %% Operations remain total, since intToTC is total
@@ -195,7 +195,7 @@ then %def
       __ rem__:   TwoComplement * TwoComplement -> TwoComplement
 
   . maxInteger=intToTC(maxInteger)              %(maxInteger_TwoComplement)%
-  . minInteger=intToTC(minInteger)              %(minInteger_TwoComplement)%
+  . minInteger=intToTC(minInteger);             %(minInteger_TwoComplement)%
   forall x,y: TwoComplement
   . intToTC(0) = 0                                   %(def_0_TwoComplement)%
   . intToTC(1) = 1                                   %(def_1_TwoComplement)%

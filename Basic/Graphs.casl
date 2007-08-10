@@ -14,6 +14,7 @@ version 1.0
 %display __::__-->__isIn__ %LATEX __::__\longrightarrow__\epsilon__
 %display __isIn__          %LATEX __\epsilon__
 
+%prec {__::__-->__isIn__} <> {__<=>__, __::__}
 
 from Basic/StructuredDatatypes get Set, Map, List
 from Basic/Numbers get Nat
@@ -48,7 +49,7 @@ spec Graph[sort NodeId][sort EdgeId] =
   . def addEdge(s,t,e2,g) =>
      (target(e1,addEdge(s,t,e2,g)) = 
       t when e1=e2 else target(e1,g))                    %(target_addEdge)%
-  . e::s-->t isIn g <=> e isIn g /\ source(e,g)=s /\ target(e,g)=t
+  . (e::s-->t isIn g) <=> e isIn g /\ source(e,g)=s /\ target(e,g)=t
                                                                %(isIn_def)%
   . g=g' <=> (forall n:NodeId . n isIn g <=> n isIn g')
          /\ (forall e:EdgeId . e isIn g <=> e isIn g') 
@@ -83,12 +84,12 @@ then %def
 
   pred symmetric(g:Graph) <=> 
     forall n1,n2:NodeId; e:EdgeId .
-        e::n1-->n2 isIn g => 
+        (e::n1-->n2 isIn g) => 
            exists e':EdgeId . e'::n2-->n1 isIn g       %(symmetric_def)%
 
   pred transitive(g:Graph) <=>
     forall n1,n2,n3:NodeId; e1,e2:EdgeId . 
-        e1::n1-->n2 isIn g /\ e2::n2-->n3 isIn g =>
+        (e1::n1-->n2 isIn g) /\ (e2::n2-->n3 isIn g) =>
            exists e3:EdgeId . e2::n1-->n3 isIn g      %(transitive_def)%
 
   pred loopFree(g:Graph) <=>
@@ -96,12 +97,12 @@ then %def
                                                         %(loopFree_def)%
   pred simple(g:Graph) <=>
      forall e1,e2:EdgeId; s,t:NodeId .
-        e1::s-->t isIn g /\ e2::s-->t isIn g => e1=e2     %(simple_def)%
+        (e1::s-->t isIn g) /\ (e2::s-->t isIn g) => e1=e2 %(simple_def)%
 
   pred __subgraphOf__ (g1,g2:Graph) <=>
     (forall n:NodeId . n isIn g1 => n isIn g2) /\
     (forall n1,n2:NodeId; e:EdgeId .
-          e::n1-->n2 isIn g1 => e::n1-->n2 isIn g2)   %(subgraphOf_def)%
+        (e::n1-->n2 isIn g1) => (e::n1-->n2 isIn g2)) %(subgraphOf_def)%
 
   pred complete(g:Graph) <=>
     forall n1,n2:NodeId . n1 isIn g /\ n2 isIn g =>
@@ -158,7 +159,7 @@ then
 then
   sort SymmetricGraph =                           
        {g:Graph . forall s,t:NodeId; e:EdgeId . 
-                    left(e)::s-->t isIn g <=> right(e)::t-->s isIn g}
+                    (left(e)::s-->t isIn g) <=> (right(e)::t-->s isIn g)}
                                                   %(SymmetricGraph_def)%
   type SymmetricGraph ::= emptyGraph
 %[            | addNode(node :? NodeId; graph :? SymmetricGraph)
@@ -184,8 +185,8 @@ then
   op sc : Graph -> Graph
   forall n,n1,n2:NodeId; e:EdgeId; g:Graph
   . n isIn sc(g) <=> n isIn g                            %(sc_def_1)%
-  . e::n1-->n2 isIn sc(g) <=> 
-      (e::n1-->n2 isIn g \/ e::n2-->n1 isIn g)           %(sc_def_2)%
+  . (e::n1-->n2 isIn sc(g)) <=> 
+      (e::n1-->n2 isIn g) \/ (e::n2-->n1 isIn g)         %(sc_def_2)%
 then %implies
   forall g:Graph
   . symmetric(sc(g))                                 %(symmetric_sc)%
@@ -211,12 +212,12 @@ then
   . g pathSubgraphOf g' <=>
       (forall n:NodeId . n isIn g <=> n isIn g') /\
       (forall n1,n2:NodeId; e:EdgeId .
-          e::n1-->n2 isIn g <=> [e]::n1-->n2 isIn g') 
+          (e::n1-->n2 isIn g) <=> ([e]::n1-->n2 isIn g')) 
                                                 %(pathSubgraphOf_def)%
   . pathTransitive(g') <=>
       forall n1,n2,n3:NodeId; e1,e2:List[EdgeId] . 
-        e1::n1-->n2 isIn g' /\ e2::n2-->n3 isIn g' =>
-           (e1++e2)::n1-->n3 isIn g'            %(pathTransitive_def)%
+        (e1::n1-->n2 isIn g') /\ (e2::n2-->n3 isIn g') =>
+           ((e1++e2)::n1-->n3 isIn g')          %(pathTransitive_def)%
 
   . pathTransitive(tc(g))                                  %(tc_def1)%
   . g pathSubgraphOf tc(g)                                 %(tc_def2)%
@@ -260,7 +261,7 @@ then
            p pathOf g /\ freq(p,e)=2
            /\ not (exists e1,e2:EdgeId; n1,n2:NodeId .
                     e1 eps p /\ e2 eps p
-                      /\ e1::n1-->n2 isIn g /\ e2::n2-->n1 isIn g ))
+                      /\ (e1::n1-->n2 isIn g) /\ (e2::n2-->n1 isIn g)))
                                                %(symmetricHasCycle_def)%
 
   pred symmetricAcyclic(g:Graph) <=> 
@@ -274,7 +275,7 @@ then %implies
   %% occurrences of --> * <--
   pred tree(g:Graph) <=> acyclic(g) /\ connected(g) 
       /\ not (exists e1,e2:EdgeId; n1,n2,n3:NodeId .
-               e1::n1-->n2 isIn g /\ e2::n3-->n2 isIn g) %(tree_def2)%
+               (e1::n1-->n2 isIn g) /\ (e2::n3-->n2 isIn g)) %(tree_def2)%
 end
 
 spec GraphColorability[sort NodeId][sort EdgeId] given Nat =
@@ -286,7 +287,7 @@ then
       dom(f) = nodeSet(g)
       /\ (forall m:Nat . m eps range(f) => m<n)
       /\ forall e:EdgeId; s,t:NodeId .
-          e::s-->t isIn g => not lookup(s,f)=lookup(t,f)  %(colorable_def)%
+          (e::s-->t isIn g) => not lookup(s,f)=lookup(t,f) %(colorable_def)%
   pred bipartite(g:Graph) <=> g is 2 colorable        %(bipartite_def)%
 end
 
@@ -327,9 +328,9 @@ then
                               edgeMap : Map[E1,E2])
   sort Hom =                                               
    {h:PreHom .
-      forall n,n':N1; e:E1 . e::n-->n' isIn source(h) =>
-       lookup(e,edgeMap(h))::lookup(n,nodeMap(h))-->lookup(n',nodeMap(h))
-                                                    isIn target(h)   }
+      forall n,n':N1; e:E1 . (e::n-->n' isIn source(h)) =>
+       (lookup(e,edgeMap(h))::lookup(n,nodeMap(h))-->lookup(n',nodeMap(h))
+                                                    isIn target(h))  }
 							%(Hom_def)% 
 end
 
@@ -416,6 +417,6 @@ then
                                               %(removeEdgeLabel_def2)%
      . el isIn g <=> exists n1,n2: NodeId . EI(n1,el,n2) isIn g
                                                        %(isInNU1_def)%
-     . el :: n1 --> n2 isIn g <=> EI(n1,el,n2) isIn g
+     . (el :: n1 --> n2 isIn g) <=> EI(n1,el,n2) isIn g
                                                        %(isInNU2_def)%
 end
