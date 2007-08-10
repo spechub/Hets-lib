@@ -17,11 +17,11 @@ var    x, y, z: a
 var a, b: Ord
 type  instances a * b: Ord
 vars  x, z: a; y, w: b
-. (x, y) <=[a * b] (z, w) <=> x <=[a] z /\ y <=[b] w
+. (x, y) <= (z, w) <=> x <= z /\ y <= w
 
 type  instance Unit: Ord
-. () <=[Unit] ()
+. () <= ()
 
 type  instance ?a: Ord
 vars  x, y: ?a
-. x <=[?a] y <=> def x() => x() <= y()
+. x <= y <=> def x() => x() <= y()
