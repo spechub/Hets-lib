@@ -2,7 +2,7 @@ library HasCASL/Metatheory/Coproduct
 
 logic HasCASL
 
-spec Coproduct = 
+spec Coproduct =
 vars a, b, c: Type
 type Sum a b
 ops  inl: a -> Sum a b;
@@ -10,7 +10,7 @@ ops  inl: a -> Sum a b;
      sumcase: (a ->? c) -> (b ->? c) -> Sum a b ->? c;
      bot: ?a
 vars f: a ->? c; g: b ->? c; h: Sum a b ->? c;
-. h = sumcase f g <=> 
+. h = sumcase f g <=>
   forall x: a; y: b . h (inl x) = f x /\ h (inr y) = g y
 . not def (bot : ?a)
 . sumcase inl inr = \ z : Sum a b . z %implied
@@ -28,4 +28,4 @@ ops  True, False: Bool;
      if__then__else__ : Bool * a * a -> a
      . True = inl ()
      . False = inr ()
-     . if p then x else w = sumcase (\ . x) (\ . w) p     
+     . if p then x else w = sumcase (\ . x) (\ . w) p
