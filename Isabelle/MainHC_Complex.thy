@@ -93,12 +93,10 @@ mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
 mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 "mapSnd f p == (fst p, f (snd p))"
 
-defOp :: "'a option => bool"
-"defOp s == case s of
-    None => False
-  | Some a => True"
-
-declare defOp_def [simp]
+consts defOp :: "'a option => bool"
+primrec 
+"defOp None = False"
+"defOp (Some x) = True"
 
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
@@ -130,6 +128,17 @@ primrec
 
 lemma some_inj : "Some x = Some y ==> x = y"
 apply (auto)
+done
+
+lemma real_mult_ldistrib : "w * ((z1::real) + z2) = (w * z1) + (w * z2)"
+apply (subst real_mult_commute)
+apply (rule sym)
+apply (subst real_mult_commute)
+apply (subst real_mult_commute [where w="z2"])
+apply (rule sym)
+apply (cases z1, cases z2, cases w)
+apply (simp add: real_add real_mult preal_add_mult_distrib2 
+                 preal_add_ac preal_mult_ac)
 done
 
 end

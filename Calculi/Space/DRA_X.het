@@ -11698,13 +11698,8 @@ spec PointsToVector =
      ops Ap : PairOfPoints -> Vector;
      ops P  : PairOfPoints * Point -> Vector;
      pred Dipole : PairOfPoints; 
-     pred inRange : Elem;
      forall pt: Point; Dp: PairOfPoints; a : Elem
-     . inRange(a) <=> a = -5 \/ a = -4 \/ a = -3 \/
-       a = -2 \/ a = -1 \/ a = 0 \/ a = 1 \/ a = 2 \/
-       a = 3 \/ a = 4 \/ a = 5                                                                          %(range_def)%
-     . Dipole (Dp) <=> not (sp(Dp) = ep(Dp)) /\ inRange(xc(sp(Dp))) /\ inRange(xc(ep(Dp))) /\           %(Dipole_def)%
-       inRange(yc(sp(Dp))) /\ inRange(yc(ep(Dp)))
+     . Dipole (Dp) <=> not (sp(Dp) = ep(Dp))                                                            %(Dipole_def)%
      . Dipole (Dp)  => (A(Dp)      = $$xc(ep(Dp))+((-1) * xc(sp(Dp))) yc(ep(Dp))+((-1) * yc(sp(Dp)))$$) %(ADp_def)%
      . Dipole (Dp)  => (Ap(Dp)     = $$yc(ep(Dp))+((-1) * yc(sp(Dp))) xc(sp(Dp))+((-1) * xc(ep(Dp)))$$) %(ApDp_def)%
      . Dipole (Dp)  => (P (Dp, pt) = $$xc(pt)+((-1) * xc(sp(Dp)))     yc(pt)+((-1) * yc(sp(Dp)))$$)     %(PDppt_def)%
