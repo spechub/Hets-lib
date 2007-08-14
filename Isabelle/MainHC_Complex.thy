@@ -141,4 +141,26 @@ apply (simp add: real_add real_mult preal_add_mult_distrib2
                  preal_add_ac preal_mult_ac)
 done
 
+lemma ladd_zero_real : "(0 :: real) + a = a"
+  by (auto)
+
+lemma radd_zero_real : "a + (0 :: real) = a"
+  by (auto)
+
+lemma lmult_zero_real : "(0 :: real) * a = 0"
+  by (auto)
+
+lemma rmult_zero_real : "a * (0 :: real) = 0"
+  by (auto)
+
+lemma plus_minus : "a + - (b :: real) = a - b"
+  by (auto)
+
+lemma lmult_one_real : "(1 :: real) * a = a"
+  by (auto)
+
+lemma rmult_one_real : "(1 :: real) * a = a"
+  by (auto)
+
+
 end
