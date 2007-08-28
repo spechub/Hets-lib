@@ -27,8 +27,7 @@ program
  foldl z f nil = z;
  foldl z f (cons x l) = foldl (f z x) f l
 
-
-view ImplementFoldl: FoldlReq to FoldlImpl
+%%view ImplementFoldl: FoldlReq to FoldlImpl
 
 %%Translate to Haskell (inc CASL-lib/HasCASL)
 %%Demo term: foldl 10 (-)  (A__cons 3 (A__cons 4 (A__cons 5 A__nil)))
