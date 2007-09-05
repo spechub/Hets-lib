@@ -37,7 +37,6 @@ ops  True, False: Bool;
 spec While = Sums with Bool, if__then__else__ then
 type s
 ops  while: (s -> Bool) -> (s ->? s) -> s ->? s
-fun  __ res __: ?s * ?s -> s
 pred __ <= __ (q, r: s ->? s) <=> forall y: s . q y = r y res q y
 vars b: s -> Bool; p: s ->? s; x: s
 . let F = \ (q: s ->? s) (x: s) . if b x then x else q (p x);
