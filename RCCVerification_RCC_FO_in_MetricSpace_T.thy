@@ -347,8 +347,7 @@ apply (subst not_iff)
 apply (case_tac "ta >' 0''")
 apply (rule_tac x="closedBall(xa, half (d(za, xa) -' ta))" in exI)
 apply(auto)
-thm EMSCB_rep_pos [THEN sym]
-apply((drule EMSCB_rep_pos [THEN sym])+)
+apply((drule EMSCB_rep_pos [COMP impI, THEN swap]))+
 apply(rule_tac P="d(za, xa) <=' ta" in notE)
 apply(assumption)
 apply(rule half_leq)
@@ -359,23 +358,23 @@ apply(rule add_monotone)
 apply(rule conjI)
 apply(erule mp)
 back
-apply(insert sub_leq [THEN mp])
-apply(rule half_gt_zero [THEN mp])
-apply(rule sub_leq [THEN mp])
+apply(insert sub_leq)
+apply(rule half_gt_zero)
+apply(rule sub_leq)
 apply(assumption+)
 
 apply(rule_tac x="xa" in exI)
 apply simp
-apply(rule EMSCB_rep_pos [THEN mp, THEN iffD2])
-apply(rule half_gt_zero [THEN mp])
-apply(rule sub_leq [THEN mp])
+apply(rule EMSCB_rep_pos [THEN iffD2])
+apply(rule half_gt_zero)
+apply(rule sub_leq)
 apply(assumption)
 apply simp
-apply(rule half_leq_zero [THEN mp])
-apply(drule sub_leq [THEN mp])
+apply(rule half_leq_zero)
+apply(drule sub_leq)
 apply(simp add: greater_def_ExtPartialOrder
                 less_def_ExtPartialOrder)
-apply(rule trans [THEN spec, THEN spec, THEN spec, THEN mp])
+apply(rule trans)
 apply(rule conjI)
 defer
 apply(rule MS_triangle_rev)
@@ -385,7 +384,7 @@ done
 
 theorem C_id : "ALL x. ALL y. (ALL z. (z C x) = (z C y)) --> x = y"
 apply (auto simp add: C_def)
-apply (rule EMSCB_rep_inj [THEN mp])
+apply (rule EMSCB_rep_inj)
 apply (rule ext)
 apply (auto)
 apply (rule_tac x="x" in C_id_lemma)
@@ -400,7 +399,7 @@ theorem C_non_triv : "EX x. x C x"
 apply (simp add: C_def)
 apply (rule exI)
 apply (rule exI)
-apply (rule EMSCB_rep_pos [THEN mp, THEN iffD2])
+apply (rule EMSCB_rep_pos [THEN iffD2])
 apply(rule one_greater_zero)
 apply(rule iffD2)
 apply(rule arg_cong)
