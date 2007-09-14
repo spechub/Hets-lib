@@ -123,8 +123,9 @@ then
         . atExit = @atExit
         . atEntry = @atEntry
         forall entry, exit: Location
-        . entry-->exit#entry-->exit>atExit
-        . entry-->exit#exit-->entry>atEntry
+        . entry = exit \/
+          (entry-->exit#entry-->exit>atExit
+           /\ entry-->exit#exit-->entry>atEntry)
 end
 
 spec Places = DoubleCrossCalculus then
