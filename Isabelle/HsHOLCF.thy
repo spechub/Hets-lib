@@ -1,143 +1,79 @@
 theory HsHOLCF
 imports "$ISABELLE_HOME/src/HOLCF/IOA/meta_theory/Abstraction"
+"$ISABELLE_HOME/src/HOL/Complex/Complex"
 begin
 
-(*
-axclass BoolC < type
-axclass IntC < type
+(** types Bool and Ordering **)
 
-instance bool:: BoolC
-by intro_classes
+domain lBool = FALSE | TRUE
+domain lOrdering = LT | EQ | GT
 
-instance int:: IntC
-by intro_classes
-*)
+(** type bounded Int **)
 
+constdefs
+minB :: int
+"minB == -2147483648"
+maxB :: int
+"maxB == 21474836487"
 
-(* lifting of HOL types to flat domains *)
+typedef boundInt = "{x::int. minB <= x & x <= maxB}"
+apply (rule_tac x=0 in exI)
+apply (unfold minB_def maxB_def)
+apply auto
+done
 
 types
-dInt = "int lift"
+unitT       = "unit lift"
+integerT    = "int lift"
+ratT        = "rat lift"
+charT       = "char lift"
+intT        = "boundInt lift" 
 
-constdefs
-fliftbin ::
-"('a => 'b => 'c) => ('a lift -> 'b lift -> 'c lift)"
-"fliftbin f == flift1 (%x. flift2 (f x))"
+(* class declarations *)
 
-fliftbinA ::
-"(('a::pcpo) => ('b::pcpo) => ('c::type)) => ('a -> 'b -> 'c lift)"
-"fliftbinA f == LAM y. (LAM x. (Def (f y x)))"
-
-consts
-hEq :: "'a -> 'a -> tr"
-hNEq :: "'a -> 'a -> tr"
-
+axclass BoundedH < type
 axclass Eq < pcpo
-  eqAx: "hEq $ p $ q = neg $ (hNEq $ p $ q)"
-(*  ALL x::bool.
-        (hEq $ p $ q = Def x) = (hNEq $ p $ q = Def (~x))" *)
+axclass Num < Eq
+axclass Ord < Eq
+axclass Enum < pcpo
 
-constdefs
-holEq :: "('a::flat) => 'a => tr"
-"holEq == %p q.
-   if ~(p=UU) & ~(q=UU) then Def (p=q) else UU"
-holNEq :: "('a::flat) => 'a => tr"
-"holNEq == %p q.
-   if ~(p=UU) & ~(q=UU) then Def (p~=q) else UU"
+(* Bounded *)
 
-(* auxiliary *)
+consts 
+minBound :: "'a::BoundedH"
+maxBound :: "'a::BoundedH"
 
-lemma beta2_cfun:
-  "(ALL x. cont (f x)) --> cont (%w1. (LAM w2. f w1 w2)) --> (LAM w1 w2. f w1 w2) $ z1 $ z2 = f z1 z2"
-apply auto
-done
-
-(* holEq *)
-
-lemma holEq1_UU: "ALL (y::('a::flat)). (%x. holEq x y) UU = UU"
-apply (unfold holEq_def)
-apply auto
-done
-
-lemma holEq2_UU: "ALL (x::('a::flat)). (%y. holEq x y) UU = UU"
-apply (unfold holEq_def)
-apply auto
-done
-
-lemma holEq_cont1: "ALL (y::('a::flat)). cont (%x. holEq x y)"
-apply (simp add: holEq1_UU flatdom_strict2cont)
-done
-
-lemma holEq_cont2: "cont (holEq x)"
-apply (simp add: holEq2_UU flatdom_strict2cont)
-done
-
-lemma holEq_cont1C: "cont (%x. (LAM y. holEq x y))"
-apply (simp add: holEq_cont2 holEq1_UU flatdom_strict2cont)
-done
-
-lemma holEq_beta2: "(LAM x y. holEq x y) $ z1 $ z2 = holEq z1 z2"
-apply (simp add: holEq_cont2 holEq_cont1C beta2_cfun)
-done
-
-(* holNE *)
-
-lemma holNEq1_UU: "ALL (y::('a::flat)). (%x. holNEq x y) UU = UU"
-apply (unfold holNEq_def)
-apply auto
-done
-
-lemma holNEq2_UU: "ALL (x::('a::flat)). (%y. holNEq x y) UU = UU"
-apply (unfold holNEq_def)
-apply auto
-done
-
-lemma holNEq_cont1: "ALL (y::('a::flat)). cont (%x. holNEq x y)"
-apply (simp add: holNEq1_UU flatdom_strict2cont)
-done
-
-lemma holNEq_cont2: "cont (holNEq x)"
-apply (simp add: holNEq2_UU flatdom_strict2cont)
-done
-
-lemma holNEq_cont1C: "cont (%x. (LAM y. holNEq x y))"
-apply (simp add: holNEq_cont2 holNEq1_UU flatdom_strict2cont)
-done
-
-lemma holNEq_beta2: "(LAM x y. holNEq x y) $ z1 $ z2 = holNEq z1 z2"
-apply (simp add: holNEq_cont2 holNEq_cont1C beta2_cfun)
-done
-
-(* lift *)
-
+instance unit :: BoundedH ..
+instance boundInt :: BoundedH ..
+instance lOrdering :: BoundedH ..
+instance lBool :: BoundedH ..
+instance lift :: (BoundedH) BoundedH ..
+instance char :: BoundedH ..
+ 
 defs
-lift_hEq_def: "hEq == LAM (p::('a :: type) lift) q.
-   holEq p q"
-lift_hNEq_def: "hNEq == LAM (p::('a :: type) lift) q.
-   holNEq p q"
+lBool_minBound_def: "minBound == FALSE"
+lBool_maxBound_def: "maxBound == TRUE"
+unit_minBound_def: "minBound == ()"
+unit_maxBound_def: "maxBound == ()"
+boundInt_minBound_def: "minBound == Abs_boundInt minB"
+boundInt_maxBound_def: "maxBound == Abs_boundInt maxB"
+lOrdering_minBound_def: "minBound == LT"
+lOrdering_maxBound_def: "maxBound == GT"
+lift_minBound_def: "minBound == Def minBound"
+lift_maxBound_def: "maxBound == Def maxBound"
+(*
+problem with char -
+char_minBound_def: "minBound == ??"
+char_maxBound_def: "maxBound == ??"
+*)
 
-instance lift :: (type) Eq
-apply (intro_classes, unfold lift_hEq_def lift_hNEq_def)
-apply (simp add: holEq_beta2 holNEq_beta2)
-apply (unfold holEq_def holNEq_def)
-apply (unfold neg_def)
-apply auto
-done
-
-lemma double_neg: "x = neg $ (neg $ x)"
-apply (rule_tac p = "x" in trE)
-apply (simp add: Exh_tr neg_thms trE)
-apply auto
-done
-
-
-(* lifted function types *)
+(**** lifted function types ****)
 
 defaultsort pcpo
 
-domain ('a, 'b)  LiftedCFun  = Lift (lazy "'a -> 'b")  
-syntax 
-  "LiftedCFun"  :: "[type, type] => type"      ("(_ --> _)" [1,0]0)
+domain 'a Lift = Lift (lazy 'a)
+
+types  ('a, 'b) "-->"    = "('a -> 'b) Lift" (infixr 0)
 
 constdefs
   liftedApp :: "('a --> 'b) => ('a => 'b)" ("_$$_" [999,1000] 999)
@@ -149,7 +85,7 @@ constdefs
                                                 (* abstraction *)
   "liftedLam f == Lift $ (LAM x . f x)"
 
-lemmas LiftedCFun.rews [simp]
+lemmas Lift.rews [simp]
 
 lemma cont2cont_liftedApp [simp]:
   "[| cont f; cont t |] ==> cont (%x. f x $$ (t x))"
@@ -165,7 +101,25 @@ lemma cont2cont_liftedLam [simp]:
 lemma beta[simp] : "cont t ==> (Lam x . t x) $$ u = t u "
 by (auto simp add: liftedApp_def liftedLam_def)
 
-(* lifting of HOLCF continuous functions *)
+lemma beta2_cfun:
+  "(ALL x. cont (f x)) --> cont (%w1. (LAM w2. f w1 w2)) --> 
+                        (LAM w1 w2. f w1 w2) $ z1 $ z2 = f z1 z2"
+apply auto
+done
+
+
+(* lifting of HOL to HOLCF *)
+
+constdefs
+fliftbin ::
+"('a => 'b => 'c) => ('a lift -> 'b lift -> 'c lift)"
+"fliftbin f == flift1 (%x. flift2 (f x))"
+
+fliftbinA ::
+"(('a::pcpo) => ('b::pcpo) => ('c::type)) => ('a -> 'b -> 'c lift)"
+"fliftbinA f == LAM y. (LAM x. (Def (f y x)))"
+
+(* lifting and unlifting between HOLCF and Hs *)
 
 constdefs
   lifted2cont :: "('a --> 'b) => ('a -> 'b)"
@@ -175,36 +129,55 @@ constdefs
   cont2lifted2 :: "('a -> 'b -> 'c) => ('a --> 'b --> 'c)"
   "cont2lifted2 f == Lam x . Lam y. f $ x $ y"
 
-  ltror :: "tr --> tr --> tr"
-  "ltror == cont2lifted2 tror"
-  lhEq :: "'a --> 'a --> tr"
-  "lhEq == cont2lifted2 hEq"
-  lhNEq :: "'a --> 'a --> tr"
-  "lhNEq == cont2lifted2 hNEq"
-
-
-(* lifting of HOL functions *)
+(* lifting of HOL to Hs *)
 
 constdefs
+llift2 :: "('a::type => 'b::type) => ('a lift --> 'b lift)"
+"llift2 f == cont2lifted (flift2 f)"
+
 lliftbin ::
 "('a::type => 'b::type => 'c::type) => ('a lift --> 'b lift --> 'c lift)"
 "lliftbin f == cont2lifted2 (flift1 (%x. flift2 (f x)))"
 
-(* lazy products *)
 
-domain ('a,'b) lprod = lpair (lazy 'a) (lazy 'b)
+(*** lazy products ***)
 
-(* lift constructors and selectors *)
+domain ('a,'b) lprod = lpair (lazy lfst :: 'a) (lazy lsnd :: 'b)
+
+(* lifted constructors and selectors *)
 constdefs
   llpair :: "'a --> 'b --> ('a,'b) lprod"
   "llpair == cont2lifted2 lpair"
+  llfst :: "('a, 'b) lprod --> 'a"
+  "llfst == cont2lifted lfst"
+  llsnd :: "('a, 'b) lprod --> 'b"
+  "llsnd == cont2lifted lsnd"
 
-(* lazy lists *)
+
+(*** lazy sum ***)
+
+domain ('a,'b) lEither = lLeft (lazy 'a) | lRight (lazy 'b)
+
+constdefs
+llLeft :: "'a --> ('a,'b) lEither"
+"llLeft == cont2lifted lLeft"
+llRight :: "'b --> ('a,'b) lEither"
+"llRight == cont2lifted lRight"
+
+(*** maybe ***)
+
+domain 'a lMaybe = lNothing | lJust (lazy 'a)
+
+constdefs
+llJust :: "'a --> 'a lMaybe"
+"llJust == cont2lifted lJust"
+
+(*** lazy lists ***)
 
 domain 'a llist = lNil | "###" (lazy lHd :: 'a)
                        (lazy lTl :: "'a llist") (infixr 65)
 
-(* lift constructors and selectors *)
+(* lifted constructors and selectors *)
 constdefs
   llCons :: "'a --> 'a llist --> 'a llist"
   "llCons == cont2lifted2 (op ###)"
@@ -214,67 +187,388 @@ constdefs
   "llTl == cont2lifted lTl"
 
 lemmas llCons_def [simp]
-lemmas llist.rews [simp]  
 
+(* lift lists to Hs *)
 constdefs
-llEq :: "('a::Eq) llist -> 'a llist -> tr"
-"llEq == fix $ (LAM hh (xs::('a::Eq) llist) ys.
-  if (xs = UU) | (ys = UU) then UU
-  else case xs of
-       lNil => case ys of
-           lNil => TT
-          | w###ws => if (w = UU) then UU
-                    else FF
-      | z###zs => if (z = UU) then UU
-          else case ys of
-              lNil => FF
-             | w###ws => if (w = UU) then UU
-                    else (hEq $ z $ w) andalso (hh $ zs $ ws))"
+list2llist :: "'a list => 'a llist"
+"list2llist s == foldr (%x y. x ### y) s lNil"
+liftList :: "'a list => ('a lift) llist"
+"liftList s == list2llist (map Def s)"
+
+types lString = "charT llist"
+
+(*** lifted Boolean operators ***)
+
+consts
+andH  :: "lBool --> lBool --> lBool"
+orH   :: "lBool --> lBool --> lBool"
+notH  :: "lBool --> lBool"
+ifteH :: "lBool --> 'c --> 'c --> 'c"
+ttr   :: "lBool -> tr"
 
 defs
-llist_hEq_def: "hEq == llEq"
-llist_hNEq_def: "hNEq == LAM x y. neg $ (llEq $ x $ y)"
+andH_def :
+"andH == Lam x. (Lam y. case x of
+                   FALSE => FALSE |
+                   TRUE => y)"
+orH_def :
+"orH == 
+Lam x. (Lam y. case x of
+                   FALSE => y |
+                   TRUE => TRUE)"
+notH_def :
+"notH == 
+Lam x. case x of
+          FALSE => TRUE |
+          TRUE => FALSE"
+ 
+syntax  "@IFTE"        :: "lBool=>'c=>'c=>'c" 
+                                    ("(3IF _/ (THEN _/ ELSE _) FI)" 60)
+        "@AND"      :: "lBool => lBool => lBool" ("_ AND _" [36,35] 35)
+        "@OR"       :: "lBool => lBool => lBool" ("_ OR _"  [31,30] 30)
+ 
+translations 
+             "x AND y" == "andH$$x$$y"
+             "x OR y"  == "orH$$x$$y"
+             "IF b THEN e1 ELSE e2 FI" == "ifteH$$b$$e1$$e2"
 
-instance llist :: (Eq) Eq
-apply (intro_classes)
-apply (unfold llist_hEq_def llist_hNEq_def)
-apply auto
-apply (simp add:double_neg)
-done
+defs 
+ttr_def: "ttr == LAM x. case x of  
+                FALSE  => FF
+              | TRUE => TT"
+ifteH_def: "ifteH == Lam a x y. If (ttr $ a) then x else y fi"
 
 
-(* seq  - not used *)
+(***** CLASSES *****)
 
-constdefs
-shEq :: "('a::Eq) seq -> 'a seq -> tr"
-"shEq == fix $ (LAM hh (xs::('a::Eq) seq) ys.
-  if (xs = UU) | (ys = UU) then UU
-  else case xs of
-       nil => case ys of
-           nil => TT
-          | w##ws => if (w = UU) then UU
-                    else FF
-      | z##zs => if (z = UU) then UU
-          else case ys of
-              nil => FF
-             | w##ws => if (w = UU) then UU
-                    else (hEq $ z $ w) andalso (hh $ zs $ ws))"
+(**** Bounded ****)
+
+instance lprod :: ("{BoundedH,pcpo}","{BoundedH,pcpo}") BoundedH ..
 
 defs
-seq_hEq_def: "hEq == shEq"
-seq_hNEq_def: "hNEq == LAM x y. neg $ (shEq $ x $ y)"
+lprod_minBound_def: "minBound::('a::{BoundedH,pcpo},'b::{BoundedH,pcpo}) 
+                       lprod == lpair $ (minBound::'a) $ (minBound::'b)"
+lprod_maxBound_def: "maxBound::('a::{BoundedH,pcpo},'b::{BoundedH,pcpo}) 
+                       lprod == lpair $ (maxBound::'a) $ (maxBound::'b)"
 
-instance seq :: (Eq) Eq
-apply (intro_classes)
-apply (unfold seq_hEq_def seq_hNEq_def)
-apply auto
-apply (simp add:double_neg)
-done
 
-(*
+(**** Equality ****)
+
+(*** equality - declarations ***)
+
+consts
+eqH  :: "'a::Eq --> 'a --> lBool"
+neqH :: "'a::Eq --> 'a --> lBool"
+
+consts
+eqD ::  "'a::Eq --> 'a --> lBool"
+neqD :: "'a::Eq --> 'a --> lBool"
+
+fixrec (permissive)
+   "(eqD :: 'a::Eq --> 'a --> lBool) = 
+             (Lam x. (Lam y. (notH $$ (neqD $$ x $$ y))))"
+and    
+   "(neqD :: 'a::Eq --> 'a --> lBool) = 
+               (Lam x. (Lam y. (notH $$ (eqD $$ x $$ y))))"
+(* mutually recursive definition *) 
+
 constdefs
-seq_el :: "('a::pcpo) seq => nat => 'a"
-"seq_el xs n == slast $ ((seq_take n) $ xs)"
-*)
+eqHI ::  "'a::Eq --> 'a --> lBool"
+"eqHI == Lam x y. notH $$ (neqH $$ x $$ y)"
+neqHI :: "'a::Eq --> 'a --> lBool"
+"neqHI == Lam x y. notH $$ (eqH $$ x $$ y)"
+(* used to translate one function when the other is defined *)
+
+(*** equality - instantiations ***)
+
+axclass PEq < type
+ 
+instance unit :: PEq ..
+instance int :: PEq ..
+instance boundInt :: PEq ..
+instance rat :: PEq ..
+instance char :: PEq ..
+
+instance lBool :: Eq ..
+instance lOrdering :: Eq ..
+instance lift :: (PEq) Eq .. 
+instance llist :: (Eq) Eq ..
+instance lprod :: (Eq, Eq) Eq .. 
+instance lEither :: (Eq,Eq) Eq .. 
+instance lMaybe :: (Eq) Eq ..
+
+axclass PNum < type
+
+instance int :: PNum ..
+instance boundInt :: PNum ..
+
+instance lift :: ("{PEq,PNum}") Num ..
+
+instance lBool :: Ord ..
+instance lOrdering :: Ord ..
+instance lift :: (PEq) Ord .. 
+instance llist :: (Ord) Ord ..
+instance lprod :: (Ord,Ord) Ord .. 
+instance lEither :: (Ord,Ord) Ord .. 
+instance lMaybe :: (Ord) Ord ..
+
+instance lBool :: Enum ..
+instance lOrdering :: Enum ..
+instance lift :: (PEq) Enum ..  
+
+
+(*** equality - auxiliary functions ***)
+
+(** for ground types **)
+
+constdefs
+eqHB  :: "'a::Eq --> 'a --> lBool"
+"eqHB == Lam x y. If Def (x = y) then TRUE else FALSE fi"
+neqHB :: "'a::Eq --> 'a --> lBool"
+"neqHB == Lam x y. If Def (x ~= y) then TRUE else FALSE fi"
+(* used to translate built-in ground types and 
+   derived instances *)
+
+
+(** for type constructors **)
+
+constdefs
+eqLP :: "('a::Eq,'b::Eq) lprod --> ('a,'b) lprod --> lBool"
+"eqLP == Lam x y. andH $$ (eqH $$ (lfst $ x) $$ (lfst $ y))  
+        $$ (eqH $$ (lsnd $ x) $$ (lsnd $ y))"
+eqLS :: "('a::Eq,'b::Eq) lEither --> ('a,'b) lEither --> lBool"
+"eqLS == Lam x y. case x of
+    lLeft $ w  => case y of 
+        lLeft $ z   => eqH $$ w $$ z
+      | lRight $ z  => FALSE
+  | lRight $ w => case y of
+        lLeft $ z   => FALSE
+      | lRight $ z  => eqH $$ w $$ z"
+eqLM :: "('a::Eq) lMaybe --> 'a lMaybe --> lBool"
+"eqLM == Lam x y. case x of
+    lNothing  => case y of 
+        lNothing   => TRUE
+      | lJust $ z    => FALSE
+  | lJust $ w => case y of
+        lNothing   => FALSE
+      | lJust $ z    => eqH $$ w $$ z"
+
+consts 
+eqLL :: "('a::{pcpo,Eq}) llist --> 'a llist --> lBool"
+
+fixrec (permissive)
+"eqLL = (Lam (x::('a::{pcpo,Eq}) llist). 
+   (Lam (y::('a::{pcpo,Eq}) llist). case x of
+        lNil => (case y of 
+                lNil      => TRUE
+              | ((op ###) $ z $ zs) => FALSE)      
+         | ((op ###) $ w $ ws)  => (case y of
+                lNil => FALSE
+              | ((op ###) $ z $ zs) => 
+                     (andH $$ (eqH $$ w $$ z)  
+                           $$ (eqLL $$ ws $$ zs)))))"
+
+
+(*** equality - method definition ***)
+
+defs
+lBool_eqH_def:  "eqH::(lBool --> lBool --> lBool) == eqHB"
+lBool_neqH_def: "neqH::(lBool --> lBool --> lBool) == neqHI"
+lift_eqH_def:  "eqH::(('a::PEq) lift --> 'a lift --> lBool) == eqHB"
+lift_neqH_def: "neqH::(('a::PEq) lift --> 'a lift --> lBool) == neqHI"
+lOrdering_eqH_def:  "eqH::(lOrdering --> lOrdering --> lBool) == eqHB"
+lOrdering_neqH_def: "neqH::(lOrdering --> lOrdering --> lBool) == neqHI"
+
+defs
+llist_eqH_def:  
+  "eqH::(('a::Eq) llist --> 'a llist --> lBool) == eqLL"
+llist_neqH_def: 
+  "neqH::(('a::Eq) llist --> 'a llist --> lBool) == neqHI"
+lprod_eqH_def:  
+  "eqH::(('a::Eq,'b::Eq) lprod --> ('a::Eq,'b::Eq) lprod --> lBool) 
+     == eqLP"
+lprod_neqH_def: 
+  "neqH::(('a::Eq,'b::Eq) lprod --> ('a::Eq,'b::Eq) lprod --> lBool) 
+     == neqHI"
+lsum_eqH_def:   
+  "eqH::(('a::Eq,'b::Eq) lEither --> ('a::Eq,'b::Eq) lEither --> lBool) 
+     == eqLS"
+lsum_neqH_def:  
+  "neqH::(('a::Eq,'b::Eq) lEither --> ('a::Eq,'b::Eq) lEither --> lBool) 
+     == neqHI"
+lMaybe_eqH_def:  
+  "eqH::(('a::Eq) lMaybe --> ('a::Eq) lMaybe --> lBool) == eqLM"
+lMaybe_neqH_def: 
+  "neqH::(('a::Eq) lMaybe --> ('a::Eq) lMaybe --> lBool) == neqHI"
+
+
+(* Ord *)
+
+consts
+compareH   :: "'a::Ord --> 'a --> lOrdering"
+lessH      :: "'a::Ord --> 'a --> lBool"
+moreH      :: "'a::Ord --> 'a --> lBool"
+leqH    :: "'a::Ord --> 'a --> lBool"
+meqH    :: "'a::Ord --> 'a --> lBool"
+minH       :: "'a::Ord --> 'a --> 'a"
+maxH       :: "'a::Ord --> 'a --> 'a"
+
+consts
+compareD   :: "'a::Ord --> 'a --> lOrdering"
+leqD      :: "'a::Ord --> 'a --> lBool"
+
+consts
+compareHI   :: "'a::Ord --> 'a --> lOrdering"
+lessHI      :: "'a::Ord --> 'a --> lBool"
+moreHI      :: "'a::Ord --> 'a --> lBool"
+leqHI    :: "'a::Ord --> 'a --> lBool"
+meqHI    :: "'a::Ord --> 'a --> lBool"
+minHI       :: "'a::Ord --> 'a --> 'a"
+maxHI       :: "'a::Ord --> 'a --> 'a"
+
+
+(* Ord - default method definitions *)
+
+fixrec (permissive)
+"compareD =
+ (Lam x. (Lam y. (IF eqH $$ x $$ y THEN EQ
+              ELSE (IF leqD $$ x $$ y THEN LT
+                   ELSE GT FI) FI)))"
+and "leqD =
+ (Lam x. (Lam y. (neqH $$ (compareD $$ x $$ y) $$ GT)))"
+
+defs
+compareHI_def: 
+"compareHI ==
+ (Lam x. (Lam y. (IF eqH $$ x $$ y THEN EQ
+              ELSE (IF leqH $$ x $$ y THEN LT
+                   ELSE GT FI) FI)))"
+leqHI_def:
+"leqHI ==
+ (Lam x. (Lam y. (neqH $$ (compareH $$ x $$ y) $$ GT)))"
+lessHI_def:
+"lessHI ==
+ Lam x. Lam y. eqH $$ (compareH $$ x $$ y) $$ LT"
+moreHI_def:
+"moreHI ==
+ Lam x. Lam y. eqH $$ (compareH $$ x $$ y) $$ GT"
+
+meqHI_def:
+"meqHI ==
+ Lam x. Lam y. neqH $$ (compareH $$ x $$ y) $$ LT"
+minHI_def:
+"minHI ==
+ Lam x. Lam y. IF leqH $$ x $$ y THEN x
+                  ELSE y FI"
+maxHI_def:
+"maxHI ==
+ Lam x. Lam y. IF leqH $$ x $$ y THEN y
+                  ELSE x FI"
+
+
+(* Num *)
+
+consts 
+addH   :: "'a::Num --> 'a --> 'a"
+diffH  :: "'a::Num --> 'a --> 'a"
+prodH   :: "'a::Num --> 'a --> 'a"
+negateH :: "'a::Num --> 'a"
+absH    :: "'a::Num --> 'a"
+signumH :: "'a::Num --> 'a"
+fromIntegerH :: "integerT --> 'a::Num"
+zeroH        :: "'a::Num"
+oneH         :: "'a::Num"
+twoH         :: "'a::Num"
+
+consts 
+diffD  :: "'a::Num --> 'a --> 'a"
+negateD :: "'a::Num --> 'a"
+fromIntegerD :: "integerT --> 'a::Num"
+
+consts 
+diffHI  :: "'a::Num --> 'a --> 'a"
+negateHI :: "'a::Num --> 'a"
+
+defs
+fromIntegerD_def: "fromIntegerD == (Lam x::integerT.
+   IF eqH $$ x $$ (Def 0) THEN zeroH ELSE 
+   IF eqH $$ x $$ (Def 1) THEN oneH  ELSE
+   IF eqH $$ x $$ (Def 2) THEN twoH  ELSE
+   fromIntegerH $$ x FI FI FI)"
+
+fixrec (permissive)
+"diffD = (Lam x. (Lam y. (addH $$ x $$ (negateD $$ y))))"
+and
+"negateD = (Lam x. diffD $$ (fromIntegerH $$ (Def 0)) $$ x)"
+
+defs
+diffHI_def: "diffHI == Lam x. (Lam y. (addH $$ x $$ (negateH $$ y)))"
+negateHI_def: "negateHI == Lam x. diffH $$ (fromIntegerH $$ (Def 0)) $$ x"
+
+
+(* some Prelude functions *)
+
+constdefs
+otherwiseH :: lBool
+"otherwiseH == TRUE"
+compH :: "('a --> 'b) --> ('c --> 'a) --> ('c --> 'b)"
+"compH == Lam f. Lam g. Lam x. f $$ (g $$ x)"
+flipH :: "('a --> 'b --> 'c) --> 'b --> 'a --> 'c"
+"flipH == Lam f. Lam x. Lam y. f $$ y $$ x"
+subtractH :: "'a::Num --> 'a --> 'a"
+"subtractH == flipH $$ diffH"
+
+consts
+mapH :: "('a --> 'b) --> 'a llist --> 'b llist"
+
+fixrec "mapH =
+        (Lam qX1. Lam qX2. case qX2 of
+                    lNil => lNil |
+                    pX1 ### pX2 => qX1 $$ pX1 ### mapH $$ qX1 $$ pX2)"
+
+
+(* Enum *)
+
+consts
+succH :: "'a::Enum --> 'a"
+predH :: "'a::Enum --> 'a"
+toEnumH :: "intT --> 'a::Enum"
+fromEnumH :: "'a::Enum --> intT"
+enumFromThenH :: "'a::Enum --> 'a --> 'a llist"
+enumFromToH :: "'a::Enum --> 'a --> 'a llist"
+enumFromThenToH :: "'a::Enum --> 'a --> 'a --> 'a llist"
+
+consts
+succHI :: "'a::Enum --> 'a"
+predHI :: "'a::Enum --> 'a"
+toEnumHI :: "intT --> 'a::Enum"
+fromEnumHI :: "'a::Enum --> intT"
+enumFromThenHI :: "'a::Enum --> 'a --> 'a llist"
+enumFromToHI :: "'a::Enum --> 'a --> 'a llist"
+enumFromThenToHI :: "'a::Enum --> 'a --> 'a --> 'a llist"
+
+defs
+succHI_def :
+"succHI ==
+ compH $$ toEnumH $$
+ (compH $$ (flipH $$ addH $$ (fromIntegerH $$ (Def 1))) $$
+  fromEnumH)"
+
+predHI_def :
+"predHI ==
+ compH $$ toEnumH $$
+ (compH $$ (subtractH $$ (fromIntegerH $$ (Def 1))) $$ fromEnumH)"
+
+enumFromToHI_def :
+"enumFromToHI ==
+ Lam x. Lam y. mapH $$ toEnumH $$
+               (enumFromToH $$ (fromEnumH $$ x) $$ (fromEnumH $$ y))"
+
+enumFromThenToHI_def :
+"enumFromThenToHI ==
+ Lam x. Lam y. Lam z. mapH $$ toEnumH $$
+                      (enumFromThenToH $$ (fromEnumH $$ x) $$
+                       (fromEnumH $$ y) $$ (fromEnumH $$ z))"
+
 
 end
