@@ -23,14 +23,18 @@ spec EgoOrientation =
                   assoc, comm, unit front;
             __-__ : Orientation * Orientation -> Orientation;
         forall a, b: Orientation
-                . @front = front  . @back = back
-                . @a = front - a  . @ @a = a  . a + @a = front
-                . ~a = back + a   . ~ ~a = a  . a - b = a + @b
+        . @ @a = a
+        . a + @a = front
+        . ~a = back + a
+        . ~ ~a = a
+        . a - b = a + @b
 then %implies
+        . @front = front
+        . @back = back
         . ~front = back
         . back + back = front
         forall a : Orientation
-        . a + front = a
+        . @a = front - a
 then
         free type Orientation4 ::= sort Orientation2 | right | left
         sort Orientation4 < Orientation
@@ -107,7 +111,6 @@ then
         . leftAtEntry = ~rightAtExit
         . leftAtExit = @rightAtExit
         . leftAtEntry = @rightAtEntry
-        . onCourse = ~onCourse
         . onCourse = @onCourse
 
         forall entry, exit, c: Location; u, v, w: Edge
@@ -164,10 +167,9 @@ spec RoutePredicates = Segments then
         forall a, b, c: Place
         . a-->b via c <=> a-->b # b-->c > onCourse
 then
-        sort LROrientation = {o:Orientation4 . o=left \/ o=right}
         preds __ passBy__  : Segment * Location;
-              __pass__on__ : Segment * Location * Orientation4;
-        forall a, b, c: Place; lr: LROrientation
+              __pass__on__ : Segment * Location * OrientationDCC;
+        forall a, b, c: Place; lr: OrientationDCC
         . a-->b pass c on lr <=>
           exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
         . a-->b passBy c <=>
