@@ -64,13 +64,12 @@ spec Locations = Identities then
 end
 
 spec Edges = EgoOrientation and Locations then
-   free type LEdge ::= __-->*__ (source,target: Location)
-   sort Edge = {v : LEdge . not source(v) = target(v)}
-   op __-->__ : Location * Location ->? Edge
+   sort Edge
+   ops __-->__ : Location * Location ->? Edge;
+       source, target : Edge -> Location
 
    forall x,y: Location
-   . def x --> y <=> x -->* y in Edge
-   . x --> y = x -->* y if def x --> y
+   . def x --> y <=> not x = y
 
         ops  -__ :    Edge -> Edge; %% inverse
             __|__ :  Edge * Edge -> Orientation
@@ -156,6 +155,8 @@ then %% recomputation of entry or exit
         . oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
         . id(b) = id(d) /\ a-->b | b-->c = a-->d | d-->c =>
           oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c)
+then
+        forall a, b, c, d: Place
         . oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
           oEntry(b-->c) = origin(b) | origin(d) + oEntry(d-->c)
         . oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
@@ -199,19 +200,12 @@ spec GenGraph [sort NodeLabel] [sort EdgeLabel] =
      forall g : Graph; e: Edge
      . g has e => g has source(e) /\ g has target(e)
 
-then List [sort Edge fit Elem |-> Edge]
-     reveal [], __::__, __eps__, Nat, freq, __<=__, 1
-then pred connected : List[Edge]
-     forall e1,e2: Edge; l: List[Edge]
-     . connected([])
-     . connected(e1 :: [])
-     . connected(e1 :: e2 :: l) <=>
-           target(e1) = source(e2) /\ connected(e2 :: l)
-     sorts Path = { l : List[Edge] . connected(l) };
-           Route = { p : Path . (forall e : Edge . freq(p, e) <= 1)
-                     /\ forall e1,e2:Edge .
-                     e1 eps p /\ e2 eps p /\ source(e1) = source(e2)
-                     => e1 = e2 }
+then pred reachable : Graph * Node * Node
+     forall g : Graph; e :Edge; l, n, m : Node
+     . g has e /\ source(e) = n /\ target(e) = m => reachable(g, n, m)
+     . reachable (g, l, m) /\ reachable (g, m, n) => reachable (g, l, n)
+     sort  Path = { g : Graph . exists n : Node . forall m : Node .
+                    g has n /\ g has m /\ reachable(g, n, m) }
 end
 
 spec RouteSegment =
@@ -231,19 +225,25 @@ spec GenRouteGraph[GenPlace [sort RefSystem]][RouteSegment] =
      with Graph |-> RouteGraph,
           Node  |-> Place,
           Edge  |-> RouteSegment
-end
-
-spec Points =
-     sorts Point, Angle
-     op vOrigin : Point -> Angle
-end
-
-spec Lines = Points
 then
-     sorts Line, VEdge
-     ops vCourse : Line -> VEdge;
-         vEntry : Line -> Angle;
-         vExit : Line -> Angle
+     sort Route = { p : Path . forall e1, e2: RouteSegment .
+                     p has e2 /\ p has e2 /\ (source(e1) = source(e2)
+                     \/ target(e1) = target(e2))
+                     => e1 = e2 }
+
+end
+
+spec VPlaces =
+     sorts VPlace, Angle
+     op vOrigin : VPlace -> Angle
+end
+
+spec VSegments = VPlaces
+then
+     sorts VSegment, VEdge
+     ops vCourse : VSegment -> VEdge;
+         vEntry : VSegment -> Angle;
+         vExit : VSegment -> Angle
 end
 
 spec RouteGraphAbstraction
@@ -255,14 +255,14 @@ spec RouteGraphAbstraction
        Exit |-> OrientationDCC,
        course |-> oCourse,
        entry |-> oEntry,
-       exit |-> oExit] with RouteGraph |-> SemanticModel]
+       exit |-> oExit] with RouteGraph |-> ConceptualModel]
      [GenRouteGraph
-      [Points fit
+      [VPlaces fit
        RefSystem |-> Angle,
-       Place |-> Point,
+       Place |-> VPlace,
        origin |-> vOrigin]
-      [Lines fit
-       RouteSegment |-> Line,
+      [VSegments fit
+       RouteSegment |-> VSegment,
        Course |-> VEdge,
        Entry |-> Angle,
        Exit |-> Angle,
@@ -270,17 +270,30 @@ spec RouteGraphAbstraction
        entry |-> vEntry,
        exit |-> vExit]
       with RouteGraph |-> VoronoiGraph] =
-     preds __abstractionFrom__ : SemanticModel * VoronoiGraph;
-           __abstractionFrom__ : Place * Point;
-           __abstractionFrom__ : Segment * Line
+     preds __abstractionFrom__ : ConceptualModel * VoronoiGraph;
+           __abstractionFrom__ : Place * VPlace;
+           __abstractionFrom__ : Segment * VSegment
 
-   forall p1,p2:Place; p:Point; s:Segment; l:Line;
-          sm: SemanticModel; vg: VoronoiGraph
-   . p1 abstractionFrom p /\ p2 abstractionFrom p
+   forall p1, p2: Place; vp: VPlace; s: Segment; vs: VSegment;
+          m: ConceptualModel; vg: VoronoiGraph
+   . p1 abstractionFrom vp /\ p2 abstractionFrom vp
       => p1 = p2
-   . sm has s /\ vg has l /\
-     source(s) abstractionFrom source(l) /\
-     target(s) abstractionFrom target(l)
-      => sm abstractionFrom vg
-   . vg has p /\ p1 abstractionFrom p => sm has p1
+   . m abstractionFrom vg /\ m has s /\ vg has vs /\
+     source(s) abstractionFrom source(vs) /\
+     target(s) abstractionFrom target(vs)
+      => s abstractionFrom vs
+   . m abstractionFrom vg /\ vg has vp /\ p1 abstractionFrom vp
+      => m has p1
+then
+   forall p1, p2: Place; vs: VSegment;
+          m: ConceptualModel; vg: VoronoiGraph
+   .  m abstractionFrom vg /\ vg has vs /\ p1 abstractionFrom source(vs)
+      /\ p1 abstractionFrom target(vs) /\ not p1 = p2
+    => exists s: Segment . source(s) = p1 /\ target(s) = p2
+then
+   forall p: Place; s: Segment;
+          m: ConceptualModel; vg: VoronoiGraph
+   .  m abstractionFrom vg /\ m has p /\ m has s
+    => exists vs: VSegment; vp: VPlace
+      . vg has vp /\ vg has vs /\ p abstractionFrom vp /\ s abstractionFrom vs
 end
