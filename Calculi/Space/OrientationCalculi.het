@@ -202,10 +202,17 @@ spec GenGraph [sort NodeLabel] [sort EdgeLabel] =
 
 then pred reachable : Graph * Node * Node
      forall g : Graph; e :Edge; l, n, m : Node
+     . reachable(g, n, n)
      . g has e /\ source(e) = n /\ target(e) = m => reachable(g, n, m)
      . reachable (g, l, m) /\ reachable (g, m, n) => reachable (g, l, n)
-     sort  Path = { g : Graph . exists n : Node . forall m : Node .
-                    g has n /\ g has m /\ reachable(g, n, m) }
+     pred sequentialized (g : Graph) <=>
+          (exists n : Node . forall m : Node .
+                    g has n /\ g has m => reachable(g, n, m))
+          /\
+          forall e1, e2: Edge .
+                    g has e2 /\ g has e2 /\ (source(e1) = source(e2)
+                     \/ target(e1) = target(e2))
+                     => e1 = e2
 end
 
 spec RouteSegment =
@@ -226,11 +233,9 @@ spec GenRouteGraph[GenPlace [sort RefSystem]][RouteSegment] =
           Node  |-> Place,
           Edge  |-> RouteSegment
 then
-     sort Route = { p : Path . forall e1, e2: RouteSegment .
-                     p has e2 /\ p has e2 /\ (source(e1) = source(e2)
-                     \/ target(e1) = target(e2))
-                     => e1 = e2 }
-
+     sort Route = { g : RouteGraph . sequentialized(g)
+                    /\ forall n, m : Place .
+                    reachable (g, n, m) => not reachable(g, m, n) }
 end
 
 spec VPlaces =
