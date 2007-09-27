@@ -200,12 +200,13 @@ spec GenGraph [sort NodeLabel] [sort EdgeLabel] =
      forall g : Graph; e: Edge
      . g has e => g has source(e) /\ g has target(e)
 
-then pred reachable : Graph * Node * Node
+then free
+     { pred reachable : Graph * Node * Node
      forall g : Graph; e :Edge; l, n, m : Node
-     . reachable(g, n, n)
      . g has e /\ source(e) = n /\ target(e) = m => reachable(g, n, m)
      . reachable (g, l, m) /\ reachable (g, m, n) => reachable (g, l, n)
-     pred sequentialized (g : Graph) <=>
+     }
+then pred sequentialized (g : Graph) <=>
           (exists n : Node . forall m : Node .
                     g has n /\ g has m => reachable(g, n, m))
           /\
