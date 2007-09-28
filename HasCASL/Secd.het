@@ -10,28 +10,25 @@ from Basic/Numbers get Nat
 
 logic HasCASL
 
-spec List = 
+spec List =
      var a : +Type;
      free type List a ::= [] | __ :: __(a; List a)
 
-spec FiniteSet = 
+spec FiniteSet =
      var a : Type;
      type FiniteSet: Type -> Type;
      ops {} :  FiniteSet a;
          {__} : a -> FiniteSet a;
          __ + __, __ - __ : FiniteSet a * FiniteSet a -> FiniteSet a
-     
-spec InternalLogic = {}
-spec Recursion = InternalLogic then {}
 
-  spec Transitivity = 
+spec Transitivity =
   vars t,u : Type
-  ops __subset__ : Pred(Pred(u) * Pred(u)); 
+  ops __subset__ : Pred(Pred(u) * Pred(u));
       transitive : Pred(Pred(t * t));
       tc : Pred(t * t) -> Pred(t * t)
   forall s, s': Pred(u); r, r': Pred(t * t)
   . s subset s' <=> forall x: u . s x => s' x
-  . transitive r <=> 
+  . transitive r <=>
      forall x,y,z:t . r(x,y) /\ r(y,z) => r(x,z)
   . transitive(tc r)
   . r subset r' /\ transitive r' => (tc r) subset r'
@@ -39,30 +36,30 @@ spec Recursion = InternalLogic then {}
   spec Reduction = Transitivity then
   type Expr; type Value < Expr
   op reducesTo : Pred (Expr * Expr)
-  forall x, y, z : Expr; v,w : Value 
-   . not (reducesTo(x,x))                    
-   . not (reducesTo(v,x))                    
-   . transitive reducesTo                            
-   . reducesTo(x,v) /\ reducesTo(x,w) => v = w                            
+  forall x, y, z : Expr; v,w : Value
+   . not (reducesTo(x,x))
+   . not (reducesTo(v,x))
+   . transitive reducesTo
+   . reducesTo(x,v) /\ reducesTo(x,w) => v = w
 
-  spec Eval[Reduction] =  
-  op eval: Expr ->? Value 
-  forall e : Expr; v: Value 
+  spec Eval[Reduction] =
+  op eval: Expr ->? Value
+  forall e : Expr; v: Value
    . eval e = v <=> reducesTo(e, v)
    vars t,u : Type
 
   spec Run =
-  type State 
+  type State
   op run : State ->? State
 
-  spec Machine[Run] = 
+  spec Machine[Run] =
   types Expr, Value
   ops    load: Expr -> State ;
          unload : State ->? Value
 
-  spec Execution[Machine[Run]] = 
-  op exec: Expr ->? Value 
-  forall e: Expr 
+  spec Execution[Machine[Run]] =
+  op exec: Expr ->? Value
+  forall e: Expr
   . exec e = unload(run(load e))
 
 spec Step =
@@ -72,24 +69,24 @@ op step : State ->? State
 spec Iterate[Step] = Nat then
 op iterate : Nat -> State ->? State
 forall n : Nat; s : State
-. iterate 0 s = s 
+. iterate 0 s = s
 . iterate (n+1) s = iterate n(step s)
 
-spec Count[Step] = Iterate[Step] then 
+spec Count[Step] = Iterate[Step] then
 ops isFinal : Pred State;
     count : State ->? Nat;
-    run : State ->? State 
+    run : State ->? State
 forall n: Nat; s : State
 . isFinal s => not (def (step s))
 . count s = n <=> isFinal(iterate n s)
 . run s = iterate (count s) s
 
-  spec EvalByExecution = 
+  spec EvalByExecution =
        Eval[Reduction] and Execution[Machine[Run]] then
   forall e : Expr
   . exec e = eval e
 
-spec EvalByTimedExec = 
+spec EvalByTimedExec =
 Eval[Reduction] and
 Execution[Machine[Count[Step]]] hide iterate then
 ops time: Expr -> Nat
@@ -98,35 +95,35 @@ forall e: Expr; t: Nat
 . def(eval e) => eval e = exec e
 . def(count(load e)) => time e <=  count(load e)
 
-view TimeRefine : EvalByExecution to EvalByTimedExec 
+view TimeRefine : EvalByExecution to EvalByTimedExec
 
-spec Term = FiniteSet then 
-type Variable  %% unspecified  
-  free type Term ::=    Var Variable | 
-                        Lam Variable Term | 
+spec Term = FiniteSet then
+type Variable  %% unspecified
+  free type Term ::=    Var Variable |
+                        Lam Variable Term |
                         App Term Term
   ops fv : Term -> FiniteSet Variable ;
-      isClosed: Pred Term  
-  forall x:Variable; t, f, a: Term  
-  . fv (Var x) = {x}              
-  . fv (Lam x t) = (fv t) - {x}   
-  . fv (App f a) = (fv f) + (fv a)  
-  . isClosed t <=> (fv t) = {} 
-  type ClosedTerm = { t : Term . isClosed t } 
+      isClosed: Pred Term
+  forall x:Variable; t, f, a: Term
+  . fv (Var x) = {x}
+  . fv (Lam x t) = (fv t) - {x}
+  . fv (App f a) = (fv f) + (fv a)
+  . isClosed t <=> (fv t) = {}
+  type ClosedTerm = { t : Term . isClosed t }
   type Value = { a: ClosedTerm . exists x: Variable; b: Term . a = Lam x b }
   op App : ClosedTerm -> ClosedTerm -> ClosedTerm   %% redeclared
-  op subst:ClosedTerm->Variable->Term->Term 
+  op subst:ClosedTerm->Variable->Term->Term
   %% Definition of substitution is missing
-then %implies  
+then %implies
   forall x: Variable; b: Term; a : ClosedTerm
   . isClosed(Lam x b) => isClosed(subst a x b)
 
-  spec LeftReduction = Term and Transitivity and Recursion then 
+  spec LeftReduction = Term and Transitivity then
   op leftRed: Term ->? Term
   program leftRed (App (App f a) c) = App (leftRed (App f a))c;
-     leftRed(App (Lam x b)(App f a)) = 
+     leftRed(App (Lam x b)(App f a)) =
           App (Lam x b) (leftRed (App f a));		
-     leftRed(App (Lam x b)(Lam y t)) = 
+     leftRed(App (Lam x b)(Lam y t)) =
           (subst (Lam y t as ClosedTerm) x b)
   op leftRed: ClosedTerm ->? ClosedTerm
   op leftRel,reducesTo: Pred (ClosedTerm * ClosedTerm)
@@ -137,7 +134,7 @@ then %implies
 view TermReduction : Reduction to LeftReduction =
   type Expr |-> ClosedTerm
 
-spec Closure = Term then 
+spec Closure = Term then
 free types Env ::= Empty | Add Variable TermEnv Env ;
            TermEnv ::= Clos Term Env
 type Clos < TermEnv
@@ -146,42 +143,42 @@ ops lookup : Env -> Variable ->? Clos;
     real : TermEnv ->? ClosedTerm
 forall e : Env; x: Variable; c: Clos; t: Term
 . real (Clos t Empty) = t as ClosedTerm
-. real (Clos t (Add x c e)) = 
+. real (Clos t (Add x c e)) =
         real (Clos (subst (real c) x t)(remove x e))
 type Clos = {c: TermEnv. def(real c)}
 
-spec Dump = Closure and {List with [], __::__} and Recursion then 
-free type ExtTerm ::= Aps | type Term 
-type Control := List ExtTerm    %% synonyms                  
-type Stack := List TermEnv      %% List Clos             
-type Dump := List (Stack * Env * Control)     
+spec Dump = Closure and {List with [], __::__} then
+free type ExtTerm ::= Aps | type Term
+type Control := List ExtTerm    %% synonyms
+type Stack := List TermEnv      %% List Clos
+type Dump := List (Stack * Env * Control)
 op step : Dump ->? Dump
 program step((s, e, Var x :: c) :: d) = (lookup e x :: s, e, c) :: d;
-step((s, e, Lam x b :: c) :: d) =  
-     (Clos(Lam x b) e :: s, e, c) :: d; 
+step((s, e, Lam x b :: c) :: d) =
+     (Clos(Lam x b) e :: s, e, c) :: d;
 step((s, e, (App f a):: c) :: d) = (s, e, a :: f :: Aps :: c) :: d; %(apply)%
 step((Clos(Lam x b) e_0 :: v :: s, e, Aps :: c) :: d) =
     ([], Add x v e_0, b :: []) :: (s, e, c) :: d;             %(call)%
 step((v :: [], e_0, []) :: (s, e, c) :: d) = (v :: s, e, c) :: d %(return)%
 
-spec Repeat[Step] = Recursion and Nat then 
+spec Repeat[Step] = Nat then
 ops repeat : Pred State -> State ->? State;
     steps : Pred State -> State ->? Nat
-program repeat p s = s when p s else repeat p(step s); 
-   steps p s = 0 when p s else 1 + steps p(step s) 
+program repeat p s = s when p s else repeat p(step s);
+   steps p s = 0 when p s else 1 + steps p(step s)
 
   view DumpStep : Step to Dump =
       type State |-> Dump
 
-spec SecdMachine = Repeat[view DumpStep] then 
+spec SecdMachine = Repeat[view DumpStep] then
 ops load : ClosedTerm -> Dump;
-    unload : Dump ->? Value; 
+    unload : Dump ->? Value;
     isFinal : Pred Dump;
     run : Dump ->? Dump;
     count : Dump ->? Nat
 program load a = ([], Empty, a :: []) :: [];
  unload ((v :: [], Empty, []) :: []) = real v as Value;
- isFinal d = case d of (v :: [], Empty, []) :: [] -> true | 
+ isFinal d = case d of (v :: [], Empty, []) :: [] -> true |
                d -> false;
  run d = repeat isFinal d;
  count = steps isFinal
@@ -189,14 +186,14 @@ program load a = ([], Empty, a :: []) :: [];
 view Secd : Machine[Run] to SecdMachine =
      types State |-> Dump, Expr |-> ClosedTerm
 
-spec Time = Eval[view TermReduction] and Nat then 
-op time : ClosedTerm -> Nat 
+spec Time = Eval[view TermReduction] and Nat then
+op time : ClosedTerm -> Nat
 forall x: Variable; a, b, f : ClosedTerm; v: Value
 . time v = 1
-. Lam x b = eval f /\ v = eval a => time (App f a) = 
+. Lam x b = eval f /\ v = eval a => time (App f a) =
         time a + time f + time(subst v x b as ClosedTerm) + 1
 
-spec TermEvalBySecdExec = 
+spec TermEvalBySecdExec =
      Time and Execution[view Secd]
 
 view Implementation : EvalByTimedExec to TermEvalBySecdExec =
