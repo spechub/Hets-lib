@@ -208,7 +208,7 @@ then free
      }
 then pred sequentialized (g : Graph) <=>
           (exists n : Node . forall m : Node .
-                    g has n /\ g has m => reachable(g, n, m))
+                    not n = m /\ g has n /\ g has m => reachable(g, n, m))
           /\
           forall e1, e2: Edge .
                     g has e2 /\ g has e2 /\ (source(e1) = source(e2)
