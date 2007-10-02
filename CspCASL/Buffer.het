@@ -12,19 +12,20 @@ logic CspCASL
 spec Buffer =
   data List
   channel read, write : Elem
-  process   
+  process
   %%let Buf(l:List[Elem]) =
   %%            read?x -> Buf( cons(x,nil) )
   %%            [] if l=nil then STOP else write!last(l) -> Buf( rest(l) )
-  %%            in 
+  %%            in
                    Buf(nil)
 end
 
+logic Modal
 
 spec FairBuffer =
-  Buffer with logic -> Modal
+  Buffer
 then %implies
   . true
   %% . A G F exists x:Elem . <write.x> true
-%%  {} 
+%%  {}
 end
