@@ -10,7 +10,7 @@ then
 end
 
 spec BasicAS =
-  sort WORDS
+  sort CHAR
 and
   NeList[sort BASIC_ITEMS fit Elem |-> BASIC_ITEMS]
 and
@@ -51,71 +51,77 @@ and
   NeList[sort VAR fit Elem |-> VAR]
 and
   NeList[sort PRED_ITEM fit Elem |-> PRED_ITEM]
-then  
-  free types 
+and
+  NeList[sort WORD fit Elem |-> WORD]
+and
+  NeList[sort WORD_CHAR fit Elem |-> WORD_CHAR]
+and
+  NeList[sort SIGN fit Elem |-> SIGN]
+then
+  free types
   BASIC_SPEC       ::= basic_spec(List[BASIC_ITEMS]);
 
-  BASIC_ITEMS      ::= sort SIG_ITEMS 
-                   | free_datatype(NeList[DATATYPE_DECL])
-                   | sort_gen(NeList[SIG_ITEMS])
-                   | var_items(NeList[VAR_DECL])
-                   | local_var_axioms(NeList[VAR_DECL]; NeList[FORMULA])
-                   | axiom_items(NeList[FORMULA]);
+  BASIC_ITEMS      ::= sort SIG_ITEMS
+                     | free_datatype(NeList[DATATYPE_DECL])
+                     | sort_gen(NeList[SIG_ITEMS])
+                     | var_items(NeList[VAR_DECL])
+                     | local_var_axioms(NeList[VAR_DECL]; NeList[FORMULA])
+                     | axiom_items(NeList[FORMULA]);
 
   SIG_ITEMS        ::= sort_items(NeList[SORT_ITEM])
-                   | op_items(NeList[OP_ITEM])
-                   | pred_items(NeList[PRED_ITEM])
-                   | datatype_items(NeList[DATATYPE_DECL]);
+                     | op_items(NeList[OP_ITEM])
+                     | pred_items(NeList[PRED_ITEM])
+                     | datatype_items(NeList[DATATYPE_DECL]);
 
   SORT_ITEM        ::= sort_decl(NeList[SORT])
-                   | subsort_decl(NeList[SORT]; SORT)
-                   | subsort_defn(SORT; VAR; SORT; FORMULA)
-                   | iso_decl(NeList[SORT]);
+                     | subsort_decl(NeList[SORT]; SORT)
+                     | subsort_defn(SORT; VAR; SORT; FORMULA)
+                     | iso_decl(NeList[SORT]);
 
   OP_ITEM          ::= op_decl(NeList[OP_NAME]; OP_TYPE; List[OP_ATTR])
-                   | op_defn(OP_NAME; OP_HEAD; TERM);
+                     | op_defn(OP_NAME; OP_HEAD; TERM);
   OP_TYPE          ::= total_op_type(SORT_LIST; SORT)
-                   | partial_op_type(SORT_LIST; SORT);
+                     | partial_op_type(SORT_LIST; SORT);
 
   SORT_LIST        ::= sort_list(List[SORT]);
 
   OP_ATTR          ::= assoc_op_attr | comm_op_attr | idem_op_attr
-                   | unit_op_attr(TERM);
+                     | unit_op_attr(TERM);
 
   OP_HEAD          ::= total_op_head(List[ARG_DECL]; SORT)
-                   | partial_op_head(List[ARG_DECL]; SORT);
+                     | partial_op_head(List[ARG_DECL]; SORT);
 
   ARG_DECL         ::= arg_decl(NeList[VAR]; SORT);
 
   PRED_ITEM        ::= pred_decl(NeList[PRED_NAME]; PRED_TYPE)
-                   | pred_defn(PRED_NAME; PRED_HEAD; FORMULA);
+                     | pred_defn(PRED_NAME; PRED_HEAD; FORMULA);
   PRED_TYPE        ::= pred_type(SORT_LIST);
   PRED_HEAD        ::= pred_head(List[ARG_DECL]);
 
   DATATYPE_DECL    ::= datatype_decl(SORT; NeList[ALTERNATIVE]);
 
   ALTERNATIVE      ::= total_construct(OP_NAME; List[COMPONENTS])
-                   | partial_construct(OP_NAME; NeList[COMPONENTS])
-                   | subsorts(NeList[SORT]);
+                     | partial_construct(OP_NAME; NeList[COMPONENTS])
+                     | subsorts(NeList[SORT]);
 
   COMPONENTS       ::= total_select(NeList[OP_NAME]; SORT)
-                   | partial_select(NeList[OP_NAME]; SORT)
-                   | sort SORT;
+                     | partial_select(NeList[OP_NAME]; SORT)
+                     | sort SORT;
 
   VAR_DECL         ::= var_decl(NeList[VAR]; SORT);
 
   FORMULA          ::= quantification(QUANTIFIER; NeList[VAR_DECL]; FORMULA)
-                   | conjunction(NeList[FORMULA])
-                   | disjunction(NeList[FORMULA])
-                   | implication(FORMULA; FORMULA)
-                   | equivalence(FORMULA; FORMULA)
-                   | negation(FORMULA)
-                   | true_atom | false_atom
-                   | predication(PRED_SYMB; TERMS)
-                   | definedness(TERM)
-                   | existl_equation(TERM; TERM)
-                   | strong_equation(TERM; TERM)
-                   | membership(TERM; SORT);
+                     | conjunction(NeList[FORMULA])
+                     | disjunction(NeList[FORMULA])
+                     | implication(FORMULA; FORMULA)
+                     | equivalence(FORMULA; FORMULA)
+                     | negation(FORMULA)
+                     | true_atom | false_atom
+                     | predication(PRED_SYMB; TERMS)
+                     | definedness(TERM)
+                     | existl_equation(TERM; TERM)
+                     | strong_equation(TERM; TERM)
+                     | membership(TERM; SORT);
 
   QUANTIFIER       ::= universal | existential | unique_existential;
 
@@ -123,16 +129,16 @@ then
 
   TERMS            ::= terms(List[TERM]);
   TERM             ::= sort SIMPLE_ID
-                   | qual_var(VAR; SORT)
-                   | application(OP_SYMB; TERMS)
-                   | sorted_term(TERM; SORT)
-                   | conditional(TERM; FORMULA; TERM)
-                   | cast(TERM; SORT);
+                     | qual_var(VAR; SORT)
+                     | application(OP_SYMB; TERMS)
+                     | sorted_term(TERM; SORT)
+                     | conditional(TERM; FORMULA; TERM)
+                     | cast(TERM; SORT);
 
   OP_SYMB          ::= sort OP_NAME | qual_op_name(OP_NAME; OP_TYPE);
 
   SORT             ::= sort SORT_ID
-                   | sort COMP_SORT_ID;
+                     | sort COMP_SORT_ID;
   OP_NAME          ::= sort ID;
   PRED_NAME        ::= sort ID;
   VAR              ::= sort SIMPLE_ID;
@@ -140,11 +146,41 @@ then
   SORT_ID          ::= sort WORDS;
   ID               ::= id(NeList[MIX_TOKEN]);
   SIMPLE_ID        ::= sort WORDS;
+
+  PLACE            ::= place;
+
+  WORDS            ::= words(NeList[WORD]);
+  DOT_WORDS        ::= dot_words(WORDS);
+  WORD             ::= word(NeList[WORD_CHAR]);
+  WORD_CHAR        ::= sort LETTER | prime | sort DIGIT;
+  LETTER           ::= A | B | C | D | E | F | G | H | I | J | K | L | M
+                     | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+                     | a | b | c | d | e | f | g | h | i | j | k | l | m
+                     | n | o | p | q | r | s | t | u | v | w | x | y | z
+                     | À | Á | Â | Ã | Ä | Å | Æ | Ç | È | É | Ê | Ë | Ì
+                     | Í | Î | Ï | Ð | Ñ | Ò | Ó | Ô | Õ | Ö | Ø | Ù | Ú
+                     | Û | Ü | Ý | Þ | ß | à | á | â | ã | ä | å | æ | ç
+                     | è | é | ê | ë | ì | í | î | ï | ð | ñ | ò | ó | ô
+                     | õ | ö | ø | ù | ú | û | ü | ý | þ | ÿ;
+  DIGIT            ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+  SIGNS            ::= signs(NeList[SIGN]);
+  SIGN             ::= + | - | * | / | \ | & | equal | < | >
+                     | ! | ? | colon | dot | $ | @ | # | ^ | ~
+                     | ¡ | ¿ | times | ÷ | £ | © | ± | ¶ | §
+                     | ¹ | ² | ³ | cdot | ¢ | ° | neg | µ | bar;
+
+  QUOTED_CHAR      ::= quoted_char(CHAR);
+
   MIX_TOKEN        ::= sort TOKEN | sort PLACE
-                   | bracket_id(ID) | empty_brackets
-                   | braced_id(ID) | empty_braces
-                   | sort COMP_MIX_TOKEN;
-  TOKEN            ::= sort WORDS | sort DOT_WORDS | sort SIGNS | sort DIGIT | sort QUOTED_CHAR;
+                     | bracket_id(ID) | empty_brackets
+                     | braced_id(ID) | empty_braces
+                     | sort COMP_MIX_TOKEN;
+  TOKEN            ::= sort WORDS
+                     | sort DOT_WORDS
+                     | sort SIGNS
+                     | sort DIGIT
+                     | sort QUOTED_CHAR;
 
   COMP_SORT_ID     ::= comp_sort_id(WORDS; NeList[ID]);
   COMP_MIX_TOKEN   ::= comp_mix_token(NeList[ID])
@@ -163,7 +199,7 @@ and
 and
   NeList[sort SPEC fit Elem |-> SPEC]
 and
-  BasicAS 
+  BasicAS
 then
   free types
   SPEC             ::= sort BASIC_SPEC
@@ -217,7 +253,7 @@ and
 and
   NeList[sort UNIT_DECL_DEFN fit Elem |-> UNIT_DECL_DEFN]
 and
-  StructuredAS 
+  StructuredAS
 then
   free types
   ARCH_SPEC_DEFN   ::= arch_spec_defn(ARCH_SPEC_NAME; ARCH_SPEC);
