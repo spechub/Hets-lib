@@ -13,7 +13,7 @@ from Basic/Algebra_I  get
      Group, Field, ExtField, RichField
 from Basic/Algebra_II get
      MonoidAction, RichMonoidAction,
-     GroupAction, ExtGroupAction, 
+     GroupAction, ExtGroupAction,
      EuclidianRing_in_Int
 from Basic/Numbers get Nat, Int
 from Basic/Algebra_II get
@@ -35,7 +35,7 @@ then
 end
 
 view AbelianGroup_in_VectorSpace [Field]:
-     AbelianGroup to VectorSpace [Field] = 
+     AbelianGroup to VectorSpace [Field] =
      sort Elem |-> Space,
           ops  e         |-> 0,
                 __ * __  |-> __ + __
@@ -44,12 +44,12 @@ end
 view GroupAction_in_VectorSpace [Field]:
      GroupAction [Group] to
      {
-        VectorSpace 
-                [RichField 
-                    reveal 
+        VectorSpace
+                [RichField
+                    reveal
                         sorts Elem, NonZero[Elem],
                         ops  e, 0, __ + __, __ * __]
-           then 
+           then
                op __ * __: NonZero[Elem] * Space -> Space
       } =
      sort Elem |-> NonZero[Elem]
@@ -60,16 +60,16 @@ view VectorSpace_in_Field [Field]:
      sort Space |-> Elem,
      op __ * __: Elem * Space -> Space |-> __ * __: Elem * Elem -> Elem
 end
-        
+
 
 spec VectorSpaceLC [VectorSpace [Field]] =
-%mono 
+%mono
 {
      Map [sort Space fit sort S |-> Space]
                [sort Elem fit sort T |-> Elem]
           with sort Map[Space,Elem] |-> LC[Space,Elem]
 }
-hide 
+hide
     sorts Set[Space], Set[Elem]
 then
      op eval: LC[Space,Elem] -> Space
@@ -77,15 +77,15 @@ then
 
      forall x: Space; r: Elem; l:LC[Space,Elem]
      . eval(empty) = 0                          %(eval_empty_EVS)%
-     . lookup(x, l) = r => eval(l) = r * x + eval(l - [r/x])    
+     . lookup(x, l) = r => eval(l) = r * x + eval(l - [r/x])
                                                 %(eval_add_EVS)%
      . isZero(l) <=> forall y: Space. (def lookup(y, l) => lookup(y, l) = 0)
                                                 %(isZero_def_EVS)%
 end
 
-spec ConstructVSWithBase [Field][sort Base] given Int= 
+spec ConstructVSWithBase [Field][sort Base] given Int=
 %mono
-     VectorSpaceLC [VectorSpace [Field]] 
+     VectorSpaceLC [VectorSpace [Field]]
 then
 {
      sort Base < Space
@@ -96,7 +96,7 @@ then
      hide sorts Set[Base], Set[Elem]
 then
      sort LC[Base,Elem] < LC[Space,Elem]
-        
+
      forall l: LC[Base,Elem]
      . forall y: Space. exists k: LC[Base,Elem]. y = eval(k)
                                                 %(generating_CVSB)%
@@ -106,8 +106,8 @@ end
 
 spec VSWithBase [Field][sort Base]=
      ConstructVSWithBase [Field][sort Base]
-          reveal sorts Space, Elem, Base, 
-                 ops __ + __: Space * Space -> Space, 
+          reveal sorts Space, Elem, Base,
+                 ops __ + __: Space * Space -> Space,
                      0      : Space,
                      __ * __: Elem * Space -> Space,
                      __ * __: Elem * Elem -> Elem,
@@ -122,9 +122,10 @@ spec ExtVectorSpace [VectorSpace [Field]] given Int =
      RichField
 and
      ExtAbelianGroup [view AbelianGroup_in_VectorSpace [Field]]
-     with 
+     with
         ops inv   |-> -__,
-            __ ^ __ |-> __ times __, 
+            __ ^ __ : Space * Nat -> Space |-> __ times __,
+            __ ^ __ : Space * Int -> Space |-> __ times __,
             __ / __ |-> __ - __
 and
      RichMonoidAction [Monoid]
@@ -167,7 +168,7 @@ spec VectorTuple [VectorSpace[Field]][op n: Pos] given Int =
           sort Index[n] < Nat
      then
           sort Tuple[Space,n]={ x: Array[Space].
-                         forall i: Index[n]. def x ! i }                
+                         forall i: Index[n]. def x ! i }
           ops __ ! __: Tuple[Space,n] * Index[n] -> Space;
               0:      Tuple[Space,n];
               __*__:  Elem * Tuple[Space,n] -> Tuple[Space,n];
@@ -193,7 +194,7 @@ spec ConstructVector [Field][op n: Pos] given Int =
 %mono
      {VectorTuple [view VectorSpace_in_Field [Field]][op n: Pos] with
           sorts Tuple[Elem,n] |-> Vector[Elem,n], Index[n],
-          ops 0, __ * __, __ + __, sum} 
+          ops 0, __ * __, __ + __, sum}
         with op __ ! __: Vector[Elem,n] * Index[n] -> Elem
 then
      {
@@ -209,7 +210,7 @@ then
      . <x || y> =sum(auxmult(x,y))              %(scp_def_CVector)%
      . auxprod(x, 1 as Index[n])=x ! (1 as Index[n])
                                                 %(auxprod_1_CVector)%
-     . auxprod(x, suc(i) as Index[n]) = auxprod(x,i) * 
+     . auxprod(x, suc(i) as Index[n]) = auxprod(x,i) *
                                         (x ! (suc(i) as Index[n]))
                                                 %(auxprod_suc_CVector)%
      . prod(x) = auxprod(x, n as Index[n])      %(prod_def_CVector)%
@@ -222,11 +223,11 @@ then
 then %implies
      forall x,y: Vector[Elem,n]
      . <x || y> = <y || x>                      %(scpComm_CVector)%
-     . <x || x> = 0 => x = 0                    %(scpPos_CVector)% 
+     . <x || x> = 0 => x = 0                    %(scpPos_CVector)%
 end
 
 spec Vector [Field][op n: Pos] given Int =
-     ConstructVector [Field][op n: Pos] 
+     ConstructVector [Field][op n: Pos]
      reveal sorts Vector[Elem,n], UnitVector[Elem,n],
             ops __ + __: Vector[Elem,n] * Vector[Elem,n] -> Vector[Elem,n],
                 __ * __: Elem * Vector[Elem,n] -> Vector[Elem,n],
@@ -238,16 +239,16 @@ view VectorSpace_in_Vector [Field][op n: Pos] given Nat:
      sort Space |-> Vector[Elem,n]
 end
 
-           
+
 spec SymmetricGroup [op n: Pos] given Int =
 %mono
      sort Index[n] = {i: Pos . i <= n}
 then
      Array [ops 1, n: Int fit ops min: Int |-> 1, max: Int |-> n]
-        [sort Index[n] fit sort Elem|-> Index[n]] 
+        [sort Index[n] fit sort Elem|-> Index[n]]
                 with sorts Array[Index[n]], Index |-> Index[n]
 then
-     sort Perm[n]={p: Array[Index[n]] . forall i: Index[n] . 
+     sort Perm[n]={p: Array[Index[n]] . forall i: Index[n] .
                                         exists j: Index[n] . p ! j = i}
      ops id: Perm[n];
          __  comp  __: Perm[n] * Perm[n] -> Perm[n];
@@ -279,9 +280,9 @@ spec Matrix [Field][op n: Pos] given Int = %mono
           [op n: Pos]
      with
           sort Index[n], Tuple[Vector[Elem,n],n] |-> Matrix[Elem,n]
-and 
+and
      ConstructVector [Field][op n: Pos]
-and  
+and
      ExtField [Field]
 then
      ops transpose:  Matrix[Elem,n] -> Matrix[Elem,n];
@@ -319,7 +320,7 @@ then
      . summands(a) ! j= prod(factors(a,j)) times sign(perm(j))
                                                 %(summands_def_Matrix)%
      . det(a)=sum(summands(a))                  %(Leibnitz)%
-     } 
+     }
 then %implies
      forall a,b: Matrix[Elem,n]
      . det(0) = 0                               %(det0)%
@@ -329,7 +330,7 @@ then %implies
      . det(a * b) = det(a) * det(b)             %(detMult)%
 end
 
-spec RichVectorSpace = 
+spec RichVectorSpace =
      ExtVectorSpace [VectorSpace [Field]]
 end
 
