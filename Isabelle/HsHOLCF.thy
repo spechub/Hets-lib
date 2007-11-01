@@ -273,10 +273,10 @@ and
 (* mutually recursive definition *) 
 
 constdefs
-eqHI ::  "'a::Eq --> 'a --> lBool"
-"eqHI == Lam x y. notH $$ (neqH $$ x $$ y)"
-neqHI :: "'a::Eq --> 'a --> lBool"
-"neqHI == Lam x y. notH $$ (eqH $$ x $$ y)"
+eqHDF ::  "'a::Eq --> 'a --> lBool"
+"eqHDF == Lam x y. notH $$ (neqH $$ x $$ y)"
+neqHDF :: "'a::Eq --> 'a --> lBool"
+"neqHDF == Lam x y. notH $$ (eqH $$ x $$ y)"
 (* used to translate one function when the other is defined *)
 
 (*** equality - instantiations ***)
@@ -322,10 +322,10 @@ instance lift :: (PEq) Enum ..
 (** for ground types **)
 
 constdefs
-eqHB  :: "'a::Eq --> 'a --> lBool"
-"eqHB == Lam x y. If Def (x = y) then TRUE else FALSE fi"
-neqHB :: "'a::Eq --> 'a --> lBool"
-"neqHB == Lam x y. If Def (x ~= y) then TRUE else FALSE fi"
+eqHI  :: "'a::Eq --> 'a --> lBool"
+"eqHI == Lam x y. If Def (x = y) then TRUE else FALSE fi"
+neqHI :: "'a::Eq --> 'a --> lBool"
+"neqHI == neqHDF"
 (* used to translate built-in ground types and 
    derived instances *)
 
@@ -372,34 +372,34 @@ fixrec (permissive)
 (*** equality - method definition ***)
 
 defs
-lBool_eqH_def:  "eqH::(lBool --> lBool --> lBool) == eqHB"
-lBool_neqH_def: "neqH::(lBool --> lBool --> lBool) == neqHI"
-lift_eqH_def:  "eqH::(('a::PEq) lift --> 'a lift --> lBool) == eqHB"
-lift_neqH_def: "neqH::(('a::PEq) lift --> 'a lift --> lBool) == neqHI"
-lOrdering_eqH_def:  "eqH::(lOrdering --> lOrdering --> lBool) == eqHB"
-lOrdering_neqH_def: "neqH::(lOrdering --> lOrdering --> lBool) == neqHI"
+lBool_eqH_def:  "eqH::(lBool --> lBool --> lBool) == eqHI"
+lBool_neqH_def: "neqH::(lBool --> lBool --> lBool) == neqHDF"
+lift_eqH_def:  "eqH::(('a::PEq) lift --> 'a lift --> lBool) == eqHI"
+lift_neqH_def: "neqH::(('a::PEq) lift --> 'a lift --> lBool) == neqHDF"
+lOrdering_eqH_def:  "eqH::(lOrdering --> lOrdering --> lBool) == eqHI"
+lOrdering_neqH_def: "neqH::(lOrdering --> lOrdering --> lBool) == neqHDF"
 
 defs
 llist_eqH_def:  
   "eqH::(('a::Eq) llist --> 'a llist --> lBool) == eqLL"
 llist_neqH_def: 
-  "neqH::(('a::Eq) llist --> 'a llist --> lBool) == neqHI"
+  "neqH::(('a::Eq) llist --> 'a llist --> lBool) == neqHDF"
 lprod_eqH_def:  
   "eqH::(('a::Eq,'b::Eq) lprod --> ('a::Eq,'b::Eq) lprod --> lBool) 
      == eqLP"
 lprod_neqH_def: 
   "neqH::(('a::Eq,'b::Eq) lprod --> ('a::Eq,'b::Eq) lprod --> lBool) 
-     == neqHI"
+     == neqHDF"
 lsum_eqH_def:   
   "eqH::(('a::Eq,'b::Eq) lEither --> ('a::Eq,'b::Eq) lEither --> lBool) 
      == eqLS"
 lsum_neqH_def:  
   "neqH::(('a::Eq,'b::Eq) lEither --> ('a::Eq,'b::Eq) lEither --> lBool) 
-     == neqHI"
+     == neqHDF"
 lMaybe_eqH_def:  
   "eqH::(('a::Eq) lMaybe --> ('a::Eq) lMaybe --> lBool) == eqLM"
 lMaybe_neqH_def: 
-  "neqH::(('a::Eq) lMaybe --> ('a::Eq) lMaybe --> lBool) == neqHI"
+  "neqH::(('a::Eq) lMaybe --> ('a::Eq) lMaybe --> lBool) == neqHDF"
 
 
 (* Ord *)
@@ -418,13 +418,13 @@ compareD   :: "'a::Ord --> 'a --> lOrdering"
 leqD      :: "'a::Ord --> 'a --> lBool"
 
 consts
-compareHI   :: "'a::Ord --> 'a --> lOrdering"
-lessHI      :: "'a::Ord --> 'a --> lBool"
-moreHI      :: "'a::Ord --> 'a --> lBool"
-leqHI    :: "'a::Ord --> 'a --> lBool"
-meqHI    :: "'a::Ord --> 'a --> lBool"
-minHI       :: "'a::Ord --> 'a --> 'a"
-maxHI       :: "'a::Ord --> 'a --> 'a"
+compareHDF   :: "'a::Ord --> 'a --> lOrdering"
+lessHDF      :: "'a::Ord --> 'a --> lBool"
+moreHDF      :: "'a::Ord --> 'a --> lBool"
+leqHDF    :: "'a::Ord --> 'a --> lBool"
+meqHDF    :: "'a::Ord --> 'a --> lBool"
+minHDF       :: "'a::Ord --> 'a --> 'a"
+maxHDF       :: "'a::Ord --> 'a --> 'a"
 
 
 (* Ord - default method definitions *)
@@ -438,30 +438,30 @@ and "leqD =
  (Lam x. (Lam y. (neqH $$ (compareD $$ x $$ y) $$ GT)))"
 
 defs
-compareHI_def: 
-"compareHI ==
+compareHDF_def: 
+"compareHDF ==
  (Lam x. (Lam y. (IF eqH $$ x $$ y THEN EQ
               ELSE (IF leqH $$ x $$ y THEN LT
                    ELSE GT FI) FI)))"
-leqHI_def:
-"leqHI ==
+leqHDF_def:
+"leqHDF ==
  (Lam x. (Lam y. (neqH $$ (compareH $$ x $$ y) $$ GT)))"
-lessHI_def:
-"lessHI ==
+lessHDF_def:
+"lessHDF ==
  Lam x. Lam y. eqH $$ (compareH $$ x $$ y) $$ LT"
-moreHI_def:
-"moreHI ==
+moreHDF_def:
+"moreHDF ==
  Lam x. Lam y. eqH $$ (compareH $$ x $$ y) $$ GT"
 
-meqHI_def:
-"meqHI ==
+meqHDF_def:
+"meqHDF ==
  Lam x. Lam y. neqH $$ (compareH $$ x $$ y) $$ LT"
-minHI_def:
-"minHI ==
+minHDF_def:
+"minHDF ==
  Lam x. Lam y. IF leqH $$ x $$ y THEN x
                   ELSE y FI"
-maxHI_def:
-"maxHI ==
+maxHDF_def:
+"maxHDF ==
  Lam x. Lam y. IF leqH $$ x $$ y THEN y
                   ELSE x FI"
 
@@ -486,8 +486,8 @@ negateD :: "'a::Num --> 'a"
 fromIntegerD :: "integerT --> 'a::Num"
 
 consts 
-diffHI  :: "'a::Num --> 'a --> 'a"
-negateHI :: "'a::Num --> 'a"
+diffHDF  :: "'a::Num --> 'a --> 'a"
+negateHDF :: "'a::Num --> 'a"
 
 defs
 fromIntegerD_def: "fromIntegerD == (Lam x::integerT.
@@ -502,8 +502,9 @@ and
 "negateD = (Lam x. diffD $$ (fromIntegerH $$ (Def 0)) $$ x)"
 
 defs
-diffHI_def: "diffHI == Lam x. (Lam y. (addH $$ x $$ (negateH $$ y)))"
-negateHI_def: "negateHI == Lam x. diffH $$ (fromIntegerH $$ (Def 0)) $$ x"
+diffHDF_def: "diffHDF == Lam x. (Lam y. (addH $$ x $$ (negateH $$ y)))"
+negateHDF_def: "negateHDF == 
+                        Lam x. diffH $$ (fromIntegerH $$ (Def 0)) $$ x"
 
 
 (* some Prelude functions *)
@@ -534,38 +535,40 @@ succH :: "'a::Enum --> 'a"
 predH :: "'a::Enum --> 'a"
 toEnumH :: "intT --> 'a::Enum"
 fromEnumH :: "'a::Enum --> intT"
+enumFromH :: "'a::Enum --> 'a llist"
 enumFromThenH :: "'a::Enum --> 'a --> 'a llist"
 enumFromToH :: "'a::Enum --> 'a --> 'a llist"
 enumFromThenToH :: "'a::Enum --> 'a --> 'a --> 'a llist"
 
 consts
-succHI :: "'a::Enum --> 'a"
-predHI :: "'a::Enum --> 'a"
-toEnumHI :: "intT --> 'a::Enum"
-fromEnumHI :: "'a::Enum --> intT"
-enumFromThenHI :: "'a::Enum --> 'a --> 'a llist"
-enumFromToHI :: "'a::Enum --> 'a --> 'a llist"
-enumFromThenToHI :: "'a::Enum --> 'a --> 'a --> 'a llist"
+succHDF :: "'a::Enum --> 'a"
+predHDF :: "'a::Enum --> 'a"
+toEnumHDF :: "intT --> 'a::Enum"
+fromEnumHDF :: "'a::Enum --> intT"
+enumFromHDF :: "'a::Enum --> 'a llist"
+enumFromThenHDF :: "'a::Enum --> 'a --> 'a llist"
+enumFromToHDF :: "'a::Enum --> 'a --> 'a llist"
+enumFromThenToHDF :: "'a::Enum --> 'a --> 'a --> 'a llist"
 
 defs
-succHI_def :
-"succHI ==
+succHDF_def :
+"succHDF ==
  compH $$ toEnumH $$
  (compH $$ (flipH $$ addH $$ (fromIntegerH $$ (Def 1))) $$
   fromEnumH)"
 
-predHI_def :
-"predHI ==
+predHDF_def :
+"predHDF ==
  compH $$ toEnumH $$
  (compH $$ (subtractH $$ (fromIntegerH $$ (Def 1))) $$ fromEnumH)"
 
-enumFromToHI_def :
-"enumFromToHI ==
+enumFromToHDF_def :
+"enumFromToHDF ==
  Lam x. Lam y. mapH $$ toEnumH $$
                (enumFromToH $$ (fromEnumH $$ x) $$ (fromEnumH $$ y))"
 
-enumFromThenToHI_def :
-"enumFromThenToHI ==
+enumFromThenToHDF_def :
+"enumFromThenToHDF ==
  Lam x. Lam y. Lam z. mapH $$ toEnumH $$
                       (enumFromThenToH $$ (fromEnumH $$ x) $$
                        (fromEnumH $$ y) $$ (fromEnumH $$ z))"
