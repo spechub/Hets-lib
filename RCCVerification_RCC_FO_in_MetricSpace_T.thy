@@ -12,28 +12,28 @@ ML "Header.initialize
      \"greater_def_ExtPartialOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
      \"inf_def_ExtPartialOrder\", \"sup_def_ExtPartialOrder\",
      \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\",
-     \"ga_assoc_max\", \"min_def_ExtTotalOrder\",
-     \"max_def_ExtTotalOrder\", \"min_inf_relation\",
-     \"max_sup_relation\", \"Real_ub_def\", \"Real_lb_def\",
-     \"Real_inf_def\", \"Real_sup_def\", \"Real_isBounded_def\",
-     \"completeness\", \"Real_inj_0\", \"Real_inj_suc\",
-     \"Real_archimedian\", \"Real_abs_def\", \"Real_sqr_def\",
-     \"Real_sqrt_dom\", \"Real_sqrt_idef\", \"Real_2_def\",
-     \"Real_minus_def\", \"Real_divide_dom\", \"Real_divide_idef\",
-     \"Real_half_idef\", \"one_greater_zero\", \"zero_leq_one\",
-     \"half_gt_zero\", \"half_plus_minus\", \"add_monotone\",
-     \"sub_leq\", \"half_leq\", \"half_leq_zero\", \"comm_add\",
-     \"Real_half_plus\", \"Real_half_minus\", \"Real_minus_half\",
-     \"Real_half_monot\", \"MS_pos_definite\", \"MS_symm\",
-     \"MS_triangle\", \"MS_pos\", \"MS_zero\", \"EMSCB_rep_pos\",
-     \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\", \"EMSCB_center\",
-     \"EMSCB_closed\", \"def_nonempty\", \"C_def\"]"
+     \"ga_assoc_max\", \"ga_left_comm_min\", \"ga_left_comm_max\",
+     \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\",
+     \"min_inf_relation\", \"max_sup_relation\", \"Real_ub_def\",
+     \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\",
+     \"Real_isBounded_def\", \"completeness\", \"Real_inj_0\",
+     \"Real_inj_suc\", \"Real_archimedian\", \"Real_abs_def\",
+     \"Real_sqr_def\", \"Real_sqrt_dom\", \"Real_sqrt_idef\",
+     \"Real_2_def\", \"Real_minus_def\", \"Real_divide_dom\",
+     \"Real_divide_idef\", \"Real_half_idef\", \"one_greater_zero\",
+     \"zero_leq_one\", \"half_gt_zero\", \"half_plus_minus\",
+     \"add_monotone\", \"sub_leq\", \"half_leq\", \"half_leq_zero\",
+     \"comm_add\", \"Real_half_plus\", \"Real_half_minus\",
+     \"Real_minus_half\", \"Real_half_monot\", \"MS_pos_definite\",
+     \"MS_symm\", \"MS_triangle\", \"MS_pos\", \"MS_zero\",
+     \"EMSCB_rep_pos\", \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\",
+     \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\"]"
 
 typedecl ClosedBall
 typedecl Real
 typedecl S
 
-datatype Nat = X0X1 ("0''") | X_suc "Nat" ("suc/'(_')" [10] 999)
+datatype Nat = X0X1 ("0''") | X_suc "Nat" ("suc/'(_')" [3] 999)
 
 consts
 X0X2 :: "Real" ("0''''")
@@ -52,30 +52,26 @@ X__XMinus__X :: "Real => Real => Real" ("(_/ -''/ _)" [54,54] 52)
 X__XPlus__X :: "Real => Real => Real" ("(_/ +''/ _)" [54,54] 52)
 X__XSlash__X :: "Real => Real => Real option" ("(_/ '/''/ _)" [54,54] 52)
 X__Xx__X :: "Real => Real => Real" ("(_/ *''/ _)" [54,54] 52)
-X_closedBall :: "S => Real => ClosedBall" ("closedBall/'(_,/ _')" [10,10] 999)
-X_d :: "S => S => Real" ("d/'(_,/ _')" [10,10] 999)
-X_half :: "Real => Real" ("half/'(_')" [10] 999)
-X_inj :: "Nat => Real" ("inj''/'(_')" [10] 999)
-X_isBounded :: "(Real => bool) => bool" ("isBounded/'(_')" [10] 999)
-X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [10,10] 999)
-X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [10,10] 999)
-X_nonempty :: "ClosedBall => bool" ("nonempty/'(_')" [10] 999)
-infX1 :: "Real => Real => Real option" ("inf''/'(_,/ _')" [10,10] 999)
-infX2 :: "(Real => bool) => Real option" ("inf''''/'(_')" [10] 999)
+X_closedBall :: "S => Real => ClosedBall" ("closedBall/'(_,/ _')" [3,3] 999)
+X_d :: "S => S => Real" ("d/'(_,/ _')" [3,3] 999)
+X_half :: "Real => Real" ("half/'(_')" [3] 999)
+X_inj :: "Nat => Real" ("inj''/'(_')" [3] 999)
+X_isBounded :: "(Real => bool) => bool" ("isBounded/'(_')" [3] 999)
+X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
+X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
+X_nonempty :: "ClosedBall => bool" ("nonempty/'(_')" [3] 999)
+infX1 :: "Real => Real => Real option" ("inf''/'(_,/ _')" [3,3] 999)
+infX2 :: "(Real => bool) => Real option" ("inf''''/'(_')" [3] 999)
 rep :: "ClosedBall => S => bool"
 sqr__X :: "Real => Real" ("(sqr/ _)" [56] 56)
 sqrt__X :: "Real => Real option" ("(sqrt/ _)" [56] 56)
-supX1 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [10,10] 999)
-supX2 :: "(Real => bool) => Real option" ("sup''''/'(_')" [10] 999)
+supX1 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [3,3] 999)
+supX2 :: "(Real => bool) => Real option" ("sup''''/'(_')" [3] 999)
 
-instance ClosedBall:: type
-by intro_classes
-instance Nat:: type
-by intro_classes
-instance Real:: type
-by intro_classes
-instance S:: type
-by intro_classes
+instance ClosedBall:: type ..
+instance Nat:: type ..
+instance Real:: type ..
+instance S:: type ..
 
 axioms
 refl [rule_format] : "ALL x. x <=' x"
@@ -138,10 +134,16 @@ ga_comm_min [rule_format] : "ALL x. ALL y. min'(x, y) = min'(y, x)"
 ga_comm_max [rule_format] : "ALL x. ALL y. max'(x, y) = max'(y, x)"
 
 ga_assoc_min [rule_format] :
-"ALL x. ALL y. ALL z. min'(x, min'(y, z)) = min'(min'(x, y), z)"
+"ALL x. ALL y. ALL z. min'(min'(x, y), z) = min'(x, min'(y, z))"
 
 ga_assoc_max [rule_format] :
-"ALL x. ALL y. ALL z. max'(x, max'(y, z)) = max'(max'(x, y), z)"
+"ALL x. ALL y. ALL z. max'(max'(x, y), z) = max'(x, max'(y, z))"
+
+ga_left_comm_min [rule_format] :
+"ALL x. ALL y. ALL z. min'(x, min'(y, z)) = min'(y, min'(x, z))"
+
+ga_left_comm_max [rule_format] :
+"ALL x. ALL y. ALL z. max'(x, max'(y, z)) = max'(y, max'(x, z))"
 
 min_def_ExtTotalOrder [rule_format] :
 "ALL x. ALL y. min'(x, y) = (if x <=' y then x else y)"
@@ -274,22 +276,28 @@ EMSCB_closed [rule_format] :
  ~ rep a x -->
  (EX r. ALL y. ~ (rep (closedBall(x, r)) y & ~ rep a y))"
 
-def_nonempty [rule_format] : "ALL x. nonempty(x) = (x C x)"
+Ax1 [rule_format] : "ALL x. nonempty(x) = (x C x)"
 
 C_def [rule_format] :
 "ALL x. ALL y. (x C y) = (EX s. rep x s & rep y s)"
 
 declare refl [simp]
-declare dichotomy_TotalOrder [simp]
 declare Field_unary_minus_idef [simp]
 declare FWO_plus_left [simp]
 declare FWO_plus_right [simp]
+declare ga_comm_inf [simp]
+declare ga_comm_sup [simp]
+declare ga_comm_min [simp]
+declare ga_comm_max [simp]
+declare ga_assoc_min [simp]
+declare ga_assoc_max [simp]
+declare ga_left_comm_min [simp]
+declare ga_left_comm_max [simp]
 declare min_inf_relation [simp]
 declare max_sup_relation [simp]
 declare completeness [simp]
 declare Real_inj_0 [simp]
 declare Real_divide_dom [simp]
-declare Real_divide_idef [simp]
 declare Real_half_idef [simp]
 declare one_greater_zero [simp]
 declare zero_leq_one [simp]
@@ -305,7 +313,6 @@ declare MS_zero [simp]
 declare EMSCB_rep_pos [simp]
 declare EMSCB_rep_0 [simp]
 declare EMSCB_center [simp]
-declare EMSCB_closed [simp]
 
 theorem C_non_null : "ALL x. ALL y. x C y --> x C x"
 using C_def by auto
