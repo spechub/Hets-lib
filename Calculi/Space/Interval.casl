@@ -1,38 +1,40 @@
 library Calculi/Space/Interval version 0.7
 
+%{Moore Intervals}%
+
 %author Regivan H. N. Santiago <regivan@dimap.ufrn.br>
 %date 15 November 2007
 
 from Basic/Numbers get Rat
 
 spec RatPair = Rat
-then %def
-free type RatPair ::= [__..__](proj1:Rat;proj2:Rat)
-then %def
-sort IntervalRat = { a : RatPair . proj1(a) <= proj2(a)}
+then %mono
+free type RatPair ::= __..__(proj1:Rat;proj2:Rat)
+sort Interval = {a : RatPair . proj1(a) <= proj2(a)}
+sort Rat < Interval
+     forall a: Rat . a = a .. a             %(Rat2Interval_embedding)%
 then %def
 ops
-%% [1 ..1],[0 ..0] : IntervalRat;
-__+__ : IntervalRat * IntervalRat -> IntervalRat,
-comm,assoc,unit [0 ..0] as IntervalRat ;
-inva__: IntervalRat -> IntervalRat;
-__-__ : IntervalRat * IntervalRat -> IntervalRat;
-__*__ : IntervalRat * IntervalRat -> IntervalRat,
-comm,assoc, unit [1 ..1] as IntervalRat;
-invm__ : IntervalRat ->? IntervalRat;
-__/__ : IntervalRat * IntervalRat -> IntervalRat;
-m__ : IntervalRat -> Rat; %(midpoint)%
-dist : IntervalRat * IntervalRat -> Rat; %(Distance)%
-width__ : IntervalRat -> Rat; %(width)%
-abs: IntervalRat -> Rat; %(absolute value)%
-__cap__: IntervalRat * IntervalRat ->? IntervalRat;
+__+__ : Interval * Interval -> Interval,
+comm,assoc,unit 0;
+inva__: Interval -> Interval;
+__-__ : Interval * Interval -> Interval;
+__*__ : Interval * Interval -> Interval,
+comm,assoc, unit 1;
+invm__ : Interval ->? Interval;
+__/__ : Interval * Interval -> Interval;
+m__ : Interval -> Rat; %(midpoint)%
+dist : Interval * Interval -> Rat; %(Distance)%
+width__ : Interval -> Rat; %(width)%
+abs: Interval -> Rat; %(absolute value)%
+__cap__: Interval * Interval ->? Interval;
 %(Intersection)%
 then
-preds __include__:IntervalRat*IntervalRat;
-degen__:IntervalRat; %($x$ is degenerate)%
-__lc__:IntervalRat*IntervalRat; %(Local equality)%
-__inf__:IntervalRat*IntervalRat; %(Inform. Order)%
-vars x, y, w, z:IntervalRat
+preds __include__:Interval*Interval;
+degen__:Interval; %($x$ is degenerate)%
+__lc__:Interval*Interval; %(Local equality)%
+__inf__:Interval*Interval; %(Inform. Order)%
+vars x, y, w, z:Interval
 %Some definitions
 . def x %Every interval is defined
 . x include y <=> (proj1(x) >= proj1(y) /\
@@ -62,7 +64,7 @@ proj2(x) <= proj2(y))
 . (x inf y) => (inva(x) inf inva(y))
 . (x inf y) => (invm(x) inf invm(y))
 then %implies
-vars x, y, z, w:IntervalRat
+vars x, y, z, w:Interval
 %Subdistributivity
 . x * (y + z) = (x * y) + (x * z) if degen(x)
 . x * (y + z) include (x * y) + (x * z)
@@ -71,14 +73,14 @@ vars x, y, z, w:IntervalRat
 . (x * (y * z)) lc ((x * y) * z)
 . (x + y) lc (y + x)
 . (x * y) lc (y * x)
-. (x + inva(x)) lc [0 ..0] as IntervalRat
-. (x * invm(x)) lc [1 ..1] as IntervalRat
-. (x + [0 ..0] as IntervalRat) lc x
-. (x * [1 ..1] as IntervalRat) lc x
+. (x + inva(x)) lc 0
+. (x * invm(x)) lc 1
+. (x + 0) lc x
+. (x * 1) lc x
 . (x * (y + z)) lc ((x * y) + (x * z))
 %Algebraic properties of intervals
-. (x + inva(x)) = [0 ..0] as IntervalRat if degen(x) %(inv+)%
-. (x * invm(x)) = [1 ..1] as IntervalRat if degen(x)
+. (x + inva(x)) = 0 if degen(x) %(inv+)%
+. (x * invm(x)) = 1 if degen(x)
 . (x * (y + z)) = ((x * y) + (x * z))
    if degen(x) /\ degen(y) /\ degen(z)
 end
