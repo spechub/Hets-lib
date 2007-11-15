@@ -63,7 +63,7 @@ proj2(x) <= proj2(y))
 . (x inf y) => (invm(x) inf invm(y))
 then %implies
 vars x, y, z, w:IntervalRat
-%(Subdistributivity)
+%Subdistributivity
 . x * (y + z) = (x * y) + (x * z) if degen(x)
 . x * (y + z) include (x * y) + (x * z)
 %local field axioms
@@ -71,13 +71,13 @@ vars x, y, z, w:IntervalRat
 . (x * (y * z)) lc ((x * y) * z)
 . (x + y) lc (y + x)
 . (x * y) lc (y * x)
-. (x + inva(x)) lc [0..0] as IntervalRat
-. (x * invm(x)) lc [1..1] as IntervalRat
-. (x + [0..0] as IntervalRat) lc x
-. (x * [1..1] as IntervalRat) lc x
+. (x + inva(x)) lc [0 ..0] as IntervalRat
+. (x * invm(x)) lc [1 ..1] as IntervalRat
+. (x + [0 ..0] as IntervalRat) lc x
+. (x * [1 ..1] as IntervalRat) lc x
 . (x * (y + z)) lc ((x * y) + (x * z))
 %Algebraic properties of intervals
-. (x + inva(x)) = [0..0] as IntervalRat if degen(x) %(inv+)%
+. (x + inva(x)) = [0 ..0] as IntervalRat if degen(x) %(inv+)%
 . (x * invm(x)) = [1 ..1] as IntervalRat if degen(x)
 . (x * (y + z)) = ((x * y) + (x * z))
    if degen(x) /\ degen(y) /\ degen(z)
