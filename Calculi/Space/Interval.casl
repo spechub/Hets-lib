@@ -1,0 +1,84 @@
+library Calculi/Space/Interval version 0.7
+
+%author Regivan H. N. Santiago <regivan@dimap.ufrn.br>
+%date 15 November 2007
+
+from Basic/Numbers get Rat
+
+spec RatPair = Rat
+then %def
+free type RatPair ::= [__..__](proj1:Rat;proj2:Rat)
+then %def
+sort IntervalRat = { a : RatPair . proj1(a) <= proj2(a)}
+then %def
+ops
+%% [1 ..1],[0 ..0] : IntervalRat;
+__+__ : IntervalRat * IntervalRat -> IntervalRat,
+comm,assoc,unit [0 ..0] as IntervalRat ;
+inva__: IntervalRat -> IntervalRat;
+__-__ : IntervalRat * IntervalRat -> IntervalRat;
+__*__ : IntervalRat * IntervalRat -> IntervalRat,
+comm,assoc, unit [1 ..1] as IntervalRat;
+invm__ : IntervalRat ->? IntervalRat;
+__/__ : IntervalRat * IntervalRat -> IntervalRat;
+m__ : IntervalRat -> Rat; %(midpoint)%
+dist : IntervalRat * IntervalRat -> Rat; %(Distance)%
+width__ : IntervalRat -> Rat; %(width)%
+abs: IntervalRat -> Rat; %(absolute value)%
+__cap__: IntervalRat * IntervalRat ->? IntervalRat;
+%(Intersection)%
+then
+preds __include__:IntervalRat*IntervalRat;
+degen__:IntervalRat; %($x$ is degenerate)%
+__lc__:IntervalRat*IntervalRat; %(Local equality)%
+__inf__:IntervalRat*IntervalRat; %(Inform. Order)%
+vars x, y, w, z:IntervalRat
+%Some definitions
+. def x %Every interval is defined
+. x include y <=> (proj1(x) >= proj1(y) /\
+proj2(x) <= proj2(y))
+. degen(x) <=> proj1(x) = proj2(x)
+. (x inf y) <=> (proj1(x)<= proj1(y)
+/\ proj2(y) <= proj2(x))
+%Local equality axioms
+. (x lc x) <=> def x %(refllocJZ)%
+. (x lc y) => (y lc x)
+. def (x cap z) => ((x lc y) /\ (y lc z)=> (x lc z))
+%Local equality introduction
+. (x lc y) <=> def (x cap y) %(IntroLc01)%
+. (x = y) => (x lc y) %(IntroLc02)%
+%Congruence
+. (x lc y) => (inva(x) lc inva(y))
+. ((x lc y) /\ (def (invm(x)) /\ def (invm(y))))
+=> (invm(x) lc invm(y))
+. ((x lc y) /\ (w lc z)) => ((x + w) lc (y + z))
+. ((x lc y) /\ (w lc z)) => ((x * w) lc (y * z))
+%defSup
+. ((x inf w) /\ (y inf z) /\ (w = z))
+=> def(x cap y) /\ (x inf z) /\ (y inf w)
+%Monotonicity
+. ((x inf y) /\ (w inf z)) => (x + w) inf (y + z)
+. ((x inf y) /\ (w inf z)) => (x * w) inf (y * z)
+. (x inf y) => (inva(x) inf inva(y))
+. (x inf y) => (invm(x) inf invm(y))
+then %implies
+vars x, y, z, w:IntervalRat
+%(Subdistributivity)
+. x * (y + z) = (x * y) + (x * z) if degen(x)
+. x * (y + z) include (x * y) + (x * z)
+%local field axioms
+. (x + (y + z)) lc ((x + y) + z)
+. (x * (y * z)) lc ((x * y) * z)
+. (x + y) lc (y + x)
+. (x * y) lc (y * x)
+. (x + inva(x)) lc [0..0] as IntervalRat
+. (x * invm(x)) lc [1..1] as IntervalRat
+. (x + [0..0] as IntervalRat) lc x
+. (x * [1..1] as IntervalRat) lc x
+. (x * (y + z)) lc ((x * y) + (x * z))
+%Algebraic properties of intervals
+. (x + inva(x)) = [0..0] as IntervalRat if degen(x) %(inv+)%
+. (x * invm(x)) = [1 ..1] as IntervalRat if degen(x)
+. (x * (y + z)) = ((x * y) + (x * z))
+   if degen(x) /\ degen(y) /\ degen(z)
+end
