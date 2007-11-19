@@ -5,6 +5,11 @@ library Calculi/Space/Interval version 0.7
 %author Regivan H. N. Santiago <regivan@dimap.ufrn.br>
 %date 15 November 2007
 
+%prec {__+__, __-__} < {__*__} 
+%prec {__*__,__/__} < {__..__}
+%prec {__cup__,__ccup__} < {__cap__}
+%prec {__cap__} < {__..__}
+
 from Basic/Numbers get Rat
 
 spec RatPair = Rat
@@ -12,75 +17,92 @@ then %mono
 free type RatPair ::= __..__(proj1:Rat;proj2:Rat)
 sort Interval = {a : RatPair . proj1(a) <= proj2(a)}
 sort Rat < Interval
-     forall a: Rat . a = (a..a) as Interval  %(Rat2Interval_embedding)%
+    forall a: Rat . a = a .. a             %(Rat2Interval_embedding)%
 then %def
+
 ops
-__+__ : Interval * Interval -> Interval,
-comm,assoc,unit 0;
-inva__: Interval -> Interval;
+
+%(Begin Arithmetic)%
+__+__ : Interval * Interval -> Interval,comm,assoc,unit 0;
 __-__ : Interval * Interval -> Interval;
-__*__ : Interval * Interval -> Interval,
-comm,assoc, unit 1;
-invm__ : Interval ->? Interval;
-__/__ : Interval * Interval -> Interval;
-m__ : Interval -> Rat; %(midpoint)%
+__*__ : Interval * Interval -> Interval,comm,assoc, unit 1;
+__/__ : Interval * Interval ->? Interval;
+__..__ : Rat * Rat ->? Interval;
+-__: Interval -> Interval;
+invm : Interval ->? Interval;
+%(End Arithmetic)%
+
+%(Begin Set Operations)%
+__cap__: Interval * Interval ->? Interval; %(Intersection)%
+__cup__: Interval * Interval ->? Interval; %(Union)%
+__ccup__: Interval * Interval -> Interval; %(Convex Union)%
+%(End Set Operations)%
+
+%(Begin Real valued Operations)%
+m : Interval -> Rat; %(midpoint)%
 dist : Interval * Interval -> Rat; %(Distance)%
-width__ : Interval -> Rat; %(width)%
 abs: Interval -> Rat; %(absolute value)%
-__cap__: Interval * Interval ->? Interval;
-%(Intersection)%
-then
-preds __include__:Interval*Interval;
-degen__:Interval; %($x$ is degenerate)%
-__lc__:Interval*Interval; %(Local equality)%
-__inf__:Interval*Interval; %(Inform. Order)%
-vars x, y, w, z:Interval
-%Some definitions
-. def x %Every interval is defined
-. x include y <=> (proj1(x) >= proj1(y) /\
-proj2(x) <= proj2(y))
+width : Interval -> Rat; %(width)%
+%(End Real valued Operations)%
+
+preds 
+
+__subseteq__:Interval*Interval; %(Subset Order)%
+__inform__:Interval*Interval; %(Information Order)%
+degen:Interval; %($x$ is degenerate)%
+symm:Interval; %($x$ is Symmetric)%
+
+then %def
+
+vars x, y, w, z : Interval
+vars l1,l2,u1,u2 : Rat
+
+%(DA_Definition_Arithmetic)%
+. l1..u1 + l2..u2 = (l1+l2)..(u1+u2) %(Sum definition)%
+. -(l1..u1) = -u1.. -l1             %(Pseudo-inverse additive)%
+. l1..u1 - l2..u2 = l1..u1 + -(l2..u2) %(Interval difference)%
+
+. l1..u1 * l2..u2 = min(min(l1*l2,l1*u2),min(u1*l2,u1*u2))..max(max(l1*l2,l1*u2),max(u1*l2,u1*u2)) %(Interval multiplication)%
+. not def (invm(l1..u1)) if l1<=0 /\ 0<=u1 %(Definability condition for Pseudo-inverse multiplicative)% 
+. invm(l1..u1)= (1/u1)..(1/l1)  %(Pseudo-inverse multiplicative)%
+. l1..u1 / l2..u2 = l1..u1 * invm(l2..u2)  %(Interval division)%
+%(End_DA)%
+
+%(DSO_Definition_Set_Operations)%
+%(Intersection_def)%
+. not def(l1..u1 cap l2.. u2) if max(l1,l2)>min(u1,u2)
+. l1..u1 cap l2..u2 = max(l1,l2)..min(u1,u2)
+%(Union_def)%
+. not def(l1..u1 cup l2.. u2) if not def(l1..u1 cap l2.. u2)
+. l1..u1 cup l2..u2 = min(l1,l2)..max(u1,u2)
+. l1..u1 ccup l2..u2 = min(l1,l2)..max(u1,u2)
+%(End_DSO)%
+
+%(DRVF_Definition_Real_valued_functions)%
+. m(l1..u1)=(l1+u1)/2
+. dist(l1..u1,l2..u2)=max(abs(l1-l2),abs(u1-u2))
+. abs (l1..l2)=max(abs(l1),abs(l2))
+. width(l1..u1)=u1-l1
+%(End_DRVF)%
+
+%(DR_Definition_Relations)%
+. x subseteq y <=> proj1(x) >= proj1(y) /\ proj2(x) <= proj2(y)
 . degen(x) <=> proj1(x) = proj2(x)
-. (x inf y) <=> (proj1(x)<= proj1(y)
-/\ proj2(y) <= proj2(x))
-%Local equality axioms
-. (x lc x) <=> def x %(refllocJZ)%
-. (x lc y) => (y lc x)
-. def (x cap z) => ((x lc y) /\ (y lc z)=> (x lc z))
-%Local equality introduction
-. (x lc y) <=> def (x cap y) %(IntroLc01)%
-. (x = y) => (x lc y) %(IntroLc02)%
-%Congruence
-. (x lc y) => (inva(x) lc inva(y))
-. ((x lc y) /\ (def (invm(x)) /\ def (invm(y))))
-=> (invm(x) lc invm(y))
-. ((x lc y) /\ (w lc z)) => ((x + w) lc (y + z))
-. ((x lc y) /\ (w lc z)) => ((x * w) lc (y * z))
-%defSup
-. ((x inf w) /\ (y inf z) /\ (w = z))
-=> def(x cap y) /\ (x inf z) /\ (y inf w)
-%Monotonicity
-. ((x inf y) /\ (w inf z)) => (x + w) inf (y + z)
-. ((x inf y) /\ (w inf z)) => (x * w) inf (y * z)
-. (x inf y) => (inva(x) inf inva(y))
-. (x inf y) => (invm(x) inf invm(y))
+. x inform y <=> y subseteq x
+. symm(x) <=> x = -x
+%(End_DR)%
+
 then %implies
+
+%(Theorems)%
+
 vars x, y, z, w:Interval
-%Subdistributivity
+
+%(Subdistributivity)%
 . x * (y + z) = (x * y) + (x * z) if degen(x)
-. x * (y + z) include (x * y) + (x * z)
-%local field axioms
-. (x + (y + z)) lc ((x + y) + z)
-. (x * (y * z)) lc ((x * y) * z)
-. (x + y) lc (y + x)
-. (x * y) lc (y * x)
-. (x + inva(x)) lc 0
-. (x * invm(x)) lc 1
-. (x + 0) lc x
-. (x * 1) lc x
-. (x * (y + z)) lc ((x * y) + (x * z))
-%Algebraic properties of intervals
-. (x + inva(x)) = 0 if degen(x) %(inv+)%
-. (x * invm(x)) = 1 if degen(x)
-. (x * (y + z)) = ((x * y) + (x * z))
-   if degen(x) /\ degen(y) /\ degen(z)
+. x * (y + z) subseteq (x * y) + (x * z)
+
+%(Algebraic properties of degenarate intervals)%
+. x - x = 0 if degen(x) %(inv+)%
+. x * invm(x) = 1 if degen(x) /\ not x = 0 %(inv*)%
 end
