@@ -17,7 +17,7 @@ then %mono
 free type RatPair ::= __..__(proj1:Rat;proj2:Rat)
 sort Interval = {a : RatPair . proj1(a) <= proj2(a)}
 sort Rat < Interval
-    forall a: Rat . a = a .. a as Interval %(Rat2Interval_embedding)%
+    forall a: Rat . a = (a .. a) as Interval %(Rat2Interval_embedding)%
 then %def
 
 ops
