@@ -24,10 +24,10 @@ forall p, q, r, s : Rat
 
 spec RatPair = RatProps
 then %mono
-free type RatPair ::= __..__(proj1:Rat;proj2:Rat)
+free type RatPair ::= __....__(proj1:Rat;proj2:Rat)
 sort Interval = {a : RatPair . proj1(a) <= proj2(a)}
 sort Rat < Interval
-    forall a: Rat . a = (a .. a) as Interval %(Rat2Interval_embedding)%
+    forall a: Rat . a = (a .... a) as Interval %(Rat2Interval_embedding)%
 then %def
 
 ops
@@ -63,8 +63,7 @@ then %def
 vars x, y, w, z : Interval
 vars l1,l2,u1,u2 : Rat
 
-. l1 <= u1 => l1 .. u1 = (op __..__ : Rat * Rat -> RatPair)(l1, u1)
-                                               %(Interval_def)%    
+. l1 <= u1 => l1 .. u1 = l1 .... u1 %(Interval_def)%    
 
 %% DA_Definition_Arithmetic
 . l1 <= u1 /\ l2 <= u2 => l1..u1 + l2..u2 = (l1+l2)..(u1+u2) %(Sum_def)%
