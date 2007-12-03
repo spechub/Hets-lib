@@ -1,4 +1,6 @@
-theory FlipFlop_FO_FlipFlopExt_FO = Main:
+theory FlipFlop_FO_FlipFlopExt_FO
+imports Main
+begin
 
 typedecl "Point"
 
