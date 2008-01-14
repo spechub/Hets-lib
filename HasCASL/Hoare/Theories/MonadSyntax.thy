@@ -1,4 +1,4 @@
-theory MonadSyntax = Main: (*min. Product_Type*)
+theory MonadSyntax imports Main begin (*min. Product_Type*)
 
 text{*Definition of monad type and the two monadic funtions 
   \quak{@{text "\<guillemotright>="}} and ret *}
