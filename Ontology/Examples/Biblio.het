@@ -1,0 +1,62 @@
+library Ontology/Examples/Biblio
+
+logic DL
+
+spec Biblio_DL =
+  Class: Researcher
+  SubclassOf: name some Thing  
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: Article
+  SubclassOf: author some Thing, title some Thing, hasJournal some Journal
+  
+  Class: Journal
+  SubclassOf: name some Thing, hasArticle some Thing, impactFactor some Thing
+
+then %implies
+  Class: Journal
+  SubclassOf: hasArticle some Article
+
+end
+
+logic RelationalScheme
+
+spec Biblio_RS =
+  tables
+    person(key: id,name:string);
+    author_of(person,paper);
+    paper(key: id,title,published_in);
+    journal(key: id,name,impact_factor)
+  
+  links
+    author_of.person -> person.id;
+    author_of.paper -> paper.id;
+    paper.published_in -> journal.id
+end
+
+logic CASL
+
+view Biblio_RS_in_DL : Biblio_RS to
+  { Biblio_DL with logic DL -> CASL
+    then %def
+      preds 
+        journal(j,n,f:Thing) <=> 
+          Journal(j) /\ name(j,n) /\ impactFactor(j,f);
+        paper(a,t,j:Thing) <=> 
+          Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t);
+        author_of(p,a:Thing) <=> 
+          Researcher(p) /\ Article(a) /\ author(p,a);
+        person(p,n:Thing) <=> Researcher(p) /\ name(p,n)
+  } = logic RelationalScheme -> CASL
+end
+
+view Biblio_DL_in_RS : Biblio_DL to
+  { Biblio_RS with logic RelationalScheme -> CASL
+    then %def
+      preds Researcher(x:Thing) <=> exists n:Thing, p:Thing . person(x,n) /\ author(x,p)
+            Article(x:Thing) <=> exists t,j:Thing . paper(x,t,j)
+            Journal(x:Thing) <=> exists n,i:Thing . journal(x,n,i)
+            title(x,y:Thing) <=> exists 
+end
