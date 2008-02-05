@@ -54,4 +54,33 @@ proof-
   thus ?thesis
     by (unfold ileq_def) simp
 qed
+
+lemma indRight:
+  assumes "\<forall>x. (do {x \<leftarrow> p x; q x})  \<preceq> p x"
+  shows   "\<forall>x. (do {x \<leftarrow> p x; x \<leftarrow>\<^sup>* q x; r x}) \<preceq> do { x \<leftarrow> p x; r x}"  (is "ALL x. ?P x")
+proof
+  fix x
+  have "\<forall>x. ((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
+    using assms by (rule ind_right)
+  hence "((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
+    by auto
+  hence "(p x = ((p x \<guillemotright>= (q^[+])) \<oplus> (p x)))"
+    by (unfold "ileq_def") simp
+  hence "((p x \<guillemotright>= r) = (((p x \<guillemotright>= (q^[+])) \<oplus> (p x)) \<guillemotright>=r))"    
+    by (rule_tac f="%x. x \<guillemotright>= r" in arg_cong)
+  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (q^[+]) \<guillemotright>=r) \<oplus> (p x \<guillemotright>=r))"    
+    by (simp only: dist1)
+  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (q^[+]) \<guillemotright>= r) \<oplus> (p x \<guillemotright>= r) \<oplus> (p x \<guillemotright>= r))"    
+    by (simp add: idmp)
+  hence "(p x \<guillemotright>= r) = (((p x \<guillemotright>= (\<lambda>x. (q^[+]) x \<guillemotright>= r)) \<oplus>  (p x \<guillemotright>= r)) \<oplus> (p x \<guillemotright>= r))"
+    by (simp only: assoc)
+  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (\<lambda>x. ((((q^[+]) x) \<guillemotright>= r) \<oplus> (r x)))) \<oplus> (p x \<guillemotright>= r) )"
+    by (simp only: dist2)
+  hence "(p x \<guillemotright>= r) = ( (p x \<guillemotright>= (\<lambda>x. ((r x) \<oplus> (((q^[+]) x) \<guillemotright>= r)))) \<oplus> (p x \<guillemotright>= r))"
+    by (simp add: comm)
+  hence "(p x \<guillemotright>= (\<lambda>x. ((r x) \<oplus> (((q^[+]) x) \<guillemotright>= r)))) \<preceq> (p x \<guillemotright>= r)"
+    by (unfold ileq_def) simp
+  thus "?P x" by auto
+ qed
+
 end
