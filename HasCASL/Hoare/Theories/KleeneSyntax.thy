@@ -83,4 +83,13 @@ proof
   thus "?P x" by auto
  qed
 
+lemma bindStar: "do {x \<leftarrow> p x; x \<leftarrow>\<^sup>* p x; q x} = do { x \<leftarrow> do { x \<leftarrow>\<^sup>* p x; p x}; q x }"
+apply (simp only: dist1 dist2 assoc [THEN sym])
+apply (rule_tac f="%z. ((p x \<guillemotright>= q) \<oplus> z)" in arg_cong)
+apply (rule_tac f="%z. (z \<guillemotright>= q)" in arg_cong)
+apply (subst unf_left)
+apply (rule sym)
+apply (subst unf_right)
+apply (simp only: dist1 dist2 assoc)
+
 end
