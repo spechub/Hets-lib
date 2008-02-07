@@ -15,9 +15,11 @@ axioms
  ind_right:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (p x)) \<Longrightarrow> \<forall>x. ((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
 
 constdefs
-  test :: "bool \<Rightarrow> unit T"
-  "(test b) == if b then ret () else \<delta>" 
-
+  test :: "bool T \<Rightarrow> unit T"
+  "(test b) == do {x \<leftarrow> b; if x then ret () else \<delta>}" 
+  ustar :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[*]" [1000] 999)
+  "(ustar f) == \<lambda>x. (f x) \<oplus> (f^[+]) x"
+  
 syntax
   "_monstar"  :: "[pttrn, 'a T, monseq]\<Rightarrow> monseq"  ("((_\<leftarrow>\<^sup>*(_));/ _)" [110,6,5]5)
 
@@ -84,12 +86,12 @@ proof
  qed
 
 lemma bindStar: "do {x \<leftarrow> p x; x \<leftarrow>\<^sup>* p x; q x} = do { x \<leftarrow> do { x \<leftarrow>\<^sup>* p x; p x}; q x }"
-apply (simp only: dist1 dist2 assoc [THEN sym])
-apply (rule_tac f="%z. ((p x \<guillemotright>= q) \<oplus> z)" in arg_cong)
-apply (rule_tac f="%z. (z \<guillemotright>= q)" in arg_cong)
-apply (subst unf_left)
-apply (rule sym)
-apply (subst unf_right)
-apply (simp only: dist1 dist2 assoc)
-
+  apply (simp only: dist1 dist2 assoc [THEN sym])
+  apply (rule_tac f="%z. ((p x \<guillemotright>= q) \<oplus> z)" in arg_cong)
+  apply (rule_tac f="%z. (z \<guillemotright>= q)" in arg_cong)
+  apply (subst unf_left)
+  apply (rule sym)
+  apply (subst unf_right)
+  apply (simp only: dist1 dist2 assoc)
+done
 end
