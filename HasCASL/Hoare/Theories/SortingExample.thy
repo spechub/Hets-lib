@@ -13,7 +13,10 @@ syntax
 -- "p - initial computation passed to the loop trought x"
 -- "q - the loop's body"  
 translations
-  "dowhile {b, x, p, q}"  => "(q \<guillemotright>= ((%x. (test b) \<guillemotright> p)^[*]))"
+  "dowhile {b, x, p, q}"  => "(q \<guillemotright>= ((%x. (test b) \<guillemotright> p)^[*]) \<guillemotright>= (test' (mnot b)))"
+
+lemma whileUnf "dowhile {b, x, p, q} = dowhile {b, x, p, do {x \<leftarrow> q; if\<^isub>T b then p else \<delta> }}"
+
 
 -- "example specific definitions"
 consts

@@ -15,10 +15,14 @@ axioms
  ind_right:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (p x)) \<Longrightarrow> \<forall>x. ((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
 
 constdefs
+  mnot :: "bool T \<Rightarrow> bool T"
+  "mnot b == do {x \<leftarrow> b; ret (\<not> x)}" 
+  test' :: "bool T \<Rightarrow> 'a \<Rightarrow> 'a T"
+  "(test' b a) == do {x \<leftarrow> b; if x then ret a else \<delta>}" 
   test :: "bool T \<Rightarrow> unit T"
   "(test b) == do {x \<leftarrow> b; if x then ret () else \<delta>}" 
   ustar :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[*]" [1000] 999)
-  "(ustar f) == \<lambda>x. (f x) \<oplus> (f^[+]) x"
+  "(ustar f) == \<lambda>x. (ret x) \<oplus> (f^[+]) x"
   
 syntax
   "_monstar"  :: "[pttrn, 'a T, monseq]\<Rightarrow> monseq"  ("((_\<leftarrow>\<^sup>*(_));/ _)" [110,6,5]5)
