@@ -21,19 +21,19 @@ then %implies
 
 end
 
-logic RelationalScheme
+logic Rel
 
 spec Biblio_RS =
-  tables
-    person(key: id,name:string);
-    author_of(person,paper);
-    paper(key: id,title,published_in);
-    journal(key: id,name,impact_factor)
+  Tables
+    person(key id:integer, name:string)
+    author_of(person, paper:integer)
+    paper(key id:integer,title:string,published_in:integer)
+    journal(key id:integer,name:string,impact_factor:float)
   
-  links
-    author_of.person -> person.id;
-    author_of.paper -> paper.id;
-    paper.published_in -> journal.id
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
 end
 
 logic CASL
