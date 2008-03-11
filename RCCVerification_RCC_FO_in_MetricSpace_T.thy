@@ -4,9 +4,9 @@ uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
-    [\"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\", \"refl\",
-     \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
-     \"Field_unary_minus_idef\", \"FWO_plus_left\", \"FWO_times_left\",
+    [\"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\",
+     \"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
+     \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
      \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\",
      \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
      \"greater_def_ExtPartialOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
@@ -74,6 +74,8 @@ instance Real:: type ..
 instance S:: type ..
 
 axioms
+Field_unary_minus_idef [rule_format] : "ALL x. -' x +' x = 0''"
+
 refl [rule_format] : "ALL x. x <=' x"
 
 trans [rule_format] :
@@ -83,8 +85,6 @@ antisym [rule_format] : "ALL x. ALL y. x <=' y & y <=' x --> x = y"
 
 dichotomy_TotalOrder [rule_format] :
 "ALL x. ALL y. x <=' y | y <=' x"
-
-Field_unary_minus_idef [rule_format] : "ALL x. -' x +' x = 0''"
 
 FWO_plus_left [rule_format] :
 "ALL a. ALL b. ALL c. a <=' b --> a +' c <=' b +' c"
@@ -281,8 +281,8 @@ Ax1 [rule_format] : "ALL x. nonempty(x) = (x C x)"
 C_def [rule_format] :
 "ALL x. ALL y. (x C y) = (EX s. rep x s & rep y s)"
 
-declare refl [simp]
 declare Field_unary_minus_idef [simp]
+declare refl [simp]
 declare FWO_plus_left [simp]
 declare FWO_plus_right [simp]
 declare ga_comm_inf [simp]
