@@ -48,7 +48,7 @@ view Biblio_RS_in_DL : Biblio_RS to
           Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t);
         author_of(p,a:integer) <=> 
           Researcher(p) /\ Article(a) /\ author(p,a);
-        person(p:integer;n:String) <=> Researcher(p) /\ name(p,n)
+        person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)
   } = logic RelScheme -> CASL
 end
 
