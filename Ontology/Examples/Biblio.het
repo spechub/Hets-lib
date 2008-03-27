@@ -21,7 +21,7 @@ then %implies
 
 end
 
-logic Rel
+logic RelScheme
 
 spec Biblio_RS =
   Tables
@@ -49,14 +49,13 @@ view Biblio_RS_in_DL : Biblio_RS to
         author_of(p,a:Thing) <=> 
           Researcher(p) /\ Article(a) /\ author(p,a);
         person(p,n:Thing) <=> Researcher(p) /\ name(p,n)
-  } = logic RelationalScheme -> CASL
+  } = logic RelScheme -> CASL
 end
 
 view Biblio_DL_in_RS : Biblio_DL to
-  { Biblio_RS with logic RelationalScheme -> CASL
+  { Biblio_RS with logic RelScheme -> CASL
     then %def
-      preds Researcher(x:Thing) <=> exists n:Thing, p:Thing . person(x,n) /\ author(x,p)
+      preds Researcher(x:Thing) <=> exists n, p : Thing . person(x,n) /\ author(x,p)
             Article(x:Thing) <=> exists t,j:Thing . paper(x,t,j)
             Journal(x:Thing) <=> exists n,i:Thing . journal(x,n,i)
-            title(x,y:Thing) <=> exists 
 end
