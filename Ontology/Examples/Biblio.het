@@ -36,9 +36,14 @@ spec Biblio_RS =
     paper[published_in]    -> journal[id] one_to_many
 end
 
+
+logic RelScheme
+
+spec Biblio_RS_CASL = Biblio_RS with logic RelScheme -> CASL
+
 logic CASL
 
-view Biblio_RS_in_DL : {Biblio_RS with logic RelScheme -> CASL} to
+view Biblio_RS_in_DL : Biblio_RS_CASL to
   { Biblio_DL with logic DL -> CASL
     then %def
       preds 
@@ -52,6 +57,7 @@ view Biblio_RS_in_DL : {Biblio_RS with logic RelScheme -> CASL} to
   } 
 end
 
+%{
  view Biblio_DL_in_RS : Biblio_DL to
   { Biblio_RS with logic RelScheme -> CASL
     then %def
@@ -60,3 +66,4 @@ end
             Journal(x:integer) <=> (exists n:string;i:float . journal(x,n,i));
   }
 end
+}%
