@@ -38,7 +38,7 @@ end
 
 logic CASL
 
-view Biblio_RS_in_DL : Biblio_RS to
+view Biblio_RS_in_DL : {Biblio_RS with logic RelScheme -> CASL} to
   { Biblio_DL with logic DL -> CASL
     then %def
       preds 
@@ -49,13 +49,14 @@ view Biblio_RS_in_DL : Biblio_RS to
         author_of(p,a:integer) <=> 
           Researcher(p) /\ Article(a) /\ author(p,a);
         person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)
-  } = logic RelScheme -> CASL
+  } 
 end
 
-%[ view Biblio_DL_in_RS : Biblio_DL to]%
-%[  { Biblio_RS with logic RelScheme -> CASL]%
-%[    then %def]%
-%[      preds Researcher(x:Thing) <=> exists n, p : Thing . person(x,n) /\ author(x,p)]%
-%[            Article(x:Thing) <=> exists t,j:Thing . paper(x,t,j)]%
-%[            Journal(x:Thing) <=> exists n,i:Thing . journal(x,n,i)]%
-%[end]%
+ view Biblio_DL_in_RS : Biblio_DL to
+  { Biblio_RS with logic RelScheme -> CASL
+    then %def
+      preds Researcher(x:integer) <=> (exists n : string; p : integer . person(x,n) /\ author(x,p));
+            Article(x:integer) <=> (exists t:string;j:integer . paper(x,t,j));
+            Journal(x:integer) <=> (exists n:string;i:float . journal(x,n,i));
+  }
+end
