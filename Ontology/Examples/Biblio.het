@@ -41,6 +41,15 @@ logic RelScheme
 
 spec Biblio_RS_CASL = Biblio_RS with logic RelScheme -> CASL
 
+logic DL
+
+spec Biblio_DL_CASL_DL = Biblio_DL with logic DL -> CASL_DL
+
+logic CASL_DL
+
+spec Biblio_DL_CASL = Biblio_DL_CASL_DL with logic CASL_DL -> CASL
+
+%{
 logic CASL
 
 view Biblio_RS_in_DL : Biblio_RS_CASL to
@@ -56,6 +65,7 @@ view Biblio_RS_in_DL : Biblio_RS_CASL to
         person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)
   } 
 end
+}%
 
 %{
  view Biblio_DL_in_RS : Biblio_DL to
