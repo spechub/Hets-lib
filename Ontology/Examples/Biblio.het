@@ -4,16 +4,16 @@ logic DL
 
 spec Biblio_DL =
   Class: Researcher
-  SubclassOf: name some Thing  
+  SubclassOf: name some string 
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubclassOf: author some Thing, title some Thing, hasJournal some Journal
+  SubclassOf: author some Thing, title some string, hasJournal some Journal
   
   Class: Journal
-  SubclassOf: name some Thing, hasArticle some Thing, impactFactor some Thing
+  SubclassOf: name some Thing, hasArticle some Thing, impactFactor some integer
 
 then %implies
   Class: Journal
@@ -25,10 +25,10 @@ logic RelScheme
 
 spec Biblio_RS =
   Tables
-    person(key id:integer, name:string)
-    author_of(person, paper:integer)
-    paper(key id:integer,title:string,published_in:integer)
-    journal(key id:integer,name:string,impact_factor:float)
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
   
   Relationships
     author_of[person]      -> person[id]  one_to_many
@@ -36,44 +36,33 @@ spec Biblio_RS =
     paper[published_in]    -> journal[id] one_to_many
 end
 
-
-logic RelScheme
-
-spec Biblio_RS_CASL = Biblio_RS with logic RelScheme -> CASL
-
-logic DL
-
-spec Biblio_DL_CASL_DL = Biblio_DL with logic DL -> CASL_DL
-
-logic CASL_DL
-
-spec Biblio_DL_CASL = Biblio_DL_CASL_DL with logic CASL_DL -> CASL
-
-%{
 logic CASL
 
-view Biblio_RS_in_DL : Biblio_RS_CASL to
-  { Biblio_DL with logic DL -> CASL
+view Biblio_RS_in_DL : Biblio_RS to
+  { Biblio_DL with DL |-> CASL
     then %def
       preds 
-        journal(j:integer;n:string;f:float) <=> 
+        journal(j:pointer;n:string;f:float) <=> 
           Journal(j) /\ name(j,n) /\ impactFactor(j,f);
-        paper(a:integer;t:string;j:integer) <=> 
+        paper(a:pointer;t:string;j:pointer) <=> 
           Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t);
-        author_of(p,a:integer) <=> 
+        author_of(p,a:pointer) <=> 
           Researcher(p) /\ Article(a) /\ author(p,a);
         person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)
   } 
 end
-}%
 
-%{
  view Biblio_DL_in_RS : Biblio_DL to
   { Biblio_RS with logic RelScheme -> CASL
     then %def
-      preds Researcher(x:integer) <=> (exists n : string; p : integer . person(x,n) /\ author(x,p));
-            Article(x:integer) <=> (exists t:string;j:integer . paper(x,t,j));
-            Journal(x:integer) <=> (exists n:string;i:float . journal(x,n,i));
+      preds Researcher(x:pointer)      <=> (exists n:string; a:pointer . person(x,n) /\ author_of(x,a));
+            Article(x:pointer)         <=> (exists t:string; j:integer . paper(x,t,j));
+            Journal(x:pointer)         <=> (exists n:string; i:float   . journal(x,n,i));
+            name(x:pointer;n:string)   <=> person(x,n);
+            hasArticle(x,j:pointer)    <=> (exists n,t:string; i:integer . journal(x,n,i) /\ paper(j,t,x));
+            hasJorunal(j,x:pointer)    <=> (exists n,t:string; i:integer . journal(x,n,i) /\ paper(j,t,x));
+            author(a,p:pointer)        <=> (exists t,n:string p_pointer . paper(a,t,p) /\ person(p,n));
+            title(a:pointer; t:string) <=> (exists p:pointer . paper(a,t,p));
+            impact_factor(j,f)         <=> (exists n:string . journal(j,n,f));
   }
 end
-}%
