@@ -3,8 +3,7 @@ library Ontology/Examples/Biblio
 logic DL
 
 spec Biblio_DL =
-  Interface reveal Researcher, name, Article, author, title, hasJournal,
-	           Journal, hasArticle, impactFactor
+     Biblio_DL_Sign
 then
   Class: Researcher
   SubclassOf: name some string 
@@ -43,7 +42,7 @@ end
 logic RelScheme
 
 spec Biblio_RS =
-  Interface reveal person, id, author_of, paper, published_in
+     Biblio_RS_Sign
 then
   Relationships
     author_of[person]      -> person[id]  one_to_many
