@@ -1,0 +1,37 @@
+library Ontology/Examples/Biblio
+
+logic DL
+
+spec Biblio_DL =
+  Class: Researcher
+  SubclassOf: name some string 
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: Article
+  SubclassOf: author some Thing, title some string, hasJournal some Journal
+  
+  Class: Journal
+  SubclassOf: name some string, hasArticle some Thing, impactFactor some integer
+
+then %implies
+  Class: Journal
+  SubclassOf: hasArticle some Article
+
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+  
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
+end
