@@ -2,6 +2,22 @@ library Ontology/Examples/Biblio
 
 logic DL
 
+spec Biblio_DL_Sign =
+  Class: Researcher
+  DataProperty: name
+
+  Class: Article
+  ObjectProperty: author
+  DataProperty: title
+  ObjectProperty: hasJournal
+
+  
+  Class: Journal
+  ObjectProperty: hasArticle
+  DataProperty: impactFactor
+
+end
+
 spec Biblio_DL =
      Biblio_DL_Sign
 then
@@ -23,32 +39,7 @@ then %implies
 
 end
 
-spec Bibli_DL_Sign =
-  Class: Researcher
-  DataProperty: name
-
-  Class: Article
-  ObjectProperty: author
-  DataProperty: title
-  ObjectProperty: hasJournal
-
-  
-  Class: Journal
-  ObjectProperty: hasArticle
-  DataProperty: impactFactor
-
-end
-
 logic RelScheme
-
-spec Biblio_RS =
-     Biblio_RS_Sign
-then
-  Relationships
-    author_of[person]      -> person[id]  one_to_many
-    author_of[paper]       -> paper[id]   one_to_many
-    paper[published_in]    -> journal[id] one_to_many
-end
 
 spec Biblio_RS_Sign = 
 
@@ -57,6 +48,15 @@ spec Biblio_RS_Sign =
     author_of(person, paper:pointer)
     paper(key id:pointer,title:string,published_in:pointer)
     journal(key id:pointer,name:string,impact_factor:integer)
+end
+
+spec Biblio_RS =
+     Biblio_RS_Sign
+then
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
 end
 
 logic CASL

@@ -61,8 +61,8 @@ end
             name(x:pointer;n:string)   <=> person(x,n);
             hasArticle(x,j:pointer)    <=> (exists n,t:string; i:integer . journal(x,n,i) /\ paper(j,t,x));
             hasJorunal(j,x:pointer)    <=> (exists n,t:string; i:integer . journal(x,n,i) /\ paper(j,t,x));
-            author(a,p:pointer)        <=> (exists t,n:string p_pointer . paper(a,t,p) /\ person(p,n));
+            author(a,p:pointer)        <=> (exists t,n:string; p:pointer . paper(a,t,p) /\ person(p,n));
             title(a:pointer; t:string) <=> (exists p:pointer . paper(a,t,p));
-            impact_factor(j,f)         <=> (exists n:string . journal(j,n,f));
+            impact_factor(j:pointer;f:integer) <=> (exists n:string . journal(j,n,f));
   }
 end
