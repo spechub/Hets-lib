@@ -43,11 +43,11 @@ spec Upper_FOL_Theory =
 and 
      {Biblio_DL with logic DL -> CASL with Thing |-> pointer}     
 then
-     forall x,p:pointer;n:string;i:integer
-     . journal(x,n,i) <=> Journal(x) /\ name (x,n) /\ impactFactor(x,i)
-     . author_of(x,p) <=> Researcher(x) /\ Article(p) /\ author(p,x)
+     forall a,j,x,p:pointer;n:string;i:integer
+     . journal(j,n,i) <=> Journal(j) /\ name (j,n) /\ impactFactor(x,i)
+     . author_of(a,p) <=> Researcher(a) /\ Article(p) /\ author(p,a)
      . person(p,n)    <=> Researcher(p) /\ name(p,n)
      . Researcher(p)  <=> (exists t:string;q:pointer . person(p,t) /\ author(q,p))
      . Article(x)     <=> (exists t:string;q:pointer . paper(x,t,q))
-     . Journal(x)     <=> (exists t:string;j:integer . journal(x,t,j))
+     . Journal(x)     <=> (exists t:string;f:integer . journal(x,t,f))
 end

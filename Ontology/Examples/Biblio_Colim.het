@@ -3,6 +3,9 @@ library Ontology/Examples/Biblio
 logic DL
 
 spec Biblio_DL =
+  Interface reveal Researcher, name, Article, author, title, hasJournal,
+	           Journal, hasArticle, impactFactor
+then
   Class: Researcher
   SubclassOf: name some string 
 
@@ -13,7 +16,7 @@ spec Biblio_DL =
   SubclassOf: author some Thing, title some string, hasJournal some Journal
   
   Class: Journal
-  SubclassOf: name some Thing, hasArticle some Thing, impactFactor some integer
+  SubclassOf: name some string, hasArticle some Thing, impactFactor some integer
 
 then %implies
   Class: Journal
@@ -21,24 +24,54 @@ then %implies
 
 end
 
+spec Bibli_DL_Sign =
+  Class: Researcher
+  DataProperty: name
+
+  Class: Article
+  ObjectProperty: author
+  DataProperty: title
+  ObjectProperty: hasJournal
+
+  
+  Class: Journal
+  ObjectProperty: hasArticle
+  DataProperty: impactFactor
+
+end
+
 logic RelScheme
 
 spec Biblio_RS =
-  Tables
-    person(key id:pointer, name:string)
-    author_of(person, paper:pointer)
-    paper(key id:pointer,title:string,published_in:pointer)
-    journal(key id:pointer,name:string,impact_factor:integer)
-  
+  Interface reveal person, id, author_of, paper, published_in
+then
   Relationships
     author_of[person]      -> person[id]  one_to_many
     author_of[paper]       -> paper[id]   one_to_many
     paper[published_in]    -> journal[id] one_to_many
 end
 
+spec Biblio_RS_Sign = 
+
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+end
+
 logic CASL
 
-spec Bridge =
-     sorts thing, string, integer, DATA
-     sorts string, integer < DATA 
+spec Interface = 
+   {Biblio_RS_Sign with logic RelScheme -> CASL}  and 
+   {Biblio_DL_Sign with logic DL -> CASL with Thing |-> pointer} 
+then
+   forall a,j,p,x:pointer;n,t:string;f:integer
+  . journal(j,n,f) <=> Journal(j) /\ name(j,n) /\ impactFactor(j,f)
+  . paper(a,t,j) <=> Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t)
+  . author_of(p,a) <=> Researcher(p) /\ Article(a) /\ author(p,a)
+  . person(p,n) <=> Researcher(p) /\ name(p,n)
+  . Researcher(x) <=> (exists q:pointer;m:string . person(x,m) /\ author(x,q))
+  . Article(x) <=> (exists q:pointer;m:string . paper(x,m,q))
+  . Journal(x) <=> (exists m:string;i:integer . journal(x,n,i))
 end
