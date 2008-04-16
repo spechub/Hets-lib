@@ -1,0 +1,28 @@
+# goal add_assoc_Nat is provable with Isabelle
+# use this:
+# declare add_suc_Nat [simp]
+# theorem add_assoc_Nat :
+# "ALL m. ALL X_n. ALL k. m +' (X_n +' k) = (m +' X_n) +' k"
+# apply(rule allI)
+# apply(rule allI)
+# apply(rule allI)
+# apply(induct_tac m)
+# by auto
+
+use Datatypes
+
+dg-all auto
+
+dg basic Nat
+translate SuleCFOL2SoftFOLInduction
+prover SPASS
+set goals add_0_Nat_right
+set time-limit 20
+prove
+set goals add_suc_Nat_1
+set time-limit 40
+prove
+set goals add_comm_Nat
+set time-limit 40
+prove
+
