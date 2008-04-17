@@ -1,0 +1,31 @@
+logic DL
+
+spec Predators =
+     Class: Cheetah
+     SubclassOf: Felinae, Carnivore, isFaster some Tiger
+
+     Class: Tiger
+     SubclassOf: Felinae, Carnivore
+end
+
+logic CASL_DL
+
+spec Victims =
+     pred Hare      : Thing
+     pred Mouse     : Thing
+     pred isTastier : Thing * Thing
+     forall a,b :Thing
+     . Hare(a) /\ Mouse (b) => isTastier (a,b)
+end
+
+logic CASL
+spec Animals =
+     Predators and Victims
+     then 
+     pred huntsPreferred : Thing * Thing * Thing
+     forall a,b,c : Thing
+     . Tiger(a) /\ isTastier (b,c) <=> huntsPreferred (a,b,c)
+     then %implies
+     forall a,b,c : Thing
+     . Tiger(a) /\ Hare(b) /\ Mouse (c) => huntsPreferred (a,b,c)
+end
