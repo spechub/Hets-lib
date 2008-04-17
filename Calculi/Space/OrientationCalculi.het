@@ -77,7 +77,7 @@ spec Edges = EgoOrientation and Locations then
         forall v, w: Edge
         . v | w  = ~(v | -w)
         . v | -w = -v | w
-        . v | w  = ~(w | v)
+        . v | w  = @ (w | v)
         . - -v = v
 then %implies
         forall v, w: Edge
@@ -157,9 +157,9 @@ then %% recomputation of entry or exit
           oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c)
 then
         forall a, b, c, d: Place
-        . oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+        . id(b) = id(d) /\ def b-->c /\ def d-->c =>
           oEntry(b-->c) = origin(b) | origin(d) + oEntry(d-->c)
-        . oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+        . id(b) = id(d) /\ def a-->d /\ def a-->d =>
           oExit(a-->d) = oExit(a-->b) - origin(d) | origin(b)
 end
 
