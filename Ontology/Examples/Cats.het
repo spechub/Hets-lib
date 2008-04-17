@@ -1,11 +1,14 @@
 logic DL
 
 spec Predators =
+     ObjectProperty: isFaster
+     InverseOf: isSlower
+
      Class: Cheetah
-     SubclassOf: Felinae, Carnivore, isFaster some Tiger
+     SubclassOf: Carnivore, isFaster some Tiger
 
      Class: Tiger
-     SubclassOf: Felinae, Carnivore
+     SubclassOf: Carnivore, isSlower some Tiger
 end
 
 logic CASL_DL
@@ -15,17 +18,22 @@ spec Victims =
      pred Mouse     : Thing
      pred isTastier : Thing * Thing
      forall a,b :Thing
-     . Hare(a) /\ Mouse (b) => isTastier (a,b)
+     . isTastier (a,b) => not isTastier (b,a) 
+     . Hare(a)  /\ Mouse (b) => isTastier (a,b)     
+     then %implies
+     forall a,b : Thing
+     . Hare(a)  /\ Mouse (b) => not isTastier (b,a)        
 end
 
 logic CASL
+
 spec Animals =
      Predators and Victims
      then 
-     pred huntsPreferred : Thing * Thing * Thing
+     pred preferres : Thing * Thing * Thing
      forall a,b,c : Thing
-     . Tiger(a) /\ isTastier (b,c) <=> huntsPreferred (a,b,c)
+     . Tiger(a) /\ isTastier (b,c) <=> preferres (a,b,c)
      then %implies
      forall a,b,c : Thing
-     . Tiger(a) /\ Hare(b) /\ Mouse (c) => huntsPreferred (a,b,c)
+     . Tiger(a) /\ Hare(b) /\ Mouse (c) => preferres (a,b,c)
 end
