@@ -1,0 +1,34 @@
+logic DL
+spec Cats =
+     ObjectProperty: isFaster
+     Characteristics: Transitive, Irreflexive
+
+     Class: Cheetah
+     SubclassOf: Carnivore, isFaster some Tiger
+     DisjointWith: Tiger
+
+     Class: Tiger
+     SubclassOf: Carnivore
+     DisjointWith: Cheetah
+end
+
+logic CASL_DL
+spec MoreCats =
+     pred Cheetah, Tiger, Lion : Thing
+     pred isFaster  : Thing * Thing
+     pred Carnivore : Thing
+     forall a,b :Thing
+     . Cheetah (a) => Carnivore (a)
+     . Tiger   (a) => Carnivore (a)
+     . Lion    (a) => Carnivore (a)
+     . Cheetah(a)  => exists b : Thing . isFaster(a,b) /\ Tiger(b)
+     . Tiger(a)    => exists b : Thing . isFaster(a,b) /\ Lion(b)
+     . not (Tiger(a) /\ Cheetah(a))
+     . not (Tiger(a) /\ Lion(a))
+     . not (Lion(a) /\ Cheetah(a))
+     . forall a : Thing . not isFaster(a, a) 
+     . isFaster(a, b) /\ isFaster(b, c) => isFaster(a, c) 
+end
+
+%view cview : Cats to MoreCats
+
