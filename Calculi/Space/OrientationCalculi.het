@@ -151,10 +151,10 @@ then %% recomputation of entry or exit
         forall a, b, c, d: Place
         . a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
         . a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
-        . oExit(a-->b)  = front <=> a-->b | b-->c = oEntry(b-->c)
-        . oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
-        . id(b) = id(d) /\ a-->b | b-->c = a-->d | d-->c =>
-          oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c)
+        . oExit(a-->b)  = front => a-->b | b-->c = oEntry(b-->c) %implied
+        . oEntry(b-->c) = front => a-->b | b-->c = oExit(a-->b)  %implied
+        . a-->b | b-->c = a-->d | d-->c =>
+          oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) %implied
 then
         forall a, b, c, d: Place
         . id(b) = id(d) /\ def b-->c /\ def d-->c =>
