@@ -39,4 +39,3 @@ vars  x: a; p: m a; b: Type; q: a -> m b
 . lift (ret x) = ret x : t m a
 . lift (p >>= q) = lift p >>= \ y: a .! lift (q y) : t m b }
 
-spec State = Monad then {}
