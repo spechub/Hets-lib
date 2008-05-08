@@ -28,12 +28,12 @@ end
 logic CASL
 
 spec Animals =
-     Predators and Prey
+     Predators and {Prey with Hare |-> Lepus}
      then 
      pred preferres : Thing * Thing * Thing
      forall a,b,c : Thing
      . Tiger(a) /\ isTastier (b,c) <=> preferres (a,b,c)
      then %implies
      forall a,b,c : Thing
-     . Tiger(a) /\ Hare(b) /\ Mouse (c) => preferres (a,b,c)
+     . Tiger(a) /\ Lepus(b) /\ Mouse (c) => preferres (a,b,c)
 end
