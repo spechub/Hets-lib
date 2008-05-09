@@ -18,11 +18,11 @@ spec Prey =
      pred Mouse     : Thing
      pred isTastier : Thing * Thing
      forall a,b :Thing
-     . isTastier (a,b) => not isTastier (b,a) 
-     . Hare(a)  /\ Mouse (b) => isTastier (a,b)     
+     . isTastier (a,b) => not isTastier (b,a)  %(Tastier_asym)%
+     . Hare(a)  /\ Mouse (b) => isTastier (a,b) %(Hare_Tastier)%
      then %implies
      forall a,b : Thing
-     . Hare(a)  /\ Mouse (b) => not isTastier (b,a)        
+     . Hare(a)  /\ Mouse (b) => not isTastier (b,a)  %(Mouse_notTastier)%
 end
 
 logic CASL
@@ -30,10 +30,10 @@ logic CASL
 spec Animals =
      Predators and {Prey with Hare |-> Lepus}
      then 
-     pred preferres : Thing * Thing * Thing
+     pred prefers : Thing * Thing * Thing
      forall a,b,c : Thing
-     . Tiger(a) /\ isTastier (b,c) <=> preferres (a,b,c)
+     . Tiger(a) /\ isTastier (b,c) => prefers (a,b,c) %(Tiger_gourmet)%
      then %implies
      forall a,b,c : Thing
-     . Tiger(a) /\ Lepus(b) /\ Mouse (c) => preferres (a,b,c)
+     . Tiger(a) /\ Hare(b) /\ Mouse (c) => prefers (a,b,c) %(Tiger_likes_Hares)%
 end
