@@ -1,0 +1,85 @@
+use Basic/RelationsAndOrders
+
+dg-all auto
+
+dg basic BooleanAlgebra_E1
+prover SPASS
+prove-all
+
+dg basic StrictOrder_1E1
+prover SPASS
+prove-all
+
+dg basic PartialOrder_in_ExtBooleanAlgebra_T
+prover SPASS
+prove-all
+
+dg basic ExtTotalOrder_E1U1
+prover SPASS
+prove-all
+
+dg basic ExtTotalOrder_E1
+prover SPASS
+prove-all
+
+dg basic ExtPartialOrder_U1
+set goals ga_comm_sup
+prover MathServe Broker
+begin-script
+Time Limit: 60
+end-script
+prove
+
+dg basic ExtBooleanAlgebra_U1E1
+prover SPASS
+begin-script
+Time Limit: 40
+end-script
+set goals involution_compl_ExtBooleanAlgebra
+prove
+set goals de_Morgan2
+prove
+set goals de_Morgan1
+prove
+
+dg basic Nat
+prover Vampire
+begin-script
+Time Limit: 40
+end-script
+prove-all
+
+dg basic Int
+prover Vampire
+begin-script
+Time Limit: 40
+end-script
+set goals antisym trans
+prove
+
+begin-script
+Time Limit: 40
+end-script
+set goals refl dichotomy_TotalOrder
+prover Vampire
+# translate CASL2PCFOL
+# translate CASL2SubCFOL
+translate SuleCFOL2SoftFOLInduction
+prove
+
+dg basic Rat
+prover Vampire
+begin-script
+Time Limit: 40
+end-script
+set goals antisym trans
+prove
+begin-script
+Time Limit: 40
+end-script
+set goals refl dichotomy_TotalOrder
+prover Vampire
+# translate CASL2PCFOL
+# translate CASL2SubCFOL
+translate SuleCFOL2SoftFOLInduction
+prove
