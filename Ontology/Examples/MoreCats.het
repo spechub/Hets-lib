@@ -15,13 +15,13 @@ end
 logic CASL_DL
 spec MoreCats =
      pred Universal : Thing * Thing
-     pred Nothing : Thing
      pred Self : Thing
-     pred Thing : Thing
      pred Cheetah, Tiger, Lion : Thing
      pred isFaster  : Thing * Thing
      pred Carnivore : Thing
-     forall a,b,c :Thing
+     pred Nothing : Thing
+     forall a,b,c
+ :Thing
      . Cheetah (a) => Carnivore (a)
      . Tiger   (a) => Carnivore (a)
      . Lion    (a) => Carnivore (a)
@@ -34,5 +34,5 @@ spec MoreCats =
      . isFaster(a, b) /\ isFaster(b, c) => isFaster(a, c) 
 end
 
-logic CASL
+logic CASL_DL
 view cview : Cats to MoreCats
