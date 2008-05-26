@@ -21,6 +21,14 @@ whenElseOp :: "('a option * bool) * 'a option => 'a option"
 "whenElseOp t == case t of
     (p, e) => if snd p then fst p else e"
 
+resOp :: "'a option * 'b option => 'a"
+"resOp p == case fst p of
+     None => arbitrary
+   | Some a => a"
+
+botOp :: "'a"
+"botOp == arbitrary"
+
 unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
 "unpackOption c s a == case s of
