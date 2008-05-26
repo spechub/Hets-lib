@@ -26,9 +26,6 @@ resOp :: "'a option * 'b option => 'a"
      None => arbitrary
    | Some a => a"
 
-botOp :: "'a"
-"botOp == arbitrary"
-
 unpackOption :: "(('a => 'b option) => 'c => 'd option)
             => ('a => 'b option) option => 'c => 'd option"
 "unpackOption c s a == case s of
