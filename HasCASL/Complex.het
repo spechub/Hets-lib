@@ -10,6 +10,7 @@ from Basic/Algebra_I get
 from HasCASL/Real get 
      Real
 
+logic HasCASL
 
 spec ConstructComplex = Real then
  free type Complex ::= __ + __ i (Re: Real; Im: Real)
@@ -18,11 +19,11 @@ spec ConstructComplex = Real then
  var x:Real
  . x = x + 0i
  var x,y,z,w: Real
- . (x + yi) + (z + wi) = (x + z) + (y + w)i
- . (x + yi) * (z + wi) = (x*z - y*w) + (y*z + x*w)i
+ . (x + y i) + (z + w i) = ((x + z) + (y + w)i)
+ . (x + y i) * (z + w i) = ((x*z - y*w) + (y*z + x*w)i)
 
 view ConstructComplex_as_Field:
      BasicField to ConstructComplex =
-  e |-> 1
+  Elem |-> Complex, e |-> 1
 
-spec  Complex = BasicExtField[ConstructComplex_as_Field]
+%%spec  Complex = BasicExtField[view ConstructComplex_as_Field]
