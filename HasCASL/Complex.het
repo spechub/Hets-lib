@@ -13,14 +13,16 @@ from HasCASL/Real get
 logic HasCASL
 
 spec ConstructComplex = Real then
- free type Complex ::= __ + __ i (Re: Real; Im: Real)
- ops __+__, __*__: Complex * Complex -> Complex
+ free type Complex ::= complex(Re: Real; Im: Real)
+ ops __+__, __*__: Complex * Complex -> Complex;
+     i: Complex
  sort Real < Complex
  var x:Real
- . x = x + 0i
+ . x = complex(x,0)
+ . i = complex(0,1)
  var x,y,z,w: Real
- . (x + y i) + (z + w i) = ((x + z) + (y + w)i)
- . (x + y i) * (z + w i) = ((x*z - y*w) + (y*z + x*w)i)
+ . complex(x, y) + complex(z, w) = complex(x + z, y + w)
+ . complex(x, y) * complex(z, w) = complex(x*z - y*w, y*z + x*w)
 
 view ConstructComplex_as_Field:
      BasicField to ConstructComplex =
