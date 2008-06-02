@@ -64,24 +64,37 @@ We also want associtivity for q and r coming along with no parameter. For
 this purpose we need three more variants of the assocLaw.
 *}
 
-lemma do_assoc1[simp]: 
+lemma do_assoc1 [simp]: 
   "(do{do{x\<leftarrow>p;q x}; r}) = (do {x\<leftarrow>p; q x; r})" 
   apply (unfold "bind'_def")
   by (rule assocLaw)
 
-lemma do_assoc2[simp]: 
+lemma do_assoc2 [simp]: 
   "(do {x\<leftarrow>(do {p; q}); r x}) = (do {p; x\<leftarrow>q; r x})"
   apply (unfold "bind'_def")
   by (rule assocLaw)
 
-lemma do_assoc3[simp]: 
+lemma do_assoc3 [simp]: 
   "(do {(do {p; q}); r})= (do {p; q; r})"
   apply (unfold "bind'_def")
   by (rule assocLaw)
 
-lemma delBind[simp]: "do {x\<leftarrow>p; q} = do {p; q}"
+lemma delBind [simp]: "do {x\<leftarrow>p; q} = do {p; q}"
   apply (unfold bind'_def)
   by simp
+
+lemma fstUnitLaw1 [simp]:  "(do {ret x; p}) = p"
+ apply (simp only: delBind [THEN sym])
+ by (rule lunit)
+
+lemma delBang [simp]: "do {x\<leftarrow>p; ret ()} = p"
+  apply (subst runit [THEN sym]) back back back
+  apply (subst unit_abs_eta_conv [THEN sym]) back back
+  by auto
+
+lemma delBang1 [simp]: "do {p; ret ()} = p"
+  apply (simp only: delBind [THEN sym])
+  by (rule delBang)
 
 text{*Syntactic sugar for True and False*}
 syntax
