@@ -1,0 +1,60 @@
+library Calculi/Algebra/FuzzySystems
+version 0.1
+%authors: Regivan Hugo Nunes Santiago, Christian Maeder
+%date: 2008-06-24
+%email: Christian.Maeder@dfki.de
+
+%{
+    This library defines some basic concepts for fuzzy systems
+}%
+
+%display  __intersection__ %LATEX __\cap__
+%display  __union__        %LATEX __\cup__
+
+from Basic/RelationsAndOrders get TotalOrder
+
+spec UnitInterval = TotalOrder with Elem |-> UnitInterval
+then
+     ops 0 : UnitInterval; 1 : UnitInterval
+     var x : UnitInterval
+     . 0 <= x
+     . x <= 1
+
+spec MonotoneJunctor[UnitInterval] =
+     op J : UnitInterval * UnitInterval -> UnitInterval, comm, assoc
+     vars x, y, z, w : UnitInterval
+     . x <= y /\ w <= z => J(x, w) <= J(y, z)
+
+spec TNorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> T
+then
+     forall x : UnitInterval . T(x, 1) = x
+
+spec TConorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> C
+then
+     forall x : UnitInterval . C(x, 0) = x
+
+spec Complement[UnitInterval] =
+     op compl __ : UnitInterval -> UnitInterval
+     . compl 0 = 1
+     . compl 1 = 0
+
+spec Junctors[UnitInterval] = TNorm[UnitInterval]
+and TConorm[UnitInterval]
+and Complement[UnitInterval]
+then vars x, y : UnitInterval
+     %% de Morgan ??
+     . compl T(x, y) = C(compl x, compl y)
+     . compl C(x, y) = T(compl x, compl y)
+
+logic HasCASL
+
+spec FuzzySet[Junctors[UnitInterval]] =
+     var U : Type
+     type FuzzySet U := U -> UnitInterval
+     ops __intersection__, __union__ : FuzzySet U * FuzzySet U -> FuzzySet U,
+         comm, assoc %implied
+     op complement : FuzzySet U -> FuzzySet U
+     vars x : U; A, B: FuzzySet U
+     . (A intersection B) x = T(A x, B x)
+     . (A union B) x = C(A x, B x)
+     . complement A x = compl (A x)
