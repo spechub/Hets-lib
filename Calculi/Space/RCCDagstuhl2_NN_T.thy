@@ -269,8 +269,8 @@ lemma MS_triangle_rev :
 "d(x, z) <=_3 (d(x, y) +' d(z, y))"
 by (simp add: MS_symm)
 
-lemma C_id_lemma : "!!x y xa. \
-       ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s) \
+lemma C_id_lemma : "!!x y xa.
+       ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s)
        ==> rep x xa ==> rep y xa"
 apply (erule contrapos_pp)
 apply (subst not_all)
