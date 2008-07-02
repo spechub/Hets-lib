@@ -17,21 +17,21 @@ spec UnitInterval = TotalOrder with Elem |-> UnitInterval
 then
      ops 0 : UnitInterval; 1 : UnitInterval
      var x : UnitInterval
-     . 0 <= x
-     . x <= 1
+     . 0 <= x %(ge_0)%
+     . x <= 1 %(le_1)%
 
 spec MonotoneJunctor[UnitInterval] =
      op J : UnitInterval * UnitInterval -> UnitInterval, comm, assoc
      vars x, y, z, w : UnitInterval
-     . x <= y /\ w <= z => J(x, w) <= J(y, z)
+     . x <= y /\ w <= z => J(x, w) <= J(y, z) %(monotonicity)%
 
 spec TNorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> T
 then
-     forall x : UnitInterval . T(x, 1) = x
+     forall x : UnitInterval . T(x, 1) = x %(boundary_1)%
 
 spec TConorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> C
 then
-     forall x : UnitInterval . C(x, 0) = x
+     forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
 
 spec Complement[UnitInterval] =
      op compl __ : UnitInterval -> UnitInterval
@@ -46,15 +46,65 @@ then vars x, y : UnitInterval
      . compl T(x, y) = C(compl x, compl y)
      . compl C(x, y) = T(compl x, compl y)
 
-logic HasCASL
-
-spec FuzzySet[Junctors[UnitInterval]] =
-     var U : Type
-     type FuzzySet U := U -> UnitInterval
-     ops __intersection__, __union__ : FuzzySet U * FuzzySet U -> FuzzySet U,
+spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
+     sort FuzzySet
+     %% application
+     op __@__ : FuzzySet * Universe -> UnitInterval
+     ops __intersection__, __union__ : FuzzySet * FuzzySet -> FuzzySet,
          comm, assoc %implied
-     op complement : FuzzySet U -> FuzzySet U
-     vars x : U; A, B: FuzzySet U
-     . (A intersection B) x = T(A x, B x)
-     . (A union B) x = C(A x, B x)
-     . complement A x = compl (A x)
+     op complement __ : FuzzySet -> FuzzySet
+     vars x : Universe; A, B: FuzzySet
+     . A = B <=> forall x : Universe . A @ x = B @ x %(extensionality)%
+     . (A intersection B) @ x = T(A @ x, B @ x)
+     . (A union B) @ x = C(A @ x, B @ x)
+     . complement A @ x = compl (A @ x)
+
+from Basic/Numbers get Rat
+
+spec ConcretUnitInterval = Rat
+then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
+
+spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
+     FuzzySet[Junctors[UnitInterval]][sort Universe]
+
+spec QuasiFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> FuzzyNumber
+then
+     . true %(convex)%
+     . true %(piecewise_continuous)%
+
+spec FuzzyNumber = QuasiFuzzyNumber
+then
+     . true %(normalized)%
+
+spec Value [sort Universe] given ConcretUnitInterval =
+     free type Value ::=
+          ConfValue (rawValue : Universe; confidence : UnitInterval)
+
+spec Trapez = FuzzyNumber
+then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
+     vars x, a, b, c, d : Rat; t : FuzzyNumber
+     . a <= b /\ b <= c /\ c <= d => def trapez(a, b, c, d)
+     . x <= a /\ t = trapez(a, b, c, d)
+       => t @ x = 0
+     . a < x /\ x <= b /\ t = trapez(a, b, c, d)
+       => t @ x = (x - a) / (b - a)
+     . b <= x /\ x <= c /\ t = trapez(a, b, c, d)
+       => t @ x = 1
+     . c < x /\ x <= d /\ t = trapez(a, b, c, d)
+       => t @ x = (d - x) / (d - c)
+     . d <= x /\ t = trapez(a, b, c, d)
+       => t @ x = 0
+
+spec Triange = Trapez
+then op triangle : Rat * Rat * Rat ->? FuzzyNumber
+     vars a, b, c : Rat
+     . triangle (a, b, c) = trapez(a, b, b, c)
+
+from Basic/StructuredDatatypes get String, Set, Map
+
+spec DiscreteFuzzySet = String
+then Value[sort String]
+then Set[sort Value]
+
+spec ConfidenceMap = String and QuasiFuzzyNumber
+then Map[sort String][sort FuzzyNumber]
