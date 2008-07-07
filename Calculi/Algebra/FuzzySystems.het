@@ -67,18 +67,18 @@ then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
 spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
      FuzzySet[Junctors[UnitInterval]][sort Universe]
 
-spec QuasiFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> FuzzyNumber
-then
-     . true %(convex)%
-     . true %(piecewise_continuous)%
-
-spec FuzzyNumber = QuasiFuzzyNumber
-then
-     . true %(normalized)%
+spec FuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
+then sort QuasiFuzzyNumber =
+     { x : PreFuzzyNumber
+       . true %(convex)%
+       /\ true %(piecewise_continuous)% }
+     sort FuzzyNumber = 
+     { x : QuasiFuzzyNumber
+       . true %(normalized)% }
 
 spec Value [sort Universe] given ConcretUnitInterval =
      free type Value ::=
-          ConfValue (rawValue : Universe; confidence : UnitInterval)
+          ConfValue (rawValue : Universe; cf : UnitInterval)
 
 spec Trapez = FuzzyNumber
 then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
@@ -102,9 +102,37 @@ then op triangle : Rat * Rat * Rat ->? FuzzyNumber
 
 from Basic/StructuredDatatypes get String, Set, Map
 
-spec DiscreteFuzzySet = String
-then Value[sort String]
-then Set[sort Value]
+spec FiniteFuzzySet = String
+then Value[sort String] %% a linguistic term
+then Set[sort Value] %% a finite set of linguistic terms
 
-spec ConfidenceMap = String and QuasiFuzzyNumber
-then Map[sort String][sort FuzzyNumber]
+spec ConfidenceMap = String and FuzzyNumber
+then Map[sort String][sort QuasiFuzzyNumber]
+
+spec LinguisticVariable[sort Range] = FiniteFuzzySet and ConfidenceMap
+then sort Range < Rat
+     generated type LVar ::= LVar(
+       String;
+       Set[Value];
+       Map[String, QuasiFuzzyNumber])?
+
+spec Sing = FuzzyNumber
+then op Sing __ : Rat -> PreFuzzyNumber
+     var r, s : Rat
+     . Sing r @ s = 1 when r = s else 0
+     sort Sing =
+     { x : PreFuzzyNumber
+       . exists r: Rat . Sing r = x }
+     
+spec Fuzzify[sort Range] = Sing and LinguisticVariable[sort Range]
+then op fuzzify : PreFuzzyNumber * LVar -> LVar
+     vars name: String;
+          A : PreFuzzyNumber;
+          CM : Map[String, QuasiFuzzyNumber];
+          S, Ta : Set[Value];
+          v, va : UnitInterval
+     . (forall t : String . (forall x : Range . exists y : Range .
+         va = min(A @ y, lookup(t, CM) @ y)
+         /\ va >= min(A @ x, lookup(t, CM) @ x)) /\
+       ConfValue(t, v) eps S <=> ConfValue(t, va) eps Ta)
+       => fuzzify(A, LVar(name, S, CM)) = LVar(name, Ta, CM)        
