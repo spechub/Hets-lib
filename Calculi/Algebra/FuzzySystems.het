@@ -10,8 +10,8 @@ version 0.1
 
 %display  __intersection__ %LATEX __\cap__
 %display  __union__        %LATEX __\cup__
-%display  __subseteq__        %LATEX __\subseteq__
-%display  __subset__        %LATEX __\subset__
+%display  __subseteq__     %LATEX __\subseteq__
+%display  __subset__       %LATEX __\subset__
 
 from Basic/RelationsAndOrders get TotalOrder
 
@@ -131,7 +131,7 @@ then op triangle : Rat * Rat * Rat ->? FuzzyNumber
 
 %%--------------------- Linguistic Variables ---------------
 
-%% values with confidence over any universe
+%% values of a universe sort with a confidence
 spec Value [sort Universe] given ConcretUnitInterval =
      free type Value ::=
           ConfValue (rawValue : Universe; cf : UnitInterval)
@@ -146,7 +146,7 @@ then free type TS ::= TS(String)
 spec CS = String
 then free type CS ::= CS(String)
 
-%% instantiate Value
+%% instantiate values with strings for terms
 spec LinguisticTerm = TS
 then Value[sort TS]
 
@@ -158,7 +158,7 @@ then Set[sort Value]
 spec ConfidenceMap = TS and QuasiFuzzyNumber
 then Map[sort TS][sort QuasiFuzzyNumber]
 
-%% only consider subsorts of Rat as Range
+%% only consider subsorts of Rat as Range for linguistic variables
 spec LinguisticVariable[sort Range] = CS
 and LinguisticTerms
 and ConfidenceMap
@@ -177,20 +177,18 @@ then %% only changes the confidence of the terms in the linguistic variables
      %% lookup the confidence for a term string and a value from Range
      op eval (t: TS; CM : Map[TS, QuasiFuzzyNumber]; x : Range) :? UnitInterval
         = lookup(t, CM) @ x
-     vars cname : CS;
-          A : SingOrQuasiFuzzyNumber;
-          CM : Map[TS, QuasiFuzzyNumber];
-          S, Ta : Set[Value];
-          v, va : UnitInterval
+     vars cname : CS; %% unchanged concept name
+          A : SingOrQuasiFuzzyNumber; %% input
+          CM : Map[TS, QuasiFuzzyNumber]; %% confidence map
+          S, Ta : Set[Value]; %% terms before and after fuzzification
+          v, va : UnitInterval %% confidence before and after fuzzification
      %% for a term string t take the minimum of the input A and
      %% the corresponding quasi fuzzy number from the confidence map CM
      %% obtained by lookup(t, CM)
-     %% choose the maximum of these value over the whole Range
+     %% choose the maximum of these value va over the whole Range
      %% apply the above to all linguistic terms in the sets
      . (forall t : TS . (forall x : Range . exists y : Range .
          va = min(A @ y, eval(t, CM, y))
          /\ va >= min(A @ x, eval(t, CM, x))) /\
        ConfValue(t, v) eps S <=> ConfValue(t, va) eps Ta)
        => fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
-
-
