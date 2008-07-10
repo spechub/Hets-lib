@@ -10,6 +10,8 @@ version 0.1
 
 %display  __intersection__ %LATEX __\cap__
 %display  __union__        %LATEX __\cup__
+%display  __subseteq__        %LATEX __\subseteq__
+%display  __subset__        %LATEX __\subset__
 
 from Basic/RelationsAndOrders get TotalOrder
 
@@ -52,34 +54,55 @@ spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
      op __@__ : FuzzySet * Universe -> UnitInterval
      ops __intersection__, __union__ : FuzzySet * FuzzySet -> FuzzySet,
          comm, assoc %implied
+     preds __subseteq__, __subset__ : FuzzySet * FuzzySet
      op complement __ : FuzzySet -> FuzzySet
      vars x : Universe; A, B: FuzzySet
      . A = B <=> forall x : Universe . A @ x = B @ x %(extensionality)%
+     . A subseteq B <=> forall x : Universe . A @ x <= B @ x
+     . A subset B <=> not A = B /\ A subseteq B
      . (A intersection B) @ x = T(A @ x, B @ x)
      . (A union B) @ x = C(A @ x, B @ x)
      . complement A @ x = compl (A @ x)
 
+%% now fix the unit interval for more concrete fuzzy sets
 from Basic/Numbers get Rat
 
 spec ConcretUnitInterval = Rat
 then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
 
+%% only the sort Universe is a formal parameter now
 spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
      FuzzySet[Junctors[UnitInterval]][sort Universe]
 
-spec FuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
+%% define various subsorts of functions from Rat
+spec PreFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
+
+spec QuasiFuzzyNumber = PreFuzzyNumber
 then sort QuasiFuzzyNumber =
      { x : PreFuzzyNumber
        . true %(convex)%
        /\ true %(piecewise_continuous)% }
-     sort FuzzyNumber = 
+
+spec FuzzyNumber = QuasiFuzzyNumber
+then sort FuzzyNumber =
      { x : QuasiFuzzyNumber
-       . true %(normalized)% }
+       . exists r : Rat . x @ r = 1 %(normalized)% }
 
-spec Value [sort Universe] given ConcretUnitInterval =
-     free type Value ::=
-          ConfValue (rawValue : Universe; cf : UnitInterval)
+%%--------------------- Singletons -------------------------
+spec Sing = PreFuzzyNumber
+then op Sing __ : Rat -> PreFuzzyNumber
+     var r, s : Rat
+     . Sing r @ s = 1 when r = s else 0
+     sort Sing =
+     { x : PreFuzzyNumber
+       . exists r: Rat . Sing r = x }
 
+%%--------------------- Singletons or quasi fuzzy numbers
+spec SingOrQuasiFuzzyNumber = QuasiFuzzyNumber and Sing
+then sort SingOrQuasiFuzzyNumber =
+     { x : PreFuzzyNumber . x in QuasiFuzzyNumber \/ x in Sing }
+
+%%--------------- Trapezoidal Fuzzy Numbers ----------------
 spec Trapez = FuzzyNumber
 then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
      vars x, a, b, c, d : Rat; t : FuzzyNumber
@@ -95,44 +118,79 @@ then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
      . d <= x /\ t = trapez(a, b, c, d)
        => t @ x = 0
 
+%%------------- Triangular Fuzzy Numbers ----------------
 spec Triange = Trapez
 then op triangle : Rat * Rat * Rat ->? FuzzyNumber
      vars a, b, c : Rat
      . triangle (a, b, c) = trapez(a, b, b, c)
 
+%%------------- Piecewise Quadratic Fuzzy Numbers ------------
+
+%%------------- Normal Quadratic Fuzzy Numbers ------------
+
+
+%%--------------------- Linguistic Variables ---------------
+
+%% values with confidence over any universe
+spec Value [sort Universe] given ConcretUnitInterval =
+     free type Value ::=
+          ConfValue (rawValue : Universe; cf : UnitInterval)
+
 from Basic/StructuredDatatypes get String, Set, Map
 
-spec FiniteFuzzySet = String
-then Value[sort String] %% a linguistic term
-then Set[sort Value] %% a finite set of linguistic terms
+%% strings within terms
+spec TS = String
+then free type TS ::= TS(String)
 
-spec ConfidenceMap = String and FuzzyNumber
-then Map[sort String][sort QuasiFuzzyNumber]
+%% strings for concepts
+spec CS = String
+then free type CS ::= CS(String)
 
-spec LinguisticVariable[sort Range] = FiniteFuzzySet and ConfidenceMap
+%% instantiate Value
+spec LinguisticTerm = TS
+then Value[sort TS]
+
+%% sets of linguistic terms
+spec LinguisticTerms = LinguisticTerm
+then Set[sort Value]
+
+%% map term strings to quasi fuzzy number
+spec ConfidenceMap = TS and QuasiFuzzyNumber
+then Map[sort TS][sort QuasiFuzzyNumber]
+
+%% only consider subsorts of Rat as Range
+spec LinguisticVariable[sort Range] = CS
+and LinguisticTerms
+and ConfidenceMap
 then sort Range < Rat
      generated type LVar ::= LVar(
-       String;
+       name : CS;
        Set[Value];
-       Map[String, QuasiFuzzyNumber])?
+       Map[TS, QuasiFuzzyNumber])?
 
-spec Sing = FuzzyNumber
-then op Sing __ : Rat -> PreFuzzyNumber
-     var r, s : Rat
-     . Sing r @ s = 1 when r = s else 0
-     sort Sing =
-     { x : PreFuzzyNumber
-       . exists r: Rat . Sing r = x }
-     
-spec Fuzzify[sort Range] = Sing and LinguisticVariable[sort Range]
-then op fuzzify : PreFuzzyNumber * LVar -> LVar
-     vars name: String;
-          A : PreFuzzyNumber;
-          CM : Map[String, QuasiFuzzyNumber];
+%%--------------------- Fuzzification ----------------------
+
+spec Fuzzify[sort Range] = SingOrQuasiFuzzyNumber
+and LinguisticVariable[sort Range]
+then %% only changes the confidence of the terms in the linguistic variables
+     op fuzzify : SingOrQuasiFuzzyNumber * LVar -> LVar;
+     %% lookup the confidence for a term string and a value from Range
+     op eval (t: TS; CM : Map[TS, QuasiFuzzyNumber]; x : Range) :? UnitInterval
+        = lookup(t, CM) @ x
+     vars cname : CS;
+          A : SingOrQuasiFuzzyNumber;
+          CM : Map[TS, QuasiFuzzyNumber];
           S, Ta : Set[Value];
           v, va : UnitInterval
-     . (forall t : String . (forall x : Range . exists y : Range .
-         va = min(A @ y, lookup(t, CM) @ y)
-         /\ va >= min(A @ x, lookup(t, CM) @ x)) /\
+     %% for a term string t take the minimum of the input A and
+     %% the corresponding quasi fuzzy number from the confidence map CM
+     %% obtained by lookup(t, CM)
+     %% choose the maximum of these value over the whole Range
+     %% apply the above to all linguistic terms in the sets
+     . (forall t : TS . (forall x : Range . exists y : Range .
+         va = min(A @ y, eval(t, CM, y))
+         /\ va >= min(A @ x, eval(t, CM, x))) /\
        ConfValue(t, v) eps S <=> ConfValue(t, va) eps Ta)
-       => fuzzify(A, LVar(name, S, CM)) = LVar(name, Ta, CM)        
+       => fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
+
+
