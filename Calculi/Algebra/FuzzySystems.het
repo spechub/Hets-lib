@@ -13,7 +13,7 @@ version 0.1
 %display  __subseteq__     %LATEX __\subseteq__
 %display  __subset__       %LATEX __\subset__
 
-from Basic/RelationsAndOrders get TotalOrder
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 
 spec UnitInterval = TotalOrder with Elem |-> UnitInterval
 then
@@ -49,10 +49,12 @@ then vars x, y : UnitInterval
      . compl C(x, y) = T(compl x, compl y)
 
 spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
-     sort FuzzySet
+     ExtTotalOrder[UnitInterval fit Elem |-> UnitInterval]
+     with min : UnitInterval * UnitInterval -> UnitInterval
+then sort FuzzySet
      %% application
      op __@__ : FuzzySet * Universe -> UnitInterval
-     ops __intersection__, __union__ : FuzzySet * FuzzySet -> FuzzySet,
+     ops __intersection__, __union__, minimum : FuzzySet * FuzzySet -> FuzzySet,
          comm, assoc %implied
      preds __subseteq__, __subset__ : FuzzySet * FuzzySet
      op complement __ : FuzzySet -> FuzzySet
@@ -62,6 +64,7 @@ spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
      . A subset B <=> not A = B /\ A subseteq B
      . (A intersection B) @ x = T(A @ x, B @ x)
      . (A union B) @ x = C(A @ x, B @ x)
+     . minimum(A, B) @ x = min(A @ x, B @ x)
      . complement A @ x = compl (A @ x)
 
 %% now fix the unit interval for more concrete fuzzy sets
@@ -152,11 +155,12 @@ then Value[sort TS]
 
 %% sets of linguistic terms
 spec LinguisticTerms = LinguisticTerm
-then Set[sort Value]
+then Set[sort Value] with pred __eps__ : Value * Set[Value]
 
 %% map term strings to quasi fuzzy number
 spec ConfidenceMap = TS and QuasiFuzzyNumber
 then Map[sort TS][sort QuasiFuzzyNumber]
+     with op lookup : TS * Map[TS, QuasiFuzzyNumber] ->? QuasiFuzzyNumber
 
 %% only consider subsorts of Rat as Range for linguistic variables
 spec LinguisticVariable[sort Range] = CS
@@ -170,25 +174,28 @@ then sort Range < Rat
 
 %%--------------------- Fuzzification ----------------------
 
-spec Fuzzify[sort Range] = SingOrQuasiFuzzyNumber
+spec Fuzzify[sort Range] = 
+    SingOrQuasiFuzzyNumber 
+    with op minimum : PreFuzzyNumber * PreFuzzyNumber -> PreFuzzyNumber
 and LinguisticVariable[sort Range]
-then %% only changes the confidence of the terms in the linguistic variables
-     op fuzzify : SingOrQuasiFuzzyNumber * LVar -> LVar;
-     %% lookup the confidence for a term string and a value from Range
-     op eval (t: TS; CM : Map[TS, QuasiFuzzyNumber]; x : Range) :? UnitInterval
-        = lookup(t, CM) @ x
+then %% get the maximal confidence over the range
+     op maxOnRange : PreFuzzyNumber -> UnitInterval
+     var P : PreFuzzyNumber; m : UnitInterval
+     . maxOnRange(P) = m <=> exists y : Range . forall x : Range .
+       P @ x <= m /\ P @ y = m
+     %% only changes the confidence of the terms in the linguistic variables
+     op fuzzify : SingOrQuasiFuzzyNumber * LVar -> LVar
      vars cname : CS; %% unchanged concept name
           A : SingOrQuasiFuzzyNumber; %% input
           CM : Map[TS, QuasiFuzzyNumber]; %% confidence map
           S, Ta : Set[Value]; %% terms before and after fuzzification
-          v, va : UnitInterval %% confidence before and after fuzzification
      %% for a term string t take the minimum of the input A and
-     %% the corresponding quasi fuzzy number from the confidence map CM
-     %% obtained by lookup(t, CM)
-     %% choose the maximum of these value va over the whole Range
-     %% apply the above to all linguistic terms in the sets
-     . (forall t : TS . (forall x : Range . exists y : Range .
-         va = min(A @ y, eval(t, CM, y))
-         /\ va >= min(A @ x, eval(t, CM, x))) /\
-       ConfValue(t, v) eps S <=> ConfValue(t, va) eps Ta)
-       => fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
+     %% the corresponding quasi fuzzy number looked up in the confidence map CM
+     %% from the minimum PreFuzzyNumber choose the maximum over the Range
+     %% consider all linguistic terms in the sets
+     . fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
+       <=> forall t : TS . 
+            (exists v : UnitInterval . ConfValue(t, v) eps S)
+            <=> ConfValue(t, maxOnRange(minimum(A, lookup(t, CM)))) eps Ta
+
+%%--------------------- Defuzzification ----------------------
