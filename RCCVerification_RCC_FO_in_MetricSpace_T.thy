@@ -68,11 +68,6 @@ sqrt__X :: "Real => Real option" ("(sqrt/ _)" [56] 56)
 supX1 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [3,3] 999)
 supX2 :: "(Real => bool) => Real option" ("sup''''/'(_')" [3] 999)
 
-instance ClosedBall:: type ..
-instance Nat:: type ..
-instance Real:: type ..
-instance S:: type ..
-
 axioms
 Field_unary_minus_idef [rule_format] : "ALL x. -' x +' x = 0''"
 
