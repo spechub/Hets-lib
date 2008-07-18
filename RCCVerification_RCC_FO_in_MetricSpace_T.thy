@@ -4,8 +4,7 @@ uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
-    [\"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\",
-     \"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
+    [\"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
      \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
      \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\",
      \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
@@ -27,7 +26,8 @@ ML "Header.initialize
      \"Real_minus_half\", \"Real_half_monot\", \"MS_pos_definite\",
      \"MS_symm\", \"MS_triangle\", \"MS_pos\", \"MS_zero\",
      \"EMSCB_rep_pos\", \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\",
-     \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\"]"
+     \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\",
+     \"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\"]"
 
 typedecl ClosedBall
 typedecl Real
