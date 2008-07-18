@@ -80,16 +80,24 @@ spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
 %% define various subsorts of functions from Rat
 spec PreFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
 
+%% get the maximal confidence over the range
+spec MaxOnRange[sort Range] given Rat = PreFuzzyNumber
+then sort Range < Rat
+     op maxOnRange : PreFuzzyNumber -> UnitInterval
+     var P : PreFuzzyNumber; m : UnitInterval
+     . maxOnRange(P) = m <=> exists y : Range . forall x : Range .
+       P @ x <= m /\ P @ y = m
+
 spec QuasiFuzzyNumber = PreFuzzyNumber
 then sort QuasiFuzzyNumber =
      { x : PreFuzzyNumber
        . true %(convex)%
        /\ true %(piecewise_continuous)% }
 
-spec FuzzyNumber = QuasiFuzzyNumber
+spec FuzzyNumber = QuasiFuzzyNumber and MaxOnRange[sort Rat]
 then sort FuzzyNumber =
      { x : QuasiFuzzyNumber
-       . exists r : Rat . x @ r = 1 %(normalized)% }
+       . maxOnRange(x) = 1 %(normalized)% }
 
 %%--------------------- Singletons -------------------------
 spec Sing = PreFuzzyNumber
@@ -174,16 +182,12 @@ then sort Range < Rat
 
 %%--------------------- Fuzzification ----------------------
 
-spec Fuzzify[sort Range] = 
-    SingOrQuasiFuzzyNumber 
+spec Fuzzify[sort Range] =
+    SingOrQuasiFuzzyNumber
     with op minimum : PreFuzzyNumber * PreFuzzyNumber -> PreFuzzyNumber
 and LinguisticVariable[sort Range]
-then %% get the maximal confidence over the range
-     op maxOnRange : PreFuzzyNumber -> UnitInterval
-     var P : PreFuzzyNumber; m : UnitInterval
-     . maxOnRange(P) = m <=> exists y : Range . forall x : Range .
-       P @ x <= m /\ P @ y = m
-     %% only changes the confidence of the terms in the linguistic variables
+and MaxOnRange[sort Range]
+then %% only changes the confidence of the terms in the linguistic variables
      op fuzzify : SingOrQuasiFuzzyNumber * LVar -> LVar
      vars cname : CS; %% unchanged concept name
           A : SingOrQuasiFuzzyNumber; %% input
@@ -194,7 +198,7 @@ then %% get the maximal confidence over the range
      %% from the minimum PreFuzzyNumber choose the maximum over the Range
      %% consider all linguistic terms in the sets
      . fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
-       <=> forall t : TS . 
+       <=> forall t : TS .
             (exists v : UnitInterval . ConfValue(t, v) eps S)
             <=> ConfValue(t, maxOnRange(minimum(A, lookup(t, CM)))) eps Ta
 
