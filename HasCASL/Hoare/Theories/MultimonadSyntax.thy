@@ -19,14 +19,17 @@ constdefs
 
 axioms
  plus0[simp]:            "(p \<oplus> \<delta>) = p"
- plus0'[simp]:           "(\<delta>\<oplus> p) = p"  -- "Turn into a lemma!"
- comm:             "(p \<oplus> q) = (q \<oplus> p)"
- idmp [simp]:             "(p \<oplus> p) = p"
- plus:             "((p \<oplus> q) \<oplus> r) = (p \<oplus> (q \<oplus> r))"
- dist1:            "((p \<oplus> q) \<guillemotright>= r) = ((p \<guillemotright>= r) \<oplus> (q \<guillemotright>= r))" 
- dist2:            "(p \<guillemotright>= (\<lambda>x. (q x \<oplus> r x))) = ((p \<guillemotright>= q) \<oplus> (p\<guillemotright>= r))"
- bind01:           "(\<delta> \<guillemotright>= r) = \<delta>" 
- bind02:           "(p \<guillemotright>= (\<lambda>x. \<delta>)) = \<delta>"
+ comm:                   "(p \<oplus> q) = (q \<oplus> p)"
+ idmp [simp]:            "(p \<oplus> p) = p"
+ plus:                   "((p \<oplus> q) \<oplus> r) = (p \<oplus> (q \<oplus> r))"
+ dist1:                  "((p \<oplus> q) \<guillemotright>= r) = ((p \<guillemotright>= r) \<oplus> (q \<guillemotright>= r))" 
+ dist2:                  "(p \<guillemotright>= (\<lambda>x. (q x \<oplus> r x))) = ((p \<guillemotright>= q) \<oplus> (p\<guillemotright>= r))"
+ bind01:                 "(\<delta> \<guillemotright>= r) = \<delta>" 
+ bind02:                 "(p \<guillemotright>= (\<lambda>x. \<delta>)) = \<delta>"
+
+lemma plus0' [simp]: "(\<delta> \<oplus> p) = p"
+  apply (subst comm)
+  by (rule plus0)
 
 lemma leftDistr [simp]:  "do{x\<leftarrow>(p \<oplus> q); r x} = (do{x\<leftarrow> p; r x} \<oplus> do{x\<leftarrow> q; r x})"
  by (rule dist1)
@@ -185,5 +188,20 @@ lemma testBind [simp]: "test(do {x \<leftarrow> p; q x}) = do{x \<leftarrow> p; 
 lemma testBind1 [simp]: "test (do{p; q}) = do{p; test(q)}"
   sorry
 
+
+lemma testTrue [simp]: "test (ret \<top>) = ret ()"
+  apply (unfold test_def)
+  by simp
+     
+ 
+lemma testFalse [simp]: "test (ret \<bottom>) = \<delta>"
+  apply (unfold test_def)
+  by simp
+	
+      
+lemma mnotTrue [simp]: "mnot (ret \<top>) = ret (\<bottom>)"
+  apply (unfold mnot_def)
+  by simp
+	     
 end
 

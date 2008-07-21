@@ -1,115 +1,82 @@
 theory KleeneSyntax imports MultimonadSyntax begin
 
-text{*Definition of monad type and the two monadic funtions 
-  \quak{@{text "\<guillemotright>="}} and ret *}
+text{*Definition the Kleene star and acompanying constructions. *}
 
 consts   
-  uplus :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[+]" [1000] 999)
+  ustar :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[*]" [1000] 999)
 
+constdefs
+  uplus :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[+]" [1000] 999)
+  "(uplus f) == \<lambda>x. (f x \<guillemotright>= (f^[*]))"
+
+notation (xsymbols) ustar ("_\<^sup>*" [1000] 999)
 notation (xsymbols) uplus ("_\<^sup>+" [1000] 999)
 
 axioms
- unf_left:   "(p^[+]) = (\<lambda>x. p x \<oplus> ((p^[+]) x \<guillemotright>= p))"
- unf_right:  "(p^[+]) = (\<lambda>x. p x \<oplus> (p x \<guillemotright>= (p^[+])))"
- ind_left:   "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (q x)) \<Longrightarrow> \<forall>x. (((p^[+]) x \<guillemotright>= q) \<preceq> (q x))"
- ind_right:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (p x)) \<Longrightarrow> \<forall>x. ((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
+ unf_right: "(p^[*]) = (\<lambda>x. ret x \<oplus> ((p^[*]) x \<guillemotright>= p))"
+ unf_left:  "(p^[*]) = (\<lambda>x. ret x \<oplus> (p x \<guillemotright>= (p^[*])))"
+ ind_right: "((p \<guillemotright>= q) \<preceq> p) \<Longrightarrow> ((p \<guillemotright>= (q^[*])) \<preceq> p)"
+ ind_left:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (q x)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) \<preceq> (q x))"
 
-constdefs
-  ustar :: "('a \<Rightarrow> 'a T) \<Rightarrow> ('a \<Rightarrow> 'a T)" ("_^[*]" [1000] 999)
-  "(ustar f) == \<lambda>x. (ret x) \<oplus> (f^[+]) x"
-
-axioms
- -- "quick and dirty solution. fix it!"
- ind_left':   "(\<forall> x. (p x \<guillemotright>= q) \<preceq> (q x)) \<Longrightarrow> (\<forall>x. ((p^[*]) x \<guillemotright>= q) \<preceq> (q x))"
- ind_right':  "(\<forall> x. (p x \<guillemotright>= q) \<preceq> (p x)) \<Longrightarrow> (\<forall>x. (p x \<guillemotright>= (q^[*])) \<preceq> (p x))"
-
-  
+lemma inv_lemma: "\<forall>x. ((p x \<guillemotright>= q) = (q x \<guillemotright>= r)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) = (q x \<guillemotright>= (r^[*])))"
+  sorry 
+ 
 syntax
-  "_monstar"  :: "[pttrn, 'a T, monseq]\<Rightarrow> monseq"  ("((_\<leftarrow>\<^sup>*(_));/ _)" [110,6,5]5)
+  "_monstar"  :: "monseq \<Rightarrow> 'a T" ("(star {(_)})"    [5] 100)
 
 translations
-  "_monseq(_monstar x p q)"    => "(_monseq q) \<oplus> ((((%x. p)^[+]) x) \<guillemotright>= (%x. (_monseq q)))"
-  "_monseq(_monstar x p q)"    <= "_monseq (_monstar x p (_monseq q))"
+  (* input macros; replace do-notation by bind/seq *)
+  "_monstar(_mongen x p q)"    => "p \<guillemotright>= (%x. (_monseq q))^[*]"
+  "_monstar(_monexp p q)"      => "p \<guillemotright>= (%_. (_monseq q))^[*]"
+  "_monstar(_monexp0 q)"       => "((%_. q)^[*]) ()"
+  (* Retranslation of bind/seq into do-notation *)
+  "_monstar(_mongen x p q)"    <= "p \<guillemotright>= (%x. q)^[*]"
+  "_monstar(_monexp p q)"      <= "p \<guillemotright>  (%x. q)^[*]"
 
+  (* Normalization macros *)
+  "_monstar(_monexp p q)"      <= "_monstar (_monexp p (_monseq q))"
+  "_monstar(_mongen x p q)"    <= "_monstar (_mongen x p (_monseq q))"
 
-lemma unfRightStar: "(p^[*]) = (\<lambda>x. (ret x) \<oplus> (p x \<guillemotright>= (p^[*])))"
-  apply (unfold ustar_def)
-  apply (rule_tac f="%z. \<lambda>x. (ret x) \<oplus> z x" in arg_cong)
-  apply (simp only: dist2 runit)
-  apply (subst unf_right)
-  by auto
-  
-lemma unfLeftStar: "(p^[*]) = (\<lambda>x. (ret x) \<oplus> ((p^[*]) x \<guillemotright>= p))"
-  sorry  
-
-lemma unfLeft: "(do {x \<leftarrow>\<^sup>* p x; q x}) = (q x \<oplus> do{x \<leftarrow>\<^sup>* p x; x \<leftarrow> p x; q x})"
+lemma unfLeft: "(star {x \<leftarrow> p; q x}) = (p \<oplus> star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x})"
 proof -
-  have "(q x \<oplus> ((p^[+]) x \<guillemotright>= q)) = (q x \<oplus> (p x \<oplus> ((p^[+]) x \<guillemotright>= p) \<guillemotright>= q))"
-    using unf_left [of p] by (rule_tac f="%z. (q x \<oplus> ((z x) \<guillemotright>= q))" in arg_cong, auto) (*, rule_tac x="x" in fun_cong, auto*)
-  thus ?thesis by (simp add: dist1)
+  have "(star {x \<leftarrow> p; q x}) = do {x \<leftarrow>p; (ret x \<oplus> star {x \<leftarrow> q x; q x})}"
+    using unf_left [of q] by (rule_tac f="%z. do {x \<leftarrow> p; z x}" in arg_cong)
+  thus ?thesis by simp
 qed
 
-lemma unfRight: "(do {x \<leftarrow>\<^sup>* p x; q x}) = (q x \<oplus> do{x \<leftarrow> p x; x \<leftarrow>\<^sup>* p x; q x})"
+lemma unfRight: "(star {x \<leftarrow> p; q x}) = (p \<oplus> do{x \<leftarrow> star {x \<leftarrow> p; q x}; q x})"
 proof -
-  have "(q x \<oplus> ((p^[+]) x \<guillemotright>= q)) = (q x \<oplus> (p x \<oplus> (p x \<guillemotright>= (p^[+])) \<guillemotright>= q))"
-    using unf_right [of p] by (rule_tac f="%z. (q x \<oplus> ((z x) \<guillemotright>= q))" in arg_cong, auto)
-  thus ?thesis by (simp add: dist2)
-qed
-
-lemma indLeft:
-  assumes "\<forall>x. (do {x \<leftarrow> p x; q x})  \<preceq> q x"
-  shows   "\<forall>x. (do {x \<leftarrow>\<^sup>* p x; q x}) \<preceq> q x"
-proof-
-  have "\<forall>x. (((p^[+]) x \<guillemotright>= q) \<preceq> (q x))"
-    using assms by (rule ind_left)
-  hence "\<forall>x. (q x = (((p^[+]) x \<guillemotright>= q) \<oplus> (q x)))"
-    by (unfold "ileq_def") simp
-  hence "\<forall>x. (q x = (((p^[+]) x \<guillemotright>= q) \<oplus> (q x) \<oplus> (q x)))"    
-    by (simp add: idmp)
-  hence "\<forall>x. (q x = ((q x) \<oplus> ((p^[+]) x \<guillemotright>= q) \<oplus> (q x)))"    
-    by (unfold "comm") simp
-  thus ?thesis
-    by (unfold ileq_def) simp
+  have  "(star {x \<leftarrow> p; q x}) = (do {x \<leftarrow> p; ret x \<oplus> do{x \<leftarrow> (q^[*]) x; q x}})"
+    using unf_right [of q] by (rule_tac f="%z. do {x \<leftarrow> p; z x}" in arg_cong)
+  thus ?thesis by (subst assoc) simp
 qed
 
 lemma indRight:
-  assumes "\<forall>x. (do {x \<leftarrow> p x; q x})  \<preceq> p x"
-  shows   "\<forall>x. (do {x \<leftarrow> p x; x \<leftarrow>\<^sup>* q x; r x}) \<preceq> do { x \<leftarrow> p x; r x}"  (is "ALL x. ?P x")
-proof
-  fix x
-  have "\<forall>x. ((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
-    using assms by (rule ind_right)
-  hence "((p x \<guillemotright>= (q^[+])) \<preceq> (p x))"
-    by auto
-  hence "(p x = ((p x \<guillemotright>= (q^[+])) \<oplus> (p x)))"
-    by (unfold "ileq_def") simp
-  hence "((p x \<guillemotright>= r) = (((p x \<guillemotright>= (q^[+])) \<oplus> (p x)) \<guillemotright>=r))"    
-    by (rule_tac f="%x. x \<guillemotright>= r" in arg_cong)
-  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (q^[+]) \<guillemotright>=r) \<oplus> (p x \<guillemotright>=r))"    
-    by (simp only: dist1)
-  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (q^[+]) \<guillemotright>= r) \<oplus> (p x \<guillemotright>= r) \<oplus> (p x \<guillemotright>= r))"    
-    by (simp add: idmp)
-  hence "(p x \<guillemotright>= r) = (((p x \<guillemotright>= (\<lambda>x. (q^[+]) x \<guillemotright>= r)) \<oplus>  (p x \<guillemotright>= r)) \<oplus> (p x \<guillemotright>= r))"
-    by (simp only: assoc)
-  hence "(p x \<guillemotright>= r) = ((p x \<guillemotright>= (\<lambda>x. ((((q^[+]) x) \<guillemotright>= r) \<oplus> (r x)))) \<oplus> (p x \<guillemotright>= r) )"
-    by (simp only: dist2)
-  hence "(p x \<guillemotright>= r) = ( (p x \<guillemotright>= (\<lambda>x. ((r x) \<oplus> (((q^[+]) x) \<guillemotright>= r)))) \<oplus> (p x \<guillemotright>= r))"
-    by (simp add: comm)
-  hence "(p x \<guillemotright>= (\<lambda>x. ((r x) \<oplus> (((q^[+]) x) \<guillemotright>= r)))) \<preceq> (p x \<guillemotright>= r)"
-    by (unfold ileq_def) simp
-  thus "?P x" by auto
- qed
+  assumes "do   {x \<leftarrow> p; q x} \<preceq> p"
+  shows   "star {x \<leftarrow> p; q x} \<preceq> p"
+proof-
+  have "do {x \<leftarrow> p; q x} \<preceq> p"
+    using assms by auto
+  thus ?thesis
+    by (rule ind_right)
+qed
 
-lemma bindStar: "do {x \<leftarrow> p x; x \<leftarrow>\<^sup>* p x; q x} = do { x \<leftarrow> do { x \<leftarrow>\<^sup>* p x; p x}; q x }"
-  apply (simp only: dist1 dist2 assoc [THEN sym])
-  apply (rule_tac f="%z. ((p x \<guillemotright>= q) \<oplus> z)" in arg_cong)
-  apply (rule_tac f="%z. (z \<guillemotright>= q)" in arg_cong)
-  apply (subst unf_left)
-  apply (rule sym)
-  apply (subst unf_right)
-  apply (simp only: dist1 dist2 assoc)
-done
+lemma indLeft:
+  assumes "\<forall>x. do {x \<leftarrow> p x; q x}  \<preceq> q x"
+  shows   "\<forall>x. do {x \<leftarrow> star {x \<leftarrow> r; p x}; q x} \<preceq> do {x \<leftarrow> r; q x}"
+proof-
+  have "\<forall>x. do {x \<leftarrow> (p^[*]) x; q x}  \<preceq> q x"
+    using assms by (rule ind_left)
+  hence "\<forall>x. do {x \<leftarrow> r; x \<leftarrow> (p^[*]) x; q x} \<preceq> do {x \<leftarrow> r; q x}"
+    by (rule ileqBindLeft)
+  thus ?thesis by (subst assoc) simp
+qed
 
+lemma bindStar: "star {x \<leftarrow> do{x \<leftarrow> p; q x}; r x} = do {x \<leftarrow> p; star {x \<leftarrow> q x; r x}}"
+  by simp
+
+(* uncoment and fix, when needed *)
+(*
 -- "TODO: convert to the concrete synax, once it is decided"
 lemma indLeftAlt: "(\<forall>x. (t x \<oplus> (p x \<guillemotright>= q)) \<preceq> q x) \<Longrightarrow> (\<forall>x. ((p^[*]) x \<guillemotright>= t) \<preceq> q x)"
 sorry
@@ -118,20 +85,15 @@ sorry
 lemma indRightAlt: "(\<forall>x. (t x \<oplus> (p x \<guillemotright>= q)) \<preceq> p x) \<Longrightarrow> (\<forall>x. (t x \<guillemotright>= (q^[*])) \<preceq> p x)"
 sorry
 
-lemma testTrue [simp]: 
- "test (ret \<top>) = ret ()"
-  apply (unfold test_def)
-  by simp
+lemma rev_lemma : "star {p \<leftarrow> do {reverse; ret p}; do{x \<leftarrow> pop; ret (do{p; push x})}} = 
+                   do   {p \<leftarrow> star {p \<leftarrow> ret p; do{x \<leftarrow> pop; ret (do{push x; p})}}; do {reverse; ret p}}"
+  apply (simp only: fstUnitLaw)
+  apply (rule sym)
+  apply (rule inv_lemma [THEN allE])
+  prefer 2
+  apply assumption
+  apply simp
 
-lemma testFalse [simp]: 
- "test (ret \<bottom>) = \<delta>"
-  apply (unfold test_def)
-  by simp
-
-lemma mnotTrue [simp]: 
- "mnot (ret \<top>) = ret (\<bottom>)"
- apply (unfold mnot_def)
- by simp
 
 lemma starEq: "(\<forall>x. do{x \<leftarrow> a x; b x} = do {x \<leftarrow> b x; c x}) \<Longrightarrow> 
                (\<forall>x. do{x \<leftarrow> (a^[*]) x; b x} = do {x \<leftarrow> b x; (c^[*]) x})"
@@ -389,7 +351,7 @@ lemma starRegroup: "do {x \<leftarrow> a x; ((\<lambda>x. do {x \<leftarrow> b x
   by simp
 
 
-
+*)
 
 
 
