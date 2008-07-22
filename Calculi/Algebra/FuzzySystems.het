@@ -180,6 +180,8 @@ then sort Range < Rat
        Set[Value];
        Map[TS, QuasiFuzzyNumber])?
 
+%% --------------------- Hedges ---------------------------
+
 %%--------------------- Fuzzification ----------------------
 
 spec Fuzzify[sort Range] =
@@ -203,3 +205,23 @@ then %% only changes the confidence of the terms in the linguistic variables
             <=> ConfValue(t, maxOnRange(minimum(A, lookup(t, CM)))) eps Ta
 
 %%--------------------- Defuzzification ----------------------
+
+%% constraining a linguistic variable wrt. its terms
+
+%% create a constant quasi fuzzy number from a value between 0 and 1
+spec ConstFuzzyNumber = QuasiFuzzyNumber
+then op Const __ : UnitInterval -> QuasiFuzzyNumber
+     var x : Rat; v : UnitInterval
+     . Const v @ x = v
+
+spec Constrain[sort Range] = LinguisticVariable[sort Range] and ConstFuzzyNumber
+then op constrain : LVar -> LVar
+     vars cname : CS; %% unchanged concept name
+          S : Set[Value]; %% unchanged terms
+          %% avoid the letter T because that's the T-Norm
+          CM, CCM : Map[TS, QuasiFuzzyNumber]; %% (constrained) confidence map
+     . constrain(LVar(cname, S, CM)) = LVar(cname, S, CCM)
+       <=> forall t : TS; v : UnitInterval .
+            lookup(t, CCM)
+            = Const v intersection lookup(t, CM)
+              when ConfValue(t, v) eps S else lookup(t, CM)
