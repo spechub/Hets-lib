@@ -35,7 +35,7 @@ spec Nat = %mono
 
   free type Nat ::= 0 | suc(pre:? Nat)
  
-  preds   __ <= __, __ >= __,
+  preds   __ <= __, __ >= __, __dvd__,
           __ <  __, __ > __:   Nat * Nat;
           even, odd:           Nat
 
@@ -75,6 +75,7 @@ spec Nat = %mono
   %% axioms concerning predicates
 
      . 0 <= n                           %(leq_def1_Nat)% %simp
+     . m dvd n <=> (exists k : Nat . n = m * k) %(dvd_def_Nat)% %simp
      . not suc(n) <= 0                  %(leq_def2_Nat)% %simp
      . suc(m) <= suc(n) <=> m <= n      %(leq_def3_Nat)% %simp
 
