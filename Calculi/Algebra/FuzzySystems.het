@@ -13,6 +13,8 @@ version 0.1
 %display  __subseteq__     %LATEX __\subseteq__
 %display  __subset__       %LATEX __\subset__
 
+%prec { __*__} < {__@__}
+
 from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 
 spec UnitInterval = TotalOrder with Elem |-> UnitInterval
@@ -147,7 +149,7 @@ spec Value [sort Universe] given ConcretUnitInterval =
      free type Value ::=
           ConfValue (rawValue : Universe; cf : UnitInterval)
 
-from Basic/StructuredDatatypes get String, Set, Map
+from Basic/StructuredDatatypes get String, Set, Bag, Map
 
 %% strings within terms
 spec TS = String
@@ -206,14 +208,13 @@ then %% only changes the confidence of the terms in the linguistic variables
 
 %%--------------------- Defuzzification ----------------------
 
-%% constraining a linguistic variable wrt. its terms
-
 %% create a constant quasi fuzzy number from a value between 0 and 1
 spec ConstFuzzyNumber = QuasiFuzzyNumber
 then op Const __ : UnitInterval -> QuasiFuzzyNumber
      var x : Rat; v : UnitInterval
      . Const v @ x = v
 
+%% constraining a linguistic variable wrt. its terms
 spec Constrain[sort Range] = LinguisticVariable[sort Range] and ConstFuzzyNumber
 then op constrain : LVar -> LVar
      vars cname : CS; %% unchanged concept name
@@ -225,3 +226,63 @@ then op constrain : LVar -> LVar
             lookup(t, CCM)
             = Const v intersection lookup(t, CM)
               when ConfValue(t, v) eps S else lookup(t, CM)
+
+%% aggregation functions are symmetric as bags
+spec AggregationFunction = ConcretUnitInterval
+then Bag[sort UnitInterval]
+then op h : Bag[UnitInterval] -> UnitInterval
+     var S : Bag[UnitInterval]; v, v0 : UnitInterval
+     . not v = v0 /\  freq(S, v) = 0 /\ freq(S, v0) > 0
+       => h(S) = v0 %(idempotent)%
+     . v > 0 /\ freq(S, v) = 0 /\ freq(S, 0 as UnitInterval) > 0
+       => h(S) = 0  %(all_zero)%  %% implied
+     . v < 1 /\ freq(S, v) = 0 /\ freq(S, 1 as UnitInterval) > 0
+       => h(S) = 1  %(all_one)%   %% implied
+     . v0 <= v
+       => h(S + v0) <= h(S + v) %(monotonic)%
+     . true %(continuous)%
+
+%% aggregate a linguistic variable using a suitable aggregation function
+spec Aggregation[sort Range] = AggregationFunction
+and LinguisticVariable[sort Range]
+and Bag[sort TS]
+and Bag[sort QuasiFuzzyNumber]
+then %% convert a set of terms to a bag of term names
+     op setToBag : Set[Value] -> Bag[TS]
+     . setToBag({}) = {}
+     vars S : Set[Value]; t : TS; v : UnitInterval
+     . setToBag(S + ConfValue(t, v)) = setToBag(S) + t
+
+     %% create a bag of quasi fuzzy number from a confidence map
+     op mapToCBag : Map[TS, QuasiFuzzyNumber] * Bag[TS] -> Bag[QuasiFuzzyNumber]
+     var CM : Map[TS, QuasiFuzzyNumber]
+     . mapToCBag(CM, {}) = {}
+     var B : Bag[TS]
+     . mapToCBag(CM, B + t) = mapToCBag(CM, B) + lookup(t, CM)
+
+     %% extract a bag of confidences for a point
+     op mapToUBag : Rat * Bag[QuasiFuzzyNumber] -> Bag[UnitInterval]
+     var r : Rat
+     . mapToUBag (r, {}) = {}
+     vars NB : Bag[QuasiFuzzyNumber]; A : QuasiFuzzyNumber
+     . mapToUBag (r, NB + A) = mapToUBag (r, NB) + A @ r
+
+     %% construct a fuzzy number from a bag of fuzzy numbers using h
+     op aggregate : Bag[QuasiFuzzyNumber] -> PreFuzzyNumber
+     . aggregate(NB) @ r = h(mapToUBag(r, NB))
+
+     %% putting the above together
+     op aggreg : LVar -> PreFuzzyNumber
+     vars cname : CS
+     . aggreg (LVar(cname, S, CM)) = aggregate(mapToCBag(CM, setToBag(S)))
+
+%% any function that extracts a number from a fuzzy set
+%% possibly taking the range into account
+spec Projection[sort Range] = PreFuzzyNumber
+then op project : PreFuzzyNumber -> Rat
+
+%% defuzzification is aggregation followed by projection
+spec Defuzz = Aggregation[sort Range] and Projection[sort Range]
+then op defuzz : LVar -> Rat
+     var L : LVar
+     . defuzz(L) = project(aggreg(L))
