@@ -75,6 +75,14 @@ qed
 lemma bindStar: "star {x \<leftarrow> do{x \<leftarrow> p; q x}; r x} = do {x \<leftarrow> p; star {x \<leftarrow> q x; r x}}"
   by simp
 
+lemma ret_star: "star {x \<leftarrow> p; q x} = do {p \<leftarrow> star {p \<leftarrow> ret p; ret (do{x \<leftarrow>  p; q x})}; p}"
+  apply simp
+  apply (rule sym)
+  apply (rule inv_lemma [THEN allE])
+  prefer 2
+  apply assumption 
+  by simp
+
 (* uncoment and fix, when needed *)
 (*
 -- "TODO: convert to the concrete synax, once it is decided"
