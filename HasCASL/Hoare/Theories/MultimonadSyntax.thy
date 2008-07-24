@@ -179,6 +179,7 @@ lemma testProp: "(test' b a) = do {test b; ret a}"
   apply (subst leftBindDelta1)
   by auto
 
+(* Uncomment if needed
 lemma testPlus [simp]: "test(a \<oplus> b) = (test(a) \<oplus> test(b))"
   sorry
 
@@ -187,7 +188,7 @@ lemma testBind [simp]: "test(do {x \<leftarrow> p; q x}) = do{x \<leftarrow> p; 
 
 lemma testBind1 [simp]: "test (do{p; q}) = do{p; test(q)}"
   sorry
-
+*)
 
 lemma testTrue [simp]: "test (ret \<top>) = ret ()"
   apply (unfold test_def)
