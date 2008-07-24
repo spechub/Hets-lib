@@ -185,46 +185,46 @@ then %def
 
   %% axioms concerning predicates
 
-     . m <= n <=> n - m in Nat                 %(leq_def_Int)%
+     . m <= n <=> n - m in Nat                 %(leq_def_Int)%     %simp
      . m >= n <=> n <= m  	               %(geq_def_Int)%
      . m < n <=> (m <= n /\ not m=n)           %(less_def_Int)%
      . m > n <=> n < m   	               %(greater_def_Int)%
 
-     . even(m) <=> even(abs(m))                %(even_def_Int)%
-     . odd(m)  <=> not even(m)                 %(odd_def_Int)%
-     . odd(m)  <=> odd(abs(m))                 %(odd_alt_Int)%
+     . even(m) <=> even(abs(m))                %(even_def_Int)%    %simp
+     . odd(m)  <=> not even(m)                 %(odd_def_Int)%    
+     . odd(m)  <=> odd(abs(m))                 %(odd_alt_Int)%     %simp
 
   %% axioms concerning operations
 
-     . - (a - b) = b - a                       %(neg_def_Int)%
+     . - (a - b) = b - a                       %(neg_def_Int)%     %simp
 
      . sign(m) = 0 when m = 0 
-           else (1 when m > 0 else -1)         %(sign_def_Int)% 
+           else (1 when m > 0 else -1)         %(sign_def_Int)%    %simp
   
      . abs(m) = - m when m < 0                  
-            else  m                            %(abs_def_Int)%
+            else  m                            %(abs_def_Int)%     %simp
 
-     . (a - b) + (c - d) = (a + c) - (b + d)   %(add_def_Int)%
+     . (a - b) + (c - d) = (a + c) - (b + d)   %(add_def_Int)%     %simp
      . (a - b) * (c - d) = 
-       (a * c + b * d) - (b * c + a * d)       %(mult_def_Int)%
-     .  m - n = m + ( - n )                    %(sub_def_Int)%
+       (a * c + b * d) - (b * c + a * d)       %(mult_def_Int)%    %simp
+     .  m - n = m + ( - n )                    %(sub_def_Int)%     %simp
 		
-     . min(m,n) = m when m <= n else n         %(min_def_Int)%
-     . max(m,n) = n when m <= n else m         %(max_def_Int)%
+     . min(m,n) = m when m <= n else n         %(min_def_Int)%     %simp
+     . max(m,n) = n when m <= n else m         %(max_def_Int)%     %simp
 
-     . (- 1) ^ a = 1 when even(a) else - 1     %(power_neg1_Int)%
+     . (- 1) ^ a = 1 when even(a) else - 1     %(power_neg1_Int)%  %simp
      . m ^ a = sign(m)^a * abs(m)^a  
-       if not m = -1                           %(power_others_Int)%
+       if not m = -1                           %(power_others_Int)% %simp
 
      . def (m /? n) <=> m mod n = 0            %(divide_dom2_Int)% %implied
      . m /? n = r <=> not n = 0 /\ n * r = m   %(divide_alt_Int)% %implied 
      . m /? n = 
-       sign(m) * sign(n) * (abs(m) /? abs(n))  %(divide_Int)%
+       sign(m) * sign(n) * (abs(m) /? abs(n))  %(divide_Int)%              %simp
 
      . def ( m div n ) <=> not n=0             %(div_dom_Int)% %implied 
      . m div n = r <=> 
        (exists a: Nat . 
-        m = n*r + a /\ a < abs(n) )            %(div_Int)%
+        m = n*r + a /\ a < abs(n) )            %(div_Int)%                 %simp
 
 
      . def ( m quot n ) <=> not n=0            %(quot_dom_Int)% %implied 
@@ -232,29 +232,29 @@ then %def
          (exists s: Int . 
            m = n*r + s /\  
              0 >= s /\ s > - abs(n) )
-       ) if m < 0                              %(quot_neg_Int)%
+       ) if m < 0                              %(quot_neg_Int)%            %simp
      . (m quot n = r <=> 
          (exists s: Int . 
             m = n*r + s /\  
               0 <= s /\ s < abs(n) )
-       ) if m >= 0                             %(quot_nonneg_Int)%
+       ) if m >= 0                             %(quot_nonneg_Int)%         %simp
 
      . def ( m rem n ) <=> not n=0             %(rem_dom_Int)% %implied 
      . (m rem n = s <=> 
          (exists r: Int . 
            m = n*r + s /\  
              0 >= s /\ s > - abs(n) )
-       ) if m < 0                              %(quot_rem_Int)%
+       ) if m < 0                              %(quot_rem_Int)%          %simp
      . (m rem n = s <=> 
          (exists r: Int . 
             m = n*r + s /\  
               0 <= s /\ s < abs(n) )
-       ) if m >= 0                             %(rem_nonneg_Int)%
+       ) if m >= 0                             %(rem_nonneg_Int)%         %simp
 
      . def ( m mod n ) <=> not n=0             %(mod_dom_Int)% %implied 
      . m mod n = a <=> 
        (exists r: Int . 
-        m = n*r + a /\ a < abs(n))             %(mod_Int)%
+        m = n*r + a /\ a < abs(n))             %(mod_Int)%                %simp
 
   %% important laws
 
