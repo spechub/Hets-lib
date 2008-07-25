@@ -155,9 +155,17 @@ from Basic/StructuredDatatypes get String, Set, Bag, Map
 spec TS = String
 then free type TS ::= TS(String)
 
+%% strings for hedges
+spec HS = String 
+then free type HS ::= HS(String)
+
 %% strings for concepts
 spec CS = String
 then free type CS ::= CS(String)
+
+%% terms constructed from basic term strings and hedge applications
+spec Terms = TS and HS
+then free type Term ::= Leaf(TS) | Cons(HS; Term)
 
 %% instantiate values with strings for terms
 spec LinguisticTerm = TS
