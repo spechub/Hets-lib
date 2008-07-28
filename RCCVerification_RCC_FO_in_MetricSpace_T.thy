@@ -38,7 +38,7 @@ datatype Nat = X0X1 ("0''") | X_suc "Nat" ("suc/'(_')" [3] 999)
 consts
 X0X2 :: "Real" ("0''''")
 X1 :: "Real" ("1''")
-X2 :: "Real" ("2")
+X2 :: "Real" ("2''")
 XMinus__X :: "Real => Real" ("(-''/ _)" [56] 56)
 XVBar__XVBar :: "Real => Real" ("(|/ _/ |)" [10] 999)
 X__C__X :: "ClosedBall => ClosedBall => bool" ("(_/ C/ _)" [44,44] 42)
@@ -189,7 +189,7 @@ Real_sqrt_dom [rule_format] : "ALL r. defOp (sqrt r) = (r >=' 0'')"
 
 Real_sqrt_idef [rule_format] : "ALL r. sqrt sqr r = Some ( | r | )"
 
-Real_2_def [rule_format] : "2 = 1' +' 1'"
+Real_2_def [rule_format] : "2' = 1' +' 1'"
 
 Real_minus_def [rule_format] :
 "ALL r. ALL r'. r -' r' = r +' -' r'"
@@ -201,7 +201,7 @@ Real_divide_idef [rule_format] :
  ALL r'.
  ALL r''. (~ r' = 0'' --> r /' r' = Some r'') = (r'' *' r' = r)"
 
-Real_half_idef [rule_format] : "ALL r. 2 *' half(r) = r"
+Real_half_idef [rule_format] : "ALL r. 2' *' half(r) = r"
 
 one_greater_zero [rule_format] : "1' >' 0''"
 
