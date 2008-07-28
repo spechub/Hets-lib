@@ -28,6 +28,8 @@ consts
 constdefs
   rev :: "unit T"
   "rev == do {p \<leftarrow> star {p \<leftarrow> ret empty; x \<leftarrow> pop; ret (do {push x; p})}; p}"
+  rev_susp :: "unit T T \<Rightarrow> unit T T T"
+  "(rev_susp l) == star {p \<leftarrow> ret l; ret (do{x \<leftarrow> pop; t \<leftarrow> p; ret (do {t; push x})})}"
 
 text{*
   The most essential stack axioms reflect the duality of  @{text"pop"},
@@ -60,7 +62,7 @@ text{* Following lemma is a variant of the double reverse property.
   Informaly it reads as follows. First a payload, presenting a countable
   collection of reversing programms is prepared and bound to the variable
   @{term"p"}. Each of these programs reverses a finite prefix of the stack.
-  then each of these program is executed twice. The result is expected to 
+  then each of them is executed twice. The result is expected to 
   be less then @{term"ret ()"} (It straightforwardly greater then
   @{term"ret ()"}).*}
 
@@ -79,10 +81,18 @@ prefer 2
 apply assumption
 by simp
 
+lemma rev_susp_dup :  "do {p \<leftarrow> rev_susp (ret is_empty); q \<leftarrow> rev_susp (ret is_empty); z \<leftarrow> p; z; z \<leftarrow> q; z} = 
+                      (do {p \<leftarrow> rev_susp (ret is_empty); q \<leftarrow> rev_susp (p); z \<leftarrow> p; z; z \<leftarrow> q; z} \<oplus> 
+                       do {q \<leftarrow> rev_susp (ret is_empty); p \<leftarrow> rev_susp (p); z \<leftarrow> p; z; z \<leftarrow> q; z})"
+
+lemma "do {t \<leftarrow> ret(rev_susp (ret (ret (ret ())))); p \<leftarrow> rev_susp (p); q \<leftarrow> ret (do {t; p}); z \<leftarrow> p; z; z \<leftarrow> q; z} \<preceq> 
+       do {q \<leftarrow> rev_susp (p); z \<leftarrow> p; z; z \<leftarrow> q; z}"
+
+
 (*
 text{* Double reverse lemma, as it was originally thougt. It is expected 
   to follow from  @{text"rev_rev_fin"}. *}
-lemma rev_rev : "do {rev; rev} = (ret ())"
+lemma rev_rev : "do {rev; rev} \<preceq> (ret ())"
   sorry
 *)
 
