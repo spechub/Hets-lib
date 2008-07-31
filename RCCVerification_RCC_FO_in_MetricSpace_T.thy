@@ -1,5 +1,5 @@
 theory RCCVerification_RCC_FO_in_MetricSpace_T
-imports "$HETS_LIB/Isabelle/MainHC"
+imports "$HETS_LIB/Isabelle/MainHCPairs"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
@@ -50,7 +50,7 @@ X__XLtXEq__XX3 :: "(Real => bool) => Real => bool" ("(_/ <='_3/ _)" [44,44] 42)
 X__XLt__X :: "Real => Real => bool" ("(_/ <''/ _)" [44,44] 42)
 X__XMinus__X :: "Real => Real => Real" ("(_/ -''/ _)" [54,54] 52)
 X__XPlus__X :: "Real => Real => Real" ("(_/ +''/ _)" [54,54] 52)
-X__XSlash__X :: "Real => Real => Real option" ("(_/ '/''/ _)" [54,54] 52)
+X__XSlash__X :: "Real => Real => Real partial" ("(_/ '/''/ _)" [54,54] 52)
 X__Xx__X :: "Real => Real => Real" ("(_/ *''/ _)" [54,54] 52)
 X_closedBall :: "S => Real => ClosedBall" ("closedBall/'(_,/ _')" [3,3] 999)
 X_d :: "S => S => Real" ("d/'(_,/ _')" [3,3] 999)
@@ -60,13 +60,13 @@ X_isBounded :: "(Real => bool) => bool" ("isBounded/'(_')" [3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
 X_nonempty :: "ClosedBall => bool" ("nonempty/'(_')" [3] 999)
-infX1 :: "Real => Real => Real option" ("inf''/'(_,/ _')" [3,3] 999)
-infX2 :: "(Real => bool) => Real option" ("inf''''/'(_')" [3] 999)
+infX1 :: "Real => Real => Real partial" ("inf''/'(_,/ _')" [3,3] 999)
+infX2 :: "(Real => bool) => Real partial" ("inf''''/'(_')" [3] 999)
 rep :: "ClosedBall => S => bool"
 sqr__X :: "Real => Real" ("(sqr/ _)" [56] 56)
-sqrt__X :: "Real => Real option" ("(sqrt/ _)" [56] 56)
-supX1 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [3,3] 999)
-supX2 :: "(Real => bool) => Real option" ("sup''''/'(_')" [3] 999)
+sqrt__X :: "Real => Real partial" ("(sqrt/ _)" [56] 56)
+supX1 :: "Real => Real => Real partial" ("sup''/'(_,/ _')" [3,3] 999)
+supX2 :: "(Real => bool) => Real partial" ("sup''''/'(_')" [3] 999)
 
 axioms
 Field_unary_minus_idef [rule_format] : "ALL x. -' x +' x = 0''"
@@ -114,14 +114,14 @@ inf_def_ExtPartialOrder [rule_format] :
 "ALL x.
  ALL y.
  ALL z.
- inf'(x, y) = Some z =
+ inf'(x, y) = makePartial z =
  (z <=' x & z <=' y & (ALL t. t <=' x & t <=' y --> t <=' z))"
 
 sup_def_ExtPartialOrder [rule_format] :
 "ALL x.
  ALL y.
  ALL z.
- sup'(x, y) = Some z =
+ sup'(x, y) = makePartial z =
  (x <=' z & y <=' z & (ALL t. x <=' t & y <=' t --> z <=' t))"
 
 ga_comm_min [rule_format] : "ALL x. ALL y. min'(x, y) = min'(y, x)"
@@ -147,10 +147,10 @@ max_def_ExtTotalOrder [rule_format] :
 "ALL x. ALL y. max'(x, y) = (if x <=' y then y else x)"
 
 min_inf_relation [rule_format] :
-"ALL x. ALL y. Some (min'(x, y)) = inf'(x, y)"
+"ALL x. ALL y. makePartial (min'(x, y)) = inf'(x, y)"
 
 max_sup_relation [rule_format] :
-"ALL x. ALL y. Some (max'(x, y)) = sup'(x, y)"
+"ALL x. ALL y. makePartial (max'(x, y)) = sup'(x, y)"
 
 Real_ub_def [rule_format] :
 "ALL M. ALL r. (M <=_3 r) = (ALL s. M s --> s <=' r)"
@@ -161,12 +161,14 @@ Real_lb_def [rule_format] :
 Real_inf_def [rule_format] :
 "ALL M.
  ALL r.
- inf''(M) = Some r = (r <='' M & (ALL s. s <='' M --> s <=' r))"
+ inf''(M) = makePartial r =
+ (r <='' M & (ALL s. s <='' M --> s <=' r))"
 
 Real_sup_def [rule_format] :
 "ALL M.
  ALL r.
- sup''(M) = Some r = (M <=_3 r & (ALL s. M <=_3 s --> r <=' s))"
+ sup''(M) = makePartial r =
+ (M <=_3 r & (ALL s. M <=_3 s --> r <=' s))"
 
 Real_isBounded_def [rule_format] :
 "ALL M. isBounded(M) = (EX ub. EX lb. lb <='' M & M <=_3 ub)"
@@ -187,7 +189,8 @@ Real_sqr_def [rule_format] : "ALL r. sqr r = r *' r"
 
 Real_sqrt_dom [rule_format] : "ALL r. defOp (sqrt r) = (r >=' 0'')"
 
-Real_sqrt_idef [rule_format] : "ALL r. sqrt sqr r = Some ( | r | )"
+Real_sqrt_idef [rule_format] :
+"ALL r. sqrt sqr r = makePartial ( | r | )"
 
 Real_2_def [rule_format] : "2' = 1' +' 1'"
 
@@ -199,7 +202,8 @@ Real_divide_dom [rule_format] : "ALL r. ~ defOp (r /' 0'')"
 Real_divide_idef [rule_format] :
 "ALL r.
  ALL r'.
- ALL r''. (~ r' = 0'' --> r /' r' = Some r'') = (r'' *' r' = r)"
+ ALL r''.
+ (~ r' = 0'' --> r /' r' = makePartial r'') = (r'' *' r' = r)"
 
 Real_half_idef [rule_format] : "ALL r. 2' *' half(r) = r"
 
