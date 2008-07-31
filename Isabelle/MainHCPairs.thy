@@ -25,9 +25,12 @@ makeTotal :: "'a partial => 'a"
 resOp :: "'a partial * 'b partial => 'a"
 "resOp p == if fst (snd p) then makeTotal (fst p) else arbitrary"
 
+noneOp :: "'a partial"
+"noneOp == (False, arbitrary)"
+
 unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
             => ('a => 'b partial) partial => 'c => 'd partial"
-"unpackPartial c s a == if fst s then c (snd s) a else (False, arbitrary)"
+"unpackPartial c s a == if fst s then c (snd s) a else noneOp"
 
 unpackBool :: "(('a => bool) => 'c => bool)
             => ('a => bool) partial => 'c => bool"
@@ -60,7 +63,7 @@ liftUnit2bool :: "(unit => bool) => bool => bool"
 "liftUnit2bool f b == if b then f () else False"
 
 liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
-"liftUnit2partial f b == if b then f () else (False, arbitrary)"
+"liftUnit2partial f b == if b then f () else noneOp"
 
 liftUnit :: "(unit => 'a) => bool => 'a partial"
 "liftUnit f b == (b, f ())"
@@ -72,7 +75,7 @@ lift2bool :: "('a => bool) => 'a partial => bool"
 "lift2bool f s == if fst s then f (snd s) else False"
 
 lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
-"lift2partial f s == if fst s then f (snd s) else (False, arbitrary)"
+"lift2partial f s == if fst s then f (snd s) else noneOp"
 
 mapPartial :: "('a => 'b) => 'a partial => 'b partial"
 "mapPartial f s == (fst s, f (snd s))"
