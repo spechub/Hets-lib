@@ -19,8 +19,11 @@ whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
 "whenElseOp t == case t of
     (p, e) => if snd p then fst p else e"
 
+makeTotal :: "'a partial => 'a"
+"makeTotal p == if fst p then snd p else arbitrary"
+
 resOp :: "'a partial * 'b partial => 'a"
-"resOp p == if fst (fst p) then snd (fst p) else arbitrary"
+"resOp p == if fst (snd p) then makeTotal (fst p) else arbitrary"
 
 unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
             => ('a => 'b partial) partial => 'c => 'd partial"
@@ -82,5 +85,8 @@ mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 
 defOp :: "'a partial => bool"
 "defOp p == fst p"
+
+makePartial :: "'a => 'a partial"
+"makePartial a == (True, a)"
 
 end
