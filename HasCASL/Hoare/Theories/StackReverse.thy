@@ -27,7 +27,7 @@ consts
 
 constdefs
   rev :: "unit T"
-  "rev == do {p \<leftarrow> star {p \<leftarrow> ret is_empty; x \<leftarrow> pop; ret (do {push x; p})}; p}"
+  "rev == do {p \<leftarrow> star {p \<leftarrow> ret is_empty; x \<leftarrow> pop; ret (do {p; push x})}; p}"
   rev_susp :: "unit T T \<Rightarrow> unit T T T"
   "(rev_susp l) == star {p \<leftarrow> ret l; ret (do{x \<leftarrow> pop; t \<leftarrow> p; ret (do {t; push x})})}"
   rev_dup_susp :: "unit T T \<Rightarrow> unit T T \<Rightarrow> (unit T T \<times> unit T T) T"
@@ -75,8 +75,8 @@ text{* Following lemma is a variant of the double reverse property.
   be less then @{term"ret ()"} (It straightforwardly greater then
   @{term"ret ()"}).*}
 
-lemma rev_rev_fin : "do{p \<leftarrow> star {p \<leftarrow> ret (ret (ret ())); ret (do{x \<leftarrow> pop; t \<leftarrow> p; ret (do {t; push x})})}; 
-                        z \<leftarrow> p; z; z \<leftarrow> p; z} \<preceq> ret ()"
+lemma rev_rev_fin : "do{p \<leftarrow> rev_susp (ret (ret ())); z \<leftarrow> p; z; z \<leftarrow> p; z} \<preceq> ret ()"
+  apply (unfold rev_susp_def)
   apply (rule ileq_assoc [of _ "do{q \<leftarrow> star {p \<leftarrow> ret (ret ()); x \<leftarrow> pop; ret (do {push x; p})}; q}"])
   apply (insert rev_lemma_inst)
   apply (subst (asm) unf_left) back
