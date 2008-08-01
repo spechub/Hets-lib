@@ -27,7 +27,7 @@ consts
 
 constdefs
   rev :: "unit T"
-  "rev == do {p \<leftarrow> star {p \<leftarrow> ret empty; x \<leftarrow> pop; ret (do {push x; p})}; p}"
+  "rev == do {p \<leftarrow> star {p \<leftarrow> ret is_empty; x \<leftarrow> pop; ret (do {push x; p})}; p}"
   rev_susp :: "unit T T \<Rightarrow> unit T T T"
   "(rev_susp l) == star {p \<leftarrow> ret l; ret (do{x \<leftarrow> pop; t \<leftarrow> p; ret (do {t; push x})})}"
   rev_dup_susp :: "unit T T \<Rightarrow> unit T T \<Rightarrow> (unit T T \<times> unit T T) T"
