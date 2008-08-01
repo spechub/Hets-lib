@@ -14,23 +14,13 @@ use Datatypes
 dg-all auto
 
 dg basic Nat
-translate SuleCFOL2SoftFOLInduction
 prover SPASS
-set goals add_0_Nat_right
-begin-script
-Time Limit: 40
-end-script
-prove
-
-set goals add_suc_Nat_1
-begin-script
-Time Limit: 40
-end-script
+translate SuleCFOL2SoftFOLInduction
+set goals add_0_Nat_right add_suc_Nat_1
+set time-limit 40
 prove
 
 set goals add_comm_Nat
-begin-script
-Time Limit: 40
-end-script
+set time-limit 40
 prove
 

@@ -2,6 +2,7 @@ use Basic/StructuredDatatypes
 
 dg-all auto
 
+
 # ------------------------------------------------------------------------------
 
 dg basic BooleanAlgebra_E1
@@ -15,7 +16,7 @@ prove-all
 dg basic Int_E1
 prover MathServe Broker
 translate CASL2PCFOL
-translate CASL2SubFOL
+translate CASL2SubCFOL
 translate SuleCFOL2SoftFOLInduction
 prove-all
 
@@ -42,9 +43,7 @@ prove-all
 dg basic Bag
 prover SPASS
 set goals ga_idem___intersection__
-begin-script
-Time-Limit: 40
-end-script
+set time-limit 40
 prove
 
 
@@ -98,12 +97,12 @@ prover SPASS
 set goals zeroAndCap distr1_BooleanAlgebra
 prove
 
-# prover MathServe Broker
-# translate CASL2PCFOL
-# translate CASL2SubFOL
-# translate SuleCFOL2SoftFOLInduction
-# set goals ga_left_unit___union__
-# prove
+prover MathServe Broker
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate SuleCFOL2SoftFOLInduction
+set goals ga_left_unit___union__
+prove
 
 
 # ------------------------------------------------------------------------------
@@ -125,10 +124,8 @@ prove
 
 prover MathServe Broker
 translate CASL2PCFOL
-translate CASL2SubFOL
+translate CASL2SubCFOL
 translate SuleCFOL2SoftFOLInduction
 set goals ga_right_unit___*___1
-begin-script
-Time-Limit: 40
-end-script
+set time-limit 40
 prove
