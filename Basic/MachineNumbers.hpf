@@ -2,6 +2,8 @@ use Basic/MachineNumbers
 
 dg-all auto
 
+# ------------------------------------------------------------------------------
+
 dg basic INTEGER_E1
 prover SPASS
 set goals divide_INTEGER_dom
@@ -20,6 +22,7 @@ set goals ga_assoc___+___2 ga_comm___+___2 ga_left_comm___+___2 ga_assoc___*___2
 set time-limit 40
 prove
 
+# ------------------------------------------------------------------------------
 
 dg basic CARDINAL_E1
 prover Vampire
@@ -33,6 +36,8 @@ translate SuleCFOL2SoftFOLInduction
 set goals ga_comm___*___1 add_CARDINAL_dom mult_CARDINAL_dom
 prove
 
+# ------------------------------------------------------------------------------
+
 dg basic TotalOrder_in_INTEGER_T
 prover MathServe Broker
 translate CASL2PCFOL
@@ -40,6 +45,7 @@ translate CASL2SubCFOL
 translate SuleCFOL2SoftFOLInduction
 prove-all
 
+# ------------------------------------------------------------------------------
 
 dg basic TotalOrder_in_CARDINAL_T
 prover Vampire
@@ -54,6 +60,7 @@ set goals antisym trans
 set time-limit 40
 prove
 
+# ------------------------------------------------------------------------------
 
 dg basic TotalOrder_in_TwoComplement_T
 prover Vampire

@@ -2,16 +2,13 @@ use Basic/StructuredDatatypes
 
 dg-all auto
 
-
 # ------------------------------------------------------------------------------
 
 dg basic BooleanAlgebra_E1
 prover SPASS
 prove-all
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Int_E1
 prover MathServe Broker
@@ -20,25 +17,19 @@ translate CASL2SubCFOL
 translate SuleCFOL2SoftFOLInduction
 prove-all
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic PowerSet
 prover SPASS
 prove-all
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic PartialOrder_in_Set_T
 prover MathServe Broker
 prove-all
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Bag
 prover SPASS
@@ -46,51 +37,35 @@ set goals ga_idem___intersection__
 set time-limit 40
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic PartialOrder_in_Bag_T
 prover MathServe Broker
 set goals refl
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Nat_E1
 prover SPASS
 set goals min_0
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Set_E1
 prover SPASS
 set goals ga_right_unit___union__
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic List_E1
 prover SPASS
 set goals first_partial_nil rest_nil ga_selector_front ga_disjoint_OSqBrCSqBr___+__
 prove
 
-
 # ------------------------------------------------------------------------------
-
-
-#dg basic Array_E1
-
-
-# ------------------------------------------------------------------------------
-
 
 dg basic BooleanAlgebra_in_PowerSet_T
 prover SPASS
@@ -104,18 +79,14 @@ translate SuleCFOL2SoftFOLInduction
 set goals ga_left_unit___union__
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Map
 prover Vampire
 set goals lookup_dom
 prove
 
-
 # ------------------------------------------------------------------------------
-
 
 dg basic Monoid_in_List_T
 prover SPASS
@@ -129,3 +100,7 @@ translate SuleCFOL2SoftFOLInduction
 set goals ga_right_unit___*___1
 set time-limit 40
 prove
+
+# ------------------------------------------------------------------------------
+
+# dg basic Array_E1
