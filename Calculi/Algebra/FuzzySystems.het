@@ -51,9 +51,9 @@ spec Complement[UnitInterval] =
 
 %% putting t-norm and t-conorm together
 spec Junctors[UnitInterval] = TNorm[UnitInterval]
-and TConorm[UnitInterval]
+and  TConorm[UnitInterval]
 %% if the complement and further properties are needed here is open
-and Complement[UnitInterval]
+and  Complement[UnitInterval]
 
 %% abstract total functions with application and extensionality
 spec Function[sort Domain][sort Codomain] =
@@ -67,7 +67,7 @@ spec Function[sort Domain][sort Codomain] =
 spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
      ExtTotalOrder[UnitInterval fit Elem |-> UnitInterval]
      with min : UnitInterval * UnitInterval -> UnitInterval
-and Function[sort Universe][sort UnitInterval]
+and  Function[sort Universe][sort UnitInterval]
      with Function |-> FuzzySet
 then
      ops __intersection__, __union__, minimum : FuzzySet * FuzzySet -> FuzzySet,
@@ -92,16 +92,16 @@ then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
 spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
      FuzzySet[Junctors[UnitInterval]][sort Universe]
 
+%% get the maximal confidence over the range
+spec MaxOnRange[sort Universe] given ConcretUnitInterval =
+     ConcretFuzzySet[sort Universe]
+then op maxOnRange : FuzzySet -> UnitInterval
+     var P : FuzzySet; m : UnitInterval
+     . maxOnRange(P) = m <=> exists y : Universe . forall x : Universe .
+       P @ x <= m /\ P @ y = m
+
 %% define various subsorts of functions from Rat
 spec PreFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
-
-%% get the maximal confidence over the range
-spec MaxOnRange[sort Range] given Rat = PreFuzzyNumber
-then sort Range < Rat
-     op maxOnRange : PreFuzzyNumber -> UnitInterval
-     var P : PreFuzzyNumber; m : UnitInterval
-     . maxOnRange(P) = m <=> exists y : Range . forall x : Range .
-       P @ x <= m /\ P @ y = m
 
 spec QuasiFuzzyNumber = PreFuzzyNumber
 then sort QuasiFuzzyNumber =
@@ -109,24 +109,21 @@ then sort QuasiFuzzyNumber =
        . true %(convex)%
        /\ true %(piecewise_continuous)% }
 
-spec FuzzyNumber = QuasiFuzzyNumber and MaxOnRange[sort Rat]
+spec FuzzyNumber = QuasiFuzzyNumber
+and  MaxOnRange[sort Rat] with FuzzySet |-> PreFuzzyNumber
 then sort FuzzyNumber =
      { x : QuasiFuzzyNumber
        . maxOnRange(x) = 1 %(normalized)% }
 
 %%--------------------- Singletons -------------------------
-spec Sing = PreFuzzyNumber
-then op Sing __ : Rat -> PreFuzzyNumber
-     var r, s : Rat
+spec Sing[sort Universe] given ConcretUnitInterval =
+     ConcretFuzzySet[sort Universe]
+then op Sing __ : Universe -> FuzzySet
+     var r, s : Universe
      . Sing r @ s = 1 when r = s else 0
      sort Sing =
-     { x : PreFuzzyNumber
-       . exists r: Rat . Sing r = x }
-
-%%--------------------- Singletons or quasi fuzzy numbers
-spec SingOrQuasiFuzzyNumber = QuasiFuzzyNumber and Sing
-then sort SingOrQuasiFuzzyNumber =
-     { x : PreFuzzyNumber . x in QuasiFuzzyNumber \/ x in Sing }
+     { x : FuzzySet
+       . exists r: Universe . Sing r = x }
 
 %%--------------- Trapezoidal Fuzzy Numbers ----------------
 spec Trapez = FuzzyNumber
@@ -189,38 +186,37 @@ spec LinguisticTerms = LinguisticTerm
 then Set[sort Value] with pred __eps__ : Value * Set[Value]
 
 %% map term strings to quasi fuzzy number
-spec ConfidenceMap = TS and QuasiFuzzyNumber
-then Map[sort TS][sort QuasiFuzzyNumber]
-     with op lookup : TS * Map[TS, QuasiFuzzyNumber] ->? QuasiFuzzyNumber
+spec ConfidenceMap[sort Universe] given ConcretUnitInterval = TS
+and  ConcretFuzzySet[sort Universe]
+then Map[sort TS][sort FuzzySet]
+     with op lookup : TS * Map[TS, FuzzySet] ->? FuzzySet
 
 %% only consider subsorts of Rat as Range for linguistic variables
-spec LinguisticVariable[sort Range] = CS
-and LinguisticTerms
-and ConfidenceMap
-then sort Range < Rat
-     generated type LVar ::= LVar(
+spec LinguisticVariable[sort Universe] given ConcretUnitInterval = CS
+and  LinguisticTerms
+and  ConfidenceMap[sort Universe]
+then generated type LVar ::= LVar(
        name : CS;
        Set[Value];
-       Map[TS, QuasiFuzzyNumber])?
+       Map[TS, FuzzySet])?
 
 %% --------------------- Hedges ---------------------------
 
 %%--------------------- Fuzzification ----------------------
 
-spec Fuzzify[sort Range] =
-    SingOrQuasiFuzzyNumber
-    with op minimum : PreFuzzyNumber * PreFuzzyNumber -> PreFuzzyNumber
-and LinguisticVariable[sort Range]
-and MaxOnRange[sort Range]
+spec Fuzzify[sort Universe] given ConcretUnitInterval =
+     LinguisticVariable[sort Universe]
+     with op minimum : FuzzySet * FuzzySet -> FuzzySet
+and  MaxOnRange[sort Universe]
 then %% only changes the confidence of the terms in the linguistic variables
-     op fuzzify : SingOrQuasiFuzzyNumber * LVar -> LVar
+     op fuzzify : FuzzySet * LVar -> LVar
      vars cname : CS; %% unchanged concept name
-          A : SingOrQuasiFuzzyNumber; %% input
-          CM : Map[TS, QuasiFuzzyNumber]; %% confidence map
+          A : FuzzySet; %% input
+          CM : Map[TS, FuzzySet]; %% confidence map
           S, Ta : Set[Value]; %% terms before and after fuzzification
      %% for a term string t take the minimum of the input A and
-     %% the corresponding quasi fuzzy number looked up in the confidence map CM
-     %% from the minimum PreFuzzyNumber choose the maximum over the Range
+     %% the corresponding fuzzy set looked up in the confidence map CM
+     %% from the minimum fuzzy set choose the maximum over the Range
      %% consider all linguistic terms in the sets
      . fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
        <=> forall t : TS .
@@ -229,19 +225,21 @@ then %% only changes the confidence of the terms in the linguistic variables
 
 %%--------------------- Defuzzification ----------------------
 
-%% create a constant quasi fuzzy number from a value between 0 and 1
-spec ConstFuzzyNumber = QuasiFuzzyNumber
-then op Const __ : UnitInterval -> QuasiFuzzyNumber
-     var x : Rat; v : UnitInterval
+%% create a constant fuzzy set from a value between 0 and 1
+spec Const[sort Universe] given ConcretUnitInterval =
+     ConcretFuzzySet[sort Universe]
+then op Const __ : UnitInterval -> FuzzySet
+     var x : Universe; v : UnitInterval
      . Const v @ x = v
 
 %% constraining a linguistic variable wrt. its terms
-spec Constrain[sort Range] = LinguisticVariable[sort Range] and ConstFuzzyNumber
+spec Constrain[sort Universe] given ConcretUnitInterval =
+     LinguisticVariable[sort Universe] and Const[sort Universe]
 then op constrain : LVar -> LVar
      vars cname : CS; %% unchanged concept name
           S : Set[Value]; %% unchanged terms
           %% avoid the letter T because that's the T-Norm
-          CM, CCM : Map[TS, QuasiFuzzyNumber]; %% (constrained) confidence map
+          CM, CCM : Map[TS, FuzzySet]; %% (constrained) confidence map
      . constrain(LVar(cname, S, CM)) = LVar(cname, S, CCM)
        <=> forall t : TS; v : UnitInterval .
             lookup(t, CCM)
@@ -264,10 +262,11 @@ then op h : Bag[UnitInterval] -> UnitInterval
      . true %(continuous)%
 
 %% aggregate a linguistic variable using a suitable aggregation function
-spec Aggregation[sort Range] = AggregationFunction
-and LinguisticVariable[sort Range]
-and Bag[sort TS]
-and Bag[sort QuasiFuzzyNumber]
+spec Aggregation[sort Universe] given ConcretUnitInterval =
+     AggregationFunction
+and  LinguisticVariable[sort Universe]
+and  Bag[sort TS]
+and  Bag[sort FuzzySet]
 then %% convert a set of terms to a bag of term names
      op setToBag : Set[Value] -> Bag[TS]
      . setToBag({}) = {}
@@ -275,35 +274,37 @@ then %% convert a set of terms to a bag of term names
      . setToBag(S + ConfValue(t, v)) = setToBag(S) + t
 
      %% create a bag of quasi fuzzy number from a confidence map
-     op mapToCBag : Map[TS, QuasiFuzzyNumber] * Bag[TS] -> Bag[QuasiFuzzyNumber]
-     var CM : Map[TS, QuasiFuzzyNumber]
+     op mapToCBag : Map[TS, FuzzySet] * Bag[TS] -> Bag[FuzzySet]
+     var CM : Map[TS, FuzzySet]
      . mapToCBag(CM, {}) = {}
      var B : Bag[TS]
      . mapToCBag(CM, B + t) = mapToCBag(CM, B) + lookup(t, CM)
 
      %% extract a bag of confidences for a point
-     op mapToUBag : Rat * Bag[QuasiFuzzyNumber] -> Bag[UnitInterval]
-     var r : Rat
+     op mapToUBag : Universe * Bag[FuzzySet] -> Bag[UnitInterval]
+     var r : Universe
      . mapToUBag (r, {}) = {}
-     vars NB : Bag[QuasiFuzzyNumber]; A : QuasiFuzzyNumber
+     vars NB : Bag[FuzzySet]; A : FuzzySet
      . mapToUBag (r, NB + A) = mapToUBag (r, NB) + A @ r
 
      %% construct a fuzzy number from a bag of fuzzy numbers using h
-     op aggregate : Bag[QuasiFuzzyNumber] -> PreFuzzyNumber
+     op aggregate : Bag[FuzzySet] -> FuzzySet
      . aggregate(NB) @ r = h(mapToUBag(r, NB))
 
      %% putting the above together
-     op aggreg : LVar -> PreFuzzyNumber
+     op aggreg : LVar -> FuzzySet
      vars cname : CS
      . aggreg (LVar(cname, S, CM)) = aggregate(mapToCBag(CM, setToBag(S)))
 
 %% any function that extracts a number from a fuzzy set
 %% possibly taking the range into account
-spec Projection[sort Range] = PreFuzzyNumber
-then op project : PreFuzzyNumber -> Rat
+spec Projection[sort Universe] given ConcretUnitInterval =
+     ConcretFuzzySet[sort Universe]
+then op project : FuzzySet -> Universe
 
 %% defuzzification is aggregation followed by projection
-spec Defuzz = Aggregation[sort Range] and Projection[sort Range]
-then op defuzz : LVar -> Rat
+spec Defuzz[sort Universe] given ConcretUnitInterval =
+     Aggregation[sort Universe] and Projection[sort Universe]
+then op defuzz : LVar -> Universe
      var L : LVar
      . defuzz(L) = project(aggreg(L))
