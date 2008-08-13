@@ -17,6 +17,8 @@ version 0.1
 
 from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 
+%{ an underspecified unit interval with a total order plus 0 and 1
+   as minimum resp. maximum }%
 spec UnitInterval = TotalOrder with Elem |-> UnitInterval
 then
      ops 0 : UnitInterval; 1 : UnitInterval
@@ -24,44 +26,55 @@ then
      . 0 <= x %(ge_0)%
      . x <= 1 %(le_1)%
 
+%{ any monotone, symmetric and associative, binary junctor called J
+   as basis to define t-norms and t-conorms }%
 spec MonotoneJunctor[UnitInterval] =
      op J : UnitInterval * UnitInterval -> UnitInterval, comm, assoc
      vars x, y, z, w : UnitInterval
      . x <= y /\ w <= z => J(x, w) <= J(y, z) %(monotonicity)%
 
+%% a t-norm has the boundary 1 and is called T
 spec TNorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> T
 then
      forall x : UnitInterval . T(x, 1) = x %(boundary_1)%
 
+%% a t-conorm has the boundary 0 and is called C
 spec TConorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> C
 then
      forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
 
+%% an underspecified complement over a unit interval
 spec Complement[UnitInterval] =
      op compl __ : UnitInterval -> UnitInterval
      . compl 0 = 1
      . compl 1 = 0
 
+%% putting t-norm and t-conorm together
 spec Junctors[UnitInterval] = TNorm[UnitInterval]
 and TConorm[UnitInterval]
+%% if the complement and further properties are needed here is open
 and Complement[UnitInterval]
-then vars x, y : UnitInterval
-     %% de Morgan ??
-     . compl T(x, y) = C(compl x, compl y)
-     . compl C(x, y) = T(compl x, compl y)
 
+%% abstract total functions with application and extensionality
+spec Function[sort Domain][sort Codomain] =
+     sort Function
+     %% application operation
+     op __@__ : Function * Domain -> Codomain
+     vars A, B: Function
+     . A = B <=> forall x : Domain . A @ x = B @ x %(extensionality)%
+
+%% type-1 fuzzy sets over a universe and an underspecified unit interval
 spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
      ExtTotalOrder[UnitInterval fit Elem |-> UnitInterval]
      with min : UnitInterval * UnitInterval -> UnitInterval
-then sort FuzzySet
-     %% application
-     op __@__ : FuzzySet * Universe -> UnitInterval
+and Function[sort Universe][sort UnitInterval]
+     with Function |-> FuzzySet
+then
      ops __intersection__, __union__, minimum : FuzzySet * FuzzySet -> FuzzySet,
          comm, assoc %implied
      preds __subseteq__, __subset__ : FuzzySet * FuzzySet
      op complement __ : FuzzySet -> FuzzySet
      vars x : Universe; A, B: FuzzySet
-     . A = B <=> forall x : Universe . A @ x = B @ x %(extensionality)%
      . A subseteq B <=> forall x : Universe . A @ x <= B @ x
      . A subset B <=> not A = B /\ A subseteq B
      . (A intersection B) @ x = T(A @ x, B @ x)
@@ -156,7 +169,7 @@ spec TS = String
 then free type TS ::= TS(String)
 
 %% strings for hedges
-spec HS = String 
+spec HS = String
 then free type HS ::= HS(String)
 
 %% strings for concepts
