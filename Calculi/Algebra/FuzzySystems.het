@@ -174,10 +174,10 @@ spec CS = String
 then free type CS ::= CS(String)
 
 %% terms constructed from basic term strings and hedge applications
-spec Terms = TS and HS
+spec Term = TS and HS
 then free type Term ::= Leaf(TS) | Cons(HS; Term)
 
-%% instantiate values with strings for terms
+%% instantiate values with terms
 spec LinguisticTerm = TS
 then Value[sort TS]
 
@@ -185,22 +185,31 @@ then Value[sort TS]
 spec LinguisticTerms = LinguisticTerm
 then Set[sort Value] with pred __eps__ : Value * Set[Value]
 
-%% map term strings to quasi fuzzy number
+%% map term strings to fuzzy sets
 spec ConfidenceMap[sort Universe] given ConcretUnitInterval = TS
 and  ConcretFuzzySet[sort Universe]
 then Map[sort TS][sort FuzzySet]
      with op lookup : TS * Map[TS, FuzzySet] ->? FuzzySet
 
-%% only consider subsorts of Rat as Range for linguistic variables
+%% --------------------- Hedges ---------------------------
+spec Hedge = ConcretUnitInterval
+then Function[sort UnitInterval][sort UnitInterval] with Function |-> Hedge
+
+%% examples are ^2 for "very" or ^1/3 for "slightly"
+
+%% associating hedge names to functions
+spec HedgeMap = HS and Hedge
+then Map[sort HS][sort Hedge]
+
+%% a linguistic variables over a universe
 spec LinguisticVariable[sort Universe] given ConcretUnitInterval = CS
-and  LinguisticTerms
+and  LinguisticTerms and HedgeMap
 and  ConfidenceMap[sort Universe]
 then generated type LVar ::= LVar(
        name : CS;
        Set[Value];
+       Map[HS, Hedge];
        Map[TS, FuzzySet])?
-
-%% --------------------- Hedges ---------------------------
 
 %%--------------------- Fuzzification ----------------------
 
@@ -212,13 +221,14 @@ then %% only changes the confidence of the terms in the linguistic variables
      op fuzzify : FuzzySet * LVar -> LVar
      vars cname : CS; %% unchanged concept name
           A : FuzzySet; %% input
+          HM : Map[HS, Hedge]; %% fixed hedge map
           CM : Map[TS, FuzzySet]; %% confidence map
           S, Ta : Set[Value]; %% terms before and after fuzzification
      %% for a term string t take the minimum of the input A and
      %% the corresponding fuzzy set looked up in the confidence map CM
      %% from the minimum fuzzy set choose the maximum over the Range
      %% consider all linguistic terms in the sets
-     . fuzzify(A, LVar(cname, S, CM)) = LVar(cname, Ta, CM)
+     . fuzzify(A, LVar(cname, S, HM, CM)) = LVar(cname, Ta, HM, CM)
        <=> forall t : TS .
             (exists v : UnitInterval . ConfValue(t, v) eps S)
             <=> ConfValue(t, maxOnRange(minimum(A, lookup(t, CM)))) eps Ta
@@ -239,8 +249,9 @@ then op constrain : LVar -> LVar
      vars cname : CS; %% unchanged concept name
           S : Set[Value]; %% unchanged terms
           %% avoid the letter T because that's the T-Norm
+          HM : Map[HS, Hedge]; %% fixed hedge map
           CM, CCM : Map[TS, FuzzySet]; %% (constrained) confidence map
-     . constrain(LVar(cname, S, CM)) = LVar(cname, S, CCM)
+     . constrain(LVar(cname, S, HM, CM)) = LVar(cname, S, HM, CCM)
        <=> forall t : TS; v : UnitInterval .
             lookup(t, CCM)
             = Const v intersection lookup(t, CM)
@@ -293,8 +304,9 @@ then %% convert a set of terms to a bag of term names
 
      %% putting the above together
      op aggreg : LVar -> FuzzySet
-     vars cname : CS
-     . aggreg (LVar(cname, S, CM)) = aggregate(mapToCBag(CM, setToBag(S)))
+     vars cname : CS; HM : Map[HS, Hedge]
+     . aggreg (LVar(cname, S, HM, CM))
+       = aggregate(mapToCBag(CM, setToBag(S)))
 
 %% any function that extracts a number from a fuzzy set
 %% possibly taking the range into account
