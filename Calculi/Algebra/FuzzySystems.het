@@ -13,8 +13,6 @@ version 0.1
 %display  __subseteq__     %LATEX __\subseteq__
 %display  __subset__       %LATEX __\subset__
 
-%prec { __*__} < {__@__}
-
 from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
 
 %{ an underspecified unit interval with a total order plus 0 and 1
@@ -178,8 +176,8 @@ spec Term = TS and HS
 then free type Term ::= Leaf(TS) | Cons(HS; Term)
 
 %% instantiate values with terms
-spec LinguisticTerm = TS
-then Value[sort TS]
+spec LinguisticTerm = Term
+then Value[sort Term]
 
 %% sets of linguistic terms
 spec LinguisticTerms = LinguisticTerm
@@ -210,6 +208,18 @@ then generated type LVar ::= LVar(
        Set[Value];
        Map[HS, Hedge];
        Map[TS, FuzzySet])?
+     %% function composition for fuzzy sets with hedges
+     op __o__ : Hedge * FuzzySet -> FuzzySet
+     vars h : Hedge; f : FuzzySet; x : Universe
+     . (h o f) @ x = h @ (f @ x)
+
+     %% lookup and compose the fuzzy set for a term
+     op eval : Term * Map[HS, Hedge] * Map[TS, FuzzySet] -> FuzzySet
+     vars ts : TS; hs : HS; t : Term;
+          HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet]
+     . eval (Leaf(ts), HM, CM) = lookup(ts, CM)
+     . eval (Cons(hs, t), HM, CM)
+       = lookup(hs, HM) o eval(t, HM, CM)
 
 %%--------------------- Fuzzification ----------------------
 
@@ -229,9 +239,9 @@ then %% only changes the confidence of the terms in the linguistic variables
      %% from the minimum fuzzy set choose the maximum over the Range
      %% consider all linguistic terms in the sets
      . fuzzify(A, LVar(cname, S, HM, CM)) = LVar(cname, Ta, HM, CM)
-       <=> forall t : TS .
+       <=> forall t : Term .
             (exists v : UnitInterval . ConfValue(t, v) eps S)
-            <=> ConfValue(t, maxOnRange(minimum(A, lookup(t, CM)))) eps Ta
+            <=> ConfValue(t, maxOnRange(minimum(A, eval(t, HM, CM)))) eps Ta
 
 %%--------------------- Defuzzification ----------------------
 
@@ -252,10 +262,10 @@ then op constrain : LVar -> LVar
           HM : Map[HS, Hedge]; %% fixed hedge map
           CM, CCM : Map[TS, FuzzySet]; %% (constrained) confidence map
      . constrain(LVar(cname, S, HM, CM)) = LVar(cname, S, HM, CCM)
-       <=> forall t : TS; v : UnitInterval .
-            lookup(t, CCM)
-            = Const v intersection lookup(t, CM)
-              when ConfValue(t, v) eps S else lookup(t, CM)
+       <=> forall t : Term; v : UnitInterval .
+            eval(t, HM, CCM)
+            = Const v intersection eval(t, HM, CM)
+              when ConfValue(t, v) eps S else eval(t, HM, CM)
 
 %% aggregation functions are symmetric as bags
 spec AggregationFunction = ConcretUnitInterval
@@ -276,27 +286,28 @@ then op h : Bag[UnitInterval] -> UnitInterval
 spec Aggregation[sort Universe] given ConcretUnitInterval =
      AggregationFunction
 and  LinguisticVariable[sort Universe]
-and  Bag[sort TS]
+and  Bag[sort Term]
 and  Bag[sort FuzzySet]
 then %% convert a set of terms to a bag of term names
-     op setToBag : Set[Value] -> Bag[TS]
+     op setToBag : Set[Value] -> Bag[Term]
      . setToBag({}) = {}
-     vars S : Set[Value]; t : TS; v : UnitInterval
+     vars S : Set[Value]; t : Term; v : UnitInterval
      . setToBag(S + ConfValue(t, v)) = setToBag(S) + t
 
      %% create a bag of quasi fuzzy number from a confidence map
-     op mapToCBag : Map[TS, FuzzySet] * Bag[TS] -> Bag[FuzzySet]
-     var CM : Map[TS, FuzzySet]
-     . mapToCBag(CM, {}) = {}
-     var B : Bag[TS]
-     . mapToCBag(CM, B + t) = mapToCBag(CM, B) + lookup(t, CM)
+     op mapToCBag : Map[HS, Hedge] * Map[TS, FuzzySet] * Bag[Term]
+          -> Bag[FuzzySet]
+     vars HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet]
+     . mapToCBag(HM, CM, {}) = {}
+     var B : Bag[Term]
+     . mapToCBag(HM, CM, B + t) = mapToCBag(HM, CM, B) + eval(t, HM, CM)
 
      %% extract a bag of confidences for a point
      op mapToUBag : Universe * Bag[FuzzySet] -> Bag[UnitInterval]
      var r : Universe
      . mapToUBag (r, {}) = {}
      vars NB : Bag[FuzzySet]; A : FuzzySet
-     . mapToUBag (r, NB + A) = mapToUBag (r, NB) + A @ r
+     . mapToUBag (r, NB + A) = mapToUBag (r, NB) + (A @ r)
 
      %% construct a fuzzy number from a bag of fuzzy numbers using h
      op aggregate : Bag[FuzzySet] -> FuzzySet
@@ -306,7 +317,7 @@ then %% convert a set of terms to a bag of term names
      op aggreg : LVar -> FuzzySet
      vars cname : CS; HM : Map[HS, Hedge]
      . aggreg (LVar(cname, S, HM, CM))
-       = aggregate(mapToCBag(CM, setToBag(S)))
+       = aggregate(mapToCBag(HM, CM, setToBag(S)))
 
 %% any function that extracts a number from a fuzzy set
 %% possibly taking the range into account
