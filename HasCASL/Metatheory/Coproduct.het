@@ -20,7 +20,7 @@ vars f: a ->? c; g: b ->? c; h: Sum a b ->? c;
 . sumcase inl inr = \ z : Sum a b . z %implied
 
 then %def
-vars a, b: Type; y: b; z: Sum a b
+vars a, b: Type
 ops  outl: Sum a b -> a;
      outr: Sum a b -> b
 . outl = sumcase (\ x: a . x) (\ y: b . bot)
