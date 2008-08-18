@@ -35,7 +35,7 @@ spec MonadTransFormer = Monad then
 class MonadT < Monad -> Monad {
 vars  t: MonadT; m: Monad; a: Type
 op    lift: m a -> t m a
-vars  x: a; p: m a; b: Type; q: a -> m b
+vars  x: a; p: m a; b: Type; q: a ->? m b
 . lift (ret x) = ret x : t m a
-. lift (p >>= q) = lift p >>= \ y: a .! lift (q y) : t m b }
+. lift (p >>= q) = lift p >>= \ y: a . lift (q y) : t m b }
 
