@@ -5,27 +5,27 @@ from Basic/Numbers get Nat
 
 logic HasCASL
 
-spec Recursion = Ord and Nat then
-class  Cpo < Ord {
+spec Recursion = Ord with Ord |-> InfOrd, __<=__ |-> __<<=__ and Nat then
+class  Cpo < InfOrd {
 var    a: Cpo
-fun    __<=__ : Pred (a * a)
+fun    __<<=__ : Pred (a * a)
 op     undefined: ?a
 . not def (undefined: ?a)
-type   Chain a = {s: Nat ->? a . forall n: Nat . def s n => s n <= s (n + 1)}
+type   Chain a = {s: Nat ->? a . forall n: Nat . def s n => s n <<= s (n + 1)}
 fun    sup: Chain a ->? a
 var    x: ?a; c: Chain a
-. sup c <=[?a] x <=> forall n: Nat . c n <=[?a] x
+. sup c <<=[?a] x <=> forall n: Nat . c n <<=[?a] x
 }
 
 class Cppo < Cpo {
 var    a : Cppo
 fun    bottom : a
-. bottom <= x
+. bottom <<= x
 }
 
 class FlatCpo < Cpo {
 vars   a : FlatCpo; x, y: a
-. x <= y => x = y
+. x <<= y => x = y
 }
 
 vars a, b: Cpo; c: Cppo; x, y: a; z, w: b
@@ -42,11 +42,11 @@ type a --> b = { f : a -->? b . f in a -> b }
 
 type instance __-->?__ : -Cpo -> +Cpo -> Cppo
 var  f, g: a -->? b
-. f <= g <=> forall x: a . def (f x) => f x <= g x
+. f <<= g <=> forall x: a . def (f x) => f x <<= g x
 
 type instance __-->__ : -Cpo -> +Cpo -> Cpo
 var  f, g: a --> b
-. f <= g <=> forall x: a . f x <= g x
+. f <<= g <=> forall x: a . f x <<= g x
 
 type instance __-->__ : -Cpo -> +Cppo -> Cppo
 . bottom[a --> c] = \ x: a . bottom[c]
@@ -55,6 +55,7 @@ then %def
 
 var c: Cppo
 fun Y : (c --> c) --> c
-var f : c --> c; x: c
+var f : c --> c; x: c; P : Pred c
 . f(Y f) = Y f
-. f x = x => Y f <= x
+. f x = x => Y f <<= x
+. P bottom /\ (forall x : c . P x => P (f x)) => P (Y f) %implied
