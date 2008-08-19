@@ -31,24 +31,26 @@ spec Biblio_RS =
     paper[published_in]    -> journal[id] one_to_many
 end
 
+logic CASL
+
+view Biblio_RS_in_DL : {Biblio_RS with pointer |-> Thing} to
+  { Biblio_DL with logic DL -> CASL
+    then %def
+      preds 
+        journal(j:Thing;n:string;f:integer) <=> 
+          Journal(j) /\ name(j,n) /\ impactFactor(j,f);
+        paper(a:Thing;t:string;j:Thing) <=> 
+          Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t);
+        author_of(p,a:Thing) <=> 
+          Researcher(p) /\ Article(a) /\ author(p,a);
+        person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)
+  } 
+end
+
 %[logic CASL]%
 
-%[view Biblio_RS_in_DL : {Biblio_RS with pointer |-> Thing} to]%
-%[  { Biblio_DL with logic DL -> CASL]%
-%[    then %def]%
-%[      preds ]%
-%[        journal(j:Thing;n:string;f:integer) <=> ]%
-%[          Journal(j) /\ name(j,n) /\ impactFactor(j,f);]%
-%[        paper(a:Thing;t:string;j:Thing) <=> ]%
-%[          Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t);]%
-%[        author_of(p,a:Thing) <=> ]%
-%[          Researcher(p) /\ Article(a) /\ author(p,a);]%
-%[        person(p:integer;n:string) <=> Researcher(p) /\ name(p,n)]%
-%[  } ]%
-%[end]%
-
 %[ view Biblio_DL_in_RS : Biblio_DL to]%
-%[  { Biblio_RS with logic RelScheme -> CASL, pointer |-> Thing]%
+%[  { {Biblio_RS with logic RelScheme -> CASL} with pointer |-> Thing]%
 %[    then %def]%
 %[      preds Researcher(x:Thing)      <=> (exists n:string; a:Thing . person(x,n) /\ author_of(x,a));]%
 %[            Article(x:Thing)         <=> (exists t:string; j:integer . paper(x,t,j));]%
