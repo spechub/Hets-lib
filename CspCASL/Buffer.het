@@ -13,10 +13,10 @@ spec Buffer =
   data List
   channel read, write : Elem
   process
-  %%let Buf(l:List[Elem]) =
-  %%            read?x -> Buf( cons(x,nil) )
-  %%            [] if l=nil then STOP else write!last(l) -> Buf( rest(l) )
-  %%            in
+    let Buf(l:List[Elem]) =
+                read?x -> Buf( cons(x,nil) )
+                [] if l=nil then STOP else write!last(l) -> Buf( rest(l) )
+                in
                    Buf(nil)
 end
 
