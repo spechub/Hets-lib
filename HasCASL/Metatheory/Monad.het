@@ -4,8 +4,6 @@ library HasCASL/Metatheory/Monad
 
 logic HasCASL
 
-%[from HasCASL/Metatheory/Functor get Functor]%
-
 spec Functor =
 class Functor < Type -> Type {
 vars  f: Functor; a, b, c: Type
@@ -39,3 +37,11 @@ vars  x: a; p: m a; b: Type; q: a ->? m b
 . lift (ret x) = ret x : t m a
 . lift (p >>= q) = lift p >>= \ y: a . lift (q y) : t m b }
 
+spec CpoMonad = Monad then %% Recursion is built-in
+class CpoMonad < Monad {
+class instance CpoMonad < Cpo -> Cpo
+vars  m: CpoMonad; a, b: Cpo
+ops   __>>=__ : m a * (a -->? m b) -->? m b;
+      %binder(do __ <- __ ;; __)%
+      ret : a --> m a
+}
