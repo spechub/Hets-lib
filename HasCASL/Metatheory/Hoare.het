@@ -46,7 +46,7 @@ var  a: Cpo
 type N: CpoMonad
 ops  fail, chaos: N a;
      __[]__, __sync__ : N a * N a --> N a
-vars psi, phi: Logical; x: a; p,q : N a; x1, x2: a -> Logical
+vars psi, phi: Logical; p, q: N a; x1, x2: a -> Logical
 . {} fail[a] {psi}
 . {phi} x <- p {x1 x} /\ {phi} x <- q {x2 x}
   => {phi} x <- p [] q {x1 x \/ x2 x}
