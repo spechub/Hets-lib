@@ -1,6 +1,10 @@
 library HasCASL/Metatheory/Monad
 
 %display __>>=__ %LATEX __\gg=__
+%display __<-__;;__ %LATEX __\leftarrow__;__
+
+%prec {do__} < {__<-__;;__}
+%right_assoc __<-__;;__
 
 logic HasCASL
 
@@ -42,6 +46,9 @@ class CpoMonad < Monad {
 class instance CpoMonad < Cpo -> Cpo
 vars  m: CpoMonad; a, b: Cpo
 ops   __>>=__ : m a * (a -->? m b) -->? m b;
-      %binder(do __ <- __ ;; __)%
+      %binder(__<-__;;__)%
+      do __ : m a -> m a;
       ret : a --> m a
+var   x : m a
+. (do x) = x
 }
