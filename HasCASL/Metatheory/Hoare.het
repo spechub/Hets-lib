@@ -11,12 +11,13 @@ from HasCASL/Metatheory/Monad get CpoMonad
 
 spec Hoare = CpoMonad then
 var m : CpoMonad; a : Cpo
-fun   __{__} : m a * Logical -> m Logical;
+type PostCondition
+fun   __{__} : m a * Logical -> m PostCondition;
       pure : m a -> Logical;
-      bindPostCondition : m a * (a ->? Logical) -> m Logical;
+      bindPostCondition : m a * (a ->? Logical) -> m PostCondition;
       %binder(__<-__{__})%
-      {}__ : m Logical -> Logical;
-      {__}__ : Logical * m Logical -> Logical
+      {}__ : m PostCondition -> Logical;
+      {__}__ : Logical * m PostCondition -> Logical
 
 spec Reference = Hoare then
 var   a: Cpo
