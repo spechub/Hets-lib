@@ -35,11 +35,12 @@ spec DynamicReference = Reference then
 vars a, b: Cpo
 op   new: a --> R (Ref a)
 var  x : a
-. {} r <- new x {x = * r}
+. {} r <- new x {x = * r}                     %(read_new)
 vars y : a ; r : Ref a
-. {x = * r} s <- new y {not r = s /\ x = * r}
-vars p: Ref a -> R (Ref a); y: Ref a -> a
+. {x = * r} s <- new y {not r = s /\ x = * r} %(read_new_other)%
+vars p: Ref a -> R (Ref b); y: Ref b -> a
 . {} r <- new x ;; z <- p r ;; s <- new (y z) {not r = s}
+                                              %(read_distinct)%
 
 spec Nondeterminism = Hoare then
 var  a: Cpo
