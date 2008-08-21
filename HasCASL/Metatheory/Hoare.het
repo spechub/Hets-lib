@@ -34,7 +34,7 @@ forall x, y: a; r, s: Ref a
 spec DynamicReference = Reference then
 vars a, b: Cpo
 op   new: a --> R (Ref a)
-vars x, y : a; r : Ref a; z: Ref b -> a; p: Ref a -> R (Ref b)
+vars x, y : a; r : Ref a; z: b -> a; p: Ref a -> R b
 . {} r <- new x {x = * r}                     %(read_new)
 . {x = * r} s <- new y {not r = s /\ x = * r} %(read_new_other)%
 . {} r <- new x ;; w <- p r ;; s <- new (z w) {not r = s}
