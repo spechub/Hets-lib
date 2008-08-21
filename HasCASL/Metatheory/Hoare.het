@@ -3,7 +3,7 @@ library HasCASL/Metatheory/Hoare
 %display __>>=__ %LATEX __\gg=__
 %display __<-__{__} %LATEX __\leftarrow__{__}
 
-%prec {{}__} < {__<-__;;__}
+%prec {{}__, {__}__} < {__<-__;;__, __{__}}
 
 logic HasCASL
 
@@ -11,8 +11,7 @@ from HasCASL/Metatheory/Monad get CpoMonad
 
 spec Hoare = CpoMonad then
 var m : CpoMonad; a : Cpo
-fun   {__}__{__} : Logical * m a * Logical -> Logical;
-      {}__{__} : m a * Logical -> Logical;
+fun   __{__} : m a * Logical -> m Logical;
       pure : m a -> Logical;
       bindPostCondition : m a * (a ->? Logical) -> m Logical;
       %binder(__<-__{__})%
