@@ -1167,12 +1167,12 @@ arch spec PreDolce_Model =
                                given TempParthoodPED, TempParthoodNPED, Particip;
           ConstitutionNPED   : {Constantly_Generically_Constituted with s |-> NPED, s1 |-> SC, s2 |-> SAG} given 
                                TempParthoodPED, TempParthoodNPED, Particip;
-          Constitution       : ConstitutionPD and ConstitutionPED and ConstitutionNPED
+          Constitution       = ConstitutionPD and ConstitutionPED and ConstitutionNPED;
           %% Temporary_Quale
 	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, s2 |-> PQ} given BinTempDisPR;
           TempQualeAR        : {Temporary_Quale_Spec with s1 |-> AR, s2 |-> AQ} given BinTempDisAR;
           TempQualeS         : {Temporary_Quale_Spec with s1 |-> S, s2 |-> SL}  given BinTempDisS;
-          TempQuale          : TempQualePR and TempQualeAR and TempQualeS
+          TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
           DirectQuality      : Direct_Quality given ClassExtParthoodPD, TempParthoodPED, DependenceAQNPED;
      result BeingPresentEDorDP and Constitution and DirectQuality and TempQuale             
 end
