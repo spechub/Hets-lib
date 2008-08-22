@@ -1,0 +1,99 @@
+library Ontology/Dolce/DolceModel
+version 1.0
+
+from Ontology/Dolce/DolceSimpl get Taxonomy, Partial_Order, Ext_Partial_Order,
+         Ext_Overlap_or_Connection, Classical_Extensional_Parthood,
+         Time_Mereology, Unary_Temporal_Dissective, Being_Present,
+         Mereology, Mereology_and_TemporalPart, Binary_Present,
+         Binary_Temporal_Dissective, Temporary_Partial_Order,
+         Temporary_Strict_Partial_Order, Temporary_Parthood,
+         Temporary_Mereology, Constitution_Spec,
+         Constantly_Generically_Constituted, Constitution, Participation,
+         Direct_Quality_Spec, Direct_Quality, Immediate_Quale_Spec,
+         Immediate_Quale, Temporary_Quale_Spec, Temporary_Quale, 
+         Specific_Dependence, Mutual_Specific_Dependence,
+         OneSide_Specific_Dependence, Generic_Dependence,
+         Mutual_Generic_Dependence, OneSide_Generic_Dependence, Dependence,
+         Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
+         Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
+
+arch spec PreDolce_Model =
+     units
+	  TM                 : Time_Mereology;                                       
+          ImmediateQuale     : Immediate_Quale given TM;
+	  TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
+          TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and
+                               OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} given
+                               TempParthoodSC;
+          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
+          TempParthoodAPO    : {Temporary_Parthood with s |-> APO and
+                               OneSide_Generic_Dependence with s1 |-> SAG, s2 |-> APO} given
+			       TempParthoodSAG;
+          TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
+          TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
+                               OneSide_Generic_Dependence with s1 |-> F, s2 |-> NAPO} given
+                               TempParthoodF;
+          TempParthoodASO    : {Temporary_Parthood with s |-> ASO} given TempParthoodSC,
+                               TempParthoodSAG;
+          TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
+                               OneSide_Specific_Dependence with s1 |-> MOB, s2 |-> APO} given
+                               TempParthoodAPO;
+	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB} given 
+                               TempParthoodNASO, TempParthoodASO;
+          TempParthoodPOB    : {Temporary_Parthood with s |-> POB} given 
+                               TempParthoodMOB, TempParthoodNAPO;
+          TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB} given
+                               TempParthoodSOB, TempParthoodMOB;
+          TempParthoodM      : {Temporary_Parthood with s |-> M} given
+                               TempParthoodPOB;
+          TempParthoodNPED   : {Temporary_Parthood with s |-> NPED} given
+                               TempParthoodNPOB;
+          TempParthoodPED    : {Temporary_Parthood with s |-> PED} given
+                               TempParthoodM;
+          TempParthoodED     : {Temporary_Parthood with s |-> ED} given
+                               TempParthoodPED, TempParthoodNPED;
+	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD};
+          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR};
+          Particip           : Participation given TempParthoodED, ClassExtParthoodPD;
+          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, s2 |-> NPED} given
+                               TempParthoodED;
+	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, s2 |-> PED} given
+                               TempParthoodED;
+          DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, s2 |-> PD} given 
+                               Particip, ImmediateQuale;
+          BeingPresentEDorDP : {Being_Present with s |-> EDorDPorQ} given 
+                               DependenceTQPD, DependencePQPED, DependenceAQNPED;
+	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, s2 |-> SL} given 
+                               DependencePQPED;
+          BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, s2 |-> PQ};
+          ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} given 
+                               BinTempDisS;
+	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, s2 |-> AQ} given
+                               DependenceAQNPED, ClassExtParthoodAR;
+          %%Constitution
+          ConstitutionPD     : {Constitution_Spec with s |-> PD} given TempParthoodPED,
+                               TempParthoodNPED, Particip;
+          ConstitutionPED    : {Constantly_Generically_Constituted with s |-> PED, s1 |-> NAPO, s2 |-> M 	
+                               and  Constantly_Generically_Constituted with s |-> PED, s1 |-> APO, s2 |-> NAPO}
+                               given TempParthoodPED, TempParthoodNPED, Particip;
+          ConstitutionNPED   : {Constantly_Generically_Constituted with s |-> NPED, s1 |-> SC, s2 |-> SAG} given 
+                               TempParthoodPED, TempParthoodNPED, Particip;
+          Constitution       = ConstitutionPD and ConstitutionPED and ConstitutionNPED;
+          %% Temporary_Quale
+	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, s2 |-> PQ} given BeingPresentEDorDP, BinTempDisS;
+          TempQualeAR        : {Temporary_Quale_Spec with s1 |-> AR, s2 |-> AQ} given BeingPresentEDorDP, BinTempDisS;
+          TempQualeS         : {Temporary_Quale_Spec with s1 |-> S, s2 |-> SL}  given BeingPresentEDorDP, BinTempDisS;
+          TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
+          %% Direct Quality
+          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS;
+     result BeingPresentEDorDP and Constitution and DirectQuality and TempQuale             
+end
+
+arch spec Dolce_Model =
+     units
+	  PreDolce : arch spec PreDolce_Model;
+	  Tax      : Taxonomy given PreDolce
+     result Tax
+end
+
+refinement Dolce_Ref = Dolce refined to Dolce_Model

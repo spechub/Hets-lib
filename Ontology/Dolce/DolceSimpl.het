@@ -1,4 +1,4 @@
-library Ontology/DOLCE/DolceSimpl
+library Ontology/Dolce/DolceSimpl
 %%8621
 %[
 todo
@@ -14,7 +14,7 @@ todo
     spec D[sort s] = SD[sort s] or GD[sort s]
 - [Klaus, Till] CASL extension
 - [Klaus, Till] find out how to increase model size for consistency checks in Isabelle
-- [Till] add further consistency checkers (look at workshop on disproving theorems), 
+- [Till] add further consistency checkers (look at workshop on disproving theorems),
 - [Klaus] check consistency of DOLCE
 - [Till] mark imported theorems as proved theorems, not axioms
 - [Till, Klaus] use underscores for label disambiguation
@@ -37,9 +37,9 @@ stress modularization
 %%--------------------------------------------------------------------------------
 %% CASL simplifications:
 %%
-%% - No explicit parameters are used to specify the DOLCE theory: only simple 
+%% - No explicit parameters are used to specify the DOLCE theory: only simple
 %%   specifications and imports of these specifications using the "with" operator.
-%% - No "Views" are still used. 
+%% - No "Views" are still used.
 %%
 %%---------------------------------------------------------------------------------
 %% DOLCE simplifications:
@@ -49,9 +49,9 @@ stress modularization
 %%   (see for example the axiom (Ad44) or (Ad51)).
 %%   In the case of axioms (Ad75)-(Ad82), all the Meta-relations NEP, CM, AT, etc.
 %%   are defined in this CASL version, but there are not leaves in the actual DOLCE
-%%   taxonomy that instantiate these properties. 
+%%   taxonomy that instantiate these properties.
 %% 1.(Ad9) and (Ad15) are weakened assuming only the existence of binary sum
-%%   and difference (instead of a General Extensional Mereology, we have only a 
+%%   and difference (instead of a General Extensional Mereology, we have only a
 %%   Classical Extensional Mereology).
 %% 2.The predicate PRE (being present),defined in DOLCEv2.1 by means of the fusion
 %%   is here introduced as a primitive relation.
@@ -63,7 +63,7 @@ stress modularization
 %% 5.Axioms (Ad56),(Ad57),(Ad63), and (Ad64) are instantiated only by temporal and
 %%   spatial locations (TL and SL) and by Time intervals (T) and Space Regions (S),
 %%   i.e. all the leaves present in dolce.
-%% 6.(Ad74) not introduced (I'm unable to do the logical OR between specific and 
+%% 6.(Ad74) not introduced (I'm unable to do the logical OR between specific and
 %%   Generic dependence.
 %%-----------------------------------------------------------------------------------
 
@@ -73,8 +73,8 @@ stress modularization
 %% Taxonomy
 %%------------------------
 
-spec Taxonomy =  
-    
+spec Taxonomy =
+
 sorts
 EDorPDorQ,PT,AB,R,TR,T,PR,S,AR,Q,TQ,TL,PQ,SL,AQ,ED,PED,M,F,POB,APO,NAPO,NPED,NPOB,
 MOB,SOB,ASO,SAG,SC,NASO,AS,PD,EV,ACH,ACC,STV,ST,PRO
@@ -93,7 +93,7 @@ free type NPOB ::= sorts  MOB, SOB
 free type POB  ::= sorts  APO, NAPO
 free type SOB  ::= sorts  ASO, NASO
 free type ASO  ::= sorts  SAG, SC
-sorts  R<AB; NPOB<NPED; TL<TQ; SL<PQ; T<TR; S<PR; 
+sorts  R<AB; NPOB<NPED; TL<TQ; SL<PQ; T<TR; S<PR;
 
 end
 
@@ -149,7 +149,7 @@ spec Strict_Partial_Order =
 sort s
 pred Rel: s * s
 forall x,y,z: s
-. Rel(x,y) => not Rel(y,x) 
+. Rel(x,y) => not Rel(y,x)
 . Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
 end
 ]%
@@ -173,7 +173,7 @@ At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
 
 %%  Atomic Part
 AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
- 
+
 %%  Binary Sum
 Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
 
@@ -192,7 +192,7 @@ end
 %% Time_Mereology is needed in oder to specify the properties of perdurants
 
 spec Time_Mereology =
-%[     Taxonomy 
+%[     Taxonomy
 and ]% Classical_Extensional_Parthood with s |-> T
 end
 
@@ -201,8 +201,8 @@ end
 %% Unary_Temporal_Dissective (utd)
 %%--------------------------------
 
-spec Unary_Temporal_Dissective = 
-     Time_Mereology 
+spec Unary_Temporal_Dissective =
+     Time_Mereology
 then
 sort s
 pred Rel: s * T
@@ -218,8 +218,8 @@ end
 
 spec Being_Present =
      Unary_Temporal_Dissective with Rel |-> PRE
-     
-then 
+
+then
 
 forall x:s
 .exists t:T.(PRE(x,t))
@@ -252,7 +252,7 @@ then
 pred
 
 %% Temporal Part
-P_T(x:PD; y:PD) <=> P(x,y) /\ forall z:PD.((P(z,y) /\ forall t:T.(PRE(z,t) => PRE(x,t))) => P(z,x)) 
+P_T(x:PD; y:PD) <=> P(x,y) /\ forall z:PD.((P(z,y) /\ forall t:T.(PRE(z,t) => PRE(x,t))) => P(z,x))
 end
 
 %%---------------------
@@ -269,19 +269,19 @@ pred Rel: s1 * s2 * T
 
 forall x1:s1; x2:s2; t:T
 .Rel(x1,x2,t) => PRE(x1,t) /\ PRE(x2,t)
-end 
+end
 
 
 %%---------------------------------
 %% Binary_Temporal_Dissective (btd)
 %%---------------------------------
 
-spec Binary_Temporal_Dissective = 
+spec Binary_Temporal_Dissective =
      Time_Mereology
 then
 
 sort s1,s2
-pred Rel: s1 * s2 * T 
+pred Rel: s1 * s2 * T
 
 forall x1:s1; x2:s2; t1,t2:T
 .(Rel(x1,x2,t1) /\ P(t2,t1)) => Rel(x1,x2,t2)
@@ -301,7 +301,7 @@ pred Rel: s * s * T
 forall x,y,z:s; t:T
 .PRE(x,t) => Rel(x,x,t)
 .Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
-end 
+end
 
 
 %%-------------------------------------
@@ -312,14 +312,14 @@ spec Temporary_Strict_Partial_Order =
 %[     Taxonomy
 
 then
-]%     
+]%
 sorts s,T
 pred Rel: s * s * T
 
 forall x,y,z:s; t:T
-.Rel(x,y,t) => not Rel(y,x,t) 
+.Rel(x,y,t) => not Rel(y,x,t)
 .Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
-end 
+end
 
 
 %%-----------------------
@@ -338,14 +338,14 @@ preds
 tPP(x:s; y:s; t:T) <=> tP(x,y,t) /\  not tP(y,x,t);
 
 %% Temporary Overlap
-tOv(x:s; y:s; t:T) <=> exists z:s.(tP(z,x,t) /\ tP(z,y,t)); 
+tOv(x:s; y:s; t:T) <=> exists z:s.(tP(z,x,t) /\ tP(z,y,t));
 
 %% Temporary Atom
 %% At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
 
 %% Temporary Atomic Part
 %% AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
- 
+
 %% Temporary Binary Sum
 tSum(z:s; x:s; y:s) <=> forall w:s;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)));
 
@@ -353,14 +353,14 @@ tSum(z:s; x:s; y:s) <=> forall w:s;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t
 tDif(z:s; x:s; y:s) <=> forall w:s;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
 
 forall x,y:s; t:T
-.PRE(x,t) /\ PRE(y,t) /\ not tP(x,y,t) => exists z:s.(tP(z,x,t) /\ not tOv(z,y,t)) 
+.PRE(x,t) /\ PRE(y,t) /\ not tP(x,y,t) => exists z:s.(tP(z,x,t) /\ not tOv(z,y,t))
 .exists z:s.(tSum(z,x,y)) %(Existence of the sum)%
 
 %% ----------------------------------------------------------------------------------------------------
 %% The case of difference for temporary parthood is more complex.... I need to control in Peter Simons
 %% .not tP(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
 %% ----------------------------------------------------------------------------------------------------
-end  
+end
 
 
 %%---------------------
@@ -381,7 +381,7 @@ spec Constitution_Spec =
      Binary_Temporal_Dissective with s1 |-> s, s2 |-> s, Rel |-> K
 and  Binary_Present with s1 |-> s, s2 |-> s, Rel |-> K
 and  Temporary_Strict_Partial_Order with  Rel |-> K
-and  Temporary_Parthood 
+and  Temporary_Parthood
 
 then
 
@@ -440,13 +440,13 @@ forall y:PD; t:T
 forall x:ED;y:PD;t:T
 . (PRE(x,t) => exists y : PD . PC(x,y,t))
 
-then %implies 
+then %implies
      forall x:ED;y:PD;t:T
      . PC(x,y,t) => PRE(x,t) /\ PRE(y,t) %(T33)%
      forall x:ED
      .exists y:PD;t:T.(PC(x,y,t))        %(T35a)%
 
-end     
+end
 
 
 %%--------------------------
@@ -457,7 +457,7 @@ spec Direct_Quality_Spec =
 
 sorts s1, s2
 preds dqt : s1 * s2
-     
+
 forall x:s1; y1,y2:s2
 .dqt(x,y1) /\ dqt(x,y2) => y1 = y2
 
@@ -467,7 +467,7 @@ forall x1,x2:s1; y:s2
 forall x:s1
 .exists! y:s2.dqt(x,y)
 end
-%% the first two axioms can be introduced as two separated specification for 
+%% the first two axioms can be introduced as two separated specification for
 %% functions and inverse functions
 
 
@@ -499,7 +499,7 @@ spec Immediate_Quale_Spec =
 
 sorts s1, s2
 preds ql : s1 * s2
-     
+
 forall x1,x2:s1; y:s2
 .ql(x1,y) /\ ql(x2,y) => x1 = x2
 
@@ -516,8 +516,8 @@ spec Immediate_Quale =
 %[     Taxonomy
 and]%  Immediate_Quale_Spec with s1 |-> T, s2 |-> TL
 and  Immediate_Quale_Spec with s1 |-> TR, s2 |-> TQ
-end 
-   
+end
+
 
 %%---------------------------
 %% Temporary_Quale_Spec (tql)
@@ -560,7 +560,7 @@ then
 
 preds
 %% Specific Dependence
-SD(x:s1; y:s2) <=> (exists t:T.(PRE(x,t))) /\ 
+SD(x:s1; y:s2) <=> (exists t:T.(PRE(x,t))) /\
                    (forall t:T.(PRE(x,t) => PRE(y,t)));
 
 forall x:s1
@@ -573,7 +573,7 @@ end
 %%---------------------------------
 
 spec Mutual_Specific_Dependence =
-     Specific_Dependence with s1 |-> s1, s2 |-> s2 
+     Specific_Dependence with s1 |-> s1, s2 |-> s2
 and  Specific_Dependence with s1 |-> s2, s2 |-> s1
 end
 
@@ -599,7 +599,7 @@ end
 
 spec Generic_Dependence =
      Being_Present with s |-> s1
-then 
+then
      Being_Present with s |-> s2
 then
 
@@ -615,7 +615,7 @@ end
 %%--------------------------------
 
 spec Mutual_Generic_Dependence =
-     Generic_Dependence with s1 |-> s1, s2 |-> s2 
+     Generic_Dependence with s1 |-> s1, s2 |-> s2
 and  Generic_Dependence with s1 |-> s2, s2 |-> s1
 end
 
@@ -760,7 +760,7 @@ end
 %% Conditions_On_Perdurant_Leaves
 %%--------------------------------
 
-spec Conditions_On_Perdurant_Leaves =     
+spec Conditions_On_Perdurant_Leaves =
 sort s
 %% rigth now there are no perdurant's leaves, therefore there are no conditions on these leaves
 %% in any case, wa can express dolce's axioms (Ad79)-(ad82) using the specifications introduced before
@@ -792,14 +792,14 @@ and
 end
 
 %[
-view Td2 : Generic_Dependence to Constantly_Generically_Constituted  
+view Td2 : Generic_Dependence to Constantly_Generically_Constituted
 end
 
 view T31 : { Constantly_Generically_Constituted with s1 |-> phi, s2 |-> chi }
         to {    Constantly_Generically_Constituted with s1 |-> phi, s2 |-> psi
             and Constantly_Generically_Constituted with s1 |-> psi, s2 |-> chi }
 end
-          
+
 spec CGC[sort s1][sort s2] =
      Constantly_Generically_Constituted
 end
@@ -827,17 +827,17 @@ spec Classical_Extensional_Parthood_1_model =
 
   %%  Atomic Part
   AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
-   
+
   %%  Binary Sum
   Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-  
+
   %%  Binary Difference
   Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
 end
 
 
 spec Classical_Extensional_Parthood_4_model =
-  free type s ::= a | b | c | d | ab | ac | ad | bc | bd | cd | 
+  free type s ::= a | b | c | d | ab | ac | ad | bc | bd | cd |
                   abc | abd | acd | bcd | abcd
  pred P:s*s
  . P(d,d)
@@ -1077,10 +1077,10 @@ spec Classical_Extensional_Parthood_4_model =
 
   %%  Atomic Part
   AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
-   
+
   %%  Binary Sum
   Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-  
+
   %%  Binary Difference
   Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
 end
@@ -1091,10 +1091,10 @@ view consistent_cpm1 : sp to Classical_Extensional_Parthood_1_model
 view consistent_cpm4 : sp to Classical_Extensional_Parthood_4_model
 
 
-view cpm1: Classical_Extensional_Parthood to 
+view cpm1: Classical_Extensional_Parthood to
            Classical_Extensional_Parthood_1_model
 
-view cpm4: Classical_Extensional_Parthood to 
+view cpm4: Classical_Extensional_Parthood to
            Classical_Extensional_Parthood_4_model
 
 spec Mereology_Model =
@@ -1104,99 +1104,4 @@ and  Classical_Extensional_Parthood_1_model with s |-> S
 and  Classical_Extensional_Parthood_1_model with s |-> AR
 end
 
-view m : Mereology to Mereology_Model 
-
-arch spec PreDolce_Model =
-     units
-	  TM                 : Time_Mereology;                                       
-          ImmediateQuale     : Immediate_Quale given TM;
-	  TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
-          TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and
-                               OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} given
-                               TempParthoodSC;
-          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
-          TempParthoodAPO    : {Temporary_Parthood with s |-> APO and
-                               OneSide_Generic_Dependence with s1 |-> SAG, s2 |-> APO} given
-			       TempParthoodSAG;
-          TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
-          TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
-                               OneSide_Generic_Dependence with s1 |-> F, s2 |-> NAPO} given
-                               TempParthoodF;
-          TempParthoodASO    : {Temporary_Parthood with s |-> ASO} given TempParthoodSC,
-                               TempParthoodSAG;
-          TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
-                               OneSide_Specific_Dependence with s1 |-> MOB, s2 |-> APO} given
-                               TempParthoodAPO;
-	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB} given 
-                               TempParthoodNASO, TempParthoodASO;
-          TempParthoodPOB    : {Temporary_Parthood with s |-> POB} given 
-                               TempParthoodMOB, TempParthoodNAPO;
-          TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB} given
-                               TempParthoodSOB, TempParthoodMOB;
-          TempParthoodM      : {Temporary_Parthood with s |-> M} given
-                               TempParthoodPOB;
-          TempParthoodNPED   : {Temporary_Parthood with s |-> NPED} given
-                               TempParthoodNPOB;
-          TempParthoodPED    : {Temporary_Parthood with s |-> PED} given
-                               TempParthoodM;
-          TempParthoodED     : {Temporary_Parthood with s |-> ED} given
-                               TempParthoodPED, TempParthoodNPED;
-	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD};
-          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR};
-          Particip           : Participation given TempParthoodED, ClassExtParthoodPD;
-          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, s2 |-> NPED} given
-                               TempParthoodED;
-	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, s2 |-> PED} given
-                               TempParthoodED;
-          DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, s2 |-> PD} given 
-                               Particip, ImmediateQuale;
-          BeingPresentEDorDP : {Being_Present with s |-> EDorDPorQ} given 
-                               DependenceTQPD, DependencePQPED, DependenceAQNPED;
-	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, s2 |-> SL} given 
-                               DependencePQPED;
-          BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, s2 |-> PQ};
-          ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} given 
-                               BinTempDisS;
-	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, s2 |-> AQ} given
-                               DependenceAQNPED, ClassExtParthoodAR;
-          %%Constitution
-          ConstitutionPD     : {Constitution_Spec with s |-> PD} given TempParthoodPED,
-                               TempParthoodNPED, Particip;
-          ConstitutionPED    : {Constantly_Generically_Constituted with s |-> PED, s1 |-> NAPO, s2 |-> M 	
-                               and  Constantly_Generically_Constituted with s |-> PED, s1 |-> APO, s2 |-> NAPO}
-                               given TempParthoodPED, TempParthoodNPED, Particip;
-          ConstitutionNPED   : {Constantly_Generically_Constituted with s |-> NPED, s1 |-> SC, s2 |-> SAG} given 
-                               TempParthoodPED, TempParthoodNPED, Particip;
-          Constitution       = ConstitutionPD and ConstitutionPED and ConstitutionNPED;
-          %% Temporary_Quale
-	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, s2 |-> PQ} given BeingPresentEDorDP, BinTempDisS;
-          TempQualeAR        : {Temporary_Quale_Spec with s1 |-> AR, s2 |-> AQ} given BeingPresentEDorDP, BinTempDisS;
-          TempQualeS         : {Temporary_Quale_Spec with s1 |-> S, s2 |-> SL}  given BeingPresentEDorDP, BinTempDisS;
-          TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
-          %% Direct Quality
-          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS;
-     result BeingPresentEDorDP and Constitution and DirectQuality and TempQuale             
-end
-
-arch spec Dolce_Model =
-     units
-	  PreDolce : arch spec PreDolce_Model;
-	  Tax      : Taxonomy given PreDolce
-     result Tax
-end
-
-refinement Dolce_Ref = Dolce refined to Dolce_Model
-
-arch spec test =
-     units
-          TM                 : Time_Mereology; 
-	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, s2 |-> SL}  given TM;
-          BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, s2 |-> PQ} given TM;
-	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, s2 |-> AQ} given TM;
-          TempQualeFunc      : {Binary_Temporal_Dissective with Rel |-> tql} -> Temporary_Quale_Spec;
-          TempQuale          = TempQualeFunc[{BinTempDisPR with Rel |-> tql}] and 
-                               TempQualeFunc[{BinTempDisAR with Rel |-> tql}] and 
-                               TempQualeFunc[{BinTempDisS  with Rel |-> tql}];
-     result TempQuale
-end
-
+view m : Mereology to Mereology_Model
