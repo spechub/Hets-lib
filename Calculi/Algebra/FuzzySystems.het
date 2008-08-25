@@ -95,8 +95,8 @@ spec MaxOnRange[sort Universe] given ConcretUnitInterval =
      ConcretFuzzySet[sort Universe]
 then op maxOnRange : FuzzySet -> UnitInterval
      var P : FuzzySet; m : UnitInterval
-     . maxOnRange(P) = m <=> exists y : Universe . forall x : Universe .
-       P @ x <= m /\ P @ y = m
+     . maxOnRange(P) = m <=> exists y : Universe . forall x, z : Universe .
+       C(P @ x, P @ z) <= m /\ C(P @ y, P @ z) = m
 
 %% define various subsorts of functions from Rat
 spec PreFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
@@ -225,7 +225,7 @@ then generated type LVar ::= LVar(
 
 spec Fuzzify[sort Universe] given ConcretUnitInterval =
      LinguisticVariable[sort Universe]
-     with op minimum : FuzzySet * FuzzySet -> FuzzySet
+     with op __intersection__ : FuzzySet * FuzzySet -> FuzzySet
 and  MaxOnRange[sort Universe]
 then %% only changes the confidence of the terms in the linguistic variables
      op fuzzify : FuzzySet * LVar -> LVar
@@ -241,7 +241,8 @@ then %% only changes the confidence of the terms in the linguistic variables
      . fuzzify(A, LVar(cname, S, HM, CM)) = LVar(cname, Ta, HM, CM)
        <=> forall t : Term .
             (exists v : UnitInterval . ConfValue(t, v) eps S)
-            <=> ConfValue(t, maxOnRange(minimum(A, eval(t, HM, CM)))) eps Ta
+            <=> ConfValue(t, maxOnRange(A intersection eval(t, HM, CM)))
+                eps Ta
 
 %%--------------------- Defuzzification ----------------------
 
