@@ -314,65 +314,98 @@ view m : Mereology to Mereology_Model
 
 arch spec PreDolce_Model =
      units
-	  TM                 : Time_Mereology;                                       
+	  TM                 : Time_Mereology;
           ImmediateQuale     : Immediate_Quale given TM;
 	  TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
+          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
           TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and
                                OneSide_Generic_Dependence 
 				with s1 |-> NASO, s2 |-> SC} given
                                TempParthoodSC;
-          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
           TempParthoodAPO    : {Temporary_Parthood with s |-> APO and
                                OneSide_Generic_Dependence with s1 |-> SAG, 
-				s2 |-> APO} given
-			       TempParthoodSAG;
+				s2 |-> APO} given TempParthoodSAG;
           TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
           TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
-				s2 |-> NAPO} given
-                               TempParthoodF;
-          TempParthoodASO    : {Temporary_Parthood with s |-> ASO} 
-                                given TempParthoodSC,
-                               TempParthoodSAG;
+				s2 |-> NAPO} given TempParthoodF;
+          TempParthoodASO    : {Temporary_Parthood with s |-> ASO
+				and 
+				{
+				 free type ASO ::= sort SC | sort SAG
+				}
+                               } 
+                                given TempParthoodSC, TempParthoodSAG;
           TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
                                OneSide_Specific_Dependence with s1 |-> MOB, 
 				s2 |-> APO} given
                                TempParthoodAPO;
-	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB} given 
-                               TempParthoodNASO, TempParthoodASO;
-          TempParthoodPOB    : {Temporary_Parthood with s |-> POB} given 
-                               TempParthoodMOB, TempParthoodNAPO;
-          TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB} given
-                               TempParthoodSOB, TempParthoodMOB;
+	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB 
+				and
+				{
+				 free type SOB ::= sort ASO | sort NASO}
+			       } given TempParthoodNASO, TempParthoodASO;
+          TempParthoodPOB    : {Temporary_Parthood with s |-> POB
+				and
+				{
+				 free type POB ::= sort APO | sort NAPO
+				}
+			       } given TempParthoodMOB, TempParthoodNAPO;
+          TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB
+				and
+				{
+				 free type NPOB ::= sort SOB | sort MOB
+				}
+			       } given TempParthoodSOB, TempParthoodMOB;
           TempParthoodM      : {Temporary_Parthood with s |-> M} given
                                TempParthoodPOB;
-          TempParthoodNPED   : {Temporary_Parthood with s |-> NPED} given
-                               TempParthoodNPOB;
-          TempParthoodPED    : {Temporary_Parthood with s |-> PED} given
-                               TempParthoodM;
-          TempParthoodED     : {Temporary_Parthood with s |-> ED} given
-                               TempParthoodPED, TempParthoodNPED;
+          TempParthoodNPED   : {Temporary_Parthood with s |-> NPED
+				and
+				{
+				 sort NPOB < NPED
+				}
+			       } given TempParthoodNPOB;
+          TempParthoodPED    : {Temporary_Parthood with s |-> PED
+				and
+				{
+				 free type PED ::= sort POB | sort M | sort F
+				}
+			       } given TempParthoodM;
+          TempParthoodED     : {Temporary_Parthood with s |-> ED
+				and
+				{
+				 free type ED ::= sort PED | sort NPED | sort AS
+				}
+			       } given TempParthoodPED, TempParthoodNPED;
 	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD};
           ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR};
           Particip           : Participation given TempParthoodED, 
 			        ClassExtParthoodPD;
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given
-                               TempParthoodED;
+				s2 |-> NPED} given TempParthoodED;
 	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED} given
-                               TempParthoodED;
+				s2 |-> PED} given TempParthoodED;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} given 
                                Particip, ImmediateQuale;
-          BeingPresentEDorDP : {Being_Present with s |-> EDorDPorQ} given 
-                               DependenceTQPD, DependencePQPED, 
+	  BeingPresentEDorDP : {Being_Present with s |-> EDorDPorQ
+				and
+				{
+				 free type Q ::= sort TQ | sort PQ | sort AQ;
+				 free type EDorPDorQ ::= sort Q | sort PD | sort
+				 ED
+				}
+			       } given DependenceTQPD, DependencePQPED, 
 			       DependenceAQNPED;
 	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
-				s2 |-> SL} given 
-                               DependencePQPED;
+				s2 |-> SL} given DependencePQPED;
           BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, 
-				s2 |-> PQ};
+				s2 |-> PQ
+				and 
+				{
+				 sort S < PR
+				}
+                               };
           ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} 
                                 given BinTempDisS;
 	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, 
