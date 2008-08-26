@@ -17,3 +17,346 @@ from Ontology/Dolce/DolceSimpl get Taxonomy, Partial_Order, Ext_Partial_Order,
          Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
          Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
 
+spec TM_Cons=
+     Time_Mereology
+end
+
+spec ImmediateQuale_Cons=
+     TM_Cons
+     then %cons
+     Immediate_Quale
+end
+
+spec TempParthoodSC_Cons=
+     TM_Cons
+     then %cons
+     Temporary_Parthood with s |-> SC
+end
+
+spec TempParthoodSAG_Cons=
+     TM_Cons
+     then %cons
+     Temporary_Parthood with s |-> SAG
+end
+
+spec TempParthoodNASO_Cons=
+     TempParthoodSC_Cons
+     then %cons
+     {Temporary_Parthood with s |-> NASO and
+      OneSide_Generic_Dependence 
+      with s1 |-> NASO, s2 |-> S}
+end
+
+spec TempParthoodAPO_Cons=
+     TempParthoodSAG_Cons
+     then %cons
+     {Temporary_Parthood with s |-> APO 
+      and
+      OneSide_Generic_Dependence with s1 |-> SAG, 
+      s2 |-> APO}
+end
+
+spec TempParthoodF_Cons=
+     TempParthoodSAG_Cons
+     then %cons
+     Temporary_Parthood with s |-> F
+end
+
+spec TempParthoodNAPO_Cons=
+     TempParthoodF_Cons
+     then %cons
+     {Temporary_Parthood with s |-> NAPO 
+      and
+      OneSide_Generic_Dependence with s1 |-> F, 
+      s2 |-> NAPO}
+end
+
+spec TempParthoodASO_Cons=
+     TempParthoodSC_Cons
+     and
+     TempParthoodSAG_Cons
+     then %cons
+     {Temporary_Parthood with s |-> ASO
+      and 
+      {
+       free type ASO ::= sort SC | sort SAG
+      }
+     }
+end
+
+spec TempParthoodMOB_Cons=
+     TempParthoodAPO_Cons
+     then %cons
+     {Temporary_Parthood with s |-> MOB 
+      and
+      OneSide_Specific_Dependence with s1 |-> MOB, 
+      s2 |-> APO}
+end
+
+spec TempParthoodSOB_Cons=
+     TempParthoodNASO_Cons
+     and
+     TempParthoodASO_Cons
+     then %cons
+     {Temporary_Parthood with s |-> SOB 
+      and
+      {
+       free type SOB ::= sort ASO | sort NASO}
+     }
+end
+     
+spec TempParthoodPOB_Cons=
+     TempParthoodMOB_Cons
+     and
+     TempParthoodNAPO_Cons
+     then %cons
+     {Temporary_Parthood with s |-> POB
+      and
+      {
+       free type POB ::= sort APO | sort NAPO
+      }
+     }
+end
+
+spec TempParthoodNPOB_Cons=
+     TempParthoodSOB_Cons
+     and 
+     TempParthoodMOB_Cons
+     then %cons
+     {Temporary_Parthood with s |-> NPOB
+      and
+      {
+       free type NPOB ::= sort SOB | sort MOB
+      }
+     }
+end
+     
+spec TempParthoodM_Cons=
+     TempParthoodPOB_Cons
+     then %cons
+     {Temporary_Parthood with s |-> M}
+end
+
+spec TempParthoodNPED_Cons=
+     TempParthoodNPOB_Cons
+     then %cons
+     {Temporary_Parthood with s |-> NPED
+      and
+      {
+       sort NPOB < NPED
+      }
+     }
+end
+
+spec TempParthoodPED_Cons=
+     TempParthoodM_Cons
+     then %cons
+     {Temporary_Parthood with s |-> PED
+      and
+      {
+       free type PED ::= sort POB | sort M | sort F
+      }
+     }
+end
+
+spec TempParthoodED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     then %cons
+     {Temporary_Parthood with s |-> ED
+      and
+      {
+       sort AS;
+       free type ED ::= sort PED | sort NPED | sort AS
+      }
+     } 
+end
+
+spec ClassExtParthoodPD_Cons=
+     {Classical_Extensional_Parthood with s |-> PD}
+end
+
+spec ClassExtParthoodAR_Cons=
+     Classical_Extensional_Parthood with s |-> AR
+end
+
+spec Particip_Cons=
+     TempParthoodED_Cons
+     and
+     ClassExtParthoodPD_Cons
+     then %cons
+     Participation
+end
+
+spec DependenceAQNPED_Cons=
+     TempParthoodED_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> AQ, 
+				s2 |-> NPED
+end
+
+spec DependencePQPED_Cons=
+     TempParthoodED_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> PQ, 
+				s2 |-> PED 
+end
+
+spec DependenceTQPD_Cons=
+     Particip_Cons
+     and
+     ImmediateQuale_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> TQ, 
+				s2 |-> PD
+end
+
+spec BeingPresentEDorDP_Cons=
+     DependenceTQPD_Cons
+     and
+     DependencePQPED_Cons
+     and
+     DependenceAQNPED_Cons
+     then %cons
+     {
+      Being_Present with s |-> EDorDPorQ
+      and
+      {
+       free type Q ::= sort TQ | sort PQ | sort AQ;
+       free type EDorPDorQ ::= sort Q | sort PD | sort
+       ED
+      }
+     }
+end
+
+spec BinTempDisS_Cons=
+     DependencePQPED_Cons
+     then %cons
+     Binary_Temporal_Dissective with s1 |-> S, 
+				s2 |-> SL
+end
+
+spec BinTempDisPR_Cons=
+     Binary_Temporal_Dissective with s1 |-> PR, 
+				s2 |-> PQ
+     and 
+     {
+      sort S < PR
+     }
+end
+
+spec ClassExtParthoodS_Cons=
+      BinTempDisS_Cons
+      then %cons
+      Classical_Extensional_Parthood with s |-> S
+end
+
+spec BinTempDisAR_Cons=
+     DependenceAQNPED_Cons
+     and
+     ClassExtParthoodAR_Cons
+     then %cons
+     Binary_Temporal_Dissective with s1 |-> AR, 
+				s2 |-> AQ
+end
+
+spec ConstitutionPD_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     Constitution_Spec with s |-> PD
+end
+
+spec ConstitutionPED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     {Constantly_Generically_Constituted with 
+      s |-> PED, s1 |-> NAPO, s2 |-> M 	
+      and  Constantly_Generically_Constituted with 
+      s |-> PED, s1 |-> APO, s2 |-> NAPO}
+end
+
+spec ConstitutionNPED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     Constantly_Generically_Constituted with 
+     s |-> NPED, s1 |-> SC, s2 |-> SAG
+end
+
+spec Constitution_Cons=
+     ConstitutionPD_Cons
+     and
+     ConstitutionPED_Cons
+     and
+     ConstitutionNPED_Cons
+end
+
+spec TempQualePR_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons
+     Temporary_Quale_Spec with s1 |-> PR, 
+				s2 |-> PQ
+end
+
+spec TempQualeAR_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons   
+     Temporary_Quale_Spec with s1 |-> AR, 
+				s2 |-> AQ
+end
+
+spec TempQualeS_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons 
+     Temporary_Quale_Spec with s1 |-> S, s2 |-> SL
+end
+
+spec TempQuale_Cons=
+     TempQualePR_Cons
+     and
+     TempQualeAR_Cons
+     and
+     TempQualeS_Cons
+end
+
+spec DirectQuality_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons
+     Direct_Quality
+end
+
+spec PreDolce_Cons=
+     BeingPresentEDorDP_Cons
+     and 
+     Constitution_Cons
+     and 
+     DirectQuality_Cons
+     and 
+     TempQuale_Cons
+end
+
+spec Dolce_Cons=
+     PreDolce_Cons
+     then %cons
+     Taxonomy
+end
