@@ -312,131 +312,1874 @@ end
 
 view m : Mereology to Mereology_Model
 
+%% ArchSpec helper specs
+
+spec BinTempDisS_Mod_Spec=
+     {
+      {
+       {
+	{
+	 {
+	  {
+	   Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG then %cons
+	   {Temporary_Parthood with s |-> APO and
+	    OneSide_Generic_Dependence with s1 |-> SAG, 
+	    s2 |-> APO}
+	  }
+	  and
+	  {
+	   Time_Mereology then %cons
+           Temporary_Parthood with s |-> F then %cons
+	   {Temporary_Parthood with s |-> NAPO and
+	    OneSide_Generic_Dependence with s1 |-> F, 
+	    s2 |-> NAPO}
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> POB
+	  and
+	  {
+	   free type POB ::= sort APO | sort NAPO
+	  }
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> M
+	}
+	then %cons
+	{				
+	 Temporary_Parthood with s |-> PED
+	 and
+	 {
+	  free type PED ::= sort POB | sort M | sort F
+	 }
+	}
+       }
+       and
+       {
+	{
+	 {
+	  {{Time_Mereology then %cons
+	    Temporary_Parthood with s |-> SC then %cons
+	    {Temporary_Parthood with s |-> NASO and
+	     OneSide_Generic_Dependence 
+	     with s1 |-> NASO, s2 |-> SC}}
+	   and
+	   {{Time_Mereology then %cons 
+	     {Temporary_Parthood with s |-> SC}}
+	    and
+	    {Time_Mereology then %cons 
+	     Temporary_Parthood with s |-> SAG}
+	    then %cons
+	    {Temporary_Parthood with s |-> ASO
+	     and 
+	     {
+	      free type ASO ::= sort SC | sort SAG
+	     }}}}
+	  then %cons
+	  Temporary_Parthood with s |-> SOB 
+	  and
+	  {
+	   free type SOB ::= sort ASO | sort NASO}
+	 }
+	 and
+	 {
+	  Time_Mereology then %cons 
+	  Temporary_Parthood with s |-> SAG then %cons
+	  {Temporary_Parthood with s |-> APO and
+	   OneSide_Generic_Dependence with s1 |-> SAG, 
+	   s2 |-> APO}
+	  then %cons
+	  Temporary_Parthood with s |-> MOB and
+	  OneSide_Specific_Dependence with s1 |-> MOB, 
+	  s2 |-> APO
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> NPOB
+	 and
+	 {
+	  free type NPOB ::= sort SOB | sort MOB
+	 }
+	}
+	then %cons
+	{
+	 Temporary_Parthood with s |-> NPED
+	 and
+	 {
+	  sort NPOB < NPED
+	 }
+	}
+       }
+       then %cons
+       {
+	Temporary_Parthood with s |-> ED
+	and
+	{
+	 sort AS;
+	 free type ED ::= sort PED | sort NPED | sort AS
+	}
+       }
+      }
+      then %cons
+      Mutual_Specific_Dependence with s1 |-> PQ, 
+      s2 |-> PED
+     }
+     then %cons
+	  Binary_Temporal_Dissective with s1 |-> S, 
+				s2 |-> SL
+end
+
+spec Being_Present_Mod_Spec=
+     {
+      {
+       {
+	{
+	 {
+	  {
+	   {
+	    Time_Mereology then %cons 
+	    Temporary_Parthood with s |-> SAG then %cons
+	    {Temporary_Parthood with s |-> APO and
+	     OneSide_Generic_Dependence with s1 |-> SAG, 
+	     s2 |-> APO}
+	   }
+	   and
+	   {
+	    Time_Mereology then %cons
+            Temporary_Parthood with s |-> F then %cons
+	    {Temporary_Parthood with s |-> NAPO and
+	     OneSide_Generic_Dependence with s1 |-> F, 
+	     s2 |-> NAPO}
+	   }
+	   then %cons
+	   Temporary_Parthood with s |-> POB
+	   and
+	   {
+	    free type POB ::= sort APO | sort NAPO
+	   }
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> M
+	 }
+	 then %cons
+	 {				
+	  Temporary_Parthood with s |-> PED
+	  and
+	  {
+	   free type PED ::= sort POB | sort M | sort F
+	  }
+	 }
+	}
+	and
+	{
+	 {
+	  {
+	   {{Time_Mereology then %cons
+	     Temporary_Parthood with s |-> SC then %cons
+	     {Temporary_Parthood with s |-> NASO and
+	      OneSide_Generic_Dependence 
+	      with s1 |-> NASO, s2 |-> SC}}
+	    and
+	    {{Time_Mereology then %cons 
+	      {Temporary_Parthood with s |-> SC}}
+	     and
+	     {Time_Mereology then %cons 
+	      Temporary_Parthood with s |-> SAG}
+	     then %cons
+	     {Temporary_Parthood with s |-> ASO
+	      and 
+	      {
+	       free type ASO ::= sort SC | sort SAG
+	      }}}}
+	   then %cons
+	   Temporary_Parthood with s |-> SOB 
+	   and
+	   {
+	    free type SOB ::= sort ASO | sort NASO}
+	  }
+	  and
+	  {
+	   Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG then %cons
+	   {Temporary_Parthood with s |-> APO and
+	    OneSide_Generic_Dependence with s1 |-> SAG, 
+	    s2 |-> APO}
+	   then %cons
+	   Temporary_Parthood with s |-> MOB and
+	   OneSide_Specific_Dependence with s1 |-> MOB, 
+	   s2 |-> APO
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> NPOB
+	  and
+	  {
+	   free type NPOB ::= sort SOB | sort MOB
+	  }
+	 }
+	 then %cons
+	 {
+	  Temporary_Parthood with s |-> NPED
+	  and
+	  {
+	   sort NPOB < NPED
+	  }
+	 }
+	}
+	then %cons
+	{
+	 Temporary_Parthood with s |-> ED
+	 and
+	 {
+	  sort AS;
+	  free type ED ::= sort PED | sort NPED | sort AS
+	 }
+	}
+       }
+       and
+       {
+	Classical_Extensional_Parthood with s |-> PD
+       }
+       then %cons
+       Participation
+      }
+      and
+      {
+       Time_Mereology
+       then %cons
+       Immediate_Quale
+      }
+      then %cons
+      Mutual_Specific_Dependence with s1 |-> TQ, 
+      s2 |-> PD
+     }
+     and
+     {
+      {
+       {
+	{
+	 {
+	  {
+	   Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG then %cons
+	   {Temporary_Parthood with s |-> APO and
+	    OneSide_Generic_Dependence with s1 |-> SAG, 
+	    s2 |-> APO}
+	  }
+	  and
+	  {
+	   Time_Mereology then %cons
+           Temporary_Parthood with s |-> F then %cons
+	   {Temporary_Parthood with s |-> NAPO and
+	    OneSide_Generic_Dependence with s1 |-> F, 
+	    s2 |-> NAPO}
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> POB
+	  and
+	  {
+	   free type POB ::= sort APO | sort NAPO
+	  }
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> M
+	}
+	then %cons
+	{				
+	 Temporary_Parthood with s |-> PED
+	 and
+	 {
+	  free type PED ::= sort POB | sort M | sort F
+	 }
+	}
+       }
+       and
+       {
+	{
+	 {
+	  {{Time_Mereology then %cons
+	    Temporary_Parthood with s |-> SC then %cons
+	    {Temporary_Parthood with s |-> NASO and
+	     OneSide_Generic_Dependence 
+	     with s1 |-> NASO, s2 |-> SC}}
+	   and
+	   {{Time_Mereology then %cons 
+	     {Temporary_Parthood with s |-> SC}}
+	    and
+	    {Time_Mereology then %cons 
+	     Temporary_Parthood with s |-> SAG}
+	    then %cons
+	    {Temporary_Parthood with s |-> ASO
+	     and 
+	     {
+	      free type ASO ::= sort SC | sort SAG
+	     }}}}
+	  then %cons
+	  Temporary_Parthood with s |-> SOB 
+	  and
+	  {
+	   free type SOB ::= sort ASO | sort NASO}
+	 }
+	 and
+	 {
+	  Time_Mereology then %cons 
+	  Temporary_Parthood with s |-> SAG then %cons
+	  {Temporary_Parthood with s |-> APO and
+	   OneSide_Generic_Dependence with s1 |-> SAG, 
+	   s2 |-> APO}
+	  then %cons
+	  Temporary_Parthood with s |-> MOB and
+	  OneSide_Specific_Dependence with s1 |-> MOB, 
+	  s2 |-> APO
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> NPOB
+	 and
+	 {
+	  free type NPOB ::= sort SOB | sort MOB
+	 }
+	}
+	then %cons
+	{
+	 Temporary_Parthood with s |-> NPED
+	 and
+	 {
+	  sort NPOB < NPED
+	 }
+	}
+       }
+       then %cons
+       {
+	Temporary_Parthood with s |-> ED
+	and
+	{
+	 sort AS;
+	 free type ED ::= sort PED | sort NPED | sort AS
+	}
+       }
+      }
+      then %cons
+      Mutual_Specific_Dependence with s1 |-> PQ, 
+      s2 |-> PED
+     }
+     and
+     {
+      {
+       {
+	{
+	 {
+	  {
+	   Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG then %cons
+	   {Temporary_Parthood with s |-> APO and
+	    OneSide_Generic_Dependence with s1 |-> SAG, 
+	    s2 |-> APO}
+	  }
+	  and
+	  {
+	   Time_Mereology then %cons
+           Temporary_Parthood with s |-> F then %cons
+	   {Temporary_Parthood with s |-> NAPO and
+	    OneSide_Generic_Dependence with s1 |-> F, 
+	    s2 |-> NAPO}
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> POB
+	  and
+	  {
+	   free type POB ::= sort APO | sort NAPO
+	  }
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> M
+	}
+	then %cons
+	{				
+	 Temporary_Parthood with s |-> PED
+	 and
+	 {
+	  free type PED ::= sort POB | sort M | sort F
+	 }
+	}
+       }
+       and
+       {
+	{
+	 {
+	  {{Time_Mereology then %cons
+	    Temporary_Parthood with s |-> SC then %cons
+	    {Temporary_Parthood with s |-> NASO and
+	     OneSide_Generic_Dependence 
+	     with s1 |-> NASO, s2 |-> SC}}
+	   and
+	   {{Time_Mereology then %cons 
+	     {Temporary_Parthood with s |-> SC}}
+	    and
+	    {Time_Mereology then %cons 
+	     Temporary_Parthood with s |-> SAG}
+	    then %cons
+	    {Temporary_Parthood with s |-> ASO
+	     and 
+	     {
+	      free type ASO ::= sort SC | sort SAG
+	     }}}}
+	  then %cons
+	  Temporary_Parthood with s |-> SOB 
+	  and
+	  {
+	   free type SOB ::= sort ASO | sort NASO}
+	 }
+	 and
+	 {
+	  Time_Mereology then %cons 
+	  Temporary_Parthood with s |-> SAG then %cons
+	  {Temporary_Parthood with s |-> APO and
+	   OneSide_Generic_Dependence with s1 |-> SAG, 
+	   s2 |-> APO}
+	  then %cons
+	  Temporary_Parthood with s |-> MOB and
+	  OneSide_Specific_Dependence with s1 |-> MOB, 
+	  s2 |-> APO
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> NPOB
+	 and
+	 {
+	  free type NPOB ::= sort SOB | sort MOB
+	 }
+	}
+	then %cons
+	{
+	 Temporary_Parthood with s |-> NPED
+	 and
+	 {
+	  sort NPOB < NPED
+	 }
+	}
+       }
+       then %cons
+       {
+	Temporary_Parthood with s |-> ED
+	and
+	{
+	 sort AS;
+	 free type ED ::= sort PED | sort NPED | sort AS
+	}
+       }
+      }
+      then %cons
+      Mutual_Specific_Dependence with s1 |-> AQ, 
+      s2 |-> NPED
+     }
+     then %cons
+     {
+      Being_Present with s |-> EDorDPorQ
+      and
+      {
+       free type Q ::= sort TQ | sort PQ | sort AQ;
+       free type EDorPDorQ ::= sort Q | sort PD | sort ED
+      }
+     }
+end
+
+spec TempParthoodPEDTempParthoodNPEDParticip =
+     {
+      {
+       {
+	{
+	 Time_Mereology then %cons 
+	 Temporary_Parthood with s |-> SAG then %cons
+	 {Temporary_Parthood with s |-> APO and
+	  OneSide_Generic_Dependence with s1 |-> SAG, 
+	  s2 |-> APO}
+	}
+	and
+	{
+	 Time_Mereology then %cons
+         Temporary_Parthood with s |-> F then %cons
+	 {Temporary_Parthood with s |-> NAPO and
+	  OneSide_Generic_Dependence with s1 |-> F, 
+	  s2 |-> NAPO}
+	}
+	then %cons
+	Temporary_Parthood with s |-> POB
+	and
+	{
+	 free type POB ::= sort APO | sort NAPO
+	}
+       }
+       then %cons
+       Temporary_Parthood with s |-> M
+      }
+      then %cons
+      {				
+       Temporary_Parthood with s |-> PED
+       and
+       {
+	free type PED ::= sort POB | sort M | sort F
+       }
+      }
+     }
+     and
+     {
+      {
+       {
+	{{Time_Mereology then %cons
+	  Temporary_Parthood with s |-> SC then %cons
+	  {Temporary_Parthood with s |-> NASO and
+	   OneSide_Generic_Dependence 
+	   with s1 |-> NASO, s2 |-> SC}}
+	 and
+	 {{Time_Mereology then %cons 
+	   {Temporary_Parthood with s |-> SC}}
+	  and
+	  {Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG}
+	  then %cons
+	  {Temporary_Parthood with s |-> ASO
+	   and 
+	   {
+	    free type ASO ::= sort SC | sort SAG
+	   }}}}
+	then %cons
+	Temporary_Parthood with s |-> SOB 
+	and
+	{
+	 free type SOB ::= sort ASO | sort NASO}
+       }
+       and
+       {
+	Time_Mereology then %cons 
+	Temporary_Parthood with s |-> SAG then %cons
+	{Temporary_Parthood with s |-> APO and
+	 OneSide_Generic_Dependence with s1 |-> SAG, 
+	 s2 |-> APO}
+	then %cons
+	Temporary_Parthood with s |-> MOB and
+	OneSide_Specific_Dependence with s1 |-> MOB, 
+	s2 |-> APO
+       }
+       then %cons
+       Temporary_Parthood with s |-> NPOB
+       and
+       {
+	free type NPOB ::= sort SOB | sort MOB
+       }
+      }
+      then %cons
+      {
+       Temporary_Parthood with s |-> NPED
+       and
+       {
+	sort NPOB < NPED
+       }
+      }
+     }
+     and
+     {
+      {
+       {
+	{
+	 {
+	  {
+	   Time_Mereology then %cons 
+	   Temporary_Parthood with s |-> SAG then %cons
+	   {Temporary_Parthood with s |-> APO and
+	    OneSide_Generic_Dependence with s1 |-> SAG, 
+	    s2 |-> APO}
+	  }
+	  and
+	  {
+	   Time_Mereology then %cons
+           Temporary_Parthood with s |-> F then %cons
+	   {Temporary_Parthood with s |-> NAPO and
+	    OneSide_Generic_Dependence with s1 |-> F, 
+	    s2 |-> NAPO}
+	  }
+	  then %cons
+	  Temporary_Parthood with s |-> POB
+	  and
+	  {
+	   free type POB ::= sort APO | sort NAPO
+	  }
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> M
+	}
+	then %cons
+	{				
+	 Temporary_Parthood with s |-> PED
+	 and
+	 {
+	  free type PED ::= sort POB | sort M | sort F
+	 }
+	}
+       }
+       and
+       {
+	{
+	 {
+	  {{Time_Mereology then %cons
+	    Temporary_Parthood with s |-> SC then %cons
+	    {Temporary_Parthood with s |-> NASO and
+	     OneSide_Generic_Dependence 
+	     with s1 |-> NASO, s2 |-> SC}}
+	   and
+	   {{Time_Mereology then %cons 
+	     {Temporary_Parthood with s |-> SC}}
+	    and
+	    {Time_Mereology then %cons 
+	     Temporary_Parthood with s |-> SAG}
+	    then %cons
+	    {Temporary_Parthood with s |-> ASO
+	     and 
+	     {
+	      free type ASO ::= sort SC | sort SAG
+	     }}}}
+	  then %cons
+	  Temporary_Parthood with s |-> SOB 
+	  and
+	  {
+	   free type SOB ::= sort ASO | sort NASO}
+	 }
+	 and
+	 {
+	  Time_Mereology then %cons 
+	  Temporary_Parthood with s |-> SAG then %cons
+	  {Temporary_Parthood with s |-> APO and
+	   OneSide_Generic_Dependence with s1 |-> SAG, 
+	   s2 |-> APO}
+	  then %cons
+	  Temporary_Parthood with s |-> MOB and
+	  OneSide_Specific_Dependence with s1 |-> MOB, 
+	  s2 |-> APO
+	 }
+	 then %cons
+	 Temporary_Parthood with s |-> NPOB
+	 and
+	 {
+	  free type NPOB ::= sort SOB | sort MOB
+	 }
+	}
+	then %cons
+	{
+	 Temporary_Parthood with s |-> NPED
+	 and
+	 {
+	  sort NPOB < NPED
+	 }
+	}
+       }
+       then %cons
+       {
+	Temporary_Parthood with s |-> ED
+	and
+	{
+	 sort AS;
+	 free type ED ::= sort PED | sort NPED | sort AS
+	}
+       }
+      }
+      and
+      {
+       Classical_Extensional_Parthood with s |-> PD
+      }
+      then %cons
+      Participation
+     }
+end
+
+spec Constitution_Mod_Spec=
+     {TempParthoodPEDTempParthoodNPEDParticip
+      then %cons
+      Constitution_Spec with s |-> PD}
+     and
+     {
+      TempParthoodPEDTempParthoodNPEDParticip
+      then %cons
+      {Constantly_Generically_Constituted with 
+       s |-> PED, s1 |-> NAPO, s2 |-> M 	
+       and  Constantly_Generically_Constituted with 
+       s |-> PED, s1 |-> APO, s2 |-> NAPO}
+     }
+     and
+     {
+      TempParthoodPEDTempParthoodNPEDParticip
+      then %cons
+      {Constantly_Generically_Constituted with 
+       s |-> NPED, s1 |-> SC, s2 |-> SAG}
+     }
+end
+
+spec TempQuale_Mod_Spec=
+     {
+      {
+       Being_Present_Mod_Spec
+      }
+      and
+      {
+       BinTempDisS_Mod_Spec
+      }
+      then %cons
+      {Temporary_Quale_Spec with s1 |-> PR, 
+       s2 |-> PQ
+       and
+       {
+	sort S < PR
+       }
+      }
+     }
+     and
+     {
+      {
+       Being_Present_Mod_Spec
+      }
+      and
+      {
+       BinTempDisS_Mod_Spec
+      }
+      then %cons
+      {Temporary_Quale_Spec with s1 |-> AR, 
+       s2 |-> AQ}
+     }
+     and
+     {
+      {
+       Being_Present_Mod_Spec
+      }
+      and
+      {
+       BinTempDisS_Mod_Spec
+      }
+      then %cons
+      Temporary_Quale_Spec with s1 |-> S, s2 |-> SL
+     }
+end
+
+%%ArchSpec for Model
+
 arch spec PreDolce_Model =
      units
 	  TM                 : Time_Mereology;
-          ImmediateQuale     : Immediate_Quale given TM;
-	  TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
-          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
-          TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and
+          ImmediateQuale     : {
+				Time_Mereology
+				then %cons
+				Immediate_Quale} given TM;
+	  TempParthoodSC     : {Time_Mereology then %cons 
+				{Temporary_Parthood with s |-> SC}} given TM;
+          TempParthoodSAG    : {Time_Mereology then %cons 
+				Temporary_Parthood with s |-> SAG} given TM;
+          TempParthoodNASO   : {Time_Mereology then %cons
+				Temporary_Parthood with s |-> SC then %cons
+				{Temporary_Parthood with s |-> NASO and
                                OneSide_Generic_Dependence 
-				with s1 |-> NASO, s2 |-> SC} given
+				with s1 |-> NASO, s2 |-> SC}} given
                                TempParthoodSC;
-          TempParthoodAPO    : {Temporary_Parthood with s |-> APO and
-                               OneSide_Generic_Dependence with s1 |-> SAG, 
-				s2 |-> APO} given TempParthoodSAG;
-          TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
-          TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
-                               OneSide_Generic_Dependence with s1 |-> F, 
-				s2 |-> NAPO} given TempParthoodF;
-          TempParthoodASO    : {Temporary_Parthood with s |-> ASO
-				and 
-				{
-				 free type ASO ::= sort SC | sort SAG
-				}
-                               } 
-                                given TempParthoodSC, TempParthoodSAG;
-          TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
-                               OneSide_Specific_Dependence with s1 |-> MOB, 
-				s2 |-> APO} given
-                               TempParthoodAPO;
-	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB 
+          TempParthoodAPO    : {Time_Mereology then %cons 
+				Temporary_Parthood with s |-> SAG then %cons
+				{Temporary_Parthood with s |-> APO and
+				 OneSide_Generic_Dependence with s1 |-> SAG, 
+				s2 |-> APO}} given TempParthoodSAG;
+          TempParthoodF      : {Time_Mereology then %cons
+                                Temporary_Parthood with s |-> F} given TM;
+          TempParthoodNAPO   : {Time_Mereology then %cons
+                                Temporary_Parthood with s |-> F then %cons
+				{Temporary_Parthood with s |-> NAPO and
+				 OneSide_Generic_Dependence with s1 |-> F, 
+				s2 |-> NAPO}} given TempParthoodF;
+          TempParthoodASO    : {{Time_Mereology then %cons 
+				{Temporary_Parthood with s |-> SC}}
+				and
+				{Time_Mereology then %cons 
+				 Temporary_Parthood with s |-> SAG}
+				then %cons
+				{Temporary_Parthood with s |-> ASO
+				 and 
+				 {
+				  free type ASO ::= sort SC | sort SAG
+				 }}
+                               } given TempParthoodSC, TempParthoodSAG;
+          TempParthoodMOB    : {Time_Mereology then %cons 
+				Temporary_Parthood with s |-> SAG then %cons
+				{Temporary_Parthood with s |-> APO and
+				 OneSide_Generic_Dependence with s1 |-> SAG, 
+				s2 |-> APO}
+				then %cons
+				Temporary_Parthood with s |-> MOB and
+				OneSide_Specific_Dependence with s1 |-> MOB, 
+				s2 |-> APO} given TempParthoodAPO;
+	  TempParthoodSOB    : {{{Time_Mereology then %cons
+				  Temporary_Parthood with s |-> SC then %cons
+				  {Temporary_Parthood with s |-> NASO and
+				   OneSide_Generic_Dependence 
+				   with s1 |-> NASO, s2 |-> SC}}
+				 and
+				 {{Time_Mereology then %cons 
+				   {Temporary_Parthood with s |-> SC}}
+				  and
+				  {Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG}
+				  then %cons
+				  {Temporary_Parthood with s |-> ASO
+				   and 
+				   {
+				    free type ASO ::= sort SC | sort SAG
+				   }}}}
+				then %cons
+				Temporary_Parthood with s |-> SOB 
 				and
 				{
 				 free type SOB ::= sort ASO | sort NASO}
 			       } given TempParthoodNASO, TempParthoodASO;
-          TempParthoodPOB    : {Temporary_Parthood with s |-> POB
+          TempParthoodPOB    : {
+				{
+				 Time_Mereology then %cons 
+				 Temporary_Parthood with s |-> SAG then %cons
+				 {Temporary_Parthood with s |-> APO and
+				  OneSide_Generic_Dependence with s1 |-> SAG, 
+				  s2 |-> APO}
+				}
+				and
+				{
+				 Time_Mereology then %cons
+                                 Temporary_Parthood with s |-> F then %cons
+				 {Temporary_Parthood with s |-> NAPO and
+				  OneSide_Generic_Dependence with s1 |-> F, 
+				  s2 |-> NAPO}
+				}
+				then %cons
+				Temporary_Parthood with s |-> POB
 				and
 				{
 				 free type POB ::= sort APO | sort NAPO
 				}
 			       } given TempParthoodMOB, TempParthoodNAPO;
-          TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB
+          TempParthoodNPOB   : {
+				{
+				 {{Time_Mereology then %cons
+				   Temporary_Parthood with s |-> SC then %cons
+				   {Temporary_Parthood with s |-> NASO and
+				   OneSide_Generic_Dependence 
+				    with s1 |-> NASO, s2 |-> SC}}
+				  and
+				  {{Time_Mereology then %cons 
+				    {Temporary_Parthood with s |-> SC}}
+				   and
+				   {Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG}
+				   then %cons
+				   {Temporary_Parthood with s |-> ASO
+				    and 
+				    {
+				     free type ASO ::= sort SC | sort SAG
+				    }}}}
+				then %cons
+				Temporary_Parthood with s |-> SOB 
+				and
+				{
+				 free type SOB ::= sort ASO | sort NASO}
+				}
+				and
+				{
+				 Time_Mereology then %cons 
+				 Temporary_Parthood with s |-> SAG then %cons
+				 {Temporary_Parthood with s |-> APO and
+				  OneSide_Generic_Dependence with s1 |-> SAG, 
+				  s2 |-> APO}
+				 then %cons
+				 Temporary_Parthood with s |-> MOB and
+				 OneSide_Specific_Dependence with s1 |-> MOB, 
+				 s2 |-> APO
+				}
+				then %cons
+				Temporary_Parthood with s |-> NPOB
 				and
 				{
 				 free type NPOB ::= sort SOB | sort MOB
 				}
 			       } given TempParthoodSOB, TempParthoodMOB;
-          TempParthoodM      : {Temporary_Parthood with s |-> M} given
-                               TempParthoodPOB;
-          TempParthoodNPED   : {Temporary_Parthood with s |-> NPED
-				and
+          TempParthoodM      : {
 				{
+				 {
+				  Time_Mereology then %cons 
+				  Temporary_Parthood with s |-> SAG then %cons
+				  {Temporary_Parthood with s |-> APO and
+				   OneSide_Generic_Dependence with s1 |-> SAG, 
+				   s2 |-> APO}
+				 }
+				 and
+				 {
+				  Time_Mereology then %cons
+                                  Temporary_Parthood with s |-> F then %cons
+				  {Temporary_Parthood with s |-> NAPO and
+				   OneSide_Generic_Dependence with s1 |-> F, 
+				   s2 |-> NAPO}
+				 }
+				 then %cons
+				 Temporary_Parthood with s |-> POB
+				 and
+				 {
+				  free type POB ::= sort APO | sort NAPO
+				 }
+				}
+				then %cons
+				Temporary_Parthood with s |-> M} given
+			         TempParthoodPOB;
+          TempParthoodNPED   : {
+				{
+				 {
+				  {{Time_Mereology then %cons
+				    Temporary_Parthood with s |-> SC then %cons
+				    {Temporary_Parthood with s |-> NASO and
+				     OneSide_Generic_Dependence 
+				     with s1 |-> NASO, s2 |-> SC}}
+				   and
+				   {{Time_Mereology then %cons 
+				     {Temporary_Parthood with s |-> SC}}
+				    and
+				    {Time_Mereology then %cons 
+				     Temporary_Parthood with s |-> SAG}
+				    then %cons
+				    {Temporary_Parthood with s |-> ASO
+				     and 
+				     {
+				      free type ASO ::= sort SC | sort SAG
+				     }}}}
+				  then %cons
+				  Temporary_Parthood with s |-> SOB 
+				  and
+				  {
+				   free type SOB ::= sort ASO | sort NASO}
+				 }
+				 and
+				 {
+				  Time_Mereology then %cons 
+				  Temporary_Parthood with s |-> SAG then %cons
+				  {Temporary_Parthood with s |-> APO and
+				   OneSide_Generic_Dependence with s1 |-> SAG, 
+				   s2 |-> APO}
+				  then %cons
+				  Temporary_Parthood with s |-> MOB and
+				  OneSide_Specific_Dependence with s1 |-> MOB, 
+				  s2 |-> APO
+				 }
+				 then %cons
+				 Temporary_Parthood with s |-> NPOB
+				 and
+				 {
+				  free type NPOB ::= sort SOB | sort MOB
+				 }
+				}
+				then %cons
+				{
+				 Temporary_Parthood with s |-> NPED
+				 and
+				 {
 				 sort NPOB < NPED
+				 }
 				}
 			       } given TempParthoodNPOB;
-          TempParthoodPED    : {Temporary_Parthood with s |-> PED
-				and
+          TempParthoodPED    : {
 				{
-				 free type PED ::= sort POB | sort M | sort F
+				 {
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons
+                                   Temporary_Parthood with s |-> F then %cons
+				   {Temporary_Parthood with s |-> NAPO and
+				    OneSide_Generic_Dependence with s1 |-> F, 
+				    s2 |-> NAPO}
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> POB
+				  and
+				  {
+				   free type POB ::= sort APO | sort NAPO
+				  }
+				 }
+				 then %cons
+				 Temporary_Parthood with s |-> M
+				}
+				then %cons
+				{				
+				 Temporary_Parthood with s |-> PED
+				 and
+				 {
+				  free type PED ::= sort POB | sort M | sort F
+				 }
 				}
 			       } given TempParthoodM;
-          TempParthoodED     : {Temporary_Parthood with s |-> ED
+          TempParthoodED     : {
+				{
+				 {
+				  {
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons
+                                    Temporary_Parthood with s |-> F then %cons
+				    {Temporary_Parthood with s |-> NAPO and
+				     OneSide_Generic_Dependence with s1 |-> F, 
+				     s2 |-> NAPO}
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> POB
+				   and
+				   {
+				    free type POB ::= sort APO | sort NAPO
+				   }
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> M
+				 }
+				 then %cons
+				 {				
+				  Temporary_Parthood with s |-> PED
+				  and
+				  {
+				   free type PED ::= sort POB | sort M | sort F
+				  }
+				 }
+				}
 				and
 				{
-				 free type ED ::= sort PED | sort NPED | sort AS
+				 {
+				  {
+				   {{Time_Mereology then %cons
+				     Temporary_Parthood with s |-> SC then %cons
+				     {Temporary_Parthood with s |-> NASO and
+				      OneSide_Generic_Dependence 
+				      with s1 |-> NASO, s2 |-> SC}}
+				    and
+				    {{Time_Mereology then %cons 
+				      {Temporary_Parthood with s |-> SC}}
+				    and
+				     {Time_Mereology then %cons 
+				      Temporary_Parthood with s |-> SAG}
+				     then %cons
+				     {Temporary_Parthood with s |-> ASO
+				      and 
+				      {
+				       free type ASO ::= sort SC | sort SAG
+				      }}}}
+				   then %cons
+				   Temporary_Parthood with s |-> SOB 
+				   and
+				   {
+				    free type SOB ::= sort ASO | sort NASO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   then %cons
+				   Temporary_Parthood with s |-> MOB and
+				   OneSide_Specific_Dependence with s1 |-> MOB, 
+				   s2 |-> APO
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> NPOB
+				  and
+				  {
+				   free type NPOB ::= sort SOB | sort MOB
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> NPED
+				  and
+				  {
+				   sort NPOB < NPED
+				  }
+				 }
+				}
+				then %cons
+				{
+				 Temporary_Parthood with s |-> ED
+				 and
+				 {
+				  sort AS;
+				  free type ED ::= sort PED | sort NPED | sort AS
+				 }
 				}
 			       } given TempParthoodPED, TempParthoodNPED;
 	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD};
           ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR};
-          Particip           : Participation given TempParthoodED, 
-			        ClassExtParthoodPD;
-          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given TempParthoodED;
-	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED} given TempParthoodED;
-          DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
-				s2 |-> PD} given 
-                               Particip, ImmediateQuale;
-	  BeingPresentEDorDP : {Being_Present with s |-> EDorDPorQ
+          Particip           : {
+				{
+				 {
+				  {
+				   {
+				    {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				     s2 |-> APO}
+				    }
+				    and
+				    {
+				     Time_Mereology then %cons
+                                     Temporary_Parthood with s |-> F then %cons
+				     {Temporary_Parthood with s |-> NAPO and
+				      OneSide_Generic_Dependence with s1 |-> F, 
+				      s2 |-> NAPO}
+				    }
+				    then %cons
+				    Temporary_Parthood with s |-> POB
+				    and
+				    {
+				     free type POB ::= sort APO | sort NAPO
+				    }
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> M
+				  }
+				  then %cons
+				  {				
+				   Temporary_Parthood with s |-> PED
+				   and
+				   {
+				    free type PED ::= sort POB | sort M | sort F
+				   }
+				  }
+				 }
+				 and
+				 {
+				  {
+				   {
+				    {{Time_Mereology then %cons
+				      Temporary_Parthood with s |-> SC then %cons
+				      {Temporary_Parthood with s |-> NASO and
+				       OneSide_Generic_Dependence 
+				       with s1 |-> NASO, s2 |-> SC}}
+				     and
+				     {{Time_Mereology then %cons 
+				       {Temporary_Parthood with s |-> SC}}
+				      and
+				      {Time_Mereology then %cons 
+				       Temporary_Parthood with s |-> SAG}
+				      then %cons
+				      {Temporary_Parthood with s |-> ASO
+				       and 
+				       {
+					free type ASO ::= sort SC | sort SAG
+				       }}}}
+				    then %cons
+				    Temporary_Parthood with s |-> SOB 
+				    and
+				    {
+				     free type SOB ::= sort ASO | sort NASO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				     s2 |-> APO}
+				    then %cons
+				    Temporary_Parthood with s |-> MOB and
+				    OneSide_Specific_Dependence with s1 |-> MOB, 
+				    s2 |-> APO
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> NPOB
+				   and
+				   {
+				    free type NPOB ::= sort SOB | sort MOB
+				   }
+				  }
+				  then %cons
+				  {
+				   Temporary_Parthood with s |-> NPED
+				   and
+				   {
+				    sort NPOB < NPED
+				   }
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> ED
+				  and
+				  {
+				   sort AS;
+				   free type ED ::= sort PED | sort NPED | sort AS
+				  }
+				 }
+				}
 				and
 				{
-				 free type Q ::= sort TQ | sort PQ | sort AQ;
-				 free type EDorPDorQ ::= sort Q | sort PD | sort
-				 ED
+				 Classical_Extensional_Parthood with s |-> PD
 				}
+				then %cons
+				Participation} given TempParthoodED, 
+			        ClassExtParthoodPD;
+          DependenceAQNPED   : {
+				{
+				{
+				 {
+				  {
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons
+                                    Temporary_Parthood with s |-> F then %cons
+				    {Temporary_Parthood with s |-> NAPO and
+				     OneSide_Generic_Dependence with s1 |-> F, 
+				     s2 |-> NAPO}
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> POB
+				   and
+				   {
+				    free type POB ::= sort APO | sort NAPO
+				   }
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> M
+				 }
+				 then %cons
+				 {				
+				  Temporary_Parthood with s |-> PED
+				  and
+				  {
+				   free type PED ::= sort POB | sort M | sort F
+				  }
+				 }
+				}
+				and
+				{
+				 {
+				  {
+				   {{Time_Mereology then %cons
+				     Temporary_Parthood with s |-> SC then %cons
+				     {Temporary_Parthood with s |-> NASO and
+				      OneSide_Generic_Dependence 
+				      with s1 |-> NASO, s2 |-> SC}}
+				    and
+				    {{Time_Mereology then %cons 
+				      {Temporary_Parthood with s |-> SC}}
+				     and
+				     {Time_Mereology then %cons 
+				      Temporary_Parthood with s |-> SAG}
+				     then %cons
+				     {Temporary_Parthood with s |-> ASO
+				      and 
+				      {
+				       free type ASO ::= sort SC | sort SAG
+				      }}}}
+				   then %cons
+				   Temporary_Parthood with s |-> SOB 
+				   and
+				   {
+				    free type SOB ::= sort ASO | sort NASO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   then %cons
+				   Temporary_Parthood with s |-> MOB and
+				   OneSide_Specific_Dependence with s1 |-> MOB, 
+				   s2 |-> APO
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> NPOB
+				  and
+				  {
+				   free type NPOB ::= sort SOB | sort MOB
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> NPED
+				  and
+				  {
+				   sort NPOB < NPED
+				  }
+				 }
+				}
+				then %cons
+				{
+				 Temporary_Parthood with s |-> ED
+				 and
+				 {
+				  sort AS;
+				  free type ED ::= sort PED | sort NPED | sort AS
+				 }
+				}
+				}
+				then %cons
+				Mutual_Specific_Dependence with s1 |-> AQ, 
+				s2 |-> NPED} given TempParthoodED;
+	  DependencePQPED    : {
+				{
+				 {
+				 {
+				  {
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons
+                                    Temporary_Parthood with s |-> F then %cons
+				    {Temporary_Parthood with s |-> NAPO and
+				     OneSide_Generic_Dependence with s1 |-> F, 
+				     s2 |-> NAPO}
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> POB
+				   and
+				   {
+				    free type POB ::= sort APO | sort NAPO
+				   }
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> M
+				 }
+				 then %cons
+				 {				
+				  Temporary_Parthood with s |-> PED
+				  and
+				  {
+				   free type PED ::= sort POB | sort M | sort F
+				  }
+				 }
+				}
+				and
+				{
+				 {
+				  {
+				   {{Time_Mereology then %cons
+				     Temporary_Parthood with s |-> SC then %cons
+				     {Temporary_Parthood with s |-> NASO and
+				      OneSide_Generic_Dependence 
+				      with s1 |-> NASO, s2 |-> SC}}
+				    and
+				    {{Time_Mereology then %cons 
+				      {Temporary_Parthood with s |-> SC}}
+				     and
+				     {Time_Mereology then %cons 
+				      Temporary_Parthood with s |-> SAG}
+				     then %cons
+				     {Temporary_Parthood with s |-> ASO
+				      and 
+				      {
+				       free type ASO ::= sort SC | sort SAG
+				      }}}}
+				   then %cons
+				   Temporary_Parthood with s |-> SOB 
+				   and
+				   {
+				    free type SOB ::= sort ASO | sort NASO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   then %cons
+				   Temporary_Parthood with s |-> MOB and
+				   OneSide_Specific_Dependence with s1 |-> MOB, 
+				   s2 |-> APO
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> NPOB
+				  and
+				  {
+				   free type NPOB ::= sort SOB | sort MOB
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> NPED
+				  and
+				  {
+				   sort NPOB < NPED
+				  }
+				 }
+				}
+								then %cons
+				{
+				 Temporary_Parthood with s |-> ED
+				 and
+				 {
+				  sort AS;
+				  free type ED ::= sort PED | sort NPED | sort AS
+				 }
+				}
+				}
+				then %cons
+				Mutual_Specific_Dependence with s1 |-> PQ, 
+				s2 |-> PED} given TempParthoodED;
+          DependenceTQPD     : {
+				{
+				{
+				 {
+				  {
+				   {
+				    {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				     s2 |-> APO}
+				    }
+				    and
+				    {
+				     Time_Mereology then %cons
+                                     Temporary_Parthood with s |-> F then %cons
+				     {Temporary_Parthood with s |-> NAPO and
+				      OneSide_Generic_Dependence with s1 |-> F, 
+				      s2 |-> NAPO}
+				    }
+				    then %cons
+				    Temporary_Parthood with s |-> POB
+				    and
+				    {
+				     free type POB ::= sort APO | sort NAPO
+				    }
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> M
+				  }
+				  then %cons
+				  {				
+				   Temporary_Parthood with s |-> PED
+				   and
+				   {
+				    free type PED ::= sort POB | sort M | sort F
+				   }
+				  }
+				 }
+				 and
+				 {
+				  {
+				   {
+				    {{Time_Mereology then %cons
+				      Temporary_Parthood with s |-> SC then %cons
+				      {Temporary_Parthood with s |-> NASO and
+				       OneSide_Generic_Dependence 
+				       with s1 |-> NASO, s2 |-> SC}}
+				     and
+				     {{Time_Mereology then %cons 
+				       {Temporary_Parthood with s |-> SC}}
+				      and
+				      {Time_Mereology then %cons 
+				       Temporary_Parthood with s |-> SAG}
+				      then %cons
+				      {Temporary_Parthood with s |-> ASO
+				       and 
+				       {
+					free type ASO ::= sort SC | sort SAG
+				       }}}}
+				    then %cons
+				    Temporary_Parthood with s |-> SOB 
+				    and
+				    {
+				     free type SOB ::= sort ASO | sort NASO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				     s2 |-> APO}
+				    then %cons
+				    Temporary_Parthood with s |-> MOB and
+				    OneSide_Specific_Dependence with s1 |-> MOB, 
+				    s2 |-> APO
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> NPOB
+				   and
+				   {
+				    free type NPOB ::= sort SOB | sort MOB
+				   }
+				  }
+				  then %cons
+				  {
+				   Temporary_Parthood with s |-> NPED
+				   and
+				   {
+				    sort NPOB < NPED
+				   }
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> ED
+				  and
+				  {
+				   sort AS;
+				   free type ED ::= sort PED | sort NPED | sort AS
+				  }
+				 }
+				}
+				and
+				{
+				 Classical_Extensional_Parthood with s |-> PD
+				}
+				then %cons
+				Participation
+				}
+				and
+				{
+				 Time_Mereology
+				 then %cons
+				 Immediate_Quale
+				}
+				then %cons
+				Mutual_Specific_Dependence with s1 |-> TQ, 
+				s2 |-> PD} given Particip, ImmediateQuale;
+	  BeingPresentEDorDP : {
+				Being_Present_Mod_Spec
 			       } given DependenceTQPD, DependencePQPED, 
 			       DependenceAQNPED;
-	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
-				s2 |-> SL} given DependencePQPED;
-          BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, 
-				s2 |-> PQ
-				and 
+	  BinTempDisS	     : {
 				{
-				 sort S < PR
+				{
+				 {
+				 {
+				  {
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons
+                                    Temporary_Parthood with s |-> F then %cons
+				    {Temporary_Parthood with s |-> NAPO and
+				     OneSide_Generic_Dependence with s1 |-> F, 
+				     s2 |-> NAPO}
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> POB
+				   and
+				   {
+				    free type POB ::= sort APO | sort NAPO
+				   }
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> M
+				 }
+				 then %cons
+				 {				
+				  Temporary_Parthood with s |-> PED
+				  and
+				  {
+				   free type PED ::= sort POB | sort M | sort F
+				  }
+				 }
 				}
-                               };
-          ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} 
-                                given BinTempDisS;
-	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, 
+				and
+				{
+				 {
+				  {
+				   {{Time_Mereology then %cons
+				     Temporary_Parthood with s |-> SC then %cons
+				     {Temporary_Parthood with s |-> NASO and
+				      OneSide_Generic_Dependence 
+				      with s1 |-> NASO, s2 |-> SC}}
+				    and
+				    {{Time_Mereology then %cons 
+				      {Temporary_Parthood with s |-> SC}}
+				     and
+				     {Time_Mereology then %cons 
+				      Temporary_Parthood with s |-> SAG}
+				     then %cons
+				     {Temporary_Parthood with s |-> ASO
+				      and 
+				      {
+				       free type ASO ::= sort SC | sort SAG
+				      }}}}
+				   then %cons
+				   Temporary_Parthood with s |-> SOB 
+				   and
+				   {
+				    free type SOB ::= sort ASO | sort NASO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   then %cons
+				   Temporary_Parthood with s |-> MOB and
+				   OneSide_Specific_Dependence with s1 |-> MOB, 
+				   s2 |-> APO
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> NPOB
+				  and
+				  {
+				   free type NPOB ::= sort SOB | sort MOB
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> NPED
+				  and
+				  {
+				   sort NPOB < NPED
+				  }
+				 }
+				}
+								then %cons
+				{
+				 Temporary_Parthood with s |-> ED
+				 and
+				 {
+				  sort AS;
+				  free type ED ::= sort PED | sort NPED | sort AS
+				 }
+				}
+				}
+				then %cons
+				Mutual_Specific_Dependence with s1 |-> PQ, 
+				s2 |-> PED
+				}
+				then %cons
+				Binary_Temporal_Dissective with s1 |-> S, 
+				s2 |-> SL} given DependencePQPED;
+%[          BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, ]%
+%[				s2 |-> PQ]%
+%[				and ]%
+%[				{]%
+%[				 sort S < PR]%
+%[				}]%
+%[                               };]%
+%[          ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} ]%
+%[                                given BinTempDisS;]%
+	  BinTempDisAR	     : {
+				{
+				{
+				{
+				 {
+				  {
+				   {
+				    Time_Mereology then %cons 
+				    Temporary_Parthood with s |-> SAG then %cons
+				    {Temporary_Parthood with s |-> APO and
+				     OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   }
+				   and
+				   {
+				    Time_Mereology then %cons
+                                    Temporary_Parthood with s |-> F then %cons
+				    {Temporary_Parthood with s |-> NAPO and
+				     OneSide_Generic_Dependence with s1 |-> F, 
+				     s2 |-> NAPO}
+				   }
+				   then %cons
+				   Temporary_Parthood with s |-> POB
+				   and
+				   {
+				    free type POB ::= sort APO | sort NAPO
+				   }
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> M
+				 }
+				 then %cons
+				 {				
+				  Temporary_Parthood with s |-> PED
+				  and
+				  {
+				   free type PED ::= sort POB | sort M | sort F
+				  }
+				 }
+				}
+				and
+				{
+				 {
+				  {
+				   {{Time_Mereology then %cons
+				     Temporary_Parthood with s |-> SC then %cons
+				     {Temporary_Parthood with s |-> NASO and
+				      OneSide_Generic_Dependence 
+				      with s1 |-> NASO, s2 |-> SC}}
+				    and
+				    {{Time_Mereology then %cons 
+				      {Temporary_Parthood with s |-> SC}}
+				     and
+				     {Time_Mereology then %cons 
+				      Temporary_Parthood with s |-> SAG}
+				     then %cons
+				     {Temporary_Parthood with s |-> ASO
+				      and 
+				      {
+				       free type ASO ::= sort SC | sort SAG
+				      }}}}
+				   then %cons
+				   Temporary_Parthood with s |-> SOB 
+				   and
+				   {
+				    free type SOB ::= sort ASO | sort NASO}
+				  }
+				  and
+				  {
+				   Time_Mereology then %cons 
+				   Temporary_Parthood with s |-> SAG then %cons
+				   {Temporary_Parthood with s |-> APO and
+				    OneSide_Generic_Dependence with s1 |-> SAG, 
+				    s2 |-> APO}
+				   then %cons
+				   Temporary_Parthood with s |-> MOB and
+				   OneSide_Specific_Dependence with s1 |-> MOB, 
+				   s2 |-> APO
+				  }
+				  then %cons
+				  Temporary_Parthood with s |-> NPOB
+				  and
+				  {
+				   free type NPOB ::= sort SOB | sort MOB
+				  }
+				 }
+				 then %cons
+				 {
+				  Temporary_Parthood with s |-> NPED
+				  and
+				  {
+				   sort NPOB < NPED
+				  }
+				 }
+				}
+				then %cons
+				{
+				 Temporary_Parthood with s |-> ED
+				 and
+				 {
+				  sort AS;
+				  free type ED ::= sort PED | sort NPED | sort AS
+				 }
+				}
+				}
+				then %cons
+				Mutual_Specific_Dependence with s1 |-> AQ, 
+				s2 |-> NPED
+				}
+				and
+				{
+				 Classical_Extensional_Parthood with s |-> AR
+				}
+				then %cons
+				Binary_Temporal_Dissective with s1 |-> AR, 
 				s2 |-> AQ} given DependenceAQNPED, 
 			        ClassExtParthoodAR;
           %%Constitution
-          ConstitutionPD     : {Constitution_Spec with s |-> PD} given 
+          ConstitutionPD     : {TempParthoodPEDTempParthoodNPEDParticip
+				then %cons
+				Constitution_Spec with s |-> PD} given 
                                 TempParthoodPED, TempParthoodNPED, Particip;
-          ConstitutionPED    : {Constantly_Generically_Constituted with 
-				s |-> PED, s1 |-> NAPO, s2 |-> M 	
-                               and  Constantly_Generically_Constituted with 
-				s |-> PED, s1 |-> APO, s2 |-> NAPO}
+          ConstitutionPED    : {
+				TempParthoodPEDTempParthoodNPEDParticip
+				then %cons
+				{Constantly_Generically_Constituted with 
+				 s |-> PED, s1 |-> NAPO, s2 |-> M 	
+				 and  Constantly_Generically_Constituted with 
+				 s |-> PED, s1 |-> APO, s2 |-> NAPO}}
                                given TempParthoodPED, TempParthoodNPED, 
 			       Particip;
-          ConstitutionNPED   : {Constantly_Generically_Constituted with 
-				s |-> NPED, s1 |-> SC, s2 |-> SAG} given 
+          ConstitutionNPED   : {TempParthoodPEDTempParthoodNPEDParticip
+				then %cons
+				{Constantly_Generically_Constituted with 
+				 s |-> NPED, s1 |-> SC, s2 |-> SAG}} given 
                                TempParthoodPED, TempParthoodNPED, Particip;
           Constitution       = ConstitutionPD and ConstitutionPED and 
 						  ConstitutionNPED;
           %% Temporary_Quale
-	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, 
-				s2 |-> PQ} given BeingPresentEDorDP, 
+	  TempQualePR        : {
+				{
+				 Being_Present_Mod_Spec
+				}
+				and
+				{
+				 BinTempDisS_Mod_Spec
+				}
+				then %cons
+				{Temporary_Quale_Spec with s1 |-> PR, 
+				s2 |-> PQ
+				and
+				{
+				 sort S < PR
+				}
+                               }} given BeingPresentEDorDP, BinTempDisS;
+          TempQualeAR        : {
+				{
+				 Being_Present_Mod_Spec
+				}
+				and
+				{
+				 BinTempDisS_Mod_Spec
+				}
+				then %cons
+				{Temporary_Quale_Spec with s1 |-> AR, 
+				s2 |-> AQ}} given BeingPresentEDorDP, 
 			        BinTempDisS;
-          TempQualeAR        : {Temporary_Quale_Spec with s1 |-> AR, 
-				s2 |-> AQ} given BeingPresentEDorDP, 
-			        BinTempDisS;
-          TempQualeS         : {Temporary_Quale_Spec with s1 |-> S, s2 |-> SL}
+          TempQualeS         : {
+				{
+				 Being_Present_Mod_Spec
+				}
+				and
+				{
+				 BinTempDisS_Mod_Spec
+				}
+				then %cons
+				Temporary_Quale_Spec with s1 |-> S, s2 |-> SL}
                                 given BeingPresentEDorDP, BinTempDisS;
           TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
           %% Direct Quality
-          DirectQuality      : Direct_Quality given BeingPresentEDorDP, 
+          DirectQuality      : {
+				{
+				 Being_Present_Mod_Spec
+				}
+				and
+				{
+				 BinTempDisS_Mod_Spec
+				}
+				then %cons
+				Direct_Quality} given BeingPresentEDorDP, 
 			        BinTempDisS;
      result BeingPresentEDorDP and Constitution and DirectQuality and 
 						    TempQuale             
@@ -445,7 +2188,33 @@ end
 arch spec Dolce_Model =
      units
 	  PreDolce : arch spec PreDolce_Model;
-	  Tax      : Taxonomy given PreDolce
+	  Tax      : {
+		      {
+		       Being_Present_Mod_Spec
+		      }
+		      and
+		      {
+		       Constitution_Mod_Spec
+		      }
+		      and
+		      {
+		       {
+			Being_Present_Mod_Spec
+		       }
+		       and
+		       {
+			BinTempDisS_Mod_Spec
+		       }
+		       then %cons
+		       Direct_Quality
+		      }
+		      and
+		      {
+		       TempQuale_Mod_Spec
+		      }
+		      then %cons
+		      Taxonomy
+		     } given PreDolce
      result Tax
 end
 
