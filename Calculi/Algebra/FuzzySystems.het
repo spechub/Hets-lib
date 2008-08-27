@@ -32,9 +32,69 @@ then
 spec TNorm = MonotoneJunctor with J |-> T
 then forall x : UnitInterval . T(x, 1) = x %(boundary_1)%
 
+%% standard or Zadeh T-Norm
+spec T_Z = TNorm
+then forall x, y : UnitInterval . T(x, y) = min(x, y) as UnitInterval
+
+%% probabilistic conjunction
+spec T_P = TNorm
+then forall x, y : UnitInterval . T(x, y) = x * y as UnitInterval
+
+%% bounded difference
+spec T_B = TNorm
+then forall x, y : UnitInterval . T(x, y) = max(0, (x + y) - 1) as UnitInterval
+
+%% drastic conjunction
+spec T_D = TNorm
+then forall x, y : UnitInterval
+     . T(x, y) = x when y = 1 else y when x = 1 else 0
+
+spec TNormProps = TNorm
+and  T_Z with T |-> T_Z
+and  T_P with T |-> T_P
+and  T_B with T |-> T_B
+and  T_D with T |-> T_D
+then %implies
+     vars x, y : UnitInterval
+     . T_P(x, y) <= T_Z(x, y)
+     . T_B(x, y) <= T_P(x, y)
+     . T_D(x, y) <= T_B(x, y)
+     . T_D(x, y) <= T(x, y)
+     . T(x, y) <= T_Z(x, y)
+
 %% a t-conorm has the boundary 0 and is called C
 spec TConorm = MonotoneJunctor with J |-> C
 then forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
+
+%% standard or Zadeh disjunction
+spec C_Z = TConorm
+then forall x, y : UnitInterval . C(x, y) = max(x, y) as UnitInterval
+
+%% probabilistic disjunction or algebraic sum
+spec C_P = TConorm
+then forall x, y : UnitInterval . C(x, y) = ((x + y) - x * y) as UnitInterval
+
+%% bounded sum
+spec C_B = TConorm
+then forall x, y : UnitInterval . C(x, y) = min(1, x + y) as UnitInterval
+
+%% drastic conjunction
+spec C_D = TConorm
+then forall x, y : UnitInterval
+     . C(x, y) = x when y = 0 else y when x = 0 else 1
+
+spec TConormProps = TConorm
+and  C_Z with C |-> C_Z
+and  C_P with C |-> C_P
+and  C_B with C |-> C_B
+and  C_D with C |-> C_D
+then %implies
+     vars x, y : UnitInterval
+     . C_Z(x, y) <= C_P(x, y)
+     . C_P(x, y) <= C_B(x, y)
+     . C_B(x, y) <= C_D(x, y)
+     . C(x, y) <= C_D(x, y)
+     . C_Z(x, y) <= C(x, y)
 
 %% an underspecified complement over the unit interval
 spec Complement = UnitInterval
@@ -71,6 +131,11 @@ then
 spec Intersection[TNorm][sort Universe] =
      LiftJunctor[TNorm fit J |-> T ][sort Universe]
      with liftedJunctor |-> __intersection__
+
+%% a T-Conorm lifted to a union function
+spec Union[TConorm][sort Universe] =
+     LiftJunctor[TConorm fit J |-> C ][sort Universe]
+     with liftedJunctor |-> __union__
 
 %% get the maximal confidence over the range
 spec MaxOnRange[sort Universe] given UnitInterval = FuzzySet[sort Universe]
