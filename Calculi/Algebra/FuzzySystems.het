@@ -63,7 +63,7 @@ then
 spec LiftJunctor[MonotoneJunctor][sort Universe] given UnitInterval =
      FuzzySet[sort Universe]
 then
-     op liftedJunctor : FuzzySet * FuzzySet -> FuzzySet
+     op liftedJunctor : FuzzySet * FuzzySet -> FuzzySet, comm, assoc %implied
      vars x : Universe; A, B: FuzzySet
      . liftedJunctor(A, B) @ x = J(A @ x, B @ x)
 
