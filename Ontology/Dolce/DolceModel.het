@@ -378,14 +378,17 @@ arch spec PreDolce_Model =
 				 free type ED ::= sort PED | sort NPED | sort AS
 				}
 			       } given TempParthoodPED, TempParthoodNPED;
-	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD};
-          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR};
-          Particip           : Participation given TempParthoodED, 
-			        ClassExtParthoodPD;
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
 				s2 |-> NPED} given TempParthoodED;
 	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
 				s2 |-> PED} given TempParthoodED;
+	  ClassExtParthoodPD : {Classical_Extensional_Parthood with s |-> PD}
+                                given TempParthoodED;
+          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR
+				then
+				. exists x:AR. x in AR
+			       } given DependenceAQNPED;
+          Particip           : Participation given ClassExtParthoodPD;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} given 
                                Particip, ImmediateQuale;

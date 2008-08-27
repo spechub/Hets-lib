@@ -174,29 +174,32 @@ spec TempParthoodED_Cons=
      } 
 end
 
-%%model with up-to 4 points can be found
-spec ClassExtParthoodPD_Cons=
-     {Classical_Extensional_Parthood with s |-> PD}
-end
-
-%%model with up-to 4 points can be found
-spec ClassExtParthoodAR_Cons=
-     Classical_Extensional_Parthood with s |-> AR
-end
-
-spec Particip_Cons=
-     TempParthoodED_Cons
-     and
-     ClassExtParthoodPD_Cons
-     then %cons
-     Participation
-end
 
 spec DependenceAQNPED_Cons=
      TempParthoodED_Cons
      then %cons
      Mutual_Specific_Dependence with s1 |-> AQ, 
 				s2 |-> NPED
+end
+
+spec ClassExtParthoodPD_Cons=
+     TempParthoodED_Cons
+     then %cons
+     {Classical_Extensional_Parthood with s |-> PD}
+end
+
+spec ClassExtParthoodAR_Cons=
+     DependenceAQNPED_Cons
+     then %cons
+     Classical_Extensional_Parthood with s |-> AR
+then
+     . exists x:AR. x in AR
+end
+
+spec Particip_Cons=
+     ClassExtParthoodPD_Cons
+     then %cons
+     Participation
 end
 
 spec DependencePQPED_Cons=
