@@ -13,45 +13,34 @@ version 0.1
 %display  __subseteq__     %LATEX __\subseteq__
 %display  __subset__       %LATEX __\subset__
 
-from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
+from Basic/Numbers get Rat
 
-%{ an underspecified unit interval with a total order plus 0 and 1
-   as minimum resp. maximum }%
-spec UnitInterval = TotalOrder with Elem |-> UnitInterval
-then
-     ops 0 : UnitInterval; 1 : UnitInterval
-     var x : UnitInterval
-     . 0 <= x %(ge_0)%
-     . x <= 1 %(le_1)%
+%% take a fixed, rational unit interval
+spec UnitInterval = Rat
+then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
+     ops 0, 1 : UnitInterval
 
 %{ any monotone, symmetric and associative, binary junctor called J
    as basis to define t-norms and t-conorms }%
-spec MonotoneJunctor[UnitInterval] =
+spec MonotoneJunctor = UnitInterval
+then
      op J : UnitInterval * UnitInterval -> UnitInterval, comm, assoc
      vars x, y, z, w : UnitInterval
      . x <= y /\ w <= z => J(x, w) <= J(y, z) %(monotonicity)%
 
 %% a t-norm has the boundary 1 and is called T
-spec TNorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> T
-then
-     forall x : UnitInterval . T(x, 1) = x %(boundary_1)%
+spec TNorm = MonotoneJunctor with J |-> T
+then forall x : UnitInterval . T(x, 1) = x %(boundary_1)%
 
 %% a t-conorm has the boundary 0 and is called C
-spec TConorm[UnitInterval] = MonotoneJunctor[UnitInterval] with J |-> C
-then
-     forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
+spec TConorm = MonotoneJunctor with J |-> C
+then forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
 
-%% an underspecified complement over a unit interval
-spec Complement[UnitInterval] =
-     op compl __ : UnitInterval -> UnitInterval
+%% an underspecified complement over the unit interval
+spec Complement = UnitInterval
+then op compl __ : UnitInterval -> UnitInterval
      . compl 0 = 1
      . compl 1 = 0
-
-%% putting t-norm and t-conorm together
-spec Junctors[UnitInterval] = TNorm[UnitInterval]
-and  TConorm[UnitInterval]
-%% if the complement and further properties are needed here is open
-and  Complement[UnitInterval]
 
 %% abstract total functions with application and extensionality
 spec Function[sort Domain][sort Codomain] =
@@ -62,44 +51,36 @@ spec Function[sort Domain][sort Codomain] =
      . A = B <=> forall x : Domain . A @ x = B @ x %(extensionality)%
 
 %% type-1 fuzzy sets over a universe and an underspecified unit interval
-spec FuzzySet[Junctors[UnitInterval]][sort Universe] =
-     ExtTotalOrder[UnitInterval fit Elem |-> UnitInterval]
-     with min : UnitInterval * UnitInterval -> UnitInterval
-and  Function[sort Universe][sort UnitInterval]
-     with Function |-> FuzzySet
+spec FuzzySet[sort Universe] given UnitInterval =
+     Function[sort Universe][sort UnitInterval] with Function |-> FuzzySet
 then
-     ops __intersection__, __union__, minimum : FuzzySet * FuzzySet -> FuzzySet,
-         comm, assoc %implied
      preds __subseteq__, __subset__ : FuzzySet * FuzzySet
-     op complement __ : FuzzySet -> FuzzySet
      vars x : Universe; A, B: FuzzySet
      . A subseteq B <=> forall x : Universe . A @ x <= B @ x
      . A subset B <=> not A = B /\ A subseteq B
-     . (A intersection B) @ x = T(A @ x, B @ x)
-     . (A union B) @ x = C(A @ x, B @ x)
-     . minimum(A, B) @ x = min(A @ x, B @ x)
-     . complement A @ x = compl (A @ x)
 
-%% now fix the unit interval for more concrete fuzzy sets
-from Basic/Numbers get Rat
+%% pointwise lift a norm to a function over fuzzy sets
+spec LiftJunctor[MonotoneJunctor][sort Universe] given UnitInterval =
+     FuzzySet[sort Universe]
+then
+     op liftedJunctor : FuzzySet * FuzzySet -> FuzzySet
+     vars x : Universe; A, B: FuzzySet
+     . liftedJunctor(A, B) @ x = J(A @ x, B @ x)
 
-spec ConcretUnitInterval = Rat
-then sort UnitInterval = { x : Rat . 0 <= x /\ x <= 1 }
-
-%% only the sort Universe is a formal parameter now
-spec ConcretFuzzySet [sort Universe] given ConcretUnitInterval =
-     FuzzySet[Junctors[UnitInterval]][sort Universe]
+%% a T-Norm lifted to an intersection function
+spec Intersection[TNorm][sort Universe] =
+     LiftJunctor[TNorm fit J |-> T ][sort Universe]
+     with liftedJunctor |-> __intersection__
 
 %% get the maximal confidence over the range
-spec MaxOnRange[sort Universe] given ConcretUnitInterval =
-     ConcretFuzzySet[sort Universe]
+spec MaxOnRange[sort Universe] given UnitInterval = FuzzySet[sort Universe]
 then op maxOnRange : FuzzySet -> UnitInterval
      var P : FuzzySet; m : UnitInterval
      . maxOnRange(P) = m <=> exists y : Universe . forall x : Universe .
        P @ x <= m /\ P @ y = m
 
 %% define various subsorts of functions from Rat
-spec PreFuzzyNumber = ConcretFuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
+spec PreFuzzyNumber = FuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
 
 spec QuasiFuzzyNumber = PreFuzzyNumber
 then sort QuasiFuzzyNumber =
@@ -114,8 +95,7 @@ then sort FuzzyNumber =
        . maxOnRange(x) = 1 %(normalized)% }
 
 %%--------------------- Singletons -------------------------
-spec Sing[sort Universe] given ConcretUnitInterval =
-     ConcretFuzzySet[sort Universe]
+spec Sing[sort Universe] given UnitInterval = FuzzySet[sort Universe]
 then op Sing __ : Universe -> FuzzySet
      var r, s : Universe
      . Sing r @ s = 1 when r = s else 0
@@ -153,7 +133,7 @@ then op triangle : Rat * Rat * Rat ->? FuzzyNumber
 %%--------------------- Linguistic Variables ---------------
 
 %% values of a universe sort with a confidence
-spec Value [sort Universe] given ConcretUnitInterval =
+spec Value [sort Universe] given UnitInterval =
      free type Value ::=
           ConfValue (rawValue : Universe; cf : UnitInterval)
 
@@ -184,13 +164,13 @@ spec LinguisticTerms = LinguisticTerm
 then Set[sort Value] with pred __eps__ : Value * Set[Value]
 
 %% map term strings to fuzzy sets
-spec ConfidenceMap[sort Universe] given ConcretUnitInterval = TS
-and  ConcretFuzzySet[sort Universe]
+spec ConfidenceMap[sort Universe] given UnitInterval = TS
+and  FuzzySet[sort Universe]
 then Map[sort TS][sort FuzzySet]
      with op lookup : TS * Map[TS, FuzzySet] ->? FuzzySet
 
 %% --------------------- Hedges ---------------------------
-spec Hedge = ConcretUnitInterval
+spec Hedge = UnitInterval
 then Function[sort UnitInterval][sort UnitInterval] with Function |-> Hedge
 
 %% examples are ^2 for "very" or ^1/3 for "slightly"
@@ -200,7 +180,7 @@ spec HedgeMap = HS and Hedge
 then Map[sort HS][sort Hedge]
 
 %% a linguistic variables over a universe
-spec LinguisticVariable[sort Universe] given ConcretUnitInterval = CS
+spec LinguisticVariable[sort Universe] given UnitInterval = CS
 and  LinguisticTerms and HedgeMap
 and  ConfidenceMap[sort Universe]
 then generated type LVar ::= LVar(
@@ -223,9 +203,9 @@ then generated type LVar ::= LVar(
 
 %%--------------------- Fuzzification ----------------------
 
-spec Fuzzify[sort Universe] given ConcretUnitInterval =
+spec Fuzzify[TNorm][sort Universe] given UnitInterval =
      LinguisticVariable[sort Universe]
-     with op __intersection__ : FuzzySet * FuzzySet -> FuzzySet
+and  Intersection[TNorm][sort Universe]
 and  MaxOnRange[sort Universe]
 then %% only changes the confidence of the terms in the linguistic variables
      op fuzzify : FuzzySet * LVar -> LVar
@@ -246,15 +226,17 @@ then %% only changes the confidence of the terms in the linguistic variables
 %%--------------------- Defuzzification ----------------------
 
 %% create a constant fuzzy set from a value between 0 and 1
-spec Const[sort Universe] given ConcretUnitInterval =
-     ConcretFuzzySet[sort Universe]
+spec Const[sort Universe] given UnitInterval =
+     FuzzySet[sort Universe]
 then op Const __ : UnitInterval -> FuzzySet
      var x : Universe; v : UnitInterval
      . Const v @ x = v
 
 %% constraining a linguistic variable wrt. its terms
-spec Constrain[sort Universe] given ConcretUnitInterval =
-     LinguisticVariable[sort Universe] and Const[sort Universe]
+spec Constrain[TNorm][sort Universe] given UnitInterval =
+     LinguisticVariable[sort Universe]
+and  Intersection[TNorm][sort Universe]
+and  Const[sort Universe]
 then op constrain : LVar -> LVar
      vars cname : CS; %% unchanged concept name
           S : Set[Value]; %% unchanged terms
@@ -268,7 +250,7 @@ then op constrain : LVar -> LVar
               when ConfValue(t, v) eps S else eval(t, HM, CM)
 
 %% aggregation functions are symmetric as bags
-spec AggregationFunction = ConcretUnitInterval
+spec AggregationFunction = UnitInterval
 then Bag[sort UnitInterval]
 then op h : Bag[UnitInterval] -> UnitInterval
      var S : Bag[UnitInterval]; v, v0 : UnitInterval
@@ -283,7 +265,7 @@ then op h : Bag[UnitInterval] -> UnitInterval
      . true %(continuous)%
 
 %% aggregate a linguistic variable using a suitable aggregation function
-spec Aggregation[sort Universe] given ConcretUnitInterval =
+spec Aggregation[sort Universe] given UnitInterval =
      AggregationFunction
 and  LinguisticVariable[sort Universe]
 and  Bag[sort Term]
@@ -321,12 +303,12 @@ then %% convert a set of terms to a bag of term names
 
 %% any function that extracts a number from a fuzzy set
 %% possibly taking the range into account
-spec Projection[sort Universe] given ConcretUnitInterval =
-     ConcretFuzzySet[sort Universe]
+spec Projection[sort Universe] given UnitInterval =
+     FuzzySet[sort Universe]
 then op project : FuzzySet -> Universe
 
 %% defuzzification is aggregation followed by projection
-spec Defuzz[sort Universe] given ConcretUnitInterval =
+spec Defuzz[sort Universe] given UnitInterval =
      Aggregation[sort Universe] and Projection[sort Universe]
 then op defuzz : LVar -> Universe
      var L : LVar
