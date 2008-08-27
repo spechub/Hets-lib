@@ -125,7 +125,7 @@ spec LiftJunctor[MonotoneJunctor][sort Universe] given UnitInterval =
 then
      op liftedJunctor : FuzzySet * FuzzySet -> FuzzySet, comm, assoc %implied
      vars x : Universe; A, B: FuzzySet
-     . liftedJunctor(A, B) @ x = J(A @ x, B @ x)
+     . liftedJunctor(A, B) @ x = J(A @ x, B @ x) %(liftedJunctor_def)%
 
 %% a T-Norm lifted to an intersection function
 spec Intersection[TNorm][sort Universe] =
@@ -185,7 +185,7 @@ then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
        => t @ x = 0
 
 %%------------- Triangular Fuzzy Numbers ----------------
-spec Triange = Trapez
+spec Triangle = Trapez
 then op triangle : Rat * Rat * Rat ->? FuzzyNumber
      vars a, b, c : Rat
      . triangle (a, b, c) = trapez(a, b, b, c)
