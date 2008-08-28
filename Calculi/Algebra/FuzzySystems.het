@@ -78,7 +78,7 @@ then forall x, y : UnitInterval . C(x, y) = ((x + y) - x * y) as UnitInterval
 spec C_B = TConorm
 then forall x, y : UnitInterval . C(x, y) = min(1, x + y) as UnitInterval
 
-%% drastic conjunction
+%% drastic disjunction
 spec C_D = TConorm
 then forall x, y : UnitInterval
      . C(x, y) = x when y = 0 else y when x = 0 else 1
@@ -137,11 +137,12 @@ spec Union[TConorm][sort Universe] =
      LiftJunctor[TConorm fit J |-> C ][sort Universe]
      with liftedJunctor |-> __union__
 
-%% get the maximal confidence over the range
-spec MaxOnRange[sort Universe] given UnitInterval = FuzzySet[sort Universe]
-then op maxOnRange : FuzzySet -> UnitInterval
+%% get the maximal confidence over the universe
+%% here it is open how to compute a value using a T-conorm
+spec MaxOverUniverse[sort Universe] given UnitInterval = FuzzySet[sort Universe]
+then op maxOverUniverse : FuzzySet -> UnitInterval
      var P : FuzzySet; m : UnitInterval
-     . maxOnRange(P) = m <=> exists y : Universe . forall x : Universe .
+     . maxOverUniverse(P) = m <=> exists y : Universe . forall x : Universe .
        P @ x <= m /\ P @ y = m
 
 %% define various subsorts of functions from Rat
@@ -154,10 +155,10 @@ then sort QuasiFuzzyNumber =
        /\ true %(piecewise_continuous)% }
 
 spec FuzzyNumber = QuasiFuzzyNumber
-and  MaxOnRange[sort Rat] with FuzzySet |-> PreFuzzyNumber
+and  MaxOverUniverse[sort Rat] with FuzzySet |-> PreFuzzyNumber
 then sort FuzzyNumber =
      { x : QuasiFuzzyNumber
-       . maxOnRange(x) = 1 %(normalized)% }
+       . maxOverUniverse(x) = 1 %(normalized)% }
 
 %%--------------------- Singletons -------------------------
 spec Sing[sort Universe] given UnitInterval = FuzzySet[sort Universe]
@@ -271,7 +272,7 @@ then generated type LVar ::= LVar(
 spec Fuzzify[TNorm][sort Universe] given UnitInterval =
      LinguisticVariable[sort Universe]
 and  Intersection[TNorm][sort Universe]
-and  MaxOnRange[sort Universe]
+and  MaxOverUniverse[sort Universe]
 then %% only changes the confidence of the terms in the linguistic variables
      op fuzzify : FuzzySet * LVar -> LVar
      vars cname : CS; %% unchanged concept name
@@ -281,12 +282,13 @@ then %% only changes the confidence of the terms in the linguistic variables
           S, Ta : Set[Value]; %% terms before and after fuzzification
      %% for a term string t take the minimum of the input A and
      %% the corresponding fuzzy set looked up in the confidence map CM
-     %% from the minimum fuzzy set choose the maximum over the Range
+     %% from the minimum fuzzy set choose the maximum over the universe
      %% consider all linguistic terms in the sets
      . fuzzify(A, LVar(cname, S, HM, CM)) = LVar(cname, Ta, HM, CM)
        <=> forall t : Term .
             (exists v : UnitInterval . ConfValue(t, v) eps S)
-            <=> ConfValue(t, maxOnRange(A intersection eval(t, HM, CM))) eps Ta
+            <=> ConfValue(t, maxOverUniverse(A intersection eval(t, HM, CM)))
+                eps Ta
 
 %%--------------------- Defuzzification ----------------------
 
@@ -366,8 +368,7 @@ then %% convert a set of terms to a bag of term names
      . aggreg (LVar(cname, S, HM, CM))
        = aggregate(mapToCBag(HM, CM, setToBag(S)))
 
-%% any function that extracts a number from a fuzzy set
-%% possibly taking the range into account
+%% any function that extracts a (central) universe value from a fuzzy set
 spec Projection[sort Universe] given UnitInterval =
      FuzzySet[sort Universe]
 then op project : FuzzySet -> Universe
