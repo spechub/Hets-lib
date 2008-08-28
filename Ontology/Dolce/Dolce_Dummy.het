@@ -1,0 +1,346 @@
+library Ontology/Dolce/DolceSimpl_Dummy
+
+%%------------------------
+%% Taxonomy
+%%------------------------
+
+spec Taxonomy =  
+     sorts s
+end
+
+
+%%------------------------
+%% Partial_Order (po)
+%%------------------------
+
+spec Partial_Order =
+     sorts s
+end
+
+%%---------------------------
+%% Strict_Partial_Order (spo)
+%%---------------------------
+
+%[
+spec Strict_Partial_Order =
+
+esort s
+pred Rel: s * s
+forall x,y,z: s
+. Rel(x,y) => not Rel(y,x) 
+. Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
+end
+]%
+%%-----------------------------------
+%% Classical_Extensional_Parhood (p)
+%%----------------------------------
+
+spec Classical_Extensional_Parthood =
+     Partial_Order
+end
+
+
+%%---------------
+%% Time_Mereology
+%%---------------
+%% Time_Mereology is needed in oder to specify the properties of perdurants
+
+spec Time_Mereology =
+     Classical_Extensional_Parthood
+end
+
+%%--------------------------------
+%% Unary_Temporal_Dissective (utd)
+%%--------------------------------
+
+spec Unary_Temporal_Dissective = 
+     Time_Mereology 
+end
+
+
+%%-------------------
+%% Being_Present
+%%-------------------
+
+spec Being_Present =
+     Unary_Temporal_Dissective
+end
+
+
+%%-----------
+%% Mereology
+%%-----------
+
+spec Mereology =
+     Time_Mereology
+and  Classical_Extensional_Parthood
+and  Classical_Extensional_Parthood
+and  Classical_Extensional_Parthood
+end
+
+%%----------------------------
+%% Mereology_and_TemporalPart
+%%----------------------------
+
+spec Mereology_and_TemporalPart =
+     Mereology
+and  Being_Present
+end
+
+%%---------------------
+%% Binary_Present (bpre)
+%%---------------------
+
+spec Binary_Present =
+     Being_Present
+then
+     Being_Present
+end 
+
+
+%%---------------------------------
+%% Binary_Temporal_Dissective (btd)
+%%---------------------------------
+
+spec Binary_Temporal_Dissective = 
+     Time_Mereology
+end
+
+
+%%-----------------------------
+%% Temporary_Partial_Order (tpo)
+%%-----------------------------
+
+spec Temporary_Partial_Order =
+     Being_Present
+end 
+
+
+%%-------------------------------------
+%% Temporary_Strict_Partial_Order (tspo)
+%%-------------------------------------
+
+spec Temporary_Strict_Partial_Order =
+     sorts s
+end 
+
+
+%%-----------------------
+%% Temporary_Parthood (tp)
+%%-----------------------
+
+spec Temporary_Parthood =
+     Temporary_Partial_Order
+and  Binary_Temporal_Dissective
+and  Binary_Present
+end  
+
+
+%%---------------------
+%% Temporary_Mereology
+%%---------------------
+
+spec Temporary_Mereology =
+     Temporary_Parthood
+and  Temporary_Parthood
+end
+
+
+%%-----------------------
+%% Constitution_Spec (k)
+%%----------------------
+
+spec Constitution_Spec =
+     Binary_Temporal_Dissective
+and  Binary_Present
+and  Temporary_Strict_Partial_Order
+and  Temporary_Parthood 
+end
+
+
+%%-----------------------------------------
+%% Constantly_Generically_Constituted (cgc)
+%%-----------------------------------------
+
+spec Constantly_Generically_Constituted =
+     Constitution_Spec
+end
+
+
+%%--------------
+%% Constitution
+%%--------------
+
+spec Constitution =
+     Constitution_Spec
+and  Constitution_Spec
+and  Constitution_Spec
+and  Constantly_Generically_Constituted
+and  Constantly_Generically_Constituted
+and  Constantly_Generically_Constituted
+end
+
+
+%%----------------
+%% Participation
+%%----------------
+
+spec Participation =
+     Binary_Temporal_Dissective
+and  Binary_Present
+end     
+
+
+%%--------------------------
+%% Direct_Quality_Spec (dqt)
+%%-------------------------
+
+spec Direct_Quality_Spec =
+sorts s
+end
+
+%%----------------
+%% Direct_Quality
+%%----------------
+
+spec Direct_Quality =
+%[     Taxonomy
+and ]% Direct_Quality_Spec
+and  Direct_Quality_Spec
+and  Direct_Quality_Spec
+end
+
+
+%%---------------------------
+%% Immediate_Quale_Spec (ql)
+%%---------------------------
+
+spec Immediate_Quale_Spec =
+     sorts s
+end
+
+
+%%-----------------
+%% Immediate_Quale
+%%-----------------
+
+spec Immediate_Quale =
+     Immediate_Quale_Spec
+and  Immediate_Quale_Spec
+end 
+   
+
+%%---------------------------
+%% Temporary_Quale_Spec (tql)
+%%---------------------------
+
+spec Temporary_Quale_Spec =
+     Being_Present
+and  Binary_Temporal_Dissective
+end
+
+
+%%-------------------
+%% Temporary_Quale
+%%-------------------
+
+spec Temporary_Quale =
+     Temporary_Quale_Spec
+and  Temporary_Quale_Spec
+and  Temporary_Quale_Spec
+end
+
+
+%%-------------------------
+%% Specific_Dependence (sd)
+%%-------------------------
+
+spec Specific_Dependence =
+     Being_Present
+and
+     Being_Present
+end
+
+
+%%---------------------------------
+%% Mutual_Specific_Dependence (msd)
+%%---------------------------------
+
+spec Mutual_Specific_Dependence =
+     Specific_Dependence
+and  Specific_Dependence
+end
+
+
+%%----------------------------------
+%% OneSide_Specific_Dependence (osd)
+%%----------------------------------
+
+spec OneSide_Specific_Dependence =
+     Specific_Dependence
+end
+
+
+%%------------------------
+%% Generic_Dependence (gd)
+%%------------------------
+
+spec Generic_Dependence =
+     Being_Present
+and
+     Being_Present
+end
+
+%%--------------------------------
+%% Mutual_Generic_Dependence (mgd)
+%%--------------------------------
+
+spec Mutual_Generic_Dependence =
+     Generic_Dependence
+and  Generic_Dependence
+end
+
+
+%%---------------------------------
+%% OneSide_Generic_Dependence (ogd)
+%%---------------------------------
+
+spec OneSide_Generic_Dependence =
+     Generic_Dependence
+end
+
+
+%%------------
+%% Dependence
+%%------------
+
+spec Dependence =
+     Mutual_Specific_Dependence 
+and  Mutual_Specific_Dependence
+and  Mutual_Specific_Dependence
+and  OneSide_Specific_Dependence
+and  OneSide_Generic_Dependence
+and  OneSide_Generic_Dependence
+and  OneSide_Generic_Dependence
+end
+
+%%-------
+%% Dolce
+%%-------
+
+spec PreDolce =
+     Mereology_and_TemporalPart
+and  Temporary_Mereology
+and  Participation
+and  Constitution
+and  Dependence
+and  Direct_Quality
+and  Temporary_Quale
+and  Immediate_Quale
+end
+
+spec Dolce =
+     PreDolce
+and
+     Taxonomy
+end
