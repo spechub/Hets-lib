@@ -49,21 +49,12 @@ spec Time_Mereology =
      Classical_Extensional_Parthood
 end
 
-%%--------------------------------
-%% Unary_Temporal_Dissective (utd)
-%%--------------------------------
-
-spec Unary_Temporal_Dissective = 
-     Time_Mereology 
-end
-
-
 %%-------------------
 %% Being_Present
 %%-------------------
 
 spec Being_Present =
-     Unary_Temporal_Dissective
+     Time_Mereology
 end
 
 
@@ -93,7 +84,7 @@ end
 
 spec Binary_Present =
      Being_Present
-then
+and
      Being_Present
 end 
 
@@ -105,16 +96,6 @@ end
 spec Binary_Temporal_Dissective = 
      Time_Mereology
 end
-
-
-%%-----------------------------
-%% Temporary_Partial_Order (tpo)
-%%-----------------------------
-
-spec Temporary_Partial_Order =
-     Being_Present
-end 
-
 
 %%-------------------------------------
 %% Temporary_Strict_Partial_Order (tspo)
@@ -130,7 +111,7 @@ end
 %%-----------------------
 
 spec Temporary_Parthood =
-     Temporary_Partial_Order
+     Being_Present
 and  Binary_Temporal_Dissective
 and  Binary_Present
 end  
@@ -157,16 +138,6 @@ and  Temporary_Strict_Partial_Order
 and  Temporary_Parthood 
 end
 
-
-%%-----------------------------------------
-%% Constantly_Generically_Constituted (cgc)
-%%-----------------------------------------
-
-spec Constantly_Generically_Constituted =
-     Constitution_Spec
-end
-
-
 %%--------------
 %% Constitution
 %%--------------
@@ -175,9 +146,9 @@ spec Constitution =
      Constitution_Spec
 and  Constitution_Spec
 and  Constitution_Spec
-and  Constantly_Generically_Constituted
-and  Constantly_Generically_Constituted
-and  Constantly_Generically_Constituted
+and  Constitution_Spec
+and  Constitution_Spec
+and  Constitution_Spec
 end
 
 
@@ -190,54 +161,21 @@ spec Participation =
 and  Binary_Present
 end     
 
-
-%%--------------------------
-%% Direct_Quality_Spec (dqt)
-%%-------------------------
-
-spec Direct_Quality_Spec =
-sorts s
-end
-
 %%----------------
 %% Direct_Quality
 %%----------------
 
 spec Direct_Quality =
-%[     Taxonomy
-and ]% Direct_Quality_Spec
-and  Direct_Quality_Spec
-and  Direct_Quality_Spec
-end
-
-
-%%---------------------------
-%% Immediate_Quale_Spec (ql)
-%%---------------------------
-
-spec Immediate_Quale_Spec =
      sorts s
 end
-
 
 %%-----------------
 %% Immediate_Quale
 %%-----------------
 
 spec Immediate_Quale =
-     Immediate_Quale_Spec
-and  Immediate_Quale_Spec
+     sorts s
 end 
-   
-
-%%---------------------------
-%% Temporary_Quale_Spec (tql)
-%%---------------------------
-
-spec Temporary_Quale_Spec =
-     Being_Present
-and  Binary_Temporal_Dissective
-end
 
 
 %%-------------------
@@ -245,84 +183,24 @@ end
 %%-------------------
 
 spec Temporary_Quale =
-     Temporary_Quale_Spec
-and  Temporary_Quale_Spec
-and  Temporary_Quale_Spec
-end
-
-
-%%-------------------------
-%% Specific_Dependence (sd)
-%%-------------------------
-
-spec Specific_Dependence =
      Being_Present
-and
-     Being_Present
+and  Being_Present
+and  Being_Present
 end
-
-
-%%---------------------------------
-%% Mutual_Specific_Dependence (msd)
-%%---------------------------------
-
-spec Mutual_Specific_Dependence =
-     Specific_Dependence
-and  Specific_Dependence
-end
-
-
-%%----------------------------------
-%% OneSide_Specific_Dependence (osd)
-%%----------------------------------
-
-spec OneSide_Specific_Dependence =
-     Specific_Dependence
-end
-
-
-%%------------------------
-%% Generic_Dependence (gd)
-%%------------------------
-
-spec Generic_Dependence =
-     Being_Present
-and
-     Being_Present
-end
-
-%%--------------------------------
-%% Mutual_Generic_Dependence (mgd)
-%%--------------------------------
-
-spec Mutual_Generic_Dependence =
-     Generic_Dependence
-and  Generic_Dependence
-end
-
-
-%%---------------------------------
-%% OneSide_Generic_Dependence (ogd)
-%%---------------------------------
-
-spec OneSide_Generic_Dependence =
-     Generic_Dependence
-end
-
 
 %%------------
 %% Dependence
 %%------------
 
 spec Dependence =
-     Mutual_Specific_Dependence 
-and  Mutual_Specific_Dependence
-and  Mutual_Specific_Dependence
-and  OneSide_Specific_Dependence
-and  OneSide_Generic_Dependence
-and  OneSide_Generic_Dependence
-and  OneSide_Generic_Dependence
-end
+     Being_Present
+and  Being_Present
+and  Being_Present
+and  Being_Present
+and  Being_Present
+and  Being_Present
+and  Being_Present
+end 
 
 %%-------
 %% Dolce
