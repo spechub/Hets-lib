@@ -28,10 +28,34 @@ spec ImmediateQuale_Cons=
      Immediate_Quale
 end
 
-spec TempParthoodSC_Cons=
+spec ImmediateQuale_Cons_Model =
+     TM_Cons
+     then %cons
+     free type TL ::= sort T
+     pred ql(x:T;y:TL) <=> x=y
+     free type TQ ::= tq
+     free type TR ::= sort TQ
+     pred ql(x:TR;y:TQ) <=> x=y
+
+end 
+
+view v_ImmediateQuale_Cons_Model :  
+     ImmediateQuale_Cons to ImmediateQuale_Cons_Model
+end
+
+spec TempParthoodSC_Cons =
      TM_Cons
      then %cons
      Temporary_Parthood with s |-> SC
+end
+
+spec TempParthoodSC_Cons_Model =
+     TM_Cons
+     then %cons
+end
+
+view v_TempParthoodSC_Cons_Model : 
+     TempParthoodSC_Cons to TempParthoodSC_Cons_Model
 end
 
 spec TempParthoodSAG_Cons=
