@@ -159,7 +159,7 @@ forall x,y,z: s
 end
 ]%
 %%-----------------------------------
-%% Classical_Extensional_Parhood (p)
+%% Classical_Extensional_Parthood (p)
 %%----------------------------------
 
 spec Classical_Extensional_Parthood =
@@ -268,7 +268,6 @@ then
      Being_Present with s |-> s2
 then
 
-esorts s1<EDorPDorQ; s2<EDorPDorQ
 pred Rel: s1 * s2 * T
 
 forall x1:s1; x2:s2; t:T
@@ -313,11 +312,7 @@ end
 %%-------------------------------------
 
 spec Temporary_Strict_Partial_Order =
-%[     Taxonomy
-
-then
-]%     
-esorts s<EDorPDorQ;T
+esorts s,T
 pred Rel: s * s * T
 
 forall x,y,z:s; t:T
@@ -481,8 +476,7 @@ end
 %%----------------
 
 spec Direct_Quality =
-%[     Taxonomy
-and ]% Direct_Quality_Spec with s1 |-> TQ, s2 |-> PD
+     Direct_Quality_Spec with s1 |-> TQ, s2 |-> PD
 and  Direct_Quality_Spec with s1 |-> PQ, s2 |-> PED
 and  Direct_Quality_Spec with s1 |-> AQ, s2 |-> NPED
 
@@ -518,8 +512,7 @@ end
 %%-----------------
 
 spec Immediate_Quale =
-%[     Taxonomy
-and]%  Immediate_Quale_Spec with s1 |-> T, s2 |-> TL
+     Immediate_Quale_Spec with s1 |-> T, s2 |-> TL
 and  Immediate_Quale_Spec with s1 |-> TR, s2 |-> TQ
 end 
    
@@ -533,8 +526,6 @@ spec Temporary_Quale_Spec =
 and  Binary_Temporal_Dissective with Rel |-> tql
 
 then
-
-esorts s2<EDorPDorQ
 
 forall y:s2; t:T
 .PRE(y,t) => exists x:s1.tql(x,y,t)
@@ -566,7 +557,6 @@ then
 
 then
 
-esorts s1<EDorPDorQ; s2<EDorPDorQ
 preds
 %% Specific Dependence
 SD(x:s1; y:s2) <=> (exists t:T.(PRE(x,t))) /\ 
