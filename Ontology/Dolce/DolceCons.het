@@ -20,6 +20,8 @@ from Ontology/Dolce/DolceSimpl_Esort get Taxonomy, Partial_Order, Ext_Partial_Or
 %%One Point Model Found
 spec TM_Cons=
      Time_Mereology
+then
+     . exists t:T . true  %% we need at least one time point
 end
 
 spec ImmediateQuale_Cons=
@@ -49,9 +51,22 @@ spec TempParthoodSC_Cons =
      Temporary_Parthood with s |-> SC
 end
 
+spec OnePointTempParthoodModel =
+  TM_Cons
+then
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+  pred tDif (x,y,z:s) <=> true
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> true
+  pred tSum  (x,y,z:s) <=> true
+end
+  
 spec TempParthoodSC_Cons_Model =
      TM_Cons
-     then %cons
+then %cons
+     OnePointTempParthoodModel with sort s |-> SC
 end
 
 view v_TempParthoodSC_Cons_Model : 
