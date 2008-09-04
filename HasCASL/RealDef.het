@@ -1,0 +1,78 @@
+library HasCASL/RealDef
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+
+logic HasCASL
+
+
+%% we use x to denote sequences
+%% m,n,p to denote natural numbers
+%% B always represeents a bound
+%% define a new type for nearly additive functions
+%% injNat for injecting the naturals
+%% <<= as ordering on naturals 
+
+spec NatDist = Nat
+then %def
+  ops
+    dist: Nat*Nat -> Nat;
+  preds
+   is_nadd:Nat->Nat;
+
+  . forall m,n:Nat. dist(m,n) = (m -! n) + (n -! m)
+  . forall x:Nat->Nat . is_nadd(x) <=> 
+     (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
+      
+then %mono
+  type Nadd = {X:Nat->Nat . is_nadd(X)}
+  type Nat < Nadd
+%%  ops
+%%! injNat(k:Nat) : Nat -> Nadd = \n:Nat. k * n;  %% Injection Natural Numbers
+%%!   x:Nadd ++ y:Nadd -> Nadd =  \n. x(n) + y(n) %% Addition on Nadd
+  
+
+then %def
+  preds  
+   __ === __ : Nadd*Nadd;          %% Equivalence Relation
+   __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
+
+  . forall x,y:Nadd . x === y <=> 
+      (exists B:Nat. forall n:Nat. dist(x(n),y(n)) <= B)
+
+then %implies
+  forall m,n,p:Nat
+  . dist(n,n) = 0
+  . dist(0,n) = n
+  . dist(n,0) = n
+  . dist(m,n) = dist(n,m)
+  . dist(m + n,m + p) = dist(n,p)
+  . dist(m + p,n + p) = dist(m,n)
+  . dist(m + n,m) = n
+  . dist(m,m + n) = n
+  . m * dist(n,p) = dist(m * n,m * p)
+  . dist(m,n) * p = dist(m * p,n * p)
+  . (dist(m,n) = 0) <=> (m = n)
+end
+
+view naddequivEquivalenceRelation : 
+     EquivalenceRelation to NatDist
+=    Elem |-> Nadd,
+     __ ~ __ |-> __ === __
+end
+
+
+
+view naddorderTotalOrder :
+    TotalOrder to NatDist
+=   __ <= __ |-> __ <<= __,
+    Elem |-> Nadd
+end

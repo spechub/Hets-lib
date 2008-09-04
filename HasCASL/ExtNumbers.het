@@ -1,0 +1,359 @@
+library HasCASL/Num
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+logic HasCASL
+
+spec HolNum =
+  free type Num ::= 0 | SUC(Num)
+  ops
+    NUMERAL : Num -> Num
+  then %def
+    forall n:Num. NUMERAL n = n %(NUMERAL)%
+  then %implies
+  vars m,n:Num
+  vars A:Type
+
+   . not(SUC(n) = 0)      %(NOT_SUC)%
+   . SUC(m) = SUC(n) <=> m = n %(SUC_INJ)%
+   . forall P:Num->Logical. P(0) /\ (forall n:Num. P(n) => P(SUC(n))) => forall n:Num. P(n) %(num_INDUCTION)%
+%%   . !forall (e:A) . forall f. ?!fn. (fn _0 = e) /\ (!n. fn (SUC n) = f (fn n) n) %(num_Axiom)% 
+   . forall m:Num. (m = 0) \/ (exists n:Num. m = SUC n) %(num_CASES)%
+end
+
+spec HolArith = HolNum
+then
+  ops
+    PRE : Num -> Num;
+    __ + __ : Num * Num -> Num;
+
+  then %def
+
+  %% Definition of Addition
+  forall m,n,p : Num
+     . 0 + m = m /\ SUC(n) + m = SUC(n + m) %(ADD)% %simp     
+
+  then %implies
+
+  forall m,n,p : Num
+  %% Theorems about Addition
+  
+ . m + (SUC n) = SUC(m + n) %(ADD_SUC)%
+ 
+ . (forall n:Num. 0 + n = n) /\ 
+   (forall m:Num. m + 0 = m) /\ 
+   (forall m,n:Num . (SUC m) + n = SUC(m + n)) /\ 
+   (forall m,n:Num. m + (SUC n) = SUC(m + n)) %(ADD_CLAUSES)%
+
+ . m + n = n + m %(ADD_SYM)%
+ 
+ . m + (n + p) = (m + n) + p %(ADD_ASSOC)%
+
+ . (m + n = n + m) /\
+   ((m + n) + p = m + (n + p)) /\
+   (m + (n + p) = n + (m + p)) %(ADD_AC)%
+
+ . (m + n = 0) <=> (m = 0) /\ (n = 0) %(ADD_EQ_0)%
+ . (m + n = m + p) <=> (n = p) %(EQ_ADD_LCANCEL)%
+ . (m + p = n + p) <=> (m = n) %(EQ_ADD_RCANCEL)%
+ . (m + n = m) <=> (n = 0)  %(EQ_ADD_LCANCEL_0)%
+ . (m + n = n) <=> (m = 0) %(EQ_ADD_RCANCEL_0)%
+
+end
+
+spec HolArithBit = HolArith 
+then
+  ops
+    BIT0 : Num -> Num;
+    BIT1 : Num -> Num; 
+    __ * __ : Num * Num -> Num;
+    __ EXP __ : Num * Num -> Num;
+  
+then %def
+  forall n:Num
+  . BIT0 n = n + n      %(BIT0)%
+  . BIT1 n = SUC(n + n) %(BIT1)%
+  
+  %% Definition of Multiplication
+  . (forall n:Num. NUMERAL(0) * n = NUMERAL(0)) /\
+    (forall m,n:Num. (SUC m) * n = (m * n) + n) %(MULT)% %simp
+
+  %% Definition of Exponentiation
+  . (forall m:Num. m EXP NUMERAL(0) = NUMERAL(BIT1(0))) /\
+    (forall m,n:Num. m EXP (SUC n) = m * (m EXP n)) %(EXP)%
+
+then %implies
+  forall m,n,p,x:Num
+ . NUMERAL(BIT0 n) = NUMERAL n  + NUMERAL n   %(BIT0_THM)%
+ . NUMERAL(BIT1 n) = SUC(NUMERAL n + NUMERAL n) %(BIT1_THM)%
+ . NUMERAL(BIT1(0))  = SUC(NUMERAL(0)) %(ONE)%
+ . NUMERAL(BIT1(BIT1(0))) = SUC(NUMERAL(BIT1(0))) %(TWO)%
+
+ . (forall n:Num. NUMERAL(0) * n = NUMERAL(0)) /\
+   (forall m:Num. m * NUMERAL(0) = NUMERAL(0)) /\
+   (forall n:Num. NUMERAL(BIT1(0)) * n = n) /\
+   (forall m:Num. m * NUMERAL(BIT1(0)) = m) /\
+   (forall m,n:Num. (SUC m) * n = (m * n) + n) /\
+   (forall m,n:Num. m * (SUC n) = m + (m * n)) %(MULT_CLAUSES)%
+ . NUMERAL(BIT0(BIT1(0))) * n = n + n %(MULT_2)%
+ . (m * n = NUMERAL(BIT1(0))) <=> (m = NUMERAL(BIT1(0))) /\ (n = NUMERAL(BIT1(0))) %(MULT_EQ_1)%
+
+  %% Theorems about Multiplication
+
+ . m * NUMERAL(0) = NUMERAL(0)  %(MULT_0)%
+ . m * (SUC n) = m + (m * n) %(MULT_SUC)%
+
+ . m * n = n * m  %(MULT_SYM)%
+ . m * (n + p) = (m * n) + (m * p) %(LEFT_ADD_DISTRIB)%
+ . (m + n) * p = (m * p) + (n * p) %(RIGHT_ADD_DISTRIB)%
+ . m * (n * p) = (m * n) * p  %(MULT_ASSOC)%
+ . (m * n = n * m) /\
+   ((m * n) * p = m * (n * p)) /\
+   (m * (n * p) = n * (m * p)) %(MULT_AC)%
+ . (m * n = NUMERAL(0)) <=> (m = NUMERAL(0)) \/ (n = NUMERAL(0))  %(MULT_EQ_0)%
+ . (m * n = m * p) <=> (m = NUMERAL(0)) \/ (n = p) %(EQ_MULT_LCANCEL)%
+ . (m * p = n * p) <=> (m = n) \/ (p = NUMERAL(0)) %(EQ_MULT_RCANCEL)%
+
+
+  %% Theorems about Exponentiation
+ . (m EXP n = NUMERAL(0)) <=> (m = NUMERAL(0)) /\ not(n = NUMERAL(0)) %(EXP_EQ_0)%
+ . x EXP n = NUMERAL(BIT1(0)) <=> x = NUMERAL(BIT1(0)) \/ n = NUMERAL(0) %(EXP_EQ_1)%
+ . m EXP (n + p) = (m EXP n) * (m EXP p) %(EXP_ADD)%
+ . NUMERAL(BIT1(0)) EXP n = NUMERAL(BIT1(0)) %(EXP_ONE)%
+ . n EXP NUMERAL(BIT1(0)) = n %(EXP_1)%
+ . n EXP NUMERAL(BIT0(BIT1(0))) = n * n %(EXP_2)%
+ . (m * n) EXP p = (m EXP p) * (n EXP p) %(MULT_EXP)%
+ . (m EXP (n * p)) = ((m EXP n) EXP p) %(EXP_MULT)%
+
+end
+
+
+spec HolArithBitOrdered = HolArithBit
+then
+  preds
+    __ < __ : Num * Num;
+    __ <= __ : Num * Num;
+    __ > __ : Num * Num;
+    __ >= __ : Num * Num;
+
+then %def
+     
+  . forall m:Num. (m <= 0) <=> (m = 0) /\
+    forall m,n:Num . (m <= SUC n) <=> (m = SUC n) \/ (m <= n) %(LE)%
+
+  . forall m:Num. (m < 0) <=> false /\
+    (forall m,n:Num. (m < SUC n) <=> (m = n) \/ (m < n)) %(LT)%
+
+  . forall m,n:Num . m >= n <=> n <= m %(GE)%
+  . forall m,n:Num . m > n <=> n < m %(GT)%
+
+then %implies
+  forall m,n,p,q:Num
+ 
+ .  (SUC m <= n) <=> (m < n) %(LE_SUC_LT)%
+ . (m < SUC n) <=> (m <= n) %(LT_SUC_LE)%
+ . (SUC m <= SUC n) <=> (m <= n) %(LE_SUC)%
+ . (SUC m < SUC n) <=> (m < n) %(LT_SUC)%
+
+ . NUMERAL(0) <= n %(LE_0)%
+ . NUMERAL(0) < SUC n %(LT_0)%
+
+ . n <= n %(LE_REFL)%
+ . not(n < n) %(LT_REFL)%
+ . (m <= n /\ n <= m) <=> (m = n) %(LE_ANTISYM)%
+ . not(m < n /\ n < m) %(LT_ANTISYM)%
+ . not(m <= n /\ n < m) %(LET_ANTISYM)%
+ . not(m < n /\ n <= m) %(LTE_ANTISYM)%
+ . m <= n /\ n <= p => m <= p %(LE_TRANS)%
+ . m < n /\ n < p => m < p %(LT_TRANS)%
+ . m <= n /\ n < p => m < p %(LET_TRANS)%
+ . m < n /\ n <= p => m < p %(LTE_TRANS)%
+ . m <= n \/ n <= m %(LE_CASES)%
+ . (m < n) \/ (n < m) \/ (m = n) %(LT_CASES)%
+ . m <= n \/ n < m %(LET_CASES)%
+ . m < n \/ n <= m %(LTE_CASES)%
+
+%% Relationship between orderings.                                           
+
+ . (m <= n) <=> (m < n) \/ (m = n) %(LE_LT)%
+ . (m < n) <=> (m <= n) /\ not(m = n) %(LT_LE)%
+ . not(m <= n) <=> (n < m) %(NOT_LE)%
+ . not(m < n) <=> n <= m %(NOT_LT)%
+ . m < n => m <= n %(LT_IMP_LE)%
+ . (m = n) => m <= n %(EQ_IMP_LE)%
+ . NUMERAL(0) < n <=> not(n = NUMERAL(0)) %(LT_NZ)%
+
+ . (forall n:Num. not(n = NUMERAL(0)) => NUMERAL(0) < n) /\
+   (forall n:Num. not(n = NUMERAL(0)) => NUMERAL(BIT1(0)) <= n) /\
+   (forall n:Num. NUMERAL(0) < n => not(n = NUMERAL(0))) /\
+   (forall n:Num. NUMERAL(0) < n => NUMERAL(BIT1(0)) <= n) /\
+   (forall n:Num. NUMERAL(BIT1(0)) <= n => NUMERAL(0) < n) /\
+   (forall n:Num. NUMERAL(BIT1(0)) <= n => not(n = NUMERAL(0))) %(LE_1)%
+
+%% Relate the orderings to arithmetic operations.                            
+. (m <= n) <=> (exists d:Num. n = m + d) %(LE_EXISTS)%
+. (m < n) <=> (exists d:Num. n = m + SUC d) %(LT_EXISTS)%
+
+%% Interaction with addition.                                                
+
+. m <= m + n %(LE_ADD)%
+. n <= m + n %(LE_ADDR)%
+. (m < m + n) <=> (NUMERAL(0) < n) %(LT_ADD)%
+. (n < m + n) <=> (NUMERAL(0) < m) %(LT_ADDR)%
+. (m + n) <= (m + p) <=> n <= p %(LE_ADD_LCANCEL)%
+. (m + p) <= (n + p) <=> (m <= n) %(LE_ADD_RCANCEL)%
+. (m + n) < (m + p) <=> n < p %(LT_ADD_LCANCEL)%
+. (m + p) < (n + p) <=> (m < n) %(LT_ADD_RCANCEL)%
+. m <= p /\ n <= q => m + n <= p + q %(LE_ADD2)%
+. m <= p /\ n < q => m + n < p + q %(LET_ADD2)%
+. m < p /\ n <= q => m + n < p + q %(LTE_ADD2)%
+. m < p /\ n < q => m + n < p + q %(LT_ADD2)%
+
+%% And multiplication.                                                      
+
+. (NUMERAL(0) < m * n) <=> (NUMERAL(0) < m) /\ (NUMERAL(0) < n) %(LT_MULT)%
+. m <= n /\ p <= q => m * p <= n * q %(LE_MULT2)%
+. not(m = NUMERAL(0)) /\ n < p => m * n < m * p %(LT_LMULT)%
+. (m * n) <= (m * p) <=> (m = NUMERAL(0)) \/ n <= p %(LE_MULT_LCANCEL)%
+. (m * p) <= (n * p) <=> (m <= n) \/ (p = NUMERAL(0)) %(LE_MULT_RCANCEL)%
+. (m * n) < (m * p) <=> not(m = NUMERAL(0)) /\ n < p %(LT_MULT_LCANCEL)%
+. (m * p) < (n * p) <=> (m < n) /\ not(p = NUMERAL(0)) %(LT_MULT_RCANCEL)%
+. (SUC m = SUC n) <=> (m = n) %(EQ_SUC)%
+. m < n /\ p < q => m * p < n * q %(LT_MULT2)%
+. n <= n * n %(LE_SQUARE_REFL)%
+
+end
+
+spec HolArithBitOrderedExt = HolArithBitOrdered
+then
+  ops
+    __ - __ : Num * Num -> Num;
+    FACT : Num -> Num;
+
+    EVEN : Num * Num;
+    ODD : Num * Num;
+end
+
+spec HolDistance = HolArithBitOrderedExt
+
+end
+
+spec HolNearlyAdditive = HolDistance
+then
+
+let DIST_REFL = prove
+ (`!n. dist(n,n) = 0`,
+  REWRITE_TAC[dist; SUB_REFL; ADD_CLAUSES]);;
+
+let DIST_LZERO = prove
+ (`!n. dist(0,n) = n`,
+  REWRITE_TAC[dist; SUB_0; ADD_CLAUSES]);;
+
+let DIST_RZERO = prove
+ (`!n. dist(n,0) = n`,
+  REWRITE_TAC[dist; SUB_0; ADD_CLAUSES]);;
+
+let DIST_SYM = prove
+ (`!m n. dist(m,n) = dist(n,m)`,
+  REWRITE_TAC[dist] THEN MATCH_ACCEPT_TAC ADD_SYM);;
+
+let DIST_LADD = prove
+ (`!m p n. dist(m + n,m + p) = dist(n,p)`,
+  REWRITE_TAC[dist; SUB_ADD_LCANCEL]);;
+
+let DIST_RADD = prove
+ (`!m p n. dist(m + p,n + p) = dist(m,n)`,
+  REWRITE_TAC[dist; SUB_ADD_RCANCEL]);;
+
+let DIST_LADD_0 = prove
+ (`!m n. dist(m + n,m) = n`,
+  REWRITE_TAC[dist; ADD_SUB2; ADD_SUBR2; ADD_CLAUSES]);;
+
+let DIST_RADD_0 = prove
+ (`!m n. dist(m,m + n) = n`,
+  ONCE_REWRITE_TAC[DIST_SYM] THEN MATCH_ACCEPT_TAC DIST_LADD_0);;
+
+let DIST_LMUL = prove
+ (`!m n p. m * dist(n,p) = dist(m * n,m * p)`,
+  REWRITE_TAC[dist; LEFT_ADD_DISTRIB; LEFT_SUB_DISTRIB]);;
+
+let DIST_RMUL = prove
+ (`!m n p. dist(m,n) * p = dist(m * p,n * p)`,
+  REWRITE_TAC[dist; RIGHT_ADD_DISTRIB; RIGHT_SUB_DISTRIB]);;
+
+let DIST_EQ_0 = prove
+ (`!m n. (dist(m,n) = 0) <=> (m = n)`,
+  REWRITE_TAC[dist; ADD_EQ_0; SUB_EQ_0; LE_ANTISYM]);;
+
+(* ------------------------------------------------------------------------- *)
+(* Simplifying theorem about the distance operation.                         *)
+(* ------------------------------------------------------------------------- *)
+
+let DIST_ELIM_THM = prove
+ (`P(dist(x,y)) <=> !d. ((x = y + d) ==> P(d)) /\ ((y = x + d) ==> P(d))`,
+  DISJ_CASES_TAC(SPECL [`x:num`; `y:num`] LE_CASES) THEN
+  POP_ASSUM(X_CHOOSE_THEN `e:num` SUBST1_TAC o REWRITE_RULE[LE_EXISTS]) THEN
+  REWRITE_TAC[dist; ADD_SUB; ADD_SUB2; ADD_SUBR; ADD_SUBR2] THEN
+  REWRITE_TAC[ADD_CLAUSES; EQ_ADD_LCANCEL] THEN
+  GEN_REWRITE_TAC (RAND_CONV o ONCE_DEPTH_CONV) [EQ_SYM_EQ] THEN
+  REWRITE_TAC[GSYM ADD_ASSOC; EQ_ADD_LCANCEL_0; ADD_EQ_0] THEN
+  ASM_CASES_TAC `e = 0` THEN ASM_REWRITE_TAC[] THEN
+  EQ_TAC THEN REPEAT STRIP_TAC THEN ASM_REWRITE_TAC[] THEN
+  FIRST_ASSUM MATCH_MP_TAC THEN ASM_REWRITE_TAC[]);;
+
+(* ------------------------------------------------------------------------- *)
+(* Now some more theorems.                                                   *)
+(* ------------------------------------------------------------------------- *)
+
+let DIST_LE_CASES,DIST_ADDBOUND,DIST_TRIANGLE,DIST_ADD2,DIST_ADD2_REV =
+  let DIST_ELIM_TAC =
+    let conv =
+      HIGHER_REWRITE_CONV[SUB_ELIM_THM; COND_ELIM_THM; DIST_ELIM_THM] false in
+    CONV_TAC conv THEN TRY GEN_TAC THEN CONJ_TAC THEN
+    DISCH_THEN(fun th -> SUBST_ALL_TAC th THEN
+                         (let l,r = dest_eq (concl th) in
+                          if is_var l & not (vfree_in l r) then ALL_TAC
+                          else ASSUME_TAC th)) in
+  let DIST_ELIM_TAC' =
+    REPEAT STRIP_TAC THEN REPEAT DIST_ELIM_TAC THEN
+    REWRITE_TAC[GSYM NOT_LT; LT_EXISTS] THEN
+    DISCH_THEN(CHOOSE_THEN SUBST_ALL_TAC) THEN POP_ASSUM MP_TAC THEN
+    CONV_TAC(LAND_CONV NUM_CANCEL_CONV) THEN
+    REWRITE_TAC[ADD_CLAUSES; NOT_SUC] in
+  let DIST_LE_CASES = prove
+   (`!m n p. dist(m,n) <= p <=> (m <= n + p) /\ (n <= m + p)`,
+    REPEAT GEN_TAC THEN REPEAT DIST_ELIM_TAC THEN
+    REWRITE_TAC[GSYM ADD_ASSOC; LE_ADD; LE_ADD_LCANCEL])
+  and DIST_ADDBOUND = prove
+   (`!m n. dist(m,n) <= m + n`,
+    REPEAT GEN_TAC THEN DIST_ELIM_TAC THENL
+     [ONCE_REWRITE_TAC[ADD_SYM]; ALL_TAC] THEN
+    REWRITE_TAC[ADD_ASSOC; LE_ADDR])
+  and [DIST_TRIANGLE; DIST_ADD2; DIST_ADD2_REV] = (CONJUNCTS o prove)
+   (`(!m n p. dist(m,p) <= dist(m,n) + dist(n,p)) /\
+     (!m n p q. dist(m + n,p + q) <= dist(m,p) + dist(n,q)) /\
+     (!m n p q. dist(m,p) <= dist(m + n,p + q) + dist(n,q))`,
+    DIST_ELIM_TAC') in
+  DIST_LE_CASES,DIST_ADDBOUND,DIST_TRIANGLE,DIST_ADD2,DIST_ADD2_REV;;
+
+let DIST_TRIANGLE_LE = prove
+ (`!m n p q. dist(m,n) + dist(n,p) <= q ==> dist(m,p) <= q`,
+  REPEAT STRIP_TAC THEN MATCH_MP_TAC LE_TRANS THEN
+  EXISTS_TAC `dist(m,n) + dist(n,p)` THEN ASM_REWRITE_TAC[DIST_TRIANGLE]);;
+
+let DIST_TRIANGLES_LE = prove
+ (`!m n p q r s.
+        dist(m,n) <= r /\ dist(p,q) <= s ==> dist(m,p) <= dist(n,q) + r + s`,
+  REPEAT STRIP_TAC THEN MATCH_MP_TAC DIST_TRIANGLE_LE THEN
+  EXISTS_TAC `n:num` THEN GEN_REWRITE_TAC RAND_CONV [ADD_SYM] THEN
+  REWRITE_TAC[GSYM ADD_ASSOC] THEN MATCH_MP_TAC LE_ADD2 THEN
+  ASM_REWRITE_TAC[] THEN MATCH_MP_TAC DIST_TRIANGLE_LE THEN
+  EXISTS_TAC `q:num` THEN GEN_REWRITE_TAC RAND_CONV [ADD_SYM] THEN
+  REWRITE_TAC[LE_ADD_LCANCEL] THEN ONCE_REWRITE_TAC[DIST_SYM] THEN
+  ASM_REWRITE_TAC[]);;
+  
+end
+
+%% 166 realax.ml
