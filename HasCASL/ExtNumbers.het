@@ -1,4 +1,4 @@
-library HasCASL/Num
+library HasCASL/ExtNumbers
 version 0.1
 
 %author: D. Dietrich
@@ -19,7 +19,7 @@ spec HolNum =
    . not(SUC(n) = 0)      %(NOT_SUC)%
    . SUC(m) = SUC(n) <=> m = n %(SUC_INJ)%
    . forall P:Num->Logical. P(0) /\ (forall n:Num. P(n) => P(SUC(n))) => forall n:Num. P(n) %(num_INDUCTION)%
-%%   . !forall (e:A) . forall f. ?!fn. (fn _0 = e) /\ (!n. fn (SUC n) = f (fn n) n) %(num_Axiom)% 
+%%   . !forall (e:A) . forall f. ?!fn. (fn _0 = e) /\ (!n. fn (SUC n) = f (fn n) n) %(num_Axiom)%
    . forall m:Num. (m = 0) \/ (exists n:Num. m = SUC n) %(num_CASES)%
 end
 
@@ -33,22 +33,22 @@ then
 
   %% Definition of Addition
   forall m,n,p : Num
-     . 0 + m = m /\ SUC(n) + m = SUC(n + m) %(ADD)% %simp     
+     . 0 + m = m /\ SUC(n) + m = SUC(n + m) %(ADD)% %simp
 
   then %implies
 
   forall m,n,p : Num
   %% Theorems about Addition
-  
+
  . m + (SUC n) = SUC(m + n) %(ADD_SUC)%
- 
- . (forall n:Num. 0 + n = n) /\ 
-   (forall m:Num. m + 0 = m) /\ 
-   (forall m,n:Num . (SUC m) + n = SUC(m + n)) /\ 
+
+ . (forall n:Num. 0 + n = n) /\
+   (forall m:Num. m + 0 = m) /\
+   (forall m,n:Num . (SUC m) + n = SUC(m + n)) /\
    (forall m,n:Num. m + (SUC n) = SUC(m + n)) %(ADD_CLAUSES)%
 
  . m + n = n + m %(ADD_SYM)%
- 
+
  . m + (n + p) = (m + n) + p %(ADD_ASSOC)%
 
  . (m + n = n + m) /\
@@ -63,19 +63,19 @@ then
 
 end
 
-spec HolArithBit = HolArith 
+spec HolArithBit = HolArith
 then
   ops
     BIT0 : Num -> Num;
-    BIT1 : Num -> Num; 
+    BIT1 : Num -> Num;
     __ * __ : Num * Num -> Num;
     __ EXP __ : Num * Num -> Num;
-  
+
 then %def
   forall n:Num
   . BIT0 n = n + n      %(BIT0)%
   . BIT1 n = SUC(n + n) %(BIT1)%
-  
+
   %% Definition of Multiplication
   . (forall n:Num. NUMERAL(0) * n = NUMERAL(0)) /\
     (forall m,n:Num. (SUC m) * n = (m * n) + n) %(MULT)% %simp
@@ -139,7 +139,7 @@ then
     __ >= __ : Num * Num;
 
 then %def
-     
+
   . forall m:Num. (m <= 0) <=> (m = 0) /\
     forall m,n:Num . (m <= SUC n) <=> (m = SUC n) \/ (m <= n) %(LE)%
 
@@ -151,7 +151,7 @@ then %def
 
 then %implies
   forall m,n,p,q:Num
- 
+
  .  (SUC m <= n) <=> (m < n) %(LE_SUC_LT)%
  . (m < SUC n) <=> (m <= n) %(LT_SUC_LE)%
  . (SUC m <= SUC n) <=> (m <= n) %(LE_SUC)%
@@ -175,7 +175,7 @@ then %implies
  . m <= n \/ n < m %(LET_CASES)%
  . m < n \/ n <= m %(LTE_CASES)%
 
-%% Relationship between orderings.                                           
+%% Relationship between orderings.
 
  . (m <= n) <=> (m < n) \/ (m = n) %(LE_LT)%
  . (m < n) <=> (m <= n) /\ not(m = n) %(LT_LE)%
@@ -192,11 +192,11 @@ then %implies
    (forall n:Num. NUMERAL(BIT1(0)) <= n => NUMERAL(0) < n) /\
    (forall n:Num. NUMERAL(BIT1(0)) <= n => not(n = NUMERAL(0))) %(LE_1)%
 
-%% Relate the orderings to arithmetic operations.                            
+%% Relate the orderings to arithmetic operations.
 . (m <= n) <=> (exists d:Num. n = m + d) %(LE_EXISTS)%
 . (m < n) <=> (exists d:Num. n = m + SUC d) %(LT_EXISTS)%
 
-%% Interaction with addition.                                                
+%% Interaction with addition.
 
 . m <= m + n %(LE_ADD)%
 . n <= m + n %(LE_ADDR)%
@@ -211,7 +211,7 @@ then %implies
 . m < p /\ n <= q => m + n < p + q %(LTE_ADD2)%
 . m < p /\ n < q => m + n < p + q %(LT_ADD2)%
 
-%% And multiplication.                                                      
+%% And multiplication.
 
 . (NUMERAL(0) < m * n) <=> (NUMERAL(0) < m) /\ (NUMERAL(0) < n) %(LT_MULT)%
 . m <= n /\ p <= q => m * p <= n * q %(LE_MULT2)%
@@ -241,7 +241,7 @@ spec HolDistance = HolArithBitOrderedExt
 end
 
 spec HolNearlyAdditive = HolDistance
-then
+%[then
 
 let DIST_REFL = prove
  (`!n. dist(n,n) = 0`,
@@ -353,7 +353,7 @@ let DIST_TRIANGLES_LE = prove
   EXISTS_TAC `q:num` THEN GEN_REWRITE_TAC RAND_CONV [ADD_SYM] THEN
   REWRITE_TAC[LE_ADD_LCANCEL] THEN ONCE_REWRITE_TAC[DIST_SYM] THEN
   ASM_REWRITE_TAC[]);;
-  
-end
+
+]% end
 
 %% 166 realax.ml
