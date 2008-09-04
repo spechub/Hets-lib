@@ -76,13 +76,19 @@ logic HasCASL
 
 spec Reals =
      Nat and RichOrderedField with Elem |-> Real
+
 then
+  sort Nat < Real
+  forall n: Nat. (suc n):Real = 1 + n                   %(Nat2Real_embedding)%
+
+
   ops __<=__ :     Pred(Real * Pred(Real));
       __<=__ :     Pred(Pred(Real) * Real);
       isBounded : Pred(Pred(Real));
       inf,sup :   Pred(Real) ->? Real;
-      inj:        Nat -> Real
+
    forall r,s:Real; M:Pred(Real); n: Nat
+
    . M <= r <=> forall s:Real . M(s) => s <= r          %(Real_ub_def)%
    . r <= M <=> forall s:Real . M(s) => r <= s          %(Real_lb_def)%
    . inf(M)=r <=> r <= M /\ forall s:Real . s <= M => s <= r  %(Real_inf_def)%
@@ -90,9 +96,7 @@ then
    . isBounded(M) <=> exists ub,lb:Real . lb <= M /\ M <= ub
                                                         %(Real_isBounded_def)%
    . isBounded(M) => def inf(M) /\ def sup(M)  %(completeness)%
-   . inj 0 = 0                                          %(Real_inj_0)%
-   . inj (suc n) = 1 + inj n                    %(Real_inj_suc)%
-   . exists n: Nat. r <= inj n                  %(Real_archimedian)%
+   . exists n: Nat. r <= n                     %(Real_archimedian)%
 then %def
      ops
         __-__: Real * Real -> Real;
