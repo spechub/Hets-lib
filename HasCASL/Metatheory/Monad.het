@@ -10,9 +10,9 @@ logic HasCASL
 
 spec Functor =
 class Functor < Type -> Type {
-vars  f: Functor; a, b, c: Type
-op    map : (a -> b) -> f a -> f b
-vars  x: f a; f: a -> b; g: b -> c
+vars  F: Functor; a, b, c: Type
+op    map : (a -> b) -> F a -> F b
+vars  x: F a; f: a -> b; g: b -> c
 . map (\ y: a .! y) x = x
 . map (\ y: a .! g (f y)) x = map g (map f x) }
 
