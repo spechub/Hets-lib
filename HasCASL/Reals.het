@@ -1,7 +1,7 @@
 library HasCASL/Reals
 version 0.2
 
-%author: T. Mossakowski, S. Wölfl, E. Schulz
+%author: T. Mossakowski, S. WÃ¶lfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
 from Basic/Numbers get
@@ -73,98 +73,108 @@ spec RichOrderedField = ExtOrderedField[FieldWithOrdering]
 
 logic HasCASL
 
-spec Reals =
-     Nat and Int and Rat and RichOrderedField with Elem |-> Real
-
-then
-  sort Rat < Real  %% the embedding follows from the overloaded functions
-
-  ops __<=__ :     Pred(Real * Pred(Real));
-      __<=__ :     Pred(Pred(Real) * Real);
-      isBounded : Pred(Pred(Real));
-      inf,sup :   Pred(Real) ->? Real;
-
-   forall r,s:Real; M:Pred(Real); n: Nat
-
-   . M <= r <=> forall s:Real . M(s) => s <= r          %(Real_ub_def)%
-   . r <= M <=> forall s:Real . M(s) => r <= s          %(Real_lb_def)%
-   . inf(M)=r <=> r <= M /\ forall s:Real . s <= M => s <= r  %(Real_inf_def)%
-   . sup(M)=r <=> M <= r /\ forall s:Real . M <= s => r <= s  %(Real_sup_def)%
-   . isBounded(M) <=> exists ub,lb:Real . lb <= M /\ M <= ub
-                                                        %(Real_isBounded_def)%
-   . isBounded(M) => def inf(M) /\ def sup(M)  %(completeness)%
-   . exists n: Nat. r <= n                     %(Real_archimedian)%
+spec Reals = FieldWithOrdering with Elem |-> Real
 then %def
-     ops
-        __-__: Real * Real -> Real;
-        |__| : Real -> Real;
-        __/__: Real * Real ->? Real;
-        sqr__: Real -> Real;
-        sqrt__: Real ->? Real;
-        2    : Real;
-        half : Real -> Real
-     forall r,r',r'':Real
-     . | r | = max(r,-r)                %(Real_abs_def)%
-     . sqr(r) = r * r                   %(Real_sqr_def)%
-     . def sqrt(r) <=> r >= 0           %(Real_sqrt_dom)%
-     . sqrt(sqr(r)) = | r |             %(Real_sqrt_idef)%
-     . 2 = 1 + 1                        %(Real_2_def)%
-     . r-r' = r + -r'                   %(Real_minus_def)%
-     . not def(r/0)                     %(Real_divide_dom)%
-     . not (r' = 0) => r/r' = r'' <=> r'' * r' = r      %(Real_divide_idef)%
-     . 2 * half(r) = r                  %(Real_half_idef)%
-then %implies
-     forall a,b,c,e,r,s:Real
-     . 1>0                              %(one_greater_zero)%
-     . 0<=1                             %(zero_leq_one)%
-     . r>0 => half(r)>0                 %(half_gt_zero)%
-     . r<=s => s+(half(r-s))<=s         %(half_plus_minus)%
-     . a<=b /\ c<=e => a+c<=b+e         %(add_monotone)%
-     . not (a<=b) => a-b>0              %(sub_leq)%
-     . a<=half(a-b)+b => a<=b           %(half_leq)%
-     . 0<=r => 0<=half(r)               %(half_leq_zero)%
-     . a+b=b+a                          %(comm_add)%
-  . half(r+s) = half(r) + half(s)       %(Real_half_plus)%
-  . half(r-s) = half(r) - half(s)       %(Real_half_minus)%
-  . r - half(r) = half(r)               %(Real_minus_half)%
-  . half(r) <= half (s) <=> r <= s      %(Real_half_monot)%
+  preds
+    isBoundedAbove : Pred(Real);
+    nonempty : Pred(Real);
+    . forall S: Pred(Real) . isBoundedAbove(S) <=> (exists B:Real . forall x:Real. S(x) => x <= B); %(Real_boundedabove)%
+    . forall S: Pred(Real) . (exists x:Real. S(x)) %(nonempty)%
+then 
+  ops  inf : Pred(Real) ->? Real;
+  . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
+  . forall S: Pred(Real). nonempty(S) /\ isBoundedAbove(S) => exists m:Real. m=inf(S) %(Real_completeness)%
 end
 
+%[spec ExtReals = Reals]%
+%[then     ]%
+%[  ops __<=__ :     Pred(Real * Pred(Real));]%
+%[      __<=__ :     Pred(Pred(Real) * Real);]%
 
-spec FieldWithValuation =
-     Field
-and  Reals
-then
-     op val: Elem -> Real
-     forall x,y:Elem
-     . val(x) >= 0              %(non-negative)%
-     . val(x) = 0 <=> x = 0     %(pos-definite)%
-     . val(x * y) = val(x) * val(y) %(multiplic)%
-     . val(x + y) <= val(x) + val(y) %(triangle)%
-then %implies
-     . val(1) = 1
-end
+%[      isBounded : Pred(Pred(Real));]%
+%[      inf,sup :   Pred(Real) ->? Real;]%
+
+%[   forall r,s:Real; M:Pred(Real); n: Nat]%
+
+%[   . M <= r <=> forall s:Real . M(s) => s <= r          %(Real_ub_def)%]%
+%[   . r <= M <=> forall s:Real . M(s) => r <= s          %(Real_lb_def)%]%
+%[   . inf(M)=r <=> r <= M /\ forall s:Real . s <= M => s <= r  %(Real_inf_def)%]%
+%[   . sup(M)=r <=> M <= r /\ forall s:Real . M <= s => r <= s  %(Real_sup_def)%]%
+%[   . isBounded(M) <=> exists ub,lb:Real . lb <= M /\ M <= ub]%
+%[                                                        %(Real_isBounded_def)%]%
+%[   . isBounded(M) => def inf(M) /\ def sup(M)  %(completeness)%]%
+%[   . exists n: Nat. r <= n                     %(Real_archimedian)%]%
+%[then %def]%
+%[     ops]%
+%[        __-__: Real * Real -> Real;]%
+%[        |__| : Real -> Real;]%
+%[        __/__: Real * Real ->? Real;]%
+%[        sqr__: Real -> Real;]%
+%[        sqrt__: Real ->? Real;]%
+%[        2    : Real;]%
+%[        half : Real -> Real]%
+%[     forall r,r',r'':Real]%
+%[     . | r | = max(r,-r)                %(Real_abs_def)%]%
+%[     . sqr(r) = r * r                   %(Real_sqr_def)%]%
+%[     . def sqrt(r) <=> r >= 0           %(Real_sqrt_dom)%]%
+%[     . sqrt(sqr(r)) = | r |             %(Real_sqrt_idef)%]%
+%[     . 2 = 1 + 1                        %(Real_2_def)%]%
+%[     . r-r' = r + -r'                   %(Real_minus_def)%]%
+%[     . not def(r/0)                     %(Real_divide_dom)%]%
+%[     . not (r' = 0) => r/r' = r'' <=> r'' * r' = r      %(Real_divide_idef)%]%
+%[     . 2 * half(r) = r                  %(Real_half_idef)%]%
+%[then %implies]%
+%[     forall a,b,c,e,r,s:Real]%
+%[     . 1>0                              %(one_greater_zero)%]%
+%[     . 0<=1                             %(zero_leq_one)%]%
+%[     . r>0 => half(r)>0                 %(half_gt_zero)%]%
+%[     . r<=s => s+(half(r-s))<=s         %(half_plus_minus)%]%
+%[     . a<=b /\ c<=e => a+c<=b+e         %(add_monotone)%]%
+%[     . not (a<=b) => a-b>0              %(sub_leq)%]%
+%[     . a<=half(a-b)+b => a<=b           %(half_leq)%]%
+%[     . 0<=r => 0<=half(r)               %(half_leq_zero)%]%
+%[     . a+b=b+a                          %(comm_add)%]%
+%[  . half(r+s) = half(r) + half(s)       %(Real_half_plus)%]%
+%[  . half(r-s) = half(r) - half(s)       %(Real_half_minus)%]%
+%[  . r - half(r) = half(r)               %(Real_minus_half)%]%
+%[  . half(r) <= half (s) <=> r <= s      %(Real_half_monot)%]%
+%[end]%
 
 
-spec FieldWithArchimedianValuation =
-     Field
-and  Reals
-then
-     op val: Elem -> Real
-     forall x,y:Elem
-     . val(x) >= 0              %(non-negative)%
-     . val(x) = 0 <=> x = 0     %(pos-definite)%
-     . val(x * y) = val(x) * val(y) %(multiplic)%
-     . val(x + y) <= max(val(x),val(y)) %(ultra)%
-end
-
-view FieldWithValuation_in_FieldWithArchimedianValuation :
-     FieldWithValuation
-to   FieldWithArchimedianValuation
-end
+%[spec FieldWithValuation =]%
+%[     Field]%
+%[and  Reals]%
+%[then]%
+%[     op val: Elem -> Real]%
+%[     forall x,y:Elem]%
+%[     . val(x) >= 0              %(non-negative)%]%
+%[     . val(x) = 0 <=> x = 0     %(pos-definite)%]%
+%[     . val(x * y) = val(x) * val(y) %(multiplic)%]%
+%[     . val(x + y) <= val(x) + val(y) %(triangle)%]%
+%[then %implies]%
+%[     . val(1) = 1]%
+%[end]%
 
 
-view Real_as_FieldWithArchimedianValuation :
-     FieldWithArchimedianValuation to Reals
-=    Elem |-> Real, val |-> |__|
-end
+%[spec FieldWithArchimedianValuation =]%
+%[     Field]%
+%[and  Reals]%
+%[then]%
+%[     op val: Elem -> Real]%
+%[     forall x,y:Elem]%
+%[     . val(x) >= 0              %(non-negative)%]%
+%[     . val(x) = 0 <=> x = 0     %(pos-definite)%]%
+%[     . val(x * y) = val(x) * val(y) %(multiplic)%]%
+%[     . val(x + y) <= max(val(x),val(y)) %(ultra)%]%
+%[end]%
+
+%[view FieldWithValuation_in_FieldWithArchimedianValuation :]%
+%[     FieldWithValuation]%
+%[to   FieldWithArchimedianValuation]%
+%[end]%
+
+
+%[view Real_as_FieldWithArchimedianValuation :]%
+%[     FieldWithArchimedianValuation to Reals]%
+%[=    Elem |-> Real, val |-> |__|]%
+%[end]%

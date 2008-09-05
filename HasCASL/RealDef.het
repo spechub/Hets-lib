@@ -10,9 +10,20 @@ from Basic/Numbers get
 from Basic/RelationsAndOrders get
         EquivalenceRelation, TotalOrder
 
+from HasCASL/Reals get 
+        Reals
 
 logic HasCASL
 
+
+%[spec Quotconstruction = EquivalenceRelation]%
+%[then]%
+%[   generated type QuotElem ::= __ - __(Elem;Elem)]%
+%[   forall a,b,c,d: Elem]%
+%[   .  a - b = c - d <=> a + d = c + b    %(equality_Quot)%]%
+%[   sort  Elem < QuotElem	]%
+%[   forall a: Elem . a = a - 0             %(Elem2Quot_embedding)%]%
+%[end]%
 
 %% we use x to denote sequences
 %% m,n,p to denote natural numbers
@@ -21,7 +32,7 @@ logic HasCASL
 %% injNat for injecting the naturals
 %% <<= as ordering on naturals
 
-spec PReal = Nat
+spec Naddfunctions = Nat
 then %def
   ops
     dist: Nat*Nat -> Nat;
@@ -74,31 +85,66 @@ then %implies
 end
 
 view naddequivEquivalenceRelation :
-     EquivalenceRelation to PReal
+     EquivalenceRelation to Naddfunctions
 =    Elem |-> Nadd,
      __ ~ __ |-> __ === __
 end
 
 view naddorderTotalOrder :
-    TotalOrder to PReal
+    TotalOrder to Naddfunctions
 =   __ <= __ |-> __ <<= __,
     Elem |-> Nadd
 end
 
-spec SignedReal = PReal
-then %mono
-
-   generated type Sreal ::= __ - __(Nadd;Nadd)
+spec SignedReal = Naddfunctions
+then
+   generated type SReal ::= __ - __(Nadd;Nadd)
    forall a,b,c,d: Nadd
-   .  a - b = c - d <=> a ++ d = c ++ b    %(equality_Sreal)%
-
-   sort  Nadd < Sreal
-   forall a: Nadd . a = a - 0             %(Nadd2Sreal_embedding)%
+   .  a - b = c - d <=> a ++ d = c ++ b    %(equality_Quot)%
+   sort  Nadd < SReal	
+   forall a: Nadd . a = a - 0             %(Nadd2SReal_embedding)%
 
 ops
-  __ ++ __ : Sreal * Sreal -> Sreal;
+  inv_mul : SReal -> SReal;                %% multiplicative inverse
+  __ ++ __ : SReal * SReal -> SReal;       %% addition
+  __ ** __ :SReal * SReal -> SReal;        %% multiplication
+  inv_add :SReal -> SReal;                 %% additive inverse
 
-pred
-  __ <<= __ : Sreal * Sreal -> Sreal;
+  . forall x,y:Nadd .  inv_add(x - y) = (y - x) %(SReal_addinv)%
+  . forall x1,x2,y1,y2:Nadd . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
+  . forall x1,x2,y1,y2:Nadd . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
+  
+preds  __ <<= __ : SReal * SReal;
+       __ === __ : SReal * SReal;      
+  . forall x1,x2,y1,y2:Nadd . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
+  . forall x1,x2,y1,y2:Nadd . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
+%[  . forall x,y:SReal . inv(x,y) = (0 - 0) when (x = y) ]%
+%[                    else ((inv(@d. x = y + d), &0) when (y <<= x)  ]%
+%[                    else (&0, inv(@d. y = x + d))]%
+%[			  )]%
+end
+
+view SignedRealEquiv :
+     EquivalenceRelation to SignedReal
+=    Elem |-> SReal,
+     __ ~ __ |-> __ === __
+end
+
+view SignedRealTotalOrder :
+    TotalOrder to SignedReal
+=   __ <= __ |-> __ <<= __,
+    Elem |-> Nadd
+end
+
+view RealsSignedReal :
+  Reals to SignedReal
+= 
+  sort Real |-> SReal,
+  pred __ <= __ |-> __ <<= __,
+  ops 
+    __ + __ |-> __ ++ __,
+    __ * __ |-> __ ** __,
+    0 |-> 0,
+    1 |-> 1
 end
 
