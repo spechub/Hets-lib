@@ -118,6 +118,7 @@ preds  __ <<= __ : SReal * SReal;
        __ === __ : SReal * SReal;      
   . forall x1,x2,y1,y2:Nadd . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
   . forall x1,x2,y1,y2:Nadd . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
+  . forall x:SReal. inv_mul(x) = x
 %[  . forall x,y:SReal . inv(x,y) = (0 - 0) when (x = y) ]%
 %[                    else ((inv(@d. x = y + d), &0) when (y <<= x)  ]%
 %[                    else (&0, inv(@d. y = x + d))]%
@@ -136,8 +137,9 @@ view SignedRealTotalOrder :
     Elem |-> Nadd
 end
 
+
 view RealsSignedReal :
-  Reals to SignedReal
+  {Reals hide inf,nonempty, isBoundedAbove} to SignedReal
 = 
   sort Real |-> SReal,
   pred __ <= __ |-> __ <<= __,
@@ -145,6 +147,7 @@ view RealsSignedReal :
     __ + __ |-> __ ++ __,
     __ * __ |-> __ ** __,
     0 |-> 0,
-    1 |-> 1
+    1 |-> 1,
+    -__ |-> inv_add
 end
 
