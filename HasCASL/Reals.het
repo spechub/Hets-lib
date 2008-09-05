@@ -1,11 +1,11 @@
-library HasCASL/Real
+library HasCASL/Reals
 version 0.2
 
 %author: T. Mossakowski, S. Wölfl, E. Schulz
 %date: 12-10-2005
 
 from Basic/Numbers get
-        Nat
+        Nat, Int, Rat
 from Basic/RelationsAndOrders get
         TotalOrder, ExtTotalOrder, RichTotalOrder
 from Basic/Algebra_I get
@@ -71,16 +71,13 @@ end
 spec RichOrderedField = ExtOrderedField[FieldWithOrdering]
 
 
-
 logic HasCASL
 
 spec Reals =
-     Nat and RichOrderedField with Elem |-> Real
+     Nat and Int and Rat and RichOrderedField with Elem |-> Real
 
 then
-  sort Nat < Real
-  forall n: Nat. (suc n):Real = 1 + n                   %(Nat2Real_embedding)%
-
+  sort Rat < Real  %% the embedding follows from the overloaded functions
 
   ops __<=__ :     Pred(Real * Pred(Real));
       __<=__ :     Pred(Pred(Real) * Real);
