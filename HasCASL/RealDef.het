@@ -21,7 +21,7 @@ logic HasCASL
 %% injNat for injecting the naturals
 %% <<= as ordering on naturals
 
-spec NatDist = Nat
+spec PReal = Nat
 then %def
   ops
     dist: Nat*Nat -> Nat;
@@ -33,12 +33,18 @@ then %def
      (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
 
 then %mono
-  type Nadd = {X:Nat->Nat . is_nadd(X)}
-%%  type Nat < Nadd
-%%  ops
-%%! injNat(k:Nat) : Nat -> Nadd = \n:Nat. k * n;  %% Injection Natural Numbers
-%%!   x:Nadd ++ y:Nadd -> Nadd =  \n. x(n) + y(n) %% Addition on Nadd
-
+  free type NaddAux ::= NAdd (unAdd: Nat->Nat)
+  type Nadd = {X: NaddAux . is_nadd(unAdd X)}
+  sort Nat < Nadd
+  forall k:Nat . k = NAdd (\n:Nat.! k * n) %% Injection Natural Numbers
+ops
+    __ ++ __: Nadd * Nadd -> Nadd;
+    __ ** __: Nadd * Nadd -> Nadd;
+    nadd_rinv:Nadd -> Nadd;
+    
+    . forall x,y:Nadd . x ++ y = NAdd \n:Nat.! (unAdd x)(n) + (unAdd y)(n)   %% Addition on Nadd
+    . forall x,y:Nadd . x ** y  = NAdd \n:Nat.! (unAdd x)((unAdd y)(n))      %% Multiplication on Nadd
+    . forall x:Nadd . nadd_rinv(x) = NAdd \n:Nat.! (n * n) div (unAdd x)(n)  %% RInverse on Nadd
 
 then %def
   preds
@@ -46,7 +52,11 @@ then %def
    __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
 
   . forall x,y:Nadd . x === y <=>
-      (exists B:Nat. forall n:Nat. dist(x(n),y(n)) <= B)
+      (exists B:Nat. forall n:Nat. dist((unAdd x)(n), (unAdd y)(n)) <= B)
+
+ops
+    nadd_inv:Nadd -> Nadd;
+    . forall x:Nadd . nadd_inv(x) = 0 when (x === 0) else nadd_rinv(x)  %% Proper Inverse
 
 then %implies
   forall m,n,p:Nat
@@ -64,15 +74,31 @@ then %implies
 end
 
 view naddequivEquivalenceRelation :
-     EquivalenceRelation to NatDist
+     EquivalenceRelation to PReal
 =    Elem |-> Nadd,
      __ ~ __ |-> __ === __
 end
 
-
-
 view naddorderTotalOrder :
-    TotalOrder to NatDist
+    TotalOrder to PReal
 =   __ <= __ |-> __ <<= __,
     Elem |-> Nadd
 end
+
+spec SignedReal = PReal
+then %mono
+
+   generated type Sreal ::= __ - __(Nadd;Nadd)
+   forall a,b,c,d: Nadd
+   .  a - b = c - d <=> a ++ d = c ++ b    %(equality_Sreal)%
+
+   sort  Nadd < Sreal
+   forall a: Nadd . a = a - 0             %(Nadd2Sreal_embedding)%
+
+ops
+  __ ++ __ : Sreal * Sreal -> Sreal;
+
+pred
+  __ <<= __ : Sreal * Sreal -> Sreal;
+end
+
