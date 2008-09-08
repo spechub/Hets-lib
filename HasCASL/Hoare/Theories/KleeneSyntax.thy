@@ -83,6 +83,37 @@ lemma ret_star: "star {x \<leftarrow> p; q x} = do {p \<leftarrow> star {p \<lef
   apply assumption 
   by simp
 
+lemma cutStar0: 
+  assumes "\<forall>a b. F (a \<oplus> b) = (F a \<oplus> F b)"
+  shows   "F p \<preceq> F (star {x \<leftarrow> p; q x})"
+proof-
+  have  "F (star {x \<leftarrow> p; q x}) = (F p \<oplus> F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x}))"
+    using assms [THEN spec [of _ p], THEN spec [of _ "star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x}"]] by (subst unfLeft)
+  hence "(F p \<oplus> F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x})) \<preceq> F (star {x \<leftarrow> p; q x})"
+    by simp
+  thus ?thesis
+    by (subst (asm) comm) (rule ileq_plusE)
+qed   
+
+lemma cutStar1: 
+  assumes "\<forall>a b. F (a \<oplus> b) = (F a \<oplus> F b)"
+  shows   "F (do {x \<leftarrow> p; q x}) \<preceq> F (star {x \<leftarrow> p; q x})"
+proof-
+  from assms have A:"F (do {x \<leftarrow> p; q x}) \<preceq> F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x})"
+    proof-
+      assume "\<forall>a b. F (a \<oplus> b) = (F a \<oplus> F b)"
+      thus ?thesis by (rule cutStar0 [of F "do {x \<leftarrow> p; q x}" q])
+    qed
+  from assms [THEN spec [of _ p], THEN spec [of _ "star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x}"]]
+    have "F (star {x \<leftarrow> p; q x}) = (F p \<oplus> F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x})) "
+      by (subst unfLeft) simp
+    hence "(F p \<oplus> F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x})) \<preceq> F (star {x \<leftarrow> p; q x})"
+      by simp
+    hence B: "F (star {x \<leftarrow> do {x \<leftarrow> p; q x}; q x}) \<preceq> F (star {x \<leftarrow> p; q x})"
+      by (rule ileq_plusE)
+  from A and B show ?thesis
+    by (rule ileq_assoc)
+qed 
 end
 
 
