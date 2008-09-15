@@ -5,7 +5,7 @@ version 0.1
 %date: 09-2008
 
 from Basic/Numbers get
-        Nat
+        Nat, Rat
 
 from Basic/RelationsAndOrders get
         EquivalenceRelation, TotalOrder
@@ -15,6 +15,10 @@ from HasCASL/Reals get
 
 logic HasCASL
 
+%%&&spec Quotient[EquivalenceRelation]
+%%end
+
+
 %% we use x to denote sequences
 %% m,n,p to denote natural numbers
 %% B always represeents a bound
@@ -22,43 +26,12 @@ logic HasCASL
 %% injNat for injecting the naturals
 %% <<= as ordering on naturals
 
-spec Naddfunctions = Nat
+
+spec NatMetric = Nat
 then %def
   ops
     dist: Nat*Nat -> Nat;
-  preds
-   is_nadd:Nat->Nat;
-
   . forall m,n:Nat. dist(m,n) = (m -! n) + (n -! m)
-  . forall x:Nat->Nat . is_nadd(x) <=>
-     (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
-
-then %mono
-  free type NaddAux ::= NAdd (unAdd: Nat->Nat)
-  type Nadd = {X: NaddAux . is_nadd(unAdd X)}
-  sort Nat < Nadd
-  forall k:Nat . k = NAdd (\n:Nat.! k * n) %% Injection Natural Numbers
-ops
-    __ ++ __: Nadd * Nadd -> Nadd;
-    __ ** __: Nadd * Nadd -> Nadd;
-    nadd_rinv:Nadd -> Nadd;
-    
-    . forall x,y:Nadd . x ++ y = NAdd \n:Nat.! (unAdd x)(n) + (unAdd y)(n)   %% Addition on Nadd
-    . forall x,y:Nadd . x ** y  = NAdd \n:Nat.! (unAdd x)((unAdd y)(n))      %% Multiplication on Nadd
-    . forall x:Nadd . nadd_rinv(x) = NAdd \n:Nat.! (n * n) div (unAdd x)(n)  %% RInverse on Nadd
-
-then %def
-  preds
-   __ === __ : Nadd*Nadd;          %% Equivalence Relation
-   __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
-
-  . forall x,y:Nadd . x === y <=>
-      (exists B:Nat. forall n:Nat. dist((unAdd x)(n), (unAdd y)(n)) <= B)
-
-ops
-    nadd_inv:Nadd -> Nadd;
-    . forall x:Nadd . nadd_inv(x) = 0 when (x === 0) else nadd_rinv(x)  %% Proper Inverse
-
 then %implies
   forall m,n,p:Nat
   . dist(n,n) = 0
@@ -74,6 +47,91 @@ then %implies
   . (dist(m,n) = 0) <=> (m = n)
 end
 
+
+spec PRat = %mono
+
+     Nat
+
+then %mono
+
+     generated type PosRat ::= __ / __ (Nat;Pos)
+     forall i,j: Nat; p,q: Pos
+     . i / p = j / q <=> i*q = j*p              %(equality_Rat)%
+
+     sort Nat < PosRat
+     forall i:Nat . i = i / 1                   %(Nat2Rat_embedding)%
+
+then %def
+
+     preds    __ <= __, __ < __,
+              __ >= __, __ > __: PosRat * PosRat;
+
+  %% implied operation attributes :
+then
+     ops __+__:   PosRat * PosRat -> PosRat;
+         __*__:   PosRat * PosRat -> PosRat;
+
+then
+    forall p,q:Pos; n:Nat; i,j: Nat; x,y,z: PosRat
+
+  %% axioms concerning predicates]%
+
+     . (i / p <= j / q <=> i * q <= j * p ) %(leq_def_Rat)%
+     . x >= y <=> y <= x                    %(geq_def_Rat)%
+     . x < y <=> (x <= y /\ not x=y )       %(less_def_Rat)%
+     . x > y <=> y < x                      %(greater_def_Rat)%
+
+  %% axioms concerning operations
+
+     . (i / p) + (j / q) =	
+       (i * q + j * p) / (p * q)        %(add_def_Rat)%
+     . (i / p) * (j / q) = 
+       (i * j) / (p * q)                %(mult_def_Rat)%
+end
+
+
+%[view pratEquivalenceRelation :]%
+%[     EquivalenceRelation to PrePRat]%
+%[=    Elem |-> NatPair ,]%
+%[     __ ~ __ |-> __ ~ __]%
+%[end]%
+
+
+spec Naddfunctions = Nat and NatMetric
+then %def
+  preds
+   is_nadd:Nat->Nat;
+
+  . forall x:Nat->Nat . is_nadd(x) <=>
+     (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
+
+then %mono
+  free type NaddAux ::= mk_NaddAux (dest_NaddAux: Nat->Nat)
+  type Nadd = {X: NaddAux . is_nadd(dest_NaddAux X)}
+  sort Nat < Nadd
+  forall k:Nat . k = mk_NaddAux (\n:Nat.! k * n) %% Injection Natural Numbers
+ops
+    __ ++ __: Nadd * Nadd -> Nadd;
+    __ ** __: Nadd * Nadd -> Nadd;
+    nadd_rinv:Nadd -> Nadd;
+    
+    . forall x,y:Nadd . x ++ y = mk_NaddAux \n:Nat.! (dest_NaddAux x)(n) + (dest_NaddAux y)(n)   %% Addition on Nadd
+    . forall x,y:Nadd . x ** y  = mk_NaddAux \n:Nat.! (dest_NaddAux x)((dest_NaddAux y)(n))      %% Multiplication on Nadd
+    . forall x:Nadd . nadd_rinv(x) = mk_NaddAux \n:Nat.! (n * n) div (dest_NaddAux x)(n)  %% RInverse on Nadd
+
+then %def
+  preds
+   __ === __ : Nadd*Nadd;          %% Equivalence Relation
+   __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
+
+  . forall x,y:Nadd . x === y <=>
+      (exists B:Nat. forall n:Nat. dist((dest_NaddAux x)(n), (dest_NaddAux y)(n)) <= B)
+
+ops
+    nadd_inv:Nadd -> Nadd;
+    . forall x:Nadd . nadd_inv(x) = 0 when (x === 0) else nadd_rinv(x)  %% Proper Inverse
+end
+
 view naddequivEquivalenceRelation :
      EquivalenceRelation to Naddfunctions
 =    Elem |-> Nadd,
@@ -86,13 +144,22 @@ view naddorderTotalOrder :
     Elem |-> Nadd
 end
 
-spec SignedReal = Naddfunctions
+spec PosReal = Naddfunctions
 then
-   generated type SReal ::= __ - __(Nadd;Nadd)
-   forall a,b,c,d: Nadd
-   .  a - b = c - d <=> a ++ d = c ++ b    %(equality_Quot)%
-   sort  Nadd < SReal	
-   forall a: Nadd . a = a - 0             %(Nadd2SReal_embedding)%
+  free type PReal ::= mk_PReal(Nadd) (dest_PReal:Nadd)
+  forall a,b:Nadd . (mk_PReal a) = (mk_PReal b) <=> a === b
+  sort Nadd < PReal;
+  ops __ ++ __ :PReal * PReal -> PReal;
+  %%. forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
+end
+
+spec SignedReal = PosReal
+then
+   generated type SReal ::= __ - __(PReal;PReal)
+   sort  PReal < SReal	
+   forall a,b,c,d: PReal
+%%   .  a - b = c - d <=> (dest_PReal a) ++ (dest_PReal d) = (dest_PReal c) ++ (dest_PReal b)    %(equality_Quot)%
+   . forall a: PReal . a = a - 0             %(Nadd2SReal_embedding)%
 
 ops
   inv_mul : SReal -> SReal;                %% multiplicative inverse
@@ -100,14 +167,14 @@ ops
   __ ** __ :SReal * SReal -> SReal;        %% multiplication
   inv_add :SReal -> SReal;                 %% additive inverse
 
-  . forall x,y:Nadd .  inv_add(x - y) = (y - x) %(SReal_addinv)%
-  . forall x1,x2,y1,y2:Nadd . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
-  . forall x1,x2,y1,y2:Nadd . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
+  . forall x,y:PReal .  inv_add(x - y) = (y - x) %(SReal_addinv)%
+%%  . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
+%%  . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
   
 preds  __ <<= __ : SReal * SReal;
        __ === __ : SReal * SReal;      
-  . forall x1,x2,y1,y2:Nadd . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
-  . forall x1,x2,y1,y2:Nadd . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
   . forall x:SReal. inv_mul(x) = x
 %[  . forall x,y:SReal . inv(x,y) = (0 - 0) when (x = y) ]%
 %[                    else ((inv(@d. x = y + d), &0) when (y <<= x)  ]%
@@ -124,7 +191,7 @@ end
 view SignedRealTotalOrder :
     TotalOrder to SignedReal
 =   __ <= __ |-> __ <<= __,
-    Elem |-> Nadd
+    Elem |-> PReal
 end
 
 
@@ -141,3 +208,52 @@ view RealsSignedReal :
     -__ |-> inv_add
 end
 
+%% =============================================================================
+%% ==================================== Dedekind ===============================
+%% =============================================================================
+
+%% one problem that arises are many casesplits. instead one can go via Q^+ to R^+ 
+%% which reduces many cases
+%% Fundamentals of Abstract Analysis [Gleason- p. 121]
+
+
+spec DReal = Rat
+then
+  preds dedcut:Pred(Rat);
+  . forall X:Pred(Rat) . dedcut(X) <=> (exists x:Rat. X(x) /\ not(forall x:Rat. X(x)) 
+                                    /\ forall q:Rat. X(q) => forall r:Rat. r <=q => X(r)
+                                    /\ forall q:Rat. X(q) => exists r:Rat. X(r) /\ r>q)  
+  %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
+  %% the set of Real numbers is the set of all Dedikind Cuts 
+%[  type Real = {X: Pred(Rat) . dedcut(X)}]%
+%[  sort Rat < Real]%
+%[  forall x:Rat. Real(x) =  (\s:Rat . s < x)]%
+  %% sup(S)=union der ses
+  %% x+y = {x +y | x in X /\ y in Y}
+  %% x*y = {xy| x in X /\ y in Y}
+  %% x^{-1} = {w | exists d < 1. forall x in X. wx < d}
+end
+
+
+%% =============================================================================
+%% =================================== Cantor ==================================
+%% =============================================================================
+
+%% cohen and erich, thurston
+%% roberts 1962, going over positive rationals to positive reals, Roberts (1962)
+spec CReal = Rat
+then
+  preds 
+  Cauchy:(Nat->Rat); %% expresses the fact that a sequence is a cauchy sequence
+  samelimit:(Nat->Rat)*(Nat->Rat); %% expresses the fact that two sequences have the same limit without using the limit itself
+      
+then
+  . forall s:Nat->Rat. Cauchy(s) <=> (forall epsilon:Rat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => abs(s(m) - s(n)) < epsilon)
+  . forall s1,s2:Nat->Rat. samelimit(s1,s2) <=> forall epsilon:Rat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> abs(s1(n)-s2(n))<epsilon 
+end
+
+%[view samelimitequivalence :]%
+%[     EquivalenceRelation to CReal]%
+%[=    Elem |-> Nat->Rat,]%
+%[     __ ~ __ |-> samelimit]%
+%[end]%
