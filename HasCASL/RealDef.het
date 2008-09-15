@@ -146,11 +146,11 @@ end
 
 spec PosReal = Naddfunctions
 then
-  free type PReal ::= mk_PReal(Nadd) (dest_PReal:Nadd)
+  free type PReal ::= mk_PReal(dest_PReal:Nadd)
   forall a,b:Nadd . (mk_PReal a) = (mk_PReal b) <=> a === b
   sort Nadd < PReal;
   ops __ ++ __ :PReal * PReal -> PReal;
-  %%. forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
+  . forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
 end
 
 spec SignedReal = PosReal
