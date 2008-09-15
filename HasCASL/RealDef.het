@@ -15,8 +15,11 @@ from HasCASL/Reals get
 
 logic HasCASL
 
-%%&&spec Quotient[EquivalenceRelation]
-%%end
+spec Quotient[EquivalenceRelation] =
+  free type Quotient ::= mk_Quotient(dest_Quotient:Elem)
+  . forall a,b:Elem. mk_Quotient(a) = mk_Quotient(b) <=> a ~ b
+  sort Elem < Quotient
+end
 
 
 %% we use x to denote sequences
@@ -145,12 +148,15 @@ view naddorderTotalOrder :
 end
 
 spec PosReal = Naddfunctions
+%% ersetzen von PReal durch Quotient
 then
   free type PReal ::= mk_PReal(dest_PReal:Nadd)
   forall a,b:Nadd . (mk_PReal a) = (mk_PReal b) <=> a === b
   sort Nadd < PReal;
   ops __ ++ __ :PReal * PReal -> PReal;
+  ops __ ** __ :PReal * PReal -> PReal;
   . forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
+  . forall a,b:Nadd . (mk_PReal a) ** (mk_PReal b) = mk_PReal (a ** b)
 end
 
 spec SignedReal = PosReal
@@ -158,7 +164,7 @@ then
    generated type SReal ::= __ - __(PReal;PReal)
    sort  PReal < SReal	
    forall a,b,c,d: PReal
-%%   .  a - b = c - d <=> (dest_PReal a) ++ (dest_PReal d) = (dest_PReal c) ++ (dest_PReal b)    %(equality_Quot)%
+   .  a - b = c - d <=> (dest_PReal a) ++ (dest_PReal d) = (dest_PReal c) ++ (dest_PReal b)    %(equality_Quot)%
    . forall a: PReal . a = a - 0             %(Nadd2SReal_embedding)%
 
 ops
@@ -168,8 +174,9 @@ ops
   inv_add :SReal -> SReal;                 %% additive inverse
 
   . forall x,y:PReal .  inv_add(x - y) = (y - x) %(SReal_addinv)%
-%%  . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
-%%  . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
+  . forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
   
 preds  __ <<= __ : SReal * SReal;
        __ === __ : SReal * SReal;      
@@ -214,7 +221,7 @@ end
 
 %% one problem that arises are many casesplits. instead one can go via Q^+ to R^+ 
 %% which reduces many cases
-%% Fundamentals of Abstract Analysis [Gleason- p. 121]
+%% Fundamentals of Abstract Analysis [Gleason- p. 121], Landau
 
 
 spec DReal = Rat
@@ -225,9 +232,9 @@ then
                                     /\ forall q:Rat. X(q) => exists r:Rat. X(r) /\ r>q)  
   %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
   %% the set of Real numbers is the set of all Dedikind Cuts 
-%[  type Real = {X: Pred(Rat) . dedcut(X)}]%
-%[  sort Rat < Real]%
-%[  forall x:Rat. Real(x) =  (\s:Rat . s < x)]%
+  type DReal = {X: Pred(Rat) . dedcut(X)}
+  sort Rat < DReal
+  %%forall x:Rat. x =  \s:Rat .! s < x
   %% sup(S)=union der ses
   %% x+y = {x +y | x in X /\ y in Y}
   %% x*y = {xy| x in X /\ y in Y}
