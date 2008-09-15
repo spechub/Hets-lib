@@ -16,8 +16,8 @@ from HasCASL/Reals get
 logic HasCASL
 
 spec Quotient[EquivalenceRelation] =
-  free type Quotient ::= mk_Quotient(dest_Quotient:Elem)
-  . forall a,b:Elem. mk_Quotient(a) = mk_Quotient(b) <=> a ~ b
+  generated type Quotient ::= mk_quot(unquot:Elem)
+  . forall a,b:Elem. mk_quot(a) = mk_quot(b) <=> a ~ b
   sort Elem < Quotient
 end
 
@@ -30,8 +30,8 @@ end
 %% <<= as ordering on naturals
 
 
-spec NatMetric = Nat
-then %def
+spec NatDist = Nat
+then 
   ops
     dist: Nat*Nat -> Nat;
   . forall m,n:Nat. dist(m,n) = (m -! n) + (n -! m)
@@ -53,29 +53,28 @@ end
 
 spec PRat = %mono
 
-     Nat
+     Nat 
 
 then %mono
 
-     generated type PosRat ::= __ / __ (Nat;Pos)
+     generated type PRat ::= __ / __ (Nat;Pos)
      forall i,j: Nat; p,q: Pos
      . i / p = j / q <=> i*q = j*p              %(equality_Rat)%
 
-     sort Nat < PosRat
+     sort Nat < PRat
      forall i:Nat . i = i / 1                   %(Nat2Rat_embedding)%
 
 then %def
 
      preds    __ <= __, __ < __,
-              __ >= __, __ > __: PosRat * PosRat;
+              __ >= __, __ > __: PRat * PRat;
 
   %% implied operation attributes :
 then
-     ops __+__:   PosRat * PosRat -> PosRat;
-         __*__:   PosRat * PosRat -> PosRat;
-
-then
-    forall p,q:Pos; n:Nat; i,j: Nat; x,y,z: PosRat
+     ops __+__:   PRat * PRat -> PRat;
+         __*__:   PRat * PRat -> PRat;
+ then
+    forall p,q:Pos; n:Nat; i,j: Nat; x,y,z: PRat
 
   %% axioms concerning predicates]%
 
@@ -93,6 +92,38 @@ then
 end
 
 
+spec PRatDist = PRat
+then
+  ops
+    __-!__ :         PRat * PRat ->  PRat;
+    __ -?__ : PRat * PRat ->? PRat;
+    dist: PRat*PRat -> PRat;
+  forall p,q,r:PRat
+  .  p -! q = 0 if p < q
+  .  p -! q = p -? q if p >= q
+  . forall p,q:PRat. dist(p,q) = (p -! q) + (p -! q)
+  . def(p-?q) <=> p >= q             %(sub_dom_Nat)% %implied 
+  . p -? q = r <=> p = r + q         %(sub_def_Nat)%
+
+then %implies
+  forall m,n,p:PRat
+  . dist(n,n) = 0
+  . dist(0,n) = n
+  . dist(n,0) = n
+  . dist(m,n) = dist(n,m)
+  . dist(m + n,m + p) = dist(n,p)
+  . dist(m + p,n + p) = dist(m,n)
+  . dist(m + n,m) = n
+  . dist(m,m + n) = n
+  . m * dist(n,p) = dist(m * n,m * p)
+  . dist(m,n) * p = dist(m * p,n * p)
+  . (dist(m,n) = 0) <=> (m = n)
+end
+
+
+
+
+
 %[view pratEquivalenceRelation :]%
 %[     EquivalenceRelation to PrePRat]%
 %[=    Elem |-> NatPair ,]%
@@ -100,7 +131,7 @@ end
 %[end]%
 
 
-spec Naddfunctions = Nat and NatMetric
+spec Naddfunctions = Nat and NatDist
 then %def
   preds
    is_nadd:Nat->Nat;
@@ -147,16 +178,15 @@ view naddorderTotalOrder :
     Elem |-> Nadd
 end
 
-spec PosReal = Naddfunctions
+spec PosReal = Naddfunctions and Quotient[Naddfunctions fit Elem |-> Nadd, __~__ |-> __===__] with sort Quotient |-> PReal
 %% ersetzen von PReal durch Quotient
 then
-  free type PReal ::= mk_PReal(dest_PReal:Nadd)
-  forall a,b:Nadd . (mk_PReal a) = (mk_PReal b) <=> a === b
-  sort Nadd < PReal;
+%%  free type PReal ::= mk_PReal(dest_PReal:Nadd)
+%%  sort Nadd < PReal;
   ops __ ++ __ :PReal * PReal -> PReal;
   ops __ ** __ :PReal * PReal -> PReal;
-  . forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
-  . forall a,b:Nadd . (mk_PReal a) ** (mk_PReal b) = mk_PReal (a ** b)
+  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
+  . forall a,b:Nadd . (mk_quot a) ** (mk_quot b) = mk_quot (a ** b)
 end
 
 spec SignedReal = PosReal
@@ -164,7 +194,7 @@ then
    generated type SReal ::= __ - __(PReal;PReal)
    sort  PReal < SReal	
    forall a,b,c,d: PReal
-   .  a - b = c - d <=> (dest_PReal a) ++ (dest_PReal d) = (dest_PReal c) ++ (dest_PReal b)    %(equality_Quot)%
+   .  a - b = c - d <=> (unquot a) ++ (unquot d) = (unquot c) ++ (unquot b)    %(equality_Quot)%
    . forall a: PReal . a = a - 0             %(Nadd2SReal_embedding)%
 
 ops
@@ -175,7 +205,7 @@ ops
 
   . forall x,y:PReal .  inv_add(x - y) = (y - x) %(SReal_addinv)%
   . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
-  . forall a,b:Nadd . (mk_PReal a) ++ (mk_PReal b) = mk_PReal (a ++ b)
+  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
   . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
   
 preds  __ <<= __ : SReal * SReal;
@@ -246,21 +276,48 @@ end
 %% =================================== Cantor ==================================
 %% =============================================================================
 
-%% cohen and erich, thurston
-%% roberts 1962, going over positive rationals to positive reals, Roberts (1962)
-spec CReal = Rat
+%% variant 1: directly construct the reals over the rationals
+spec CRealDef = Rat
 then
   preds 
   Cauchy:(Nat->Rat); %% expresses the fact that a sequence is a cauchy sequence
   samelimit:(Nat->Rat)*(Nat->Rat); %% expresses the fact that two sequences have the same limit without using the limit itself
       
 then
+    free type RatSeq ::= mk_ratseq (unratseq: Nat->Rat)
   . forall s:Nat->Rat. Cauchy(s) <=> (forall epsilon:Rat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => abs(s(m) - s(n)) < epsilon)
   . forall s1,s2:Nat->Rat. samelimit(s1,s2) <=> forall epsilon:Rat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> abs(s1(n)-s2(n))<epsilon 
+  type RatCauchySequences = {s:RatSeq . Cauchy(unratseq s)}
+  pred 
+    __ === __ : RatCauchySequences*RatCauchySequences
+  . forall s1,s2:RatCauchySequences. s1 === s2 <=> samelimit(unratseq s1,unratseq s2)
+  %% Define the operators
+  then 
+    ops
+      __+__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
+      __*__:RatCauchySequences*RatCauchySequences->RatCauchySequences;      
+    . forall x,y:RatCauchySequences . x + y = mk_ratseq \n:Nat.! (unratseq x)(n) + (unratseq y)(n)   %% Addition on RatCauchySequences
 end
 
-%[view samelimitequivalence :]%
-%[     EquivalenceRelation to CReal]%
-%[=    Elem |-> Nat->Rat,]%
-%[     __ ~ __ |-> samelimit]%
-%[end]%
+spec CReal = CRealDef and Quotient[CRealDef fit Elem |-> RatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> Real
+end
+
+
+%% variant 2: construct the positive reals and then the reals
+spec CPRealDef = PRatDist
+then
+  preds 
+  Cauchy:(Nat->PRat); %% expresses the fact that a sequence is a cauchy sequence
+  samelimit:(Nat->PRat)*(Nat->PRat); %% expresses the fact that two sequences have the same limit without using the limit itself
+      
+then
+  . forall s:Nat->PRat. Cauchy(s) <=> (forall epsilon:PRat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => dist(s(m),s(n)) < epsilon)
+  . forall s1,s2:Nat->PRat. samelimit(s1,s2) <=> forall epsilon:PRat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> dist(s1(n),s2(n))<epsilon 
+  type PRatCauchySequences = {s:Nat->PRat . Cauchy(s)}
+  pred 
+    __ === __ : PRatCauchySequences*PRatCauchySequences
+  . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(s1,s2)  
+end
+
+spec CPReal = CPRealDef and Quotient[CPRealDef fit Elem |-> PRatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> PReal
+end
