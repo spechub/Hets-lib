@@ -295,12 +295,48 @@ then
   then 
     ops
       __+__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
-      __*__:RatCauchySequences*RatCauchySequences->RatCauchySequences;      
+      __*__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
+      -__:RatCauchySequences->RatCauchySequences;
+      inv:RatCauchySequences->?RatCauchySequences;
+      0 : RatCauchySequences;
+      1 : RatCauchySequences;
     . forall x,y:RatCauchySequences . x + y = mk_ratseq \n:Nat.! (unratseq x)(n) + (unratseq y)(n)   %% Addition on RatCauchySequences
+    . forall x,y:RatCauchySequences . x * y = mk_ratseq \n:Nat.! (unratseq x)(n) * (unratseq y)(n)   %% Multiplication on RatCauchySequences
+    . 0 = mk_ratseq (\n:Nat.! 0)                                                                     %% Definition of 0
+    . 1 = mk_ratseq (\n:Nat.! 1)                                                                     %% Definition of 1
+    . forall x:RatCauchySequences . (-x) = mk_ratseq \n:Nat.! (-(unratseq x)(n))                     %% Definition of add. inverse
+    . forall x:RatCauchySequences . not(x=0) => inv(x)= mk_ratseq \n:Nat.! 1/((unratseq x)(n))       %% Definition of mult. inverse
+  %% Now define ordering on top of that by defining what positive means, we thus get an ordered field
+    pred
+      pos:RatCauchySequences
+      . forall r:RatCauchySequences. pos(r) <=> exists q:Rat . exists k:Nat . forall n:Nat. n>k => (unratseq r)(n) > q 
 end
 
 spec CReal = CRealDef and Quotient[CRealDef fit Elem |-> RatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> Real
+then
+  ops
+      __+__:Real*Real->Real;
+      __*__:Real*Real->Real;
+      -__:Real->Real;
+      inv:Real->?Real;
+      0 : Real;
+      1 : Real;
+      forall x,y:RatCauchySequences
+      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
+      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
+      . 0 = mk_quot(0)
+      . 1 = mk_quot(1)
+      . - mk_quot(x) = mk_quot(-x)
+      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
+  pred pos:Real
+       . forall r:RatCauchySequences . pos(mk_quot(r)) <=> pos(r)
+  sort RPos = { r:Real . pos(r) }
 end
+
+%[view RealtoCRealDef :]%
+%[     Reals to CRealDef]%
+%[end]%
+
 
 
 %% variant 2: construct the positive reals and then the reals
