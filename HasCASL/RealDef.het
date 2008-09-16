@@ -257,7 +257,7 @@ then
   %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
   %% the set of Real numbers is the set of all Dedikind Cuts 
   type DReal = {X: Pred(Rat) . dedcut(X)}
-  sort Rat < DReal
+%%  sort Rat < DReal
   %%forall x:Rat. x =  \s:Rat .! s < x
   %% sup(S)=union der ses
   %% x+y = {x +y | x in X /\ y in Y}
@@ -339,11 +339,11 @@ then
   sort RPos = { r:Real . pos(r) }
 end
 
-view RealtoCRealDef :
+%[view RealtoCRealDef :
      FieldWithOrdering to CReal
 =
   Elem |-> Real
-end
+end]%
 
 
 
