@@ -8,18 +8,12 @@ from Basic/Numbers get
         Nat, Rat
 
 from Basic/RelationsAndOrders get
-        EquivalenceRelation, TotalOrder
+        EquivalenceRelation, TotalOrder, Quotient
 
 from HasCASL/Reals get 
         Reals, FieldWithOrdering
 
 logic HasCASL
-
-spec Quotient[EquivalenceRelation] =
-  generated type Quotient ::= mk_quot(unquot:Elem)
-  . forall a,b:Elem. mk_quot(a) = mk_quot(b) <=> a ~ b
-  sort Elem < Quotient
-end
 
 
 %% we use x to denote sequences
