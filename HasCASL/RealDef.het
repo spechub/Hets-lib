@@ -73,6 +73,7 @@ then %def
 then
      ops __+__:   PRat * PRat -> PRat;
          __*__:   PRat * PRat -> PRat;
+         __ / __ : PRat * PRat ->? PRat;
  then
     forall p,q:Pos; n:Nat; i,j: Nat; x,y,z: PRat
 
@@ -352,7 +353,6 @@ view RealtoCRealDef :
 end
 
 
-
 %% variant 2: construct the positive reals and then the reals
 spec CPRealDef = PRatDist
 then
@@ -361,13 +361,46 @@ then
   samelimit:(Nat->PRat)*(Nat->PRat); %% expresses the fact that two sequences have the same limit without using the limit itself
       
 then
+    free type PRatSeq ::= mk_pratseq (unpratseq: Nat->PRat)
   . forall s:Nat->PRat. Cauchy(s) <=> (forall epsilon:PRat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => dist(s(m),s(n)) < epsilon)
   . forall s1,s2:Nat->PRat. samelimit(s1,s2) <=> forall epsilon:PRat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> dist(s1(n),s2(n))<epsilon 
-  type PRatCauchySequences = {s:Nat->PRat . Cauchy(s)}
-  pred 
-    __ === __ : PRatCauchySequences*PRatCauchySequences
-  . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(s1,s2)  
+  type PRatCauchySequences = {s:PRatSeq . Cauchy(unpratseq s)}
+  preds
+    __ === __ : PRatCauchySequences*PRatCauchySequences;
+  ops
+    __+__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    __/__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    __*__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    inv:PRatCauchySequences->?PRatCauchySequences;
+    0 : PRatCauchySequences;
+    1 : PRatCauchySequences;
+    forall x,y,r,s:PRatCauchySequences
+    . x + y = mk_pratseq \n:Nat.! (unpratseq x)(n) + (unpratseq y)(n)   %% Addition on PRatCauchySequences
+    . x * y = mk_pratseq \n:Nat.! (unpratseq x)(n) * (unpratseq y)(n)   %% Multiplication on PRatCauchySequences
+    . 0 = mk_pratseq (\n:Nat.! 0)                                                                     %% Definition of 0
+    . 1 = mk_pratseq (\n:Nat.! 1)                                                                     %% Definition of 1
+    . not(x=0) => inv(x)= mk_pratseq \n:Nat.! 1/((unpratseq x)(n))       %% Definition of mult. inverse
+    . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(unpratseq s1,unpratseq s2)
+    . not(s=0) => r / s = r * inv(s)
 end
 
 spec CPReal = CPRealDef and Quotient[CPRealDef fit Elem |-> PRatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> PReal
+then
+  ops
+      __+__:PReal*PReal->PReal;
+      __*__:PReal*PReal->PReal;
+      __/__:PReal*PReal->PReal;
+      inv:PReal->?PReal;
+      0 : PReal;
+      1 : PReal;
+      forall x,y:PRatCauchySequences; r,s:PReal; rn,sn:PRatCauchySequences
+      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
+      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
+      . 0 = mk_quot(0)
+      . 1 = mk_quot(1)
+      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
+      . not(s=0) => r / s = r * inv(s)
+end
+
+spec CPRealfromP = CPReal
 end
