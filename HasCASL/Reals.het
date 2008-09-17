@@ -76,12 +76,12 @@ end
 logic HasCASL
 
 spec Reals = FieldWithOrdering with Elem |-> Real
-then
-  ops
-    inf : Pred(Real) ->? Real;
-  . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
-then %implies
-  . forall S: Pred(Real). (exists x:Real. S(x)) /\ (exists B:Real . forall x:Real. S(x) => x <= B) => exists m:Real. m=inf(S) %(Real_completeness)%
+%[then]%
+%[  ops]%
+%[    inf : Pred(Real) ->? Real;]%
+%[  . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)]%
+%[then %implies]%
+%[  . forall S: Pred(Real). (exists x:Real. S(x)) /\ (exists B:Real . forall x:Real. S(x) => x <= B) => exists m:Real. m=inf(S) %(Real_completeness)%]%
 %%If A is a non-empty subset of R, and if A has an upper bound, then A has a least upper bound u, such that for every upper bound v of A, u ≤ v.
 end
 

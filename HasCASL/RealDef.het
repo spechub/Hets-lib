@@ -314,6 +314,7 @@ then
       __*__:Real*Real->Real;
       -__:Real->Real;
       __-__:Real*Real->Real;
+      __/__:Real*Real->Real;
       inv:Real->?Real;
       0 : Real;
       1 : Real;
@@ -332,6 +333,7 @@ then
         %%. forall S:Pred(Real) . forall m:Real. inf(S)=m <=> m=m%%(forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
         . pos(mk_quot(rn)) <=> pos(rn)
         . r - s = r + (-s)
+         . not(s=0) => r / s = r * inv(s)
         . r>s <=> pos(r-s)
         . mk_quot(rn) >= mk_quot(sn) <=> mk_quot(rn)>mk_quot(sn) \/ mk_quot(rn)-mk_quot(sn)=0
         . r < s <=> s > r
@@ -339,11 +341,11 @@ then
   sort RPos = { r:Real . pos(r) }
 end
 
-%[view RealtoCRealDef :
+view RealtoCRealDef :
      FieldWithOrdering to CReal
 =
   Elem |-> Real
-end]%
+end
 
 
 
