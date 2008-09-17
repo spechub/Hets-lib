@@ -8,36 +8,22 @@ from Basic/Numbers get
      Nat, Int, Rat
 from Basic/RelationsAndOrders get
      TotalOrder, ExtTotalOrder, RichTotalOrder
-from Basic/Algebra_I get
-     Field |-> BasicField
+from HasCASL/Algebra get
+     ExtField |-> Field
 
-logic CASL
-
-spec Field = BasicField with e |-> 1
-then %def
-ops -__:Elem->Elem;
-    __ - __:Elem*Elem->Elem;
-    inv:Elem->?Elem;
-    __ / __: Elem*Elem->?Elem;
-
-vars x,y:Elem
-     . -x + x = 0                     %(additive_inverse)%
-     . x - y = x + -y                 %(minus)%
-     . not(x=0) => inv(x) * x = 1     %(multiplicative_inverse)%
-     . not(y=0) => x / y = x * inv(y) %(divided)%
-     . not(def(inv(0)))               %(inverse_zero_undef)%
-     . not(def(x / 0))                %(divide_by_zero_undef)%
-     
-end
+logic HasCASL
 
 spec FieldWithOrdering =
+
      Field and TotalOrder
+
 then
-    vars a, b, c:Elem
+    forall a, b, c:Elem
     . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
-    . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(FWO_times_left)%
+%% doesn't work with if!!!
+    . (a <= b /\ 0 <= c) => (a * c) <= (b * c) %(FWO_times_left)%
 then %implies
-    vars a, b, c, d: Elem
+    forall a, b, c, d: Elem
     . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%
     . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(FWO_times_right)%
     . (a + b) <= (c + d) if a <= c /\ b <= d    %(FWO_plus)%
@@ -72,8 +58,6 @@ view FieldWithOrdering_in_OrderedField :
        . x <= y  <=> Pos(y - x)
      }
 end
-
-logic HasCASL
 
 spec Reals = FieldWithOrdering with Elem |-> Real
 then
