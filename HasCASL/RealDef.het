@@ -315,6 +315,7 @@ then
       -__:Real->Real;
       __-__:Real*Real->Real;
       __/__:Real*Real->Real;
+      inf : Pred(Real) ->? Real;
       inv:Real->?Real;
       0 : Real;
       1 : Real;
@@ -326,11 +327,10 @@ then
       . - mk_quot(x) = mk_quot(-x)
       . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
   preds pos:Real;
-	inf : Pred(Real) ->? Real;
 	__ <= __, __ >= __,
         __ <  __, __ >  __: Real * Real;
         forall r,s:Real; rn,sn:RatCauchySequences
-        %%. forall S:Pred(Real) . forall m:Real. inf(S)=m <=> m=m%%(forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
+        . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
         . pos(mk_quot(rn)) <=> pos(rn)
         . r - s = r + (-s)
          . not(s=0) => r / s = r * inv(s)
@@ -343,7 +343,6 @@ end
 
 view RealtoCRealDef :
      Reals to CReal
-=
 end
 
 
