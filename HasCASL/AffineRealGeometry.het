@@ -1,0 +1,95 @@
+library HasCASL/AffineRealGeometry
+version 0.2
+
+%author: E. Schulz
+%date: 04-09-2008
+
+from Basic/Numbers get
+     Nat, Int
+
+from Basic/Algebra_I get
+     AbelianGroup
+
+from Basic/LinearAlgebra_I get
+     VectorSpace
+
+from HasCASL/Reals get
+     Reals
+
+
+logic HasCASL
+
+
+spec Basics = Nat and Reals then
+     types Seq := \a:Type. Nat -> a; %% sequences will be used for tuples
+	   Mat := \a:Type. Nat*Nat -> a; %% Matrices
+	   RMat := Mat Real;  %% Real Matrices (we'll use only them)
+	   RSeq := Seq Real; %% The supertype of all finite real vector spaces
+
+     var a:Type
+     
+     ops const(x:a) :Seq a = \i:Nat.! x; %(constant_function)%
+	  [__ -> __]__(n:Nat;x:a;s:Seq a) :Seq a =
+	       \i:Nat.! x when i=n else s(i);  %(substitution)%
+
+end
+
+spec AdditiveInverse = AbelianGroup with __ * __ |-> __ + __, e |-> 0
+then %def
+     ops -__:Elem->Elem;
+	 __ - __:Elem*Elem->Elem
+
+    vars x,y:Elem
+     . -x + x = 0                     %(additive_inverse)%
+     . x - y = x + -y                 %(minus)%
+end
+
+spec RealVectorSpace = 
+     VectorSpace[Reals fit Elem |-> Real, e |-> 1]
+and AdditiveInverse with Elem |-> Space
+end
+
+spec RealVectorN [op n:Nat] given Nat = Reals and Basics
+then
+     type VecRN = {X: RSeq. forall x:Nat. x >= n => X(x) = 0}
+then %def	  
+     ops __ + __:VecRN * VecRN -> VecRN;
+	 __ * __:Real * VecRN -> VecRN;
+	 0:VecRN;
+
+     vars s:Real;x,y:VecRN
+	  
+     . 0 = const(0:Real)            %(null_vector)%
+     . s * x = \i:Nat.! s*x(i)        %(def_of_scalar_mult)%
+     . x + y = \i:Nat.! x(i) + y(i)   %(def_of_vector_add)%
+
+%%then AdditiveInverse with Elem |-> VecRN
+end
+
+spec AffineSpace[RealVectorSpace] = 
+     sort Point = Space
+     ops  0:Point;
+	  __+__ : Point * Space -> Point;
+	  vec : Point * Point -> Space;
+
+
+     forall p:Point; v:Space
+     . vec(0,p) = p            %(point_to_space_embedding)%
+     . (0 + v):Point = v       %(space_to_point__embedding)%
+
+then
+     forall p,q,r:Point ; v,w: Space
+     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
+     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
+
+end
+
+
+spec R2 = RealVectorN[type Nat fit n |-> 2] and Reals then
+     type R2 := Real*Real
+     type Real < VecRx
+     vars x,y:Real
+     . [0->x][1->y]0 = [1->x][0->y]0
+     . (x,y):R2 = (y,x):R2
+%%     . (x,y) = \i:Nat .! x
+end
