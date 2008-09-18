@@ -22,6 +22,15 @@ then
 	  __ * __: Elem * Elem -> Elem, unit e
 end
 
+spec WithInverse[Monoid] = 
+  ops inv:Elem->Elem;
+      __ / __:Elem*Elem->Elem;
+
+  forall x,y:Elem
+  . inv(x) * x = e     %(unary_inverse)%
+  .  x / y = x * inv(y) %(binary_inverse)%
+end
+
 spec Group =
      Monoid
 then
@@ -64,15 +73,6 @@ spec NonZeros =
      type NonZero = {x:Elem. not (x=0)}
 end
 
-spec Inverse[Monoid] = 
-  ops inv:Elem->Elem;
-      __ / __:Elem*Elem->Elem;
-
-  forall x,y:Elem
-  . inv(x) * x = e     %(inverse)%
-  .  x / y = x * inv(y) %(division)%
-end
-
 spec RingWithNonZeros = IntegralDomain and NonZeros
 then 
      ops 1:NonZero;
@@ -82,8 +82,8 @@ end
 spec Field = RingWithNonZeros and Group with Elem |-> NonZero, e |-> 1
 
 spec ExtField =
-Inverse[Field fit __ * __ |-> __ + __, e |-> 0]
+WithInverse[Field fit __ * __ |-> __ + __, e |-> 0]
    with inv |-> -__, __ / __ |-> __ - __
 and
-Inverse[Field fit Elem |-> NonZero, e |-> 1]
+WithInverse[Field fit Elem |-> NonZero, e |-> 1]
 end

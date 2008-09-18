@@ -1,0 +1,27 @@
+library HasCASL/LinearAlgebra
+version 0.1
+
+%author: E. Schulz
+%date: 18-09-2008
+
+logic HasCASL
+
+from HasCASL/Algebra get
+     WithInverse, AbelianGroup, Field
+
+spec AdditiveAbelianGroup_aux =
+WithInverse[AbelianGroup] with
+  Elem |-> Space, __ * __ |-> __ + __, e |-> 0, __ / __ |-> __ - __, inv |-> -__
+end
+
+spec VectorSpace[Field with Elem |-> Field] = AdditiveAbelianGroup_aux
+then
+     op  __ * __: Field * Space -> Space
+
+     forall s,r:Field; x,y:Space
+
+     . (r * s) * x = r * (s * x)              %(mix_assoc)%
+     . (r + s) * x = (r * x) + (s * x)        %(distr_Field)%
+     . r * (x + y) = (r * x) + (r * y)        %(distr_Space)%
+end
+

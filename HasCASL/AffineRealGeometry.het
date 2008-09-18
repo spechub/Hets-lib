@@ -1,23 +1,22 @@
 library HasCASL/AffineRealGeometry
-version 0.2
+version 0.1
 
 %author: E. Schulz
 %date: 04-09-2008
 
+logic HasCASL
+
 from Basic/Numbers get
      Nat, Int
-
-from Basic/Algebra_I get
-     AbelianGroup
-
-from Basic/LinearAlgebra_I get
-     VectorSpace
 
 from HasCASL/Reals get
      Reals
 
+from HasCASL/Algebra get
+     WithInverse, AbelianGroup
 
-logic HasCASL
+from HasCASL/LinearAlgebra get
+     VectorSpace
 
 
 spec Basics = Nat and Reals then
@@ -34,19 +33,16 @@ spec Basics = Nat and Reals then
 
 end
 
-spec AdditiveInverse = AbelianGroup with __ * __ |-> __ + __, e |-> 0
-then %def
-     ops -__:Elem->Elem;
-	 __ - __:Elem*Elem->Elem
-
-    vars x,y:Elem
-     . -x + x = 0                     %(additive_inverse)%
-     . x - y = x + -y                 %(minus)%
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+%                       Real Vector Spaces                           %
+%                                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 spec RealVectorSpace = 
-     VectorSpace[Reals fit Elem |-> Real, e |-> 1]
-and AdditiveInverse with Elem |-> Space
+     VectorSpace[Reals fit Field |-> Real]
+and WithInverse[AbelianGroup] with
+Elem |-> Space, __ * __ |-> __ + __, e |-> 0
 end
 
 spec RealVectorN [op n:Nat] given Nat = Reals and Basics
@@ -63,8 +59,28 @@ then %def
      . s * x = \i:Nat.! s*x(i)        %(def_of_scalar_mult)%
      . x + y = \i:Nat.! x(i) + y(i)   %(def_of_vector_add)%
 
-%%then AdditiveInverse with Elem |-> VecRN
 end
+
+
+
+spec R2 = RealVectorN[op 2:Nat fit n |-> 2] and Reals
+%%then
+%%     op [__|__](x,y:Real):VecRN = [0->x][1->y]0
+
+end
+
+spec R3 = RealVectorN[op 3:Nat fit n |-> 3] and Reals
+%%then
+%%     op [__|__](x,y:Real):VecRN = [0->x][1->y]0
+
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                    %
+%                       Affine Point Spaces                          %
+%                                                                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 spec AffineSpace[RealVectorSpace] = 
      sort Point = Space
@@ -82,14 +98,4 @@ then
      . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
      . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
 
-end
-
-
-spec R2 = RealVectorN[type Nat fit n |-> 2] and Reals then
-     type R2 := Real*Real
-     type Real < VecRx
-     vars x,y:Real
-     . [0->x][1->y]0 = [1->x][0->y]0
-     . (x,y):R2 = (y,x):R2
-%%     . (x,y) = \i:Nat .! x
 end
