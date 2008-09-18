@@ -1,6 +1,9 @@
 library HasCASL/RealDef
 version 0.1
 
+%% todo: structure similar parts of the theories to subtheories
+%% as for quotient, define a theory which adds the negative numbers by the standard equivalence relation
+
 %author: D. Dietrich
 %date: 09-2008
 
@@ -23,11 +26,35 @@ logic HasCASL
 %% injNat for injecting the naturals
 %% <<= as ordering on naturals
 
-
 spec Quotient[EquivalenceRelation] =
   generated type Quotient ::= mk_quot(unquot:Elem)
   . forall a,b:Elem. mk_quot(a) = mk_quot(b) <=> a ~ b
   sort Elem < Quotient
+end
+
+spec NegExtension[sort Elem op __+__:Elem*Elem->Elem] =
+  type ElemPair:=Elem*Elem
+  preds
+    __===__ :ElemPair*ElemPair;
+    . forall x1,x2,y1,y2:Elem . (x1,x2) === (y1,y2) <=> x1+y2 = x2+y1
+  ops
+    __+__:ElemPair*ElemPair->ElemPair;
+   . forall x1,x2,y1,y2:Elem . (x1,x2) + (y1,y2) = (x1+y1,x2+y2)
+end
+
+spec NegExtensionQuotient[sort Elem ops __+__:Elem*Elem->Elem; 0:Elem] =
+  Quotient[NegExtension[sort Elem op __+__:Elem*Elem->Elem] fit Elem |-> ElemPair, __~__ |-> __===__]
+then
+  sort Elem<Quotient
+  . forall a:Elem . a = mk_quot(a,0)
+  ops
+    __+__:Quotient*Quotient->Quotient;
+    -__:Quotient->Quotient;
+    __-__:Quotient*Quotient->Quotient;
+    0:Quotient;
+   . forall a,b:ElemPair . mk_quot(a) + mk_quot(b) = mk_quot(a+b)
+   . forall a,b:Elem. -mk_quot(a,b) = mk_quot(b,a)
+   . forall a,b:Quotient. a - b = a + (-b)
 end
 
 spec NatDist = Nat
@@ -400,7 +427,15 @@ then
       . 1 = mk_quot(1)
       . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
       . not(s=0) => r / s = r * inv(s)
+%[then %% prepare the equivalence relation]%
+%[  free type PRealPair ::= mk_prealpair (dest_prealpair: PReal*PReal)]%
+%[  preds]%
+%[    __ === __ :PRealPair*PRealPair;]%
+%[    . forall x1,x2,y1,y2:PReal . mk_prealpair(x1,x2) === mk_prealpair(y1,y2) <=> x1+y2 = x2+y1]%
 end
 
-spec CPRealfromP = CPReal
+spec CPRealEqv = NegExtension[CPReal fit Elem |-> PReal]
 end
+
+%[spec CPRealfromP = CPReal and Quotient[CPReal fit Elem |-> PRealPair, __ ~ __ |-> __ === __] with sort Quotient |-> Real]%
+%[end]%
