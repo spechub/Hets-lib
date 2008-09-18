@@ -9,6 +9,9 @@ logic HasCASL
 from Basic/Numbers get
      Nat, Int
 
+from HasCASL/Iteration get
+     Sequence, Sum
+
 from HasCASL/Reals get
      Reals
 
@@ -19,67 +22,70 @@ from HasCASL/LinearAlgebra get
      VectorSpace
 
 
-spec Basics = Nat and Reals then
-     types Seq := \a:Type. Nat -> a; %% sequences will be used for tuples
-	   Mat := \a:Type. Nat*Nat -> a; %% Matrices
+spec Basics = Sequence and Reals then
+     types Mat := \a:Type. Nat*Nat -> a; %% Matrices
 	   RMat := Mat Real;  %% Real Matrices (we'll use only them)
 	   RSeq := Seq Real; %% The supertype of all finite real vector spaces
-
-     var a:Type
-     
-     ops const(x:a) :Seq a = \i:Nat.! x; %(constant_function)%
-	  [__ -> __]__(n:Nat;x:a;s:Seq a) :Seq a =
-	       \i:Nat.! x when i=n else s(i);  %(substitution)%
 
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                    %
-%                       Real Vector Spaces                           %
-%                                                                    %
+%%                                                                  %%
+%%                       Real Vector Spaces                         %%
+%%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 spec RealVectorSpace = 
      VectorSpace[Reals fit Field |-> Real]
 and WithInverse[AbelianGroup] with
-Elem |-> Space, __ * __ |-> __ + __, e |-> 0
+    Elem |-> Space, __ * __ |-> __ + __, e |-> 0
 end
 
-spec RealVectorN [op n:Nat] given Nat = Reals and Basics
+spec RN_aux [op dimension:Nat] given Nat = Basics
 then
-     type VecRN = {X: RSeq. forall x:Nat. x >= n => X(x) = 0}
+     type VecRN = {X: RSeq. forall x:Nat. X(0) = 0 /\ x > dimension => X(x) = 0}
 then %def	  
-     ops __ + __:VecRN * VecRN -> VecRN;
-	 __ * __:Real * VecRN -> VecRN;
-	 0:VecRN;
+     ops __ + __:VecRN*VecRN->VecRN;
+	 __ + __(x,y:VecRN):VecRN = \i:Nat.! x(i) + y(i);  %(vector_add)%
+	 __ * __(s:Real; x:VecRN):VecRN = \i:Nat.! s*x(i); %(scalar_mult)%
+	 0:VecRN = const(0:Real);
 
-     vars s:Real;x,y:VecRN
+end
+
+spec RN[op dimension:Nat] given Nat =
+     Sum[RN_aux[op dimension:Nat] fit Elem |-> Real]
+%[then
+     op __ * __: VecRN*VecRN->Real
+%%     ops __ * __(x,y:VecRN):Real = sum(1,dimension,\i:Nat. x(i) * y(i))
 	  
-     . 0 = const(0:Real)            %(null_vector)%
-     . s * x = \i:Nat.! s*x(i)        %(def_of_scalar_mult)%
-     . x + y = \i:Nat.! x(i) + y(i)   %(def_of_vector_add)%
+     . forall x,y:VecRN. x*y = sum(1,dimension,(\i:Nat. x(i) * y(i)):Seq Real)
+     
+]%
+end
+
+spec R2 = RN[op 2:Nat fit dimension |-> 2]
+then
+     op v2(x,y:Real):VecRN = [1->x][2->y]0
 
 end
 
-
-
-spec R2 = RealVectorN[op 2:Nat fit n |-> 2] and Reals
-%%then
-%%     op [__|__](x,y:Real):VecRN = [0->x][1->y]0
+spec R3 = RN[op 3:Nat fit dimension |-> 3]
+then
+     op v3(x,y,z:Real):VecRN = [1->x][2->y][3->z]0
 
 end
 
-spec R3 = RealVectorN[op 3:Nat fit n |-> 3] and Reals
-%%then
-%%     op [__|__](x,y:Real):VecRN = [0->x][1->y]0
+spec R4 = RN[op 4:Nat fit dimension |-> 4]
+then
+     op v4(x,y,z,t:Real):VecRN = [1->x][2->y][3->z][4->t]0
 
 end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                    %
-%                       Affine Point Spaces                          %
-%                                                                    %
+%%                                                                  %%
+%%                       Affine Point Spaces                        %%
+%%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 spec AffineSpace[RealVectorSpace] = 
