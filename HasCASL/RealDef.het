@@ -11,7 +11,7 @@ from Basic/RelationsAndOrders get
         EquivalenceRelation, TotalOrder
 
 from HasCASL/Reals get 
-        Reals, FieldWithOrdering
+        SimpleReals, Reals, FieldWithOrdering
 
 logic HasCASL
 
@@ -348,10 +348,10 @@ then
   sort RPos = { r:Real . pos(r) }
 end
 
-%[view RealtoCRealDef :
-     Reals to CReal
+view RealtoCRealDef :
+     SimpleReals to CReal
 end
-]%
+
 
 %% variant 2: construct the positive reals and then the reals
 spec CPRealDef = PRatDist
