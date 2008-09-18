@@ -2,7 +2,7 @@ library HasCASL/RealDef
 version 0.1
 
 %% todo: structure similar parts of the theories to subtheories
-%% as for quotient, define a theory which adds the negative numbers by the standard equivalence relation
+%% todo: replace NatDist and PRatDist by more general Dist
 
 %author: D. Dietrich
 %date: 09-2008
@@ -57,6 +57,22 @@ then
    . forall a,b:Quotient. a - b = a + (-b)
 end
 
+spec Dist[sort Elem ops 0:Elem; __+__:Elem*Elem->Elem; __-!__:Elem*Elem->Elem] =
+ops
+    dist: Elem*Elem -> Elem;
+  . forall m,n:Elem. dist(m,n) = (m -! n) + (n -! m)
+then %implies
+  forall m,n,p:Elem
+  . dist(n,n) = 0
+  . dist(0,n) = n
+  . dist(n,0) = n
+  . dist(m,n) = dist(n,m)
+  . dist(m + n,m + p) = dist(n,p)
+  . dist(m + p,n + p) = dist(m,n)
+  . dist(m + n,m) = n
+  . dist(m,m + n) = n
+end
+
 spec NatDist = Nat
 then 
   ops
@@ -76,6 +92,7 @@ then %implies
   . dist(m,n) * p = dist(m * p,n * p)
   . (dist(m,n) = 0) <=> (m = n)
 end
+
 
 
 spec PRat = %mono
@@ -147,8 +164,6 @@ then %implies
   . dist(m,n) * p = dist(m * p,n * p)
   . (dist(m,n) = 0) <=> (m = n)
 end
-
-
 
 
 
