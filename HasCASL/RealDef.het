@@ -31,6 +31,7 @@ spec Quotient[EquivalenceRelation] =
   sort Elem < Quotient
 end
 
+
 spec NegExtension[sort Elem op __+__:Elem*Elem->Elem] =
   type ElemPair:=Elem*Elem
   preds
@@ -56,6 +57,29 @@ then
    . forall a,b:Quotient. a - b = a + (-b)
 end
 
+
+spec MulExtension[sort Elem sort ElemPos op __*__:Elem*Elem->Elem] =
+  type ElemPair:=Elem*Elem
+  preds
+    __===__ :ElemPair*ElemPair;
+    . forall x1,x2,y1,y2:Elem . (x1,x2) === (y1,y2) <=> x1*y2 = x2*y1
+  ops
+    __*__:ElemPair*ElemPair->ElemPair;
+   . forall x1,x2,y1,y2:Elem . (x1,x2) * (y1,y2) = (x1*y1,x2*y2)
+end
+
+
+spec MulExtensionQuotient[sort Elem sort ElemPos ops __*__:Elem*Elem->Elem; 1:Elem] =
+  Quotient[MulExtension[sort Elem sort ElemPos op __*__:Elem*Elem->Elem] fit Elem |-> ElemPair, __~__ |-> __===__]
+then
+  sort Elem<Quotient
+  . forall a:Elem . a = mk_quot(a,1)
+  ops
+    __*__:Quotient*Quotient->Quotient;
+    1:Quotient=mk_quot(1,1);
+end
+
+
 spec Dist[sort Elem ops 0:Elem; __+__:Elem*Elem->Elem; __-!__:Elem*Elem->Elem] =
 ops
     dist: Elem*Elem -> Elem;
@@ -75,11 +99,15 @@ end
 spec NatDist = Dist[{Nat with logic -> HasCASL} fit Elem |-> Nat]
 end
 
+spec NatDistExt = Nat
+then
+  type NatPair:=Nat*Nat
+  preds
+    __===__ :NatPair*NatPair;
+    . forall x1,x2,y1,y2:Nat . (x1,x2) === (y1,y2) <=> x1*y2 = x2*y1
+end
 
-spec PRat = %mono
-
-     Nat 
-
+spec PRat = Nat
 then %mono
 
      generated type PRat ::= __ / __ (Nat;Pos)
