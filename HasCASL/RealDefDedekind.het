@@ -1,0 +1,46 @@
+library HasCASL/RealDefDedekind
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat, Rat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+from HasCASL/Reals get 
+        SimpleReals, Reals, FieldWithOrdering
+
+from HasCASL/RealDef get 
+    Quotient, NegExtension, NegExtensionQuotient, Dist, PRat
+
+logic HasCASL
+
+%% =============================================================================
+%% ==================================== Dedekind ===============================
+%% =============================================================================
+
+%% one problem that arises are many casesplits. instead one can go via Q^+ to R^+ 
+%% which reduces many cases
+%% Fundamentals of Abstract Analysis [Gleason- p. 121], Landau
+
+
+spec DReal = Rat
+then
+  preds dedcut:Pred(Rat);
+  . forall X:Pred(Rat) . dedcut(X) <=> (exists x:Rat. X(x) /\ not(forall x:Rat. X(x)) 
+                                    /\ forall q:Rat. X(q) => forall r:Rat. r <=q => X(r)
+                                    /\ forall q:Rat. X(q) => exists r:Rat. X(r) /\ r>q)  
+  %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
+  %% the set of Real numbers is the set of all Dedikind Cuts 
+  type DReal = {X: Pred(Rat) . dedcut(X)}
+%%  sort Rat < DReal
+  %%forall x:Rat. x =  \s:Rat .! s < x
+  %% sup(S)=union der ses
+  %% x+y = {x +y | x in X /\ y in Y}
+  %% x*y = {xy| x in X /\ y in Y}
+  %% x^{-1} = {w | exists d < 1. forall x in X. wx < d}
+end
+

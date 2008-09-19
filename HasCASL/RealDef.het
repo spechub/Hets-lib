@@ -2,7 +2,6 @@ library HasCASL/RealDef
 version 0.1
 
 %% todo: structure similar parts of the theories to subtheories
-%% todo: replace NatDist and PRatDist by more general Dist
 
 %author: D. Dietrich
 %date: 09-2008
@@ -73,26 +72,8 @@ then %implies
   . dist(m,m + n) = n
 end
 
-spec NatDist = Nat
-then 
-  ops
-    dist: Nat*Nat -> Nat;
-  . forall m,n:Nat. dist(m,n) = (m -! n) + (n -! m)
-then %implies
-  forall m,n,p:Nat
-  . dist(n,n) = 0
-  . dist(0,n) = n
-  . dist(n,0) = n
-  . dist(m,n) = dist(n,m)
-  . dist(m + n,m + p) = dist(n,p)
-  . dist(m + p,n + p) = dist(m,n)
-  . dist(m + n,m) = n
-  . dist(m,m + n) = n
-  . m * dist(n,p) = dist(m * n,m * p)
-  . dist(m,n) * p = dist(m * p,n * p)
-  . (dist(m,n) = 0) <=> (m = n)
+spec NatDist = Dist[{Nat with logic -> HasCASL} fit Elem |-> Nat]
 end
-
 
 
 spec PRat = %mono
@@ -137,320 +118,22 @@ then
 end
 
 
-spec PRatDist = PRat
+spec PRatSub = PRat
 then
   ops
     __-!__ :         PRat * PRat ->  PRat;
     __ -?__ : PRat * PRat ->? PRat;
-    dist: PRat*PRat -> PRat;
   forall p,q,r:PRat
   .  p -! q = 0 if p < q
   .  p -! q = p -? q if p >= q
-  . forall p,q:PRat. dist(p,q) = (p -! q) + (p -! q)
   . def(p-?q) <=> p >= q             %(sub_dom_Nat)% %implied 
   . p -? q = r <=> p = r + q         %(sub_def_Nat)%
+end
 
-then %implies
-  forall m,n,p:PRat
-  . dist(n,n) = 0
-  . dist(0,n) = n
-  . dist(n,0) = n
-  . dist(m,n) = dist(n,m)
-  . dist(m + n,m + p) = dist(n,p)
-  . dist(m + p,n + p) = dist(m,n)
-  . dist(m + n,m) = n
-  . dist(m,m + n) = n
-  . m * dist(n,p) = dist(m * n,m * p)
-  . dist(m,n) * p = dist(m * p,n * p)
-  . (dist(m,n) = 0) <=> (m = n)
+spec PRatDist = Dist[{PRatSub with logic -> HasCASL} fit Elem |-> PRat]
 end
 
 
 
-%[view pratEquivalenceRelation :]%
-%[     EquivalenceRelation to PrePRat]%
-%[=    Elem |-> NatPair ,]%
-%[     __ ~ __ |-> __ ~ __]%
-%[end]%
 
 
-spec Naddfunctions = Nat and NatDist
-then %def
-  preds
-   is_nadd:Nat->Nat;
-
-  . forall x:Nat->Nat . is_nadd(x) <=>
-     (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
-
-then %mono
-  free type NaddAux ::= mk_NaddAux (dest_NaddAux: Nat->Nat)
-  type Nadd = {X: NaddAux . is_nadd(dest_NaddAux X)}
-  sort Nat < Nadd
-  forall k:Nat . k = mk_NaddAux (\n:Nat.! k * n) %% Injection Natural Numbers
-ops
-    __ ++ __: Nadd * Nadd -> Nadd;
-    __ ** __: Nadd * Nadd -> Nadd;
-    nadd_rinv:Nadd -> Nadd;
-    
-    . forall x,y:Nadd . x ++ y = mk_NaddAux \n:Nat.! (dest_NaddAux x)(n) + (dest_NaddAux y)(n)   %% Addition on Nadd
-    . forall x,y:Nadd . x ** y  = mk_NaddAux \n:Nat.! (dest_NaddAux x)((dest_NaddAux y)(n))      %% Multiplication on Nadd
-    . forall x:Nadd . nadd_rinv(x) = mk_NaddAux \n:Nat.! (n * n) div (dest_NaddAux x)(n)  %% RInverse on Nadd
-
-then %def
-  preds
-   __ === __ : Nadd*Nadd;          %% Equivalence Relation
-   __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
-
-  . forall x,y:Nadd . x === y <=>
-      (exists B:Nat. forall n:Nat. dist((dest_NaddAux x)(n), (dest_NaddAux y)(n)) <= B)
-
-ops
-    nadd_inv:Nadd -> Nadd;
-    . forall x:Nadd . nadd_inv(x) = 0 when (x === 0) else nadd_rinv(x)  %% Proper Inverse
-end
-
-view naddequivEquivalenceRelation :
-     EquivalenceRelation to Naddfunctions
-=    Elem |-> Nadd,
-     __ ~ __ |-> __ === __
-end
-
-view naddorderTotalOrder :
-    TotalOrder to Naddfunctions
-=   __ <= __ |-> __ <<= __,
-    Elem |-> Nadd
-end
-
-spec PosReal = Naddfunctions and Quotient[Naddfunctions fit Elem |-> Nadd, __~__ |-> __===__] with sort Quotient |-> PReal
-%% ersetzen von PReal durch Quotient
-then
-%%  free type PReal ::= mk_PReal(dest_PReal:Nadd)
-%%  sort Nadd < PReal;
-  ops __ ++ __ :PReal * PReal -> PReal;
-  ops __ ** __ :PReal * PReal -> PReal;
-  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
-  . forall a,b:Nadd . (mk_quot a) ** (mk_quot b) = mk_quot (a ** b)
-end
-
-spec SignedReal = PosReal
-then
-   generated type SReal ::= __ - __(PReal;PReal)
-   sort  PReal < SReal	
-   forall a,b,c,d: PReal
-   .  a - b = c - d <=> (unquot a) ++ (unquot d) = (unquot c) ++ (unquot b)    %(equality_Quot)%
-   . forall a: PReal . a = a - 0             %(Nadd2SReal_embedding)%
-
-ops
-  inv_mul : SReal -> SReal;                %% multiplicative inverse
-  __ ++ __ : SReal * SReal -> SReal;       %% addition
-  __ ** __ :SReal * SReal -> SReal;        %% multiplication
-  inv_add :SReal -> SReal;                 %% additive inverse
-
-  . forall x,y:PReal .  inv_add(x - y) = (y - x) %(SReal_addinv)%
-  . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
-  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
-  . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
-  
-preds  __ <<= __ : SReal * SReal;
-       __ === __ : SReal * SReal;      
-  . forall x1,x2,y1,y2:PReal . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
-  . forall x1,x2,y1,y2:PReal . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
-  . forall x:SReal. inv_mul(x) = x
-%[  . forall x,y:SReal . inv(x,y) = (0 - 0) when (x = y) ]%
-%[                    else ((inv(@d. x = y + d), &0) when (y <<= x)  ]%
-%[                    else (&0, inv(@d. y = x + d))]%
-%[			  )]%
-end
-
-view SignedRealEquiv :
-     EquivalenceRelation to SignedReal
-=    Elem |-> SReal,
-     __ ~ __ |-> __ === __
-end
-
-view SignedRealTotalOrder :
-    TotalOrder to SignedReal
-=   __ <= __ |-> __ <<= __,
-    Elem |-> PReal
-end
-
-
-%[view RealsSignedReal :]%
-%[  {Reals} to SignedReal]%
-%[= ]%
-%[  sort Real |-> SReal,]%
-%[  pred __ <= __ |-> __ <<= __,]%
-%[  ops ]%
-%[    __ + __ |-> __ ++ __,]%
-%[    __ * __ |-> __ ** __,]%
-%[    0 |-> 0,]%
-%[    1 |-> 1,]%
-%[    -__ |-> inv_add]%
-%[end]%
-
-%% =============================================================================
-%% ==================================== Dedekind ===============================
-%% =============================================================================
-
-%% one problem that arises are many casesplits. instead one can go via Q^+ to R^+ 
-%% which reduces many cases
-%% Fundamentals of Abstract Analysis [Gleason- p. 121], Landau
-
-
-spec DReal = Rat
-then
-  preds dedcut:Pred(Rat);
-  . forall X:Pred(Rat) . dedcut(X) <=> (exists x:Rat. X(x) /\ not(forall x:Rat. X(x)) 
-                                    /\ forall q:Rat. X(q) => forall r:Rat. r <=q => X(r)
-                                    /\ forall q:Rat. X(q) => exists r:Rat. X(r) /\ r>q)  
-  %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
-  %% the set of Real numbers is the set of all Dedikind Cuts 
-  type DReal = {X: Pred(Rat) . dedcut(X)}
-%%  sort Rat < DReal
-  %%forall x:Rat. x =  \s:Rat .! s < x
-  %% sup(S)=union der ses
-  %% x+y = {x +y | x in X /\ y in Y}
-  %% x*y = {xy| x in X /\ y in Y}
-  %% x^{-1} = {w | exists d < 1. forall x in X. wx < d}
-end
-
-
-%% =============================================================================
-%% =================================== Cantor ==================================
-%% =============================================================================
-
-%% variant 1: directly construct the reals over the rationals
-spec CRealDef = Rat
-then
-  preds 
-  Cauchy:(Nat->Rat); %% expresses the fact that a sequence is a cauchy sequence
-  samelimit:(Nat->Rat)*(Nat->Rat); %% expresses the fact that two sequences have the same limit without using the limit itself
-      
-then
-    free type RatSeq ::= mk_ratseq (unratseq: Nat->Rat)
-  . forall s:Nat->Rat. Cauchy(s) <=> (forall epsilon:Rat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => abs(s(m) - s(n)) < epsilon)
-  . forall s1,s2:Nat->Rat. samelimit(s1,s2) <=> forall epsilon:Rat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> abs(s1(n)-s2(n))<epsilon 
-  type RatCauchySequences = {s:RatSeq . Cauchy(unratseq s)}
-  pred 
-    __ === __ : RatCauchySequences*RatCauchySequences
-  . forall s1,s2:RatCauchySequences. s1 === s2 <=> samelimit(unratseq s1,unratseq s2)
-  %% Define the operators
-  then 
-    ops
-      __+__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
-      __*__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
-      -__:RatCauchySequences->RatCauchySequences;
-      inv:RatCauchySequences->?RatCauchySequences;
-      0 : RatCauchySequences;
-      1 : RatCauchySequences;
-      forall x,y:RatCauchySequences
-    . x + y = mk_ratseq \n:Nat.! (unratseq x)(n) + (unratseq y)(n)   %% Addition on RatCauchySequences
-    . x * y = mk_ratseq \n:Nat.! (unratseq x)(n) * (unratseq y)(n)   %% Multiplication on RatCauchySequences
-    . 0 = mk_ratseq (\n:Nat.! 0)                                                                     %% Definition of 0
-    . 1 = mk_ratseq (\n:Nat.! 1)                                                                     %% Definition of 1
-    . (-x) = mk_ratseq \n:Nat.! (-(unratseq x)(n))                     %% Definition of add. inverse
-    . not(x=0) => inv(x)= mk_ratseq \n:Nat.! 1/((unratseq x)(n))       %% Definition of mult. inverse
-  %% Now define ordering on top of that by defining what positive means, we thus get an ordered field
-    pred
-      pos:RatCauchySequences
-      . forall r:RatCauchySequences. pos(r) <=> exists q:Rat . exists k:Nat . forall n:Nat. n>k => (unratseq r)(n) > q 
-end
-
-spec CReal = CRealDef and Quotient[CRealDef fit Elem |-> RatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> Real
-then
-  ops
-      __+__:Real*Real->Real;
-      __*__:Real*Real->Real;
-      -__:Real->Real;
-      __-__:Real*Real->Real;
-      __/__:Real*Real->Real;
-      inf : Pred(Real) ->? Real;
-      inv:Real->?Real;
-      0 : Real;
-      1 : Real;
-      forall x,y:RatCauchySequences
-      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
-      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
-      . 0 = mk_quot(0)
-      . 1 = mk_quot(1)
-      . - mk_quot(x) = mk_quot(-x)
-      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
-  preds pos:Real;
-	__ <= __, __ >= __,
-        __ <  __, __ >  __: Real * Real;
-        forall r,s:Real; rn,sn:RatCauchySequences
-        . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
-        . pos(mk_quot(rn)) <=> pos(rn)
-        . r - s = r + (-s)
-         . not(s=0) => r / s = r * inv(s)
-        . r>s <=> pos(r-s)
-        . mk_quot(rn) >= mk_quot(sn) <=> mk_quot(rn)>mk_quot(sn) \/ mk_quot(rn)-mk_quot(sn)=0
-        . r < s <=> s > r
-        . r <= s <=> s>= r
-  sort RPos = { r:Real . pos(r) }
-end
-
-view RealtoCRealDef :
-     SimpleReals to CReal
-end
-
-
-%% variant 2: construct the positive reals and then the reals
-spec CPRealDef = PRatDist
-then
-  preds 
-  Cauchy:(Nat->PRat); %% expresses the fact that a sequence is a cauchy sequence
-  samelimit:(Nat->PRat)*(Nat->PRat); %% expresses the fact that two sequences have the same limit without using the limit itself
-      
-then
-    free type PRatSeq ::= mk_pratseq (unpratseq: Nat->PRat)
-  . forall s:Nat->PRat. Cauchy(s) <=> (forall epsilon:PRat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => dist(s(m),s(n)) < epsilon)
-  . forall s1,s2:Nat->PRat. samelimit(s1,s2) <=> forall epsilon:PRat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> dist(s1(n),s2(n))<epsilon 
-  type PRatCauchySequences = {s:PRatSeq . Cauchy(unpratseq s)}
-  preds
-    __ === __ : PRatCauchySequences*PRatCauchySequences;
-  ops
-    __+__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
-    __/__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
-    __*__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
-    inv:PRatCauchySequences->?PRatCauchySequences;
-    0 : PRatCauchySequences;
-    1 : PRatCauchySequences;
-    forall x,y,r,s:PRatCauchySequences
-    . x + y = mk_pratseq \n:Nat.! (unpratseq x)(n) + (unpratseq y)(n)   %% Addition on PRatCauchySequences
-    . x * y = mk_pratseq \n:Nat.! (unpratseq x)(n) * (unpratseq y)(n)   %% Multiplication on PRatCauchySequences
-    . 0 = mk_pratseq (\n:Nat.! 0)                                                                     %% Definition of 0
-    . 1 = mk_pratseq (\n:Nat.! 1)                                                                     %% Definition of 1
-    . not(x=0) => inv(x)= mk_pratseq \n:Nat.! 1/((unpratseq x)(n))       %% Definition of mult. inverse
-    . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(unpratseq s1,unpratseq s2)
-    . not(s=0) => r / s = r * inv(s)
-end
-
-spec CPReal = CPRealDef and Quotient[CPRealDef fit Elem |-> PRatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> PReal
-then
-  ops
-      __+__:PReal*PReal->PReal;
-      __*__:PReal*PReal->PReal;
-      __/__:PReal*PReal->PReal;
-      inv:PReal->?PReal;
-      0 : PReal;
-      1 : PReal;
-      forall x,y:PRatCauchySequences; r,s:PReal; rn,sn:PRatCauchySequences
-      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
-      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
-      . 0 = mk_quot(0)
-      . 1 = mk_quot(1)
-      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
-      . not(s=0) => r / s = r * inv(s)
-%[then %% prepare the equivalence relation]%
-%[  free type PRealPair ::= mk_prealpair (dest_prealpair: PReal*PReal)]%
-%[  preds]%
-%[    __ === __ :PRealPair*PRealPair;]%
-%[    . forall x1,x2,y1,y2:PReal . mk_prealpair(x1,x2) === mk_prealpair(y1,y2) <=> x1+y2 = x2+y1]%
-end
-
-spec CPRealEqv = NegExtension[CPReal fit Elem |-> PReal]
-end
-
-%[spec CPRealfromP = CPReal and Quotient[CPReal fit Elem |-> PRealPair, __ ~ __ |-> __ === __] with sort Quotient |-> Real]%
-%[end]%
