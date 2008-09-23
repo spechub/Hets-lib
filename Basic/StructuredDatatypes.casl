@@ -11,8 +11,6 @@ version 1.0
 %prec {__ ++ __} < {__ :: __}
 %prec {[__/__]} <> {__ __}
 
-%string emptyString, __:@:__
-
 %display  nothing     %LATEX \bot
 
 %display  __eps__ %LATEX __\epsilon__
@@ -29,7 +27,6 @@ from Basic/Numbers get Nat, Int
 
 from Basic/RelationsAndOrders get PartialOrder, BooleanAlgebra
 from Basic/Algebra_I get Monoid, CommutativeMonoid
-from Basic/SimpleDatatypes get Char
 
 spec Maybe [sort S] = %mono
   free type Maybe[S] ::= nothing | sort S
@@ -268,13 +265,6 @@ view Monoid_in_List  [sort Elem] given Nat:
   sort Elem |-> List[Elem],
   ops  e |-> [],
        __*__ |-> __ ++ __
-end
-
-spec String = %mono
- List [Char fit sort Elem |-> Char]
- with sort List[Char] |-> String,
-      ops  []         |-> emptyString,
-           __::__     |-> __:@:__            
 end
 
 spec GenerateMap [sort S] [sort T] = %mono
