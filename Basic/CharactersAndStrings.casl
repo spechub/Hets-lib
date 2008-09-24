@@ -5,7 +5,7 @@ version 1.0
 
 %{ This library provides the datatypes characters and strings.
 The characters are defined to be the subset 0..255
-of the natural numbers, and then constants for different 
+of the natural numbers, and then constants for different
 representations (ASCII, decimal, octal, hexadecimal)
 are introduced. }%
 
@@ -27,7 +27,7 @@ then %mono
   . chr(ord(c))=c              %(chr_ord_inverse)%
 
 
-                        
+
   %% definition of individual characters by decimal codes:
   ops  '\000' : Char = chr(0);              %(slash_000)%
        '\001' : Char = chr(1);              %(slash_001)%
@@ -483,11 +483,11 @@ then %mono
        'þ' : Char = '\254' ;            %(printable_254)%
        'ÿ' : Char = '\255' ;            %(printable_255)%
 
-  preds 
+  preds
     isLetter(c:Char) <=> (
       (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
-      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)% 
-    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9'); 
+      (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)%
+    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9');
                                                          %(isDigit_def)%
     isPrintable(c:Char) <=> (
       (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
@@ -1052,8 +1052,8 @@ then %mono
        DEL:Char = '\127';             %(DEL_def)%
 
   %% alternative names for special characters:
-  ops  NL:Char = LF;                  %(NL_def)% 
-       NP:Char = FF;                  %(NP_def)% 
+  ops  NL:Char = LF;                  %(NL_def)%
+       NP:Char = FF;                  %(NP_def)%
 
   %% character constants:
   ops  '\n' : Char = NL;              %(slash_n)%
@@ -1070,5 +1070,5 @@ spec String = %mono
  List [Char fit sort Elem |-> Char]
  with sort List[Char] |-> String,
       ops  []         |-> emptyString,
-           __::__     |-> __:@:__            
+           __::__     |-> __:@:__
 end
