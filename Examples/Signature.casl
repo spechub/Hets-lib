@@ -1,22 +1,23 @@
 library Examples/Signature
 
-from Basic/StructuredDatatypes get Set, List, String
+from Basic/StructuredDatatypes get Set, List
+from Basic/CharactersAndStrings get String
 
 spec Signature_Macro =
-  
-    Set[String fit sort Elem |-> String] 
+
+    Set[String fit sort Elem |-> String]
     with sort Set[String] |-> Signature_Sorts
 
   and
 
   {   String and List[String fit sort Elem |-> String]
     then
-      free type 
-      Operation ::= operation( name: String; 
-                               argument_sorts: List[String]; 
+      free type
+      Operation ::= operation( name: String;
+                               argument_sorts: List[String];
                                result_sort: String)
     then
-      Set[sort Operation fit sort Elem |-> Operation] 
+      Set[sort Operation fit sort Elem |-> Operation]
       with sort Set[Operation] |-> Signature_Operations
   }
 
@@ -35,16 +36,16 @@ then
 
     forall S: Signature_Sorts; x: String; L: List[String]
     .  []:List[String]  eps S
-    .  (x::L) eps S <=> x eps S /\ L eps S 
+    .  (x::L) eps S <=> x eps S /\ L eps S
   }
   within
-  
+
   forall S:Signature
   . forall o: Operation .
-     o eps sig_ops(S) => 
+     o eps sig_ops(S) =>
        argument_sorts(o) eps sig_sorts(S) /\
-       result_sort(o)    eps sig_sorts(S) 
-end        
+       result_sort(o)    eps sig_sorts(S)
+end
 
 
 %[
@@ -52,10 +53,10 @@ spec Example =
   Signature_Theory
 then
   op S:Signature =
-     signature( { 's'::[] }, 
-                { operation( 'o'::[], 
-                             ('s'::[])::(('s'::[])::[]), 
-                             's'::[] ) 
+     signature( { 's'::[] },
+                { operation( 'o'::[],
+                             ('s'::[])::(('s'::[])::[]),
+                             's'::[] )
                 }
               )
 end
