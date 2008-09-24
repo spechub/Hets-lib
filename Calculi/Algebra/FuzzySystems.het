@@ -115,7 +115,7 @@ spec FuzzySet[sort Universe] given UnitInterval =
      Function[sort Universe][sort UnitInterval] with Function |-> FuzzySet
 then
      preds __subseteq__, __subset__ : FuzzySet * FuzzySet
-     vars x : Universe; A, B: FuzzySet
+     vars A, B: FuzzySet
      . A subseteq B <=> forall x : Universe . A @ x <= B @ x
      . A subset B <=> not A = B /\ A subseteq B
 
@@ -203,7 +203,9 @@ spec Value [sort Universe] given UnitInterval =
      free type Value ::=
           ConfValue (rawValue : Universe; cf : UnitInterval)
 
-from Basic/StructuredDatatypes get String, Set, Bag, Map
+%{instead of importing strings use a shorter abstract definition}%
+%% from Basic/CharactersAndStrings get String
+spec String = sort String
 
 %% strings within terms
 spec TS = String
@@ -224,6 +226,8 @@ then free type Term ::= Leaf(TS) | Cons(HS; Term)
 %% instantiate values with terms
 spec LinguisticTerm = Term
 then Value[sort Term]
+
+from Basic/StructuredDatatypes get Set, Bag, Map
 
 %% sets of linguistic terms
 spec LinguisticTerms = LinguisticTerm
