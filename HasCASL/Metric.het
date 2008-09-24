@@ -1,0 +1,101 @@
+library HasCASL/Metric
+
+%author: E. Schulz
+%date: 22-09-2008
+
+%% copied from MetricSpaces (2)
+
+from Basic/Numbers get Nat
+
+logic HasCASL
+
+from HasCASL/Reals get OrderedReals
+from HasCASL/Set get Map
+
+spec MetricSpace = OrderedReals and Nat
+then
+     sort Space
+     op d:Space*Space->Real
+     var x,y,z:Space
+     . d(x,y) = 0 <=> x = y		%(MS_pos_definite)%
+     . d(x,y) = d(y,x)			%(MS_symm)%
+     . d(x,z) <= d(x,y) + d(y,z)	%(MS_triangle)%
+then %implies
+     var x,y:Space
+     . 0 <= d(x,y)                      %(MS_pos)%
+     . d(x,x) = 0                       %(MS_zero)%
+end
+
+spec MetricSpaceWithOpenDiscs[MetricSpace] given Map =
+     ops openDisc(x:Space;r:Real):Set Space = \y:Space . d(x,y)<r ;
+	 OpenDiscs: Set (Set Space) = image openDisc allSet[Space*Real];
+
+end
+
+spec MetricSpaceWithNh[MetricSpace] =
+     MetricSpaceWithOpenDiscs[MetricSpace]
+then
+     ops __isNhOf__(X:(Set Space);x:Space):?Unit =
+	 x isIn X /\ exists r:Real. r > 0 /\ openDisc(x,r) subset X;
+%%	 Nhs(x:Space): Set (Set Space) = \X. X isNhOf x
+end
+
+spec MetricSpaceWithCauchy[MetricSpace]=
+     op cauchy(f:Nat->Space):?Unit =
+	forall r:Real. r>0 =>
+	       exists N:Nat. forall n,m:Nat. n>N /\ m>N => d(f(n),f(m)) < r
+end     
+
+spec MetricSpaceWithConvergence[MetricSpace] =
+     MetricSpaceWithCauchy[MetricSpace]
+then
+     ops __tendsTo__(f:Nat->Space;x:Space):?Unit = 
+	 forall r:Real. r>0 =>
+		exists N:Nat. forall n:Nat. n>N => d(f(n),x) < r;
+	 converges(f:Nat->Space):?Unit = exists x:Space. f tendsTo x;
+	 complete:?Unit = forall f:Nat->Space. cauchy f => converges f;
+
+%{
+The uniqueness of the limit is expressed via the definitionality
+of the following extension.
+}%
+then %def
+     op limit:(Nat->Space)->?Space;
+     . forall f:Nat->Space;x:Space. f tendsTo x => limit f = x %(unique_limit)%
+
+then %implies
+     forall f:Nat->Space. converges f => cauchy f
+end
+
+
+spec MetricCompleteSpace[MetricSpace] =
+     MetricSpaceWithConvergence[MetricSpace]
+then
+     . complete
+end
+
+
+spec MetricSpaceWithOpenSets[MetricSpace] =
+     MetricSpaceWithNh[MetricSpace]
+then
+     ops open(X:Set Space):?Unit = forall x:Space. x isIn X =>
+	 exists U:Set Space. U isNhOf x /\ U subset X
+end
+
+
+spec ContinuousFunctions[MetricSpace with Space |-> Space1]
+                        [MetricSpace with Space |-> Space2] =
+     MetricSpaceWithNh[MetricSpace] with Space |-> Space1
+and
+     MetricSpaceWithNh[MetricSpace] with Space |-> Space2
+then
+     ops __ continuousIn __ (f:Space1->Space2;x:Space1):?Unit =
+	 forall X:Set Space2. X isNhOf f(x)  =>
+		exists Y:Set Space1. Y isNhOf x /\ (image f Y) subset X;
+
+	 __ continuousOn __ (f:Space1->Space2;X:Set Space1):?Unit =
+	 forall x:Space1. x isIn X => f continuousIn x;
+
+	 continuous(f:Space1->Space2):?Unit = f continuousOn allSet
+end
+
