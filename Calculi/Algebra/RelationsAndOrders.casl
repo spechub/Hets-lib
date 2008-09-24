@@ -4,20 +4,20 @@ version 0.1
 %author: S. Wölfl
 %date: 03-06-2005
 
-%( 
-    This library defines some basic concepts from the 
-    theory of relation algebras 
+%(
+    This library defines some basic concepts from the
+    theory of relation algebras
 )%
 
 
 %left_assoc __cup__,__cap__,__cmps__
-%prec {__cup__} < {__cmps__} 
-%prec {__cmps__} < {__cmpl__} 
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__}
 
 
 
 from Basic/RelationsAndOrders version 0.7 get
-	Relation,ReflexiveRelation,  
+	Relation,ReflexiveRelation,
 	StrictOrder |-> StrictPartialOrder
 
 
@@ -35,7 +35,7 @@ end
 
 
 spec ExtStrictPartialOrderByOrderRelations[StrictPartialOrder] = %def
-     preds __>__,__<=__,__>=__,__cmp__: Elem * Elem		
+     preds __>__,__<=__,__>=__,__cmp__: Elem * Elem
 
      forall x,y:Elem
      . x > y <=> y < x					%(def_suc)%
@@ -46,7 +46,7 @@ spec ExtStrictPartialOrderByOrderRelations[StrictPartialOrder] = %def
 then %implies
      forall x,y:Elem
      . x <= y <=> y >= x				%(equi_preE_sucE)%
-     . x cmp y => y cmp x				%(cmp_sym)%     
+     . x cmp y => y cmp x				%(cmp_sym)%
 end
 
 
@@ -62,15 +62,15 @@ then %def
      pred
          Convex : Set(Elem)
      op
-         convexhull : Set(Elem) -> Set(Elem) 
+         convexhull : Set(Elem) -> Set(Elem)
 
      forall x:Elem; X:Set(Elem)
-     . Convex(X) <=> 
+     . Convex(X) <=>
 		(forall x,y,z:Elem . x < y /\ y < z /\ x isIn X /\ z isIn X => y isIn X)
 										%(def_convex)%
-     . x isIn convexhull(X) <=> x isIn X \/ 
+     . x isIn convexhull(X) <=> x isIn X \/
 	(exists x',x'':Elem . x isIn X /\ x' isIn X /\ x' < x /\ x < x'')
-										%(def_convexhull)%  
+										%(def_convexhull)%
 
 then %implies
      forall X,Y:Set(Elem); XX:Set(Set(Elem))
@@ -79,19 +79,20 @@ then %implies
      . (forall X:Set(Elem) . X isIn XX => Convex(X)) /\
      	(forall X,X':Set(Elem) . X isIn XX /\ X' isIn XX => X subset X' \/ X' subset X) =>
 	Convex(bigunion XX)
-     . Convex(convexhull(X)) 
-end 
+     . Convex(convexhull(X))
+end
 
 
-spec ExtStrictPartialOrderBySetRelations[StrictPartialOrder] = 
+spec ExtStrictPartialOrderBySetRelations[StrictPartialOrder] =
      ExtStrictPartialOrderByOrderRelations[StrictPartialOrder]
+     with logic -> HasCASL
 then %def
 local SetHasCASL
-within 
-     preds 
-	__<__,__>__,__<=__,__>=__: Set(Elem) * Set(Elem);		
-	__<__,__>__,__<=__,__>=__: Elem * Set(Elem);		
-	__<__,__>__,__<=__,__>=__: Set(Elem) * Elem		
+within
+     preds
+	__<__,__>__,__<=__,__>=__: Set(Elem) * Set(Elem);
+	__<__,__>__,__<=__,__>=__: Elem * Set(Elem);
+	__<__,__>__,__<=__,__>=__: Set(Elem) * Elem
 
      forall x,y:Elem; X,Y:Set(Elem)
      . X < Y <=> (forall x,y:Elem . x isIn X /\ y isIn Y => x < y)
