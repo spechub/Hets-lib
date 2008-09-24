@@ -2,27 +2,27 @@ library Calculi/Time/PointAlgebraLin
 version 0.4
 %% author: S. Wölfl
 %% date: 22-06-2005
-%% 
+%%
 
 %left_assoc __cup__,__cap__
 %prec {__cup__} < {__cmps__}
-%prec {__cmps__} < {__cmpl__} 
+%prec {__cmps__} < {__cmpl__}
 
-from Calculi/Algebra/BooleanAlgebra get 
+from Calculi/Algebra/BooleanAlgebra get
 	BooleanAlgebraWithCompl,
 	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra 
-from Calculi/Algebra/RelationAlgebra get 
+	AtomicBooleanAlgebra
+from Calculi/Algebra/RelationAlgebra get
 	AtomicRelationAlgebra,
 	IntegralRelationAlgebra,
 	SymmetricRelationAlgebra
-from Calculi/Algebra/RelationAlgebraSymbolic get 
+from Calculi/Algebra/RelationAlgebraSymbolic get
 	CompositionTable,
-	GroundingCompositionTable,	
-	SetRepresentationOfRelations,		
+	GroundingCompositionTable,
+	SetRepresentationOfRelations,
 	ConstructPseudoRelationAlgebra,
 	ConstructExtPseudoRelationAlgebra
-from Calculi/Algebra/RelationAlgebraModel get 
+from Calculi/Algebra/RelationAlgebraModel get
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
 	BaseRelationModel,
@@ -30,13 +30,12 @@ from Calculi/Algebra/RelationAlgebraModel get
 	ConstructModelFromBaseRelationModel,
 	CompositionClosedBaseRelationModel,
 	CheckCompositionClosedBaseRelationModel
-from Calculi/Time/LinearFlowOfTime get 
-	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime,
-	NTLinFlowOfTime
+from Calculi/Time/LinearFlowOfTime get
+	DnsLinFlowOfTimeSEnd |-> CASL_DnsLinFlowOfTimeSEnd,
+	LinFlowOfTime |-> CASL_LinFlowOfTime,
+	NTLinFlowOfTime |-> CASL_NTLinFlowOfTime
 
-
-%%from Calculi/Time/FlowOfTime get 
+%%from Calculi/Time/FlowOfTime get
 %%	ExtFlowOfTimeByConvexity,
 %%	ExtFlowOfTimeBySetRelations
 
@@ -44,18 +43,18 @@ from Calculi/Time/LinearFlowOfTime get
 %(  Part I: Symbolic Level
 
     We start by describing the symbolic level of the point algebra
-    of linear time (abbrev. by PAlin), i.e., the set of base relations 
-    and the composition table. Arbitrary relations of PAlin are 
-    represented as sets of base relations. In turn base relations are 
+    of linear time (abbrev. by PAlin), i.e., the set of base relations
+    and the composition table. Arbitrary relations of PAlin are
+    represented as sets of base relations. In turn base relations are
     represented by their respective singleton sets. The spec
-    BooleanAlgebraOfPAlinRelations builds this set of all relations, 
-    which obviously forms an atomic Boolean algebra. Via the composition 
-    table we then define a relation algebra on the set of all relations. 
-    This provides us with a specification of PAlin, namely spec 
+    BooleanAlgebraOfPAlinRelations builds this set of all relations,
+    which obviously forms an atomic Boolean algebra. Via the composition
+    table we then define a relation algebra on the set of all relations.
+    This provides us with a specification of PAlin, namely spec
     PAlin.
 )%
 
-%( 
+%(
      The Point Algebra for linear flows of time has three base relations,
      namely, p ("precedes"), pi ("precedes inverse"), and e ("equals").
 )%
@@ -65,7 +64,7 @@ spec PAlinBaseRelations = %mono
      free type BaseRel ::= p | pi | e
 end
 
-%(   The following spec encodes the composition table of PAlin as well as 
+%(   The following spec encodes the composition table of PAlin as well as
      the information on inverses of base relations.
 )%
 
@@ -73,19 +72,19 @@ end
 spec PAlinCompositionTable =
      sort BaseRel
      ops p,pi,e: BaseRel
-and 
+and
      CompositionTable with op id |-> e
 then
      . inv(p) = pi					%(inv_p)%
      . inv(pi) = p					%(inv_pi)%
      . inv(e) = e					%(sym_e)%
-     . p cmps p  = p 					%(cmps_pp)%	
+     . p cmps p  = p 					%(cmps_pp)%
      . p cmps pi = 1					%(cmps_ppi)%
      . p cmps e  = p					%(cmps_pe)%
-     . pi cmps p  = 1 					%(cmps_pip)%	
+     . pi cmps p  = 1 					%(cmps_pip)%
      . pi cmps pi = pi					%(cmps_pipi)%
      . pi cmps e  = pi					%(cmps_pie)%
-     . e cmps p  = p 					%(cmps_ep)%	
+     . e cmps p  = p 					%(cmps_ep)%
      . e cmps pi = pi					%(cmps_epi)%
      . e cmps e  = e					%(cmps_ee)%
 end
@@ -98,18 +97,18 @@ view PAlinCompositionTable_as_GroundingCompositionTable:
 end
 
 
-spec BooleanAlgebraOfPAlinRelations = 
-     SetRepresentationOfRelations[PAlinBaseRelations] 
+spec BooleanAlgebraOfPAlinRelations =
+     SetRepresentationOfRelations[PAlinBaseRelations]
 end
 
 view BooleanAlgebraOfPAlinRelations_as_AtomicBooleanAlgebra :
      AtomicBooleanAlgebra to BooleanAlgebraOfPAlinRelations
-= 
+=
      Elem |-> Rel, AtomElem |-> BaseRel
 end
 
 
-spec PAlin = 
+spec PAlin =
      ConstructPseudoRelationAlgebra[PAlinBaseRelations]
 	[PAlinCompositionTable fit op id:BaseRel |-> e]
 end
@@ -118,12 +117,12 @@ end
 spec RichPAlin =
      ConstructExtPseudoRelationAlgebra[PAlinBaseRelations]
 	[PAlinCompositionTable fit op id:BaseRel |-> e]
-end	
+end
 
 
 view PAlin_as_AtomicRelationAlgebra :
-     AtomicRelationAlgebra to 
-     RichPAlin 
+     AtomicRelationAlgebra to
+     RichPAlin
 =
      AtomRel |-> BaseRel
 end
@@ -141,20 +140,23 @@ end
 
 %(  Part II: Semantic Level
 
-    Following we describe how models of PAlin can be constructed from 
-    dense linear flows of time without endpoints. 
+    Following we describe how models of PAlin can be constructed from
+    dense linear flows of time without endpoints.
 )%
 
 
 
 logic HasCASL
 
+spec DnsLinFlowOfTimeSEnd = CASL_DnsLinFlowOfTimeSEnd with logic -> HasCASL
+spec LinFlowOfTime = CASL_LinFlowOfTime with logic -> HasCASL
+spec NTLinFlowOfTime = CASL_NTLinFlowOfTime with logic -> HasCASL
 
-spec PAlinBaseRelationModel[LinFlowOfTime] = %def 
-     BaseRelationModel[LinFlowOfTime fit Elem |-> Instant]  
+spec PAlinBaseRelationModel[LinFlowOfTime] = %def
+     BaseRelationModel[LinFlowOfTime fit Elem |-> Instant]
 then %def
-     ops pRel,eRel,piRel:Relation 
-     free type BaseRel ::= pRel | eRel | piRel 
+     ops pRel,eRel,piRel:Relation
+     free type BaseRel ::= pRel | eRel | piRel
 
      forall x,y:Instant
      . (x,y) isIn rep(pRel)  <=> x pre y
@@ -163,14 +165,14 @@ then %def
 end
 
 
-%( A linear flow of time provides a JEPDBaseRelationModel only if it contains 
+%( A linear flow of time provides a JEPDBaseRelationModel only if it contains
    at least 2 elements
 )%
- 
+
 
 view JEPDBaseRelationModel_From_PAlinBaseRelationModel[NTLinFlowOfTime]:
-     JEPDBaseRelationModel 
-to 
+     JEPDBaseRelationModel
+to
      PAlinBaseRelationModel[NTLinFlowOfTime]
 =    sort Elem |-> Instant
 end
@@ -180,9 +182,9 @@ end
 
 view CompositionClosedBaseRelationModel_From_PAlinBaseRelationModel[DnsLinFlowOfTimeSEnd]:
      CheckCompositionClosedBaseRelationModel to
-     {  ConstructPseudoModelFromBaseRelationModel[	
+     {  ConstructPseudoModelFromBaseRelationModel[
 		PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
-	then %def 
+	then %def
 	ops id:Rel;
 	    inv__:BaseRel -> Rel;
 	     __cmps__:BaseRel * BaseRel -> Rel
@@ -192,31 +194,31 @@ end
 
 
 
-spec PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] = %def 
+spec PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] = %def
      ConstructModelFromBaseRelationModel[
 	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
 then %def
       ops  inv__ : BaseRel -> BaseRel;
 	 __cmps__: BaseRel * BaseRel -> Rel
-end 
+end
 
 
 
 
 view PAlinModel_DnsSEnd_ExtModels_PAlinCompositionTable[DnsLinFlowOfTimeSEnd] :
-     PAlinCompositionTable 
-to 
-     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] 
-=   
+     PAlinCompositionTable
+to
+     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd]
+=
      ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
 
 
 
 view DnsLinFlowOfTimeSEnd_induces_AlgebraOfBinaryRelations[DnsLinFlowOfTimeSEnd] :
-     AlgebraOfBinaryRelations 
-to 
-     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] 
+     AlgebraOfBinaryRelations
+to
+     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd]
 =
      Elem |-> Instant
 end
@@ -225,9 +227,9 @@ end
 
 view DnsLinFlowOfTimeSEnd_induces_ModelOfPAlin[DnsLinFlowOfTimeSEnd] :
      PAlin
-to 
+to
     PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd]
-=   
+=
     ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
 
