@@ -4,18 +4,16 @@ version 0.2
 %author: T. Mossakowski, S. Wölfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
-from Basic/Numbers get
-     Nat, Int, Rat
 from Basic/RelationsAndOrders get
-     TotalOrder, ExtTotalOrder, RichTotalOrder
-from HasCASL/Algebra get
-     ExtField |-> Field
+     TotalOrder, ExtTotalOrder
+from HasCASL/Algebra get Field, RichField
+     
 
 logic HasCASL
 
 spec FieldWithOrdering =
 
-     Field and TotalOrder
+     RichField and TotalOrder
 
 then
     forall a, b, c:Elem
@@ -31,7 +29,7 @@ end
 
 
 spec OrderedField =
-     Field
+     RichField
 then
      pred Pos: Elem
      forall x,y: Elem
@@ -71,3 +69,21 @@ end
 
 spec SimpleReals = Reals hide NonZero
 
+spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
+then
+     op abs(x:Real):Real = x when 0 <= x else -x
+end
+
+spec FieldWithValuation =
+     Field
+and  OrderedReals
+then
+     op val: Elem -> Real
+     forall x,y:Elem
+     . val(x) >= 0              %(non-negative)%
+     . val(x) = 0 <=> x = 0     %(pos-definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= val(x) + val(y) %(triangle)%
+then %implies
+     . val(1) = 1
+end
