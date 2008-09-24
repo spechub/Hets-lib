@@ -127,7 +127,7 @@ then
     . x * y = mk_pratseq \n:Nat.! (unpratseq x)(n) * (unpratseq y)(n)   %% Multiplication on PRatCauchySequences
     . 0 = mk_pratseq (\n:Nat.! 0)                                                                     %% Definition of 0
     . 1 = mk_pratseq (\n:Nat.! 1)                                                                     %% Definition of 1
-    . not(x=0) => inv(x)= mk_pratseq \n:Nat.! 1/((unpratseq x)(n))       %% Definition of mult. inverse
+%%    . not(x=0) => inv(x)= mk_pratseq \n:Nat.! 1/((unpratseq x)(n))       %% Definition of mult. inverse
     . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(unpratseq s1,unpratseq s2)
     . not(s=0) => r / s = r * inv(s)
 end
@@ -155,8 +155,8 @@ then
 %[    . forall x1,x2,y1,y2:PReal . mk_prealpair(x1,x2) === mk_prealpair(y1,y2) <=> x1+y2 = x2+y1]%
 end
 
-spec CPRealEqv = NegExtension[CPReal fit Elem |-> PReal]
-end
+%[spec CPRealEqv = NegExtension[CPReal fit Elem |-> PReal]]%
+%[end]%
 
 %[spec CPRealfromP = CPReal and Quotient[CPReal fit Elem |-> PRealPair, __ ~ __ |-> __ === __] with sort Quotient |-> Real]%
 %[end]%
