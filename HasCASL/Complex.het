@@ -1,14 +1,14 @@
 library HasCASL/Complex
 version 0.2
 
-%author: L. Schroeder
+%author: L. Schroeder, D.Dietrich
 %date: 02-05-2008
 
 from Basic/Algebra_I get
         Field |-> BasicField, ExtField |-> BasicExtField
 
 from HasCASL/Real get
-     Real
+     Real, FieldWithValuation     
 
 logic HasCASL
 
@@ -29,3 +29,24 @@ view ConstructComplex_as_Field:
   Elem |-> Complex, e |-> 1
 
 spec  Complex = BasicExtField[view ConstructComplex_as_Field]
+
+spec ComplexExt = Complex
+then
+  ops conj:Complex->Complex;
+      |__| : Complex -> Real;
+      exp : Complex -> Complex;
+      sin : Real -> Real;
+      cos : Real -> Real;
+  var x,y:Real
+  . conj(complex(x,y)) = complex(x,-y)
+  . | complex(x,y) | = sqrt(x*x+y*y)  
+  . cos(x) = Re(exp(i*x))
+  . sin(x) = Im(exp(i*x))
+end
+
+view Complex_as_FieldWithValuation :
+     FieldWithValuation to Complex
+=    Elem |-> Complex, val |-> |__|
+end
+
+%% Define exp, sine, cosine, 

@@ -61,7 +61,7 @@ of the following extension.
 }%
 then %def
      op limit:(Nat->Space)->?Space;
-     . forall f:Nat->Space;x:Space. f tendsTo x => limit f = x %(unique_limit)%
+     . forall f:Nat->Space;x:Space. f tendsTo x <=> limit f = x %(unique_limit)%
 
 then %implies
      forall f:Nat->Space. converges f => cauchy f
