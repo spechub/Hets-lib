@@ -82,6 +82,7 @@ spec Map =
   ops dom : (S->?T) -> Set S;
       range : (S->?T) -> Set T; 
       image : (S->?T) -> Set S -> Set T;
+      invimage(f:(S->?T))(t:Set T):Set S = \x:S. f(x) isIn t;
       emptyMap : (S->?T);
       __ :: __ --> __ : Pred ( (S->?T) * Pred(S) * Pred(T) );
       __ [__/__] : (S->?T) * S * T -> (S->?T);
