@@ -36,10 +36,10 @@ spec NegExtension[sort Elem op __+__:Elem*Elem->Elem] =
   type ElemPair:=Elem*Elem
   preds
     __===__ :ElemPair*ElemPair;
-    . forall x1,x2,y1,y2:Elem . (x1,x2) === (y1,y2) <=> x1+y2 = x2+y1
+    . forall x1,x2,y1,y2:Elem . (x1,x2) === (y1,y2) <=> x1+y2 = x2+y1 %(pair_equivalence)%
   ops
     __+__:ElemPair*ElemPair->ElemPair;
-   . forall x1,x2,y1,y2:Elem . (x1,x2) + (y1,y2) = (x1+y1,x2+y2)
+   . forall x1,x2,y1,y2:Elem . (x1,x2) + (y1,y2) = (x1+y1,x2+y2) %(pair_equality_addition)%
 end
 
 spec NegExtensionQuotient[sort Elem ops __+__:Elem*Elem->Elem; 0:Elem] =
@@ -52,48 +52,49 @@ then
     -__:Quotient->Quotient;
     __-__:Quotient*Quotient->Quotient;
     0:Quotient;
-   . forall a,b:ElemPair . mk_quot(a) + mk_quot(b) = mk_quot(a+b)
-   . forall a,b:Elem. -mk_quot(a,b) = mk_quot(b,a)
-   . forall a,b:Quotient. a - b = a + (-b)
+   . forall a,b:ElemPair . mk_quot(a) + mk_quot(b) = mk_quot(a+b) %(addition_Quotient)%
+   . forall a,b:Elem. -mk_quot(a,b) = mk_quot(b,a) %(neg_Quotient)%
+   . forall a,b:Quotient. a - b = a + (-b) %(minus_Quotient)%
 end
 
 
 spec MulExtension[sort Elem sort ElemPos op __*__:Elem*Elem->Elem] =
-  type ElemPair:=Elem*Elem
+  sort ElemPos < Elem
+  type ElemPair:=Elem*ElemPos
   preds
     __===__ :ElemPair*ElemPair;
-    . forall x1,x2,y1,y2:Elem . (x1,x2) === (y1,y2) <=> x1*y2 = x2*y1
-  ops
-    __*__:ElemPair*ElemPair->ElemPair;
-   . forall x1,x2,y1,y2:Elem . (x1,x2) * (y1,y2) = (x1*y1,x2*y2)
+    . forall x1,y1:Elem . forall  x2,y2:ElemPos . (x1,x2) === (y1,y2) <=> x1*y2 = x2*y1 %(multiplication_equivalence)%
 end
 
 
-spec MulExtensionQuotient[sort Elem sort ElemPos ops __*__:Elem*Elem->Elem; 1:Elem] =
+spec MulExtensionQuotient[sort Elem sort ElemPos ops __*__:Elem*Elem->Elem; __*__:ElemPos*ElemPos->ElemPos;  __+__:Elem*Elem->Elem; 1:ElemPos] =
   Quotient[MulExtension[sort Elem sort ElemPos op __*__:Elem*Elem->Elem] fit Elem |-> ElemPair, __~__ |-> __===__]
 then
   sort Elem<Quotient
-  . forall a:Elem . a = mk_quot(a,1)
+  . forall a:Elem . a = mk_quot(a,1)   %(Elem2Quotient_embedding)%
   ops
-    __*__:Quotient*Quotient->Quotient;
+    __*__:Quotient*Quotient->Quotient;    
+    __+__:Quotient*Quotient->Quotient;
     1:Quotient=mk_quot(1,1);
+     . forall x1,y1:Elem . forall x2,y2:ElemPos . mk_quot(x1,x2) * mk_quot(y1,y2) = mk_quot(x1*y1,x2*y2)    %(pair_equality_multiplication)%
+     . forall x1,y1:Elem . forall x2,y2:ElemPos . mk_quot(x1,x2) + mk_quot(y1,y2) = mk_quot(x1*y2+y1*x2,x2*y2)
 end
 
 
 spec Dist[sort Elem ops 0:Elem; __+__:Elem*Elem->Elem; __-!__:Elem*Elem->Elem] =
 ops
     dist: Elem*Elem -> Elem;
-  . forall m,n:Elem. dist(m,n) = (m -! n) + (n -! m)
+  . forall m,n:Elem. dist(m,n) = (m -! n) + (n -! m) %(dist_definition)%
 then %implies
   forall m,n,p:Elem
-  . dist(n,n) = 0
-  . dist(0,n) = n
-  . dist(n,0) = n
-  . dist(m,n) = dist(n,m)
-  . dist(m + n,m + p) = dist(n,p)
-  . dist(m + p,n + p) = dist(m,n)
-  . dist(m + n,m) = n
-  . dist(m,m + n) = n
+  . dist(n,n) = 0                   %(dist_same)%
+  . dist(0,n) = n                   %(dist_zero_left)%
+  . dist(n,0) = n                   %(dist_zero_right)%
+  . dist(m,n) = dist(n,m)           %(dist_symmetry)%
+  . dist(m + n,m + p) = dist(n,p)   %(dist_add_left)%
+  . dist(m + p,n + p) = dist(m,n)   %(dist_add_right)%
+  . dist(m + n,m) = n               %(dist_zero_right_add)%
+  . dist(m,m + n) = n               %(dist_zero_left_add)%
 end
 
 spec NatDist = Dist[{Nat with logic -> HasCASL} fit Elem |-> Nat]
@@ -107,44 +108,29 @@ then
     . forall x1,x2,y1,y2:Nat . (x1,x2) === (y1,y2) <=> x1*y2 = x2*y1
 end
 
-spec PRat = Nat
-then %mono
-
-     generated type PRat ::= __ / __ (Nat;Pos)
-     forall i,j: Nat; p,q: Pos
-     . i / p = j / q <=> i*q = j*p              %(equality_Rat)%
-
-     sort Nat < PRat
-     forall i:Nat . i = i / 1                   %(Nat2Rat_embedding)%
-
-then %def
-
-     preds    __ <= __, __ < __,
-              __ >= __, __ > __: PRat * PRat;
-
-  %% implied operation attributes :
+spec PRat = Nat and MulExtensionQuotient[{Nat with logic -> HasCASL} fit Elem |-> Nat, ElemPos |-> Pos] with sort Quotient |-> PRat
 then
-     ops __+__:   PRat * PRat -> PRat;
-         __*__:   PRat * PRat -> PRat;
-         __ / __ : PRat * PRat ->? PRat;
- then
+  preds    __ <= __, __ < __,
+           __ >= __, __ > __: PRat * PRat;
+  ops __/__:Nat*Pos->PRat;
+  . forall a:Nat. forall b:Pos. a / b = mk_quot(a,b)
+
+then
     forall p,q:Pos; n:Nat; i,j: Nat; x,y,z: PRat
-
-  %% axioms concerning predicates]%
-
-     . (i / p <= j / q <=> i * q <= j * p ) %(leq_def_Rat)%
-     . x >= y <=> y <= x                    %(geq_def_Rat)%
-     . x < y <=> (x <= y /\ not x=y )       %(less_def_Rat)%
-     . x > y <=> y < x                      %(greater_def_Rat)%
-
-  %% axioms concerning operations
-
+    
+  %% ordering on the PRats
+  . (i / p <= j / q <=> i * q <= j * p ) %(leq_def_Rat)%
+  . forall x,y:PRat 
+  . x >= y <=> y <= x                    %(geq_def_PRat)%
+  . x < y <=> (x <= y /\ not x=y )       %(less_def_PRat)%
+  . x > y <=> y < x                      %(greater_def_PRat)%
+then %implies
+   forall p,q:Pos; n:Nat; i,j: Nat
      . (i / p) + (j / q) =	
        (i * q + j * p) / (p * q)        %(add_def_Rat)%
      . (i / p) * (j / q) = 
        (i * j) / (p * q)                %(mult_def_Rat)%
-end
-
+end 
 
 spec PRatSub = PRat
 then
@@ -160,8 +146,3 @@ end
 
 spec PRatDist = Dist[{PRatSub with logic -> HasCASL} fit Elem |-> PRat]
 end
-
-
-
-
-
