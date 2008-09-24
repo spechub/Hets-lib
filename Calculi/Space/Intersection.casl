@@ -1,4 +1,4 @@
-library Calculi/SpatialCalculi/Intersection
+library Calculi/Space/Intersection
 
 %left_assoc __!__
 
@@ -7,7 +7,7 @@ from Basic/LinearAlgebra_I get Matrix
 
 spec FourIntersection =
   Matrix[view Field_in_ResidueClassField[op 2: Int fit n |-> 2]]
-        [op 2:Pos fit n |-> 2] 
+        [op 2:Pos fit n |-> 2]
 then
   sort IntersectionRelations < Matrix[Z[2],2]
   ops 1,2:Index[2];
@@ -61,25 +61,25 @@ from HasCASL/TopologicalSpaces get RichTopologicalSpace
 
 logic HasCASL
 
-view FourIntersection_in_TopologicalSpace : 
+view FourIntersection_in_TopologicalSpace :
       { FourIntersection with logic -> HasCASL
-                         reveal disjoint , contains , inside , equal , 
+                         reveal disjoint , contains , inside , equal ,
                                 meet , covers , covered_by , overlap }
- to 
+ to
      { RichTopologicalSpace then
        type Relations := Pred(RegularClosed * RegularClosed)
        preds disjoint(X,Y:RegularClosed) <=> X disjoint Y;
              contains(X,Y:RegularClosed) <=> Y subset X /\ not X=Y;
              inside(X,Y:RegularClosed) <=> X subset Y /\ not X=Y;
              equal(X,Y:RegularClosed) <=> X=Y;
-             meet(X,Y:RegularClosed) <=> 
+             meet(X,Y:RegularClosed) <=>
                 (not boundary(X) intersection boundary(Y)=emptySet
                  /\ int(X) intersection int(Y) = emptySet);
-             covers(X,Y:RegularClosed) <=> 
-                Y subset X /\ not X=Y 
+             covers(X,Y:RegularClosed) <=>
+                Y subset X /\ not X=Y
                 /\not boundary(X) intersection boundary(Y)=emptySet;
-             covered_by(X,Y:RegularClosed) <=> 
-                X subset Y /\ not X=Y 
+             covered_by(X,Y:RegularClosed) <=>
+                X subset Y /\ not X=Y
                 /\not boundary(X) intersection boundary(Y)=emptySet;
              overlap(X,Y:RegularClosed) <=>
                 (not boundary(X) intersection boundary(Y)=emptySet
