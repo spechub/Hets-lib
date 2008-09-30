@@ -67,7 +67,7 @@ lemma indLeft:
 proof-
   have "\<forall>x. do {x \<leftarrow> (p^[*]) x; q x}  \<preceq> q x"
     using assms by (rule ind_left)
-  hence "\<forall>x. do {x \<leftarrow> r; x \<leftarrow> (p^[*]) x; q x} \<preceq> do {x \<leftarrow> r; q x}"
+  hence "do {x \<leftarrow> r; x \<leftarrow> (p^[*]) x; q x} \<preceq> do {x \<leftarrow> r; q x}"
     by (rule ileqBindLeft)
   thus ?thesis by (subst assoc) simp
 qed
@@ -82,6 +82,42 @@ lemma ret_star: "star {x \<leftarrow> p; q x} = do {p \<leftarrow> star {p \<lef
   prefer 2
   apply assumption 
   by simp
+
+lemma starTensorRight: "do {x \<leftarrow> star {x \<leftarrow> p; q x}; r x y} = 
+                        do {(x, y) \<leftarrow> star {(x, y) \<leftarrow> do {x \<leftarrow> p; ret (x, y)}; x \<leftarrow> q x; ret (x, y)}; r x y}"
+  apply (subgoal_tac "do {x\<leftarrow>(p \<guillemotright>= q\<^sup>*); r x y} = do {(x, y) \<leftarrow> do {x\<leftarrow>(p \<guillemotright>= q\<^sup>*); ret (x, y)}; r x y}")
+  apply (erule ssubst)
+  apply (rule_tac f="%u. do {(x, y) \<leftarrow> u; r x y}" in arg_cong)
+  apply simp
+  apply (rule_tac f="%u. do {x \<leftarrow> p; u x}" in arg_cong)
+  apply (rule ext)
+  apply (rule trans)
+  apply (rule inv_lemma [THEN allE])
+  prefer 2
+  apply assumption
+  prefer 2
+  apply simp
+  apply simp
+  apply simp
+done
+lemma starTensorLeft: "do {x \<leftarrow> star {x \<leftarrow> p; q x}; r y x} = 
+                        do {(y, x) \<leftarrow> star {(y, x) \<leftarrow> do {x \<leftarrow> p; ret (y, x)}; x \<leftarrow> q x; ret (y, x)}; r y x}"
+  apply (subgoal_tac "do {x\<leftarrow>(p \<guillemotright>= q\<^sup>*); r y x} = do {(y, x) \<leftarrow> do {x\<leftarrow>(p \<guillemotright>= q\<^sup>*); ret (y, x)}; r y x}")
+  apply (erule ssubst)
+  apply (rule_tac f="%u. do {(y, x) \<leftarrow> u; r y x}" in arg_cong)
+  apply simp
+  apply (rule_tac f="%u. do {x \<leftarrow> p; u x}" in arg_cong)
+  apply (rule ext)
+  apply (rule trans)
+  apply (rule inv_lemma [THEN allE])
+  prefer 2
+  apply assumption
+  prefer 2
+  apply simp
+  apply simp
+  apply simp
+done
+
 
 lemma cutStar0: 
   assumes "\<forall>a b. F (a \<oplus> b) = (F a \<oplus> F b)"

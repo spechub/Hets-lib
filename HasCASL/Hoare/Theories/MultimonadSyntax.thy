@@ -88,7 +88,7 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma ileqBindLeft: "(\<forall>x. p x \<preceq> q x) ==> (\<forall>x. do{ x \<leftarrow> r; p x} \<preceq> do{ x \<leftarrow> r; q x})"
+lemma ileqBindLeft: "(\<forall>x. p x \<preceq> q x) ==> do{ x \<leftarrow> r; p x} \<preceq> do{ x \<leftarrow> r; q x}"
 apply (unfold ileq_def)
 apply (subst dist2 [THEN sym])
 by simp

@@ -96,6 +96,14 @@ lemma delBang1 [simp]: "do {p; ret ()} = p"
   apply (simp only: delBind [THEN sym])
   by (rule delBang)
 
+lemma tensorRight: "do {x \<leftarrow> p; q x y} = do {(x, y) \<leftarrow> do {x \<leftarrow> p; ret (x, y)}; q x y}"
+  apply (unfold split_def)
+  by simp
+
+lemma tensorLeft: "do {x \<leftarrow> p; q y x} = do {(y, x) \<leftarrow> do {x \<leftarrow> p; ret (y, x)}; q y x}"
+  apply (unfold split_def)
+  by simp
+
 text{*Syntactic sugar for True and False*}
 syntax
   "_b1"      :: "bool"                 ("\<top>")
