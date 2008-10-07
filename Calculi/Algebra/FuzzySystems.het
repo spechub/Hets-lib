@@ -9,11 +9,14 @@ version 0.1
 }%
 
 %display  __intersection__ %LATEX __\cap__
+%display  __intersection2__ %LATEX __\cap__
 %display  __union__        %LATEX __\cup__
 %display  __subseteq__     %LATEX __\subseteq__
 %display  __subset__       %LATEX __\subset__
 
 from Basic/Numbers get Rat
+
+%% * Preliminaries
 
 %% take a fixed, rational unit interval
 spec UnitInterval = Rat
@@ -27,6 +30,8 @@ then
      op J : UnitInterval * UnitInterval -> UnitInterval, comm, assoc
      vars x, y, z, w : UnitInterval
      . x <= y /\ w <= z => J(x, w) <= J(y, z) %(monotonicity)%
+
+%% ** T-Norms, examples, properties
 
 %% a t-norm has the boundary 1 and is called T
 spec TNorm = MonotoneJunctor with J |-> T
@@ -62,6 +67,8 @@ then %implies
      . T_D(x, y) <= T(x, y)
      . T(x, y) <= T_Z(x, y)
 
+%% ** T-Conorms, examples, properties
+
 %% a t-conorm has the boundary 0 and is called C
 spec TConorm = MonotoneJunctor with J |-> C
 then forall x : UnitInterval . C(x, 0) = x %(boundary_0)%
@@ -96,6 +103,8 @@ then %implies
      . C(x, y) <= C_D(x, y)
      . C_Z(x, y) <= C(x, y)
 
+%% ** Other basics
+
 %% an underspecified complement over the unit interval
 spec Complement = UnitInterval
 then op compl __ : UnitInterval -> UnitInterval
@@ -110,66 +119,65 @@ spec Function[sort Domain][sort Codomain] =
      vars A, B: Function
      . A = B <=> forall x : Domain . A @ x = B @ x %(extensionality)%
 
-%% type-1 fuzzy sets over a universe and an underspecified unit interval
-spec FuzzySet[sort Universe] given UnitInterval =
-     Function[sort Universe][sort UnitInterval] with Function |-> FuzzySet
+%% * Type-1 fuzzy sets, with lifted junctors
+
+%% type-1 fuzzy sets over a domian and a unit interval
+spec FuzzySet[sort Domain] given UnitInterval =
+     Function[sort Domain][sort UnitInterval] with Function |-> FuzzySet
 then
      preds __subseteq__, __subset__ : FuzzySet * FuzzySet
      vars A, B: FuzzySet
-     . A subseteq B <=> forall x : Universe . A @ x <= B @ x
+     . A subseteq B <=> forall x : Domain . A @ x <= B @ x
      . A subset B <=> not A = B /\ A subseteq B
 
-%% pointwise lift a norm to a function over fuzzy sets
-spec LiftJunctor[MonotoneJunctor][sort Universe] given UnitInterval =
-     FuzzySet[sort Universe]
+%% construct a singleton fuzzy set
+spec Sing[sort Domain] given UnitInterval = FuzzySet[sort Domain]
+then op Sing __ : Domain -> FuzzySet
+     var r, s : Domain
+     . Sing r @ s = 1 when r = s else 0
+     sort Sing =
+     { x : FuzzySet
+       . exists r: Domain . Sing r = x }
+
+%% pointwise lift a norm (i.e. a monoton junctor) to a function over fuzzy sets
+spec LiftJunctor[MonotoneJunctor][sort Domain] given UnitInterval =
+     FuzzySet[sort Domain]
 then
      op liftedJunctor : FuzzySet * FuzzySet -> FuzzySet, comm, assoc %implied
-     vars x : Universe; A, B: FuzzySet
+     vars x : Domain; A, B: FuzzySet
      . liftedJunctor(A, B) @ x = J(A @ x, B @ x) %(liftedJunctor_def)%
 
 %% a T-Norm lifted to an intersection function
-spec Intersection[TNorm][sort Universe] =
-     LiftJunctor[TNorm fit J |-> T ][sort Universe]
+spec Intersection[TNorm][sort Domain] given UnitInterval =
+     LiftJunctor[TNorm fit J |-> T ][sort Domain]
      with liftedJunctor |-> __intersection__
 
 %% a T-Conorm lifted to a union function
-spec Union[TConorm][sort Universe] =
-     LiftJunctor[TConorm fit J |-> C ][sort Universe]
+spec Union[TConorm][sort Domain] given UnitInterval =
+     LiftJunctor[TConorm fit J |-> C ][sort Domain]
      with liftedJunctor |-> __union__
 
-%% get the maximal confidence over the universe
-%% here it is open how to compute a value using a T-conorm
-spec MaxOverUniverse[sort Universe] given UnitInterval = FuzzySet[sort Universe]
-then op maxOverUniverse : FuzzySet -> UnitInterval
-     var P : FuzzySet; m : UnitInterval
-     . maxOverUniverse(P) = m <=> exists y : Universe . forall x : Universe .
-       P @ x <= m /\ P @ y = m
+%% ** Fuzzy numbers
 
 %% define various subsorts of functions from Rat
 spec PreFuzzyNumber = FuzzySet[sort Rat] with FuzzySet |-> PreFuzzyNumber
 
+%% properties are still left open here
 spec QuasiFuzzyNumber = PreFuzzyNumber
 then sort QuasiFuzzyNumber =
      { x : PreFuzzyNumber
        . true %(convex)%
        /\ true %(piecewise_continuous)% }
 
+%% proper fuzzy numbers are normalized
 spec FuzzyNumber = QuasiFuzzyNumber
-and  MaxOverUniverse[sort Rat] with FuzzySet |-> PreFuzzyNumber
 then sort FuzzyNumber =
      { x : QuasiFuzzyNumber
-       . maxOverUniverse(x) = 1 %(normalized)% }
+       . exists r : Rat . x @ r = 1 %(normalized)% }
 
-%%--------------------- Singletons -------------------------
-spec Sing[sort Universe] given UnitInterval = FuzzySet[sort Universe]
-then op Sing __ : Universe -> FuzzySet
-     var r, s : Universe
-     . Sing r @ s = 1 when r = s else 0
-     sort Sing =
-     { x : FuzzySet
-       . exists r: Universe . Sing r = x }
+%% *** Special fuzzy numbers
 
-%%--------------- Trapezoidal Fuzzy Numbers ----------------
+%% trapezoidal fuzzy numbers
 spec Trapez = FuzzyNumber
 then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
      vars x, a, b, c, d : Rat; t : FuzzyNumber
@@ -185,26 +193,62 @@ then op trapez : Rat * Rat * Rat * Rat ->? FuzzyNumber
      . d <= x /\ t = trapez(a, b, c, d)
        => t @ x = 0
 
-%%------------- Triangular Fuzzy Numbers ----------------
+%% triangular fuzzy numbers
 spec Triangle = Trapez
 then op triangle : Rat * Rat * Rat ->? FuzzyNumber
      vars a, b, c : Rat
      . triangle (a, b, c) = trapez(a, b, b, c)
 
-%%------------- Piecewise Quadratic Fuzzy Numbers ------------
+%% piecewise quadratic fuzzy numbers
 
-%%------------- Normal Quadratic Fuzzy Numbers ------------
+%% normal quadratic fuzzy numbers
 
+%% * Type-2 fuzzy sets
 
-%%--------------------- Linguistic Variables ---------------
+%% type-2 fuzzy sets
+spec FuzzySet2[sort Universe][sort Domain] given UnitInterval =
+     FuzzySet[sort Domain]
+then Function[sort Universe][sort FuzzySet] with Function |-> FuzzySet2
 
-%% values of a universe sort with a confidence
-spec Value [sort Universe] given UnitInterval =
-     free type Value ::=
-          ConfValue (rawValue : Universe; cf : UnitInterval)
+%% a T-Norm lifted to a type-2 fuzzy set intersection function
+spec Intersection2[TNorm][sort Universe][sort Domain] given UnitInterval =
+     Intersection[TNorm][sort Domain]
+and  FuzzySet2[sort Universe][sort Domain]
+then %% an intersection function for type-2 fuzzy sets
+     op __intersection2__ : FuzzySet2 * FuzzySet2 -> FuzzySet2
+     vars x : Universe; A, B: FuzzySet2
+     . (A intersection2 B) @ x = (A @ x) intersection (B @ x) %(intersection2)%
 
-%{instead of importing strings use a shorter abstract definition}%
-%% from Basic/CharactersAndStrings get String
+%{ compute the type-1 fuzzy set that is pointwise (wrt. Domain points) maximal
+   forall universe values. Here it is open how to compute the resulting fuzzy
+   set using a T-conorm }%
+spec MaxOverUniverse[sort Universe][sort Domain] given UnitInterval =
+     FuzzySet2[sort Universe][sort Domain]
+then
+     %{ auxiliarly predicate to check if a confidence m is higher than the
+        result of applying the type-2 fuzzy set f to any (i.e. all) universe
+        values for a fixed domain point d }%
+     pred higherConfidenceOverUniverse : FuzzySet2 * Domain * UnitInterval
+     var f : FuzzySet2;  d : Domain; m : UnitInterval
+     . higherConfidenceOverUniverse(f, d, m)
+          <=> forall x : Universe . (f @ x) @ d <= m
+     %{ for a fixed domain point d find all upper confidence bounds and take
+        the minimal one as result. This is the usual least-upper-bound or
+        supremum construction. }%
+     op maxOverUniverse : FuzzySet2 -> FuzzySet
+     . maxOverUniverse(f) @ d = m
+          <=> higherConfidenceOverUniverse(f, d, m)
+              /\ forall n : UnitInterval .
+                   higherConfidenceOverUniverse(f, d, n) => m <= n
+
+%% * Linguistic variables
+
+%% ** Terms with an associated fuzzy set
+
+%{instead of importing strings use a shorter abstract definition.
+Alternatively import:
+from Basic/CharactersAndStrings get String
+}%
 spec String = sort String
 
 %% strings within terms
@@ -224,77 +268,92 @@ spec Term = TS and HS
 then free type Term ::= Leaf(TS) | Cons(HS; Term)
 
 %% instantiate values with terms
-spec LinguisticTerm = Term
-then Value[sort Term]
+spec LinguisticTerm[sort Domain] given UnitInterval =
+     Term
+and  FuzzySet[sort Domain]
+then free type Value ::=
+          ConfValue (rawValue : Term; cf : FuzzySet)
 
-from Basic/StructuredDatatypes get Set, Bag, Map
+%% ** Hedges
 
-%% sets of linguistic terms
-spec LinguisticTerms = LinguisticTerm
-then Set[sort Value] with pred __eps__ : Value * Set[Value]
-
-%% map term strings to fuzzy sets
-spec ConfidenceMap[sort Universe] given UnitInterval = TS
-and  FuzzySet[sort Universe]
-then Map[sort TS][sort FuzzySet]
-     with op lookup : TS * Map[TS, FuzzySet] ->? FuzzySet
-
-%% --------------------- Hedges ---------------------------
+%% hedges are plain truth modifier functions
 spec Hedge = UnitInterval
 then Function[sort UnitInterval][sort UnitInterval] with Function |-> Hedge
 
 %% examples are ^2 for "very" or ^1/3 for "slightly"
 
-%% associating hedge names to functions
+%% ** Components of linguistic variables
+
+from Basic/StructuredDatatypes get Set, Bag, Map
+
+%% sets of linguistic terms
+spec LinguisticTerms[sort Domain] given UnitInterval =
+     LinguisticTerm[sort Domain]
+then Set[sort Value] with pred __eps__ : Value * Set[Value]
+
+%% associating hedge names to hedge functions
 spec HedgeMap = HS and Hedge
 then Map[sort HS][sort Hedge]
 
-%% a linguistic variables over a universe
-spec LinguisticVariable[sort Universe] given UnitInterval = CS
-and  LinguisticTerms and HedgeMap
-and  ConfidenceMap[sort Universe]
+%% map term strings to type-2 fuzzy sets
+spec ConfidenceMap[sort Universe][sort Domain] given UnitInterval =
+     TS
+and  FuzzySet2[sort Universe][sort Domain]
+then Map[sort TS][sort FuzzySet2]
+     with op lookup : TS * Map[TS, FuzzySet2] ->? FuzzySet2
+
+%% ** Final linguistic variables
+
+spec LinguisticVariable[sort Universe][sort Domain] given UnitInterval =
+     CS
+and  LinguisticTerms[sort Domain]
+and  HedgeMap
+and  ConfidenceMap[sort Universe][sort Domain]
 then generated type LVar ::= LVar(
        name : CS;
        Set[Value];
        Map[HS, Hedge];
-       Map[TS, FuzzySet])?
-     %% function composition for fuzzy sets with hedges
-     op __o__ : Hedge * FuzzySet -> FuzzySet
-     vars h : Hedge; f : FuzzySet; x : Universe
-     . (h o f) @ x = h @ (f @ x)
+       Map[TS, FuzzySet2])?
+     %% modify a type-2 fuzzy according to a hedge function
+     %% (for type-2 fuzzy sets this is function composition)
+     op modifyTruth2 : Hedge * FuzzySet2 -> FuzzySet2
+     vars h : Hedge; f : FuzzySet2; x : Universe ; d : Domain
+     . (modifyTruth2(h, f) @ x) @ d = h @ ((f @ x) @ d)
 
      %% lookup and compose the fuzzy set for a term
-     op eval : Term * Map[HS, Hedge] * Map[TS, FuzzySet] -> FuzzySet
+     op eval : Term * Map[HS, Hedge] * Map[TS, FuzzySet2] -> FuzzySet2
      vars ts : TS; hs : HS; t : Term;
-          HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet]
+          HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet2]
      . eval (Leaf(ts), HM, CM) = lookup(ts, CM)
      . eval (Cons(hs, t), HM, CM)
-       = lookup(hs, HM) o eval(t, HM, CM)
+       = modifyTruth2(lookup(hs, HM), eval(t, HM, CM))
 
-%%--------------------- Fuzzification ----------------------
+%% * Fuzzification
 
-spec Fuzzify[TNorm][sort Universe] given UnitInterval =
-     LinguisticVariable[sort Universe]
-and  Intersection[TNorm][sort Universe]
-and  MaxOverUniverse[sort Universe]
+spec Fuzzify[TNorm][sort Universe][sort Domain] given UnitInterval =
+     LinguisticVariable[sort Universe][sort Domain]
+and  Intersection2[TNorm][sort Universe][sort Domain]
+and  MaxOverUniverse[sort Universe][sort Domain]
 then %% only changes the confidence of the terms in the linguistic variables
-     op fuzzify : FuzzySet * LVar -> LVar
+     op fuzzify : FuzzySet2 * LVar -> LVar
      vars cname : CS; %% unchanged concept name
-          A : FuzzySet; %% input
+          A : FuzzySet2; %% input
           HM : Map[HS, Hedge]; %% fixed hedge map
-          CM : Map[TS, FuzzySet]; %% confidence map
+          CM : Map[TS, FuzzySet2]; %% confidence map
           S, Ta : Set[Value]; %% terms before and after fuzzification
-     %% for a term string t take the minimum of the input A and
-     %% the corresponding fuzzy set looked up in the confidence map CM
-     %% from the minimum fuzzy set choose the maximum over the universe
-     %% consider all linguistic terms in the sets
+     %{ For all term strings t from S take the minimum (i.e. intersection2) of
+        the input A and the corresponding type-2 fuzzy set looked up in the
+        confidence map CM.  From the minimum type-2 fuzzy set choose the
+        maximum over the universe fuzzy set as new confidence for t and put
+        the new value into the result set TA. }%
      . fuzzify(A, LVar(cname, S, HM, CM)) = LVar(cname, Ta, HM, CM)
        <=> forall t : Term .
-            (exists v : UnitInterval . ConfValue(t, v) eps S)
-            <=> ConfValue(t, maxOverUniverse(A intersection eval(t, HM, CM)))
+            (exists v : FuzzySet . ConfValue(t, v) eps S)
+            <=> ConfValue(t, maxOverUniverse(A intersection2 eval(t, HM, CM)))
                 eps Ta
 
-%%--------------------- Defuzzification ----------------------
+%% * Defuzzification
+%[
 
 %% create a constant fuzzy set from a value between 0 and 1
 spec Const[sort Universe] given UnitInterval =
@@ -383,3 +442,4 @@ spec Defuzz[sort Universe] given UnitInterval =
 then op defuzz : LVar -> Universe
      var L : LVar
      . defuzz(L) = project(aggreg(L))
+]%
