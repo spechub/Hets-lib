@@ -208,7 +208,7 @@ then op triangle : Rat * Rat * Rat ->? FuzzyNumber
 %% type-2 fuzzy sets
 spec FuzzySet2[sort Universe][sort Domain] given UnitInterval =
      FuzzySet[sort Domain]
-then Function[sort Universe][sort FuzzySet] with Function |-> FuzzySet2
+and  Function[sort Universe][sort FuzzySet] with Function |-> FuzzySet2
 
 %% a T-Norm lifted to a type-2 fuzzy set intersection function
 spec Intersection2[TNorm][sort Universe][sort Domain] given UnitInterval =
@@ -278,7 +278,7 @@ then free type Value ::=
 
 %% hedges are plain truth modifier functions
 spec Hedge = UnitInterval
-then Function[sort UnitInterval][sort UnitInterval] with Function |-> Hedge
+and  Function[sort UnitInterval][sort UnitInterval] with Function |-> Hedge
 
 %% examples are ^2 for "very" or ^1/3 for "slightly"
 
@@ -289,17 +289,16 @@ from Basic/StructuredDatatypes get Set, Bag, Map
 %% sets of linguistic terms
 spec LinguisticTerms[sort Domain] given UnitInterval =
      LinguisticTerm[sort Domain]
-then Set[sort Value] with pred __eps__ : Value * Set[Value]
+and  Set[sort Value] with pred __eps__ : Value * Set[Value]
 
 %% associating hedge names to hedge functions
-spec HedgeMap = HS and Hedge
-then Map[sort HS][sort Hedge]
+spec HedgeMap = HS and Hedge and Map[sort HS][sort Hedge]
 
 %% map term strings to type-2 fuzzy sets
 spec ConfidenceMap[sort Universe][sort Domain] given UnitInterval =
      TS
 and  FuzzySet2[sort Universe][sort Domain]
-then Map[sort TS][sort FuzzySet2]
+and  Map[sort TS][sort FuzzySet2]
      with op lookup : TS * Map[TS, FuzzySet2] ->? FuzzySet2
 
 %% ** Final linguistic variables
@@ -353,35 +352,38 @@ then %% only changes the confidence of the terms in the linguistic variables
                 eps Ta
 
 %% * Defuzzification
-%[
 
-%% create a constant fuzzy set from a value between 0 and 1
-spec Const[sort Universe] given UnitInterval =
-     FuzzySet[sort Universe]
-then op Const __ : UnitInterval -> FuzzySet
-     var x : Universe; v : UnitInterval
+%% ** Constraining a linguistic variable
+
+%% create a constant type-2 fuzzy set from a type-1 fuzzy set
+spec Const[sort Universe][sort Domain] given UnitInterval =
+     FuzzySet2[sort Universe][sort Domain]
+then op Const __ : FuzzySet -> FuzzySet2
+     var x : Universe; v : FuzzySet
      . Const v @ x = v
 
-%% constraining a linguistic variable wrt. its terms
-spec Constrain[TNorm][sort Universe] given UnitInterval =
-     LinguisticVariable[sort Universe]
-and  Intersection[TNorm][sort Universe]
-and  Const[sort Universe]
+%% constraining the confidence map of a linguistic variable wrt. its terms
+spec Constrain[TNorm][sort Universe][sort Domain] given UnitInterval =
+     LinguisticVariable[sort Universe][sort Domain]
+and  Intersection2[TNorm][sort Universe][sort Domain]
+and  Const[sort Universe][sort Domain]
 then op constrain : LVar -> LVar
      vars cname : CS; %% unchanged concept name
           S : Set[Value]; %% unchanged terms
           %% avoid the letter T because that's the T-Norm
           HM : Map[HS, Hedge]; %% fixed hedge map
-          CM, CCM : Map[TS, FuzzySet]; %% (constrained) confidence map
+          CM, CCM : Map[TS, FuzzySet2]; %% (constrained) confidence map
      . constrain(LVar(cname, S, HM, CM)) = LVar(cname, S, HM, CCM)
-       <=> forall t : Term; v : UnitInterval .
+       <=> forall t : Term; v : FuzzySet .
             eval(t, HM, CCM)
-            = Const v intersection eval(t, HM, CM)
+            = Const v intersection2 eval(t, HM, CM)
               when ConfValue(t, v) eps S else eval(t, HM, CM)
 
-%% aggregation functions are symmetric as bags
+%% ** Aggregation
+
+%% aggregation functions (being symmetric via a bag input)
 spec AggregationFunction = UnitInterval
-then Bag[sort UnitInterval]
+and  Bag[sort UnitInterval]
 then op h : Bag[UnitInterval] -> UnitInterval
      var S : Bag[UnitInterval]; v, v0 : UnitInterval
      . not v = v0 /\  freq(S, v) = 0 /\ freq(S, v0) > 0
@@ -394,52 +396,69 @@ then op h : Bag[UnitInterval] -> UnitInterval
        => h(S + v0) <= h(S + v) %(monotonic)%
      . true %(continuous)%
 
-%% aggregate a linguistic variable using a suitable aggregation function
-spec Aggregation[sort Universe] given UnitInterval =
+%% AggregationFunction could be made a formal parameter
+spec LiftedAggregationFunction[sort Domain] given UnitInterval =
      AggregationFunction
-and  LinguisticVariable[sort Universe]
-and  Bag[sort Term]
+and  FuzzySet[sort Domain]
 and  Bag[sort FuzzySet]
+then %% a generic map function over bags is of no help here
+     %% because instances for all elements d of the domain are needed
+     op mapToUBag : Domain * Bag[FuzzySet] -> Bag[UnitInterval]
+     var d : Domain
+     . mapToUBag(d, {}) = {}
+     var B : Bag[FuzzySet]; f : FuzzySet
+     . mapToUBag(d, B + f) = mapToUBag(d, B) + (f @ d)
+     op liftedH : Bag[FuzzySet] -> FuzzySet
+     . liftedH(B) @ d = h(mapToUBag(d, B))
+
+%% aggregate a linguistic variable using a suitable aggregation function
+spec Aggregation[sort Universe][sort Domain] given UnitInterval =
+     LiftedAggregationFunction[sort Domain]
+and  LinguisticVariable[sort Universe][sort Domain]
+and  Bag[sort Term]
+and  Bag[sort FuzzySet2]
 then %% convert a set of terms to a bag of term names
      op setToBag : Set[Value] -> Bag[Term]
      . setToBag({}) = {}
-     vars S : Set[Value]; t : Term; v : UnitInterval
+     vars S : Set[Value]; t : Term; v : FuzzySet
      . setToBag(S + ConfValue(t, v)) = setToBag(S) + t
 
-     %% create a bag of quasi fuzzy number from a confidence map
-     op mapToCBag : Map[HS, Hedge] * Map[TS, FuzzySet] * Bag[Term]
-          -> Bag[FuzzySet]
-     vars HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet]
+     %% create a bag of type-2 fuzzy sets from a confidence map
+     op mapToCBag : Map[HS, Hedge] * Map[TS, FuzzySet2] * Bag[Term]
+          -> Bag[FuzzySet2]
+     vars HM : Map[HS, Hedge]; CM : Map[TS, FuzzySet2]
      . mapToCBag(HM, CM, {}) = {}
      var B : Bag[Term]
      . mapToCBag(HM, CM, B + t) = mapToCBag(HM, CM, B) + eval(t, HM, CM)
 
-     %% extract a bag of confidences for a point
-     op mapToUBag : Universe * Bag[FuzzySet] -> Bag[UnitInterval]
+     %% extract a bag of type-1 fuzzy sets for a universe point
+     %% this is implemented in the same way as mapToUBag
+     op mapToSBag : Universe * Bag[FuzzySet2] -> Bag[FuzzySet]
      var r : Universe
-     . mapToUBag (r, {}) = {}
-     vars NB : Bag[FuzzySet]; A : FuzzySet
-     . mapToUBag (r, NB + A) = mapToUBag (r, NB) + (A @ r)
+     . mapToSBag (r, {}) = {}
+     vars NB : Bag[FuzzySet2]; A : FuzzySet2
+     . mapToSBag (r, NB + A) = mapToSBag (r, NB) + (A @ r)
 
-     %% construct a fuzzy number from a bag of fuzzy numbers using h
-     op aggregate : Bag[FuzzySet] -> FuzzySet
-     . aggregate(NB) @ r = h(mapToUBag(r, NB))
+     %% construct a type-2 fuzzy sets from a bag of type-2 fuzzy set
+     %% using liftedH
+     op aggregate : Bag[FuzzySet2] -> FuzzySet2
+     . aggregate(NB) @ r = liftedH(mapToSBag(r, NB))
 
      %% putting the above together
-     op aggreg : LVar -> FuzzySet
+     op aggreg : LVar -> FuzzySet2
      vars cname : CS; HM : Map[HS, Hedge]
      . aggreg (LVar(cname, S, HM, CM))
        = aggregate(mapToCBag(HM, CM, setToBag(S)))
 
-%% any function that extracts a (central) universe value from a fuzzy set
-spec Projection[sort Universe] given UnitInterval =
-     FuzzySet[sort Universe]
-then op project : FuzzySet -> Universe
+%% any function that extracts a (central) universe value from a type-2 fuzzy set
+spec Projection[sort Universe][sort Domain] given UnitInterval =
+     FuzzySet2[sort Universe][sort Domain]
+then op project : FuzzySet2 -> Universe
 
 %% defuzzification is aggregation followed by projection
-spec Defuzz[sort Universe] given UnitInterval =
-     Aggregation[sort Universe] and Projection[sort Universe]
+spec Defuzz[sort Universe][sort Domain] given UnitInterval =
+     Aggregation[sort Universe][sort Domain]
+and  Projection[sort Universe][sort Domain]
 then op defuzz : LVar -> Universe
      var L : LVar
      . defuzz(L) = project(aggreg(L))
-]%
