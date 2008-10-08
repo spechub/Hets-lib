@@ -84,7 +84,7 @@ lemma rev_rev_aux : "do {star {_ \<leftarrow> ret (); x \<leftarrow> pop\<^sub>i
 
 
 lemma rev_rev : "do {isempty\<^sub>j; append\<^sub>i\<^sub>j; append\<^sub>j\<^sub>i} \<preceq> isempty\<^sub>j"
-  apply (subgoal_tac "isempty\<^sub>j = do{isempty\<^sub>j; append\<^sub>i\<^sub>j}")
+  apply (subgoal_tac "isempty\<^sub>j = do{isempty\<^sub>j; append\<^sub>j\<^sub>i}")
   apply (erule ssubst) back
   apply (simp only: delBind [THEN sym])
   apply (rule ileqBindLeft)
@@ -92,7 +92,24 @@ lemma rev_rev : "do {isempty\<^sub>j; append\<^sub>i\<^sub>j; append\<^sub>j\<^s
   apply (subst append_def)
   apply (subst rev_rev_aux [THEN sym]) back
   apply simp
-  sorry
+  apply (subst ileq_def)
+  apply (subgoal_tac "append\<^sub>j\<^sub>i = do {ret (); append\<^sub>j\<^sub>i}")
+  apply (erule ssubst) back
+
+  apply (simp only: delBind [THEN sym] dist1 [THEN sym] dist2 [THEN sym])
+  apply (subgoal_tac "ret () = (isempty\<^sub>i \<oplus> ret ())")
+  apply (erule subst)
+  apply simp
+  apply (rule sym)
+  apply (fold ileq_def)
+  apply simp
+  apply simp
+  apply (unfold append_def)
+  apply (subst unf_left)
+  apply simp
+  apply (simp only: do_assoc2 [THEN sym])
+  apply (subst empty_pop)
+  by simp
 
 lemma leng_of_append : "do {x \<leftarrow> leng\<^sub>i; y \<leftarrow> leng\<^sub>j; purge\<^sub>i; purge\<^sub>j; ret (x + y)} = do {append\<^sub>i\<^sub>j; x \<leftarrow> leng\<^sub>j; purge\<^sub>j; ret x}"
  
