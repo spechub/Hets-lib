@@ -6,11 +6,11 @@ text{*Definition of monad type and the two monadic funtions
 typedecl 'a T
 
 consts   
-  bind  :: "'a T \<Rightarrow> ('a \<Rightarrow> 'b T) \<Rightarrow> 'b T"  ("_ \<guillemotright>=\ _" [5, 6] 5)
+  bind  :: "'a T \<Rightarrow> ('a \<Rightarrow> 'b T) \<Rightarrow> 'b T"  ("_ \<guillemotright>=/ _" [5, 6] 5)
   ret   :: "'a \<Rightarrow> 'a T" 
 
 constdefs 
-  bind' :: "'a T \<Rightarrow> 'b T \<Rightarrow> 'b T"             ("_ \<guillemotright>\ _" [5, 6] 5)
+  bind' :: "'a T \<Rightarrow> 'b T \<Rightarrow> 'b T"             ("_ \<guillemotright>/ _" [5, 6] 5)
   "bind' p q == bind p (\<lambda>x. q)"
 
 text{*

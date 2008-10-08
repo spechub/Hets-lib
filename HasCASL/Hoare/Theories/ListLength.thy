@@ -66,6 +66,34 @@ lemma leng_inv: "do {z\<leftarrow>pop\<^sub>i; push\<^sub>j z; y\<leftarrow>leng
   apply (subst add_assoc)
   by simp
 
+lemma rev_rev_aux : "do {star {_ \<leftarrow> ret (); x \<leftarrow> pop\<^sub>i; push\<^sub>j x}; append\<^sub>j\<^sub>i} = append\<^sub>j\<^sub>i"
+  apply (rule ileq_asym)
+  defer
+  apply (subst unf_left)
+  apply simp
+  apply (rule ileq_plusMon)  
+  apply simp
+  apply (subst delBind [THEN sym])
+  apply (rule ind_left [THEN allE])
+  defer 
+  apply assumption
+  apply simp
+  apply (unfold append_def)
+  apply (subst unf_left)
+  by simp
+
+
+lemma rev_rev : "do {isempty\<^sub>j; append\<^sub>i\<^sub>j; append\<^sub>j\<^sub>i} \<preceq> isempty\<^sub>j"
+  apply (subgoal_tac "isempty\<^sub>j = do{isempty\<^sub>j; append\<^sub>i\<^sub>j}")
+  apply (erule ssubst) back
+  apply (simp only: delBind [THEN sym])
+  apply (rule ileqBindLeft)
+  apply simp
+  apply (subst append_def)
+  apply (subst rev_rev_aux [THEN sym]) back
+  apply simp
+  sorry
+
 lemma leng_of_append : "do {x \<leftarrow> leng\<^sub>i; y \<leftarrow> leng\<^sub>j; purge\<^sub>i; purge\<^sub>j; ret (x + y)} = do {append\<^sub>i\<^sub>j; x \<leftarrow> leng\<^sub>j; purge\<^sub>j; ret x}"
  
   apply (subgoal_tac "do {append\<^sub>i\<^sub>j; x\<leftarrow>leng\<^sub>j; purge\<^sub>j; ret x} = 
