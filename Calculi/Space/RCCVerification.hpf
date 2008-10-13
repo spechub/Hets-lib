@@ -4,11 +4,13 @@ dg-all auto
 
 # Test 1
 dg basic ExtRCC_FO_E1
+translate CASL2SoftFOL
 prover SPASS
 prove-all
 
 # Test 2
 dg basic ExtRCCByRCC5Rels_E1
+translate CASL2SoftFOL
 prover SPASS
 del axioms C_non_null C_non_triv
 set time-limit 10
@@ -17,6 +19,7 @@ prove-all
 
 # Test 3
 dg basic ExtRCCByRCC8Rels_E1
+translate CASL2SoftFOL
 prover SPASS
 set include-theorems false
 set time-limit 30
@@ -77,7 +80,9 @@ lemma MS_triangle_rev :
 "d(x, z) <=_3 (d(x, y) +' d(z, y))"
 by (simp add: MS_symm)
 
-lemma C_id_lemma : "!!x y xa. ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s) ==> rep x xa ==> rep y xa"
+lemma C_id_lemma : "!!x y xa.
+      ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s)
+      ==> rep x xa ==> rep y xa"
 apply (erule contrapos_pp)
 apply (subst not_all)
 apply (insert Ax4 [THEN allI, of "%x. x"])
@@ -162,5 +167,3 @@ apply auto
 done
 end-script
 prove
-
-
