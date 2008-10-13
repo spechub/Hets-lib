@@ -1,16 +1,14 @@
 use Calculi/Space/RCCVerification
-dg-all auto 
+dg-all auto
 
 
 # Test 1
 dg basic ExtRCC_FO_E1
-translate SuleCFOL2SoftFOL 
 prover SPASS
-prove-all 
+prove-all
 
 # Test 2
 dg basic ExtRCCByRCC5Rels_E1
-translate SuleCFOL2SoftFOL 
 prover SPASS
 del axioms C_non_null C_non_triv
 set time-limit 10
@@ -19,7 +17,6 @@ prove-all
 
 # Test 3
 dg basic ExtRCCByRCC8Rels_E1
-translate SuleCFOL2SoftFOL 
 prover SPASS
 set include-theorems false
 set time-limit 30
@@ -31,21 +28,21 @@ set goals cmps_DCEC
 set include-theorems true
 begin-script
 Time limit: 10
-Auto=0 SatInput=1 IORe=1 
+Auto=0 SatInput=1 IORe=1
 RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
 end-script
 prove
-    
+
 
 # Test 5
-set include-theorems true 
+set include-theorems true
 begin-script
 Time limit: 30
-Auto=0 SatInput=1 IORe=1 
+Auto=0 SatInput=1 IORe=1
 RFMRR=1 RObv=1 RUnC=1 RSST=1 RSSi=1 RFSub=1 RAED=1 RCon=1
 end-script
 prove-all
-    
+
 # Test 6
 begin-script
 Time limit: 70
@@ -61,8 +58,8 @@ prove-all
 
 
 # Test 8
-dg basic NN_T
-translate PCoClTyConsHOL2IsabelleHOL
+dg basic RCC_FO_in_MetricSpace_T
+translate HasCASL2IsabelleBoolPair
 prover Isabelle
 set goals C_id
 begin-script
@@ -80,9 +77,7 @@ lemma MS_triangle_rev :
 "d(x, z) <=_3 (d(x, y) +' d(z, y))"
 by (simp add: MS_symm)
 
-lemma C_id_lemma : "!!x y xa. \ 
-       ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s) \
-       ==> rep x xa ==> rep y xa"
+lemma C_id_lemma : "!!x y xa. ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s) ==> rep x xa ==> rep y xa"
 apply (erule contrapos_pp)
 apply (subst not_all)
 apply (insert Ax4 [THEN allI, of "%x. x"])
@@ -144,7 +139,7 @@ done
 
 
 end-script
-prove 
+prove
 
 
 # Test 9
@@ -166,6 +161,6 @@ apply(rule zero_leq_one)
 apply auto
 done
 end-script
-prove 
+prove
 
 
