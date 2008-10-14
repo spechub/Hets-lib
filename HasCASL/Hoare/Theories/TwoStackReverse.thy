@@ -1,4 +1,4 @@
-theory ListLength 
+theory TwoStackReverse
 imports KleeneSyntax 
 begin
 
