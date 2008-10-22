@@ -6,5 +6,10 @@ StackReverse.tar:
 	tar -cf StackReverse.tar StackReverse
 	rm -Rf StackReverse
 
-upload: StackReverse.tar
+rebuild: clean StackReverse.tar
+
+upload: rebuild
 	rcp StackReverse.tar pollux:/home/www/users/sergey/
+
+clean:
+	rm -f StackReverse.tar

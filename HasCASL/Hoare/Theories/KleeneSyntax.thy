@@ -18,9 +18,6 @@ axioms
  ind_right: "((p \<guillemotright>= q) \<preceq> p) \<Longrightarrow> ((p \<guillemotright>= (q^[*])) \<preceq> p)"
  ind_left:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (q x)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) \<preceq> (q x))"
 
-(* turn into a lemma *)
- inv_lemma: "\<forall>x. ((p x \<guillemotright>= q) = (q x \<guillemotright>= r)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) = (q x \<guillemotright>= (r^[*])))"
- 
 syntax
   "_monstar"  :: "monseq \<Rightarrow> 'a T" ("(star {(_)})"    [5] 100)
 
@@ -71,6 +68,16 @@ proof-
     by (rule ileqBindLeft)
   thus ?thesis by (subst assoc) simp
 qed
+
+lemma inv_lemma: "\<forall>x. ((p x \<guillemotright>= q) = (q x \<guillemotright>= r)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) = (q x \<guillemotright>= (r^[*])))"
+  apply (rule allI)
+  apply (rule ileq_asym)
+  apply (rule ileq_assoc [of _ "do {x \<leftarrow> (p^[*]) x; x \<leftarrow> q x; (r^[*]) x}"])
+  apply (subst unf_right) back back
+  apply simp
+  sorry
+  (*apply (rule ileq_plusMon)*)
+
 
 lemma bindStar: "star {x \<leftarrow> do{x \<leftarrow> p; q x}; r x} = do {x \<leftarrow> p; star {x \<leftarrow> q x; r x}}"
   by simp
