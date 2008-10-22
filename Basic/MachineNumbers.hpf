@@ -14,10 +14,10 @@ set goals ga_right_unit___+___2 ga_left_unit___+___2 ga_right_unit___*___2 ga_le
 set time-limit 40
 prove
 
-prover MathServe Broker
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
+prover MathServe Broker
 set goals ga_assoc___+___2 ga_comm___+___2 ga_left_comm___+___2 ga_assoc___*___2 ga_comm___*___2 minus_INTEGER_dom abs_INTEGER_dom sub_INTEGER_dom mult_INTEGER_dom div_INTEGER_dom mod_INTEGER_dom quot_INTEGER_dom rem_INTEGER_dom
 set time-limit 40
 prove
@@ -29,29 +29,29 @@ prover Vampire
 set goals ga_assoc___+___1 ga_comm___+___1 ga_left_comm___+___1 ga_right_unit___+___1 ga_left_unit___+___1  ga_assoc___*___1 ga_right_unit___*___1 ga_left_unit___*___1 ga_left_comm___*___1 sub_CARDINAL_dom div_CARDINAL_dom mod_CARDINAL_dom
 prove
 
-prover MathServe Broker
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
+prover MathServe Broker
 set goals ga_comm___*___1 add_CARDINAL_dom mult_CARDINAL_dom
 prove
 
 # ------------------------------------------------------------------------------
 
 dg basic TotalOrder_in_INTEGER_T
-prover MathServe Broker
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
+prover MathServe Broker
 prove-all
 
 # ------------------------------------------------------------------------------
 
 dg basic TotalOrder_in_CARDINAL_T
-prover Vampire
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
+prover Vampire
 set goals dichotomy_TotalOrder refl
 prove
 
@@ -63,8 +63,8 @@ prove
 # ------------------------------------------------------------------------------
 
 dg basic TotalOrder_in_TwoComplement_T
-prover Vampire
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
+prover Vampire
 prove-all
