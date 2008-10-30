@@ -1,0 +1,23 @@
+library Propositional/Birds
+
+logic Propositional
+
+spec Animal =
+  props bird, penguin, living_being
+  . penguin => bird
+  . bird => living_being
+then %cons
+  prop animal
+  . bird => animal
+  . animal => living_being
+end
+
+spec Penguin =
+  props bird, penguin
+  . penguin => bird
+then %% this extension is not conservative
+  prop can_fly
+  . bird => can_fly
+  . penguin => not can_fly
+  . not penguin %implied
+end  
