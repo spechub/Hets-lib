@@ -1,0 +1,43 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/Interval
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Rat
+
+drop-translations
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+
+set goals monotonicity_of_Rat_addition
+set-all axioms
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic RatPair_E1
+
+drop-translations
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+
+set goals monotonicity_of_sum Ax2 Ax3
+set-all axioms
+set time-limit 20
+prove
+
+set goals inv+ inv*
+set-all axioms
+set time-limit 40
+prove
+

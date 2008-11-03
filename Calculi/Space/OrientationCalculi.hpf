@@ -1,0 +1,109 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/OrientationCalculi
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic EgoOrientation_E5
+
+drop-translations
+prover SPASS
+
+set goals Ax1
+set axioms Ax11 ga_left_unit___+__ ga_right_unit___+__ Ax10 Ax9
+set time-limit 20
+prove
+
+set goals Ax2
+set axioms Ax11 ga_right_unit___+__ Ax10 Ax9
+set time-limit 20
+prove
+
+set goals Ax3
+set axioms ga_right_unit___+__ Ax10
+set time-limit 20
+prove
+
+set goals Ax4
+set axioms Ax3 Ax11 Ax10
+set time-limit 20
+prove
+
+set goals Ax5
+set axioms ga_left_unit___+__ Ax9 Ax12
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic EgoOrientation_E3
+
+drop-translations
+prover SPASS
+
+set goals Ax1_1
+set axioms Ax6 Ax5_1 Ax3 Ax11 Ax8 ga_left_unit___+__ Ax10 Ax9 ga_comm___+__ Ax12 ga_assoc___+__
+set time-limit 20
+prove
+
+set goals Ax2_1
+set axioms Ax6 Ax8 Ax9
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic EgoOrientation_E1
+
+drop-translations
+prover SPASS
+
+set goals Ax1_1
+set axioms Ax15 Ax13 Ax8
+set time-limit 20
+prove
+
+set goals Ax2_1
+set axioms Ax14 Ax8
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Vectors_E1
+
+drop-translations
+prover SPASS
+
+set goals Ax1_1
+set axioms ga_totality Ax5_1 Ax3_1
+set time-limit 20
+prove
+
+set goals Ax2_1_3
+set axioms ga_totality Ax1_1 Ax2_1 Ax3_1
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Segments_E1
+
+drop-translations
+prover SPASS
+
+set goals Ax5_3
+set axioms Ax2_4
+set time-limit 20
+prove
+

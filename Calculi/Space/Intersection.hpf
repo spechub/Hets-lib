@@ -1,0 +1,52 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/Intersection
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Nat_E1
+
+drop-translations
+prover SPASS
+
+set goals min_0
+set axioms even_0_Nat ga_totality leq_def1_Nat ga_right_unit_max ga_predicate_strictness_1 mod_dom_Nat min_def_Nat max_def_Nat
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Int_E1
+
+drop-translations
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+
+set goals Int_Nat_sub_compat abs_decomp_Int mod_abs_Int div_mod_Int quot_abs_Int rem_abs_Int quot_rem_Int power_Int
+set-all axioms
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic FourIntersection_E1AA
+
+drop-translations
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover SPASS
+
+set goals Ax1
+set axioms ga_totality_21 ga_totality_2 ga_notDefBottom_1 leq_def1_Nat Nat2Int_embedding ga_predicate_strictness_3 ga_function_monotonicity_25 geq_def_Nat mod_dom_Nat
+set time-limit 20
+prove
+
