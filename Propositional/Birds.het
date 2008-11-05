@@ -4,20 +4,21 @@ logic Propositional
 
 spec Animal =
   props bird, penguin, living_being
-  . penguin => bird
-  . bird => living_being
+  . penguin => bird        %(penguin_is_bird)%
+  . bird => living_being   %(bird_lives)%
 then %cons
   prop animal
-  . bird => animal
-  . animal => living_being
+  . bird => animal         %(bird_is_animal)%
+  . animal => living_being %(animal_lives)%
 end
 
 spec Penguin =
   props bird, penguin
-  . penguin => bird
-then %% this extension is not conservative
+  . penguin => bird        %(pengiun_is_bird)%
+then %cons
+%% this extension is not conservative
   prop can_fly
-  . bird => can_fly
-  . penguin => not can_fly
-  . not penguin %implied
+  . bird => can_fly        %(bird_can_fly)%
+  . penguin => not can_fly %(penguin_cannot_fly)%
+  . not penguin            %(not_penguin)% %implied
 end  
