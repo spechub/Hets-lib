@@ -3,14 +3,14 @@ library Modal/Lin
 logic Modal
 
 spec Lin =
-	modalities [P],[F] {
+	modalities P,F {
 			[P](p => q) => ([P] p => [P] q); %(Kp)%
 			[F](p => q) => ([F] p => [F] q); %(Kf)%
 			p => [P] <F> A; %(Cp)%
 			p => [F] <P> A; %(Cf)%
-			[P] p => [P] [P] p %(4p)%
-			[F] p => [F] [F] p %(4f)%
-			([P] p /\ p /\ [F] p) => [P] [F] p;
-			([P] p /\ p /\ [F] p) => [F] [P] p;
+			[P] p => [P] [P] p; %(4p)%
+			[F] p => [F] [F] p; %(4f)%
+			(([P] p) /\ p /\ [F] p) => [P] [F] p;
+			([P] p /\ p /\ [F] p) => [F] [P] p
 			}
 end

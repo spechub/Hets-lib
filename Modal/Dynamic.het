@@ -7,7 +7,7 @@ spec Dynamic =
   ops __seq__, __union__ : Prog * Prog -> Prog;
       __* : Prog -> Prog;
       skip, stop : Prog  %% p? is expressed as "if p then skip else stop"
-  modality [__] {
+  term modality Prog {
     forall x:Prog . [x](p=>q) => [x]p => [x]q;
     forall x,y:Prog . [x seq y]p <=> [x][y]p;
     forall x,y:Prog . [x union y]p <=> [x]p /\ [y]p;
