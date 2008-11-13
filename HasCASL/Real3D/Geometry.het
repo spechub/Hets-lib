@@ -1,0 +1,25 @@
+library HasCASL/Real3D/Geometry
+version 0.1
+
+%author: E. Schulz
+%date: 13-11-2008
+
+logic HasCASL
+
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                          Pure Geometry                           %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+spec BaseObjects = AffineRealSpace3DWithSets
+then
+     ops Cylinder(offset:Point;r:Real;axis:Vector):PointSet
+	  = { \x:Point . exists l:Real. exists y:Vector.
+	      l isIn [0...1] /\ vert(y,axis) /\ |y| <= r /\ x=offset + l*axis + y }
+end
+

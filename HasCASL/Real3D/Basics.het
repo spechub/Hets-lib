@@ -4,12 +4,16 @@ version 0.1
 %author: E. Schulz
 %date: 12-11-2008
 
+%prec({__isIn__, __subset__, __disjoint__,__ :: __ --> __} 
+		 < {__union__, __intersection__, __\\__} )%
+%prec {__union__} < {__*__}
+
 logic HasCASL
 
-from HasCASL/Set get
-     Set
 from HasCASL/Algebra get
      ExtInverse
+from HasCASL/LinearAlgebra get
+     EuclideanVectorSpace
 from HasCASL/Reals get
      ExtFieldWithOrdering, RealFunctions
 
@@ -45,15 +49,28 @@ spec Vectors3D = ExtInverse[Vectors3DBase fit Elem |-> Vector, __ * __ |-> __ + 
 
      ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y)); %(scalar mutliplication)%
 	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y); %(scalar product)%
-	 __x__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
+	 __#__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
 				      C3(x)*C1(y)-C3(y)*C1(x),
 				      C1(x)*C2(y)-C1(y)*C2(x)); %(vector product)%
+	 |__|(x:Vector):Real=sqrt(x*x); %(the norm of a vector)%
+
      preds vert:Vector*Vector;
 
      forall x,y:Vector
      . vert(x,y) <=> x*y=0 %(vertical_def)%
+
+then %implies
+     forall x,y:Vector
+     . x # y = -(y # x)    %(cross product antisymmetric)%
+     . vert(x,x # y)       %(cross product vertical)%
 end
 
+%{
+view Vectors3D_as_EuclideanVectorSpace :
+     EuclideanVectorSpace to Vectors3D
+=    Space |-> Vector
+end
+}%
 spec AffineRealSpace3D = Points3D and Vectors3D
 then
      ops __+__ : Point * Vector -> Point;
@@ -73,13 +90,35 @@ then %implies
      . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
 end
 
-spec SetsWithComprehension = Set hide {__}
-then
-     vars A:Type
-     ops {__}(s:Set A):Set A = s;
+%( taken from Set.het but changed the meaning of {f} )%
+spec SetsWithComprehension =
+  var S,T : Type
+  type Set S := S ->? Unit;
+  ops emptySet : Set S;
+      allSet : Set S;
+      __isIn__ : S * Set S ->? Unit;
+      __subset__ :Pred( Set(S) * Set(S) );
+      __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
+      bigunion : Set(Set S) -> Set S;
+      __disjoint__ : Pred( Set(S) * Set(S) );
+      __*__ : Set S * Set T -> Set (S*T);
+      {__}(s:Set S):Set S = s; %(set comprehension)%
+
+  forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
+  . not (x isIn emptySet)
+  . x isIn allSet
+  . x isIn s <=> s x
+  . s subset s' <=> forall x:S . x isIn s => x isIn s'
+  . x isIn s union s' <=> x isIn s \/ x isIn s'
+  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X
+  . x isIn s intersection s' <=> x isIn s /\ x isIn s'
+  . x isIn s \\ s' <=> x isIn s /\ not x isIn s'
+  . s disjoint s' <=> s intersection s' = emptySet
+  . (x,y) isIn s * t <=> x isIn s /\ y isIn t
+
 end
 
-spec AffineRealSpace3DSets = AffineRealSpace3D and SetsWithComprehension
+spec AffineRealSpace3DWithSets = AffineRealSpace3D and SetsWithComprehension
 then
      types PointSet := Set Point;
 	   VectorSet := Set Vector;
