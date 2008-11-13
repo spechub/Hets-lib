@@ -1,0 +1,68 @@
+library HasCASL/Real3D
+version 0.1
+
+%author: E. Schulz
+%date: 12-11-2008
+
+logic HasCASL
+
+from HasCASL/Algebra get
+     ExtInverse
+from HasCASL/Reals get
+     ExtFieldWithOrdering, OrderedReals
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       Real 3D Vector Space                       %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+spec RealBase = ExtFieldWithOrdering[OrderedReals fit Elem |-> Real]
+
+spec Points3D = RealBase then
+     free type Point ::= P(C1:Real;C2:Real;C3:Real)
+     ops 0:Point=P(0,0,0);
+end
+
+spec Vectors3DBase = RealBase then
+     free type Vector ::= V(C1:Real;C2:Real;C3:Real)
+     ops 0:Vector=V(0,0,0);
+	 __+__ : Vector * Vector -> Vector;
+	 - __ : Vector -> Vector;
+
+     forall x,y:Vector
+     . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))
+     . -x = V(-C1(x),-C2(x),-C3(x))
+end
+
+%( extend by binary inverse )%
+spec Vectors3D = ExtInverse[Vectors3DBase fit Elem |-> Vector, __ * __ |-> __ + __, inv |-> - __] 
+     with __ / __ |-> __ - __ then
+
+     ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y)); %(scalar mutliplication)%
+	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y); %(scalar product)%
+	 __x__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
+				      C3(x)*C1(y)-C3(y)*C1(x),
+				      C1(x)*C2(y)-C1(y)*C2(x)); %(vector product)%
+end
+
+spec AffineRealSpace3D = Points3D and Vectors3D
+then
+     ops __+__ : Point * Vector -> Point;
+	 vec : Point * Point -> Vector;
+	 asVector : Point -> Vector;
+	 asPoint  : Vector -> Point;
+
+     forall p,p':Point; v:Vector
+     . asVector(p) = V(C1(p),C2(p),C3(p)) %(point_to_vector_embedding)%
+     . asPoint(v) = P(C1(p),C2(p),C3(p))  %(vector_to_point__embedding)%
+     . vec(p,p') = asVector(p') - asVector(p)         %(vec_def)%
+     . asVector(p + v) = asVector(p) + v     %(compatibility_PVplus_Vplus)%
+
+then %implies
+     forall p,q,r:Point
+     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
+     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
+end
