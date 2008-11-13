@@ -6,6 +6,7 @@ version 0.1
 
 logic HasCASL
 
+
 spec Commutative =
      sort Elem
      op  __ * __: Elem * Elem -> Elem, comm
@@ -22,33 +23,39 @@ then
 	  __ * __: Elem * Elem -> Elem, unit e
 end
 
-spec WithInverse[Monoid] = 
-  ops inv:Elem->Elem;
-      __ / __:Elem*Elem->Elem;
-
-  forall x,y:Elem
-  . inv(x) * x = e     %(unary_inverse)%
-  .  x / y = x * inv(y) %(binary_inverse)%
-end
-
 spec Group =
      Monoid
 then
+     op inv:Elem->Elem
+
      forall x: Elem
-     . exists x': Elem . x' * x = e   %(inv_Group)%
+     . inv(x) * x = e   %(inv_Group)%
 then %implies
-     forall x,y,z: Elem
-     . exists x': Elem . x * x' = e   %(rinv_Group)%
-     . y * x = e /\ z * x = e => y = z %(unique_linv_Group)%
-     . x * y = e /\ x * z = e => y = z %(unique_rinv_Group)%
-     . x * y = e /\ z * x = e => y = z %(linv_is_rinv_Group)%
+     forall x: Elem
+     . x * inv(x) = e   %(rinv_Group)%
+end
+
+spec ExtInverseSig = 
+     sort Elem
+     ops  __ * __: Elem * Elem -> Elem;
+	  inv: Elem->Elem
+end
+
+%( Definitional extension of unary inv to binary inv (= /) )%
+spec ExtInverse[ExtInverseSig] = %def
+  op __ / __:Elem*Elem->Elem;
+
+  forall x,y:Elem
+  .  x / y = x * inv(y) %(binary_inverse)%
 end
 
 spec AbelianGroup = Group and Commutative
 
 spec Ring =
      AbelianGroup with ops __ * __ |-> __ + __,
+                           inv     |-> - __,
                            e       |-> 0
+
 and
      Monoid with op e |-> 1
 then
@@ -82,8 +89,8 @@ end
 spec Field = RingWithNonZeros and Group with Elem |-> NonZero, e |-> 1
 
 spec RichField =
-WithInverse[Field fit __ * __ |-> __ + __, e |-> 0]
-   with inv |-> -__, __ / __ |-> __ - __
+ExtInverse[Field fit __ * __ |-> __ + __,  inv |-> - __]
+   with __ / __ |-> __ - __
 and
-WithInverse[Field fit Elem |-> NonZero, e |-> 1]
+ExtInverse[Field fit Elem |-> NonZero]
 end

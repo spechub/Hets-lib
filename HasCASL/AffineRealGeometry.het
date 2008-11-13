@@ -16,10 +16,9 @@ from HasCASL/Reals get
      Reals
 
 from HasCASL/Algebra get
-     WithInverse, AbelianGroup
+     ExtInverse, AbelianGroup
 
-from HasCASL/LinearAlgebra get
-     VectorSpace
+from HasCASL/LinearAlgebra get VectorSpace
 
 
 spec Basics = Sequence and Reals then
@@ -36,31 +35,35 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 spec RealVectorSpace = 
-     VectorSpace[Reals fit Field |-> Real]
-and WithInverse[AbelianGroup] with
+     VectorSpace[Reals fit Elem |-> Real]
+and ExtInverse[AbelianGroup] with
     Elem |-> Space, __ * __ |-> __ + __, e |-> 0
 end
 
 spec RN_aux [op dimension:Nat] given Nat = Basics
 then
-     type VecRN = {X: RSeq. forall x:Nat. X(0) = 0 /\ x > dimension => X(x) = 0}
+     type VecRN =
+	  {X: RSeq. forall x:Nat. X(0) = 0 /\ x > dimension => X(x) = 0}
 then %def	  
-     ops __ + __:VecRN*VecRN->VecRN;
-	 __ + __(x,y:VecRN):VecRN = \i:Nat.! x(i) + y(i);  %(vector_add)%
+     ops __ + __(x,y:VecRN):VecRN = \i:Nat.! x(i) + y(i);  %(vector_add)%
 	 __ * __(s:Real; x:VecRN):VecRN = \i:Nat.! s*x(i); %(scalar_mult)%
 	 0:VecRN = const(0:Real);
-
 end
 
 spec RN[op dimension:Nat] given Nat =
      Sum[RN_aux[op dimension:Nat] fit Elem |-> Real]
-%[then
-     op __ * __: VecRN*VecRN->Real
-%%     ops __ * __(x,y:VecRN):Real = sum(1,dimension,\i:Nat. x(i) * y(i))
-	  
-     . forall x,y:VecRN. x*y = sum(1,dimension,(\i:Nat. x(i) * y(i)):Seq Real)
-     
-]%
+then
+     ops __ * __(x,y:RSeq):Real = sum(1,dimension,\i:Nat.! x(i) * y(i));
+	 %(scalar_product)%
+	 constvec(x:Real):VecRN =
+	      \i:Nat.! (x when i>0 /\ i<=dimension else 0);
+	 %(constant_vector)%
+	 kronecker(n:Nat):RSeq = \i:Nat.! (1 when i=n else 0);
+	 %(kronecker_delta)%
+
+then %implies
+     forall n,m:Nat
+     . not(m=n) => kronecker(m) * kronecker(n) = 0 %(kdeltas_orthogonal)%
 end
 
 spec R2 = RN[op 2:Nat fit dimension |-> 2]

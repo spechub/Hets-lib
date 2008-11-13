@@ -4,6 +4,16 @@ version 0.2
 %author: T. Mossakowski, S. Wölfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
+%prec( 
+  { __ - __, __ + __ } < 
+  { __*__, __ / __ } 
+)%
+
+%prec( 
+  { __ * __, __ / __ } < 
+  { - __ } 
+)%
+
 from Basic/RelationsAndOrders get
      TotalOrder, ExtTotalOrder
 from HasCASL/Algebra get Field, RichField
@@ -39,25 +49,25 @@ then
      . Pos(x) \/ Pos(-x)                        %(OF_exhaust)%
 end
 
-view OrderedField_in_FieldWithOrdering :
-      OrderedField to
-     { FieldWithOrdering then %def
+spec ExtOrderedField[OrderedField] = %def
+     pred __<=__: Elem * Elem
+       forall x,y: Elem
+       . x <= y  <=> Pos(y - x)
+end
+
+spec ExtFieldWithOrdering[FieldWithOrdering] = %def
        pred Pos: Elem
        forall x: Elem
        . Pos(x) <=> 0 <= x
-     }
+end
+
+view OrderedField_in_FieldWithOrdering :
+     OrderedField to ExtFieldWithOrdering[FieldWithOrdering]
 end
 
 view FieldWithOrdering_in_OrderedField :
-      FieldWithOrdering to
-     { OrderedField then %def
-       pred __<=__: Elem * Elem
-       forall x,y: Elem
-       . x <= y  <=> Pos(y - x)
-     }
+     FieldWithOrdering to ExtOrderedField[OrderedField]
 end
-
-
 
 spec Reals = FieldWithOrdering with Elem |-> Real
 then
@@ -92,11 +102,8 @@ then %implies
      . val(1) = 1
 end
 
+view OrderedReals_as_FieldWithValuation :
+     FieldWithValuation to OrderedReals
+=    Elem |-> Real, val |-> abs
+end
 
-%[spec RealsExt = Reals ]%
-%[then]%
-%[  ops]%
-%[    exp:Real->Real;]%
-%[    sin:Real->Real;]%
-%[    cos:Real->Real;]%
-%[end]%
