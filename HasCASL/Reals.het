@@ -107,3 +107,14 @@ view OrderedReals_as_FieldWithValuation :
 =    Elem |-> Real, val |-> abs
 end
 
+%( some selected basic functions for the reals )%
+spec RealFunctions = OrderedReals
+then %def
+ ops sqr: Real -> Real;
+     sqrt: Real ->? Real;
+
+ var r:Real
+     . sqr(r) = r * r         %(sqr_def)%
+     . def sqrt(r) <=> r >= 0 %(sqrt_dom)%
+     . sqrt(sqr(r)) = r       %(sqrt_def)%
+end

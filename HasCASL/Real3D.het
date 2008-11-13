@@ -6,10 +6,12 @@ version 0.1
 
 logic HasCASL
 
+from HasCASL/Set get
+     Set
 from HasCASL/Algebra get
      ExtInverse
 from HasCASL/Reals get
-     ExtFieldWithOrdering, OrderedReals
+     ExtFieldWithOrdering, RealFunctions
 
 
 
@@ -19,7 +21,7 @@ from HasCASL/Reals get
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-spec RealBase = ExtFieldWithOrdering[OrderedReals fit Elem |-> Real]
+spec RealBase = ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
 
 spec Points3D = RealBase then
      free type Point ::= P(C1:Real;C2:Real;C3:Real)
@@ -46,6 +48,10 @@ spec Vectors3D = ExtInverse[Vectors3DBase fit Elem |-> Vector, __ * __ |-> __ + 
 	 __x__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
 				      C3(x)*C1(y)-C3(y)*C1(x),
 				      C1(x)*C2(y)-C1(y)*C2(x)); %(vector product)%
+     preds vert:Vector*Vector;
+
+     forall x,y:Vector
+     . vert(x,y) <=> x*y=0 %(vertical_def)%
 end
 
 spec AffineRealSpace3D = Points3D and Vectors3D
@@ -57,7 +63,7 @@ then
 
      forall p,p':Point; v:Vector
      . asVector(p) = V(C1(p),C2(p),C3(p)) %(point_to_vector_embedding)%
-     . asPoint(v) = P(C1(p),C2(p),C3(p))  %(vector_to_point__embedding)%
+     . asPoint(v) = P(C1(p),C2(p),C3(p))  %(vector_to_point_embedding)%
      . vec(p,p') = asVector(p') - asVector(p)         %(vec_def)%
      . asVector(p + v) = asVector(p) + v     %(compatibility_PVplus_Vplus)%
 
@@ -65,4 +71,18 @@ then %implies
      forall p,q,r:Point
      . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
      . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
+end
+
+spec SetsWithComprehension = Set hide {__}
+then
+     vars A:Type
+     ops {__}(s:Set A):Set A = s;
+end
+
+spec AffineRealSpace3DSets = AffineRealSpace3D and SetsWithComprehension
+then
+     types PointSet := Set Point;
+	   VectorSet := Set Vector;
+
+     ops [__ ... __](a,b:Real):Set Real= \r:Real . (r >= a) /\ (r <= b);
 end
