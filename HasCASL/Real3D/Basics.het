@@ -54,15 +54,15 @@ spec Vectors3D = ExtInverse[Vectors3DBase fit Elem |-> Vector, __ * __ |-> __ + 
 				      C1(x)*C2(y)-C1(y)*C2(x)); %(vector product)%
 	 |__|(x:Vector):Real=sqrt(x*x); %(the norm of a vector)%
 
-     preds vert:Vector*Vector;
+     preds orth:Vector*Vector;
 
      forall x,y:Vector
-     . vert(x,y) <=> x*y=0 %(vertical_def)%
+     . orth(x,y) <=> x*y=0 %(orthogonal_def)%
 
 then %implies
      forall x,y:Vector
      . x # y = -(y # x)    %(cross product antisymmetric)%
-     . vert(x,x # y)       %(cross product vertical)%
+     . orth(x,x # y)       %(cross product orthogonal)%
 end
 
 %{
@@ -103,6 +103,8 @@ spec SetsWithComprehension =
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S * Set T -> Set (S*T);
       {__}(s:Set S):Set S = s; %(set comprehension)%
+      image(f:(S->T);X:Set S):Set T
+	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
   forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
   . not (x isIn emptySet)
@@ -122,6 +124,16 @@ spec AffineRealSpace3DWithSets = AffineRealSpace3D and SetsWithComprehension
 then
      types PointSet := Set Point;
 	   VectorSet := Set Vector;
+	   RealSet := Set Real;
 
-     ops [__ ... __](a,b:Real):Set Real= \r:Real . (r >= a) /\ (r <= b);
+     ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b);
+
+	 %{Lifting operations for +}%
+
+	 __+__ (P:PointSet; v:Vector):PointSet = image((\x:Point .! x+v), P);
+	 __+__ (p:Point; V:VectorSet):PointSet = image((\x:Vector .! p+x), V);
+	 __+__ (P:PointSet; V:VectorSet):PointSet = bigunion (image((\x:Vector .! P+x), V));
+
+	 %{We could also introduce lifting operations for vec}%
+
 end

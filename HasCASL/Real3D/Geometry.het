@@ -9,17 +9,48 @@ logic HasCASL
 from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                          Pure Geometry                           %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 spec BaseObjects = AffineRealSpace3DWithSets
 then
+
      ops Cylinder(offset:Point;r:Real;axis:Vector):PointSet
 	  = { \x:Point . exists l:Real. exists y:Vector.
-	      l isIn [0...1] /\ vert(y,axis) /\ |y| <= r /\ x=offset + l*axis + y }
+	      l isIn [0...1] /\ orth(y,axis) /\ |y| <= r /\
+	      x=offset + l*axis + y };
+
+
+
+	 %{ The plane orthogonal to the axis }%
+	 VPlane(axis:Vector):VectorSet
+	  = { \y:Vector . orth(y,axis) };
+
+	 %{ The ball with radius r }%
+	 VBall(r:Real):VectorSet
+	  = { \y:Vector .  |y| <= r };
+
+	 %{ The circle as intersection of a plane with a ball }%
+	 VCircle(r:Real;axis:Vector):VectorSet
+	  = VPlane(axis) intersection VBall(r);
+
+
+	 %{ This action attaches the given vectors to the given point and thus
+	 creates a PointSet }%
+	 ActAttach(point:Point;vectors:VectorSet):PointSet
+	  = point + vectors;
+
+	 %{ This action adds points to the given points by moving along
+	 the axis }%
+	 ActExtrude(axis:Vector;points:PointSet):PointSet
+	  = { \x:Point . exists l:Real. exists y:Point.
+	      l isIn [0...1] /\ y isIn points /\ x= y + l * axis };
+
+
+     
 end
 
