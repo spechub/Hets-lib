@@ -33,7 +33,7 @@ typedecl ClosedBall
 typedecl Real
 typedecl S
 
-datatype Nat = X0X1 ("0''") | X_suc "Nat" ("suc/'(_')" [3] 999)
+datatype X_Nat = X0X1 ("0''") | X_suc "X_Nat" ("suc/'(_')" [3] 999)
 
 consts
 X0X2 :: "Real" ("0''''")
@@ -55,7 +55,7 @@ X__Xx__X :: "Real => Real => Real" ("(_/ *''/ _)" [54,54] 52)
 X_closedBall :: "S => Real => ClosedBall" ("closedBall/'(_,/ _')" [3,3] 999)
 X_d :: "S => S => Real" ("d/'(_,/ _')" [3,3] 999)
 X_half :: "Real => Real" ("half/'(_')" [3] 999)
-X_inj :: "Nat => Real" ("inj''/'(_')" [3] 999)
+X_inj :: "X_Nat => Real" ("inj''/'(_')" [3] 999)
 X_isBounded :: "(Real => bool) => bool" ("isBounded/'(_')" [3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
