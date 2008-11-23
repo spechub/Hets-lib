@@ -1,0 +1,51 @@
+# automatically generated hets proof-script
+
+use Calculi/Algebra/RelationsAndOrders
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic ReflexiveRelation
+
+drop-translations
+prover SPASS
+
+set goals serial
+set-all axioms
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic StrictOrder_1E1
+
+drop-translations
+prover SPASS
+
+set goals asym
+set-all axioms
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtStrictPartialOrderByOrderRelations_E1
+
+drop-translations
+prover SPASS
+
+set goals equi_preE_sucE
+set axioms def_sucE def_preE def_suc
+set time-limit 20
+prove
+
+set goals cmp_sym
+set axioms def_cmp
+set time-limit 20
+prove
+

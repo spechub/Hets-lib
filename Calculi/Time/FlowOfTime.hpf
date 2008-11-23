@@ -1,0 +1,115 @@
+# automatically generated hets proof-script
+
+use Calculi/Time/FlowOfTime
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTimeSMin_E1
+
+drop-translations
+prover SPASS
+
+set goals PA_comp_sucpre_intro1
+set axioms no_minima def_suc trans
+set time-limit 20
+prove
+
+set goals PA_comp_sucpre_intro2
+set axioms PA_comp_sucpre_intro1 no_minima def_suc
+set time-limit 20
+prove
+
+set goals PA_comp_sucpre_intro3
+set axioms PA_comp_sucpre_intro2 PA_comp_sucsuc_elim
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTime_E1
+
+drop-translations
+prover SPASS
+
+set goals equi_preE_sucE
+set axioms def_sucE def_preE def_suc
+set time-limit 20
+prove
+
+set goals cmp_sym
+set axioms def_cmp
+set time-limit 20
+prove
+
+set goals uncmp_sym
+set axioms def_uncmp cmp_sym
+set time-limit 20
+prove
+
+set goals PA_comp_prepre_elim
+set axioms trans
+set time-limit 20
+prove
+
+set goals PA_comp_preeq_elim
+set-all axioms
+set time-limit 20
+prove
+
+set goals PA_comp_sucsuc_elim
+set axioms def_suc PA_comp_prepre_elim
+set time-limit 20
+prove
+
+set goals PA_comp_suceq_elim PA_comp_eqpre_elim PA_comp_eqsuc_elim PA_comp_eqeq_elim PA_comp_preeq_intro PA_comp_suceq_intro PA_comp_eqpre_intro PA_comp_eqsuc_intro PA_comp_eqeq_intro
+set-all axioms
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_DnsFlowOfTime_E1
+
+drop-translations
+prover SPASS
+
+set goals PA_comp_prepre_intro
+set axioms dense
+set time-limit 20
+prove
+
+set goals PA_comp_sucsuc_intro
+set axioms def_suc PA_comp_prepre_intro
+set time-limit 20
+prove
+
+
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTimeSMax_E1
+
+drop-translations
+prover SPASS
+
+set goals PA_comp_presuc_intro1
+set axioms no_maxima def_suc trans
+set time-limit 20
+prove
+
+set goals PA_comp_presuc_intro2
+set axioms PA_comp_presuc_intro1 no_maxima def_suc
+set time-limit 20
+prove
+
+set goals PA_comp_presuc_intro3
+set axioms PA_comp_presuc_intro2 PA_comp_sucsuc_elim
+set time-limit 20
+prove
+

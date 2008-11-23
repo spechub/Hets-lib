@@ -1,0 +1,18 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/SimpleRCC
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic SimpleRCC_ExtRCC_FO
+
+drop-translations
+prover SPASS
+
+set goals P_impl_C
+set axioms C_reflex P_def C_sym
+set time-limit 20
+prove
+
