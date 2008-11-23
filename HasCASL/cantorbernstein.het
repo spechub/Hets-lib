@@ -1,0 +1,128 @@
+library HasCASL/CantorBernstein
+version 0.1
+
+%author: D. Dietrich
+%date: 11-22-2008
+
+logic HasCASL
+
+from Basic/SimpleDatatypes get Boolean
+
+spec Base = 
+sorts set;
+preds 
+  __ isin __ : set*set;
+ops
+  fsep:set*(Pred(set))->set;
+vars A,B,x:set
+
+ . (x isin A <=> x isin B) => A = B %(Extensionality)%
+ . forall P:Pred(set). x isin fsep(A,P) <=> x isin A /\ P(x); %(Separation)%
+ . exists Y:set. forall x:set. x isin Y <=> forall z:set. z isin x => z isin A %(Power Set)%
+ . exists Y:set. forall x:set. x isin Y <=> (x=A \/ x=B) %(Pair)%
+ . exists Y:set. forall x:set. x isin Y <=> exists z:set. z isin A /\ x isin z %(Union)%
+then %def
+preds
+  __ subset __ : set*set;
+ops
+  emptyset:set;
+  power : set->set;
+  union : set->set;
+  __ bunion __: set*set->set;
+  intersection:set->set;
+  __ bintersection __:set*set->set;
+  __ complement __:set*set->set;
+  singleton:set->set;
+  pair:set*set->set;
+  ordpair:set*set->set;
+  __ cross __:set*set->set;
+  lproj:set->set;
+  rproj:set->set;
+  suc:set->set;
+  
+vars A,B,x:set
+ . A subset B <=> forall x:set. x isin A => x isin B
+ %% insert separation here
+ . x isin emptyset <=> not (x = x)
+ . x isin power(A) <=> x subset A
+ . x isin union(A) <=> exists y:set. y isin A /\ x isin y
+ . x isin (A bunion B) <=> x isin A \/ x isin B
+ . not(A = emptyset) => (x isin intersection(A) <=> forall y:set. y isin A => x isin y)
+ . not(A = emptyset) => (x isin intersection(A) <=> forall y:set. y isin A => x isin y)
+ . x isin A bintersection B <=> x isin A /\ x isin B
+ . x isin A complement B <=> x isin A /\ not(x isin B)
+ . x isin singleton(A) <=> x=A
+ . x isin pair(A,B) <=> x=A \/ x = B;
+ . x isin ordpair(A,B) <=> x=singleton(A) \/ x=singleton(pair(A,B)); 
+ . x isin A cross B <=> exists y:set. y isin A /\ exists z:set. z isin B /\ x = ordpair(y,z)
+ . x isin lproj(A) <=> exists y:set. A=ordpair(x,y)
+ . x isin rproj(A) <=> exists y:set. A=ordpair(y,x)
+ . x isin suc(A) <=> (x isin suc(A) <=> x isin A bunion singleton(A))
+end
+
+spec Functions = Base
+then 
+  . exists y:set. emptyset isin y /\ forall x:set. x isin y => suc(x) isin y %(infinity)%
+then %defs
+  preds
+    isfunc:set*set*set;
+    injective:set;
+    surjective:set;
+    bijective:set;
+    monotone:set;
+    antitone:set;
+  ops
+    finjective:Pred(Logical);
+    fsurjective:Pred(Logical);
+    fmonotone:Pred(Logical);
+    fbijective:Pred(Logical);
+    fantitone:Pred(Logical);
+    __ app __:set*set->set;
+    invimage:set*set->set;
+    image:set*set->set;
+    restriction:set*set->set;
+  vars F,A,B,S,x:set
+  . isfunc(F,A,B) <=> (F subset A cross B /\ forall x:set. x isin A => exists y:set. y isin B /\ ordpair(x,y) isin F)
+  . isfunc(F,A,B) => forall x:set. x isin A => forall y:set. y isin B => (F app x = y <=> ordpair(x,y) isin F)
+  . isfunc(F,A,B) => (injective(F) <=> (forall x1,x2:set. x1 isin A => x2 isin A => not(x1=x2) => not(F app x1 = F app x2)))
+  . finjective(isfunc(F,A,B)) <=> injective(F) /\ isfunc(F,A,B)
+  . isfunc(F,A,B) => (surjective(F) <=> forall y:set. y isin B => exists x:set. x isin A /\ F app x = y)
+  . fsurjective(isfunc(F,A,B)) <=> (surjective(F) /\ isfunc(F,A,B))
+  . isfunc(F,A,B) => (bijective(F) <=> (injective(F) /\ surjective(F)))
+  . fbijective(isfunc(F,A,B)) <=> (isfunc(F,A,B) /\ bijective(F))
+  . isfunc(F,power(A),power(B)) => (monotone(F) <=> (forall x1:set. x1 isin power(A) => forall x2:set. x2 isin power(A) => x1 subset x2 => F app x1 subset F app x2))
+  . fmonotone(isfunc(F,power(A),power(B))) <=> isfunc(F,power(A),power(B)) /\ monotone(F)
+  . isfunc(F,power(A),power(B)) => (antitone(F) <=> forall x1:set. x1 isin power(A) => forall x2:set. x2 isin power(A) => x1 subset x2 => F app x2 subset F app x1)
+  . fantitone(isfunc(F,power(A),power(B))) <=> isfunc(F,power(A),power(B)) /\ antitone(F)
+  . isfunc(F,A,B) /\ S subset A => forall x:set. x isin B => (x isin image(F,S) <=> exists y:set. F app y = x)
+  . isfunc(F,A,B) /\ S subset B => forall x:set. x isin A => (x isin invimage(F,S) <=> exists y:set. y isin A /\ F app x = y)
+  . isfunc(F,A,B) /\ S subset A => forall z:set. z isin F => (z isin restriction(F,S) <=> lproj(z) isin S)
+end
+
+spec Functionlemmata = Functions
+then %implies
+  vars S,G,S1,S2,F1,A1,B,F2,A2,F,A,B,C,x:set
+ . isfunc(F1,A1,B) /\ isfunc(F2,A2,B) /\ A1 bintersection A2 = emptyset => isfunc(F1 bunion F2,A1 bunion A2, B)
+ . isfunc(F,A,B) /\ C subset A => isfunc(restriction(F,C),C,B)
+ . finjective(isfunc(F,A,B)) => isfunc(invimage(F,A),image(F,A),A)
+ . finjective(isfunc(F1,A1,B)) /\ finjective(isfunc(F2,A2,B)) /\ A1 bintersection A2 = emptyset /\ image(F1,A1) bintersection image(F2,A2) = emptyset => finjective(isfunc(F1 bunion F2, A1 bunion A2,B))
+ . finjective(isfunc(F,A,B)) /\ C subset A => finjective(isfunc(restriction(F,C),C,B))
+ . isfunc(F1,A1,B) /\ isfunc(F2,A2,B) /\ A1 bintersection A2 = emptyset /\ B subset image(F1,A1) bunion image(F2,A2) => fsurjective(isfunc(F1 bunion F2,A1 bunion A2,B))
+ . isfunc(F,A,B) => forall S1:set. S1 isin power(A) => forall S2:set. S2 isin power(A) => image(F,S1) subset image(F,S2)
+ . S1 isin power(A) => forall S2:set. S2 isin power(A) => S1 subset S2 => A complement S2 subset A complement S1
+%% Fixed-point helper lemma: check separation
+ . fmonotone(isfunc(F,power(A),power(A))) => exists s:set. s isin power(A) /\ F app s = s
+%%check . finjective(isfunc(F,A,B)) /\ finjective(isfunc(G,B,A)) => exists m:set. m= fsep(power(A) cross power(A))
+ . isfunc(F,A,B) /\ x isin A => F app x isin B
+ . finjective(isfunc(F,A,B)) => forall x:set. x isin A => invimage(F,F app x) = x
+ . isfunc(F,A,B) /\ S subset A => forall x:set. x isin A => restriction(F,S app x) = F app x
+ . isfunc(F,A,B) => forall x:set. x isin A => exists y:set. y isin B /\ F app x = y
+
+end
+
+spec Cantorbernstein = Functionlemmata
+then %implies
+  vars F,A,B,G:set
+  .  finjective(isfunc(F,A,B)) /\ finjective(isfunc(G,B,A)) => exists m:set. fmonotone(isfunc(m,power(A),power(A))) /\ exists c:set. c isin power(A) /\ m app c = c /\ exists h:set. h = (restriction(F,c)  bintersection restriction(invimage(G,B),A complement c)) /\ fbijective(isfunc(h,A,B))
+  .  finjective(isfunc(F,A,B)) /\ finjective(isfunc(G,B,A)) => exists H:set. fbijective(isfunc(H,A,B))
+end
