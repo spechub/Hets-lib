@@ -82,7 +82,7 @@ then %defs
     image:set*set->set;
     restriction:set*set->set;
   vars F,A,B,S,x:set
-  . isfunc(F,A,B) <=> (F subset A cross B /\ forall x:set. x isin A => exists y:set. y isin B /\ ordpair(x,y) isin F)
+  . isfunc(F,A,B) <=> (F subset A cross B /\ forall x:set. x isin A => exists! y:set. y isin B /\ ordpair(x,y) isin F)
   . isfunc(F,A,B) => forall x:set. x isin A => forall y:set. y isin B => (F app x = y <=> ordpair(x,y) isin F)
   . isfunc(F,A,B) => (injective(F) <=> (forall x1,x2:set. x1 isin A => x2 isin A => not(x1=x2) => not(F app x1 = F app x2)))
   . finjective(isfunc(F,A,B)) <=> injective(F) /\ isfunc(F,A,B)
