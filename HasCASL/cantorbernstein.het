@@ -1,4 +1,4 @@
-library HasCASL/CantorBernstein
+library HasCASL/cantorbernstein
 version 0.1
 
 %author: D. Dietrich
@@ -8,9 +8,9 @@ logic HasCASL
 
 from Basic/SimpleDatatypes get Boolean
 
-spec Base = 
+spec Base =
 sorts set;
-preds 
+preds
   __ isin __ : set*set;
 ops
   fsep:set*(Pred(set))->set;
@@ -39,7 +39,7 @@ ops
   lproj:set->set;
   rproj:set->set;
   suc:set->set;
-  
+
 vars A,B,x:set
  . A subset B <=> forall x:set. x isin A => x isin B
  %% insert separation here
@@ -53,7 +53,7 @@ vars A,B,x:set
  . x isin A complement B <=> x isin A /\ not(x isin B)
  . x isin singleton(A) <=> x=A
  . x isin pair(A,B) <=> x=A \/ x = B;
- . x isin ordpair(A,B) <=> x=singleton(A) \/ x=singleton(pair(A,B)); 
+ . x isin ordpair(A,B) <=> x=singleton(A) \/ x=singleton(pair(A,B));
  . x isin A cross B <=> exists y:set. y isin A /\ exists z:set. z isin B /\ x = ordpair(y,z)
  . x isin lproj(A) <=> exists y:set. A=ordpair(x,y)
  . x isin rproj(A) <=> exists y:set. A=ordpair(y,x)
@@ -61,7 +61,7 @@ vars A,B,x:set
 end
 
 spec Functions = Base
-then 
+then
   . exists y:set. emptyset isin y /\ forall x:set. x isin y => suc(x) isin y %(infinity)%
 then %defs
   preds
@@ -120,7 +120,7 @@ then %implies
 
 end
 
-spec Cantorbernstein = Functionlemmata
+spec CantorBernstein = Functionlemmata
 then %implies
   vars F,A,B,G:set
   .  finjective(isfunc(F,A,B)) /\ finjective(isfunc(G,B,A)) => exists m:set. fmonotone(isfunc(m,power(A),power(A))) /\ exists c:set. c isin power(A) /\ m app c = c /\ exists h:set. h = (restriction(F,c)  bintersection restriction(invimage(G,B),A complement c)) /\ fbijective(isfunc(h,A,B))
