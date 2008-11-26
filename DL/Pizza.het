@@ -1,8 +1,12 @@
-logic DL
+library DL/Pizza
+
+logic OWL
+
+spec s =
 
 Class: DomainConcept
-SubclassOf: Thing    %(name_2)%
-DisjointWith: ValuePartition 
+SubclassOf: Thing
+DisjointWith: ValuePartition
 
 Class: Food
 SubclassOf: DomainConcept
@@ -19,7 +23,7 @@ DisjointWith: IceCream, PizzaBase, Pizza
 Class: Spiciness
 SubclassOf: Thing
 
-Class: HerbSpiceTopping  
+Class: HerbSpiceTopping
 SubclassOf: PizzaTopping, hasTopping onlysome [CajunSpiceTopping]
 DisjointWith: SauceTopping, FishTopping, FruitTopping, MeatTopping, NutTopping, VegetableTopping, CheeseTopping
 
@@ -96,8 +100,8 @@ SubclassOf: hasSpiciness some Hot,
 HerbSpiceTopping
 DisjointWith: RosemaryTopping
 
-Class:  CheeseyPizza 
-EquivalentTo: 
+Class:  CheeseyPizza
+EquivalentTo:
 Pizza
 and hasTopping some (hasBottom some Cheese)
 
@@ -105,46 +109,46 @@ Class: VegetarianPizza
 EquivalentTo:
 Pizza and not hasPart some Meat and not hasPart some Fish
 
-Class: MeatyMargheritaPizza 
-EquivalentTo: 
+Class: MeatyMargheritaPizza
+EquivalentTo:
 Pizza
 and hasTopping some Tomato
 and hasTopping some Mozzarella
 and hasTopping some SpicyBeef
 
-Class:  MargheritaPizza 
-EquivalentTo: 
+Class:  MargheritaPizza
+EquivalentTo:
 Pizza
 and hasTopping some Tomato
 and hasTopping some Mozzarella
 and hasTopping only (Tomato or Mozzarella)
 
-ObjectProperty: hasTopping 
+ObjectProperty: hasTopping
 Domain: Pizza
 Characteristics: Functional, InverseFunctional
 
-ObjectProperty: hasTopping 
+ObjectProperty: hasTopping
 Domain: Food
 Characteristics: Functional
 
-Class: Chocicecream 
+Class: Chocicecream
 SubclassOf: hasTopping some Chocolate
 
-Class: EmptyPizza 
+Class: EmptyPizza
 SubclassOf: Pizza and  not (hasToppings some Thing)
 
 
-Class: ProteinLoversPizza 
-EquivalentTo: 
+Class: ProteinLoversPizza
+EquivalentTo:
 Pizza
 and hasTopping only (Meat and Fish)
 
-Class: MeatyPizza 
-EquivalentTo: 
+Class: MeatyPizza
+EquivalentTo:
 Pizza and hasTopping only Meat
 
-Class: SpicyTopping 
-EquivalentTo: 
+Class: SpicyTopping
+EquivalentTo:
 PizzaTopping
 and hasSpiciness some Spicy
 SubclassOf: not isSuitable some SmallChild
