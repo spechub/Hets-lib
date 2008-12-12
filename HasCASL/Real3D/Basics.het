@@ -19,11 +19,11 @@ from HasCASL/Reals get
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
 %%                       Real 3D Vector Space                       %%
 %%                                                                  %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
 spec RealBase = ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
 
@@ -44,14 +44,19 @@ spec Vectors3DBase = RealBase then
 end
 
 %( extend by binary inverse )%
-spec Vectors3D = ExtInverse[Vectors3DBase fit Elem |-> Vector, __ * __ |-> __ + __, inv |-> - __] 
+spec Vectors3D =
+ExtInverse[Vectors3DBase fit
+	   Elem |-> Vector, __ * __ |-> __ + __, inv |-> - __]
      with __ / __ |-> __ - __ then
 
-     ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y)); %(scalar mutliplication)%
-	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y); %(scalar product)%
+     ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y));
+     %(scalar mutliplication)%
+	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y);
+	 %(scalar product)%
 	 __#__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
 				      C3(x)*C1(y)-C3(y)*C1(x),
-				      C1(x)*C2(y)-C1(y)*C2(x)); %(vector product)%
+				      C1(x)*C2(y)-C1(y)*C2(x));
+				      %(vector product)%
 	 |__|(x:Vector):Real=sqrt(x*x); %(the norm of a vector)%
 
      preds orth:Vector*Vector;
@@ -132,7 +137,8 @@ then
 
 	 __+__ (P:PointSet; v:Vector):PointSet = image((\x:Point .! x+v), P);
 	 __+__ (p:Point; V:VectorSet):PointSet = image((\x:Vector .! p+x), V);
-	 __+__ (P:PointSet; V:VectorSet):PointSet = bigunion (image((\x:Vector .! P+x), V));
+	 __+__ (P:PointSet; V:VectorSet):PointSet =
+	       bigunion (image((\x:Vector .! P+x), V));
 
 	 %{We could also introduce lifting operations for vec}%
 
