@@ -25,9 +25,39 @@ then
 	      x=offset + l*axis + y };
 
 
-	 %{ The plane orthogonal to the axis }%
-	 VPlane(axis:Vector):VectorSet
-	  = { \y:Vector . orth(y,axis) };
+	 %{ The following part provides a basis for the
+	 semantics of the solid works objects }%
+
+	 %{ The plane orthogonal to the normal vector }%
+	 VLine(p1:Vector;p2:Vector):VectorSet
+	  = image(\y:Real .! p1 + (y*(p2-p1)), [0...1]);
+
+	 %{ Normalize the given Vector and scale it by the scalar }%
+	 VWithLength(v:Vector;s:NonZero):Vector
+	  = v when (v=0) else (s / (|v| as NonZero))*v;
+
+	 %{ The plane orthogonal to the normal vector }%
+	 VPlane(normal:Vector):VectorSet
+	  = { \y:Vector . orth(y,normal) };
+
+	 %{ The plane spanned by the given to axes }%
+	 VPlane2(axis1:Vector;axis2:Vector):VectorSet
+          = VPlane(axis1 # axis2);
+
+	 %{ The connected set containing the given point and separated 
+	 by the given frontier }%
+	 VConnected(frontier:VectorSet;point:Vector):VectorSet
+	  = frontier when (frontier point) else 
+	       { \y:Vector .  VLine(point,y) intersection frontier = emptySet };
+
+	 %{ The halfspace separated by the plane defined
+	 by the given normal vector, where the normal vector points to. }%
+	 VHalfSpace(normal:Vector):VectorSet
+	  = VConnected(VPlane normal, normal);
+
+	 %{ As VHalfSpace but including the resulting VPlane. }%
+	 VHalfSpace2(normal:Vector):VectorSet
+	  = VConnected(VPlane normal, normal) union (VPlane normal);
 
 	 %{ The ball with radius r }%
 	 VBall(r:Real):VectorSet
@@ -38,8 +68,8 @@ then
 	  = VPlane(axis) intersection VBall(r);
 
 
-	 %{ This action attaches the given vectors to the given point and thus
-	 creates a PointSet }%
+	 %{ This action attaches the given vectors to the given point
+	 and thus creates a PointSet }%
 	 ActAttach(point:Point;vectors:VectorSet):PointSet
 	  = point + vectors;
 
