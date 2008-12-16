@@ -91,6 +91,6 @@ spec Field = RingWithNonZeros and Group with Elem |-> NonZero, e |-> 1
 spec RichField =
 ExtInverse[Field fit __ * __ |-> __ + __,  inv |-> - __]
    with __ / __ |-> __ - __
-and
-ExtInverse[Field fit Elem |-> NonZero]
+then
+     op __ / __(x:Elem;y:NonZero):Elem=x*inv(y);
 end

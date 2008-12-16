@@ -33,7 +33,7 @@ then
 	  = image(\y:Real .! p1 + (y*(p2-p1)), [0...1]);
 
 	 %{ Normalize the given Vector and scale it by the scalar }%
-	 VWithLength(v:Vector;s:NonZero):Vector
+	 VWithLength(v:Vector;s:Real):Vector
 	  = v when (v=0) else (s / (|v| as NonZero))*v;
 
 	 %{ The plane orthogonal to the normal vector }%
