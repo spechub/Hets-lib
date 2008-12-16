@@ -8,6 +8,8 @@ version 0.1
 		 < {__union__, __intersection__, __\\__} )%
 %prec {__union__} < {__*__}
 
+%number __@@__
+
 logic HasCASL
 
 from HasCASL/Algebra get
@@ -26,6 +28,23 @@ from HasCASL/Reals get
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
 spec RealBase = ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
+then
+     ops  2: Real = 1 + 1;                      %(2_def_Real)%
+	  3: Real = 2 + 1;                      %(3_def_Real)%
+	  4: Real = 3 + 1;                      %(4_def_Real)%
+	  5: Real = 4 + 1;                      %(5_def_Real)%
+	  6: Real = 5 + 1;                      %(6_def_Real)%
+	  7: Real = 6 + 1;                      %(7_def_Real)%
+	  8: Real = 7 + 1;                      %(8_def_Real)%
+	  9: Real = 8 + 1;                      %(9_def_Real)%
+
+     type ZeroToNine =
+	  {x:Real. x=0\/x=1\/x=2\/x=3\/x=4\/x=5\/x=6\/x=7\/x=8\/x=9}
+
+     op __ @@ __ (m:ZeroToNine;n:Real): Real = (m * (9 + 1)) + n
+     %(decimal_def)%
+
+end
 
 spec Points3D = RealBase then
      free type Point ::= P(C1:Real;C2:Real;C3:Real)

@@ -14,8 +14,7 @@ version 0.2
   { - __ } 
 )%
 
-from Basic/Numbers get
-     Rat
+%%from Basic/Numbers get Rat
 from Basic/RelationsAndOrders get
      TotalOrder, ExtTotalOrder
 from HasCASL/Algebra get Field, RichField
@@ -71,10 +70,11 @@ view FieldWithOrdering_in_OrderedField :
      FieldWithOrdering to ExtOrderedField[OrderedField]
 end
 
-spec Reals = FieldWithOrdering with Elem |-> Real and Rat
+spec Reals = FieldWithOrdering with Elem |-> Real
+%%and Rat
 then
 
-  type Rat < Real
+%%  type Rat < Real
 
   ops
     inf : Pred(Real) ->? Real;
