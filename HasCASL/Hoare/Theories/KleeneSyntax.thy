@@ -72,12 +72,40 @@ qed
 lemma inv_lemma: "\<forall>x. ((p x \<guillemotright>= q) = (q x \<guillemotright>= r)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) = (q x \<guillemotright>= (r^[*])))"
   apply (rule allI)
   apply (rule ileq_asym)
-  apply (rule ileq_assoc [of _ "do {x \<leftarrow> (p^[*]) x; x \<leftarrow> q x; (r^[*]) x}"])
+  apply (rule_tac b="do {x \<leftarrow> (p^[*]) x; x \<leftarrow> q x; (r^[*]) x}" in ileq_assoc)
   apply (subst unf_right) back back
   apply simp
-  sorry
-  (*apply (rule ileq_plusMon)*)
-
+  apply (rule ileq_plusMon)
+  apply (rule_tac x=x in spec)
+  apply (rule ind_left)
+  apply simp
+  apply (subst assocLaw[THEN sym])
+  apply (rule allI)
+  apply (erule_tac x=x in allE)
+  apply (erule ssubst)  
+  apply (subst unf_left) back back
+  apply simp
+  apply (subst comm)
+  apply (rule ileq_plusMon)
+  
+  apply (rule_tac b="do {x \<leftarrow> (p^[*]) x; x \<leftarrow> q x; (r^[*]) x}" in ileq_assoc)
+  apply (subst unf_right) back
+  apply simp
+  apply (rule ileq_plusMon)
+  apply (subst assocLaw[THEN sym])
+  apply (rule ind_right) 
+  apply simp  
+  apply (rule_tac x=x in spec)
+  apply simp
+  apply (subgoal_tac "(\<lambda>x. do {x \<leftarrow> p x; q x}) = (\<lambda>x. do {x \<leftarrow> q x; r x})")
+  apply (erule subst)
+  apply (subst unf_right) back
+  apply simp
+  apply (subst comm)
+  apply (rule allI)
+  apply (rule ileq_plusMon)
+  apply (rule ext)
+  by simp
 
 lemma bindStar: "star {x \<leftarrow> do{x \<leftarrow> p; q x}; r x} = do {x \<leftarrow> p; star {x \<leftarrow> q x; r x}}"
   by simp

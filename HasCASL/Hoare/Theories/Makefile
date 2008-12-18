@@ -1,4 +1,4 @@
-EXPORT = MonadSyntax.thy MultimonadSyntax.thy KleeneSyntax.thy OneStackReverse.thy TwoStackReverse.thy
+EXPORT = MonadSyntax.thy MultimonadSyntax.thy KleeneSyntax.thy OneStackReverse.thy TwoStackReverse.thy README
 
 StackReverse.tar: 
 	mkdir StackReverse
