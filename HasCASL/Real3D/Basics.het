@@ -118,23 +118,26 @@ end
 %( taken from Set.het but changed the meaning of {f} )%
 spec SetsWithComprehension =
   var S,T : Type
-  type Set S := S -> Logical;
+  free type Bool ::= True | False
+  type Set S := S -> Bool;
   ops emptySet : Set S;
+      asSet (s:Pred S) :Set S = \x:S .! True when (s x) else False; %% wahrscheinlich geht das nicht
+      asPred (s:Set S) :Pred S = \x:S .! true when (s x) = True else false; %% wahrscheinlich geht das nicht
       allSet : Set S;
-      __isIn__ : S * Set S -> Logical;
+      __isIn__ : Pred(S * Set S);
       __subset__ :Pred( Set(S) * Set(S) );
       __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
       bigunion : Set(Set S) -> Set S;
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S * Set T -> Set (S*T);
-      {__}(s:Set S):Set S = s; %(set comprehension)%
+      {__}(s:Pred(S)):Set S = asSet(s); %(set comprehension)%
       image(f:(S->T);X:Set S):Set T
-	   = { \x:T .! exists y:S. y isIn X /\ f(y) = x }; %(function image)%
+	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
   forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
   . not (x isIn emptySet)
   . x isIn allSet
-  . x isIn s <=> s x
+  . x isIn s <=> asPred(s) x
   . s subset s' <=> forall x:S . x isIn s => x isIn s'
   . x isIn s union s' <=> x isIn s \/ x isIn s'
   . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X
@@ -151,7 +154,7 @@ then
 	   VectorSet := Set Vector;
 	   RealSet := Set Real;
 
-     ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b);
+     ops [__ ... __](a,b:Real):RealSet= asSet(\r:Real . (r >= a) /\ (r <= b));
 
 	 %{Lifting operations for +}%
 
