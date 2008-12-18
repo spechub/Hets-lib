@@ -118,10 +118,10 @@ end
 %( taken from Set.het but changed the meaning of {f} )%
 spec SetsWithComprehension =
   var S,T : Type
-  type Set S := S ->? Unit;
+  type Set S := S -> Logical;
   ops emptySet : Set S;
       allSet : Set S;
-      __isIn__ : S * Set S ->? Unit;
+      __isIn__ : S * Set S -> Logical;
       __subset__ :Pred( Set(S) * Set(S) );
       __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
       bigunion : Set(Set S) -> Set S;
@@ -129,7 +129,7 @@ spec SetsWithComprehension =
       __*__ : Set S * Set T -> Set (S*T);
       {__}(s:Set S):Set S = s; %(set comprehension)%
       image(f:(S->T);X:Set S):Set T
-	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
+	   = { \x:T .! exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
   forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
   . not (x isIn emptySet)
