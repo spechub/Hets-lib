@@ -238,21 +238,20 @@ spec TempParthoodASO_Cons_Model =
      and
      TempParthoodSAG_Cons
 	 then %cons
-	 {TwoPointTempParthoodNoModel with sort s |-> ASO
+	%% {TwoPointTempParthoodNoModel with sort s |-> ASO}
 	%% OnePointTempParthoodNoModel with sort s |-> ASO  %% both turn green...?
-		and
-      {
-       free type ASO ::= sort SC | sort SAG
-      }
-	}
+	%%	and
+     	free type ASO ::= sort SC | sort SAG
+		pred PRE: ASO*T
+   		pred tOv (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tOv(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tOv(x,y,t) ) 
+   		pred tP (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tP(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tP(x,y,t) )
+   		pred tPP (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tPP(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tPP(x,y,t) )
 end
 
 view v_TempParthoodASO_Cons_Model : 
      TempParthoodASO_Cons to TempParthoodASO_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% not sure... Green as well
-
-%[
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) MOB
@@ -275,8 +274,6 @@ view v_TempParthoodMOB_Cons_Model :
      TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% fails to analyse, out of memory
-
-]%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) SOB
@@ -306,6 +303,8 @@ view v_TempParthoodSOB_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  SOB
 %% tries to prove: disjoint ASO & SC??
+
+
 %[
    
 spec TempParthoodPOB_Cons=
