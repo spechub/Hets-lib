@@ -18,11 +18,6 @@ todo
 - [Klaus] check consistency of DOLCE
 - [Till] mark imported theorems as proved theorems, not axioms
 - [Till, Klaus] use underscores for label disambiguation
-- [Klaus] automatic installer for Hets
-paper:
-ECAI, KI, FOIS
-report on practical experiences
-stress modularization
 ]%
 
 %%logic Modal
@@ -139,7 +134,7 @@ esort s
 pred OvCn:s*s
 forall x,y,z:s
 .OvCn(x,x) %(reflexivity)%
-.OvCn(x,y) => OvCn(y,x) %(simmetry)%
+.OvCn(x,y) => OvCn(y,x) %(symmetry)%
 .(OvCn(z,x) <=> OvCn(z,y)) => x=y %(extensionality)%
 end
 
@@ -322,10 +317,10 @@ end
 
 
 %%-----------------------
-%% Temporary_Parthood (tp)
+%% Temporary_Parthood No Temporal Sums and Difs (tpno)
 %%-----------------------
 
-spec Temporary_Parthood =
+spec Temporary_Parthood_No =
      Temporary_Partial_Order with Rel |-> tP
 and  Binary_Temporal_Dissective with s1 |-> s, s2 |-> s, Rel |-> tP
 and  Binary_Present with s1 |-> s, s2 |-> s, Rel |-> tP
@@ -339,12 +334,28 @@ tPP(x:s; y:s; t:T) <=> tP(x,y,t) /\  not tP(y,x,t);
 %% Temporary Overlap
 tOv(x:s; y:s; t:T) <=> exists z:s.(tP(z,x,t) /\ tP(z,y,t)); 
 
-%% Temporary Atom
+%% Temporary Atom 
 %% At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+%% tAt(x:s; t:T) <=> not exists y:s. tPP(y, x, t); %(Dd16)%
 
 %% Temporary Atomic Part
-%% AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+%%  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
  
+%% why are atoms included in this spec?
+
+%%----------------------------------------------------------------------------------------------------
+end  
+
+
+%%-----------------------
+%% Temporary_Parthood (tp)
+%%-----------------------
+
+spec Temporary_Parthood =
+     Temporary_Parthood_No
+then
+
+preds
 %% Temporary Binary Sum
 tSum(z:s; x:s; y:s) <=> forall w:s;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)));
 
@@ -360,6 +371,7 @@ forall x,y:s; t:T
 %% .not tP(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
 %% ----------------------------------------------------------------------------------------------------
 end  
+
 
 
 %%---------------------
@@ -445,7 +457,7 @@ then %implies
      . PC(x,y,t) => PRE(x,t) /\ PRE(y,t) %(T33)%
      %% the following theorem must be thought of again:
      %% if it is added in this form, Participation is inconsistent! 
-     . (PRE(x,t) => exists y : PD . PC(x,y,t)) %(T35)% 
+     %% . (PRE(x,t) => exists y : PD . PC(x,y,t)) %(T35)% 
 end     
 
 
@@ -587,7 +599,8 @@ spec OneSide_Specific_Dependence =
 then
 
 forall y:s2; t:T
-.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+%%.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+.not PRE(y,t) \/ exists x:s1.(PRE(x,t))  %% experimental change
 %% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
 end
 
@@ -632,7 +645,8 @@ spec OneSide_Generic_Dependence =
 then
 
 forall y:s2; t:T
-.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+%%.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+.not PRE(y,t) \/ exists x:s1.(PRE(x,t))  %% experimental change
 %% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
 end
 

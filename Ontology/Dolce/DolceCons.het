@@ -1,12 +1,13 @@
 library Ontology/Dolce/DolceCons
 version 1.0
 
-from Ontology/Dolce/DolceSimpl_Esort get Taxonomy, Partial_Order, Ext_Partial_Order,
+from Ontology/Dolce/DolceSimpl_Esort get
+		 Taxonomy, Partial_Order, Ext_Partial_Order,
          Ext_Overlap_or_Connection, Classical_Extensional_Parthood,
          Time_Mereology, Unary_Temporal_Dissective, Being_Present,
          Mereology, Mereology_and_TemporalPart, Binary_Present,
          Binary_Temporal_Dissective, Temporary_Partial_Order,
-         Temporary_Strict_Partial_Order, Temporary_Parthood,
+         Temporary_Strict_Partial_Order, Temporary_Parthood_No, Temporary_Parthood,
          Temporary_Mereology, Constitution_Spec,
          Constantly_Generically_Constituted, Constitution, Participation,
          Direct_Quality_Spec, Direct_Quality, Immediate_Quale_Spec,
@@ -17,134 +18,296 @@ from Ontology/Dolce/DolceSimpl_Esort get Taxonomy, Partial_Order, Ext_Partial_Or
          Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
          Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1)
 %%One Point Model Found
 spec TM_Cons=
      Time_Mereology
 then
      . exists t:T . true  %% we need at least one time point
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% add a view to a model
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4)
 spec ImmediateQuale_Cons=
      TM_Cons
      then %cons
      Immediate_Quale
 end
 
-spec ImmediateQuale_Cons_Model =
+%% We identify time points with temporal location; and temporal qualities with temporal regions
+spec ImmediateQuale_Cons_Model = 
      TM_Cons
      then %cons
      free type TL ::= sort T
      pred ql(x:T;y:TL) <=> x=y
-     free type TQ ::= tq
-     free type TR ::= sort TQ
+     free type TR ::= tr
+     free type TQ ::= sort TR
+%%     free type TQ ::= tq   %% ??? does it matter 
+%%     free type TR ::= sort TQ
      pred ql(x:TR;y:TQ) <=> x=y
-
 end 
 
 view v_ImmediateQuale_Cons_Model :  
      ImmediateQuale_Cons to ImmediateQuale_Cons_Model
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% view works, conservativity not shown.
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5)
 spec TempParthoodSC_Cons =
      TM_Cons
      then %cons
-     Temporary_Parthood with s |-> SC
+     Temporary_Parthood_No with s |-> SC
 end
 
-spec OnePointTempParthoodModel =
+spec OnePointTempParthoodNoModel =
   TM_Cons
 then
   free type s ::= ThePoint
   pred PRE (x:s;t:T) <=> true
-  pred tDif (x,y,z:s) <=> true
+%%  pred tDif (x,y,z:s) <=> false
   pred tOv (x,y:s;t:T) <=> true
   pred tP (x,y:s;t:T) <=> true
-  pred tPP (x,y:s;t:T) <=> true
-  pred tSum  (x,y,z:s) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+%%  pred tSum  (x,y,z:s) <=> true
 end
   
 spec TempParthoodSC_Cons_Model =
      TM_Cons
 then %cons
-     OnePointTempParthoodModel with sort s |-> SC
+     OnePointTempParthoodNoModel with sort s |-> SC
 end
 
 view v_TempParthoodSC_Cons_Model : 
      TempParthoodSC_Cons to TempParthoodSC_Cons_Model
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% view works, conservativity not shown.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6)
 spec TempParthoodSAG_Cons=
      TM_Cons
      then %cons
-     Temporary_Parthood with s |-> SAG
+     Temporary_Parthood_No with s |-> SAG
 end
 
+spec TempParthoodSAG_Cons_Model =
+     TM_Cons
+then %cons
+     OnePointTempParthoodNoModel with sort s |-> SAG
+end
+
+view v_TempParthoodSAG_Cons_Model : 
+     TempParthoodSAG_Cons to TempParthoodSAG_Cons_Model
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% view works, conservativity not shown.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7)
 spec TempParthoodNASO_Cons=
      TempParthoodSC_Cons
      then %cons
-     {Temporary_Parthood with s |-> NASO and
+     {Temporary_Parthood_No with s |-> NASO and
       OneSide_Generic_Dependence 
-      with s1 |-> NASO, s2 |-> S}
+      with s1 |-> NASO, s2 |-> SC}
 end
 
+%% 
+spec TempParthoodNASO_Cons_Model =
+   	 TempParthoodSC_Cons
+then %cons
+     OnePointTempParthoodNoModel with sort s |-> NASO 
+end
+
+view v_TempParthoodNASO_Cons_Model : 
+     TempParthoodNASO_Cons to TempParthoodNASO_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% view works, conservativity not shown.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8)
 spec TempParthoodAPO_Cons=
      TempParthoodSAG_Cons
      then %cons
-     {Temporary_Parthood with s |-> APO 
+     {Temporary_Parthood_No with s |-> APO 
       and
       OneSide_Generic_Dependence with s1 |-> SAG, 
       s2 |-> APO}
 end
 
+spec TempParthoodAPO_Cons_Model =
+   	 TempParthoodSAG_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> APO}
+end
+
+view v_TempParthoodAPO_Cons_Model : 
+     TempParthoodAPO_Cons to TempParthoodAPO_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% view works, conservativity not shown.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9)
 spec TempParthoodF_Cons=
      TempParthoodSAG_Cons
      then %cons
-     Temporary_Parthood with s |-> F
+     Temporary_Parthood_No with s |-> F
 end
 
+spec TempParthoodF_Cons_Model =
+   	 TempParthoodSAG_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> F}
+end
+
+view v_TempParthoodF_Cons_Model : 
+     TempParthoodF_Cons to TempParthoodF_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% view works, conservativity not shown.: Green after proof automatic
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10)
 spec TempParthoodNAPO_Cons=
      TempParthoodF_Cons
      then %cons
-     {Temporary_Parthood with s |-> NAPO 
+     {Temporary_Parthood_No with s |-> NAPO 
       and
       OneSide_Generic_Dependence with s1 |-> F, 
       s2 |-> NAPO}
 end
 
+spec TempParthoodNAPO_Cons_Model =
+	 TempParthoodF_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> NAPO}
+end
+
+view v_TempParthoodNAPO_Cons_Model : 
+     TempParthoodNAPO_Cons to TempParthoodNAPO_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% view works, conservativity not shown.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11)
 spec TempParthoodASO_Cons=
      TempParthoodSC_Cons
      and
      TempParthoodSAG_Cons
      then %cons
-     {Temporary_Parthood with s |-> ASO
+     {Temporary_Parthood_No with s |-> ASO
       and 
       {
        free type ASO ::= sort SC | sort SAG
       }
      }
 end
+%% 
 
+ spec TwoPointTempParthoodNoModel =
+   TM_Cons
+ then
+   free type s ::= PointOne | PointTwo
+   pred PRE (x:s;t:T) <=> true
+   pred tOv (x,y:s;t:T) <=> x=y
+   pred tP (x,y:s;t:T) <=> x=y
+   pred tPP (x,y:s;t:T) <=> false
+ end
+
+
+spec TempParthoodASO_Cons_Model =
+	 TempParthoodSC_Cons
+     and
+     TempParthoodSAG_Cons
+	 then %cons
+	 {TwoPointTempParthoodNoModel with sort s |-> ASO
+	%% OnePointTempParthoodNoModel with sort s |-> ASO  %% both turn green...?
+		and
+      {
+       free type ASO ::= sort SC | sort SAG
+      }
+	}
+end
+
+view v_TempParthoodASO_Cons_Model : 
+     TempParthoodASO_Cons to TempParthoodASO_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% not sure... Green as well
+
+%[
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) MOB
 spec TempParthoodMOB_Cons=
      TempParthoodAPO_Cons
      then %cons
-     {Temporary_Parthood with s |-> MOB 
+     {Temporary_Parthood_No with s |-> MOB 
       and
       OneSide_Specific_Dependence with s1 |-> MOB, 
       s2 |-> APO}
 end
 
+spec TempParthoodMOB_Cons_Model =
+	 TempParthoodAPO_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> MOB}
+end
+
+view v_TempParthoodMOB_Cons_Model : 
+     TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% fails to analyse, out of memory
+
+]%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) SOB
 spec TempParthoodSOB_Cons=
      TempParthoodNASO_Cons
      and
      TempParthoodASO_Cons
      then %cons
-     {Temporary_Parthood with s |-> SOB 
+     {Temporary_Parthood_No with s |-> SOB 
       and
       {
        free type SOB ::= sort ASO | sort NASO}
      }
 end
-     
+  
+spec TempParthoodSOB_Cons_Model =
+	 TempParthoodNASO_Cons 
+	 and
+     TempParthoodASO_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> SOB}
+end
+
+view v_TempParthoodSOB_Cons_Model : 
+     TempParthoodSOB_Cons to TempParthoodSOB_Cons_Model
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  SOB
+%% tries to prove: disjoint ASO & SC??
+%[
+   
 spec TempParthoodPOB_Cons=
      TempParthoodMOB_Cons
      and
@@ -406,3 +569,5 @@ spec Dolce_Cons=
      then %cons
      Taxonomy
 end
+
+]%
