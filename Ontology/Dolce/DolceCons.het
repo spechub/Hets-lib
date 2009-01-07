@@ -18,6 +18,8 @@ from Ontology/Dolce/DolceSimpl_Esort get
          Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
          Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1)
 %%One Point Model Found
 spec TM_Cons=
@@ -64,6 +66,8 @@ spec TempParthoodSC_Cons =
      Temporary_Parthood_No with s |-> SC
 end
 
+%%%%%%%%%%%%%%%% 1 and 2 point models for temp parthood no existence %%%%%%%%%%%%%%%%
+
 spec OnePointTempParthoodNoModel =
   TM_Cons
 then
@@ -75,6 +79,25 @@ then
   pred tPP (x,y:s;t:T) <=> false
 %%  pred tSum  (x,y,z:s) <=> true
 end
+
+view v_Temporary_Parthood_No_1 : 
+		Temporary_Parthood_No to OnePointTempParthoodNoModel
+
+%%%%%%%%%%%%%%%%%
+
+ spec TwoPointTempParthoodNoModel =
+   TM_Cons
+ then
+   free type s ::= PointOne | PointTwo
+   pred PRE (x:s;t:T) <=> true
+   pred tOv (x,y:s;t:T) <=> x=y
+   pred tP (x,y:s;t:T) <=> x=y
+   pred tPP (x,y:s;t:T) <=> false
+ end
+
+		
+view v_Temporary_Parthood_No_2 : 
+		Temporary_Parthood_No to TwoPointTempParthoodNoModel	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
 spec TempParthoodSC_Cons_Model =
      TM_Cons
@@ -222,25 +245,12 @@ spec TempParthoodASO_Cons=
 end
 %% 
 
- spec TwoPointTempParthoodNoModel =
-   TM_Cons
- then
-   free type s ::= PointOne | PointTwo
-   pred PRE (x:s;t:T) <=> true
-   pred tOv (x,y:s;t:T) <=> x=y
-   pred tP (x,y:s;t:T) <=> x=y
-   pred tPP (x,y:s;t:T) <=> false
- end
-
-
 spec TempParthoodASO_Cons_Model =
 	 TempParthoodSC_Cons
      and
      TempParthoodSAG_Cons
 	 then %cons
-	%% {TwoPointTempParthoodNoModel with sort s |-> ASO}
-	%% OnePointTempParthoodNoModel with sort s |-> ASO  %% both turn green...?
-	%%	and
+		%% abstract definition of predicates assuming (arbitrary) existing models	
      	free type ASO ::= sort SC | sort SAG
 		pred PRE: ASO*T
    		pred tOv (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tOv(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tOv(x,y,t) ) 
@@ -252,6 +262,7 @@ view v_TempParthoodASO_Cons_Model :
      TempParthoodASO_Cons to TempParthoodASO_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% not sure... Green as well
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) MOB
@@ -267,13 +278,22 @@ end
 spec TempParthoodMOB_Cons_Model =
 	 TempParthoodAPO_Cons
 then %cons
-     {OnePointTempParthoodNoModel with sort s |-> MOB}
+    {OnePointTempParthoodNoModel with sort s |-> MOB 
+and 
+	{esort MOB
+	pred SD (x:MOB;y:APO) <=> true}
+	}  
+   	  
+%% need to define predicate SD
 end
+
 
 view v_TempParthoodMOB_Cons_Model : 
      TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% fails to analyse, out of memory
+%%  OneSide_Specific_Dependence has 'experimental' changes in it.
+
+%[	
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) SOB
@@ -305,20 +325,24 @@ view v_TempParthoodSOB_Cons_Model :
 %% tries to prove: disjoint ASO & SC??
 
 
-%[
-   
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) POB   
 spec TempParthoodPOB_Cons=
      TempParthoodMOB_Cons
      and
      TempParthoodNAPO_Cons
      then %cons
-     {Temporary_Parthood with s |-> POB
+     {Temporary_Parthood_No with s |-> POB
       and
       {
        free type POB ::= sort APO | sort NAPO
       }
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) 
+
+
+
 
 spec TempParthoodNPOB_Cons=
      TempParthoodSOB_Cons

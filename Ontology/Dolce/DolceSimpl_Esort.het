@@ -143,6 +143,8 @@ end
 %% Strict_Partial_Order (spo)
 %%---------------------------
 
+%% Unused spec
+
 %[
 spec Strict_Partial_Order =
 
@@ -153,6 +155,8 @@ forall x,y,z: s
 . Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
 end
 ]%
+
+
 %%-----------------------------------
 %% Classical_Extensional_Parthood (p)
 %%----------------------------------
@@ -317,7 +321,7 @@ end
 
 
 %%-----------------------
-%% Temporary_Parthood No Temporal Sums and Difs (tpno)
+%% Temporary_Parthood No Temporal Sums and Diffs (tpno)
 %%-----------------------
 
 spec Temporary_Parthood_No =
@@ -616,7 +620,8 @@ then
 
 then
 
-esort s1 < EDorPDorQ; s2 < EDorPDorQ
+ esort s1, s2 %% < s3; s2 < s3    %% experimental
+%% esort s1 < EDorPDorQ; s2 < EDorPDorQ    %% 
 
 forall x:s1
 .exists t:T.PRE(x,t)
@@ -630,7 +635,7 @@ end
 %%--------------------------------
 
 spec Mutual_Generic_Dependence =
-     Generic_Dependence with s1 |-> s1, s2 |-> s2 
+     Generic_Dependence with s1 |-> s1, s2 |-> s2
 and  Generic_Dependence with s1 |-> s2, s2 |-> s1
 end
 
@@ -779,7 +784,7 @@ end
 spec Conditions_On_Perdurant_Leaves =     
 esort s
 %% rigth now there are no perdurant's leaves, therefore there are no conditions on these leaves
-%% in any case, wa can express dolce's axioms (Ad79)-(ad82) using the specifications introduced before
+%% in any case, we can express dolce's axioms (Ad79)-(ad82) using the specifications introduced before
 end
 ]%
 
