@@ -27,7 +27,8 @@ from Ontology/Dolce/DolceSimpl_Esort get
 spec Temporary_Parthood_No_PRE =
   Temporary_Parthood_No
 then
-  forall t:T . exists x : s . PRE(x, t) 
+%%  forall t:T . exists x : s . PRE(x, t) 
+    forall t:T . forall x : s . PRE(x, t) 
 end
 %%--------------------------------------------
 
@@ -321,8 +322,7 @@ then %cons
 and 
 	{esort MOB
 	pred PRE: MOB*T
-	pred SD (x:MOB; y:APO) <=> (exists t:T.(PRE(x,t))) /\ 
-                   (forall t:T.(PRE(x,t) => PRE(y,t)))}
+	pred SD (x:MOB; y:APO) <=> (forall t:T.(PRE(x,t) => PRE(y,t))}
 	}  
    	  
 %% need to define predicate SD
