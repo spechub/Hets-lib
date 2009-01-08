@@ -33,10 +33,11 @@ then
      . exists t:T . true  %% we need at least one time point
 end
 
-spec TM_Model=
-     Time_Mereology
-then %cons
+spec TM_Model= 
      free type T ::= t0
+     pred At : T;
+	  P,PP,Ov,AtP : T * T;
+	  Sum,Dif: T * T * T
      . P(t0,t0)
      . not PP(t0,t0)
      . Ov(t0,t0)
