@@ -27,9 +27,21 @@ spec TM_Cons=
 then
      . exists t:T . true  %% we need at least one time point
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% add a view to a model
+
+spec TM_Model=
+     Time_Mereology
+then %cons
+     free type T ::= t0
+     . P(t0,t0)
+     . not PP(t0,t0)
+     . Ov(t0,t0)
+     . At(t0)
+     . AtP(t0,t0)
+     . Sum(t0,t0,t0)
+     . not Dif(t0,t0,t0)
+end
+
+view Time_Mereology_Cons_to_Model : TM_Cons to TM_Model
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4) (TL new, TR new, TQ new)
