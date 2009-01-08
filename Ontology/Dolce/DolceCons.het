@@ -20,7 +20,7 @@ from Ontology/Dolce/DolceSimpl_Esort get
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1) (T new)
 %%One Point Model Found
 spec TM_Cons=
      Time_Mereology
@@ -28,10 +28,11 @@ then
      . exists t:T . true  %% we need at least one time point
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 %% add a view to a model
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4) (TL new, TR new, TQ new)
 spec ImmediateQuale_Cons=
      TM_Cons
      then %cons
@@ -55,16 +56,10 @@ view v_ImmediateQuale_Cons_Model :
      ImmediateQuale_Cons to ImmediateQuale_Cons_Model
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 %% view works, conservativity not shown.
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5)
-spec TempParthoodSC_Cons =
-     TM_Cons
-     then %cons
-     Temporary_Parthood_No with s |-> SC
-end
 
 %%%%%%%%%%%%%%%% 1 and 2 point models for temp parthood no existence %%%%%%%%%%%%%%%%
 
@@ -82,6 +77,7 @@ end
 
 view v_Temporary_Parthood_No_1 : 
 		Temporary_Parthood_No to OnePointTempParthoodNoModel
+%% view works
 
 %%%%%%%%%%%%%%%%%
 
@@ -97,11 +93,24 @@ view v_Temporary_Parthood_No_1 :
 
 		
 view v_Temporary_Parthood_No_2 : 
-		Temporary_Parthood_No to TwoPointTempParthoodNoModel	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		Temporary_Parthood_No to TwoPointTempParthoodNoModel
+%% view works		
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5) (SC new)
+spec TempParthoodSC_Cons =
+     TM_Cons
+     then %cons
+     Temporary_Parthood_No with s |-> SC
+end
+
   
 spec TempParthoodSC_Cons_Model =
      TM_Cons
-then %cons
+then %def
      OnePointTempParthoodNoModel with sort s |-> SC
 end
 
@@ -109,10 +118,12 @@ view v_TempParthoodSC_Cons_Model :
      TempParthoodSC_Cons to TempParthoodSC_Cons_Model
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% view works, conservativity not shown.
+%%
+%% view works, conservativity not shown. 
+%% Green after Proof Automatic
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6) (SAG new)
 spec TempParthoodSAG_Cons=
      TM_Cons
      then %cons
@@ -129,11 +140,12 @@ view v_TempParthoodSAG_Cons_Model :
      TempParthoodSAG_Cons to TempParthoodSAG_Cons_Model
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 %% view works, conservativity not shown.
+%% Green after Proof Automatic
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7) (NASO new)
 spec TempParthoodNASO_Cons=
      TempParthoodSC_Cons
      then %cons
@@ -157,7 +169,7 @@ view v_TempParthoodNASO_Cons_Model :
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8) (APO new)
 spec TempParthoodAPO_Cons=
      TempParthoodSAG_Cons
      then %cons
@@ -182,7 +194,7 @@ view v_TempParthoodAPO_Cons_Model :
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9) (F new)
 spec TempParthoodF_Cons=
      TempParthoodSAG_Cons
      then %cons
@@ -200,12 +212,13 @@ view v_TempParthoodF_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.: Green after proof automatic
+%% view works, conservativity not shown.
+%% Green after proof automatic
 
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10) (NAPO new)
 spec TempParthoodNAPO_Cons=
      TempParthoodF_Cons
      then %cons
@@ -230,7 +243,7 @@ view v_TempParthoodNAPO_Cons_Model :
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11) (ASO new)
 spec TempParthoodASO_Cons=
      TempParthoodSC_Cons
      and
@@ -261,11 +274,12 @@ end
 view v_TempParthoodASO_Cons_Model : 
      TempParthoodASO_Cons to TempParthoodASO_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% not sure... Green as well
+%%
+%% view not established
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) MOB
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) (MOB new)
 spec TempParthoodMOB_Cons=
      TempParthoodAPO_Cons
      then %cons
@@ -291,12 +305,13 @@ end
 view v_TempParthoodMOB_Cons_Model : 
      TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
 %%  OneSide_Specific_Dependence has 'experimental' changes in it.
 
-%[	
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) SOB
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) (SOB new)
 spec TempParthoodSOB_Cons=
      TempParthoodNASO_Cons
      and
@@ -314,19 +329,25 @@ spec TempParthoodSOB_Cons_Model =
 	 and
      TempParthoodASO_Cons
 then %cons
-     {OnePointTempParthoodNoModel with sort s |-> SOB}
+     free type SOB ::= sort ASO | sort NASO
+		pred PRE: SOB*T
+   		pred tOv (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tOv(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tOv(x,y,t) ) 
+   		pred tP (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tP(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tP(x,y,t) )
+   		pred tPP (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tPP(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tPP(x,y,t) )
 end
+%%% Model used repeatedly, so could define a view as for one-point model?
 
 view v_TempParthoodSOB_Cons_Model : 
      TempParthoodSOB_Cons to TempParthoodSOB_Cons_Model
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  SOB
-%% tries to prove: disjoint ASO & SC??
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
+%% view not established
 
+%[	
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) POB   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) (POB new)   
 spec TempParthoodPOB_Cons=
      TempParthoodMOB_Cons
      and
@@ -339,11 +360,33 @@ spec TempParthoodPOB_Cons=
       }
      }
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) 
+
+
+spec TempParthoodPOB_Cons_Model=
+     TempParthoodMOB_Cons
+     and
+     TempParthoodNAPO_Cons
+     then %cons
+     {Temporary_Parthood_No with s |-> POB
+      and
+      {
+       free type POB ::= sort APO | sort NAPO
+      }
+     }
+end
+
+view v_TempParthoodPOB_Cons_Model : 
+     TempParthoodPOB_Cons to TempParthoodPOB_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
+%%
 
 
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (15) (NPOB new)   
 spec TempParthoodNPOB_Cons=
      TempParthoodSOB_Cons
      and 
@@ -356,13 +399,21 @@ spec TempParthoodNPOB_Cons=
       }
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
      
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (16) (M new)   
 spec TempParthoodM_Cons=
      TempParthoodPOB_Cons
      then %cons
      {Temporary_Parthood with s |-> M}
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (17) (NPED new)   
 spec TempParthoodNPED_Cons=
      TempParthoodNPOB_Cons
      then %cons
@@ -373,7 +424,12 @@ spec TempParthoodNPED_Cons=
       }
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (18) (PED new)   
 spec TempParthoodPED_Cons=
      TempParthoodM_Cons
      then %cons
@@ -384,7 +440,12 @@ spec TempParthoodPED_Cons=
       }
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (19) (ED new)   
 spec TempParthoodED_Cons=
      TempParthoodPED_Cons
      and 
@@ -398,21 +459,33 @@ spec TempParthoodED_Cons=
       }
      } 
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (20) (AQ new)   
 spec DependenceAQNPED_Cons=
      TempParthoodED_Cons
      then %cons
      Mutual_Specific_Dependence with s1 |-> AQ, 
 				s2 |-> NPED
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (21) (PD new)   
 spec ClassExtParthoodPD_Cons=
      TempParthoodED_Cons
      then %cons
      {Classical_Extensional_Parthood with s |-> PD}
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (22) (AR new)   
 spec ClassExtParthoodAR_Cons=
      DependenceAQNPED_Cons
      then %cons
@@ -420,20 +493,34 @@ spec ClassExtParthoodAR_Cons=
 then
      . exists x:AR. x in AR
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 spec Particip_Cons=
      ClassExtParthoodPD_Cons
      then %cons
      Participation
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (23) (PQ new)   
 spec DependencePQPED_Cons=
      TempParthoodED_Cons
      then %cons
      Mutual_Specific_Dependence with s1 |-> PQ, 
 				s2 |-> PED 
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 spec DependenceTQPD_Cons=
      Particip_Cons
      and
@@ -442,7 +529,11 @@ spec DependenceTQPD_Cons=
      Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (24,25) (Q new, EDorPDorQ new)   
 spec BeingPresentEDorDP_Cons=
      DependenceTQPD_Cons
      and
@@ -451,23 +542,31 @@ spec BeingPresentEDorDP_Cons=
      DependenceAQNPED_Cons
      then %cons
      {
-      Being_Present with s |-> EDorDPorQ
+      Being_Present with s |-> EDorPDorQ
       and
       {
        free type Q ::= sort TQ | sort PQ | sort AQ;
-       free type EDorPDorQ ::= sort Q | sort PD | sort
-       ED
+       free type EDorPDorQ ::= sort Q | sort PD | sort ED
       }
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (26,27) (SL new, S new)   
 spec BinTempDisS_Cons=
      DependencePQPED_Cons
      then %cons
      Binary_Temporal_Dissective with s1 |-> S, 
 				s2 |-> SL
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (28) (PR new)   
 %% Model with PR 1 Element, PQ 1 Element exists
 spec BinTempDisPR_Cons=
      Binary_Temporal_Dissective with s1 |-> PR, 
@@ -477,13 +576,23 @@ spec BinTempDisPR_Cons=
       esort S < PR
      }
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 spec ClassExtParthoodS_Cons=
       BinTempDisS_Cons
       then %cons
       Classical_Extensional_Parthood with s |-> S
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 spec BinTempDisAR_Cons=
      DependenceAQNPED_Cons
      and
@@ -492,7 +601,12 @@ spec BinTempDisAR_Cons=
      Binary_Temporal_Dissective with s1 |-> AR, 
 				s2 |-> AQ
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 spec ConstitutionPD_Cons=
      TempParthoodPED_Cons
      and 
@@ -502,7 +616,12 @@ spec ConstitutionPD_Cons=
      then %cons
      Constitution_Spec with s |-> PD
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec ConstitutionPED_Cons=
      TempParthoodPED_Cons
      and 
@@ -515,7 +634,11 @@ spec ConstitutionPED_Cons=
       and  Constantly_Generically_Constituted with 
       s |-> PED, s1 |-> APO, s2 |-> NAPO}
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 spec ConstitutionNPED_Cons=
      TempParthoodPED_Cons
      and 
@@ -526,7 +649,11 @@ spec ConstitutionNPED_Cons=
      Constantly_Generically_Constituted with 
      s |-> NPED, s1 |-> SC, s2 |-> SAG
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec Constitution_Cons=
      ConstitutionPD_Cons
      and
@@ -534,7 +661,11 @@ spec Constitution_Cons=
      and
      ConstitutionNPED_Cons
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec TempQualePR_Cons=
      BeingPresentEDorDP_Cons
      and
@@ -543,7 +674,12 @@ spec TempQualePR_Cons=
      Temporary_Quale_Spec with s1 |-> PR, 
 				s2 |-> PQ
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 spec TempQualeAR_Cons=
      BeingPresentEDorDP_Cons
      and
@@ -552,7 +688,12 @@ spec TempQualeAR_Cons=
      Temporary_Quale_Spec with s1 |-> AR, 
 				s2 |-> AQ
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec TempQualeS_Cons=
      BeingPresentEDorDP_Cons
      and
@@ -560,7 +701,12 @@ spec TempQualeS_Cons=
      then %cons 
      Temporary_Quale_Spec with s1 |-> S, s2 |-> SL
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec TempQuale_Cons=
      TempQualePR_Cons
      and
@@ -568,7 +714,12 @@ spec TempQuale_Cons=
      and
      TempQualeS_Cons
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec DirectQuality_Cons=
      BeingPresentEDorDP_Cons
      and
@@ -576,7 +727,12 @@ spec DirectQuality_Cons=
      then %cons
      Direct_Quality
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 spec PreDolce_Cons=
      BeingPresentEDorDP_Cons
      and 
@@ -586,11 +742,19 @@ spec PreDolce_Cons=
      and 
      TempQuale_Cons
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (29-38) (PT, AB, R -- STV, ST, PRO -- EV, ACH, ACC)   
 spec Dolce_Cons=
      PreDolce_Cons
      then %cons
      Taxonomy
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
 
 ]%
