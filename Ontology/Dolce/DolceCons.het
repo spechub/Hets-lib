@@ -19,11 +19,18 @@ from Ontology/Dolce/DolceSimpl_Esort get
          Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
 
 
+
+%%-----------------------
+%% Temporary_Parthood No Temporal Sums and Diffs and Universal Presence (tpnop)
+%%-----------------------
+
 spec Temporary_Parthood_No_PRE =
   Temporary_Parthood_No
 then
   forall t:T . exists x : s . PRE(x, t) 
 end
+%%--------------------------------------------
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1) (T new)
 %%One Point Model Found
@@ -313,7 +320,9 @@ then %cons
     {OnePointTempParthoodNoModel with sort s |-> MOB 
 and 
 	{esort MOB
-	pred SD (x:MOB;y:APO) <=> true}
+	pred PRE: MOB*T
+	pred SD (x:MOB; y:APO) <=> (exists t:T.(PRE(x,t))) /\ 
+                   (forall t:T.(PRE(x,t) => PRE(y,t)))}
 	}  
    	  
 %% need to define predicate SD
@@ -363,7 +372,7 @@ view v_TempParthoodSOB_Cons_Model :
 %%
 %% view not established
 
-%[	
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) (POB new)   
 spec TempParthoodPOB_Cons=
@@ -400,7 +409,7 @@ view v_TempParthoodPOB_Cons_Model :
 %%
 
 
-
+%[	
 
 
 
