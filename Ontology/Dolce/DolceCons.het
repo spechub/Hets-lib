@@ -469,7 +469,7 @@ view v_TempParthoodM_Cons_Model :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (17) (NPED new)   
-spec TempParthoodNPED_Cons=
+	spec TempParthoodNPED_Cons=
      TempParthoodNPOB_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> NPED
@@ -507,7 +507,7 @@ view v_TempParthoodNPED_Cons_Model :
 spec TempParthoodPED_Cons=
      TempParthoodM_Cons
      then %cons
-     {Temporary_Parthood_No_PRE with s |-> PED
+     {Temporary_Parthood with s |-> PED
       and
       {
        free type PED ::= sort POB | sort M | sort F
@@ -559,7 +559,9 @@ spec TempParthoodED_Cons_Model=
 	   free type ED ::= sort PED | sort NPED | sort AS 
 	   pred PRE: ED*T
        pred tPP: ED*ED*T	
-	   pred tOv: ED*ED*T
+%	   pred tOv: ED*ED*T
+	   pred tOv (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tOv(x,y,t) ) \/ ( x in M /\ y in M /\ tOv(x,y,t) ) \/ ( x in F /\ y in F /\ tOv(x,y,t) ) 
+
 	   pred  tP: ED*ED*T
 %% Temporary Binary Sum: DEF
 	   pred tSum(z:ED; x:ED; y:ED) <=> forall w:ED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
@@ -600,6 +602,41 @@ spec ClassExtParthoodPD_Cons=
      then %cons
      {Classical_Extensional_Parthood with s |-> PD}
 end
+
+
+%%%%%%%%%%%%%%
+spec Classical_Extensional_Parthood_1_model =
+  free type s ::= a
+ pred P:s*s
+ . P(a,a)
+  preds
+  %% Proper Part
+  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
+
+  %% Overlap
+  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
+
+  %% Atom
+  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+
+  %%  Atomic Part
+  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+
+  %%  Binary Sum
+  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+
+  %%  Binary Difference
+  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+end
+%%%%%%%%%%%%%%%%
+
+spec sp = {}
+view consistent_cpm1 : sp to Classical_Extensional_Parthood_1_model
+
+view cpm1: Classical_Extensional_Parthood to
+           Classical_Extensional_Parthood_1_model
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%

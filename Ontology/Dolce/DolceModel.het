@@ -15,331 +15,46 @@ from Ontology/Dolce/DolceSimpl_Esort get Taxonomy, Partial_Order, Ext_Partial_Or
          OneSide_Specific_Dependence, Generic_Dependence,
          Mutual_Generic_Dependence, OneSide_Generic_Dependence, Dependence,
          Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
-         Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
-
-spec Classical_Extensional_Parthood_1_model =
-  free type s ::= a
- pred P:s*s
- . P(a,a)
-  preds
-  %% Proper Part
-  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
-
-  %% Overlap
-  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
-
-  %% Atom
-  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
-
-  %%  Atomic Part
-  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
-
-  %%  Binary Sum
-  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-
-  %%  Binary Difference
-  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
-end
 
 
-spec Classical_Extensional_Parthood_4_model =
-  free type s ::= a | b | c | d | ab | ac | ad | bc | bd | cd |
-                  abc | abd | acd | bcd | abcd
- pred P:s*s
- . P(d,d)
- . not P(d,c)
- . P(d,cd)
- . not P(d,b)
- . P(d,bd)
- . not P(d,bc)
- . P(d,bcd)
- . not P(d,a)
- . P(d,ad)
- . not P(d,ac)
- . P(d,acd)
- . not P(d,ab)
- . P(d,abd)
- . not P(d,abc)
- . P(d,abcd)
- . not P(c,d)
- . P(c,c)
- . P(c,cd)
- . not P(c,b)
- . not P(c,bd)
- . P(c,bc)
- . P(c,bcd)
- . not P(c,a)
- . not P(c,ad)
- . P(c,ac)
- . P(c,acd)
- . not P(c,ab)
- . not P(c,abd)
- . P(c,abc)
- . P(c,abcd)
- . not P(cd,d)
- . not P(cd,c)
- . P(cd,cd)
- . not P(cd,b)
- . not P(cd,bd)
- . not P(cd,bc)
- . P(cd,bcd)
- . not P(cd,a)
- . not P(cd,ad)
- . not P(cd,ac)
- . P(cd,acd)
- . not P(cd,ab)
- . not P(cd,abd)
- . not P(cd,abc)
- . P(cd,abcd)
- . not P(b,d)
- . not P(b,c)
- . not P(b,cd)
- . P(b,b)
- . P(b,bd)
- . P(b,bc)
- . P(b,bcd)
- . not P(b,a)
- . not P(b,ad)
- . not P(b,ac)
- . not P(b,acd)
- . P(b,ab)
- . P(b,abd)
- . P(b,abc)
- . P(b,abcd)
- . not P(bd,d)
- . not P(bd,c)
- . not P(bd,cd)
- . not P(bd,b)
- . P(bd,bd)
- . not P(bd,bc)
- . P(bd,bcd)
- . not P(bd,a)
- . not P(bd,ad)
- . not P(bd,ac)
- . not P(bd,acd)
- . not P(bd,ab)
- . P(bd,abd)
- . not P(bd,abc)
- . P(bd,abcd)
- . not P(bc,d)
- . not P(bc,c)
- . not P(bc,cd)
- . not P(bc,b)
- . not P(bc,bd)
- . P(bc,bc)
- . P(bc,bcd)
- . not P(bc,a)
- . not P(bc,ad)
- . not P(bc,ac)
- . not P(bc,acd)
- . not P(bc,ab)
- . not P(bc,abd)
- . P(bc,abc)
- . P(bc,abcd)
- . not P(bcd,d)
- . not P(bcd,c)
- . not P(bcd,cd)
- . not P(bcd,b)
- . not P(bcd,bd)
- . not P(bcd,bc)
- . P(bcd,bcd)
- . not P(bcd,a)
- . not P(bcd,ad)
- . not P(bcd,ac)
- . not P(bcd,acd)
- . not P(bcd,ab)
- . not P(bcd,abd)
- . not P(bcd,abc)
- . P(bcd,abcd)
- . not P(a,d)
- . not P(a,c)
- . not P(a,cd)
- . not P(a,b)
- . not P(a,bd)
- . not P(a,bc)
- . not P(a,bcd)
- . P(a,a)
- . P(a,ad)
- . P(a,ac)
- . P(a,acd)
- . P(a,ab)
- . P(a,abd)
- . P(a,abc)
- . P(a,abcd)
- . not P(ad,d)
- . not P(ad,c)
- . not P(ad,cd)
- . not P(ad,b)
- . not P(ad,bd)
- . not P(ad,bc)
- . not P(ad,bcd)
- . not P(ad,a)
- . P(ad,ad)
- . not P(ad,ac)
- . P(ad,acd)
- . not P(ad,ab)
- . P(ad,abd)
- . not P(ad,abc)
- . P(ad,abcd)
- . not P(ac,d)
- . not P(ac,c)
- . not P(ac,cd)
- . not P(ac,b)
- . not P(ac,bd)
- . not P(ac,bc)
- . not P(ac,bcd)
- . not P(ac,a)
- . not P(ac,ad)
- . P(ac,ac)
- . P(ac,acd)
- . not P(ac,ab)
- . not P(ac,abd)
- . P(ac,abc)
- . P(ac,abcd)
- . not P(acd,d)
- . not P(acd,c)
- . not P(acd,cd)
- . not P(acd,b)
- . not P(acd,bd)
- . not P(acd,bc)
- . not P(acd,bcd)
- . not P(acd,a)
- . not P(acd,ad)
- . not P(acd,ac)
- . P(acd,acd)
- . not P(acd,ab)
- . not P(acd,abd)
- . not P(acd,abc)
- . P(acd,abcd)
- . not P(ab,d)
- . not P(ab,c)
- . not P(ab,cd)
- . not P(ab,b)
- . not P(ab,bd)
- . not P(ab,bc)
- . not P(ab,bcd)
- . not P(ab,a)
- . not P(ab,ad)
- . not P(ab,ac)
- . not P(ab,acd)
- . P(ab,ab)
- . P(ab,abd)
- . P(ab,abc)
- . P(ab,abcd)
- . not P(abd,d)
- . not P(abd,c)
- . not P(abd,cd)
- . not P(abd,b)
- . not P(abd,bd)
- . not P(abd,bc)
- . not P(abd,bcd)
- . not P(abd,a)
- . not P(abd,ad)
- . not P(abd,ac)
- . not P(abd,acd)
- . not P(abd,ab)
- . P(abd,abd)
- . not P(abd,abc)
- . P(abd,abcd)
- . not P(abc,d)
- . not P(abc,c)
- . not P(abc,cd)
- . not P(abc,b)
- . not P(abc,bd)
- . not P(abc,bc)
- . not P(abc,bcd)
- . not P(abc,a)
- . not P(abc,ad)
- . not P(abc,ac)
- . not P(abc,acd)
- . not P(abc,ab)
- . not P(abc,abd)
- . P(abc,abc)
- . P(abc,abcd)
- . not P(abcd,d)
- . not P(abcd,c)
- . not P(abcd,cd)
- . not P(abcd,b)
- . not P(abcd,bd)
- . not P(abcd,bc)
- . not P(abcd,bcd)
- . not P(abcd,a)
- . not P(abcd,ad)
- . not P(abcd,ac)
- . not P(abcd,acd)
- . not P(abcd,ab)
- . not P(abcd,abd)
- . not P(abcd,abc)
- . P(abcd,abcd)
-  preds
-  %% Proper Part
-  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
 
-  %% Overlap
-  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
-
-  %% Atom
-  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
-
-  %%  Atomic Part
-  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
-
-  %%  Binary Sum
-  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-
-  %%  Binary Difference
-  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
-end
-
-spec sp = {}
-
-view consistent_cpm1 : sp to Classical_Extensional_Parthood_1_model
-view consistent_cpm4 : sp to Classical_Extensional_Parthood_4_model
-
-
-view cpm1: Classical_Extensional_Parthood to
-           Classical_Extensional_Parthood_1_model
-
-view cpm4: Classical_Extensional_Parthood to
-           Classical_Extensional_Parthood_4_model
-
-spec Mereology_Model =
-  Classical_Extensional_Parthood_1_model with s |-> T
-and  Classical_Extensional_Parthood_4_model with s |-> PD
-and  Classical_Extensional_Parthood_1_model with s |-> S
-and  Classical_Extensional_Parthood_1_model with s |-> AR
-end
-
-view m : Mereology to Mereology_Model
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 arch spec PreDolce_Model =
-     units
-	  TM                 : Time_Mereology;
-          ImmediateQuale     : Immediate_Quale given TM;
-	  TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
-          TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
-          TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and
-                               OneSide_Generic_Dependence 
-				with s1 |-> NASO, s2 |-> SC} given
-                               TempParthoodSC;
-          TempParthoodAPO    : {Temporary_Parthood with s |-> APO and
-                               OneSide_Generic_Dependence with s1 |-> SAG, 
-				s2 |-> APO} given TempParthoodSAG;
-          TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
-          TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
+     
+units 
+
+	TM                 : Time_Mereology;
+    ImmediateQuale     : Immediate_Quale given TM;
+	
+	TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
+    
+	TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
+    
+	TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} 
+							given  TempParthoodSC;
+							
+	TempParthoodAPO    : {Temporary_Parthood with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
+							s2 |-> APO} given TempParthoodSAG;
+    
+	TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
+      
+	TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
-				s2 |-> NAPO} given TempParthoodF;
-          TempParthoodASO    : {Temporary_Parthood with s |-> ASO
+							s2 |-> NAPO} given TempParthoodF;
+      	
+	TempParthoodASO    : {Temporary_Parthood with s |-> ASO
 				and 
 				{
 				 free type ASO ::= sort SC | sort SAG
 				}
                                } 
                                 given TempParthoodSC, TempParthoodSAG;
-          TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
+          
+	  TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
                                OneSide_Specific_Dependence with s1 |-> MOB, 
-				s2 |-> APO} given
-                               TempParthoodAPO;
+				s2 |-> APO} 
+				given TempParthoodAPO;
+				
 	  TempParthoodSOB    : {Temporary_Parthood with s |-> SOB 
 				and
 				{
@@ -440,10 +155,8 @@ arch spec PreDolce_Model =
                                 given BeingPresentEDorDP, BinTempDisS;
           TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
           %% Direct Quality
-          DirectQuality      : Direct_Quality given BeingPresentEDorDP, 
-			        BinTempDisS;
-     result BeingPresentEDorDP and Constitution and DirectQuality and 
-						    TempQuale             
+          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS;
+     result BeingPresentEDorDP and Constitution and DirectQuality and TempQuale             
 end
 
 arch spec Dolce_Model =
