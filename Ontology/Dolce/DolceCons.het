@@ -472,7 +472,7 @@ view v_TempParthoodM_Cons_Model :
 	spec TempParthoodNPED_Cons=
      TempParthoodNPOB_Cons
      then %cons
-     {Temporary_Parthood_No_PRE with s |-> NPED
+     {Temporary_Parthood with s |-> NPED
       and
       {
        esort NPOB < NPED
@@ -488,11 +488,14 @@ spec TempParthoodNPED_Cons_Model=
 	pred tOv (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tOv(x,y,t) )  
    	pred tP (x,y:NPED;t:T)  <=> ( x in NPOB /\ y in NPOB /\ tP(x,y,t) )  
    	pred tPP (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tPP(x,y,t) ) 
+ %% Temporary Binary Sum: DEF
+	pred tSum(z:NPED; x:NPED; y:NPED) <=> forall w:NPED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
+ %% Temporary Binary Difference: DEF
+	pred tDif(z:NPED; x:NPED; y:NPED) <=> forall w:NPED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))}
 %%	pred PRE : NPED * T
 %%	pred tOv : NPED * NPED * T
 %%	pred tP : NPED * NPED * T
-%%	pred tPP : NPED * NPED * T
-     }
+%%	pred tPP : NPED * NPED * T     }
 end
 
 
@@ -500,14 +503,14 @@ view v_TempParthoodNPED_Cons_Model :
      TempParthoodNPED_Cons to TempParthoodNPED_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works; 
+%% view works (for No_PRE); 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (18) (PED new)   
 spec TempParthoodPED_Cons=
      TempParthoodM_Cons
      then %cons
-     {Temporary_Parthood with s |-> PED
+     {Temporary_Parthood_No_PRE with s |-> PED
       and
       {
        free type PED ::= sort POB | sort M | sort F
