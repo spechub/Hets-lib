@@ -21,14 +21,16 @@ from Ontology/Dolce/DolceSimpl_Esort get
 
 
 %%-----------------------
-%% Temporary_Parthood with: No Temporal Sums and Diffs; Universal temporal Presence and Parthood; (tpnop)
+%% Temporary_Parthood with: No Temporal Sums and Diffs; and Universal temporal Presence; and instantiated sort; (tpnop)
 %%-----------------------
 
 spec Temporary_Parthood_No_PRE =
   Temporary_Parthood_No
 then
-  	  forall t:T . exists x : s . PRE(x, t) %% /\ tP(x,x,t)
+	  . exists  x: s . true;
+  	  . forall t:T . forall x : s . PRE(x, t); 
 %%    forall x : s . forall t:T . PRE(x, t) 
+%%  	  forall t:T . exists x : s . PRE(x, t)
 end
 %%--------------------------------------------
 
@@ -73,8 +75,6 @@ spec ImmediateQuale_Cons_Model =
      pred ql(x:T;y:TL) <=> x=y
      free type TR ::= tr
      free type TQ ::= sort TR
-%%     free type TQ ::= tq   %% ??? does it matter 
-%%     free type TR ::= sort TQ
      pred ql(x:TR;y:TQ) <=> x=y
 end 
 
@@ -319,22 +319,23 @@ spec TempParthoodMOB_Cons_Model =
 	 TempParthoodAPO_Cons
 then %cons
     {OnePointTempParthoodNoModel with sort s |-> MOB 
-and 
-	{esort MOB
-	pred PRE: MOB*T
-	pred SD (x:MOB; y:APO) <=> (exists t:T.(PRE(x,t))) /\ forall t:T.(PRE(x,t) => PRE(y,t)) }
+	and
+	{esort MOB %%free type MOB ::= MonsterMob 
+	pred PRE: MOB*T;
+	pred SD (x:MOB; y:APO) <=> (exists t:T.(PRE(x,t))) /\ (forall t:T.(PRE(x,t) => PRE(y,t)));
+	} 
 	}  
-   	  
-%% need to define predicate SD to imply def + existence of an SD instance for every MOB
+%%  
+%% need to define predicate SD to imply def + existence of an SD instance for every MOB: forall x:MOB .exists y:APO.SD(x,y); 
+%% as definition for SD, "true" works as well
 end
 
 
 view v_TempParthoodMOB_Cons_Model : 
      TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% view ??? not yet
+%% view works; 
 %%  OneSide_Specific_Dependence has 'experimental' changes in it.
-
 
 
 
@@ -479,12 +480,13 @@ view v_TempParthoodM_Cons_Model :
       }
      }
 end
+%% need full temporary parthood on NPED
 
 spec TempParthoodNPED_Cons_Model=
      TempParthoodNPOB_Cons
      then %cons
      {esort NPOB < NPED
-	pred PRE (x:NPED;t:T)   <=> ( x in NPOB /\ PRE(x,t) )
+	pred PRE (x:NPED;t:T)   <=> ( x in NPOB /\ PRE(x,t) ) \/ not x in NPOB 
 	pred tOv (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tOv(x,y,t) )  
    	pred tP (x,y:NPED;t:T)  <=> ( x in NPOB /\ y in NPOB /\ tP(x,y,t) )  
    	pred tPP (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tPP(x,y,t) ) 
@@ -502,21 +504,23 @@ end
 view v_TempParthoodNPED_Cons_Model : 
      TempParthoodNPED_Cons to TempParthoodNPED_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% view works (for No_PRE); 
+%% buggy
+%% view:
 
+%[	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (18) (PED new)   
 spec TempParthoodPED_Cons=
      TempParthoodM_Cons
      then %cons
-     {Temporary_Parthood_No_PRE with s |-> PED
+     {Temporary_Parthood with s |-> PED
       and
       {
        free type PED ::= sort POB | sort M | sort F
       }
      }
 end
+%% need full temporary parthood on PED
 
 spec TempParthoodPED_Cons_Model=
      TempParthoodM_Cons
@@ -525,17 +529,21 @@ spec TempParthoodPED_Cons_Model=
 		pred PRE: PED*T
    		pred tOv (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tOv(x,y,t) ) \/ ( x in M /\ y in M /\ tOv(x,y,t) ) \/ ( x in F /\ y in F /\ tOv(x,y,t) ) 
    		pred tP (x,y:PED;t:T)  <=> ( x in POB /\ y in POB /\ tP(x,y,t) )  \/ ( x in M /\ y in M /\ tP(x,y,t) )  \/ ( x in F /\ y in F /\ tP(x,y,t) )
-   		pred tPP (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tPP(x,y,t) ) \/ ( x in M /\ y in M /\ tPP(x,y,t) ) \/ ( x in F /\ y in F /\ tPP(x,y,t) )
+   		pred tPP (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tPP(x,y,t) ) \/ ( x in M /\ y in M /\ tPP(x,y,t) ) \/ ( x in F /\ y in F /\ tPP(x,y,t) )			
+ 		%% Temporary Binary Sum: DEF
+		pred tSum(z:PED; x:PED; y:PED) <=> forall w:PED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
+ 		%% Temporary Binary Difference: DEF
+		pred tDif(z:PED; x:PED; y:PED) <=> forall w:PED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))
 end
 
 view v_TempParthoodPED_Cons_Model : 
      TempParthoodPED_Cons to TempParthoodPED_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works (no sums or diffs on PED)
+%% view 
 
 
-%[	
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (19) (ED new) (AS new)   
 spec TempParthoodED_Cons=
@@ -562,7 +570,7 @@ spec TempParthoodED_Cons_Model=
 	   free type ED ::= sort PED | sort NPED | sort AS 
 	   pred PRE: ED*T
        pred tPP: ED*ED*T	
-%	   pred tOv: ED*ED*T
+%%	   pred tOv: ED*ED*T
 	   pred tOv (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tOv(x,y,t) ) \/ ( x in M /\ y in M /\ tOv(x,y,t) ) \/ ( x in F /\ y in F /\ tOv(x,y,t) ) 
 
 	   pred  tP: ED*ED*T
