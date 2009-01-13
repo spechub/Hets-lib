@@ -4,12 +4,12 @@ version 0.2
 %date: 08-02-05
 
 
-%{ This library provides basic specifications for branching time 
-   temporal reasoning, namely 
-   
+%{ This library provides basic specifications for branching time
+   temporal reasoning, namely
+
    - treelike structures
 
-   Some of the concepts introduced here can also be found in 
+   Some of the concepts introduced here can also be found in
    Basic/RelationsAndOrdrs.casl
 }%
 
@@ -22,17 +22,17 @@ version 0.2
 
 
 from Calculi/Time/FlowOfTime get FlowOfTime, Ext_FlowOfTime,
-	Rich_FlowOfTime, DnsFlowOfTime, 
+	Rich_FlowOfTime, DnsFlowOfTime,
 	FlowOfTimeSMax, FlowOfTimeSMin,
 	FlowOfTimeSEnd, DnsFlowOfTimeSEnd
 from Calculi/Time/LinearFlowOfTime get LinFlowOfTime
 
 
-spec Tree = 
+spec Tree =
      FlowOfTime with sort Instant |-> Node
 then
      forall x,y,z: Node
-     . x pre z /\ y pre z => x pre y \/ x = y \/ y pre x 
+     . x pre z /\ y pre z => x pre y \/ x = y \/ y pre x
 							%(left_linear)%
 end
 
@@ -47,39 +47,39 @@ then %implies
      forall x,z: Node
      . (exists y: Node . x pre y /\ y pre z) =>
 		  x pre z				%(PA_comp_prepre_elim)%
-     . (exists y: Node . x pre y /\ y suc z) => 
+     . (exists y: Node . x pre y /\ y suc z) =>
 	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc_elim)%
-     . (exists y: Node . x pre y /\ y uncmp z) => 
+     . (exists y: Node . x pre y /\ y uncmp z) =>
 		  (x pre z \/ x uncmp z)		%(PA_comp_preuncmp_elim)%
-     . (exists y: Node . x pre y /\ y = z) => 
+     . (exists y: Node . x pre y /\ y = z) =>
 		  x pre z				%(PA_comp_preeq_elim)%
      . (exists y: Node . x suc y /\ y pre z) =>
-	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)
 							%(PA_comp_sucpre_elim)%
-     . (exists y: Node . x suc y /\ y suc z) => 
+     . (exists y: Node . x suc y /\ y suc z) =>
 		  x suc z				%(PA_comp_sucsuc_elim)%
-     . (exists y: Node . x suc y /\ y uncmp z) => 
+     . (exists y: Node . x suc y /\ y uncmp z) =>
 		  x uncmp z				%(PA_comp_sucuncmp_elim)%
-     . (exists y: Node . x suc y /\ y = z) => 
+     . (exists y: Node . x suc y /\ y = z) =>
 		  x suc z				%(PA_comp_suceq_elim)%
      . (exists y: Node . x uncmp y /\ y pre z) =>
 	  	  x uncmp z				%(PA_comp_uncmppre_elim)%
      . (exists y: Node . x uncmp y /\ y suc z) =>
 	  	  (x suc z \/ x uncmp z)		%(PA_comp_uncmpsuc_elim)%
      . (exists y: Node . x uncmp y /\ y uncmp z) =>
-	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)
 							%(PA_comp_uncmpuncmp_elim)%
      . (exists y: Node . x uncmp y /\ y = z) =>
 	  	  x uncmp z				%(PA_comp_uncmpeq_elim)%
 
-     . (exists y: Node . x = y /\ y pre z) => 
+     . (exists y: Node . x = y /\ y pre z) =>
 		  x pre z				%(PA_comp_eqpre_elim)%
-     . (exists y: Node . x = y /\ y suc z) => 
+     . (exists y: Node . x = y /\ y suc z) =>
 		  x suc z				%(PA_comp_eqsuc_elim)%
-     . (exists y: Node . x = y /\ y uncmp z) => 
+     . (exists y: Node . x = y /\ y uncmp z) =>
 		  x uncmp z				%(PA_comp_equncmp_elim)%
-     . (exists y: Node . x = y /\ y = z) => 
-		  x = z					%(PA_comp_eqeq_elim)% 
+     . (exists y: Node . x = y /\ y = z) =>
+		  x = z					%(PA_comp_eqeq_elim)%
 end
 
 spec Rich_Tree = Ext_Tree[Tree]
@@ -87,7 +87,7 @@ spec Rich_Tree = Ext_Tree[Tree]
 
 spec ConnectedTree =
      Rich_Tree
-then 
+then
      forall x,y: Node
      . exists z: Node . z preE x /\ z preE y 	       %(connected)%
 
@@ -98,26 +98,27 @@ then %implies
 end
 
 view Linear_implies_Connected:
-	ConnectedTree to { LinFlowOfTime with sort Instant |-> Node }
+	ConnectedTree to
+             { Ext_FlowOfTime[LinFlowOfTime] with sort Instant |-> Node }
 end
 
 
-spec DnsTree = 
+spec DnsTree =
      Rich_Tree and { DnsFlowOfTime with sort Instant |-> Node }
 end
 
 
-spec TreeSMax = 
+spec TreeSMax =
      Tree and { FlowOfTimeSMax with sort Instant |-> Node }
 end
 
 
-spec TreeSMin = 
+spec TreeSMin =
      Tree and { FlowOfTimeSMin  with sort Instant |-> Node }
 end
 
 
-spec TreeSEnd = 
+spec TreeSEnd =
      Tree and { FlowOfTimeSEnd with sort Instant |-> Node }
 then %implies
      { TreeSMax and TreeSMin }
@@ -125,35 +126,35 @@ end
 
 spec RootedTree =
      Rich_Tree
-then 
+then
      . exists x:Node . forall y:Node . x preE y
 end
 
 
 spec Ext_RootedTree [RootedTree] =
-     Ext_Tree [Tree]	
+     Ext_Tree [Tree]
 then %def
      op root:Node
-     
+
      forall x:Node
-     . root preE x 
+     . root preE x
 
 then %implies
-     ConnectedTree	
+     ConnectedTree
 end
 
 
-spec Rich_RootedTree = Ext_RootedTree [RootedTree] 
+spec Rich_RootedTree = Ext_RootedTree [RootedTree]
 
 
 spec BranchingDnsTree =
      Rich_Tree
-then 
+then
      forall x,y:Node
-     . x pre y => (exists z:Node . x pre z /\ y uncmp z) 
+     . x pre y => (exists z:Node . x pre z /\ y uncmp z)
 							%(branching_dense)%
-then %implies	
-     forall x,y:Node			      
+then %implies
+     forall x,y:Node
      . x suc y => (exists z:Node . x uncmp z /\ z suc y)
 							%(help_3)%
 end
@@ -162,24 +163,24 @@ end
 
 spec StrongBranchingDnsTree =
      Rich_Tree
-then 
+then
      forall x,y,z:Node
-     . x pre y /\ x pre z => 
-               (exists u:Node . (x pre u /\ y uncmp u /\ z uncmp u)) 
+     . x pre y /\ x pre z =>
+               (exists u:Node . (x pre u /\ y uncmp u /\ z uncmp u))
 						     %(strong_branching_dense)%
-then %implies	
+then %implies
      BranchingDnsTree
 and
-     forall x,y:Node	
-     . x uncmp y => (exists z:Node . x uncmp z /\ z uncmp y)	
+     forall x,y:Node
+     . x uncmp y => (exists z:Node . x uncmp z /\ z uncmp y)
 							%(help_9)%
 end
 
 
-spec DnsTreeSEnd = 
+spec DnsTreeSEnd =
      { DnsTree and TreeSEnd }
 then %implies
-     forall x,y:Node			      
+     forall x,y:Node
     . x uncmp y => (exists z:Node. x uncmp z /\ z suc y)
 							%(help_4)%
 end
@@ -190,11 +191,11 @@ view DnsTreeSEnd_as_DnsFlowOfTimeSEnd:
 end
 
 
-spec BranchingDnsTreeSEnd = 
-     BranchingDnsTree and TreeSEnd 
+spec BranchingDnsTreeSEnd =
+     BranchingDnsTree and TreeSEnd
 
 then %implies
-     forall x,y:Node			      
+     forall x,y:Node
      . x pre y => (exists z:Node . x uncmp z /\ z uncmp y)
 							%(help_5)%
      . x suc y => (exists z:Node . x uncmp z /\ z uncmp y)
@@ -213,7 +214,7 @@ spec ConnectedBranchingDnsTree =
 spec ConnectedStrongBranchingDnsTree =
      StrongBranchingDnsTree and ConnectedTree
 then %implies
-     ConnectedBranchingDnsTree 	
+     ConnectedBranchingDnsTree
 end
 
 spec DnsBranchingDnsTreeSEnd =
@@ -245,76 +246,76 @@ spec CompositionCompleteTree =
 
 then %implies
      forall x,z: Node
-     .  x pre z => 
+     .  x pre z =>
 		(exists y: Node . x pre y /\ y pre z) 	%(PA_comp_prepre_intro)%
      . (x pre z \/ x = z \/ x suc z) =>
 		(exists y: Node . x pre y /\ y suc z) 	%(PA_comp_presuc_intro)%
      . (x pre z \/ x uncmp z) =>
 		(exists y: Node . x pre y /\ y uncmp z) %(PA_comp_preuncmp_intro)%
-     . x pre z => 
+     . x pre z =>
 		(exists y: Node . x pre y /\ y = z)     %(PA_comp_preeq_intro)%
      . (x pre z \/ x = z \/ x suc z \/ x uncmp z) =>
 		(exists y: Node . x suc y /\ y pre z) 	%(PA_comp_sucpre_intro)%
-     . x suc z => 
+     . x suc z =>
 		(exists y: Node . x suc y /\ y suc z) 	%(PA_comp_sucsuc_intro)%
-     . x uncmp z => 
+     . x uncmp z =>
 		(exists y: Node . x suc y /\ y uncmp z) %(PA_comp_sucuncmp_intro)%
-     . x suc z => 
+     . x suc z =>
 		(exists y: Node . x suc y /\ y = z) 	%(PA_comp_suceq_intro)%
-     . x uncmp z => 
+     . x uncmp z =>
 		(exists y: Node . x uncmp y /\ y pre z) %(PA_comp_uncmppre_intro)%
      . (x suc z \/ x uncmp z) =>
 		(exists y: Node . x uncmp y /\ y suc z) %(PA_comp_uncmpsuc_intro)%
-     . (x pre z \/ x = z \/ x suc z \/ x uncmp z) => 
-		(exists y: Node . x uncmp y /\ y uncmp z) 
+     . (x pre z \/ x = z \/ x suc z \/ x uncmp z) =>
+		(exists y: Node . x uncmp y /\ y uncmp z)
 							%(PA_comp_uncmpuncmp_intro)%
      . x uncmp z =>
 		(exists y: Node . x uncmp y /\ y = z) 	%(PA_comp_uncmpeq_intro)%
-     . x pre z => 
+     . x pre z =>
 		(exists y: Node . x = y /\ y pre z) 	%(PA_comp_eqpre_intro)%
-     . x suc z => 
+     . x suc z =>
 		(exists y: Node . x = y /\ y suc z)  	%(PA_comp_eqsuc_intro)%
-     . x uncmp z => 
+     . x uncmp z =>
 		(exists y: Node . x = y /\ y uncmp z) 	%(PA_comp_equncmp_intro)%
-     . x = z => 
-		(exists y: Node . x = y /\ y = z) 	%(PA_comp_eqeq_intro)% 
+     . x = z =>
+		(exists y: Node . x = y /\ y = z) 	%(PA_comp_eqeq_intro)%
 
      forall x,z: Node
      . (exists y: Node . x pre y /\ y pre z) <=>
 		  x pre z				%(PA_comp_prepre)%
-     . (exists y: Node . x pre y /\ y suc z) <=> 
+     . (exists y: Node . x pre y /\ y suc z) <=>
 	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc)%
-     . (exists y: Node . x pre y /\ y uncmp z) <=> 
+     . (exists y: Node . x pre y /\ y uncmp z) <=>
 		  (x pre z \/ x uncmp z)		%(PA_comp_preuncmp)%
-     . (exists y: Node . x pre y /\ y = z) <=> 
+     . (exists y: Node . x pre y /\ y = z) <=>
 		  x pre z				%(PA_comp_preeq)%
      . (exists y: Node . x suc y /\ y pre z) <=>
-	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)
 							%(PA_comp_sucpre)%
-     . (exists y: Node . x suc y /\ y suc z) <=> 
+     . (exists y: Node . x suc y /\ y suc z) <=>
 		  x suc z				%(PA_comp_sucsuc)%
-     . (exists y: Node . x suc y /\ y uncmp z) <=> 
+     . (exists y: Node . x suc y /\ y uncmp z) <=>
 		  x uncmp z				%(PA_comp_sucuncmp)%
-     . (exists y: Node . x suc y /\ y = z) <=> 
+     . (exists y: Node . x suc y /\ y = z) <=>
 		  x suc z				%(PA_comp_suceq)%
      . (exists y: Node . x uncmp y /\ y pre z) <=>
 	  	  x uncmp z				%(PA_comp_uncmppre)%
      . (exists y: Node . x uncmp y /\ y suc z) <=>
 	  	  (x suc z \/ x uncmp z)		%(PA_comp_uncmpsuc)%
      . (exists y: Node . x uncmp y /\ y uncmp z) <=>
-	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)		
+	  	  (x pre z \/ x = z \/ x suc z \/ x uncmp z)
 							%(PA_comp_uncmpuncmp)%
      . (exists y: Node . x uncmp y /\ y = z) <=>
 	  	  x uncmp z				%(PA_comp_uncmpeq)%
 
-     . (exists y: Node . x = y /\ y pre z) <=> 
+     . (exists y: Node . x = y /\ y pre z) <=>
 		  x pre z				%(PA_comp_eqpre)%
-     . (exists y: Node . x = y /\ y suc z) <=> 
+     . (exists y: Node . x = y /\ y suc z) <=>
 		  x suc z				%(PA_comp_eqsuc)%
-     . (exists y: Node . x = y /\ y uncmp z) <=> 
+     . (exists y: Node . x = y /\ y uncmp z) <=>
 		  x uncmp z				%(PA_comp_equncmp)%
-     . (exists y: Node . x = y /\ y = z) <=> 
-		  x = z					%(PA_comp_eqeq)% 
+     . (exists y: Node . x = y /\ y = z) <=>
+		  x = z					%(PA_comp_eqeq)%
 
 end
 
@@ -322,7 +323,7 @@ end
 
 spec NTTree =
      Tree
-then 
+then
      . exists x,y,z:Node . x pre y /\ x pre z /\ not y pre z /\ not z pre y
 end
 
