@@ -4,31 +4,31 @@ version 0.2
 %date: 22-06-2005
 
 
-%( 
+%(
     This library contains specifications that describe how a relation
-    algebra can be built from a finite set of base relations and a composition 
+    algebra can be built from a finite set of base relations and a composition
     table.
 )%
 
 
 %left_assoc __cup__,__cap__
-%prec {__cup__} < {__cmps__} 
-%prec {__cmps__} < {__cmpl__} 
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__}
 
 
 
-from Calculi/Algebra/BooleanAlgebra get AtomicBooleanAlgebra 
+from Calculi/Algebra/BooleanAlgebra get AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get AtomicRelationAlgebra
-from Calculi/Algebra/RelationAlgebraSymbolic get 
+from Calculi/Algebra/RelationAlgebraSymbolic get
 	CompositionTable,
-	SetRepresentationOfRelations,		
+	SetRepresentationOfRelations,
 	ConstructPseudoRelationAlgebra
 
 
 
 %(
      Following one finds a template of how to specify a sample
-     relation calculus, referred to as ExCalc,	
+     relation calculus, referred to as ExCalc,
      based on its set of base relations, its composition table, and its involution table.
 )%
 
@@ -42,9 +42,9 @@ end
 
 spec ExCalcCompositionTable =
      sort BaseRel
-     ops relation1,relation2: BaseRel    
+     ops relation1,relation2: BaseRel
 and
-     CompositionTable with op id |-> relation1 
+     CompositionTable with op id |-> relation1
 then
      . inv(relation1) = relation1
      . inv(relation2) = relation2
@@ -57,27 +57,28 @@ end
 
 
 
-spec ExCalcBooleanAlgebra = 
-     SetRepresentationOfRelations[ExCalcBaseRelations] 
+spec ExCalcBooleanAlgebra =
+     SetRepresentationOfRelations[ExCalcBaseRelations]
 end
 
 
 view ExCalcBooleanAlgebra_as_AtomicBooleanAlgebra :
-     AtomicBooleanAlgebra to ExCalcBooleanAlgebra
-= 
+     {AtomicBooleanAlgebra hide preds __<__, __<=__, __>__, __>=__}
+     to ExCalcBooleanAlgebra
+=
      Elem |-> Rel, AtomElem |-> BaseRel
 end
 
 
-spec ExCalc = 
+spec ExCalc =
      ConstructPseudoRelationAlgebra[ExCalcBaseRelations]
 	[ExCalcCompositionTable fit op id:BaseRel |-> relation1]
 end
 
 
 view ExCalc_as_AtomicRelationAlgebra :
-     AtomicRelationAlgebra to 
-     ExCalc 
+     {AtomicRelationAlgebra hide preds __<__, __<=__, __>__, __>=__} to
+     ExCalc
 =
      Rel |-> Rel , AtomRel |-> BaseRel
 end
