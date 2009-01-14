@@ -2,33 +2,33 @@ library Calculi/Space/RCC8
 version 0.3
 %% author: S. Wölfl
 %% date: 23-06-2005
-%% 
+%%
 
 %left_assoc __cup__,__cap__
 %prec {__cup__} < {__cmps__}
 
-%( 
-	The RCC8 Calculus (resp. Containment Algebra) 
-  
-Literature: TODO   
+%(
+	The RCC8 Calculus (resp. Containment Algebra)
+
+Literature: TODO
 )%
 
 
-from Calculi/Algebra/BooleanAlgebra get 
+from Calculi/Algebra/BooleanAlgebra get
 	BooleanAlgebraWithCompl,
 	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra 
-from Calculi/Algebra/RelationAlgebra get 
+	AtomicBooleanAlgebra
+from Calculi/Algebra/RelationAlgebra get
 	AtomicRelationAlgebra,
 	IntegralRelationAlgebra,
 	SymmetricRelationAlgebra
-from Calculi/Algebra/RelationAlgebraSymbolic get 
+from Calculi/Algebra/RelationAlgebraSymbolic get
 	CompositionTable,
-	GroundingCompositionTable,	
-	SetRepresentationOfRelations,		
+	GroundingCompositionTable,
+	SetRepresentationOfRelations,
 	ConstructPseudoRelationAlgebra,
 	ConstructExtPseudoRelationAlgebra
-from Calculi/Algebra/RelationAlgebraModel get 
+from Calculi/Algebra/RelationAlgebraModel get
 	BinaryRelations,
 	AlgebraOfBinaryRelations,
 	JEPDBaseRelationModel,
@@ -40,11 +40,11 @@ from Calculi/Algebra/RelationAlgebraModel get
 from Calculi/Space/EuclideanSpace get
 	EuclideanSpace2D,
 	EuclideanSpace3D
-from HasCASL/TopologicalSpaces get 
+from HasCASL/TopologicalSpaces get
 	RichTopologicalSpace
-from HasCASL/MetricSpaces get 
+from HasCASL/MetricSpaces get
 	MetricSpace
-from HasCASL/Set get 
+from HasCASL/Set get
 	Set
 
 
@@ -53,15 +53,15 @@ from HasCASL/Set get
 
 %(  Part I: Symbolic Level
 
-    We start by describing the symbolic level of the region connection 
-    calculus RCC8, i.e., the set of base relations 
-    and the composition table. Arbitrary relations of RCC8 are 
-    represented as sets of base relations. In turn base relations are 
+    We start by describing the symbolic level of the region connection
+    calculus RCC8, i.e., the set of base relations
+    and the composition table. Arbitrary relations of RCC8 are
+    represented as sets of base relations. In turn base relations are
     represented by their respective singleton sets. The spec
-    RelationBaseOfRCC8 builds this set of all relations, 
-    which obviously forms an atomic boolean algebra. Via the composition 
-    table we then define a relation algebra on the set of all relations. 
-    This provides us with a specification of RCC8, namely spec 
+    RelationBaseOfRCC8 builds this set of all relations,
+    which obviously forms an atomic boolean algebra. Via the composition
+    table we then define a relation algebra on the set of all relations.
+    This provides us with a specification of RCC8, namely spec
     RCC8.
 )%
 
@@ -69,10 +69,10 @@ from HasCASL/Set get
 
 
 %(   RCC8 has 8 base relations,
-     namely, dc ("disconnected"), ec ("externally connected"), 
-     po ("partially overlaps"), tpp ("tangential proper part"), 
-     ntpp ("non-tangential proper part"),  tppi ("tangential 
-	proper part inverse"), ntppi ("non-tangential proper 
+     namely, dc ("disconnected"), ec ("externally connected"),
+     po ("partially overlaps"), tpp ("tangential proper part"),
+     ntpp ("non-tangential proper part"),  tppi ("tangential
+	proper part inverse"), ntppi ("non-tangential proper
 	part inverse"), and  eq ("equals").
 )%
 
@@ -83,7 +83,7 @@ spec RCC8BaseRelations = %mono
 end
 
 
-%(   The following spec encodes the composition table of RCC8 as well as 
+%(   The following spec encodes the composition table of RCC8 as well as
      the information on the converses of base relations.
 )%
 
@@ -92,8 +92,8 @@ end
 spec RCC8CompositionTable =
      sort BaseRel
      ops dc ,ec ,po ,tpp ,ntpp ,tppi ,ntppi ,eq: BaseRel
-and 
-     CompositionTable with op id |-> eq 
+and
+     CompositionTable with op id |-> eq
 then
      . inv(dc) = dc						%(sym_dc)%
      . inv(ec) = ec						%(sym_dc)%
@@ -169,18 +169,19 @@ view RCC8CompositionTable_as_GroundingCompositionTable:
 end
 
 
-spec BooleanAlgebraOfRCC8Relations = 
-     SetRepresentationOfRelations[RCC8BaseRelations] 
+spec BooleanAlgebraOfRCC8Relations =
+     SetRepresentationOfRelations[RCC8BaseRelations]
 end
 
 view BooleanAlgebraOfRCC8Relations_as_AtomicBooleanAlgebra :
-     AtomicBooleanAlgebra to BooleanAlgebraOfRCC8Relations
-= 
+     {AtomicBooleanAlgebra hide preds __<__, __<=__, __>__, __>=__}
+     to BooleanAlgebraOfRCC8Relations
+=
      Elem |-> Rel, AtomElem |-> BaseRel
 end
 
 
-spec RCC8 = 
+spec RCC8 =
      ConstructPseudoRelationAlgebra[RCC8BaseRelations]
 	[RCC8CompositionTable fit op id:BaseRel |-> eq]
 end
@@ -189,12 +190,12 @@ end
 spec RichRCC8 =
      ConstructExtPseudoRelationAlgebra[RCC8BaseRelations]
 	[RCC8CompositionTable fit op id:BaseRel |-> eq]
-end	
+end
 
 
 view RCC8_as_AtomicRelationAlgebra :
-     AtomicRelationAlgebra to 
-     RichRCC8 
+     AtomicRelationAlgebra to
+     RichRCC8
 =
      AtomRel |-> BaseRel
 end
@@ -215,8 +216,8 @@ end
 
 %(  Part II: Semantic Level
 
-    Following we describe how models of RCC8 can be constructed from 
-    metric spaces. 
+    Following we describe how models of RCC8 can be constructed from
+    metric spaces.
 )%
 
 
@@ -240,28 +241,28 @@ within
 end
 
 
-spec RCC8BaseRelationModel_OpenDisc[MetricSpace] = %def 
-     BaseRelationModel[Discs[MetricSpace] fit Elem |-> OpenDisc]  
+spec RCC8BaseRelationModel_OpenDisc[MetricSpace] = %def
+     BaseRelationModel[Discs[MetricSpace] fit Elem |-> OpenDisc]
 then %def
-     ops dcRel,ecRel,poRel,tppRel,ntppRel,tppiRel,ntppiRel,eqRel:Relation 
-     free type BaseRel ::= dcRel | ecRel | poRel | tppRel | 
-			ntppRel | tppiRel | ntppiRel | eqRel 
+     ops dcRel,ecRel,poRel,tppRel,ntppRel,tppiRel,ntppiRel,eqRel:Relation
+     free type BaseRel ::= dcRel | ecRel | poRel | tppRel |
+			ntppRel | tppiRel | ntppiRel | eqRel
 
      forall x,y:OpenDisc
-     . (x,y) isIn rep(dcRel) <=>   
-		  clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y)) 
-     . (x,y) isIn rep(ecRel) <=>  
-		x disjoint y /\ 
-  	     	not clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y)) 
-     . (x,y) isIn rep(poRel) <=> 
-		not x subset y /\ not y subset x /\ not  x disjoint y 
-     . (x,y) isIn rep(tppRel) <=> 
+     . (x,y) isIn rep(dcRel) <=>
+		  clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
+     . (x,y) isIn rep(ecRel) <=>
+		x disjoint y /\
+  	     	not clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
+     . (x,y) isIn rep(poRel) <=>
+		not x subset y /\ not y subset x /\ not  x disjoint y
+     . (x,y) isIn rep(tppRel) <=>
 		x subset y /\  not clDisc(rad(x),cen(x)) subset y
-     . (x,y) isIn rep(ntppRel) <=> 
+     . (x,y) isIn rep(ntppRel) <=>
 		clDisc(rad(x),cen(x)) subset y
-     . (x,y) isIn rep(tppiRel) <=> 
+     . (x,y) isIn rep(tppiRel) <=>
 		y subset x /\  not clDisc(rad(y),cen(y)) subset x
-     . (x,y) isIn rep(ntppiRel) <=> 
+     . (x,y) isIn rep(ntppiRel) <=>
 		clDisc(rad(y),cen(y)) subset x
      . (x,y) isIn rep(eqRel) <=> x = y
 end
@@ -277,24 +278,24 @@ spec UnboundedMetricSpace =
      MetricSpace
 then
      forall r:Real
-     . exists x,y:S . d(x,y) > r 
+     . exists x,y:S . d(x,y) > r
 end
 
 
 view v_ToBeDone:  LargeMetricSpace to UnboundedMetricSpace
 
-   
 
 
 
-%( A metric space provides a JEPDBaseRelationModel only if it contains 
+
+%( A metric space provides a JEPDBaseRelationModel only if it contains
    at least ??? elements
 )%
- 
+
 
 view JEPDBaseRelationModel_From_RCC8BaseRelationModel_OpenDisc[LargeMetricSpace]:
-     JEPDBaseRelationModel 
-to 
+     JEPDBaseRelationModel
+to
      RCC8BaseRelationModel_OpenDisc[LargeMetricSpace]
 =    sort Elem |-> OpenDisc
 end
@@ -304,16 +305,16 @@ end
 
 view CompositionClosedBaseRelationModel_From_RCC8BaseRelationModel_OpenDisc[UnboundedMetricSpace]:
      CheckCompositionClosedBaseRelationModel to
-     {  ConstructPseudoModelFromBaseRelationModel[	
+     {  ConstructPseudoModelFromBaseRelationModel[
 		RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
-	then %def 
+	then %def
 	ops id:Rel;
 	    inv__:BaseRel -> Rel;
 	     __cmps__:BaseRel * BaseRel -> Rel
 	}
 =    Elem |-> OpenDisc
 end
-	
+
 
 spec RCC8Model_OpenDisc[UnboundedMetricSpace] = %def
      ConstructModelFromBaseRelationModel[
@@ -321,26 +322,26 @@ spec RCC8Model_OpenDisc[UnboundedMetricSpace] = %def
 then %def
       ops  inv__ : BaseRel -> BaseRel;
 	 __cmps__: BaseRel * BaseRel -> Rel
-end 
+end
 
 
 
 
 view RCC8Model_OpenDisc_ExtModels_RCC8CompositionTable[UnboundedMetricSpace] :
-     RCC8CompositionTable 
-to 
+     RCC8CompositionTable
+to
      RCC8Model_OpenDisc[UnboundedMetricSpace]
-=   
-    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
+=
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
 
 
 
 view MetricSpace_induces_AlgebraOfBinaryRelations_OpenDisc[UnboundedMetricSpace] :
-    AlgebraOfBinaryRelations 
-to 
-    RCC8Model_OpenDisc[UnboundedMetricSpace] 
+    AlgebraOfBinaryRelations
+to
+    RCC8Model_OpenDisc[UnboundedMetricSpace]
 =
     Elem |-> OpenDisc
 end
@@ -348,12 +349,12 @@ end
 
 
 view MetricSpace_induces_ModelOfRCC8_OpenDisc[UnboundedMetricSpace] :
-     RCC8 
-to 
+     RCC8
+to
     RCC8Model_OpenDisc[UnboundedMetricSpace]
-=   
-    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
+=
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
 
 
@@ -365,20 +366,20 @@ view EuclideanSpace2D_Is_EvenLarger:
      UnboundedMetricSpace to EuclideanSpace2D
 =    S |-> Point, d |-> dist
 end
-    
-     	
+
+
 spec RCC8EuclideanSpace2D_OpenDisc = %def
      RCC8Model_OpenDisc[view EuclideanSpace2D_Is_EvenLarger]
 end
 
 
 view RCC8EuclideanSpace2D_OpenDisc_models_RCC8 :
-     RCC8 
-to 
+     RCC8
+to
      RCC8EuclideanSpace2D_OpenDisc
-=   
-    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel, 
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel 
+=
+    ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
+	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
 
 

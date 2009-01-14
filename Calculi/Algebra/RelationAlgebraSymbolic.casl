@@ -55,7 +55,7 @@ within
         __cup__,__cap__: Rel * Rel -> Rel
      preds
 	   __eps__: BaseRel * Rel;
-         __subset__, __<__, __<=__, __>__, __>=__ : Rel * Rel
+         __subset__: Rel * Rel
      forall x:BaseRel; r:Rel
      . x = {x}
      . x eps 1
@@ -74,7 +74,7 @@ then %implies
 end
 
 view AtomicBooleanAlgebra_from_SetRepresentationOfRelations[sort BaseRel] :
-     AtomicBooleanAlgebra to
+     {AtomicBooleanAlgebra hide preds __<__, __<=__, __>__, __>=__} to
 	SetRepresentationOfRelations[sort BaseRel]
 =
      Elem |-> Rel, AtomElem |-> BaseRel
