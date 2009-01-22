@@ -12,8 +12,11 @@ flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
 ifImplOp :: "bool * bool => bool"
 "ifImplOp p == snd p --> fst p"
 
-exEqualOp :: "'a partial * 'a partial => bool"
-"exEqualOp p == fst (fst p) & fst (snd p)"
+existEqualOp :: "'a partial => 'a partial => bool" ("(_ =e=/ _)" [50, 51] 50)
+"existEqualOp a b == fst a & fst b & snd a = snd b"
+
+strongEqualOp :: "'a partial => 'a partial => bool" ("(_ =s=/ _)" [50, 51] 50)
+"strongEqualOp a b == fst a = fst b & (~ (fst a) | snd a = snd b)"
 
 whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
 "whenElseOp t == case t of
@@ -55,6 +58,9 @@ uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 
 curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 "curryOp f a b == f (a, b)"
+
+exEqualOp :: "'a partial * 'a partial => bool"
+"exEqualOp == uncurryOp existEqualOp"
 
 bool2partial :: "bool => unit partial"
 "bool2partial b == (b, ())"
