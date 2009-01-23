@@ -29,12 +29,17 @@ spec SolidWorks = RealBase then
 			| Extrusion(From:SWObject;
 				    Length:Real;ExDirection:Direction);
 
-     
      ops
+     degenerated:Pred(SWPoint)= \p:SWPoint . p = SWPoint(0,0,0);
+     degenerated:Pred(SWPlane)= \p:SWPlane . degenerated(NormalVector(p));
+
      %% the base objects of SolidWorks
      E1:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(0,0,1));
      E2:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(0,1,0));
      E3:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(1,0,0));
+
+     types SWPointNonDegenerated = {p:SWPoint. not degenerated(p)};
+	   SWPlaneNonDegenerated = {p:SWPlane. not degenerated(p)}
 
 end
 
@@ -94,6 +99,14 @@ spec SolidWorksSemanticConstructors = BaseObjects then
 	 ActExtrude(axis:Vector;points:PointSet):PointSet
 	  = { \x:Point .! exists l:Real. exists y:Point.
 	      l isIn [0...1] /\ y isIn points /\ x= y + l * axis };
+then %implies
+
+	 %{ The following part provides some basic facts about
+	 these constructor }%
+	 vars v:Vector;s:Real
+
+	 . not (v=0) => |VWithLength(v,s)| = abs(s)
+
 end
 
 

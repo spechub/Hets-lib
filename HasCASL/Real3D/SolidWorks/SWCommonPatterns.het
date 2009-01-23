@@ -22,21 +22,53 @@ spec AbstractCylinder = BaseObjects then
 	 axis:Vector;
 	 C: PointSet = Cylinder(offset,radius,axis);
 
-     . |axis| = height;
+     . |axis| = height;          %(the length of the axis is the height)%
      . radius > 0 /\ height > 0; %(non-collapsed cylinder)%
 end
 
 
-spec SolidWorksCylByArcExtrusion = SolidWorksWithSemantics then
+spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
+
+     vars p:SWPlaneNonDegenerated; c,p1:SWPoint
+
+     %{the interpretation for an complete arc: start=end.
+     
+       In that case the Halfspaces are a cover of the whole space
+       and their intersection is the plane resulting from their
+       defining normalvector}%
+     . forall p2,n:SWPointNonDegenerated.
+       VHalfSpace2(iv(p2)) intersection VHalfSpace2(- iv(p2))
+	  = VPlane(iv(n));
+
+     %% here we don't need the nondegenerated condition
+     . forall p2:SWPoint.
+       (VHalfSpace2(iv(p2)) union VHalfSpace2(- iv(p2))) = allSet:VectorSet;
+
+     . i(Arc(SWArc(p,c,p1,p1))) =
+       let cp = ip(c);
+	   r = iv(p1) - iv(c);
+	   Ball = VBall(|r|);
+	   plane = i(Plane(p))
+       in
+       ActAttach(cp, Ball) intersection plane;
+%[
+]%
+
+end
+
+spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
      ops height:Real;
 	 direction:Direction;
 	 center,boundarypoint:SWPoint;
-	 plane:SWPlane;
+	 plane:SWPlaneNonDegenerated; %(real plane)%
          arc:SWArc=SWArc(plane,center,boundarypoint,boundarypoint);
 	 cylinder:SWObject=Extrusion(Arc(arc),height,direction);
 
 
      %{constraints for the given parameters}%
+     . height > 0; %(real extrusion)%
+     . not (center = boundarypoint); %(real arc)%
+
      . let c = ip(center);
            bp = ip(boundarypoint);
            p = i(Plane(plane))
@@ -44,7 +76,7 @@ spec SolidWorksCylByArcExtrusion = SolidWorksWithSemantics then
        (c isIn p) /\ (bp isIn p) %(the arc is wellformed)%
 end
 
- 
+
 view SWCylByAE_IsCylinder: AbstractCylinder
 to
 { SolidWorksCylByArcExtrusion then
