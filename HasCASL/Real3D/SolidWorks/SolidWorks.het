@@ -127,7 +127,9 @@ then
 
      . i(Plane(SWPlane(x,y))) = ActAttach(ip x,VPlane(iv y)) %(semantics for plane)%
 
+
      . i(Arc(SWArc(p,x,y,z))) = 
+%[
        let cp = ip(x);
 	   center = iv(x);
 	   p1 = iv(y);
@@ -145,18 +147,16 @@ then
 		 intersection
 		 ((HS1 intersection HS2) when (n#r1)*r2 > 0
 		  else (HS1 union HS2)))
-       intersection plane %(semantics for Arc)%
+       intersection plane 
 
-%[
-
-     . i(Arc(SWArc(p,x,y,z))) = 
+]%
        ActAttach(ip(x),
 		 VBall(|iv(y) - iv(x)|)
 		 intersection
 		 ((VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) intersection VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p)))) when (iv(NormalVector(p))#(iv(y) - iv(x)))*(iv(z) - iv(x)) > 0
 		  else (VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) union VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p))))))
-       intersection i(Plane(p)) 
-]%
+       intersection i(Plane(p))
+       %(semantics for Arc)%
 
 
      . i(Extrusion(Arc(a),l,d)) =
