@@ -106,9 +106,11 @@ less_def_ExtPartialOrder [rule_format] :
 greater_def_ExtPartialOrder [rule_format] :
 "ALL x. ALL y. (x >' y) = (y <' x)"
 
-ga_comm_inf [rule_format] : "ALL x. ALL y. inf'(x, y) = inf'(y, x)"
+ga_comm_inf [rule_format] :
+"ALL x. ALL y. inf'(x, y) =s= inf'(y, x)"
 
-ga_comm_sup [rule_format] : "ALL x. ALL y. sup'(x, y) = sup'(y, x)"
+ga_comm_sup [rule_format] :
+"ALL x. ALL y. sup'(x, y) =s= sup'(y, x)"
 
 inf_def_ExtPartialOrder [rule_format] :
 "ALL x.
