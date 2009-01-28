@@ -38,11 +38,12 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
        defining normalvector}%
      . forall p2,n:SWPointNonDegenerated.
        VHalfSpace2(iv(p2)) intersection VHalfSpace2(- iv(p2))
-	  = VPlane(iv(n));
+	  = VPlane(iv(n)); %(help1)%
 
      %% here we don't need the nondegenerated condition
      . forall p2:SWPoint.
        (VHalfSpace2(iv(p2)) union VHalfSpace2(- iv(p2))) = allSet:VectorSet;
+							 %(help2)%
 
      . i(Arc(SWArc(p,c,p1,p1))) =
        let cp = ip(c);
@@ -50,7 +51,7 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
 	   Ball = VBall(|r|);
 	   plane = i(Plane(p))
        in
-       ActAttach(cp, Ball) intersection plane;
+       ActAttach(cp, Ball) intersection plane; %(help3)%
 %[
 ]%
 

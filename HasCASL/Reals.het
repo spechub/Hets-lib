@@ -115,11 +115,12 @@ end
 %( some selected basic functions for the reals )%
 spec RealFunctions = OrderedReals
 then %def
- ops sqr: Real -> Real;
-     sqrt: Real ->? Real;
+     type RealPos = {x:Real. x >= 0};
 
- var r:Real
+     ops sqr: Real -> Real;
+	 sqrt: RealPos -> RealPos;
+
+     var r:Real;q:RealPos
      . sqr(r) = r * r         %(sqr_def)%
-     . def sqrt(r) <=> r >= 0 %(sqrt_dom)%
-     . sqrt(sqr(r)) = r       %(sqrt_def)%
+     . sqrt(sqr(q) as RealPos) = q  %(sqrt_def)%
 end
