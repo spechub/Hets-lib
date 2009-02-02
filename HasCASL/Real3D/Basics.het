@@ -39,7 +39,7 @@ then
 	  9: Real = 8 + 1;                      %(9_def_Real)%
 
      type ZeroToNine =
-	  {x:Real. x=0\/x=1\/x=2\/x=3\/x=4\/x=5\/x=6\/x=7\/x=8\/x=9}
+	  {x:Real. x=0\/x=1\/x=2\/x=3\/x=4\/x=5\/x=6\/x=7\/x=8\/x=9} %(ZeroToNine type)%
 
      op __ @@ __ (m:ZeroToNine;n:Real): Real = (m * (9 + 1)) + n
      %(decimal_def)%
@@ -47,19 +47,19 @@ then
 end
 
 spec Points3D = RealBase then
-     free type Point ::= P(C1:Real;C2:Real;C3:Real)
-     ops 0:Point=P(0,0,0);
+     free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
+     ops 0:Point=P(0,0,0); %(Zero Point)%
 end
 
 spec Vectors3DBase = RealBase then
-     free type Vector ::= V(C1:Real;C2:Real;C3:Real)
-     ops 0:Vector=V(0,0,0);
+     free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
+     ops 0:Vector=V(0,0,0); %(Zero Vector)%
 	 __+__ : Vector * Vector -> Vector;
 	 - __ : Vector -> Vector;
 
      forall x,y:Vector
-     . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))
-     . -x = V(-C1(x),-C2(x),-C3(x))
+     . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))  %(def of vector addition)%
+     . -x = V(-C1(x),-C2(x),-C3(x)) %(def of minus vector)%
 end
 
 %( extend by binary inverse )%
@@ -135,16 +135,16 @@ spec SetsWithComprehension =
 	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
   forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
-  . not (x isIn emptySet)
-  . x isIn allSet
-  . x isIn s <=> s x
-  . s subset s' <=> forall x:S . x isIn s => x isIn s'
-  . x isIn s union s' <=> x isIn s \/ x isIn s'
-  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X
-  . x isIn s intersection s' <=> x isIn s /\ x isIn s'
-  . x isIn s \\ s' <=> x isIn s /\ not x isIn s'
-  . s disjoint s' <=> s intersection s' = emptySet
-  . (x,y) isIn s * t <=> x isIn s /\ y isIn t
+  . not (x isIn emptySet)  %(emptySet not empty)%
+  . x isIn allSet %(allSet contains all)%
+  . x isIn s <=> s x %(def of isIn)%
+  . s subset s' <=> forall x:S . x isIn s => x isIn s' %(def of subset)%
+  . x isIn s union s' <=> x isIn s \/ x isIn s' %(def of union)%
+  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X %(def of bigunion)%
+  . x isIn s intersection s' <=> x isIn s /\ x isIn s' %(def of intersection)%
+  . x isIn s \\ s' <=> x isIn s /\ not x isIn s' %(def of difference)%
+  . s disjoint s' <=> s intersection s' = emptySet %(def of disjoint)%
+  . (x,y) isIn s * t <=> x isIn s /\ y isIn t %(def of productset)%
 
 end
 
@@ -154,14 +154,14 @@ then
 	   VectorSet := Set Vector;
 	   RealSet := Set Real;
 
-     ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b);
+     ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b); %(def of interval)%
 
 	 %{Lifting operations for +}%
 
-	 __+__ (P:PointSet; v:Vector):PointSet = image((\x:Point .! x+v), P);
-	 __+__ (p:Point; V:VectorSet):PointSet = image((\x:Vector .! p+x), V);
+	 __+__ (P:PointSet; v:Vector):PointSet = image((\x:Point .! x+v), P); %(plus PointSet Vector)%
+	 __+__ (p:Point; V:VectorSet):PointSet = image((\x:Vector .! p+x), V); %(plus Point VectorSet)%
 	 __+__ (P:PointSet; V:VectorSet):PointSet =
-	       bigunion (image((\x:Vector .! P+x), V));
+	       bigunion (image((\x:Vector .! P+x), V)); %(plus PointSet VectorSet)%
 
 	 %{We could also introduce lifting operations for vec}%
 

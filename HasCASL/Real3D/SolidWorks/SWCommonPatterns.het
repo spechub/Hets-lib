@@ -52,6 +52,7 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
 	   plane = i(Plane(p))
        in
        ActAttach(cp, Ball) intersection plane; %(help3)%
+       
 %[
 ]%
 
@@ -62,8 +63,8 @@ spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
 	 direction:Direction;
 	 center,boundarypoint:SWPoint;
 	 plane:SWPlaneNonDegenerated; %(real plane)%
-         arc:SWArc=SWArc(plane,center,boundarypoint,boundarypoint);
-	 cylinder:SWObject=Extrusion(Arc(arc),height,direction);
+         arc:SWArc=SWArc(plane,center,boundarypoint,boundarypoint); %(def of given arc)%
+	 cylinder:SWObject=Extrusion(Arc(arc),height,direction); %(def of given cylinder)%
 
 
      %{constraints for the given parameters}%
@@ -82,9 +83,9 @@ view SWCylByAE_IsCylinder: AbstractCylinder
 to
 { SolidWorksCylByArcExtrusion then
   ops
-  offset:Point = ip(center);
-  axis:Vector = VWithLength(iv(NormalVector(plane)),direction*height);
-  C: PointSet = i(cylinder);
-  radius:Real = |iv(boundarypoint) - iv(center)|
+  offset:Point = ip(center); %(viewdef of offset)%
+  axis:Vector = VWithLength(iv(NormalVector(plane)),direction*height); %(viewdef of axis)%
+  C: PointSet = i(cylinder); %(viewdef of C)% %(def of C1)%
+  radius:Real = |iv(boundarypoint) - iv(center)| %(viewdef of radius)%
 }
 end
