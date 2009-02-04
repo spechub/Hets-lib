@@ -898,12 +898,30 @@ declare real_extrusion [simp]
 
 lemma let4: "(let a = A in (\<lambda>b. (Q a b))) == (\<lambda>b. (let a = A in (Q a b)))" by auto
 
+
+lemma planestruct: "\<lbrakk>a = SpacePoint(p); b = NormalVector(p)\<rbrakk> \<Longrightarrow> p = (X_SWPlane a b)"
+  by (case_tac p) simp
+
+
 theorem Ax1_5 : "X_C = Cylinder ((offset, radius), axis)"
 proof -
   -- "introducing abbreviations"
   def k_inter: interv01 == "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1'))"
-  def k_plane: swplane == "gn_inj(plane)"
-  -- "further abbrevs \<dots>"
+  def k_nv: n_plane == "NormalVector(gn_inj(plane))"
+  def k_offs: o_plane == "SpacePoint(gn_inj(plane))"
+  def k_plane: the_plane == "i(Plane(gn_inj(plane)))"
+  def k_bpoint: b_point == "ip(boundarypoint)"
+
+  -- "introducing facts"
+  from planestruct k_nv k_offs have
+    p_struct: "gn_inj(plane) = X_SWPlane o_plane n_plane" by auto
+
+  from the_arc_is_wellformed have
+    p_bp_elem: "b_point isIn the_plane" by (simp only: Let_def k_plane k_bpoint)
+
+  from the_arc_is_wellformed viewdef_of_offset have
+    p_offs_elem: "offset isIn the_plane" by (simp only: Let_def k_plane k_bpoint)
+  
   show ?thesis
   -- "expanding the definitions"
   apply (simp only: viewdef_of_C)
@@ -917,7 +935,6 @@ proof -
   apply (simp only: set_comprehension)
   apply (simp only: let4)
 
-  apply (rule ext)
   apply (simp only: Let_def)
   apply (simp only: viewdef_of_axis [symmetric])
 
@@ -926,20 +943,29 @@ proof -
   apply (simp only: vectorsemantics_for_SWPoint)
 
   apply (simp only: viewdef_of_offset [symmetric])
-  (* doesn't work!! why??
-  apply (simp only: k_plane [symmetric])
-    *)
 
+  apply (simp only: k_plane [symmetric])
+  apply (simp only: k_bpoint [symmetric])
+
+(*
+  apply (simp only: p_struct)
+  apply (simp only: semantics_for_plane)
+  apply (simp only: ActAttach_constr Let_def)
+  apply (simp only: VPlane_constr)
+  apply (simp only: VBall_constr)
+*)
+
+  apply (rule ext)
   
   proof (rule iffI) -- "introduces two subgoals"
     fix X_x
     assume "\<exists>l X_y. (l isIn interv01 \<and>
-                   X_y isIn
-                   X__intersection__X
-                    (X__XPlus__XX2 (offset,
-                     VBall ( | asVector(ip(boundarypoint)) -_3 asVector(offset) | )),
-                     i (Plane(gn_inj(plane))))) \<and>
-                  X_x = X_y +' (l *_3 axis)" (is "\<exists>l X_y. ?A l X_y")
+              X_y isIn
+              X__intersection__X
+               (X__XPlus__XX2
+                 (offset, VBall ( | asVector(b_point) -_3 asVector(offset) | )),
+                the_plane)) \<and>
+             X_x = X_y +' (l *_3 axis)" (is "\<exists>l X_y. ?A l X_y")
     then obtain l X_y_h where
       h_1: "?A l X_y_h" (is "((?I l) \<and> (X_y_h isIn ?B)) \<and> (?C X_y_h l)") by auto
     -- "this is the right instance for X_y!"
@@ -949,8 +975,7 @@ proof -
 
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
     proof -
-      from h_1 have "(?I l)" by auto
-      thus "?H l X_y" sorry 
+      show "?H l X_y" sorry 
     qed
 
     thus "\<exists>l X_y. ?H l X_y" by auto
