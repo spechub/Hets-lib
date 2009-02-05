@@ -29,7 +29,8 @@ end
 
 spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
 
-     vars p:SWPlaneNonDegenerated; c,p1:SWPoint
+     vars pl1:SWPlaneNonDegenerated; pl2:SWPlane; c,p1,p2:SWPoint;
+	  po1,po2:Point; alpha,beta,gamma:Type; A:alpha; Q:alpha->beta->gamma
 
      %{the interpretation for an complete arc: start=end.
      
@@ -45,14 +46,29 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
        (VHalfSpace2(iv(p2)) union VHalfSpace2(- iv(p2))) = allSet:VectorSet;
 							 %(help2)%
 
-     . i(Arc(SWArc(p,c,p1,p1))) =
+     %% this special case point1 = point2 simplifies the semantics
+     . i(Arc(SWArc(pl1,c,p1,p1))) =
        let cp = ip(c);
 	   r = iv(p1) - iv(c);
 	   Ball = VBall(|r|);
-	   plane = i(Plane(p))
+	   plane = i(Plane(pl1))
        in
        ActAttach(cp, Ball) intersection plane; %(help3)%
-       
+  
+     %% a simple fact about the plane and its semantics
+     . let pl = i(Plane(pl2))
+       in ((po1 isIn pl) /\ (po2 isIn pl)) =>
+	  orth(iv(NormalVector(pl2)),vec(po1,po2)); %(help4)%
+
+
+     %% let-env and lambda commute
+     . (let a = A in \b.! (Q a b)) = \b.! (let a = A in (Q a b)); %(help5)%
+
+     %% unique structure of all planes
+     . (p1 = SpacePoint(pl2) /\ p2 = NormalVector(pl2)) =>
+       pl2 = SWPlane(p1, p2); %(help6)%
+
+     
 %[
 ]%
 

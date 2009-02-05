@@ -4,12 +4,13 @@ uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
-    [\"help1\", \"help2\", \"help3\", \"inv_Group\", \"rinv_Group\",
-     \"distr1_Ring\", \"distr2_Ring\", \"noZeroDiv\", \"zeroNeqOne\",
-     \"Ax1\", \"inv_Group_1\", \"rinv_Group_1\", \"binary_inverse\",
-     \"Ax1_1\", \"refl\", \"trans\", \"antisym\",
-     \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
-     \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\", \"Ax1_2\",
+    [\"help1\", \"help2\", \"help3\", \"help4\", \"help5\", \"help6\",
+     \"inv_Group\", \"rinv_Group\", \"distr1_Ring\", \"distr2_Ring\",
+     \"noZeroDiv\", \"zeroNeqOne\", \"Ax1\", \"inv_Group_1\",
+     \"rinv_Group_1\", \"binary_inverse\", \"Ax1_1\", \"refl\",
+     \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
+     \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\",
+     \"FWO_times_right\", \"FWO_plus\", \"Ax1_2\",
      \"Real_completeness\", \"geq_def_ExtPartialOrder\",
      \"less_def_ExtPartialOrder\", \"greater_def_ExtPartialOrder\",
      \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\",
@@ -215,14 +216,33 @@ help2 [rule_format] :
 
 help3 [rule_format] :
 "ALL c.
- ALL p.
  ALL p1.
- i (Arc(X_SWArc (gn_inj(p)) c p1 p1)) =
+ ALL pl1.
+ i (Arc(X_SWArc (gn_inj(pl1)) c p1 p1)) =
  (let cp = ip(c);
       r = iv(p1) -_3 iv(c);
       X_Ball = VBall ( | r | );
-      X_plane = i (Plane(gn_inj(p)))
+      X_plane = i (Plane(gn_inj(pl1)))
   in X__intersection__X (ActAttach (cp, X_Ball), X_plane))"
+
+help4 [rule_format] :
+"ALL pl2.
+ ALL po1.
+ ALL po2.
+ let pl = i (Plane(pl2))
+ in po1 isIn pl & po2 isIn pl -->
+    orth(iv(NormalVector(pl2)), vec(po1, po2))"
+
+help5 [rule_format] :
+"ALL A.
+ ALL Q. (let a = A in % b. Q a b) = (% b. let a = A in Q a b)"
+
+help6 [rule_format] :
+"ALL p1.
+ ALL p2.
+ ALL pl2.
+ p1 = SpacePoint(pl2) & p2 = NormalVector(pl2) -->
+ pl2 = X_SWPlane p1 p2"
 
 inv_Group [rule_format] : "ALL X_x. -' X_x +_3 X_x = 0''"
 
@@ -581,6 +601,9 @@ colin_def [rule_format] :
 "ALL X_x.
  ALL X_y. colin(X_x, X_y) = (X_y = 0_3 | (EX r. X_x = r *_3 X_y))"
 
+colin_reflexivity [rule_format] :
+"ALL X_x. colin(X_x, X_x)"
+
 cross_product_antisymmetric [rule_format] :
 "ALL X_x. ALL X_y. X_x #' X_y = -'' (X_y #' X_x)"
 
@@ -715,10 +738,18 @@ VLine_constr [rule_format] :
 VWithLength_constr [rule_format] :
 "ALL s.
  ALL v.
+ VWithLength(v, s) =
+ (if v = 0_3 then v
+     else (X__Xx__XX3 (X__XSlash__X s (gn_inj( | v | )::NonZero)) v))"
+(*
+VWithLength_constr [rule_format] :
+"ALL s.
+ ALL v.
  makePartial (VWithLength(v, s)) =
  (if v = 0_3 then makePartial v
      else mapPartial (flip X__Xx__XX3 v)
-          (mapPartial (X__XSlash__X s) (gn_proj( | v | ))))"
+          (mapPartial (X__XSlash_X s) (gn_proj( | v | ))))"
+*)
 
 VPlane_constr [rule_format] :
 "ALL normal.
@@ -896,24 +927,18 @@ declare def_of_isIn [simp]
 declare real_extrusion [simp]
 
 
-lemma let4: "(let a = A in (\<lambda>b. (Q a b))) == (\<lambda>b. (let a = A in (Q a b)))" by auto
-
-
-lemma planestruct: "\<lbrakk>a = SpacePoint(p); b = NormalVector(p)\<rbrakk> \<Longrightarrow> p = (X_SWPlane a b)"
-  by (case_tac p) simp
-
-
 theorem Ax1_5 : "X_C = Cylinder ((offset, radius), axis)"
 proof -
   -- "introducing abbreviations"
   def k_inter: interv01 == "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1'))"
   def k_nv: n_plane == "NormalVector(gn_inj(plane))"
   def k_offs: o_plane == "SpacePoint(gn_inj(plane))"
+  def k_swplane: sw_plane == "gn_inj(plane)::SWPlane"
   def k_plane: the_plane == "i(Plane(gn_inj(plane)))"
   def k_bpoint: b_point == "ip(boundarypoint)"
 
   -- "introducing facts"
-  from planestruct k_nv k_offs have
+  from help6 k_nv k_offs have
     p_struct: "gn_inj(plane) = X_SWPlane o_plane n_plane" by auto
 
   from the_arc_is_wellformed have
@@ -933,7 +958,7 @@ proof -
   apply (simp only: ActExtrude_constr)
   apply (simp only: k_inter [symmetric])
   apply (simp only: set_comprehension)
-  apply (simp only: let4)
+  apply (simp only: help5)
 
   apply (simp only: Let_def)
   apply (simp only: viewdef_of_axis [symmetric])
@@ -975,6 +1000,49 @@ proof -
 
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
     proof -
+      assume ass1: "(l isIn interv01 \<and>
+	X_y_h isIn
+	X__intersection__X
+	(X__XPlus__XX2 (offset,
+	VBall ( | asVector(b_point) -_3 asVector(offset) | )), the_plane)) \<and>
+	X_x = X_y_h +' (l *_3 axis)"
+      (is "(?I l \<and> X_y_h isIn X__intersection__X(?t1, the_plane)) \<and> ?t2")
+
+      -- "there are 4 goals to prove:"
+      
+      -- "1st. "
+      hence subgoal1: "?I l" by auto
+
+
+      have p_xyh_elem: "X_y_h isIn the_plane" proof-
+	from ass1 have "X_y_h isIn X__intersection__X(?t1 , the_plane)" by auto
+	hence "(X_y_h isIn ?t1) \<and> (X_y_h isIn the_plane)"
+	  by (simp only: def_of_intersection [symmetric])
+	thus ?thesis ..
+      qed
+      with p_offs_elem have "offset isIn the_plane \<and> X_y_h isIn the_plane" ..
+      with k_plane k_swplane have p_ox_elem: "offset isIn i(Plane(sw_plane)) \<and> X_y_h isIn i(Plane(sw_plane))" by auto
+      from help4 have "offset isIn i(Plane(sw_plane)) \<and> X_y_h isIn i(Plane(sw_plane))
+	\<longrightarrow> orth(iv(NormalVector(sw_plane)), vec(offset, X_y_h))"
+	by (simp only:Let_def) auto
+
+      with p_ox_elem have "orth(iv(NormalVector(sw_plane)), vec(offset, X_y_h))" by auto
+      with k_nv k_swplane have subgoal2_first: "orth(iv(n_plane), vec(offset,X_y_h))" by auto
+
+      have "colin(axis,iv(n_plane))"
+	apply (simp only: viewdef_of_axis k_nv [symmetric])
+	apply (simp only: VWithLength_constr)
+	apply (cases "iv(n_plane) = 0_3")
+	apply simp
+	apply (rule colin_reflexivity)
+	apply simp
+	apply (rule colin_symmetry)
+      qed
+
+      -- "2nd. "
+      
+
+
       show "?H l X_y" sorry 
     qed
 
