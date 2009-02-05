@@ -38,7 +38,9 @@ ML "Header.initialize
      \"scalar_mutliplication\", \"scalar_product\", \"vector_product\",
      \"the_norm_of_a_vector\", \"orthogonal_def\", \"colin_def\",
      \"cross_product_antisymmetric\", \"cross_product_orthogonal\",
-     \"cross_product_zero_iff_colinear\", \"point_to_vector_embedding\",
+     \"cross_product_zero_iff_colinear\", \"orth_symmetry\",
+     \"colin_orth_transitivity\", \"colin_reflexivity\",
+     \"colin_symmetry\", \"point_to_vector_embedding\",
      \"vector_to_point_embedding\", \"vec_def\",
      \"compatibility_PVplus_Vplus\", \"transitivity_of_vec_XPlus\",
      \"antisymmetry_of_vec\", \"set_comprehension\", \"function_image\",
@@ -601,9 +603,6 @@ colin_def [rule_format] :
 "ALL X_x.
  ALL X_y. colin(X_x, X_y) = (X_y = 0_3 | (EX r. X_x = r *_3 X_y))"
 
-colin_reflexivity [rule_format] :
-"ALL X_x. colin(X_x, X_x)"
-
 cross_product_antisymmetric [rule_format] :
 "ALL X_x. ALL X_y. X_x #' X_y = -'' (X_y #' X_x)"
 
@@ -612,6 +611,19 @@ cross_product_orthogonal [rule_format] :
 
 cross_product_zero_iff_colinear [rule_format] :
 "ALL X_x. ALL X_y. colin(X_x, X_y) = (X_x #' X_y = 0_3)"
+
+orth_symmetry [rule_format] :
+"ALL X_x. ALL X_y. orth(X_x, X_y) --> orth(X_y, X_x)"
+
+colin_orth_transitivity [rule_format] :
+"ALL X_x.
+ ALL X_y.
+ ALL X_z. colin(X_x, X_y) & orth(X_y, X_z) --> orth(X_x, X_z)"
+
+colin_reflexivity [rule_format] : "ALL X_x. colin(X_x, X_x)"
+
+colin_symmetry [rule_format] :
+"ALL X_x. ALL X_y. colin(X_x, X_y) --> colin(X_y, X_x)"
 
 point_to_vector_embedding [rule_format] :
 "ALL p. asVector(p) = V(C1'(p), C2'(p), C3'(p))"
@@ -920,6 +932,9 @@ declare ga_select_C1_1 [simp]
 declare ga_select_C2_1 [simp]
 declare ga_select_C3_1 [simp]
 declare cross_product_orthogonal [simp]
+declare orth_symmetry [simp]
+declare colin_reflexivity [simp]
+declare colin_symmetry [simp]
 declare transitivity_of_vec_XPlus [simp]
 declare emptySet_not_empty [simp]
 declare allSet_contains_all [simp]
