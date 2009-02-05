@@ -980,12 +980,11 @@ proof -
 
   apply (simp only: help3)
   apply (simp only: ActAttach_constr Let_def)
-  apply (simp only: vectorsemantics_for_SWPoint)
+  apply (simp only: viewdef_of_radius [symmetric])
 
   apply (simp only: viewdef_of_offset [symmetric])
 
   apply (simp only: k_plane [symmetric])
-  apply (simp only: k_bpoint [symmetric])
 
 (*
   apply (simp only: p_struct)
@@ -1003,13 +1002,13 @@ proof -
               X_y isIn
               X__intersection__X
                (X__XPlus__XX2
-                 (offset, VBall ( | asVector(b_point) -_3 asVector(offset) | )),
+                 (offset, VBall(radius)),
                 the_plane)) \<and>
              X_x = X_y +' (l *_3 axis)" (is "\<exists>l X_y. ?A l X_y")
     then obtain l X_y_h where
       h_1: "?A l X_y_h" (is "((?I l) \<and> (X_y_h isIn ?B)) \<and> (?C X_y_h l)") by auto
     -- "this is the right instance for X_y!"
-    def X_y == "vec(offset, X_y_h)"
+    def have_x_y: X_y == "vec(offset, X_y_h)"
     with h_1 have "((l isIn interv01 \<and> orth(X_y, axis)) \<and> | X_y | <=' radius) \<and>
                   X_x = (offset +' (l *_3 axis)) +' X_y" (is "?H l X_y")
 
@@ -1019,7 +1018,7 @@ proof -
 	X_y_h isIn
 	X__intersection__X
 	(X__XPlus__XX2 (offset,
-	VBall ( | asVector(b_point) -_3 asVector(offset) | )), the_plane)) \<and>
+	VBall(radius)), the_plane)) \<and>
 	X_x = X_y_h +' (l *_3 axis)"
       (is "(?I l \<and> X_y_h isIn X__intersection__X(?t1, the_plane)) \<and> ?t2")
 
@@ -1049,12 +1048,17 @@ proof -
 	apply (simp only: VWithLength_constr)
 	apply (cases "iv(n_plane) = 0_3")
 	apply simp
-	apply (rule colin_reflexivity)
-	apply simp
-	apply (rule colin_symmetry)
-      qed
+	by (simp add: colin_def) auto
 
+      with subgoal2_first colin_orth_transitivity
+      have "orth(axis, vec(offset,X_y_h))" by blast
+     
       -- "2nd. "
+      with orth_symmetry have_x_y have "orth(X_y, axis)" by auto
+
+      
+
+      -- "todo"
       
 
 
@@ -1076,8 +1080,7 @@ proof -
     with h_2 have "(l isIn interv01 \<and>
                    X_y isIn
                    X__intersection__X
-                    (X__XPlus__XX2 (offset,
-                     VBall ( | asVector(ip(boundarypoint)) -_3 asVector(offset) | )),
+                    (X__XPlus__XX2 (offset, VBall(radius)),
                      i (Plane(gn_inj(plane))))) \<and>
                   X_x = X_y +' (l *_3 axis)" (is "?H l X_y")
 
