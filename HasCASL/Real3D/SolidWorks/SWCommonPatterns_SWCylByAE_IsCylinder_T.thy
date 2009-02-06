@@ -126,7 +126,7 @@ XLBrace__XRBrace :: "('S => bool) => 'S => bool"
 XMinus__XX1 :: "Real => Real" ("(-''/ _)" [56] 56)
 XMinus__XX2 :: "Vector => Vector" ("(-''''/ _)" [56] 56)
 XOSqBr__XPeriodXPeriodXPeriod__XCSqBr :: "Real * Real => Real => bool"
-XVBarXVBar__XVBarXVBar :: "Vector => RealPos" ("(||/ _/ ||)" [10] 999)
+XVBarXVBar__XVBarXVBar :: "Vector => Real" ("(||/ _/ ||)" [10] 999)
 X_ArcPlane :: "SWArc => SWPlane" ("ArcPlane/'(_')" [3] 999)
 X_C :: "Point => bool" ("C/'(_')" [3] 999)
 X_Center :: "SWArc => SWPoint" ("Center/'(_')" [3] 999)
@@ -182,7 +182,7 @@ X_iv :: "SWPoint => Vector" ("iv/'(_')" [3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
 X_orth :: "Vector => Vector => bool" ("orth/'(_,/ _')" [3,3] 999)
-X_sqrt :: "RealPos => RealPos" ("sqrt/'(_')" [3] 999)
+X_sqrt :: "RealPos => Real" ("sqrt/'(_')" [3] 999)
 X_sup :: "Real => Real => Real partial" ("sup/'(_,/ _')" [3,3] 999)
 X_vec :: "Point => Point => Vector" ("vec/'(_,/ _')" [3,3] 999)
 X_x :: "SWPoint => Real" ("x/'(_')" [3] 999)
@@ -204,7 +204,7 @@ infX2 :: "(Real => bool) => Real partial" ("inf''''/'(_')" [3] 999)
 offset :: "Point"
 plane :: "SWPlaneNonDegenerated"
 radius :: "Real"
-sqrX1 :: "Real => Real" ("sqr''/'(_')" [3] 999)
+sqrX1 :: "Real => RealPos" ("sqr''/'(_')" [3] 999)
 sqrX2 :: "Vector => RealPos" ("sqr''''/'(_')" [3] 999)
 
 axioms
@@ -227,7 +227,7 @@ help3 [rule_format] :
  i (Arc(X_SWArc (gn_inj(pl1)) c p1 p1)) =
  (let cp = ip(c);
       r = iv(p1) -'' iv(c);
-      X_Ball = VBall (gn_inj( || r || ));
+      X_Ball = VBall ( || r || );
       X_plane = i (Plane(gn_inj(pl1)))
   in X__intersection__X (ActAttach (cp, X_Ball), X_plane))"
 
@@ -399,10 +399,10 @@ Ax2 [rule_format] :
  (let (Xb1, Xc0) = makePartial (if 0'' <=' X_x then X_x else -' X_x)
   in if Xb1 then gn_proj(Xc0) else noneOp)"
 
-sqr_def [rule_format] : "ALL r. sqr'(r) = r *'' r"
+sqr_def [rule_format] :
+"ALL r. gn_inj(sqr'(r)) = makePartial (r *'' r)"
 
-sqrt_def [rule_format] :
-"ALL q. makePartial (sqr'(gn_inj(sqrt(q)))) = gn_inj(q)"
+sqrt_def [rule_format] : "ALL q. sqr'(sqrt(q)) = q"
 
 Ax1_2_1 [rule_format] : "ALL X_x. Pos(X_x) = (0'' <=' X_x)"
 
@@ -761,7 +761,7 @@ def_of_Circle [rule_format] :
  Circle ((X_offset, r), orientation) =
  XLBrace__XRBrace
  (% X_x. EX X_y.
-         (orth(X_y, orientation) & gn_inj( || X_y || ) <=' r) &
+         (orth(X_y, orientation) & || X_y || <=' r) &
          X_x = X_offset +' X_y)"
 
 def_of_Cylinder [rule_format] :
@@ -774,7 +774,7 @@ def_of_Cylinder [rule_format] :
          EX X_y.
          ((l isIn XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')) &
            orth(X_y, X_axis)) &
-          gn_inj( || X_y || ) <=' r) &
+          || X_y || <=' r) &
          X_x = (X_offset +' (l *_3 X_axis)) +' X_y)"
 
 VLine_constr [rule_format] :
@@ -788,10 +788,19 @@ VLine_constr [rule_format] :
 VWithLength_constr [rule_format] :
 "ALL s.
  ALL v.
+ VWithLength(v, s) =
+ (if v = 0_3 then v
+     else (X__Xx__XX3 (X__XSlash__X s (gn_inj( || v || ))) v))"
+
+(*
+VWithLength_constr [rule_format] :
+"ALL s.
+ ALL v.
  makePartial (VWithLength(v, s)) =
  (if v = 0_3 then makePartial v
      else mapPartial (flip X__Xx__XX3 v)
           (mapPartial (X__XSlash__X s) (gn_proj( || v || ))))"
+*)
 
 VPlane_constr [rule_format] :
 "ALL normal.
@@ -820,8 +829,7 @@ VHalfSpace2_constr [rule_format] :
  X__union__X (VConnected (VPlane normal, normal), VPlane normal)"
 
 VBall_constr [rule_format] :
-"ALL r.
- VBall r = XLBrace__XRBrace (% X_y. gn_inj( || X_y || ) <=' r)"
+"ALL r. VBall r = XLBrace__XRBrace (% X_y. || X_y || <=' r)"
 
 VCircle_constr [rule_format] :
 "ALL X_axis.
@@ -845,7 +853,10 @@ ActExtrude_constr [rule_format] :
          X_x = X_y +' (l *_3 X_axis))"
 
 constrfact1 [rule_format] :
-"ALL s. ALL v. ~ v = 0_3 --> || VWithLength(v, s) || = abs'(s)"
+"ALL s.
+ ALL v.
+ ~ v = 0_3 -->
+ makePartial ( || VWithLength(v, s) || ) = gn_inj(abs'(s))"
 
 pointsemantics_for_SWPoint [rule_format] :
 "ALL point. ip(point) = P(x(point), y(point), z(point))"
@@ -872,7 +883,7 @@ semantics_for_Arc [rule_format] :
       X_n = iv(NormalVector(p));
       r1 = p1 -'' X_center;
       r2 = p2 -'' X_center;
-      X_Ball = VBall (gn_inj( || r1 || ));
+      X_Ball = VBall ( || r1 || );
       HS1 = VHalfSpace2 (X_n #' r1);
       HS2 = VHalfSpace2 (r2 #' X_n);
       X_plane = i (Plane(p))
@@ -921,8 +932,7 @@ viewdef_of_axis [rule_format] :
 viewdef_of_C [rule_format] : "X_C = i cylinder"
 
 viewdef_of_radius [rule_format] :
-"makePartial radius =
- gn_proj( || iv(boundarypoint) -'' iv(center) || )"
+"radius = || iv(boundarypoint) -'' iv(center) ||"
 
 declare help1 [simp]
 declare help2 [simp]
@@ -976,6 +986,7 @@ declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
 declare real_extrusion [simp]
 
+
 theorem Ax1_4 : "X_C = Cylinder ((offset, radius), axis)"
 proof -
   -- "introducing abbreviations"
@@ -1014,6 +1025,7 @@ proof -
 
   apply (simp only: help3)
   apply (simp only: ActAttach_constr Let_def)
+
   apply (simp only: viewdef_of_radius [symmetric])
 
   apply (simp only: viewdef_of_offset [symmetric])
@@ -1043,7 +1055,7 @@ proof -
       h_1: "?A l X_y_h" (is "((?I l) \<and> (X_y_h isIn ?B)) \<and> (?C X_y_h l)") by auto
     -- "this is the right instance for X_y!"
     def have_x_y: X_y == "vec(offset, X_y_h)"
-    with h_1 have "((l isIn interv01 \<and> orth(X_y, axis)) \<and> | X_y | <=' radius) \<and>
+    with h_1 have "((l isIn interv01 \<and> orth(X_y, axis)) \<and> || X_y || <=' radius) \<and>
                   X_x = (offset +' (l *_3 axis)) +' X_y" (is "?H l X_y")
 
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
@@ -1105,9 +1117,9 @@ proof -
     next
 
     -- "tackle next goal"
-    fix X_x
-    assume "\<exists>l X_y. ((l isIn interv01 \<and> orth(X_y, axis)) \<and> | X_y | <=' radius) \<and>
-              X_x = (offset +' (l *_3 axis)) +' X_y" (is "\<exists>l X_y. ?A l X_y")
+    fix b
+    assume "\<exists>l X_y. ((l isIn interv01 \<and> orth(X_y, axis)) \<and> || X_y || <=' radius) \<and>
+              b = (offset +' (l *_3 axis)) +' X_y" (is "\<exists>l X_y. ?A l X_y")
     then obtain l X_y_h where
       h_2: "?A l X_y_h" (is "((?I l \<and> ?O X_y_h) \<and> (?C X_y_h)) \<and> (?D X_y_h l)") by auto
     def X_y == "offset +' X_y_h"
@@ -1115,8 +1127,8 @@ proof -
                    X_y isIn
                    X__intersection__X
                     (X__XPlus__XX2 (offset, VBall(radius)),
-                     i (Plane(gn_inj(plane))))) \<and>
-                  X_x = X_y +' (l *_3 axis)" (is "?H l X_y")
+                     the_plane)) \<and>
+                  b = X_y +' (l *_3 axis)" (is "?H l X_y")
 
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
     proof -
@@ -1131,7 +1143,7 @@ qed
 ML "Header.record \"Ax1_4\""
 
 theorem the_length_of_the_axis_is_the_height :
-"gn_inj( || axis || ) = makePartial height"
+"|| axis || = height"
 using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
       X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
       X9_def_Real decimal_def degenerated_Point_def degenerated_Plane_def
