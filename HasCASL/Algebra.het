@@ -74,14 +74,10 @@ then
      . not (1 = 0)                              %(zeroNeqOne)%
 end
 
-spec NonZeros =
-     sort Elem
-     op  0:Elem
-     type NonZero = {x:Elem. not (x=0)}
-end
-
-spec RingWithNonZeros = IntegralDomain and NonZeros
+spec RingWithNonZeros = IntegralDomain
 then 
+     type NonZero = {x:Elem. not (x=0)}
+
      ops 1:NonZero;
 	 __ * __:NonZero*NonZero->NonZero
 end

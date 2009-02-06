@@ -6,7 +6,9 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Reals get Reals, FieldWithValuation
+from HasCASL/Reals get
+     Reals, FieldWithValuation, RealFunctions,
+     OrderedReals, OrderedReals_as_FieldWithValuation
 from HasCASL/Algebra get
      ExtInverse, AbelianGroup, Field
 
@@ -24,6 +26,22 @@ then
      . (r * s) * x = r * (s * x)              %(mix_assoc)%
      . (r + s) * x = (r * x) + (s * x)        %(distr_Field)%
      . r * (x + y) = (r * x) + (r * y)        %(distr_Space)%
+end
+
+%( Definitional extension: colin-pred )%
+spec ExtVectorSpace[VectorSpace[Field]] = %def
+     preds colin:Space*Space;
+
+     var x,y:Space
+     . colin(x,y) <=> (y=0 \/ exists r:Elem. x = r*y) %(colin_def)%
+
+
+then %implies
+     var x,y:Space; r:Elem
+     %{ colin props }%
+     . colin(x,x) %(colin reflexivity)%
+     . colin(x,y) => colin(y,x) %(colin symmetry)%
+     . x = r * y => colin(x,y)  %(simple colin condition)%
 end
 
 spec NormedSpace[FieldWithValuation] =
@@ -53,3 +71,29 @@ then %implies
      . v * (a*w) = a * (v * w) 		%(right_homogen)%
 end
 
+%( Definitional extension of unary inv to binary inv (= /) )%
+spec ExtEuclideanVectorSpace[EuclideanVectorSpace] given RealFunctions
+= %def
+ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then 
+     ops  sqr(x:Space):RealPos = x*x as RealPos; %(sqr_def)%
+	  ||__|| (x:Space): RealPos = sqrt(sqr(x)); %(norm_from_scalar_prod_def)%
+
+     pred orth:Space*Space
+
+     vars x,y:Space
+     . orth(x,y) <=> x*y=0 %(orthogonal_def)%
+
+then %implies
+     vars x,y,z:Space; r:Real
+
+     %{ orth props }%
+     . orth(x,y) => orth(y,x) %(orth symmetry)%
+
+     %{ mixed props }%
+     . colin(x,y) /\ orth(y,z) => orth(x,z) %(colin orth transitivity)%
+end
+
+view EuclideanSpaceIsNormedSpace:
+     NormedSpace[view OrderedReals_as_FieldWithValuation]
+     to ExtEuclideanVectorSpace[EuclideanVectorSpace]
+end

@@ -18,7 +18,7 @@ ML "Header.initialize
      \"ga_assoc_min\", \"ga_assoc_max\", \"ga_left_comm_min\",
      \"ga_left_comm_max\", \"min_def_ExtTotalOrder\",
      \"max_def_ExtTotalOrder\", \"min_inf_relation\",
-     \"max_sup_relation\", \"Ax1_3\", \"Ax1_4\", \"sqr_def\",
+     \"max_sup_relation\", \"Ax1_3\", \"Ax2\", \"sqr_def\",
      \"sqrt_def\", \"Ax1_2_1\", \"X2_def_Real\", \"X3_def_Real\",
      \"X4_def_Real\", \"X5_def_Real\", \"X6_def_Real\", \"X7_def_Real\",
      \"X8_def_Real\", \"X9_def_Real\", \"ZeroToNine_type\",
@@ -31,37 +31,41 @@ ML "Header.initialize
      \"degenerated_Point_def\", \"degenerated_Plane_def\", \"E1_def\",
      \"E2_def\", \"E3_def\", \"nondegeneratedpoint_subtype\",
      \"nondegeneratedplane_subtype\", \"ga_select_C1\",
-     \"ga_select_C2\", \"ga_select_C3\", \"Zero_Point\", \"Ax1_1_1\",
+     \"ga_select_C2\", \"ga_select_C3\", \"Zero_Point\",
      \"ga_select_C1_1\", \"ga_select_C2_1\", \"ga_select_C3_1\",
      \"Zero_Vector\", \"def_of_vector_addition\",
      \"def_of_minus_vector\", \"binary_inverse_1_1\",
      \"scalar_mutliplication\", \"scalar_product\", \"vector_product\",
-     \"the_norm_of_a_vector\", \"orthogonal_def\", \"colin_def\",
-     \"cross_product_antisymmetric\", \"cross_product_orthogonal\",
-     \"cross_product_zero_iff_colinear\", \"orth_symmetry\",
-     \"colin_orth_transitivity\", \"colin_reflexivity\",
-     \"colin_symmetry\", \"point_to_vector_embedding\",
-     \"vector_to_point_embedding\", \"vec_def\",
-     \"compatibility_PVplus_Vplus\", \"transitivity_of_vec_XPlus\",
-     \"antisymmetry_of_vec\", \"set_comprehension\", \"function_image\",
-     \"emptySet_not_empty\", \"allSet_contains_all\", \"def_of_isIn\",
-     \"def_of_subset\", \"def_of_union\", \"def_of_bigunion\",
-     \"def_of_intersection\", \"def_of_difference\",
-     \"def_of_disjoint\", \"def_of_productset\", \"def_of_interval\",
-     \"plus_PointSet_Vector\", \"plus_Point_VectorSet\",
-     \"plus_PointSet_VectorSet\", \"def_of_Circle\",
-     \"def_of_Cylinder\", \"VLine_constr\", \"VWithLength_constr\",
-     \"VPlane_constr\", \"VPlane2_constr\", \"VConnected_constr\",
-     \"VHalfSpace_constr\", \"VHalfSpace2_constr\", \"VBall_constr\",
-     \"VCircle_constr\", \"ActAttach_constr\", \"ActExtrude_constr\",
-     \"constrfact1\", \"pointsemantics_for_SWPoint\",
-     \"vectorsemantics_for_SWPoint\", \"semantics_for_plane\",
-     \"semantics_for_Arc\", \"semantics_for_ArcExtrusion\",
-     \"def_of_given_arc\", \"def_of_given_cylinder\",
-     \"real_extrusion\", \"real_arc\", \"the_arc_is_wellformed\",
-     \"viewdef_of_offset\", \"viewdef_of_axis\", \"viewdef_of_C\",
-     \"viewdef_of_radius\", \"Ax1_5\",
-     \"the_length_of_the_axis_is_the_height\",
+     \"cross_left_homogenity\", \"cross_product_antisymmetric\",
+     \"inv_Group_2_1\", \"rinv_Group_2_1\", \"mix_assoc\",
+     \"distr_Field\", \"distr_Space\", \"distributiv\", \"homogen\",
+     \"commutativ\", \"pos_definit\", \"right_distributiv\",
+     \"right_homogen\", \"colin_def\", \"colin_reflexivity\",
+     \"colin_symmetry\", \"simple_colin_condition\", \"sqr_def_1_1\",
+     \"norm_from_scalar_prod_def\", \"orthogonal_def\",
+     \"orth_symmetry\", \"colin_orth_transitivity\",
+     \"cross_product_orthogonal\", \"cross_product_zero_iff_colinear\",
+     \"point_to_vector_embedding\", \"vector_to_point_embedding\",
+     \"vec_def\", \"compatibility_PVplus_Vplus\",
+     \"transitivity_of_vec_XPlus\", \"antisymmetry_of_vec\",
+     \"set_comprehension\", \"function_image\", \"emptySet_not_empty\",
+     \"allSet_contains_all\", \"def_of_isIn\", \"def_of_subset\",
+     \"def_of_union\", \"def_of_bigunion\", \"def_of_intersection\",
+     \"def_of_difference\", \"def_of_disjoint\", \"def_of_productset\",
+     \"def_of_interval\", \"plus_PointSet_Vector\",
+     \"plus_Point_VectorSet\", \"plus_PointSet_VectorSet\",
+     \"def_of_Circle\", \"def_of_Cylinder\", \"VLine_constr\",
+     \"VWithLength_constr\", \"VPlane_constr\", \"VPlane2_constr\",
+     \"VConnected_constr\", \"VHalfSpace_constr\",
+     \"VHalfSpace2_constr\", \"VBall_constr\", \"VCircle_constr\",
+     \"ActAttach_constr\", \"ActExtrude_constr\", \"constrfact1\",
+     \"pointsemantics_for_SWPoint\", \"vectorsemantics_for_SWPoint\",
+     \"semantics_for_plane\", \"semantics_for_Arc\",
+     \"semantics_for_ArcExtrusion\", \"def_of_given_arc\",
+     \"def_of_given_cylinder\", \"real_extrusion\", \"real_arc\",
+     \"the_arc_is_wellformed\", \"viewdef_of_offset\",
+     \"viewdef_of_axis\", \"viewdef_of_C\", \"viewdef_of_radius\",
+     \"Ax1_4\", \"the_length_of_the_axis_is_the_height\",
      \"nonXMinuscollapsed_cylinder\"]"
 
 typedecl Direction
@@ -122,7 +126,7 @@ XLBrace__XRBrace :: "('S => bool) => 'S => bool"
 XMinus__XX1 :: "Real => Real" ("(-''/ _)" [56] 56)
 XMinus__XX2 :: "Vector => Vector" ("(-''''/ _)" [56] 56)
 XOSqBr__XPeriodXPeriodXPeriod__XCSqBr :: "Real * Real => Real => bool"
-XVBar__XVBar :: "Vector => Real" ("(|/ _/ |)" [10] 999)
+XVBarXVBar__XVBarXVBar :: "Vector => RealPos" ("(||/ _/ ||)" [10] 999)
 X_ArcPlane :: "SWArc => SWPlane" ("ArcPlane/'(_')" [3] 999)
 X_C :: "Point => bool" ("C/'(_')" [3] 999)
 X_Center :: "SWArc => SWPoint" ("Center/'(_')" [3] 999)
@@ -142,9 +146,8 @@ X__XGt__X :: "Real => Real => bool" ("(_/ >''/ _)" [44,44] 42)
 X__XHash__X :: "Vector => Vector => Vector" ("(_/ #''/ _)" [54,54] 52)
 X__XLtXEq__X :: "Real => Real => bool" ("(_/ <=''/ _)" [44,44] 42)
 X__XLt__X :: "Real => Real => bool" ("(_/ <''/ _)" [44,44] 42)
-X__XMinus__XX1 :: "Real => NonZero => Real" ("(_/ -''/ _)" [54,54] 52)
-X__XMinus__XX2 :: "Real => Real => Real" ("(_/ -''''/ _)" [54,54] 52)
-X__XMinus__XX3 :: "Vector => Vector => Vector" ("(_/ -'_3/ _)" [54,54] 52)
+X__XMinus__XX1 :: "Real => Real => Real" ("(_/ -''/ _)" [54,54] 52)
+X__XMinus__XX2 :: "Vector => Vector => Vector" ("(_/ -''''/ _)" [54,54] 52)
 X__XPlus__XX1 :: "Point => Vector => Point" ("(_/ +''/ _)" [54,54] 52)
 X__XPlus__XX2 :: "Point * (Vector => bool) => Point => bool"
 X__XPlus__XX3 :: "Real => Real => Real" ("(_/ +'_3/ _)" [54,54] 52)
@@ -162,7 +165,7 @@ X__intersection__X :: "('S => bool) * ('S => bool) => 'S => bool"
 X__isIn__X :: "'S => ('S => bool) => bool" ("(_/ isIn/ _)" [44,44] 42)
 X__subset__X :: "('S => bool) => ('S => bool) => bool" ("(_/ subset/ _)" [44,44] 42)
 X__union__X :: "('S => bool) * ('S => bool) => 'S => bool"
-X_abs :: "Real => Real" ("abs''/'(_')" [3] 999)
+X_abs :: "Real => RealPos" ("abs''/'(_')" [3] 999)
 X_allSet :: "'S => bool" ("allSet/'(_')" [3] 999)
 X_asPoint :: "Vector => Point" ("asPoint/'(_')" [3] 999)
 X_asVector :: "Point => Vector" ("asVector/'(_')" [3] 999)
@@ -179,7 +182,6 @@ X_iv :: "SWPoint => Vector" ("iv/'(_')" [3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
 X_orth :: "Vector => Vector => bool" ("orth/'(_,/ _')" [3,3] 999)
-X_sqr :: "Real => Real" ("sqr/'(_')" [3] 999)
 X_sqrt :: "RealPos => RealPos" ("sqrt/'(_')" [3] 999)
 X_sup :: "Real => Real => Real partial" ("sup/'(_,/ _')" [3,3] 999)
 X_vec :: "Point => Point => Vector" ("vec/'(_,/ _')" [3,3] 999)
@@ -202,6 +204,8 @@ infX2 :: "(Real => bool) => Real partial" ("inf''''/'(_')" [3] 999)
 offset :: "Point"
 plane :: "SWPlaneNonDegenerated"
 radius :: "Real"
+sqrX1 :: "Real => Real" ("sqr''/'(_')" [3] 999)
+sqrX2 :: "Vector => RealPos" ("sqr''''/'(_')" [3] 999)
 
 axioms
 help1 [rule_format] :
@@ -222,8 +226,8 @@ help3 [rule_format] :
  ALL pl1.
  i (Arc(X_SWArc (gn_inj(pl1)) c p1 p1)) =
  (let cp = ip(c);
-      r = iv(p1) -_3 iv(c);
-      X_Ball = VBall ( | r | );
+      r = iv(p1) -'' iv(c);
+      X_Ball = VBall (gn_inj( || r || ));
       X_plane = i (Plane(gn_inj(pl1)))
   in X__intersection__X (ActAttach (cp, X_Ball), X_plane))"
 
@@ -272,7 +276,7 @@ inv_Group_1 [rule_format] : "ALL X_x. inv'(X_x) *' X_x = 1'"
 rinv_Group_1 [rule_format] : "ALL X_x. X_x *' inv'(X_x) = 1'"
 
 binary_inverse [rule_format] :
-"ALL X_x. ALL X_y. X_x -'' X_y = X_x +_3 -' X_y"
+"ALL X_x. ALL X_y. X_x -' X_y = X_x +_3 -' X_y"
 
 Ax1_1 [rule_format] :
 "ALL X_x. ALL X_y. X_x /' X_y = X_x *'' gn_inj(inv'(X_y))"
@@ -387,18 +391,18 @@ min_inf_relation [rule_format] :
 max_sup_relation [rule_format] :
 "ALL X_x. ALL X_y. makePartial (max'(X_x, X_y)) = sup(X_x, X_y)"
 
-Ax1_3 [rule_format] :
-"ALL X_x. abs'(X_x) = (if 0'' <=' X_x then X_x else -' X_x)"
+Ax1_3 [rule_format] : "ALL X_x. True = (X_x >=' 0'')"
 
-Ax1_4 [rule_format] : "ALL X_x. True = (X_x >=' 0'')"
+Ax2 [rule_format] :
+"ALL X_x.
+ makePartial (abs'(X_x)) =
+ (let (Xb1, Xc0) = makePartial (if 0'' <=' X_x then X_x else -' X_x)
+  in if Xb1 then gn_proj(Xc0) else noneOp)"
 
-sqr_def [rule_format] : "ALL r. sqr(r) = r *'' r"
+sqr_def [rule_format] : "ALL r. sqr'(r) = r *'' r"
 
 sqrt_def [rule_format] :
-"ALL q.
- (let (Xb1, Xc0) = gn_proj(sqr(gn_inj(q)))
-  in if Xb1 then makePartial (sqrt(Xc0)) else noneOp) =
- makePartial q"
+"ALL q. makePartial (sqr'(gn_inj(sqrt(q)))) = gn_inj(q)"
 
 Ax1_2_1 [rule_format] : "ALL X_x. Pos(X_x) = (0'' <=' X_x)"
 
@@ -537,9 +541,6 @@ ga_select_C3 [rule_format] :
 
 Zero_Point [rule_format] : "0' = P(0'', 0'', 0'')"
 
-Ax1_1_1 [rule_format] :
-"ALL X_x. ALL X_y. X_x -' X_y = X_x *'' gn_inj(inv'(X_y))"
-
 ga_select_C1_1 [rule_format] :
 "ALL x_1_1.
  ALL x_1_2. ALL x_1_3. C1''(V(x_1_1, x_1_2, x_1_3)) = x_1_1"
@@ -565,7 +566,7 @@ def_of_minus_vector [rule_format] :
 "ALL X_x. -'' X_x = V(-' C1''(X_x), -' C2''(X_x), -' C3''(X_x))"
 
 binary_inverse_1_1 [rule_format] :
-"ALL X_x. ALL X_y. X_x -_3 X_y = X_x +_4 -'' X_y"
+"ALL X_x. ALL X_y. X_x -'' X_y = X_x +_4 -'' X_y"
 
 scalar_mutliplication [rule_format] :
 "ALL X_x.
@@ -584,33 +585,68 @@ vector_product [rule_format] :
 "ALL X_x.
  ALL X_y.
  X_x #' X_y =
- V((C2''(X_x) *'' C3''(X_y)) -'' (C2''(X_y) *'' C3''(X_x)),
- (C3''(X_x) *'' C1''(X_y)) -'' (C3''(X_y) *'' C1''(X_x)),
- (C1''(X_x) *'' C2''(X_y)) -'' (C1''(X_y) *'' C2''(X_x)))"
+ V((C2''(X_x) *'' C3''(X_y)) -' (C2''(X_y) *'' C3''(X_x)),
+ (C3''(X_x) *'' C1''(X_y)) -' (C3''(X_y) *'' C1''(X_x)),
+ (C1''(X_x) *'' C2''(X_y)) -' (C1''(X_y) *'' C2''(X_x)))"
 
-the_norm_of_a_vector [rule_format] :
-"ALL X_x.
- makePartial ( | X_x | ) =
- (let (Xb3, Xc0) =
-      let (Xb2, Xc1) = gn_proj(X_x *_4 X_x)
-      in if Xb2 then makePartial (sqrt(Xc1)) else noneOp
-  in if Xb3 then gn_proj(Xc0) else noneOp)"
+cross_left_homogenity [rule_format] :
+"ALL r. ALL X_x. ALL X_y. r *_3 (X_x #' X_y) = (r *_3 X_x) #' X_y"
 
-orthogonal_def [rule_format] :
-"ALL X_x. ALL X_y. orth(X_x, X_y) = (X_x *_4 X_y = 0'')"
+cross_product_antisymmetric [rule_format] :
+"ALL X_x. ALL X_y. X_x #' X_y = -'' (X_y #' X_x)"
+
+inv_Group_2_1 [rule_format] : "ALL X_x. -'' X_x +_4 X_x = 0_3"
+
+rinv_Group_2_1 [rule_format] : "ALL X_x. X_x +_4 -'' X_x = 0_3"
+
+mix_assoc [rule_format] :
+"ALL r. ALL s. ALL X_x. (r *'' s) *_3 X_x = r *_3 (s *_3 X_x)"
+
+distr_Field [rule_format] :
+"ALL r.
+ ALL s. ALL X_x. (r +_3 s) *_3 X_x = (r *_3 X_x) +_4 (s *_3 X_x)"
+
+distr_Space [rule_format] :
+"ALL r.
+ ALL X_x.
+ ALL X_y. r *_3 (X_x +_4 X_y) = (r *_3 X_x) +_4 (r *_3 X_y)"
+
+distributiv [rule_format] :
+"ALL v. ALL v'. ALL w. (v +_4 v') *_4 w = (v *_4 w) +_3 (v' *_4 w)"
+
+homogen [rule_format] :
+"ALL a. ALL v. ALL w. (a *_3 v) *_4 w = a *'' (v *_4 w)"
+
+commutativ [rule_format] : "ALL v. ALL w. v *_4 w = w *_4 v"
+
+pos_definit [rule_format] : "ALL v. v *_4 v = 0'' --> v = 0_3"
+
+right_distributiv [rule_format] :
+"ALL v. ALL v'. ALL w. w *_4 (v +_4 v') = (w *_4 v) +_3 (w *_4 v')"
+
+right_homogen [rule_format] :
+"ALL a. ALL v. ALL w. v *_4 (a *_3 w) = a *'' (v *_4 w)"
 
 colin_def [rule_format] :
 "ALL X_x.
  ALL X_y. colin(X_x, X_y) = (X_y = 0_3 | (EX r. X_x = r *_3 X_y))"
 
-cross_product_antisymmetric [rule_format] :
-"ALL X_x. ALL X_y. X_x #' X_y = -'' (X_y #' X_x)"
+colin_reflexivity [rule_format] : "ALL X_x. colin(X_x, X_x)"
 
-cross_product_orthogonal [rule_format] :
-"ALL X_x. ALL X_y. orth(X_x, X_x #' X_y)"
+colin_symmetry [rule_format] :
+"ALL X_x. ALL X_y. colin(X_x, X_y) --> colin(X_y, X_x)"
 
-cross_product_zero_iff_colinear [rule_format] :
-"ALL X_x. ALL X_y. colin(X_x, X_y) = (X_x #' X_y = 0_3)"
+simple_colin_condition [rule_format] :
+"ALL r. ALL X_x. ALL X_y. X_x = r *_3 X_y --> colin(X_x, X_y)"
+
+sqr_def_1_1 [rule_format] :
+"ALL X_x. makePartial (sqr''(X_x)) = gn_proj(X_x *_4 X_x)"
+
+norm_from_scalar_prod_def [rule_format] :
+"ALL X_x. || X_x || = sqrt(sqr''(X_x))"
+
+orthogonal_def [rule_format] :
+"ALL X_x. ALL X_y. orth(X_x, X_y) = (X_x *_4 X_y = 0'')"
 
 orth_symmetry [rule_format] :
 "ALL X_x. ALL X_y. orth(X_x, X_y) --> orth(X_y, X_x)"
@@ -620,10 +656,11 @@ colin_orth_transitivity [rule_format] :
  ALL X_y.
  ALL X_z. colin(X_x, X_y) & orth(X_y, X_z) --> orth(X_x, X_z)"
 
-colin_reflexivity [rule_format] : "ALL X_x. colin(X_x, X_x)"
+cross_product_orthogonal [rule_format] :
+"ALL X_x. ALL X_y. orth(X_x, X_x #' X_y)"
 
-colin_symmetry [rule_format] :
-"ALL X_x. ALL X_y. colin(X_x, X_y) --> colin(X_y, X_x)"
+cross_product_zero_iff_colinear [rule_format] :
+"ALL X_x. ALL X_y. colin(X_x, X_y) = (X_x #' X_y = 0_3)"
 
 point_to_vector_embedding [rule_format] :
 "ALL p. asVector(p) = V(C1'(p), C2'(p), C3'(p))"
@@ -632,7 +669,7 @@ vector_to_point_embedding [rule_format] :
 "ALL p. ALL v. asPoint(v) = P(C1'(p), C2'(p), C3'(p))"
 
 vec_def [rule_format] :
-"ALL p. ALL p'. vec(p, p') = asVector(p') -_3 asVector(p)"
+"ALL p. ALL p'. vec(p, p') = asVector(p') -'' asVector(p)"
 
 compatibility_PVplus_Vplus [rule_format] :
 "ALL p. ALL v. asVector(p +' v) = asVector(p) +_4 v"
@@ -724,7 +761,8 @@ def_of_Circle [rule_format] :
  Circle ((X_offset, r), orientation) =
  XLBrace__XRBrace
  (% X_x. EX X_y.
-         (orth(X_y, orientation) & | X_y | <=' r) & X_x = X_offset +' X_y)"
+         (orth(X_y, orientation) & gn_inj( || X_y || ) <=' r) &
+         X_x = X_offset +' X_y)"
 
 def_of_Cylinder [rule_format] :
 "ALL X_axis.
@@ -736,7 +774,7 @@ def_of_Cylinder [rule_format] :
          EX X_y.
          ((l isIn XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')) &
            orth(X_y, X_axis)) &
-          | X_y | <=' r) &
+          gn_inj( || X_y || ) <=' r) &
          X_x = (X_offset +' (l *_3 X_axis)) +' X_y)"
 
 VLine_constr [rule_format] :
@@ -744,24 +782,16 @@ VLine_constr [rule_format] :
  ALL p2.
  VLine (p1, p2) =
  X_image
- (% X_y. p1 +_4 (X_y *_3 (p2 -_3 p1)),
+ (% X_y. p1 +_4 (X_y *_3 (p2 -'' p1)),
   XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')))"
 
-VWithLength_constr [rule_format] :
-"ALL s.
- ALL v.
- VWithLength(v, s) =
- (if v = 0_3 then v
-     else (X__Xx__XX3 (X__XSlash__X s (gn_inj( | v | )::NonZero)) v))"
-(*
 VWithLength_constr [rule_format] :
 "ALL s.
  ALL v.
  makePartial (VWithLength(v, s)) =
  (if v = 0_3 then makePartial v
      else mapPartial (flip X__Xx__XX3 v)
-          (mapPartial (X__XSlash_X s) (gn_proj( | v | ))))"
-*)
+          (mapPartial (X__XSlash__X s) (gn_proj( || v || ))))"
 
 VPlane_constr [rule_format] :
 "ALL normal.
@@ -790,7 +820,8 @@ VHalfSpace2_constr [rule_format] :
  X__union__X (VConnected (VPlane normal, normal), VPlane normal)"
 
 VBall_constr [rule_format] :
-"ALL r. VBall r = XLBrace__XRBrace (% X_y. | X_y | <=' r)"
+"ALL r.
+ VBall r = XLBrace__XRBrace (% X_y. gn_inj( || X_y || ) <=' r)"
 
 VCircle_constr [rule_format] :
 "ALL X_axis.
@@ -814,7 +845,7 @@ ActExtrude_constr [rule_format] :
          X_x = X_y +' (l *_3 X_axis))"
 
 constrfact1 [rule_format] :
-"ALL s. ALL v. ~ v = 0_3 --> | VWithLength(v, s) | = abs'(s)"
+"ALL s. ALL v. ~ v = 0_3 --> || VWithLength(v, s) || = abs'(s)"
 
 pointsemantics_for_SWPoint [rule_format] :
 "ALL point. ip(point) = P(x(point), y(point), z(point))"
@@ -839,9 +870,9 @@ semantics_for_Arc [rule_format] :
       p1 = iv(X_y);
       p2 = iv(X_z);
       X_n = iv(NormalVector(p));
-      r1 = p1 -_3 X_center;
-      r2 = p2 -_3 X_center;
-      X_Ball = VBall ( | r1 | );
+      r1 = p1 -'' X_center;
+      r2 = p2 -'' X_center;
+      X_Ball = VBall (gn_inj( || r1 || ));
       HS1 = VHalfSpace2 (X_n #' r1);
       HS2 = VHalfSpace2 (r2 #' X_n);
       X_plane = i (Plane(p))
@@ -890,7 +921,8 @@ viewdef_of_axis [rule_format] :
 viewdef_of_C [rule_format] : "X_C = i cylinder"
 
 viewdef_of_radius [rule_format] :
-"radius = | iv(boundarypoint) -_3 iv(center) |"
+"makePartial radius =
+ gn_proj( || iv(boundarypoint) -'' iv(center) || )"
 
 declare help1 [simp]
 declare help2 [simp]
@@ -911,6 +943,7 @@ declare ga_left_comm_min [simp]
 declare ga_left_comm_max [simp]
 declare min_inf_relation [simp]
 declare max_sup_relation [simp]
+declare sqrt_def [simp]
 declare ga_select_x [simp]
 declare ga_select_y [simp]
 declare ga_select_z [simp]
@@ -931,18 +964,19 @@ declare ga_select_C3 [simp]
 declare ga_select_C1_1 [simp]
 declare ga_select_C2_1 [simp]
 declare ga_select_C3_1 [simp]
-declare cross_product_orthogonal [simp]
-declare orth_symmetry [simp]
+declare inv_Group_2_1 [simp]
+declare rinv_Group_2_1 [simp]
 declare colin_reflexivity [simp]
 declare colin_symmetry [simp]
+declare orth_symmetry [simp]
+declare cross_product_orthogonal [simp]
 declare transitivity_of_vec_XPlus [simp]
 declare emptySet_not_empty [simp]
 declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
 declare real_extrusion [simp]
 
-
-theorem Ax1_5 : "X_C = Cylinder ((offset, radius), axis)"
+theorem Ax1_4 : "X_C = Cylinder ((offset, radius), axis)"
 proof -
   -- "introducing abbreviations"
   def k_inter: interv01 == "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1'))"
@@ -1094,22 +1128,20 @@ proof -
   qed
 qed
 
+ML "Header.record \"Ax1_4\""
 
-
-
-ML "Header.record \"Ax1_5\""
-
-theorem the_length_of_the_axis_is_the_height : "| axis | = height"
-using Ax1_1 Ax1_3 sqr_def sqrt_def X2_def_Real X3_def_Real
+theorem the_length_of_the_axis_is_the_height :
+"gn_inj( || axis || ) = makePartial height"
+using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
       X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
       X9_def_Real decimal_def degenerated_Point_def degenerated_Plane_def
-      E1_def E2_def E3_def Zero_Point Ax1_1_1 Zero_Vector
-      scalar_mutliplication scalar_product vector_product
-      the_norm_of_a_vector orthogonal_def colin_def vec_def
-      set_comprehension function_image def_of_interval
-      plus_PointSet_Vector plus_Point_VectorSet plus_PointSet_VectorSet
-      def_of_Circle def_of_Cylinder VLine_constr VWithLength_constr
-      VPlane_constr VPlane2_constr VConnected_constr VHalfSpace_constr
+      E1_def E2_def E3_def Zero_Point Zero_Vector scalar_mutliplication
+      scalar_product vector_product colin_def sqr_def_1_1
+      norm_from_scalar_prod_def orthogonal_def vec_def set_comprehension
+      function_image def_of_interval plus_PointSet_Vector
+      plus_Point_VectorSet plus_PointSet_VectorSet def_of_Circle
+      def_of_Cylinder VLine_constr VWithLength_constr VPlane_constr
+      VPlane2_constr VConnected_constr VHalfSpace_constr
       VHalfSpace2_constr VBall_constr VCircle_constr ActAttach_constr
       ActExtrude_constr pointsemantics_for_SWPoint
       vectorsemantics_for_SWPoint def_of_given_arc def_of_given_cylinder
@@ -1120,16 +1152,16 @@ ML "Header.record \"the_length_of_the_axis_is_the_height\""
 
 theorem nonXMinuscollapsed_cylinder :
 "radius >' 0'' & height >' 0''"
-using Ax1_1 Ax1_3 sqr_def sqrt_def X2_def_Real X3_def_Real
+using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
       X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
       X9_def_Real decimal_def degenerated_Point_def degenerated_Plane_def
-      E1_def E2_def E3_def Zero_Point Ax1_1_1 Zero_Vector
-      scalar_mutliplication scalar_product vector_product
-      the_norm_of_a_vector orthogonal_def colin_def vec_def
-      set_comprehension function_image def_of_interval
-      plus_PointSet_Vector plus_Point_VectorSet plus_PointSet_VectorSet
-      def_of_Circle def_of_Cylinder VLine_constr VWithLength_constr
-      VPlane_constr VPlane2_constr VConnected_constr VHalfSpace_constr
+      E1_def E2_def E3_def Zero_Point Zero_Vector scalar_mutliplication
+      scalar_product vector_product colin_def sqr_def_1_1
+      norm_from_scalar_prod_def orthogonal_def vec_def set_comprehension
+      function_image def_of_interval plus_PointSet_Vector
+      plus_Point_VectorSet plus_PointSet_VectorSet def_of_Circle
+      def_of_Cylinder VLine_constr VWithLength_constr VPlane_constr
+      VPlane2_constr VConnected_constr VHalfSpace_constr
       VHalfSpace2_constr VBall_constr VCircle_constr ActAttach_constr
       ActExtrude_constr pointsemantics_for_SWPoint
       vectorsemantics_for_SWPoint def_of_given_arc def_of_given_cylinder

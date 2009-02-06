@@ -15,7 +15,7 @@ logic HasCASL
 from HasCASL/Algebra get
      ExtInverse
 from HasCASL/LinearAlgebra get
-     EuclideanVectorSpace
+     ExtEuclideanVectorSpace
 from HasCASL/Reals get
      ExtFieldWithOrdering, RealFunctions
 
@@ -57,7 +57,7 @@ spec Vectors3DBase = RealBase then
 	 __+__ : Vector * Vector -> Vector;
 	 - __ : Vector -> Vector;
 
-     forall x,y:Vector
+     vars x,y:Vector
      . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))  %(def of vector addition)%
      . -x = V(-C1(x),-C2(x),-C3(x)) %(def of minus vector)%
 end
@@ -66,7 +66,7 @@ end
 spec Vectors3D =
 ExtInverse[Vectors3DBase fit
 	   Elem |-> Vector, __ * __ |-> __ + __, inv |-> - __]
-     with __ / __ |-> __ - __ then
+     with __ / __:Vector*Vector->Vector |-> __ - __ then
 
      ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y));
      %(scalar mutliplication)%
@@ -76,44 +76,41 @@ ExtInverse[Vectors3DBase fit
 				      C3(x)*C1(y)-C3(y)*C1(x),
 				      C1(x)*C2(y)-C1(y)*C2(x));
 				      %(vector product)%
-	 |__|(x:Vector):Real=sqrt(x*x as RealPos); %(the norm of a vector)%
-
-     preds orth:Vector*Vector;
-	   colin:Vector*Vector;
-
-     forall x,y:Vector
-     . orth(x,y) <=> x*y=0 %(orthogonal_def)%
-     . colin(x,y) <=> (y=0 \/ exists r:Real. x = r*y) %(colin_def)%
 
 then %implies
-     forall x,y:Vector
+     var x,y,z:Vector; r:Real
+
+     %{ cross prod props }%
+     . r * (x # y) = (r * x) # y; %(cross left homogenity)%
      . x # y = -(y # x)    %(cross product antisymmetric)%
+
+end
+
+spec Vectors3DSpace = ExtEuclideanVectorSpace[Vectors3D fit Space |-> Vector]
+then %implies
+     var x,y,z:Vector; r:Real
+
+     %{ mixed props }%
      . orth(x,x # y)       %(cross product orthogonal)%
-     . colin(x,y) <=> (x # y = 0)       %(cross product zero iff colinear)%
+     . colin(x,y) <=> (x # y = 0) %(cross product zero iff colinear)%
+
 end
 
-%[
-view Vectors3D_as_EuclideanVectorSpace :
-     EuclideanVectorSpace to Vectors3D
-=    Space |-> Vector
-end
-]%
-
-spec AffineRealSpace3D = Points3D and Vectors3D
+spec AffineRealSpace3D = Points3D and Vectors3DSpace
 then
      ops __+__ : Point * Vector -> Point;
 	 vec : Point * Point -> Vector;
 	 asVector : Point -> Vector;
 	 asPoint  : Vector -> Point;
 
-     forall p,p':Point; v:Vector
+     vars p,p':Point; v:Vector
      . asVector(p) = V(C1(p),C2(p),C3(p)) %(point_to_vector_embedding)%
      . asPoint(v) = P(C1(p),C2(p),C3(p))  %(vector_to_point_embedding)%
      . vec(p,p') = asVector(p') - asVector(p)         %(vec_def)%
      . asVector(p + v) = asVector(p) + v     %(compatibility_PVplus_Vplus)%
 
 then %implies
-     forall p,q,r:Point
+     vars p,q,r:Point
      . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
      . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
 end
@@ -134,7 +131,7 @@ spec SetsWithComprehension =
       image(f:(S->T);X:Set S):Set T
 	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
-  forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
+  vars x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
   . not (x isIn emptySet)  %(emptySet not empty)%
   . x isIn allSet %(allSet contains all)%
   . x isIn s <=> s x %(def of isIn)%

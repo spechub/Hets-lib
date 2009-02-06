@@ -21,10 +21,10 @@ then
 
      ops Circle(offset:Point;r:Real;orientation:Vector):PointSet
 	  = { \x:Point .! exists y:Vector.
-	      orth(y,orientation) /\ |y| <= r /\ x=offset + y }; %(def of Circle)%
+	      orth(y,orientation) /\ ||y|| <= r /\ x=offset + y }; %(def of Circle)%
 	 Cylinder(offset:Point;r:Real;axis:Vector):PointSet
 	  = { \x:Point .! exists l:Real. exists y:Vector.
-	      l isIn [0...1] /\ orth(y,axis) /\ |y| <= r /\
+	      l isIn [0...1] /\ orth(y,axis) /\ ||y|| <= r /\
 	      x=offset + l*axis + y };  %(def of Cylinder)%
      
     

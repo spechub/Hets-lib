@@ -22,7 +22,7 @@ spec AbstractCylinder = BaseObjects then
 	 axis:Vector;
 	 C: PointSet = Cylinder(offset,radius,axis);
 
-     . |axis| = height;          %(the length of the axis is the height)%
+     . ||axis|| = height;          %(the length of the axis is the height)%
      . radius > 0 /\ height > 0; %(non-collapsed cylinder)%
 end
 
@@ -50,7 +50,7 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
      . i(Arc(SWArc(pl1,c,p1,p1))) =
        let cp = ip(c);
 	   r = iv(p1) - iv(c);
-	   Ball = VBall(|r|);
+	   Ball = VBall(||r||);
 	   plane = i(Plane(pl1))
        in
        ActAttach(cp, Ball) intersection plane; %(help3)%
@@ -102,6 +102,6 @@ to
   offset:Point = ip(center); %(viewdef of offset)%
   axis:Vector = VWithLength(iv(NormalVector(plane)),direction*height); %(viewdef of axis)%
   C: PointSet = i(cylinder); %(viewdef of C)% %(def of C1)%
-  radius:Real = |iv(boundarypoint) - iv(center)| %(viewdef of radius)%
+  radius:Real = ||iv(boundarypoint) - iv(center)|| %(viewdef of radius)%
 }
 end

@@ -55,7 +55,7 @@ spec SolidWorksSemanticConstructors = BaseObjects then
 
 	 %{ Normalize the given Vector and scale it by the scalar }%
 	 VWithLength(v:Vector;s:Real):Vector
-	  = v when (v=0) else (s / (|v| as NonZero))*v; %(VWithLength constr)%
+	  = v when (v=0) else (s / (||v|| as NonZero))*v; %(VWithLength constr)%
 
 	 %{ The plane orthogonal to the normal vector }%
 	 VPlane(normal:Vector):VectorSet
@@ -82,7 +82,7 @@ spec SolidWorksSemanticConstructors = BaseObjects then
 
 	 %{ The ball with radius r }%
 	 VBall(r:Real):VectorSet
-	  = { \y:Vector .!  |y| <= r }; %(VBall constr)%
+	  = { \y:Vector .!  ||y|| <= r }; %(VBall constr)%
 
 	 %{ The circle as intersection of a plane with a ball }%
 	 VCircle(r:Real;axis:Vector):VectorSet
@@ -105,7 +105,7 @@ then %implies
 	 these constructor }%
 	 vars v:Vector;s:Real
 
-	 . not (v=0) => |VWithLength(v,s)| = abs(s) %(constrfact1)%
+	 . not (v=0) => ||VWithLength(v,s)|| = abs(s) %(constrfact1)%
 
 end
 
@@ -136,7 +136,7 @@ then
 	   n = iv(NormalVector(p));
 	   r1 = p1 - center;
 	   r2 = p2 - center;
-	   Ball = VBall(|r1|);
+	   Ball = VBall(||r1||);
 	   HS1 = VHalfSpace2(n#r1);
 	   HS2 = VHalfSpace2(r2#n);
 	   plane = i(Plane(p))
@@ -151,7 +151,7 @@ then
 
 %[
        ActAttach(ip(x),
-		 VBall(|iv(y) - iv(x)|)
+		 VBall(||iv(y) - iv(x)||)
 		 intersection
 		 ((VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) intersection VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p)))) when (iv(NormalVector(p))#(iv(y) - iv(x)))*(iv(z) - iv(x)) > 0
 		  else (VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) union VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p))))))
