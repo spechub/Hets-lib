@@ -1032,14 +1032,6 @@ proof -
 
   apply (simp only: k_plane [symmetric])
 
-(*
-  apply (simp only: p_struct)
-  apply (simp only: semantics_for_plane)
-  apply (simp only: ActAttach_constr Let_def)
-  apply (simp only: VPlane_constr)
-  apply (simp only: VBall_constr)
-*)
-
   apply (rule ext)
   
   proof (rule iffI) -- "introduces two subgoals"
@@ -1091,6 +1083,7 @@ proof -
 
       have "colin(axis,iv(n_plane))"
 	apply (simp only: viewdef_of_axis k_nv [symmetric])
+	-- "todo: here I manually replaced the axiom containing makePartial"
 	apply (simp only: VWithLength_constr)
 	apply (cases "iv(n_plane) = 0_3")
 	apply simp
@@ -1100,21 +1093,51 @@ proof -
       have "orth(axis, vec(offset,X_y_h))" by blast
      
       -- "2nd. "
-      with orth_symmetry have_x_y have "orth(X_y, axis)" by auto
+      with orth_symmetry have_x_y have subgoal2: "orth(X_y, axis)" by auto
 
+      have ball_xyh_elem: "X_y_h isIn ?t1" proof-
+	from ass1 have "X_y_h isIn X__intersection__X(?t1 , the_plane)" by auto
+	hence "(X_y_h isIn ?t1) \<and> (X_y_h isIn the_plane)"
+	  by (simp only: def_of_intersection [symmetric])
+	thus ?thesis ..
+      qed
+
+      hence "X_y isIn (VBall radius)"
+	apply (simp add: vec_def plus_Point_VectorSet function_image set_comprehension)
+      proof-
+	assume "\<exists>X_y. VBall radius X_y \<and> offset +' X_y = X_y_h" (is "\<exists>X_y. ?VB X_y")
+	then obtain X_y2 where k_VB: "?VB X_y2" (is "?VB1 \<and> ?VB2") by auto
+
+        -- "I need this lemma here! todo: source it out later"
+	have vec_shift_unique_lemma: "!! p q v. p +' v = q \<Longrightarrow> v = vec(p,q)" sorry
+	from k_VB have_x_y vec_shift_unique_lemma have "X_y2 = X_y" by auto
+	with k_VB show "VBall radius X_y" by auto
+      qed
+      -- "3rd. "
+      hence subgoal3: "|| X_y || <=' radius"
+	by (simp add: VBall_constr set_comprehension)
+
+      -- "I need this lemma here! todo: source it out later"
+      have vec_shift_def_lemma: "!! p q v. p +' vec(p,q) = q" sorry 
+      have point_vector_add_comm_lemma:
+	"!! p v w. (p +' v) +' w = (p +' w) +' v" sorry
+
+      have "X_y_h = offset +' X_y" by (simp only: vec_shift_def_lemma have_x_y)
       
+      -- "4th. "
+      with point_vector_add_comm_lemma ass1 have
+	subgoal4: "X_x = (offset +' (l *_3 axis)) +' X_y" by auto
 
-      -- "todo"
-      
 
-
-      show "?H l X_y" sorry 
+      with subgoal1 subgoal2 subgoal3 show "?H l X_y" by auto
     qed
 
     thus "\<exists>l X_y. ?H l X_y" by auto
     -- "first goal solved"
-    
+
+
     next
+
 
     -- "tackle next goal"
     fix b
