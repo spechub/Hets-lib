@@ -91,31 +91,6 @@ end
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-spec AffineSpace[VectorSpace] =
-     sort Point
-     ops __+__ : Point * Space -> Point;
-	 origin: Point = asPoint(0);
-	 asPoint  : Space -> Point;
-	 asVector : Point -> Space;
-	 vec(p,q:Point):Space = asVector(q) - asVector(p); %(vec_def)%
-
-
-     vars p,q:Point; v,w:Space
-     . asVector(asPoint(v)) = v %(vector_point_vector)%
-     . asPoint(asVector(p)) = p %(point_vector_point)%
-     . asPoint(origin) = 0  %(origin_to_zero)%
-     . asVector(p + v) = asVector(p) + v     %(compatibility_PVplus_Vplus)%
-
-then %implies
-     vars p,q,r:Point; v,w:Space
-     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
-     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
-     . p + v = q => v = vec(p,q) %(vec_shift_unique_lemma)%
-     . p + vec(p,q) = q  %(vec_shift_def_lemma)%
-     . (p + v) + w = (p + w) + v %(point_vector_add_comm_lemma)%
-
-end
-
 spec AffineSpace[RealVectorSpace] = 
      sort Point = Space
      ops  0:Point;
