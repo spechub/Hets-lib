@@ -98,4 +98,21 @@ mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 defOp :: "'a partial => bool"
 "defOp p == fst p"
 
+(*
+surj:: "'a \<Rightarrow> 'b"
+
+inj:: "'a \<Rightarrow> 'b"
+
+-- fuer alle A < B (subtyp) axiom:
+"!!x::A . surj(inj(x)) == x"
+
+-- falls A = {x:B | phi(x)} dann 2. axiom:
+"!!x::B . phi(x) \<Longrightarrow> inj(surj(x)) == x"
+
+
+-- partielle funktionen F:A\<Rightarrow>?B darstellen als F':A'\<Rightarrow>B, und A'={x:A | def(F(x)) }
+
+-- dadurch reduziert sich der Fall auf die subtyp behandlung.
+
+*)
 end
