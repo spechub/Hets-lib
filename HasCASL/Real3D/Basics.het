@@ -16,6 +16,8 @@ from HasCASL/Algebra get
      ExtInverse
 from HasCASL/LinearAlgebra get
      ExtEuclideanVectorSpace
+from HasCASL/AffineGeometry get
+     ExtAffineSpace
 from HasCASL/Reals get
      ExtFieldWithOrdering, RealFunctions
 
@@ -96,24 +98,17 @@ then %implies
 
 end
 
-spec AffineRealSpace3D = Points3D and Vectors3DSpace
+spec AffineRealSpace3D_aux = Points3D and Vectors3DSpace
 then
-     ops __+__ : Point * Vector -> Point;
-	 vec : Point * Point -> Vector;
-	 asVector : Point -> Vector;
-	 asPoint  : Vector -> Point;
-
-     vars p,p':Point; v:Vector
-     . asVector(p) = V(C1(p),C2(p),C3(p)) %(point_to_vector_embedding)%
-     . asPoint(v) = P(C1(p),C2(p),C3(p))  %(vector_to_point_embedding)%
-     . vec(p,p') = asVector(p') - asVector(p)         %(vec_def)%
-     . asVector(p + v) = asVector(p) + v     %(compatibility_PVplus_Vplus)%
-
-then %implies
-     vars p,q,r:Point
-     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
-     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
+     ops asVector(p: Point):Vector = V(C1(p),C2(p),C3(p)); %(point_to_vector_embedding)%
+	 asPoint(v: Vector):Point  = P(C1(v),C2(v),C3(v)); %(vector_to_point_embedding)%
 end
+
+spec AffineRealSpace3D = ExtAffineSpace[AffineRealSpace3D_aux
+					fit Space |-> Vector,
+					Elem |-> Real,
+					origin |-> 0:Point]
+
 
 %( taken from Set.het but changed the meaning of {f} )%
 spec SetsWithComprehension =

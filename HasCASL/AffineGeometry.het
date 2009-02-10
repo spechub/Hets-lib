@@ -1,0 +1,49 @@
+library HasCASL/AffineGeometry
+version 0.1
+
+%author: E. Schulz
+%date: 10-02-2009
+
+logic HasCASL
+
+from HasCASL/Algebra get Field
+
+from HasCASL/LinearAlgebra get VectorSpace
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       Affine Point Spaces                        %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+spec AffineSpace[VectorSpace[Field]] =
+     sort Point
+     ops asPoint  : Space -> Point;
+	 asVector : Point -> Space;
+	 origin: Point = asPoint(0);
+
+
+     vars p,q:Point; v,w:Space
+     . asVector(asPoint(v)) = v %(vector_point_vector)%
+     . asPoint(asVector(p)) = p %(point_vector_point)%
+
+then %implies
+     vars p,q,r:Point; v,w:Space
+     . asVector(origin) = 0  %(origin_to_zero)%
+end
+
+spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] =
+     ops vec(p,q:Point):Space = asVector(q) - asVector(p); %(vec_def)%
+	 __+__(p:Point; v:Space):Point = asPoint(asVector(p) + v);
+	 %(compatibility_PVplus_Vplus)%
+
+then %implies
+     vars p,q,r:Point; v,w:Space
+     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
+     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
+     . p + v = q => v = vec(p,q) %(vec_shift_unique_lemma)%
+     . p + vec(p,q) = q  %(vec_shift_def_lemma)%
+     . (p + v) + w = (p + w) + v %(point_vector_add_comm_lemma)%
+end
+
