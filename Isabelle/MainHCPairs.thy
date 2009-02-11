@@ -98,18 +98,4 @@ mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 defOp :: "'a partial => bool"
 "defOp p == fst p"
 
-consts
-
-X_gn_inj :: "'a => 'b" ("gn'_inj/'(_')" [3] 999)
-X_gn_proj :: "'a => 'b partial" ("gn'_proj/'(_')" [3] 999)
-
-
-axioms
-
-gn_proj_inj_inverse [rule_format] :
-"snd(gn_proj(gn_inj(x))) = x"
-
-gn_inj_proj_inverse [rule_format] :
-"defOp(gn_proj(x)) --> (gn_inj(snd(gn_proj(x))) = x)"
-
 end
