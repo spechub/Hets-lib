@@ -1,5 +1,5 @@
 theory SWCommonPatterns_SWCylByAE_IsCylinder_T
-imports "$HETS_LIB/Isabelle/MainHCPairs"
+imports "$HETS_LIB/Isabelle/MainHCPairsBis"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
@@ -26,8 +26,8 @@ ML "Header.initialize
      \"ga_select_y\", \"ga_select_z\", \"ga_select_ArcPlane\",
      \"ga_select_Center\", \"ga_select_Start\", \"ga_select_End\",
      \"ga_select_SpacePoint\", \"ga_select_NormalVector\",
-     \"ga_select_getArc\", \"ga_select_From\", \"ga_select_Length\",
-     \"ga_select_ExDirection\", \"ga_select_getPlane\",
+     \"ga_select_getArc\", \"ga_select_getPlane\", \"ga_select_From\",
+     \"ga_select_Length\", \"ga_select_ExDirection\",
      \"degenerated_Point_def\", \"degenerated_Plane_def\", \"E1_def\",
      \"E2_def\", \"E3_def\", \"nondegeneratedpoint_subtype\",
      \"nondegeneratedplane_subtype\", \"ga_select_C1\",
@@ -489,6 +489,9 @@ ga_select_NormalVector [rule_format] :
 ga_select_getArc [rule_format] :
 "ALL x_1_1. getArc(Arc(x_1_1)) = x_1_1"
 
+ga_select_getPlane [rule_format] :
+"ALL x_1_1. getPlane(Plane(x_1_1)) = x_1_1"
+
 ga_select_From [rule_format] :
 "ALL x_1_1.
  ALL x_1_2. ALL x_1_3. From(Extrusion(x_1_1, x_1_2, x_1_3)) = x_1_1"
@@ -502,9 +505,6 @@ ga_select_ExDirection [rule_format] :
 "ALL x_1_1.
  ALL x_1_2.
  ALL x_1_3. ExDirection(Extrusion(x_1_1, x_1_2, x_1_3)) = x_1_3"
-
-ga_select_getPlane [rule_format] :
-"ALL x_1_1. getPlane(Plane(x_1_1)) = x_1_1"
 
 degenerated_Point_def [rule_format] :
 "degeneratedX2 = (% p. p = X_SWPoint 0'' 0'' 0'')"
@@ -814,7 +814,6 @@ VWithLength_constr_special [rule_format] :
  (if v = 0_3 then v
      else (X__Xx__XX3 (X__XSlash__X s (gn_inj( || v || ))) v))"
 
-
 VWithLength_constr [rule_format] :
 "ALL s.
  ALL v.
@@ -822,7 +821,6 @@ VWithLength_constr [rule_format] :
  (if v = 0_3 then makePartial v
      else mapPartial (flip X__Xx__XX3 v)
           (mapPartial (X__XSlash__X s) (gn_proj( || v || ))))"
-
 
 VPlane_constr [rule_format] :
 "ALL normal.
@@ -986,10 +984,10 @@ declare ga_select_End [simp]
 declare ga_select_SpacePoint [simp]
 declare ga_select_NormalVector [simp]
 declare ga_select_getArc [simp]
+declare ga_select_getPlane [simp]
 declare ga_select_From [simp]
 declare ga_select_Length [simp]
 declare ga_select_ExDirection [simp]
-declare ga_select_getPlane [simp]
 declare ga_select_C1 [simp]
 declare ga_select_C2 [simp]
 declare ga_select_C3 [simp]
@@ -1011,7 +1009,6 @@ declare emptySet_not_empty [simp]
 declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
 declare real_extrusion [simp]
-
 
 theorem Ax1_4 : "X_C = Cylinder ((offset, radius), axis)"
 proof -
@@ -1102,13 +1099,38 @@ proof -
       with p_ox_elem have "orth(iv(NormalVector(sw_plane)), vec(offset, X_y_h))" by auto
       with k_nv k_swplane have subgoal2_first: "orth(iv(n_plane), vec(offset,X_y_h))" by auto
 
+      let ?scalar = "gn_inj(direction) *'' height"
+
       have "colin(axis,iv(n_plane))"
 	apply (simp only: viewdef_of_axis k_nv [symmetric])
 	-- "todo: here I manually replaced the axiom containing makePartial"
-	apply (simp only: VWithLength_constr_special)
 	apply (cases "iv(n_plane) = 0_3")
-	apply simp
-	by (simp add: colin_def) auto
+      proof-
+	assume "iv(n_plane) = 0_3"
+	with VWithLength_constr have "makePartial(VWithLength(iv(n_plane), ?scalar)) = makePartial(iv(n_plane))" by auto
+	hence "VWithLength(iv(n_plane), ?scalar) = iv(n_plane)" by (simp only: makePartial_def) auto
+	thus "colin(VWithLength(iv(n_plane), gn_inj(direction) *'' height), iv(n_plane))" by simp
+	
+      next
+	
+	assume "iv(n_plane) \<noteq> 0_3"
+	with VWithLength_constr have "makePartial (VWithLength(iv(n_plane), ?scalar)) =
+	  mapPartial (flip X__Xx__XX3 (iv(n_plane)))
+	  (mapPartial (X__XSlash__X ?scalar) (gn_proj( || iv(n_plane) || )))" by auto
+	hence f_wl1: "VWithLength(iv(n_plane), ?scalar) =
+	  snd(mapPartial (flip X__Xx__XX3 (iv(n_plane)))
+	  (mapPartial (X__XSlash__X ?scalar) (gn_proj( || iv(n_plane) || ))))"
+	  by (simp only: makePartial_def mapPartial_def) auto
+	def k_st: st == "(mapPartial
+	  (X__XSlash__X (gn_inj(direction) *'' height))
+	  (gn_proj( || iv(n_plane) || )))"
+	show "colin(VWithLength(iv(n_plane), gn_inj(direction) *'' height), iv(n_plane))"
+	  apply (simp only: f_wl1 k_st [symmetric] )
+	  apply (simp only: mapPartial_def)
+	  apply (simp add: snd_def)
+	  apply (simp only: flip_def)
+	  by (rule simple_colin_condition) auto
+      qed
 
       with subgoal2_first colin_orth_transitivity
       have "orth(axis, vec(offset,X_y_h))" by blast
@@ -1180,7 +1202,18 @@ proof -
       from ass1 have subgoal2: "b = X_y +' (l *_3 axis)"
 	by (simp add: ass2 point_vector_add_comm_lemma)
 
-      have "a isIn p \<and> \<dots>"
+      have subgoal3:
+	"X_y isIn X__intersection__X (X__XPlus__XX2 (offset, VBall radius), the_plane)"
+	(is "X_y isIn X__intersection__X (?Ball, the_plane)")
+	-- " todo: retransform this section, including lemma help7, using colin(axix, iv(n_plane))"
+	apply (simp only: def_of_intersection)
+	apply (simp only: plus_Point_VectorSet function_image set_comprehension def_of_isIn VBall_constr k_plane)
+	proof-
+	from ass1 ass2 have sgfact_1: "|| X_y_h || <=' radius \<and> offset +' X_y_h = X_y" by auto
+	
+	sorry
+	  
+
       -- "3rd. "
       have "X_y isIn the_plane"
 	apply (simp only:  ass2)
@@ -1193,7 +1226,6 @@ proof -
     -- "second (and last) goal solved"
   qed
 qed
-
 
 ML "Header.record \"Ax1_4\""
 

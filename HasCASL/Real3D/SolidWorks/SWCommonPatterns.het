@@ -68,6 +68,12 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
      . (p1 = SpacePoint(pl2) /\ p2 = NormalVector(pl2)) =>
        pl2 = SWPlane(p1, p2); %(help6)%
 
+
+     %% another simple fact about the plane and its semantics
+     . let pl = i(Plane(pl2))
+       in orth(vec(ip(SpacePoint(pl2)), po1), iv(NormalVector(pl2))) =>
+	  po1 isIn pl; %(help7)%
+
      
 %[
 ]%
