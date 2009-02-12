@@ -46,9 +46,12 @@ ML "Header.initialize
      \"orth_symmetry\", \"colin_orth_transitivity\",
      \"cross_product_orthogonal\", \"cross_product_zero_iff_colinear\",
      \"point_to_vector_embedding\", \"vector_to_point_embedding\",
-     \"vec_def\", \"compatibility_PVplus_Vplus\",
+     \"Ax1_1_1\", \"vector_point_vector\", \"point_vector_point\",
+     \"origin_to_zero\", \"vec_def\", \"compatibility_PVplus_Vplus\",
      \"transitivity_of_vec_XPlus\", \"antisymmetry_of_vec\",
-     \"set_comprehension\", \"function_image\", \"emptySet_not_empty\",
+     \"vec_shift_unique_lemma\", \"vec_shift_def_lemma\",
+     \"point_vector_add_comm_lemma\", \"set_comprehension\",
+     \"function_image\", \"emptySet_not_empty\",
      \"allSet_contains_all\", \"def_of_isIn\", \"def_of_subset\",
      \"def_of_union\", \"def_of_bigunion\", \"def_of_intersection\",
      \"def_of_difference\", \"def_of_disjoint\", \"def_of_productset\",
@@ -173,8 +176,6 @@ X_colin :: "Vector => Vector => bool" ("colin/'(_,/ _')" [3,3] 999)
 X_emptySet :: "'S => bool" ("emptySet/'(_')" [3] 999)
 X_getArc :: "SWObject => SWArc" ("getArc/'(_')" [3] 999)
 X_getPlane :: "SWObject => SWPlane" ("getPlane/'(_')" [3] 999)
-X_gn_inj :: "'a => 'b" ("gn'_inj/'(_')" [3] 999)
-X_gn_proj :: "'a => 'b partial" ("gn'_proj/'(_')" [3] 999)
 X_image :: "('S => 'T) * ('S => bool) => 'T => bool"
 X_inv :: "NonZero => NonZero" ("inv''/'(_')" [3] 999)
 X_ip :: "SWPoint => Point" ("ip/'(_')" [3] 999)
@@ -269,7 +270,7 @@ noZeroDiv [rule_format] :
 
 zeroNeqOne [rule_format] : "~ 1'' = 0''"
 
-Ax1 [rule_format] : "ALL X_x. True = (~ X_x = 0'')"
+Ax1 [rule_format] : "ALL X_x. defOp (gn_proj(X_x)) = (~ X_x = 0'')"
 
 inv_Group_1 [rule_format] : "ALL X_x. inv'(X_x) *' X_x = 1'"
 
@@ -391,7 +392,8 @@ min_inf_relation [rule_format] :
 max_sup_relation [rule_format] :
 "ALL X_x. ALL X_y. makePartial (max'(X_x, X_y)) = sup(X_x, X_y)"
 
-Ax1_3 [rule_format] : "ALL X_x. True = (X_x >=' 0'')"
+Ax1_3 [rule_format] :
+"ALL X_x. defOp (gn_proj(X_x)) = (X_x >=' 0'')"
 
 Ax2 [rule_format] :
 "ALL X_x.
@@ -424,7 +426,7 @@ X9_def_Real [rule_format] : "9' = 8' +_3 gn_inj(1')"
 
 ZeroToNine_type [rule_format] :
 "ALL X_x.
- True =
+ defOp (gn_proj(X_x)) =
  (((((((((X_x = 0'' | makePartial X_x = gn_inj(1')) | X_x = 2') |
         X_x = 3') |
        X_x = 4') |
@@ -440,7 +442,8 @@ decimal_def [rule_format] :
 
 direction_subtype [rule_format] :
 "ALL X_x.
- True = (makePartial X_x = gn_inj(1') | X_x = -' gn_inj(1'))"
+ defOp (gn_proj(X_x)) =
+ (makePartial X_x = gn_inj(1') | X_x = -' gn_inj(1'))"
 
 ga_select_x [rule_format] :
 "ALL x_1_1.
@@ -522,10 +525,10 @@ E3_def [rule_format] :
  X_SWPlane (X_SWPoint 0'' 0'' 0'') (X_SWPoint (gn_inj(1')) 0'' 0'')"
 
 nondegeneratedpoint_subtype [rule_format] :
-"ALL p. True = (~ degenerated''(p))"
+"ALL p. defOp (gn_proj(p)) = (~ degenerated''(p))"
 
 nondegeneratedplane_subtype [rule_format] :
-"ALL p. True = (~ degenerated'(p))"
+"ALL p. defOp (gn_proj(p)) = (~ degenerated'(p))"
 
 ga_select_C1 [rule_format] :
 "ALL x_1_1.
@@ -666,19 +669,38 @@ point_to_vector_embedding [rule_format] :
 "ALL p. asVector(p) = V(C1'(p), C2'(p), C3'(p))"
 
 vector_to_point_embedding [rule_format] :
-"ALL p. ALL v. asPoint(v) = P(C1'(p), C2'(p), C3'(p))"
+"ALL v. asPoint(v) = P(C1''(v), C2''(v), C3''(v))"
+
+Ax1_1_1 [rule_format] : "0' = asPoint(0_3)"
+
+vector_point_vector [rule_format] :
+"ALL v. asVector(asPoint(v)) = v"
+
+point_vector_point [rule_format] :
+"ALL p. asPoint(asVector(p)) = p"
+
+origin_to_zero [rule_format] : "asVector(0') = 0_3"
 
 vec_def [rule_format] :
-"ALL p. ALL p'. vec(p, p') = asVector(p') -'' asVector(p)"
+"ALL p. ALL q. vec(p, q) = asVector(q) -'' asVector(p)"
 
 compatibility_PVplus_Vplus [rule_format] :
-"ALL p. ALL v. asVector(p +' v) = asVector(p) +_4 v"
+"ALL p. ALL v. p +' v = asPoint(asVector(p) +_4 v)"
 
 transitivity_of_vec_XPlus [rule_format] :
 "ALL p. ALL q. ALL r. vec(p, q) +_4 vec(q, r) = vec(p, r)"
 
 antisymmetry_of_vec [rule_format] :
 "ALL p. ALL q. vec(p, q) = -'' vec(q, p)"
+
+vec_shift_unique_lemma [rule_format] :
+"ALL p. ALL q. ALL v. p +' v = q --> v = vec(p, q)"
+
+vec_shift_def_lemma [rule_format] :
+"ALL p. ALL q. p +' vec(p, q) = q"
+
+point_vector_add_comm_lemma [rule_format] :
+"ALL p. ALL v. ALL w. (p +' v) +' w = (p +' w) +' v"
 
 set_comprehension [rule_format] : "ALL s. XLBrace__XRBrace s = s"
 
@@ -785,14 +807,14 @@ VLine_constr [rule_format] :
  (% X_y. p1 +_4 (X_y *_3 (p2 -'' p1)),
   XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')))"
 
-VWithLength_constr [rule_format] :
+VWithLength_constr_special [rule_format] :
 "ALL s.
  ALL v.
  VWithLength(v, s) =
  (if v = 0_3 then v
      else (X__Xx__XX3 (X__XSlash__X s (gn_inj( || v || ))) v))"
 
-(*
+
 VWithLength_constr [rule_format] :
 "ALL s.
  ALL v.
@@ -800,7 +822,7 @@ VWithLength_constr [rule_format] :
  (if v = 0_3 then makePartial v
      else mapPartial (flip X__Xx__XX3 v)
           (mapPartial (X__XSlash__X s) (gn_proj( || v || ))))"
-*)
+
 
 VPlane_constr [rule_format] :
 "ALL normal.
@@ -980,7 +1002,11 @@ declare colin_reflexivity [simp]
 declare colin_symmetry [simp]
 declare orth_symmetry [simp]
 declare cross_product_orthogonal [simp]
+declare vector_point_vector [simp]
+declare point_vector_point [simp]
+declare origin_to_zero [simp]
 declare transitivity_of_vec_XPlus [simp]
+declare vec_shift_def_lemma [simp]
 declare emptySet_not_empty [simp]
 declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
@@ -1052,12 +1078,7 @@ proof -
 
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
     proof -
-      assume ass1: "(l isIn interv01 \<and>
-	X_y_h isIn
-	X__intersection__X
-	(X__XPlus__XX2 (offset,
-	VBall(radius)), the_plane)) \<and>
-	X_x = X_y_h +' (l *_3 axis)"
+      assume ass1: "?A l X_y_h"
       (is "(?I l \<and> X_y_h isIn X__intersection__X(?t1, the_plane)) \<and> ?t2")
 
       -- "there are 4 goals to prove:"
@@ -1084,7 +1105,7 @@ proof -
       have "colin(axis,iv(n_plane))"
 	apply (simp only: viewdef_of_axis k_nv [symmetric])
 	-- "todo: here I manually replaced the axiom containing makePartial"
-	apply (simp only: VWithLength_constr)
+	apply (simp only: VWithLength_constr_special)
 	apply (cases "iv(n_plane) = 0_3")
 	apply simp
 	by (simp add: colin_def) auto
@@ -1108,19 +1129,12 @@ proof -
 	assume "\<exists>X_y. VBall radius X_y \<and> offset +' X_y = X_y_h" (is "\<exists>X_y. ?VB X_y")
 	then obtain X_y2 where k_VB: "?VB X_y2" (is "?VB1 \<and> ?VB2") by auto
 
-        -- "I need this lemma here! todo: source it out later"
-	have vec_shift_unique_lemma: "!! p q v. p +' v = q \<Longrightarrow> v = vec(p,q)" sorry
 	from k_VB have_x_y vec_shift_unique_lemma have "X_y2 = X_y" by auto
 	with k_VB show "VBall radius X_y" by auto
       qed
       -- "3rd. "
       hence subgoal3: "|| X_y || <=' radius"
 	by (simp add: VBall_constr set_comprehension)
-
-      -- "I need this lemma here! todo: source it out later"
-      have vec_shift_def_lemma: "!! p q v. p +' vec(p,q) = q" sorry 
-      have point_vector_add_comm_lemma:
-	"!! p v w. (p +' v) +' w = (p +' w) +' v" sorry
 
       have "X_y_h = offset +' X_y" by (simp only: vec_shift_def_lemma have_x_y)
       
@@ -1153,8 +1167,25 @@ proof -
                      the_plane)) \<and>
                   b = X_y +' (l *_3 axis)" (is "?H l X_y")
 
+
     -- "!!! THE MAIN PROOF OF THIS DIRECTION"
     proof -
+      assume  ass1: "?A l X_y_h"
+      assume ass2: "X_y == offset +' X_y_h"
+      
+      
+      -- "1st. "
+      from ass1 have subgoal1: "?I l" by auto
+      -- "2nd. "
+      from ass1 have subgoal2: "b = X_y +' (l *_3 axis)"
+	by (simp add: ass2 point_vector_add_comm_lemma)
+
+      have "a isIn p \<and> \<dots>"
+      -- "3rd. "
+      have "X_y isIn the_plane"
+	apply (simp only:  ass2)
+      proof-
+      
       show "?H l X_y" sorry
     qed
 
@@ -1162,6 +1193,7 @@ proof -
     -- "second (and last) goal solved"
   qed
 qed
+
 
 ML "Header.record \"Ax1_4\""
 
@@ -1172,13 +1204,14 @@ using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
       X9_def_Real decimal_def degenerated_Point_def degenerated_Plane_def
       E1_def E2_def E3_def Zero_Point Zero_Vector scalar_mutliplication
       scalar_product vector_product colin_def sqr_def_1_1
-      norm_from_scalar_prod_def orthogonal_def vec_def set_comprehension
-      function_image def_of_interval plus_PointSet_Vector
-      plus_Point_VectorSet plus_PointSet_VectorSet def_of_Circle
-      def_of_Cylinder VLine_constr VWithLength_constr VPlane_constr
-      VPlane2_constr VConnected_constr VHalfSpace_constr
-      VHalfSpace2_constr VBall_constr VCircle_constr ActAttach_constr
-      ActExtrude_constr pointsemantics_for_SWPoint
+      norm_from_scalar_prod_def orthogonal_def point_to_vector_embedding
+      vector_to_point_embedding Ax1_1_1 vec_def
+      compatibility_PVplus_Vplus set_comprehension function_image
+      def_of_interval plus_PointSet_Vector plus_Point_VectorSet
+      plus_PointSet_VectorSet def_of_Circle def_of_Cylinder VLine_constr
+      VWithLength_constr VPlane_constr VPlane2_constr VConnected_constr
+      VHalfSpace_constr VHalfSpace2_constr VBall_constr VCircle_constr
+      ActAttach_constr ActExtrude_constr pointsemantics_for_SWPoint
       vectorsemantics_for_SWPoint def_of_given_arc def_of_given_cylinder
       viewdef_of_offset viewdef_of_axis viewdef_of_C viewdef_of_radius
 by auto
@@ -1192,13 +1225,14 @@ using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
       X9_def_Real decimal_def degenerated_Point_def degenerated_Plane_def
       E1_def E2_def E3_def Zero_Point Zero_Vector scalar_mutliplication
       scalar_product vector_product colin_def sqr_def_1_1
-      norm_from_scalar_prod_def orthogonal_def vec_def set_comprehension
-      function_image def_of_interval plus_PointSet_Vector
-      plus_Point_VectorSet plus_PointSet_VectorSet def_of_Circle
-      def_of_Cylinder VLine_constr VWithLength_constr VPlane_constr
-      VPlane2_constr VConnected_constr VHalfSpace_constr
-      VHalfSpace2_constr VBall_constr VCircle_constr ActAttach_constr
-      ActExtrude_constr pointsemantics_for_SWPoint
+      norm_from_scalar_prod_def orthogonal_def point_to_vector_embedding
+      vector_to_point_embedding Ax1_1_1 vec_def
+      compatibility_PVplus_Vplus set_comprehension function_image
+      def_of_interval plus_PointSet_Vector plus_Point_VectorSet
+      plus_PointSet_VectorSet def_of_Circle def_of_Cylinder VLine_constr
+      VWithLength_constr VPlane_constr VPlane2_constr VConnected_constr
+      VHalfSpace_constr VHalfSpace2_constr VBall_constr VCircle_constr
+      ActAttach_constr ActExtrude_constr pointsemantics_for_SWPoint
       vectorsemantics_for_SWPoint def_of_given_arc def_of_given_cylinder
       viewdef_of_offset viewdef_of_axis viewdef_of_C viewdef_of_radius
 by auto
