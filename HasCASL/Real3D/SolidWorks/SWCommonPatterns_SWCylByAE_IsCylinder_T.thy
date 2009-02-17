@@ -1,14 +1,14 @@
 theory SWCommonPatterns_SWCylByAE_IsCylinder_T
-imports "$HETS_LIB/Isabelle/MainHCPairsBis"
+imports "$HETS_LIB/Isabelle/MainHCPairs"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
     [\"help1\", \"help2\", \"help3\", \"help4\", \"help5\", \"help6\",
-     \"inv_Group\", \"rinv_Group\", \"distr1_Ring\", \"distr2_Ring\",
-     \"noZeroDiv\", \"zeroNeqOne\", \"Ax1\", \"inv_Group_1\",
-     \"rinv_Group_1\", \"binary_inverse\", \"Ax1_1\", \"refl\",
-     \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
+     \"help7\", \"inv_Group\", \"rinv_Group\", \"distr1_Ring\",
+     \"distr2_Ring\", \"noZeroDiv\", \"zeroNeqOne\", \"Ax1\",
+     \"inv_Group_1\", \"rinv_Group_1\", \"binary_inverse\", \"Ax1_1\",
+     \"refl\", \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
      \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\",
      \"FWO_times_right\", \"FWO_plus\", \"Ax1_2\",
      \"Real_completeness\", \"geq_def_ExtPartialOrder\",
@@ -176,6 +176,8 @@ X_colin :: "Vector => Vector => bool" ("colin/'(_,/ _')" [3,3] 999)
 X_emptySet :: "'S => bool" ("emptySet/'(_')" [3] 999)
 X_getArc :: "SWObject => SWArc" ("getArc/'(_')" [3] 999)
 X_getPlane :: "SWObject => SWPlane" ("getPlane/'(_')" [3] 999)
+X_gn_inj :: "'a => 'b" ("gn'_inj/'(_')" [3] 999)
+X_gn_proj :: "'a => 'b partial" ("gn'_proj/'(_')" [3] 999)
 X_image :: "('S => 'T) * ('S => bool) => 'T => bool"
 X_inv :: "NonZero => NonZero" ("inv''/'(_')" [3] 999)
 X_ip :: "SWPoint => Point" ("ip/'(_')" [3] 999)
@@ -250,6 +252,13 @@ help6 [rule_format] :
  ALL pl2.
  p1 = SpacePoint(pl2) & p2 = NormalVector(pl2) -->
  pl2 = X_SWPlane p1 p2"
+
+help7 [rule_format] :
+"ALL pl2.
+ ALL po1.
+ let pl = i (Plane(pl2))
+ in orth(vec(ip(SpacePoint(pl2)), po1), iv(NormalVector(pl2))) -->
+    po1 isIn pl"
 
 inv_Group [rule_format] : "ALL X_x. -' X_x +_3 X_x = 0''"
 
@@ -806,13 +815,6 @@ VLine_constr [rule_format] :
  X_image
  (% X_y. p1 +_4 (X_y *_3 (p2 -'' p1)),
   XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')))"
-
-VWithLength_constr_special [rule_format] :
-"ALL s.
- ALL v.
- VWithLength(v, s) =
- (if v = 0_3 then v
-     else (X__Xx__XX3 (X__XSlash__X s (gn_inj( || v || ))) v))"
 
 VWithLength_constr [rule_format] :
 "ALL s.

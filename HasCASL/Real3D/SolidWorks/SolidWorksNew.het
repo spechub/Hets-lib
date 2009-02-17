@@ -44,13 +44,15 @@ spec SolidWorks = RealBase then
 
      type Direction = {x:Real. x=1\/x= -1}; %(direction subtype)%
 
+     var a:Type
+     free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
+
      free types
      SWPoint ::= SWPoint(x:Real;y:Real;z:Real); %(SWPoint datatype)%
      SWPlane ::= SWPlane(SpacePoint:SWPoint;NormalVector:SWPoint); %(SWPlane datatype)%
      SWArc ::= SWArc(ArcPlane:SWPlane;Center:SWPoint;Start:SWPoint;End:SWPoint);  %(SWArc datatype)%
      SWSketchObject ::= type SWArc;  %(SWSketchObject datatype)%
-     SWList ::=  [] |  __ :: __ (first:? SWSketchObject; rest:? SWList); %(SWList datatype)%
-     SWSketch ::= SWSketch(Arguments:SWList);  %(SWSketch datatype)%
+     SWSketch ::= SWSketch(Arguments:SWList SWSketchObject);  %(SWSketch datatype)%
 
      %% Tanmay, please name (and adapt if necessary) these arguments appropriately
      SWFeature ::= SWExtrusion(Real;Real;Logical;Logical;Real;Real;
