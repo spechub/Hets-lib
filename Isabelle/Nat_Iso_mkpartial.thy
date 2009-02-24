@@ -400,6 +400,16 @@ apply (case_tac "s")
 apply (simp add: defOp_def)
 done
 
+lemma makepartial_intro_downfold : "(s=makePartial t) = (defOp(s) & (defOp(s) --> (snd(s)=t)))"
+apply (rule iffI)
+apply (simp add: makePartial_def)
+apply (subst defOp_def)
+apply (simp)
+apply (simp add: makePartial_def)
+apply (case_tac "s")
+apply (simp add: defOp_def)
+done
+
 lemma makepartial_intro_weak: "(s=makePartial t) ==> (snd(s)=t)"
 apply (simp add: makePartial_def)
 done
@@ -444,6 +454,14 @@ apply (drule_tac f="%x. nat2Nat(x)" in arg_cong)
 apply (simp)
 done
 
+lemma nat2Nat_injectivity_negated : "nat2Nat(x) ~= nat2Nat(y) ==> x ~= y"
+apply (auto)
+done
+
+lemma Nat2nat_injectivity_negated : "Nat2nat(x) ~= Nat2nat(y) ==>  x ~= y"
+apply (auto)
+done
+
 (* ask Lutz which version to use *)
 lemma inj_predefined : "inj Nat2nat"
 apply (simp add: inj_on_def)
@@ -460,121 +478,129 @@ section "Simple Definitions"
 (* ============================== 1 ============================== *)
 
 (*by (auto simp add: X1_def_Nat)*)
-theorem nat2Nat_1_def_Nat : "1' = nat2Nat(1)"
+theorem nat2Nat_1_def_Nat[simp] : "nat2Nat(1) = 1'"
 apply (simp)
 apply (subst X1_def_Nat)
 apply (auto)
 done
 
 (* get backwards direction via the iso (already in the simplifier) and the other direction *)
-theorem Nat2nat_1_def_Nat : "1=Nat2nat(1')"
-apply (simp add: nat2Nat_1_def_Nat)
+theorem Nat2nat_1_def_Nat[simp] : "Nat2nat(1')=1"
+apply (simp add: nat2Nat_1_def_Nat[THEN sym])
 done
 
 (* ============================== 2 ============================== *)
 
-theorem nat2Nat_2_def_Nat : "2' = nat2Nat(2)"
+theorem nat2Nat_2_def_Nat[simp] : "nat2Nat(2) =2'"
 apply (subst X2_def_Nat)
-apply (subst nat2Nat_1_def_Nat)
+apply (subst nat2Nat_1_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (subgoal_tac "Suc 1 = 2")
 apply (drule_tac f="%x. nat2Nat(x)" in arg_cong)
 apply (auto)
 done
 
-theorem two_2  : "2 = Nat2nat(2')"
-apply (simp add: nat2Nat_2_def_Nat)
+theorem two_2[simp]  : "Nat2nat(2') = 2"
+apply (subst nat2Nat_2_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 3 ============================== *)
 
-theorem nat2Nat_3_def_Nat : "3' = nat2Nat(3)"
+theorem nat2Nat_3_def_Nat[simp] : "nat2Nat(3) = 3'"
 apply (subst X3_def_Nat)
-apply (subst nat2Nat_2_def_Nat)
+apply (subst nat2Nat_2_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem nat2Nat_3_def_nat : "3 = Nat2nat(3')"
-apply (simp add: nat2Nat_3_def_Nat)
+theorem nat2Nat_3_def_nat[simp] : "Nat2nat(3') = 3"
+apply (subst nat2Nat_3_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 4 ============================== *)
 
-theorem nat2Nat_4_def_Nat : "4' = nat2Nat(4)"
+theorem nat2Nat_4_def_Nat[simp] : "nat2Nat(4) = 4'"
 apply (subst X4_def_Nat)
-apply (subst nat2Nat_3_def_Nat)
+apply (subst nat2Nat_3_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_4_def_Nat : "4  = Nat2nat(4')"
-apply (simp add: nat2Nat_4_def_Nat)
+theorem Nat2nat_4_def_Nat : "Nat2nat(4') = 4"
+apply (subst nat2Nat_4_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 5 ============================== *)
 
-theorem nat2Nat_5_def_Nat : "5' = nat2Nat(5)"
+theorem nat2Nat_5_def_Nat[simp] : "nat2Nat(5) = 5'"
 apply (subst X5_def_Nat)
-apply (subst nat2Nat_4_def_Nat)
+apply (subst nat2Nat_4_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_5_def_Nat : "5  = Nat2nat(5')"
-apply (simp add: nat2Nat_5_def_Nat)
+theorem Nat2nat_5_def_Nat[simp] : "Nat2nat(5') = 5"
+apply (subst nat2Nat_5_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 6 ============================== *)
 
-theorem nat2Nat_6_def_Nat : "6' = nat2Nat(6)"
+theorem nat2Nat_6_def_Nat[simp] : "nat2Nat(6) = 6'"
 apply (subst X6_def_Nat)
-apply (subst nat2Nat_5_def_Nat)
+apply (subst nat2Nat_5_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_6_def_Nat : "6  = Nat2nat(6')"
-apply (simp add: nat2Nat_6_def_Nat)
+theorem Nat2nat_6_def_Nat[simp] : "Nat2nat(6') = 6"
+apply (subst nat2Nat_6_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 7 ============================== *)
 
-theorem nat2Nat_7_def_Nat : "7' = nat2Nat(7)"
+theorem nat2Nat_7_def_Nat[simp] : "nat2Nat(7)=7'"
 apply (subst X7_def_Nat)
-apply (subst nat2Nat_6_def_Nat)
+apply (subst nat2Nat_6_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_7_def_Nat : "7  = Nat2nat(7')"
-apply (simp add: nat2Nat_7_def_Nat)
+theorem Nat2nat_7_def_Nat[simp] : "Nat2nat(7') = 7"
+apply (subst nat2Nat_7_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 8 ============================== *)
 
-theorem nat2Nat_8_def_Nat : "8' = nat2Nat(8)"
+theorem nat2Nat_8_def_Nat[simp] : "nat2Nat(8) = 8'"
 apply (subst X8_def_Nat)
-apply (subst nat2Nat_7_def_Nat)
+apply (subst nat2Nat_7_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_8_def_Nat : "8  = Nat2nat(8')"
-apply (simp add: nat2Nat_8_def_Nat)
+theorem Nat2nat_8_def_Nat[simp] : "Nat2nat(8') = 8 "
+apply (subst nat2Nat_8_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 (* ============================== 9 ============================== *)
 
-theorem nat2Nat_9_def_Nat : "9' = nat2Nat(9)"
+theorem nat2Nat_9_def_Nat[simp] : "nat2Nat(9) = 9'"
 apply (subst X9_def_Nat)
-apply (subst nat2Nat_8_def_Nat)
+apply (subst nat2Nat_8_def_Nat[THEN sym])
 apply (subst nat2Nat_Suc [rule_format, THEN sym])
 apply (simp)
 done
 
-theorem Nat2nat_9_def_Nat : "9  = Nat2nat(9')"
-apply (simp add: nat2Nat_9_def_Nat)
+theorem Nat2nat_9_def_Nat[simp] : "Nat2nat(9') = 9"
+apply (subst nat2Nat_9_def_Nat[THEN sym])
+apply (simp only: iso2)
 done
 
 
@@ -585,7 +611,7 @@ apply (induct_tac x)
 apply (auto simp only: nat2Nat_Suc nat2Nat_0 add_Suc add_0 add_suc_Nat add_0_Nat)
 done
 
-theorem Nat2nat_add : "Nat2nat (x +' y) = (Nat2nat x) + (Nat2nat y)"
+theorem Nat2nat_add[simp] : "Nat2nat (x +' y) = (Nat2nat x) + (Nat2nat y)"
 apply (rule nat2Nat_injectivity)
 apply (auto)
 done
@@ -596,7 +622,7 @@ apply (auto simp only: nat2Nat_Suc nat2Nat_0 nat2Nat_add mult_Suc mult_0 mult_su
 apply (auto)
 done
 
-theorem Nat2nat_mul : "Nat2nat (x *' y) = (Nat2nat x) * (Nat2nat y)"
+theorem Nat2nat_mul [simp] : "Nat2nat (x *' y) = (Nat2nat x) * (Nat2nat y)"
 apply (rule nat2Nat_injectivity)
 apply (auto)
 done
@@ -607,7 +633,7 @@ apply (auto)
 apply (simp add: X1_def_Nat)
 done
 
-theorem Nat2nat_power : "Nat2nat(x ^' y) = Nat2nat(x) ^ Nat2nat(y)"
+theorem Nat2nat_power [simp]: "Nat2nat(x ^' y) = Nat2nat(x) ^ Nat2nat(y)"
 apply (rule nat2Nat_injectivity)
 apply (auto)
 done
@@ -619,7 +645,7 @@ apply (subst fact.simps)
 apply (simp only: nat2Nat_mul nat2Nat_Suc factorial_suc)
 done
 
-theorem Nat2nat_fac : "Nat2nat(x!') = fact(Nat2nat(x))"
+theorem Nat2nat_fac [simp] : "Nat2nat(x!') = fact(Nat2nat(x))"
 apply (rule nat2Nat_injectivity)
 apply auto
 done
@@ -638,39 +664,43 @@ apply (rule nat2Nat_injectivity)
 apply simp
 done
 
-theorem nat2Nat_lt_equal [simp] : "x <= y <-> nat2Nat(x) <=' nat2Nat(y)"
+theorem nat2Nat_lt_equal [simp] : "nat2Nat(x) <=' nat2Nat(y) <->x <= y "
 apply (rule diff_induct)
 apply (auto)
 done
 
-theorem Nat2nat_lt_equal : "x <=' y <-> Nat2nat(x) <= Nat2nat(y)"
-apply (auto)
+theorem Nat2nat_lt_equal [simp] : "(Nat2nat(x) <= Nat2nat(y)) <-> (x <=' y)"
+apply (subst nat2Nat_lt_equal[THEN sym])
+apply (simp only: iso1)
 done
 
-theorem nat2Nat_lt [simp] : "x < y <-> nat2Nat(x) <' nat2Nat(y)"
+theorem nat2Nat_lt [simp] : "nat2Nat(x) <' nat2Nat(y) <-> x < y"
 apply (rule diff_induct)
 apply (auto)
 done
 
-theorem Nat2nat_lt : "x <' y <-> Nat2nat(x) < Nat2nat(y)"
-apply (auto)
+theorem Nat2nat_lt [simp] : "Nat2nat(x) < Nat2nat(y) <-> x <' y"
+apply (subst nat2Nat_lt[THEN sym])
+apply (simp only: iso1)
 done
 
-theorem nat2Nat_gt [simp] : "x > y <-> nat2Nat(x) >' nat2Nat(y)"
+theorem nat2Nat_gt [simp] : " nat2Nat(x) >' nat2Nat(y) <-> x > y"
 apply (rule diff_induct)
 apply (auto)
 done
 
-theorem Nat2nat_gt : "x >' y <-> Nat2nat(x) > Nat2nat(y)"
-apply (auto)
+theorem Nat2nat_gt [simp] : "Nat2nat(x) > Nat2nat(y) <-> x >' y "
+apply (subst nat2Nat_gt[THEN sym])
+apply (simp)
 done
 
-theorem nat2Nat_gt_equal [simp] : "x >= y <-> nat2Nat(x) >=' nat2Nat(y)"
+theorem nat2Nat_gt_equal [simp] : "nat2Nat(x) >=' nat2Nat(y) <-> x >= y"
 apply (rule diff_induct)
 apply (auto)
 done
 
-theorem Nat2nat_gt_equal : "x >=' y <-> Nat2nat(x) >= Nat2nat(y)"
+theorem Nat2nat_gt_equal [simp] : "Nat2nat(x) >= Nat2nat(y) <-> x >=' y"
+apply (subst nat2Nat_gt_equal[THEN sym])
 apply(auto)
 done
 
@@ -680,27 +710,24 @@ lemma suc_even_nat: "even(x) ==> even(Suc(Suc(x)))"
 apply (auto)
 done
 
-theorem nat2Nat_even [simp] : "((even'(x) <-> even(Nat2nat(x))) & (odd'(x) <-> odd(Nat2nat(x))))"
+theorem nat2Nat_even [simp] : "((even(Nat2nat(x)) <-> even'(x)) & (odd(Nat2nat(x)) <-> odd'(x)))"
 apply (induct x)
 apply (simp)
 apply (rule conjI)
-apply (simp only: even_suc_Nat Nat2nat_suc even_nat_Suc suc_even_nat)
-apply (subst Nat2nat_suc)
-apply (subst even_nat_Suc [rule_format, THEN sym])
+apply (simp)
+apply (simp)
+done
+
+theorem Nat2nat_even [simp] : "(even'(nat2Nat(x)) <-> (even(x)) & (odd'(nat2Nat(x)) <-> odd(x)))"
+apply (insert nat2Nat_even [of "nat2Nat(x)"])
 apply (auto)
 done
 
-theorem Nat2nat_even : "((even(x) <-> even'(nat2Nat(x))) & (odd(x) <-> odd'(nat2Nat(x))))"
-apply (auto)
-done
-
-theorem nat2Nat_dvd [simp] : "(x dvd y) <-> (nat2Nat(x) dvd' nat2Nat(y))"
+theorem nat2Nat_dvd [simp] : "(nat2Nat(x) dvd' nat2Nat(y)) <-> (x dvd y)"
 apply (subst dvd_def_Nat)
 apply (subst dvd_def)
 apply (rule iffI)
-apply (erule exE)
-apply (drule_tac f="%x. nat2Nat(x)" in arg_cong)
-apply (force)
+apply (simp)
 apply (erule exE)
 apply (drule_tac f="%x. Nat2nat(x)" in arg_cong)
 apply (simp (no_asm_use) only: Nat2nat_mul iso2)
@@ -708,9 +735,11 @@ apply (auto)
 done
 
 
-theorem Nat2nat_dvd : "(x dvd' y) = (Nat2nat(x) dvd Nat2nat(y))"
+theorem Nat2nat_dvd : "(Nat2nat(x) dvd Nat2nat(y)) = (x dvd' y)"
 apply (auto)
-sorry
+apply (subst (asm) nat2Nat_dvd [THEN sym])
+apply (auto)
+done
 
 section "Simple Functions"
 
@@ -780,7 +809,7 @@ apply (insert Nat2nat_gt)
 apply (subst (asm) not_iff)
 apply (subst (asm) not_less_eq)
 apply (subst (asm) Nat2nat_suc [rule_format, THEN sym])
-apply (subst (asm) Nat2nat_lt [rule_format, THEN sym])
+apply (subst (asm) Nat2nat_lt )
 apply (auto)
 done
 
@@ -888,7 +917,7 @@ apply (rule conjI)
 apply (rule Nat2nat_injectivity)
 apply (simp only: iso2 Nat2nat_add Nat2nat_mul)
 apply (arith)
-apply (subst nat2Nat_lt[rule_format,THEN sym])
+apply (subst nat2Nat_lt)
 apply (rule mod_less_divisor)
 apply (arith)
 done
@@ -897,7 +926,8 @@ theorem Nat2nat_div [simp] : " y ~= 0' ==> Nat2nat(snd (x div' y)) = Nat2nat(x) 
 apply (frule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
 apply (rule nat2Nat_injectivity)
-apply (drule nat2Nat_div)
+apply (subst nat2Nat_div)
+apply (simp)
 apply (simp)
 done
 
@@ -914,41 +944,43 @@ apply (subst nat2Nat_mul[rule_format,THEN sym])
 apply (subst nat2Nat_add[rule_format,THEN sym])
 apply (rule_tac f="nat2Nat" in arg_cong)
 apply (simp)
-apply (subst Nat2nat_lt)
+apply (subst Nat2nat_lt[THEN sym])
 apply (simp only: iso2)
 apply (rule mod_less_divisor)
 apply (auto)
 done
 
-theorem Nat2nat_mod : "~(y = 0') ==>  Nat2nat (snd (x mod' y)) = (Nat2nat(x) mod Nat2nat(y))"
+theorem Nat2nat_mod [simp]: "~(y = 0') ==>  Nat2nat (snd (x mod' y)) = (Nat2nat(x) mod Nat2nat(y))"
 apply (frule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
 apply (rule nat2Nat_injectivity)
-apply (drule nat2Nat_mod)
+apply (subst nat2Nat_mod)
+apply (simp)
 apply (simp)
 done
 
-theorem nat2Nat_pdiv : "[|~ y = 0 ; x mod y = 0|] ==> nat2Nat(snd(x /?? y)) =snd(nat2Nat(x) /? nat2Nat(y))"
+theorem nat2Nat_pdiv[simp] : "[|~ y = 0 ; x mod y = 0|] ==> nat2Nat(snd(x /?? y)) =snd(nat2Nat(x) /? nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
 apply (subst divide_Pos_Nat)
+apply (subst Nat2nat_gt[THEN sym])
 apply (simp)
 apply (rule Nat2nat_injectivity)
 apply (simp only: Nat2nat_mul iso2)
 apply (subst part_div_def)
 apply (simp add: makePartialproj)
-apply (drule iso1_negated1)
-apply (simp only: Nat2nat_0 iso2)
 apply (auto)
 done
 
 
-theorem Nat2nat_pdiv : "[|~ y = 0' ; x mod' y = makePartial 0'|] ==> Nat2nat(snd(x /? y)) =snd(Nat2nat(x) /?? Nat2nat(y))"
+theorem Nat2nat_pdiv [simp] : "[|~ y = 0' ; x mod' y = makePartial 0'|] ==> Nat2nat(snd(x /? y)) =snd(Nat2nat(x) /?? Nat2nat(y))"
 apply (drule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
 apply (drule_tac f="%x. snd(x)" in arg_cong)
 apply (drule_tac f="%x. Nat2nat(x)" in arg_cong)
 apply (subst (asm) Nat2nat_mod)
+apply (simp add: iso1_negated1)
+apply (rule Nat2nat_injectivity_negated)
 apply (simp)
 apply (simp  only: makePartialproj Nat2nat_0 Nat2nat_mod)
 apply (rule nat2Nat_injectivity)
@@ -957,7 +989,7 @@ apply (simp)
 apply (simp)
 done
 
-theorem nat2Nat_pminus : "(x >= y) ==> nat2Nat(snd (x -?? y)) = snd(nat2Nat(x) -? nat2Nat(y))"
+theorem nat2Nat_pminus [simp] : "(x >= y) ==> nat2Nat(snd (x -?? y)) = snd(nat2Nat(x) -? nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
 apply (subst sub_def_Nat)
@@ -967,8 +999,8 @@ apply (subst part_minus_def)
 apply (simp add: makePartialproj)
 done
 
-theorem Nat2nat_pminus : "(x >=' y) ==> Nat2nat(snd(x -? y)) = snd(Nat2nat(x) -?? Nat2nat(y))"
-apply (subst (asm) Nat2nat_gt_equal)
+theorem Nat2nat_pminus [simp]: "(x >=' y) ==> Nat2nat(snd(x -? y)) = snd(Nat2nat(x) -?? Nat2nat(y))"
+apply (subst (asm) Nat2nat_gt_equal[THEN sym])
 apply (rule nat2Nat_injectivity)
 apply (subst nat2Nat_pminus)
 apply (simp)
