@@ -23,7 +23,7 @@ whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
     (p, e) => if snd p then fst p else e"
 
 makeTotal :: "'a partial => 'a"
-"makeTotal p == if fst p then snd p else arbitrary"
+"makeTotal == snd"
 
 makePartial :: "'a => 'a partial"
 "makePartial a == (True, a)"
