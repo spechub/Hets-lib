@@ -42,7 +42,7 @@ fun get_assums t =
 
 fun get_assumNum th =
   let
-    val l = (get_assums o strip_meta o Library.nth_elem) (0, prems_of th)   
+    val l = (get_assums o strip_meta o List.nth) (0, prems_of th)   
   in
     getDefOpNum l
   end
@@ -50,7 +50,7 @@ fun get_assumNum th =
 fun my_tac opThm ntimes asm th =
   let
 (*    val opThm = thm opThmName *)
-    val npremsTh = nprems_of th
+   val npremsTh = nprems_of th
     val sset = ((simpset()) delsimps (thms "pair.simps" @ thms "app.simps" @
                 thms "apt.simps" @ thms "defOp.simps")) addsimps [opThm]
     val first = (dresolve_tac [thm "defArg"] 1) THEN
