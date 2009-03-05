@@ -1,6 +1,5 @@
 theory MainHCPlus
 imports Main
-uses "$HETS_LIB/Isabelle/HCTactic"
 begin
 
 (* Operator definitions for encoding *)
