@@ -1,20 +1,20 @@
-theory MainHCPlus = Main
-
-files ("$HETS_LIB/Isabelle/HCTactic.ML"):
-use "$HETS_LIB/Isabelle/HCTactic.ML";
+theory MainHCPlus
+imports Main
+uses "$HETS_LIB/Isabelle/HCTactic"
+begin
 
 (* Operator definitions for encoding *)
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"
-  "app (Some f) x = (case x of 
+  "app (Some f) x = (case x of
                             None => None
                           | Some x' => f x')"
 
 consts apt :: "('a => 'b) option => 'a option => 'b option"
 primrec
   "apt None a = None"
-  "apt (Some f) x = (case x of 
+  "apt (Some f) x = (case x of
                             None => None
                           | Some x' => Some (f x'))"
 
@@ -59,13 +59,13 @@ theorem symSome: "Some a = Some b ==> Some b = Some a"
 apply auto
 done
 
-theorem tr: "Some a = Some b & Some b = Some c 
+theorem tr: "Some a = Some b & Some b = Some c
                ==> Some a = Some c"
 apply auto
 done
 
-theorem cong: "Some a = Some b 
-                 ==> app (Some f) (Some a) 
+theorem cong: "Some a = Some b
+                 ==> app (Some f) (Some a)
                        = app (Some f) (Some b)"
 apply auto
 done
@@ -74,7 +74,7 @@ theorem ax: "((defOp a --> phi) & defOp a) ==> phi"
 apply auto
 done
 
-theorem sub: "(!! y::'t . phi (Some y) ==> psi (Some y)) 
+theorem sub: "(!! y::'t . phi (Some y) ==> psi (Some y))
                  ==> phi a
                     ==> defOp a
                        ==>  psi a"
@@ -82,7 +82,7 @@ apply (case_tac a)
 apply auto
 done
 
-theorem eta: "Some (% y::'t . app (Some x) (Some y)) 
+theorem eta: "Some (% y::'t . app (Some x) (Some y))
                 = Some x"
 apply auto
 done
@@ -91,8 +91,8 @@ theorem beta: "app (Some (% y::'t . a y)) (Some x) =  a x"
 apply auto
 done
 
-theorem xi: "(!! y::'t . a y = b y) 
-                ==> Some (% y::'t . a y) 
+theorem xi: "(!! y::'t . a y = b y)
+                ==> Some (% y::'t . a y)
                       = Some (% y::'t . b y)"
 apply auto
 done
@@ -146,7 +146,7 @@ apply (case_tac b)
 apply auto
 done
 
-theorem s_cong: "a = b 
+theorem s_cong: "a = b
                  ==> app f a = app f b"
 apply auto
 done
