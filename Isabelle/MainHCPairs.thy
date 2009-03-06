@@ -62,8 +62,11 @@ curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 exEqualOp :: "'a partial * 'a partial => bool"
 "exEqualOp == uncurryOp existEqualOp"
 
+restrictOp :: "'a => bool => 'a partial"
+"restrictOp a b == (b, a)"
+
 bool2partial :: "bool => unit partial"
-"bool2partial b == (b, ())"
+"bool2partial b == restrictOp () b"
 
 liftUnit2unit :: "('a => 'b) => bool => bool"
 "liftUnit2unit f b == b"
@@ -75,7 +78,7 @@ liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
 "liftUnit2partial f b == if b then f () else noneOp"
 
 liftUnit :: "(unit => 'a) => bool => 'a partial"
-"liftUnit f b == (b, f ())"
+"liftUnit f b == restrictOp (f ()) b"
 
 lift2unit :: "('b => 'c) => ('a partial => bool)"
 "lift2unit f == partial2bool"
