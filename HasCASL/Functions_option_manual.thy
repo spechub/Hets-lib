@@ -17,7 +17,7 @@ o_def [rule_format] :
 "ALL f.
  ALL g.
  X__o__X (f, g) =
- (% x. restrictOp ( (makeTotal  o f) ((makeTotal o g) x)) ( (defOp (g x)) & defOp (f (makeTotal o g) x)))"
+ (% x. restrictOp ( (makeTotal  o f) ((makeTotal o g) x)) ( (defOp (g x)) & defOp (f ((makeTotal o g) x))))"
 
 id_def [rule_format] : "X_id = makePartial o (% x. x)"
 
