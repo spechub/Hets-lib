@@ -4,20 +4,58 @@ begin
 
 types 'a partial = "'a option"
 
+(* is_none *)
+consts defOp :: "'a option => bool"
+primrec
+"defOp None = False"
+"defOp (Some x) = True"
+
 constdefs
 
+makeTotal :: "'a partial => 'a"
+"makeTotal == the"
+
+makePartial :: "'a => 'a partial"
+"makePartial == Some"
+
+(* undefined is predefined *)
+undefinedOp :: "'a partial"
+"undefinedOp == None"
+
+(* backward compatibility only *)
+noneOp :: "'a partial"
+"noneOp == undefinedOp"
+
+(* make sure undefined is always equally undefined *)
+restrictOp :: "'a partial => bool => 'a partial"
+"restrictOp a b == if b & defOp a then a else undefinedOp"
+
+(* utilities *)
 flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
 "flip f a b == f b a"
 
+uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
+"uncurryOp f p == f (fst p) (snd p)"
+
+curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
+"curryOp f a b == f (a, b)"
+
+(* map on pairs *)
+mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
+"mapFst f p == (f (fst p), snd p)"
+
+mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
+"mapSnd f p == (fst p, f (snd p))"
+
+(* predefined HasCASL functions *)
 ifImplOp :: "bool * bool => bool"
 "ifImplOp p == snd p --> fst p"
 
 existEqualOp :: "'a partial => 'a partial => bool" ("(_ =e=/ _)" [50, 51] 50)
-"existEqualOp a b == case a of
-    None => False
-  | Some c => (case b of
-      None => False
-    | Some d => c = d)"
+"existEqualOp a b == defOp a & defOp b & makeTotal a = makeTotal b"
+
+exEqualOp :: "'a partial * 'a partial => bool"
+"exEqualOp == uncurryOp existEqualOp"
 
 strongEqualOp :: "'a partial => 'a partial => bool" ("(_ =s=/ _)" [50, 51] 50)
 "strongEqualOp a b == a = b"
@@ -26,105 +64,54 @@ whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
 "whenElseOp t == case t of
     (p, e) => if snd p then fst p else e"
 
-makeTotal :: "'a partial => 'a"
-"makeTotal s == case s of
-    None => arbitrary
-  | Some a => a"
-
-makePartial :: "'a => 'a partial"
-"makePartial == Some"
-
 resOp :: "'a partial * 'b partial => 'a"
-"resOp p == case snd p of
-     None => arbitrary
-   | Some _ => makeTotal (fst p)"
+"resOp p == makeTotal (restrictOp (fst p) (defOp (snd p)))"
 
-noneOp :: "'a partial"
-"noneOp == None"
+(* conversions *)
+lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
+"lift2partial f s == restrictOp (f (makeTotal s)) (defOp s)"
+
+mapPartial :: "('a => 'b) => 'a partial => 'b partial"
+"mapPartial f s == restrictOp (makePartial (f (makeTotal s))) (defOp s)"
 
 unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
             => ('a => 'b partial) partial => 'c => 'd partial"
-"unpackPartial c s a == case s of
-    None => None
-  | Some f => c f a"
+"unpackPartial c s a == lift2partial (flip c a) s"
 
 unpackBool :: "(('a => bool) => 'c => bool)
             => ('a => bool) partial => 'c => bool"
-"unpackBool c s a == case s of
-    None => False
-  | Some f => c f a"
+"unpackBool c s a == defOp s & c (makeTotal s) a"
 
 unpack2partial :: "(('a => 'b) => 'c => 'd)
             => ('a => 'b) partial => 'c => 'd partial"
-"unpack2partial c s a == case s of
-    None => None
-  | Some f => Some (c f a)"
-
-partial2bool :: "'a partial => bool"
-"partial2bool s == case s of
-    None => False
-  | Some a => True"
+"unpack2partial c s a == mapPartial (flip c a) s"
 
 unpack2bool :: "(('a => unit) => 'c => unit)
             => ('a => unit) partial => 'c => bool"
-"unpack2bool c s a == partial2bool s"
-
-uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
-"uncurryOp f p == f (fst p) (snd p)"
-
-curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
-"curryOp f a b == f (a, b)"
-
-exEqualOp :: "'a partial * 'a partial => bool"
-"exEqualOp == uncurryOp existEqualOp"
-
-restrictOp :: "'a => bool => 'a partial"
-"restrictOp a b == if b then makePartial a else noneOp"
+"unpack2bool c s a == defOp s"
 
 bool2partial :: "bool => unit partial"
-"bool2partial b == restrictOp () b"
+"bool2partial b == restrictOp (makePartial ()) b"
 
 liftUnit2unit :: "('a => 'b) => bool => bool"
 "liftUnit2unit f b == b"
 
 liftUnit2bool :: "(unit => bool) => bool => bool"
-"liftUnit2bool f b == if b then f () else False"
+"liftUnit2bool f b == b & f ()"
 
 liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
-"liftUnit2partial f b == if b then f () else noneOp"
+"liftUnit2partial f b == restrictOp (f ()) b"
 
 liftUnit :: "(unit => 'a) => bool => 'a partial"
-"liftUnit f b == restrictOp (f ()) b"
+"liftUnit f b == restrictOp (makePartial (f ())) b"
 
 lift2unit :: "('b => 'c) => ('a partial => bool)"
-"lift2unit f == partial2bool"
+"lift2unit f == defOp"
 
 lift2bool :: "('a => bool) => 'a partial => bool"
-"lift2bool f s == case s of
-    None => False
-  | Some a => f a"
+"lift2bool f s == defOp s & f (makeTotal s)"
 
-lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
-"lift2partial f s == case s of
-    None => None
-  | Some a => f a"
-
-mapPartial :: "('a => 'b) => 'a partial => 'b partial"
-"mapPartial f s == case s of
-    None => None
-  | Some a => Some (f a)"
-
-mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
-"mapFst f p == (f (fst p), snd p)"
-
-mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
-"mapSnd f p == (fst p, f (snd p))"
-
-consts defOp :: "'a option => bool"
-primrec
-"defOp None = False"
-"defOp (Some x) = True"
-
+(* old stuff *)
 consts app :: "('a => 'b option) option => 'a option => 'b option"
 primrec
   "app None a = None"

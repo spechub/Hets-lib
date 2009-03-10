@@ -6,21 +6,8 @@ types 'a partial = "bool * 'a"
 
 constdefs
 
-flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
-"flip f a b == f b a"
-
-ifImplOp :: "bool * bool => bool"
-"ifImplOp p == snd p --> fst p"
-
-existEqualOp :: "'a partial => 'a partial => bool" ("(_ =e=/ _)" [50, 51] 50)
-"existEqualOp a b == fst a & fst b & snd a = snd b"
-
-strongEqualOp :: "'a partial => 'a partial => bool" ("(_ =s=/ _)" [50, 51] 50)
-"strongEqualOp a b == fst a = fst b & (~ (fst a) | snd a = snd b)"
-
-whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
-"whenElseOp t == case t of
-    (p, e) => if snd p then fst p else e"
+defOp :: "'a partial => bool"
+"defOp p == fst p"
 
 makeTotal :: "'a partial => 'a"
 "makeTotal == snd"
@@ -28,30 +15,21 @@ makeTotal :: "'a partial => 'a"
 makePartial :: "'a => 'a partial"
 "makePartial a == (True, a)"
 
-resOp :: "'a partial * 'b partial => 'a"
-"resOp p == if fst (snd p) then makeTotal (fst p) else arbitrary"
+(* undefined is predefined *)
+undefinedOp :: "'a partial"
+"undefinedOp == (False, arbitrary)"
 
+(* backward compatibility only *)
 noneOp :: "'a partial"
-"noneOp == (False, arbitrary)"
+"noneOp == undefinedOp"
 
-unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
-            => ('a => 'b partial) partial => 'c => 'd partial"
-"unpackPartial c s a == if fst s then c (snd s) a else noneOp"
+(* make sure undefined is always equally undefined *)
+restrictOp :: "'a partial => bool => 'a partial"
+"restrictOp a b == if b & defOp a then a else undefinedOp"
 
-unpackBool :: "(('a => bool) => 'c => bool)
-            => ('a => bool) partial => 'c => bool"
-"unpackBool c s a == if fst s then c (snd s) a else False"
-
-unpack2partial :: "(('a => 'b) => 'c => 'd)
-            => ('a => 'b) partial => 'c => 'd partial"
-"unpack2partial c s a == (fst s, c (snd s) a)"
-
-partial2bool :: "'a partial => bool"
-"partial2bool s == fst s"
-
-unpack2bool :: "(('a => unit) => 'c => unit)
-            => ('a => unit) partial => 'c => bool"
-"unpack2bool c s a == partial2bool s"
+(* utilities *)
+flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
+"flip f a b == f b a"
 
 uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 "uncurryOp f p == f (fst p) (snd p)"
@@ -59,46 +37,75 @@ uncurryOp :: "('a => 'b => 'c) => 'a * 'b => 'c"
 curryOp :: "('a * 'b => 'c) => 'a => 'b => 'c"
 "curryOp f a b == f (a, b)"
 
-exEqualOp :: "'a partial * 'a partial => bool"
-"exEqualOp == uncurryOp existEqualOp"
-
-restrictOp :: "'a => bool => 'a partial"
-"restrictOp a b == (b, a)"
-
-bool2partial :: "bool => unit partial"
-"bool2partial b == restrictOp () b"
-
-liftUnit2unit :: "('a => 'b) => bool => bool"
-"liftUnit2unit f b == b"
-
-liftUnit2bool :: "(unit => bool) => bool => bool"
-"liftUnit2bool f b == if b then f () else False"
-
-liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
-"liftUnit2partial f b == if b then f () else noneOp"
-
-liftUnit :: "(unit => 'a) => bool => 'a partial"
-"liftUnit f b == restrictOp (f ()) b"
-
-lift2unit :: "('b => 'c) => ('a partial => bool)"
-"lift2unit f == partial2bool"
-
-lift2bool :: "('a => bool) => 'a partial => bool"
-"lift2bool f s == if fst s then f (snd s) else False"
-
-lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
-"lift2partial f s == if fst s then f (snd s) else noneOp"
-
-mapPartial :: "('a => 'b) => 'a partial => 'b partial"
-"mapPartial f s == (fst s, f (snd s))"
-
+(* map on pairs *)
 mapFst :: "('a => 'b) => 'a * 'c => 'b * 'c"
 "mapFst f p == (f (fst p), snd p)"
 
 mapSnd :: "('b => 'c) => 'a * 'b => 'a * 'c"
 "mapSnd f p == (fst p, f (snd p))"
 
-defOp :: "'a partial => bool"
-"defOp p == fst p"
+(* predefined HasCASL functions *)
+ifImplOp :: "bool * bool => bool"
+"ifImplOp p == snd p --> fst p"
+
+existEqualOp :: "'a partial => 'a partial => bool" ("(_ =e=/ _)" [50, 51] 50)
+"existEqualOp a b == defOp a & defOp b & makeTotal a = makeTotal b"
+
+exEqualOp :: "'a partial * 'a partial => bool"
+"exEqualOp == uncurryOp existEqualOp"
+
+strongEqualOp :: "'a partial => 'a partial => bool" ("(_ =s=/ _)" [50, 51] 50)
+"strongEqualOp a b == a = b"
+
+whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
+"whenElseOp t == case t of
+    (p, e) => if snd p then fst p else e"
+
+resOp :: "'a partial * 'b partial => 'a"
+"resOp p == makeTotal (restrictOp (fst p) (defOp (snd p)))"
+
+(* conversions *)
+lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
+"lift2partial f s == restrictOp (f (makeTotal s)) (defOp s)"
+
+mapPartial :: "('a => 'b) => 'a partial => 'b partial"
+"mapPartial f s == restrictOp (makePartial (f (makeTotal s))) (defOp s)"
+
+unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
+            => ('a => 'b partial) partial => 'c => 'd partial"
+"unpackPartial c s a == lift2partial (flip c a) s"
+
+unpackBool :: "(('a => bool) => 'c => bool)
+            => ('a => bool) partial => 'c => bool"
+"unpackBool c s a == defOp s & c (makeTotal s) a"
+
+unpack2partial :: "(('a => 'b) => 'c => 'd)
+            => ('a => 'b) partial => 'c => 'd partial"
+"unpack2partial c s a == mapPartial (flip c a) s"
+
+unpack2bool :: "(('a => unit) => 'c => unit)
+            => ('a => unit) partial => 'c => bool"
+"unpack2bool c s a == defOp s"
+
+bool2partial :: "bool => unit partial"
+"bool2partial b == restrictOp (makePartial ()) b"
+
+liftUnit2unit :: "('a => 'b) => bool => bool"
+"liftUnit2unit f b == b"
+
+liftUnit2bool :: "(unit => bool) => bool => bool"
+"liftUnit2bool f b == b & f ()"
+
+liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
+"liftUnit2partial f b == restrictOp (f ()) b"
+
+liftUnit :: "(unit => 'a) => bool => 'a partial"
+"liftUnit f b == restrictOp (makePartial (f ())) b"
+
+lift2unit :: "('b => 'c) => ('a partial => bool)"
+"lift2unit f == defOp"
+
+lift2bool :: "('a => bool) => 'a partial => bool"
+"lift2bool f s == defOp s & f (makeTotal s)"
 
 end
