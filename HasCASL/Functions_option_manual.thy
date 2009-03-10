@@ -47,6 +47,11 @@ theorem mkpartial_cancel [simp]: "makeTotal(makePartial x) = x"
 apply (simp add: makeTotal_def makePartial_def)
 done
 
+theorem mkpartial_cancel2 [simp] : "((makePartial x) = (makePartial y)) = (x = y)"
+apply (simp add: makePartial_def)
+done
+
+
 theorem defOp_trivial [simp]: "defOp(makePartial x) = True"
 apply (simp add: makePartial_def makeTotal_def)
 done
@@ -78,21 +83,36 @@ apply (case_tac b)
 apply (auto)
 done
 
-theorem inj  :
-" X__o__X (f', f') = X_id ==>  f' x = f' y --> x = y"
-apply (rule impI)
-apply (drule_tac x = "x" in fun_cong)
-apply (simp add: o_def comp_def id_def)
-apply (frule_tac restrictOp_add_def)
-apply (simp only: restrict_trivial)
-apply (drule_tac x = "x" in fun_cong)
 
+
+theorem inj  :
+" X__o__X (g', f') = X_id ==>  f' x = f' y --> x = y"
+apply (rule impI)
+apply (rule injD [of X_id])
+apply (rule injI)
+apply (simp add: o_def comp_def id_def)
+apply (drule_tac sym)
+apply (frule_tac x = "x" in fun_cong)
+apply (drule_tac x = "y" in fun_cong)
+apply (simp)
+apply (simp (no_asm_simp) add: o_def comp_def id_def)
 done
 
+lemma makepartial_intro : "(s=makePartial t) = (defOp(s) & (makeTotal(s)=t))"
+apply (rule iffI)
+apply (simp add: makePartial_def makeTotal_def)
+apply (simp add: makePartial_def)
+apply (case_tac "s")
+apply (simp add: defOp.simps)
+apply (simp add: makeTotal_def)
+done
 
 theorem surj  :
-"ALL f'.
- X__o__X (f', f') = X_id --> (ALL x. EX y. f' y = makePartial x)"
+"X__o__X (f', f') = X_id --> (ALL x. EX y. f' y = makePartial x)"
+apply (rule impI)
+apply (rule allI)
+apply (rule_tac x="x" in exI)
+apply (drule_tac x = "x" in fun_cong)
 done
 
 
