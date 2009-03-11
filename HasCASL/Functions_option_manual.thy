@@ -47,7 +47,14 @@ theorem mkpartial_cancel [simp]: "makeTotal(makePartial x) = x"
 apply (simp add: makeTotal_def makePartial_def)
 done
 
-theorem mkpartial_cancel2 [simp] : "((makePartial x) = (makePartial y)) = (x = y)"
+theorem mkpartial_cancel2 [simp]: "defOp(x) ==> makePartial(makeTotal x) = x"
+apply (simp add: makeTotal_def makePartial_def)
+apply (case_tac x)
+apply (simp)
+apply (simp)
+done
+
+theorem mkpartial_cancel3 [simp] : "((makePartial x) = (makePartial y)) = (x = y)"
 apply (simp add: makePartial_def)
 done
 
@@ -86,7 +93,7 @@ done
 
 
 theorem inj  :
-" X__o__X (g', f') = X_id ==>  f' x = f' y --> x = y"
+" X__o__X (f', f') = X_id ==>  f' x = f' y --> x = y"
 apply (rule impI)
 apply (rule injD [of X_id])
 apply (rule injI)
@@ -107,12 +114,18 @@ apply (simp add: defOp.simps)
 apply (simp add: makeTotal_def)
 done
 
+lemma inj_id : "id'(x)=id'(y) ==> x=y"
+apply (simp add: id_def)
+done
+
+
 theorem surj  :
 "X__o__X (f', f') = X_id --> (ALL x. EX y. f' y = makePartial x)"
 apply (rule impI)
 apply (rule allI)
-apply (rule_tac x="x" in exI)
+apply (rule_tac x="makeTotal (f' x)" in exI)
 apply (drule_tac x = "x" in fun_cong)
+apply (simp add: o_def comp_def id_def restrictOp_mkpartial_defined)
 done
 
 
