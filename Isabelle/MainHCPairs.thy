@@ -23,9 +23,8 @@ undefinedOp :: "'a partial"
 noneOp :: "'a partial"
 "noneOp == undefinedOp"
 
-(* make sure undefined is always equally undefined *)
 restrictOp :: "'a partial => bool => 'a partial"
-"restrictOp a b == if b & defOp a then a else undefinedOp"
+"restrictOp a b == if b then a else undefinedOp"
 
 (* utilities *)
 flip :: "('a => 'b => 'c) => 'b => 'a => 'c"
