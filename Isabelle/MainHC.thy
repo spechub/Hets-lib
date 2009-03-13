@@ -5,7 +5,7 @@ begin
 types 'a partial = "'a option"
 
 (* is_none *)
-consts defOp :: "'a option => bool"
+consts defOp :: "'a partial => bool"
 primrec
 "defOp None = False"
 "defOp (Some x) = True"
