@@ -88,6 +88,13 @@ apply (case_tac b)
 apply (auto)
 done
 
+theorem restrictOp_trivial2[simp] : "restrictOp p (defOp p) = p"
+apply (simp only: restrictOp_def)
+apply (case_tac "p")
+apply (simp add: undefinedOp_def defOp.simps)
+apply (simp add: undefinedOp_def defOp.simps)
+done
+
 
 theorem restrictOp_mkpartial_defined: "(restrictOp f b) = (makePartial x) ==> f = (makePartial x)"
 apply (simp add: makePartial_def restrictOp_def)
@@ -101,6 +108,7 @@ apply (case_tac "c")
 apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
 done
+
 
 theorem X3comp_assoc1  :
 "ALL f.

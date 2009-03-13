@@ -1,4 +1,4 @@
-theory Functions_Functions
+theory Functions_option_manual
 imports "$HETS_LIB/Isabelle/MainHC"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
@@ -69,6 +69,7 @@ theorem o_assoc :
 apply (rule ext)
 apply (simp add: o_def comp_def)
 apply (subst restrict_out [of _ "defOp (h x)"]) back 
+apply (subst restrict_trivial)
 apply (simp)
 done
 

@@ -27,6 +27,7 @@ apply (rule ext)
 apply (case_tac "h x")
 apply (simp_all)
 done
+
 theorem id_neut: "apt (Some o_X) (pair (Some f') (Some id)) = (Some f')"
 apply (simp)
 done
@@ -40,6 +41,7 @@ apply (simp)
 apply (case_tac "f' y")
 apply (auto)
 done
+
 theorem surj: "apt (Some o_X) (pair (Some f') (Some f')) = (Some id) --> (! x :: 'a . ? y :: 'a . app (Some f') (Some y) = (Some x))"
 apply (auto)
 apply (rule_tac x = "the (f' x)" in exI)
