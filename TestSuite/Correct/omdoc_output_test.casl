@@ -25,12 +25,14 @@
 from Basic/RelationsAndOrders get LeftTotalRelation, RightUniqueRelation
 
 %% causes bug after qualify names
+%[
 spec Rel1 = LeftTotalRelation and RightUniqueRelation then
 
      pred inrg:T
 
      forall x:T. inrg(x) <=> exists y:S. y R x
 end
+]%
 
 spec LTR =
      sorts S, T
