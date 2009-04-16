@@ -1,4 +1,4 @@
-library HasCASL/Real3D/SolidWorks/SolidWorksNew
+library HasCASL/Real3D/SolidWorks/SolidWorks
 version 0.1
 
 %author: E. Schulz
@@ -8,8 +8,7 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/Geometry get BaseObjects
-from HasCASL/Real3D/Basics get RealBase
+from HasCASL/Real3D/Basics get RealBase, AffineRealSpace3DWithSets
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -71,29 +70,23 @@ spec SolidWorks = RealBase then
      %% This Features are missing: Revolution, Sweep, Loft, Chamfer
      SWFeature ::= type SWExtrusion;  %(SWFeature datatype)%
 
-     generated type SWObject ::= type SWSketchObject
+     SWObject ::= type SWSketchObject
 		| type SWSketch
 		| type SWPlane
 		| type SWFeature; %(SWObject datatype)%
 
      ops
      SWReal:Real*Real -> Real; %(Real representation def)%
-     degenerated:Pred(SWPoint)= \p:SWPoint . p = SWPoint(0,0,0); %(degenerated Point def)%
-     degenerated:Pred(SWVector)= \p:SWVector . p = SWVector(0,0,0); %(degenerated Vector def)%
-     degenerated:Pred(SWPlane)= \p:SWPlane . degenerated(NormalVector(p)); %(degenerated Plane def)%
 
      %% the base objects of SolidWorks
      E1:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,0,1),SWVector(1,0,0)); %(E1 def)%
      E2:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,1,0),SWVector(1,0,0)); %(E2 def)%
      E3:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(1,0,0),SWVector(0,1,0)); %(E3 def)%
 
-     types SWPointNonDegenerated = {p:SWPoint. not degenerated(p)}; %(nondegeneratedpoint subtype)%
-	   SWPlaneNonDegenerated = {p:SWPlane. not degenerated(p)}  %(nondegeneratedplane subtype)%
-
 end
 
 
-spec SolidWorksSemanticConstructors = BaseObjects then
+spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
      ops
 	 %{ The following part provides a basis for the
 	 semantics of the solid works objects }%
@@ -172,8 +165,14 @@ then
      %% i = interpretation for solid works features
      i:SWFeature->PointSet;
 
+     %% i = interpretation for solid works planes
+     i:SWPlane->PointSet;
+
      vars o,x,y,z:SWPoint;n,ics:SWVector;l,x1,x2,x3:Real;b1,b2,b3,b4,b5:Logical
 
+     . i(SWPlane(o,n,ics)) = ActAttach(ip(o), VPlane(iv(n))); %(semantics for Planes)%
+
+     %% we ignore all parameters after the length
      . i(SWExtrusion(SWSketch([SWArc(x,y,z)],SWPlane(o,n,ics)),
 		    l,x1,b1,b2,x2,x3,b3,b4,b5)) =
        (let cp = ip(x);

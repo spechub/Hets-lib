@@ -16,6 +16,34 @@ from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
 
+spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
+
+     vars pl1:SWPlane; v1:SWVector;
+	  po1,po2:Point; alpha,beta,gamma:Type; A:alpha; Q:alpha->beta->gamma
+
+     %% a simple fact about the plane and its semantics
+     . let pl = i(pl1)
+       in ((po1 isIn pl) /\ (po2 isIn pl)) =>
+	  orth(iv(NormalVector(pl1)),vec(po1,po2)); %(help4)%
+
+     %% let-env and lambda commute
+     . (let a = A in \b.! (Q a b)) = \b.! (let a = A in (Q a b)); %(help5)%
+
+     %% unique structure of all planes
+     . i(pl1) = i(SWPlane(SpacePoint(pl1), NormalVector(pl1), v1)); %(help6)%
+
+
+     %% another simple fact about the plane and its semantics
+     . let pl = i(pl1)
+       in orth(vec(ip(SpacePoint(pl1)), po1), iv(NormalVector(pl1))) =>
+	  po1 isIn pl; %(help7)%
+
+     
+%[
+]%
+
+end
+
 spec AbstractCylinder = BaseObjects then
      ops radius, height: Real;
 	 offset:Point;
@@ -27,87 +55,39 @@ spec AbstractCylinder = BaseObjects then
 end
 
 
-spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
-
-     vars pl1:SWPlaneNonDegenerated; pl2:SWPlane; c,p1,p2:SWPoint;
-	  po1,po2:Point; alpha,beta,gamma:Type; A:alpha; Q:alpha->beta->gamma
-
-     %{the interpretation for an complete arc: start=end.
-     
-       In that case the Halfspaces are a cover of the whole space
-       and their intersection is the plane resulting from their
-       defining normalvector}%
-     . forall p2,n:SWPointNonDegenerated.
-       VHalfSpace2(iv(p2)) intersection VHalfSpace2(- iv(p2))
-	  = VPlane(iv(n)); %(help1)%
-
-     %% here we don't need the nondegenerated condition
-     . forall p2:SWPoint.
-       (VHalfSpace2(iv(p2)) union VHalfSpace2(- iv(p2))) = allSet:VectorSet;
-							 %(help2)%
-
-     %% this special case point1 = point2 simplifies the semantics
-     . i(Arc(SWArc(pl1,c,p1,p1))) =
-       let cp = ip(c);
-	   r = iv(p1) - iv(c);
-	   Ball = VBall(||r||);
-	   plane = i(Plane(pl1))
-       in
-       ActAttach(cp, Ball) intersection plane; %(help3)%
-  
-     %% a simple fact about the plane and its semantics
-     . let pl = i(Plane(pl2))
-       in ((po1 isIn pl) /\ (po2 isIn pl)) =>
-	  orth(iv(NormalVector(pl2)),vec(po1,po2)); %(help4)%
-
-
-     %% let-env and lambda commute
-     . (let a = A in \b.! (Q a b)) = \b.! (let a = A in (Q a b)); %(help5)%
-
-     %% unique structure of all planes
-     . (p1 = SpacePoint(pl2) /\ p2 = NormalVector(pl2)) =>
-       pl2 = SWPlane(p1, p2); %(help6)%
-
-
-     %% another simple fact about the plane and its semantics
-     . let pl = i(Plane(pl2))
-       in orth(vec(ip(SpacePoint(pl2)), po1), iv(NormalVector(pl2))) =>
-	  po1 isIn pl; %(help7)%
-
-     
-%[
-]%
-
-end
-
 spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
      ops height:Real;
-	 direction:Direction;
 	 center,boundarypoint:SWPoint;
-	 plane:SWPlaneNonDegenerated; %(real plane)%
-         arc:SWArc=SWArc(plane,center,boundarypoint,boundarypoint); %(def of given arc)%
-	 cylinder:SWObject=Extrusion(Arc(arc),height,direction); %(def of given cylinder)%
+	 plane:SWPlane; %(real plane)%
+         arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
+	 x1,x2,x3:Real; %(nonused reals for extrusion)%
+	 b1,b2,b3,b4,b5:Logical; %(nonused booleans for extrusion)%
+	 cylinder:SWFeature=
+              %% we ignore all parameters after the height
+	      SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5);
+	      %(def of given cylinder)%
 
 
      %{constraints for the given parameters}%
      . height > 0; %(real extrusion)%
      . not (center = boundarypoint); %(real arc)%
+     . not (NormalVector(plane) = SWVector(0,0,0)); %(real plane)%
 
      . let c = ip(center);
            bp = ip(boundarypoint);
-           p = i(Plane(plane))
+           p = i(plane)
        in
        (c isIn p) /\ (bp isIn p) %(the arc is wellformed)%
 end
 
 
-view SWCylByAE_IsCylinder: AbstractCylinder
+view SWCylByAE_IsCylinder: { AbstractCylinder hide Circle, Cylinder }
 to
 { SolidWorksCylByArcExtrusion then
   ops
   offset:Point = ip(center); %(viewdef of offset)%
-  axis:Vector = VWithLength(iv(NormalVector(plane)),direction*height); %(viewdef of axis)%
+  axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(viewdef of axis)%
   C: PointSet = i(cylinder); %(viewdef of C)% %(def of C1)%
-  radius:Real = ||iv(boundarypoint) - iv(center)|| %(viewdef of radius)%
+  radius:Real = ||vec(ip(center),ip(boundarypoint))|| %(viewdef of radius)%
 }
 end
