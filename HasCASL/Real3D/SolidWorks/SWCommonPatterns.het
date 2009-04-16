@@ -47,6 +47,9 @@ end
 
 %%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
 
+%% this version has the advantage over the view-version not to have
+%% to give a mapping for all visible signature elements in BaseObjects!!
+
 spec SolidWorksCylByArcExtrusion_is_AbstractCylinder = 
      BaseObjects and SolidWorksSemantics then
 
@@ -104,6 +107,8 @@ spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
        (c isIn p) /\ (bp isIn p) %(the arc is wellformed)%
 end
 
+%% drawback: irrelevant signature symbols have to be hidden!
+%% This method doesn't adapt to changes to the AbstractCylinder Signature!!
 
 view SWCylByAE_IsCylinder: { AbstractCylinder hide Circle, Cylinder, Cylinder1 }
 to
