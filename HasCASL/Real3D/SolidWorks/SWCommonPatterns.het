@@ -44,6 +44,30 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
 
 end
 
+
+%%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
+
+spec SolidWorksCylByArcExtrusion_is_AbstractCylinder = 
+     BaseObjects and SolidWorksSemantics then
+
+     ops height:Real;
+	 center,boundarypoint:SWPoint;
+	 plane:SWPlane; %(real plane)%
+         arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
+	 x1,x2,x3:Real; %(nonused reals for extrusion)%
+	 b1,b2,b3,b4,b5:Logical; %(nonused booleans for extrusion)%
+
+	 offset:Point = ip(center); %(cylinder offset)%
+	 radius:Real = ||vec(ip(center),ip(boundarypoint))||; %(cylinder radius)%
+	 axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(cylinder axis)%
+
+     . i(SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5))
+	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
+end
+
+
+%%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
+
 spec AbstractCylinder = BaseObjects then
      ops radius, height: Real;
 	 offset:Point;
