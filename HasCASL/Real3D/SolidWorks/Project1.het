@@ -6,9 +6,9 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/SolidWorks/SolidWorks
+from HasCASL/Real3D/SolidWorks/SolidWorksOld
      get SolidWorksWithSemantics
-from HasCASL/Real3D/SolidWorks/SWCommonPatterns
+from HasCASL/Real3D/SolidWorks/SWCommonPatternsOld
      get SolidWorksCylByArcExtrusion
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +39,7 @@ to
   center:SWPoint=SWPoint(0,0,0);
   boundarypoint:SWPoint=SWPoint(1,0,0);
   height:Real = 3;
-  plane:SWPlane = E1;
+  plane:SWPlaneNonDegenerated = E1;
   arc:SWArc=arc1;
   cylinder:SWObject=cylinder1
 }

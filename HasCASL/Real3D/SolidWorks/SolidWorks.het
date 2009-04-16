@@ -1,8 +1,10 @@
-library HasCASL/Real3D/SolidWorks/SolidWorks
+library HasCASL/Real3D/SolidWorks/SolidWorksNew
 version 0.1
 
 %author: E. Schulz
 %date: 12-12-2008
+
+%list [__], [], __::__
 
 logic HasCASL
 
@@ -16,27 +18,74 @@ from HasCASL/Real3D/Basics get RealBase
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
 
+%[ The type hierarchie:
+
+          SWObject
+            |  | \
+            |  |  \
+            |  |   SWFeature
+            |  |      |
+            |  |      | constructed of
+            |  |      |
+            |  \   SWSketch
+            \   \     |
+             \   \    | list of
+              \   \   |
+               \   SWSketchObject
+                \     |
+                 \    |
+                  \   |
+                   SWLine, SWArc and SWSpline
+             
+
+]%
+
 spec SolidWorks = RealBase then
 
      type Direction = {x:Real. x=1\/x= -1}; %(direction subtype)%
 
+     var a:Type
+     free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
+
      free types
+     SWVector ::= SWVector(x:Real;y:Real;z:Real); %(SWVector datatype)%
      SWPoint ::= SWPoint(x:Real;y:Real;z:Real); %(SWPoint datatype)%
-     SWArc ::= SWArc(ArcPlane:SWPlane;Center:SWPoint;Start:SWPoint;End:SWPoint);  %(SWArc datatype)%
-     SWPlane ::= SWPlane(SpacePoint:SWPoint;NormalVector:SWPoint); %(SWPlane datatype)%
-     SWObject ::= Arc (getArc:SWArc)
-			| Plane (getPlane:SWPlane)
-			| Extrusion(From:SWObject;
-				    Length:Real;ExDirection:Direction); %(SWObject datatype)%
+     SWPlane ::= SWPlane(SpacePoint:SWPoint;NormalVector:SWVector;InnerCS:SWVector); %(SWPlane datatype)%
+     SWArc ::= SWArc(Center:SWPoint;Start:SWPoint;End:SWPoint);  %(SWArc datatype)%
+     SWLine ::= SWLine(From:SWPoint;To:SWPoint);  %(SWLine datatype)%
+     SWSpline ::= SWSpline(Points:SWList SWPoint);  %(SWSpline datatype)%
+     SWSketchObject ::= type SWArc | type SWLine | type SWSpline ;  %(SWSketchObject datatype)%
+     SWSketch ::= SWSketch(Objects:SWList SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
+
+     SWExtrusion ::= SWExtrusion(Sketch:SWSketch;
+				 Depth:Real;
+				 DraftAngle:Real;
+				 DraftOutward:Logical;
+				 DraftWhileExtruding:Logical;
+				 EndCondition:Real;
+				 WallThickness:Real;
+				 IsBaseExtrude:Logical;
+				 IsBossFeature:Logical;
+				 IsThinFeature:Logical); %(SWExtrusion datatype)%
+
+     %% This Features are missing: Revolution, Sweep, Loft, Chamfer
+     SWFeature ::= type SWExtrusion;  %(SWFeature datatype)%
+
+     generated type SWObject ::= type SWSketchObject
+		| type SWSketch
+		| type SWPlane
+		| type SWFeature; %(SWObject datatype)%
 
      ops
+     SWReal:Real*Real -> Real; %(Real representation def)%
      degenerated:Pred(SWPoint)= \p:SWPoint . p = SWPoint(0,0,0); %(degenerated Point def)%
+     degenerated:Pred(SWVector)= \p:SWVector . p = SWVector(0,0,0); %(degenerated Vector def)%
      degenerated:Pred(SWPlane)= \p:SWPlane . degenerated(NormalVector(p)); %(degenerated Plane def)%
 
      %% the base objects of SolidWorks
-     E1:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(0,0,1)); %(E1 def)%
-     E2:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(0,1,0)); %(E2 def)%
-     E3:SWPlane=SWPlane(SWPoint(0,0,0),SWPoint(1,0,0)); %(E3 def)%
+     E1:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,0,1),SWVector(1,0,0)); %(E1 def)%
+     E2:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,1,0),SWVector(1,0,0)); %(E2 def)%
+     E3:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(1,0,0),SWVector(0,1,0)); %(E3 def)%
 
      types SWPointNonDegenerated = {p:SWPoint. not degenerated(p)}; %(nondegeneratedpoint subtype)%
 	   SWPlaneNonDegenerated = {p:SWPlane. not degenerated(p)}  %(nondegeneratedplane subtype)%
@@ -116,60 +165,23 @@ then
 
      %% the semantics of the objects:
      %% ip = point-interpretation for points
-     ip(point:SWPoint):Point=P(x(point),y(point),z(point)); %(pointsemantics for SWPoint)%
-     %% iv = vector-interpretation for points
-     iv(point:SWPoint):Vector=asVector(ip point); %(vectorsemantics for SWPoint)%
+     ip(point:SWPoint):Point=P(x(point),y(point),z(point)); %(semantics for SWPoint)%
+     %% iv = vector-interpretation for vectors
+     iv(vector:SWVector):Vector=V(x(vector),y(vector),z(vector)); %(semantics for SWVector)%
 
-     %% i = interpretation for solid works objects
-     i:SWObject->PointSet;
+     %% i = interpretation for solid works features
+     i:SWFeature->PointSet;
 
-     vars x,y,z:SWPoint;p:SWPlane;d:Direction;a:SWArc;s:SWObject;l:Real
+     vars o,x,y,z:SWPoint;n,ics:SWVector;l,x1,x2,x3:Real;b1,b2,b3,b4,b5:Logical
 
-     . i(Plane(SWPlane(x,y))) = ActAttach(ip x,VPlane(iv y)) %(semantics for plane)%
-
-
-     . i(Arc(SWArc(p,x,y,z))) = 
-       let cp = ip(x);
-	   center = iv(x);
-	   p1 = iv(y);
-	   p2 = iv(z);
-	   n = iv(NormalVector(p));
-	   r1 = p1 - center;
-	   r2 = p2 - center;
-	   Ball = VBall(||r1||);
-	   HS1 = VHalfSpace2(n#r1);
-	   HS2 = VHalfSpace2(r2#n);
-	   plane = i(Plane(p))
-       in
-       ActAttach(cp,
-		 Ball
-		 intersection
-		 ((HS1 intersection HS2) when (n#r1)*r2 > 0
-		  else (HS1 union HS2)))
-       intersection plane 
-       %(semantics for Arc)%
-
-%[
-       ActAttach(ip(x),
-		 VBall(||iv(y) - iv(x)||)
-		 intersection
-		 ((VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) intersection VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p)))) when (iv(NormalVector(p))#(iv(y) - iv(x)))*(iv(z) - iv(x)) > 0
-		  else (VHalfSpace2(iv(NormalVector(p))#(iv(y) - iv(x))) union VHalfSpace2((iv(z) - iv(x))#iv(NormalVector(p))))))
-       intersection i(Plane(p))
-]%
-
-
-     . i(Extrusion(Arc(a),l,d)) =
-       let axis = iv(NormalVector(ArcPlane(a)));
-	   scaledAxis = VWithLength(axis, d*l);
-	   arc = i(Arc(a))
-       in
-       ActExtrude(scaledAxis, arc) %(semantics for ArcExtrusion)%
-
-%[
-     . i(Extrusion(Arc(a),l,d)) =
-       ActExtrude(VWithLength(iv(NormalVector(ArcPlane(a))), d*l), i(Arc(a)))
-							     
-]%
+     . i(SWExtrusion(SWSketch([SWArc(x,y,z)],SWPlane(o,n,ics)),
+		    l,x1,b1,b2,x2,x3,b3,b4,b5)) =
+       (let cp = ip(x);
+	    r1 = vec(cp, ip(y));
+	    ball = ActAttach(cp, VBall( ||r1|| ));
+	    plane = ActAttach(ip(o), VPlane(iv(n)));
+	    scaledAxis = VWithLength(iv(n), l)
+        in ActExtrude(scaledAxis, ball intersection plane)) when y = z else emptySet
+       %(semantics for ArcExtrusion)%
 
 end
