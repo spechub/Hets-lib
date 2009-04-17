@@ -30,7 +30,7 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
      . (let a = A in \b.! (Q a b)) = \b.! (let a = A in (Q a b)); %(help5)%
 
      %% unique structure of all planes
-     . i(pl1) = i(SWPlane(SpacePoint(pl1), NormalVector(pl1), v1)); %(help6)%
+     . pl1 = SWPlane(SpacePoint(pl1), NormalVector(pl1), InnerCS(pl1)); %(help6)%
 
 
      %% another simple fact about the plane and its semantics
@@ -64,6 +64,23 @@ spec SolidWorksCylByArcExtrusion_is_AbstractCylinder =
 	 radius:Real = ||vec(ip(center),ip(boundarypoint))||; %(cylinder radius)%
 	 axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(cylinder axis)%
 
+%% is there a limit in the crossproduct size of 5??
+SWExtrusion2: (SWSketch * Real * Real * Real  * Real) -> SWExtrusion;
+
+
+     %{constraints for the given parameters}%
+     . height > 0; %(real extrusion)%
+     . not (center = boundarypoint); %(real arc)%
+     . not (NormalVector(plane) = SWVector(0,0,0)); %(real plane)%
+
+     . let c = ip(center);
+           bp = ip(boundarypoint);
+           p = i(plane)
+       in
+       (c isIn p) /\ (bp isIn p) %(the arc is wellformed)%
+
+
+     %{The main theorem}%
      . i(SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5))
 	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
 end
