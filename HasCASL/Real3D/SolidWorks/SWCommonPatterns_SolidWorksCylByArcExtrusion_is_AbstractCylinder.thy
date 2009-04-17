@@ -1034,10 +1034,8 @@ semantics_for_ArcExtrusion [rule_format] :
  ALL X_b3.
  ALL X_b4.
  ALL X_b5.
- ALL ics.
  ALL l.
- ALL X_n.
- ALL X_o.
+ ALL X_plane.
  ALL X_x.
  ALL X_x1.
  ALL X_x2.
@@ -1046,16 +1044,15 @@ semantics_for_ArcExtrusion [rule_format] :
  ALL X_z.
  iX1
  (gn_inj(X_SWExtrusion
-         (X_SWSketch (gn_inj(X_SWArc X_x X_y X_z) ::' [ ]')
-          (X_SWPlane X_o X_n ics))
-         l X_x1 X_b1 X_b2 X_x2 X_x3 X_b3 X_b4 X_b5)) =
+         (X_SWSketch (gn_inj(X_SWArc X_x X_y X_z) ::' [ ]') X_plane) l X_x1
+         X_b1 X_b2 X_x2 X_x3 X_b3 X_b4 X_b5)) =
  (if X_y = X_z
      then let cp = ip(X_x);
               r1 = vec(cp, ip(X_y));
               ball = ActAttach (cp, VBall ( || r1 || ));
-              X_plane = ActAttach (ip(X_o), VPlane (iv(X_n)));
-              scaledAxis = VWithLength(iv(X_n), l)
-          in ActExtrude (scaledAxis, X__intersection__X (ball, X_plane))
+              planeI = iX2 X_plane;
+              scaledAxis = VWithLength(iv(NormalVector(X_plane)), l)
+          in ActExtrude (scaledAxis, X__intersection__X (ball, planeI))
      else X_emptySet)"
 
 help4 [rule_format] :
@@ -1072,8 +1069,8 @@ help5 [rule_format] :
 
 help6 [rule_format] :
 "ALL pl1.
- ALL v1.
- iX2 pl1 = iX2 (X_SWPlane (SpacePoint(pl1)) (NormalVector(pl1)) v1)"
+ pl1 =
+ X_SWPlane (SpacePoint(pl1)) (NormalVector(pl1)) (InnerCS(pl1))"
 
 help7 [rule_format] :
 "ALL pl1.
@@ -1184,6 +1181,9 @@ theorem extrusion_is_cylinder :
     def I01: interv01 == "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1'))"
     def k_bpoint: b_point == "ip(boundarypoint)"
     def k_plane: the_plane == "iX2 plane"
+    def k_nv: n_plane == "iv(NormalVector(plane))"
+    def k_offs: o_plane == "ip(SpacePoint(plane))"
+
 
       -- "introducing facts"
     from help6 have
@@ -1192,24 +1192,20 @@ theorem extrusion_is_cylinder :
     from the_arc_is_wellformed have
       p_bp_elem: "b_point isIn the_plane" by (simp only: Let_def k_plane k_bpoint)
     
-    from the_arc_is_wellformed viewdef_of_offset have
+    from the_arc_is_wellformed cylinder_offset have
       p_offs_elem: "offset isIn the_plane" by (simp only: Let_def k_plane k_bpoint)
 
-
-
-    have plane_struct: "plane = X_SWPlane (SpacePoint(plane)) (NormalVector(plane)) (InnerCS(plane))" sorry
     show ?thesis
 
       apply (subst def_of_given_arc)
-      apply (subst plane_struct)
       apply (subst semantics_for_ArcExtrusion)
-      apply (subst semantics_for_Planes)
       apply (subst if_P, simp)
       -- "We need some way to pushing the let environment to the isar proof context"
       apply (simp only: Let_def)
       apply (simp only: def_of_Cylinder ActExtrude_constr set_comprehension)
       apply (simp only: I01 [symmetric])
       apply (simp only: ActAttach_constr)
+      apply (simp only: cylinder_offset [symmetric] k_bpoint [symmetric] k_nv [symmetric])
       
       apply (rule ext)
 
