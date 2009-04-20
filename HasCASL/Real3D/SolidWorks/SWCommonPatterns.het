@@ -47,8 +47,8 @@ end
 
 spec SolidWorksPlane_is_AffinePlane = 
      AffineObjects and SolidWorksSemantics then
-     ops plane:SWPlane;
-     . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane)));
+     var plane:SWPlane
+     . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane))); %(plane is plane)% %implied
 
 end
 
@@ -60,7 +60,7 @@ end
 %% to give a mapping for all visible signature elements in AffineObjects!!
 
 spec SolidWorksCylByArcExtrusion_is_AffineCylinder = 
-     AffineObjects and SolidWorksSemantics then
+     SolidWorksPlane_is_AffinePlane then
 
      ops height:Real;
 	 center,boundarypoint:SWPoint;

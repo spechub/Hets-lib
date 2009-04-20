@@ -20,7 +20,7 @@ spec BaseObjects = AffineRealSpace3DWithSets
 then
 
      ops Plane(offset:Point;normal:Vector):PointSet
-	  = { \x:Point. orth(vec(x,offset),normal) }; %(def of Plane)%
+	  = { \x:Point .! orth(vec(x,offset),normal) }; %(def of Plane)%
 	 Circle(offset:Point;r:Real;orientation:Vector):PointSet
 	  = { \x:Point .! exists y:Vector.
 	      orth(y,orientation) /\ ||y|| <= r /\ x=offset + y }; %(def of Circle)%
@@ -37,11 +37,11 @@ then
 end
 
 %% simple properties about planes
-spec PlaneProps = BaseObjects then
+spec PlaneProps = BaseObjects then %implies
      vars offset,x,y:Point; normal:Vector
 
      . let plane = Plane(offset, normal)
-       in x isIn plane /\ y isIn plane => orth(vec(x,y),normal)
+       in x isIn plane /\ y isIn plane => orth(vec(x,y),normal) %(plane condition for 2 points)%
 end
 
 %% simple properties about circles ... missing
