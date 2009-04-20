@@ -1205,8 +1205,10 @@ theorem extrusion_is_cylinder :
       apply (simp only: def_of_Cylinder ActExtrude_constr set_comprehension)
       apply (simp only: I01 [symmetric])
       apply (simp only: ActAttach_constr)
-      apply (simp only: cylinder_offset [symmetric] k_bpoint [symmetric] k_nv [symmetric])
-      
+      apply (simp only: cylinder_axis [symmetric])
+      apply (simp only: cylinder_offset [symmetric] k_bpoint [symmetric])
+      apply (simp only: k_plane [symmetric])
+
       apply (rule ext)
 
       -- "Now we split our task in two subgoals"
@@ -1214,20 +1216,16 @@ theorem extrusion_is_cylinder :
 
 
 	fix X_x
-	assume "\<exists>l X_y.
-             (l isIn interv01 \<and>
-              X_y isIn
-              X__intersection__X
-               (X__XPlus__XX2
-                 (ip(center), VBall ( || vec(ip(center), ip(boundarypoint)) || )),
-                X__XPlus__XX2
-                 (ip(SpacePoint(plane)), VPlane (iv(NormalVector(plane)))))) \<and>
-             X_x = X_y +' (l *_3 VWithLength(iv(NormalVector(plane)), height))"
+	assume "\<exists>l X_y. (l isIn interv01 \<and>
+          X_y isIn
+          X__intersection__X
+          (X__XPlus__XX2 (offset, VBall ( || vec(offset, b_point) || )),
+          the_plane)) \<and> X_x = X_y +' (l *_3 axis)"
 	(is "\<exists>l X_y. ?A l X_y")
 
 	then obtain l X_y_h where
 	  h_1: "?A l X_y_h" (is "((?I l) \<and> (X_y_h isIn ?B)) \<and> (?C X_y_h l)") by auto
-	  
+
 	def have_x_y: X_y == "vec(offset, X_y_h)" -- "this is the right instance for X_y!"
 
 	with h_1 have "((l isIn interv01 \<and> orth(X_y, axis)) \<and> || X_y || <=' radius) \<and>
@@ -1235,7 +1233,6 @@ theorem extrusion_is_cylinder :
       
 	  -- "!!! THE MAIN PROOF OF THIS DIRECTION"
 	proof -
-term "?A l X_y_h"
 	  assume ass1: "?A l X_y_h"
 	  (is "(?I l \<and> X_y_h isIn X__intersection__X(?t1, the_plane)) \<and> ?t2")
 

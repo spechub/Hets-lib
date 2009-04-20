@@ -6,7 +6,7 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/Geometry get BaseObjects
+from HasCASL/Real3D/Geometry get AffineObjects
 from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,13 +45,22 @@ spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
 end
 
 
+spec SolidWorksPlane_is_AffinePlane = 
+     AffineObjects and SolidWorksSemantics then
+     ops plane:SWPlane;
+     . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane)));
+
+end
+
+
+
 %%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
 
 %% this version has the advantage over the view-version not to have
-%% to give a mapping for all visible signature elements in BaseObjects!!
+%% to give a mapping for all visible signature elements in AffineObjects!!
 
-spec SolidWorksCylByArcExtrusion_is_AbstractCylinder = 
-     BaseObjects and SolidWorksSemantics then
+spec SolidWorksCylByArcExtrusion_is_AffineCylinder = 
+     AffineObjects and SolidWorksSemantics then
 
      ops height:Real;
 	 center,boundarypoint:SWPoint;
@@ -63,9 +72,6 @@ spec SolidWorksCylByArcExtrusion_is_AbstractCylinder =
 	 offset:Point = ip(center); %(cylinder offset)%
 	 radius:Real = ||vec(ip(center),ip(boundarypoint))||; %(cylinder radius)%
 	 axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(cylinder axis)%
-
-%% is there a limit in the crossproduct size of 5??
-SWExtrusion2: (SWSketch * Real * Real * Real  * Real) -> SWExtrusion;
 
 
      %{constraints for the given parameters}%
@@ -88,7 +94,7 @@ end
 
 %%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
 
-spec AbstractCylinder = BaseObjects then
+spec AffineCylinder = AffineObjects then
      ops radius, height: Real;
 	 offset:Point;
 	 axis:Vector;
@@ -125,9 +131,9 @@ spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
 end
 
 %% drawback: irrelevant signature symbols have to be hidden!
-%% This method doesn't adapt to changes to the AbstractCylinder Signature!!
+%% This method doesn't adapt to changes to the AffineCylinder Signature!!
 
-view SWCylByAE_IsCylinder: { AbstractCylinder hide Circle, Cylinder, Cylinder1 }
+view SWCylByAE_IsCylinder: { AffineCylinder hide Plane, Circle, Cylinder, Cylinder1 }
 to
 { SolidWorksCylByArcExtrusion then
   ops
