@@ -1246,7 +1246,7 @@ theorem extrusion_is_cylinder :
       -- "Now we split our task in two subgoals"
       proof (rule iffI)
 
-
+	-- "SUBGOAL 1"
 	fix X_x
 	assume "\<exists>l X_y. (l isIn interv01 \<and>
           X_y isIn
@@ -1334,75 +1334,65 @@ theorem extrusion_is_cylinder :
 	  hence subgoal1_3: "|| X_y || <=' radius" by (simp add: VBall_constr set_comprehension)
 
 
-thm cylinder_axis
-(*
-"axis = VWithLength(iv(NormalVector(plane)), height)"
-*)
+	  have "X_y_h = offset +' X_y" by (simp only: vec_shift_def_lemma have_x_y)
+	  with point_vector_add_comm_lemma ass1 have
+	    subgoal1_4: "X_x = (offset +' (l *_3 axis)) +' X_y" by simp
 
-thm simple_colin_condition
-thm colin_orth_transitivity
-by auto
-"colin(X_x, X_y) & orth(X_y, X_z) --> orth(X_x, X_z)"
+	  with subgoal1_1 subgoal1_2 subgoal1_3 show "?H l X_y" by blast
+	qed
 
+	thus "\<exists>l X_y. ?H l X_y" by blast
+        -- "first goal solved"
 
-	    apply (simp only: k_nv [symmetric] k_offs [symmetric])
-	    by auto
+      next
 
- by (simp add: Let_def)
-
+	-- "SUBGOAL 2"
+	
+	fix X_x
+	assume "\<exists>l X_y. ((l isIn interv01 \<and> orth(X_y, axis)) \<and> || X_y || <=' radius) \<and>
+          X_x = (offset +' (l *_3 axis)) +' X_y" (is "\<exists>l X_y. ?A l X_y")
+	then obtain l X_y_h where
+	  h_2: "?A l X_y_h" (is "((?I l \<and> ?O X_y_h) \<and> (?C X_y_h)) \<and> (?D X_y_h l)") by blast
+	def X_y == "offset +' X_y_h"
+	with h_2 have "(l isIn interv01 \<and>
+          X_y isIn
+          X__intersection__X
+          (X__XPlus__XX2 (offset, VBall(radius)),
+          the_plane)) \<and>
+          X_x = X_y +' (l *_3 axis)" (is "?H l X_y")
 	  
-thm semantics_for_Planes
+	  -- "!!! THE MAIN PROOF OF THIS DIRECTION"
+	proof -
+	  assume ass1: "?A l X_y_h"
+	  assume ass2: "X_y == offset +' X_y_h"
+	  
+	  
+	    -- "1st. "
+	  from ass1 have subgoal2_1: "?I l" by blast
+	    -- "2nd. "
+	  from ass1 have subgoal2_2: "X_x = X_y +' (l *_3 axis)"
+	    by (simp add: ass2 point_vector_add_comm_lemma)
+	  
+	  have subgoal2_3:
+	    "X_y isIn X__intersection__X (X__XPlus__XX2 (offset, VBall radius), the_plane)"
+	    (is "X_y isIn X__intersection__X (?Ball, the_plane)")
+	      -- " todo: retransform this section, including lemma help7, using colin(axix, iv(n_plane))"
+	    apply (simp only: def_of_intersection)
+	    apply (simp only: plus_Point_VectorSet function_image set_comprehension def_of_isIn VBall_constr k_plane)
 (*
-iX2 (X_SWPlane ?X_o ?X_n ?ics) = ActAttach (ip(?X_o), VPlane (iv(?X_n)))
-*)
+	  proof-
+	    from ass1 ass2 have sgfact_1: "|| X_y_h || <=' radius \<and> offset +' X_y_h = X_y" by auto
+	    
+*)	  
+	    sorry
 
-thm plane_condition_for_2_points
-(* 
-let X_plane = PlaneX2 (?X_offset, ?normal)
-in ?X_x isIn X_plane \<and> ?X_y isIn X_plane \<longrightarrow> orth(vec(?X_x, ?X_y), ?normal)
-
-
-    def k_nv: n_plane == "iv(NormalVector(plane))"
-    def k_offs: o_plane == "ip(SpacePoint(plane))"
-
-need to show that the_plane = Plane (o_plane, n_plane)
-with:  k_plane plane_is_plane k_nv k_offs
-*)
-
-
-thm plane_is_plane
-(*
-iX2 ?X_plane = PlaneX2 (ip(SpacePoint(?X_plane)), iv(NormalVector(?X_plane)))
-*)
-
-thm k_plane
-(*
-the_plane \<equiv> iX2 plane
-*)
-
-thm p_struct
-(*
-plane = X_SWPlane (SpacePoint(plane)) (NormalVector(plane)) (InnerCS(plane))
-*)
-
-
-
-using Ax1_1 Ax2 sqr_def sqrt_def X2_def_Real X3_def_Real
-      X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
-      X9_def_Real decimal_def Zero_Point Zero_Vector
-      scalar_mutliplication scalar_product vector_product colin_def
-      sqr_def_1_1 norm_from_scalar_prod_def orthogonal_def
-      point_to_vector_embedding vector_to_point_embedding Ax1_1_1 vec_def
-      compatibility_PVplus_Vplus set_comprehension function_image
-      def_of_interval plus_PointSet_Vector plus_Point_VectorSet
-      plus_PointSet_VectorSet def_of_Plane def_of_Circle def_of_Cylinder
-      def_of_Cylinder1 E1_def E2_def E3_def VLine_constr
-      VWithLength_constr VPlane_constr VPlane2_constr VConnected_constr
-      VHalfSpace_constr VHalfSpace2_constr VBall_constr VCircle_constr
-      ActAttach_constr ActExtrude_constr semantics_for_SWPoint
-      semantics_for_SWVector def_of_given_arc cylinder_offset
-      cylinder_radius cylinder_axis
-by (auto)
+	  with subgoal2_1 subgoal2_2 show "?H l X_y" by blast
+	qed
+	  
+	thus "\<exists>l X_y. ?H l X_y" by auto
+	  -- "second (and last) goal solved"
+      qed
+    qed
 
 ML "Header.record \"extrusion_is_cylinder\""
 
