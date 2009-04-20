@@ -38,10 +38,14 @@ end
 
 %% simple properties about planes
 spec PlaneProps = BaseObjects then %implies
-     vars offset,x,y:Point; normal:Vector
+     vars offset,x,y:Point; normal,v:Vector
 
      . let plane = Plane(offset, normal)
        in x isIn plane /\ y isIn plane => orth(vec(x,y),normal) %(plane condition for 2 points)%
+
+     . let plane = Plane(offset, normal)
+       in x isIn plane /\ orth(v,normal) => (x+v) isIn plane %(plane condition for point and vector)%
+
 end
 
 %% simple properties about circles ... missing

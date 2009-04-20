@@ -50,21 +50,21 @@ ML "Header.initialize
      \"plus_Point_VectorSet\", \"plus_PointSet_VectorSet\",
      \"def_of_Plane\", \"def_of_Circle\", \"def_of_Cylinder\",
      \"def_of_Cylinder1\", \"plane_condition_for_2_points\",
-     \"direction_subtype\", \"ga_select_first\", \"ga_select_rest\",
-     \"ga_select_x\", \"ga_select_y\", \"ga_select_z\",
-     \"ga_select_x_1\", \"ga_select_y_1\", \"ga_select_z_1\",
-     \"ga_select_SpacePoint\", \"ga_select_NormalVector\",
-     \"ga_select_InnerCS\", \"ga_select_Center\", \"ga_select_Start\",
-     \"ga_select_End\", \"ga_select_From\", \"ga_select_To\",
-     \"ga_select_Points\", \"ga_select_Objects\", \"ga_select_Plane\",
-     \"ga_select_Sketch\", \"ga_select_Depth\",
-     \"ga_select_DraftAngle\", \"ga_select_DraftOutward\",
-     \"ga_select_DraftWhileExtruding\", \"ga_select_EndCondition\",
-     \"ga_select_WallThickness\", \"ga_select_IsBaseExtrude\",
-     \"ga_select_IsBossFeature\", \"ga_select_IsThinFeature\",
-     \"E1_def\", \"E2_def\", \"E3_def\", \"VLine_constr\",
-     \"VWithLength_constr\", \"VPlane_constr\", \"VPlane2_constr\",
-     \"VConnected_constr\", \"VHalfSpace_constr\",
+     \"plane_condition_for_point_and_vector\", \"direction_subtype\",
+     \"ga_select_first\", \"ga_select_rest\", \"ga_select_x\",
+     \"ga_select_y\", \"ga_select_z\", \"ga_select_x_1\",
+     \"ga_select_y_1\", \"ga_select_z_1\", \"ga_select_SpacePoint\",
+     \"ga_select_NormalVector\", \"ga_select_InnerCS\",
+     \"ga_select_Center\", \"ga_select_Start\", \"ga_select_End\",
+     \"ga_select_From\", \"ga_select_To\", \"ga_select_Points\",
+     \"ga_select_Objects\", \"ga_select_Plane\", \"ga_select_Sketch\",
+     \"ga_select_Depth\", \"ga_select_DraftAngle\",
+     \"ga_select_DraftOutward\", \"ga_select_DraftWhileExtruding\",
+     \"ga_select_EndCondition\", \"ga_select_WallThickness\",
+     \"ga_select_IsBaseExtrude\", \"ga_select_IsBossFeature\",
+     \"ga_select_IsThinFeature\", \"E1_def\", \"E2_def\", \"E3_def\",
+     \"VLine_constr\", \"VWithLength_constr\", \"VPlane_constr\",
+     \"VPlane2_constr\", \"VConnected_constr\", \"VHalfSpace_constr\",
      \"VHalfSpace2_constr\", \"VBall_constr\", \"VCircle_constr\",
      \"ActAttach_constr\", \"ActExtrude_constr\", \"vwl_length\",
      \"vwl_colin\", \"semantics_for_SWPoint\",
@@ -731,6 +731,14 @@ plane_condition_for_2_points [rule_format] :
  in X_x isIn X_plane & X_y isIn X_plane -->
     orth(vec(X_x, X_y), normal)"
 
+plane_condition_for_point_and_vector [rule_format] :
+"ALL normal.
+ ALL X_offset.
+ ALL v.
+ ALL X_x.
+ let X_plane = PlaneX2 (X_offset, normal)
+ in X_x isIn X_plane & orth(v, normal) --> X_x +' v isIn X_plane"
+
 direction_subtype [rule_format] :
 "ALL X_x.
  defOp (gn_proj(X_x)) =
@@ -1361,34 +1369,47 @@ theorem extrusion_is_cylinder :
           the_plane)) \<and>
           X_x = X_y +' (l *_3 axis)" (is "?H l X_y")
 	  
-	  -- "!!! THE MAIN PROOF OF THIS DIRECTION"
+	-- "!!! THE MAIN PROOF OF THIS DIRECTION"
 	proof -
 	  assume ass1: "?A l X_y_h"
 	  assume ass2: "X_y == offset +' X_y_h"
 	  
 	  
-	    -- "1st. "
 	  from ass1 have subgoal2_1: "?I l" by blast
-	    -- "2nd. "
 	  from ass1 have subgoal2_2: "X_x = X_y +' (l *_3 axis)"
 	    by (simp add: ass2 point_vector_add_comm_lemma)
 	  
 	  have subgoal2_3:
 	    "X_y isIn X__intersection__X (X__XPlus__XX2 (offset, VBall radius), the_plane)"
 	    (is "X_y isIn X__intersection__X (?Ball, the_plane)")
-	      -- " todo: retransform this section, including lemma help7, using colin(axix, iv(n_plane))"
-	    apply (simp only: def_of_intersection)
-	    apply (simp only: plus_Point_VectorSet function_image set_comprehension def_of_isIn VBall_constr k_plane)
-(*
-	  proof-
-	    from ass1 ass2 have sgfact_1: "|| X_y_h || <=' radius \<and> offset +' X_y_h = X_y" by auto
 	    
-*)	  
-	    sorry
-
+	  proof-
+	    from ass1 have "|| X_y_h || <=' radius" by blast
+	    hence xyh_vball: "X_y_h isIn VBall(radius)"
+	      by (simp add: VBall_constr set_comprehension)
+	    
+	    have xy_in_ball: "X_y isIn ?Ball"
+	    proof (simp only: def_of_isIn,
+		simp only: plus_Point_VectorSet function_image set_comprehension)
+	      from ass2 xyh_vball have
+		"X_y_h isIn VBall radius \<and> offset +' X_y_h = X_y" (is "?B X_y_h")
+		by blast
+	      thus "\<exists>X_z. ?B X_z" ..
+	    qed
+	    
+	    from orth_symmetry ass1 have "orth(axis, X_y_h)" by blast
+	    with orth_symmetry axis_normal_colin colin_orth_transitivity
+	      colin_symmetry have "orth(X_y_h, n_plane)" by blast
+	    with theplane_struct plane_condition_for_point_and_vector
+	      p_offs_elem ass2 have
+	      "X_y isIn the_plane" by (simp add: Let_def)
+	    
+	    with xy_in_ball show ?thesis by (subst def_of_intersection, simp)
+	  qed
+	  
 	  with subgoal2_1 subgoal2_2 show "?H l X_y" by blast
 	qed
-	  
+	
 	thus "\<exists>l X_y. ?H l X_y" by auto
 	  -- "second (and last) goal solved"
       qed
