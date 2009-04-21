@@ -46,7 +46,7 @@ end
 
 
 spec SolidWorksPlane_is_AffinePlane = 
-     AffineObjects and SolidWorksSemantics then
+     PlaneProps and SolidWorksSemantics then
      var plane:SWPlane
      . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane))); %(plane is plane)% %implied
 
@@ -94,17 +94,6 @@ end
 
 %%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
 
-spec AffineCylinder = AffineObjects then
-     ops radius, height: Real;
-	 offset:Point;
-	 axis:Vector;
-	 C: PointSet = Cylinder(offset,radius,axis);
-
-     . ||axis|| = height;          %(the length of the axis is the height)%
-     . radius > 0 /\ height > 0; %(non-collapsed cylinder)%
-end
-
-
 spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
      ops height:Real;
 	 center,boundarypoint:SWPoint;
@@ -133,7 +122,7 @@ end
 %% drawback: irrelevant signature symbols have to be hidden!
 %% This method doesn't adapt to changes to the AffineCylinder Signature!!
 
-view SWCylByAE_IsCylinder: { AffineCylinder hide Plane, Circle, Cylinder, Cylinder1 }
+view SWCylByAE_IsCylinder: AffineCylinder
 to
 { SolidWorksCylByArcExtrusion then
   ops
@@ -141,5 +130,5 @@ to
   axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(viewdef of axis)%
   C: PointSet = i(cylinder); %(viewdef of C)% %(def of C1)%
   radius:Real = ||vec(ip(center),ip(boundarypoint))|| %(viewdef of radius)%
-}
+} = 
 end
