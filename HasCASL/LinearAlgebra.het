@@ -28,20 +28,20 @@ then
      . r * (x + y) = (r * x) + (r * y)        %(distr_Space)%
 end
 
-%( Definitional extension: colin-pred )%
+%( Definitional extension: lindep-pred )%
 spec ExtVectorSpace[VectorSpace[Field]] = %def
-     preds colin:Space*Space;
+     preds lindep:Space*Space;
 
      var x,y:Space
-     . colin(x,y) <=> (y=0 \/ exists r:Elem. x = r*y) %(colin_def)%
+     . lindep(x,y) <=> (y=0 \/ exists r:Elem. x = r*y) %(lindep_def)%
 
 
 then %implies
      var x,y:Space; r:Elem
-     %{ colin props }%
-     . colin(x,x) %(colin reflexivity)%
-     . colin(x,y) => colin(y,x) %(colin symmetry)%
-     . x = r * y => colin(x,y)  %(simple colin condition)%
+     %{ lindep props }%
+     . lindep(x,x) %(lindep reflexivity)%
+     . lindep(x,y) => lindep(y,x) %(lindep symmetry)%
+     . x = r * y => lindep(x,y)  %(simple lindep condition)%
 end
 
 spec NormedSpace[FieldWithValuation] =
@@ -90,7 +90,7 @@ then %implies
      . orth(x,y) => orth(y,x) %(orth symmetry)%
 
      %{ mixed props }%
-     . colin(x,y) /\ orth(y,z) => orth(x,z) %(colin orth transitivity)%
+     . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitivity)%
 end
 
 view EuclideanSpaceIsNormedSpace:
