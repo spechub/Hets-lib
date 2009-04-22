@@ -41,8 +41,6 @@ from HasCASL/Real3D/Basics get RealBase, AffineRealSpace3DWithSets
 
 spec SolidWorks = RealBase then
 
-     type Direction = {x:Real. x=1\/x= -1}; %(direction subtype)%
-
      var a:Type
      free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
 
@@ -186,5 +184,20 @@ then
 	    scaledAxis = VWithLength(iv(NormalVector(plane)), l)
         in ActExtrude(scaledAxis, ball intersection planeI)) when y = z else emptySet
        %(semantics for ArcExtrusion)%
+
+
+     %% we define the inverse functions for point and vector interpretations
+     ops ip_i(point:Point):SWPoint = 
+	 SWPoint(C1(point),C2(point),C3(point)); %(inverse of ip)%
+	 iv_i(vector:Vector):SWVector =
+	 SWVector(C1(vector),C2(vector),C3(vector)); %(inverse of iv)%
+
+then %implies
+     vars x:Point; w:Vector; p:SWPoint; v:SWVector
+     . ip_i(ip(p)) = p %(ip left inverse)%
+     . ip(ip_i(x)) = x %(ip right inverse)%
+
+     . iv_i(iv(v)) = v %(iv left inverse)%
+     . iv(iv_i(w)) = w %(iv right inverse)%
 
 end

@@ -91,16 +91,18 @@ spec SimpleReals = Reals hide NonZero
 
 spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
 then %def
-     type RealPos = {x:Real. x >= 0};
+     type RealNonNeg = {x:Real. x >= 0};
+     type RealPos = {x:Real. x > 0};
+     type RealStar = {x:Real. not x = 0};
 
-     op abs(x:Real):RealPos = x when 0 <= x else -x
+     op abs(x:Real):RealNonNeg = x when 0 <= x else -x
 end
 
 spec FieldWithValuation =
      Field
 and  OrderedReals
 then
-     op val: Elem -> RealPos
+     op val: Elem -> RealNonNeg
      forall x,y:Elem
      . val(x) >= 0              %(non-negative)%
      . val(x) = 0 <=> x = 0     %(pos-definite)%
@@ -119,13 +121,13 @@ end
 spec RealFunctions = OrderedReals
 then %def
 
-     ops sqr: Real -> RealPos;
-	 sqrt: RealPos -> Real;
+     ops sqr: Real -> RealNonNeg;
+	 sqrt: RealNonNeg -> Real;
 
-     var r:Real;q:RealPos
+     var r:Real;q:RealNonNeg
      . sqr(r) = r * r    %(sqr_def)%
      %{ to see that this definition of sqrt is definitional one need the
-        injectivity of sqr on RealPos e.g. via the intermediate value theorem }%
+        injectivity of sqr on RealNonNeg e.g. via the intermediate value theorem }%
      . sqr(sqrt(q)) = q  %(sqrt_def)%
 end
 

@@ -6,8 +6,9 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/Geometry get AffineObjects
-from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
+from HasCASL/Real3D/Geometry get PlaneProps, Cylinder
+from HasCASL/Real3D/SolidWorks/SolidWorks
+     get SolidWorksWithSemantics
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -15,43 +16,12 @@ from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
-
-spec SolidWorksSemantics = SolidWorksWithSemantics then %implies
-
-     vars pl1:SWPlane; v1:SWVector;
-	  po1,po2:Point; alpha,beta,gamma:Type; A:alpha; Q:alpha->beta->gamma
-
-     %% a simple fact about the plane and its semantics
-     . let pl = i(pl1)
-       in ((po1 isIn pl) /\ (po2 isIn pl)) =>
-	  orth(iv(NormalVector(pl1)),vec(po1,po2)); %(help4)%
-
-     %% let-env and lambda commute
-     . (let a = A in \b.! (Q a b)) = \b.! (let a = A in (Q a b)); %(help5)%
-
-     %% unique structure of all planes
-     . pl1 = SWPlane(SpacePoint(pl1), NormalVector(pl1), InnerCS(pl1)); %(help6)%
-
-
-     %% another simple fact about the plane and its semantics
-     . let pl = i(pl1)
-       in orth(vec(ip(SpacePoint(pl1)), po1), iv(NormalVector(pl1))) =>
-	  po1 isIn pl; %(help7)%
-
-     
-%[
-]%
-
-end
-
-
 spec SolidWorksPlane_is_AffinePlane = 
-     PlaneProps and SolidWorksSemantics then
+     PlaneProps and SolidWorksWithSemantics then
      var plane:SWPlane
-     . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane))); %(plane is plane)% %implied
+     . i(plane) = Plane(ip(SpacePoint(plane)),iv(NormalVector(plane)) as VectorStar); %(plane is plane)% %implied
 
 end
-
 
 
 %%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
@@ -60,9 +30,9 @@ end
 %% to give a mapping for all visible signature elements in AffineObjects!!
 
 spec SolidWorksCylByArcExtrusion_is_AffineCylinder = 
-     SolidWorksPlane_is_AffinePlane then
+     SolidWorksPlane_is_AffinePlane and Cylinder then
 
-     ops height:Real;
+     ops height:RealPos;
 	 center,boundarypoint:SWPoint;
 	 plane:SWPlane; %(real plane)%
          arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
@@ -70,14 +40,15 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
 	 b1,b2,b3,b4,b5:Logical; %(nonused booleans for extrusion)%
 
 	 offset:Point = ip(center); %(cylinder offset)%
-	 radius:Real = ||vec(ip(center),ip(boundarypoint))||; %(cylinder radius)%
-	 axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(cylinder axis)%
+	 radius:RealPos = ||vec(ip(center),ip(boundarypoint))||; %(cylinder radius)%
+	 axis:VectorStar = VWithLength(iv(NormalVector(plane)),height); %(cylinder axis)%
 
 
      %{constraints for the given parameters}%
-     . height > 0; %(real extrusion)%
+     . height > 0; %(real extrusion)% %% follows from type RealPos
      . not (center = boundarypoint); %(real arc)%
      . not (NormalVector(plane) = SWVector(0,0,0)); %(real plane)%
+     %% follows from type of axis and axis_def!
 
      . let c = ip(center);
            bp = ip(boundarypoint);
@@ -89,46 +60,26 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
      %{The main theorem}%
      . i(SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5))
 	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
+%{
+}%
 end
 
 
 %%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
 
-spec SolidWorksCylByArcExtrusion = SolidWorksSemantics then
-     ops height:Real;
-	 center,boundarypoint:SWPoint;
-	 plane:SWPlane; %(real plane)%
-         arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
-	 x1,x2,x3:Real; %(nonused reals for extrusion)%
-	 b1,b2,b3,b4,b5:Logical; %(nonused booleans for extrusion)%
-	 cylinder:SWFeature=
-              %% we ignore all parameters after the height
-	      SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5);
-	      %(def of given cylinder)%
-
-
-     %{constraints for the given parameters}%
-     . height > 0; %(real extrusion)%
-     . not (center = boundarypoint); %(real arc)%
-     . not (NormalVector(plane) = SWVector(0,0,0)); %(real plane)%
-
-     . let c = ip(center);
-           bp = ip(boundarypoint);
-           p = i(plane)
-       in
-       (c isIn p) /\ (bp isIn p) %(the arc is wellformed)%
+spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
+     op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
+	  = let bpCond = \p:Point .! let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
+	        boundarypoint = ip_i(choose(bpCond));
+		center = ip_i(offset);
+	        plane = SWPlane(center, iv_i(axis), SWVector(0,0,0));
+		arc = SWArc(center,boundarypoint,boundarypoint);
+		height = ||axis||;
+		x1 = 0:Real;
+		b = false
+	    in
+	    i(SWExtrusion(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b)); %(affine cylinder by SW)%
+	    %% every affine cylinder can be produced in SolidWorks
 end
 
-%% drawback: irrelevant signature symbols have to be hidden!
-%% This method doesn't adapt to changes to the AffineCylinder Signature!!
-
-view SWCylByAE_IsCylinder: AffineCylinder
-to
-{ SolidWorksCylByArcExtrusion then
-  ops
-  offset:Point = ip(center); %(viewdef of offset)%
-  axis:Vector = VWithLength(iv(NormalVector(plane)),height); %(viewdef of axis)%
-  C: PointSet = i(cylinder); %(viewdef of C)% %(def of C1)%
-  radius:Real = ||vec(ip(center),ip(boundarypoint))|| %(viewdef of radius)%
-} = 
-end
+view SWCylByAE_IsCylinder: Cylinder to SolidWorksCylByArcExtrusion

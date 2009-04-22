@@ -43,21 +43,31 @@ then
      type ZeroToNine =
 	  {x:Real. x=0\/x=1\/x=2\/x=3\/x=4\/x=5\/x=6\/x=7\/x=8\/x=9} %(ZeroToNine type)%
 
-     op __ @@ __ (m:ZeroToNine;n:Real): Real = (m * (9 + 1)) + n
-     %(decimal_def)%
+     op __ @@ __ (m:ZeroToNine;n:Real): Real = (m * (9 + 1)) + n %(decimal_def)%
 
 end
 
 spec Points3D = RealBase then
      free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
      ops 0:Point=P(0,0,0); %(Zero Point)%
+
+	 %% choice operators may only be defined on non-empty types,
+	 %% otherwise they introduce inconsistencies as they guarantee
+	 %% the existence of an element!
+	 choose:Pred(Point) -> Point; %(choice op for Point)%
+
+     . forall P:Pred(Point). (exists y:Point. P(y)) => P(choose(P)) %(Point choice)%
+
 end
 
 spec Vectors3DBase = RealBase then
      free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
+
      ops 0:Vector=V(0,0,0); %(Zero Vector)%
 	 __+__ : Vector * Vector -> Vector;
 	 - __ : Vector -> Vector;
+
+     type VectorStar = {x:Vector. not x = 0};
 
      vars x,y:Vector
      . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))  %(def of vector addition)%
