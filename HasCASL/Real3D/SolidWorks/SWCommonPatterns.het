@@ -68,22 +68,25 @@ end
 %%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
 
 spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
-     op SWCylinder(offset:Point;r:RealPos;axis:VectorStar):SWFeature
-	  = let bpCond = \p:Point .! let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
-	        boundarypoint = ip_i(choose(bpCond));
-		center = ip_i(offset);
-	        plane = SWPlane(center, iv_i(axis), SWVector(0,0,0));
+     op SWCylinder(center, boundarypoint:SWPoint; axis:SWVector):SWFeature
+	  = let plane = SWPlane(center, axis, SWVector(0,0,0));
 		arc = SWArc(center,boundarypoint,boundarypoint);
-		height = ||axis||;
+		height = ||iv(axis)||;
 		x1 = 0:Real;
 		b = false
 	    in
-	    SWExtrusion(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b); %(affine cylinder by SW)%
-	    %% every affine cylinder can be produced in SolidWorks
+	    SWExtrusion(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b); %(def of SWCylinder)%
 end
 
 view SWCylByAE_IsCylinder: Cylinder to 
-     {SolidWorksCylByArcExtrusion
-        then
-      op Cylinder(offset:Point;r:RealPos;axis:VectorStar):Pointset = 
-           i(SWCylinder(offset;r;axis)
+     { SolidWorksCylByArcExtrusion
+       then
+       op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
+	  = let bpCond = \p:Point .! let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
+	        boundarypoint = ip_i(choose(bpCond));
+		center = ip_i(offset);
+                SWaxis = iv_i(axis)
+       in
+       i(SWCylinder(center, boundarypoint, SWaxis)) %(affine cylinder constructible in SW)%
+       %% every affine cylinder can be produced in SolidWorks
+     }
