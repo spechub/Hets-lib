@@ -68,7 +68,7 @@ end
 %%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
 
 spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
-     op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
+     op SWCylinder(offset:Point;r:RealPos;axis:VectorStar):SWFeature
 	  = let bpCond = \p:Point .! let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
 	        boundarypoint = ip_i(choose(bpCond));
 		center = ip_i(offset);
@@ -78,8 +78,12 @@ spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
 		x1 = 0:Real;
 		b = false
 	    in
-	    i(SWExtrusion(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b)); %(affine cylinder by SW)%
+	    SWExtrusion(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b); %(affine cylinder by SW)%
 	    %% every affine cylinder can be produced in SolidWorks
 end
 
-view SWCylByAE_IsCylinder: Cylinder to SolidWorksCylByArcExtrusion
+view SWCylByAE_IsCylinder: Cylinder to 
+     {SolidWorksCylByArcExtrusion
+        then
+      op Cylinder(offset:Point;r:RealPos;axis:VectorStar):Pointset = 
+           i(SWCylinder(offset;r;axis)
