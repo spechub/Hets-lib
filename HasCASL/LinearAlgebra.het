@@ -21,12 +21,19 @@ spec VectorSpace[Field] = AdditiveAbelianGroup_aux
 then
      op  __ * __: Elem * Space -> Space
 
-     forall s,r:Elem; x,y:Space
+     vars s,r:Elem; x,y:Space
 
      . 1 * x = x                              %(unit)%
      . (r * s) * x = r * (s * x)              %(mix_assoc)%
      . (r + s) * x = (r * x) + (s * x)        %(distr_Field)%
      . r * (x + y) = (r * x) + (r * y)        %(distr_Space)%
+
+then %implies
+     vars x:Space; r:Elem
+     . 0 * x = 0 %(zero by left zero)%
+     . r * 0:Space = 0 %(zero by right zero)%
+
+     . -1 * x = -x %(inverse by -1)%
 end
 
 %( Definitional extension: lindep-pred )%
