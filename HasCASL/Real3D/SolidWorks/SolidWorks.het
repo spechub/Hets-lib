@@ -8,7 +8,7 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/Basics get RealBase, AffineRealSpace3DWithSets
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -39,18 +39,16 @@ from HasCASL/Real3D/Basics get RealBase, AffineRealSpace3DWithSets
 
 ]%
 
-spec SolidWorks = RealBase then
+spec SolidWorks = AffineRealSpace3DWithSets then
 
      var a:Type
      free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
 
      free types
-     SWVector ::= SWVector(x:Real;y:Real;z:Real); %(SWVector datatype)%
-     SWPoint ::= SWPoint(x:Real;y:Real;z:Real); %(SWPoint datatype)%
-     SWPlane ::= SWPlane(SpacePoint:SWPoint;NormalVector:SWVector;InnerCS:SWVector); %(SWPlane datatype)%
-     SWArc ::= SWArc(Center:SWPoint;Start:SWPoint;End:SWPoint);  %(SWArc datatype)%
-     SWLine ::= SWLine(From:SWPoint;To:SWPoint);  %(SWLine datatype)%
-     SWSpline ::= SWSpline(Points:SWList SWPoint);  %(SWSpline datatype)%
+     SWPlane ::= SWPlane(SpacePoint:Point;NormalVector:VectorStar;InnerCS:Vector); %(SWPlane datatype)%
+     SWArc ::= SWArc(Center:Point;Start:Point;End:Point);  %(SWArc datatype)%
+     SWLine ::= SWLine(From:Point;To:Point);  %(SWLine datatype)%
+     SWSpline ::= SWSpline(Points:SWList Point);  %(SWSpline datatype)%
      SWSketchObject ::= type SWArc | type SWLine | type SWSpline ;  %(SWSketchObject datatype)%
      SWSketch ::= SWSketch(Objects:SWList SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
 
@@ -76,11 +74,22 @@ spec SolidWorks = RealBase then
      ops
      SWReal:Real*Real -> Real; %(Real representation def)%
 
-     %% the base objects of SolidWorks
-     E1:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,0,1),SWVector(1,0,0)); %(E1 def)%
-     E2:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(0,1,0),SWVector(1,0,0)); %(E2 def)%
-     E3:SWPlane=SWPlane(SWPoint(0,0,0),SWVector(1,0,0),SWVector(0,1,0)); %(E3 def)%
+     SWExtrusion_inj: SWExtrusion -> SWFeature;
+     SWExtrusion_proj: SWFeature -> SWExtrusion;
 
+
+     %% the base objects of SolidWorks
+     E1:SWPlane =
+     SWPlane(P(0,0,0),VectorStar_proj(V(0,0,1)),V(1,0,0));
+     %(E1 def)%
+     E2:SWPlane =
+     SWPlane(P(0,0,0),VectorStar_proj(V(0,1,0)),V(1,0,0));
+     %(E2 def)%
+     E3:SWPlane =
+     SWPlane(P(0,0,0),VectorStar_proj(V(1,0,0)),V(0,1,0));
+     %(E3 def)%
+
+     . isSubtype(SWExtrusion_inj, SWExtrusion_proj); %(SWExtrusion_subtype)%
 end
 
 
@@ -156,48 +165,27 @@ spec SolidWorksWithSemantics = SolidWorks and SolidWorksSemanticConstructors
 then
      ops
 
-     %% the semantics of the objects:
-     %% ip = point-interpretation for points
-     ip(point:SWPoint):Point=P(x(point),y(point),z(point)); %(semantics for SWPoint)%
-     %% iv = vector-interpretation for vectors
-     iv(vector:SWVector):Vector=V(x(vector),y(vector),z(vector)); %(semantics for SWVector)%
-
      %% i = interpretation for solid works features
      i:SWFeature->PointSet;
 
      %% i = interpretation for solid works planes
      i:SWPlane->PointSet;
 
-     vars o,x,y,z:SWPoint;n,ics:SWVector;l,x1,x2,x3:Real;plane:SWPlane;
-	  b1,b2,b3,b4,b5:Logical
+     vars o,x,y,z:Point; n:VectorStar; ics:Vector; l,x1,x2,x3:Real;
+	  plane:SWPlane; b1,b2,b3,b4,b5:Logical
 
-     . i(SWPlane(o,n,ics)) = ActAttach(ip(o), VPlane(iv(n)));
+     . i(SWPlane(o,n,ics)) = ActAttach(o, VPlane(n));
      %(semantics for Planes)%
 
      %% we ignore all parameters after the length
-     . i(SWExtrusion(SWSketch([SWArc(x,y,z)],plane),
-		    l,x1,b1,b2,x2,x3,b3,b4,b5)) =
-       (let cp = ip(x);
-	    r1 = vec(cp, ip(y));
+     . i(SWExtrusion_inj(SWExtrusion(SWSketch([SWArc(x,y,z)],plane),
+				     l,x1,b1,b2,x2,x3,b3,b4,b5))) =
+       (let cp = x;
+	    r1 = vec(cp, y);
 	    ball = ActAttach(cp, VBall( ||r1|| ));
 	    planeI = i(plane);
-	    scaledAxis = VWithLength(iv(NormalVector(plane)), l)
+	    scaledAxis = VWithLength(NormalVector(plane), l)
         in ActExtrude(scaledAxis, ball intersection planeI)) when y = z else emptySet
        %(semantics for ArcExtrusion)%
-
-
-     %% we define the inverse functions for point and vector interpretations
-     ops ip_i(point:Point):SWPoint = 
-	 SWPoint(C1(point),C2(point),C3(point)); %(inverse of ip)%
-	 iv_i(vector:Vector):SWVector =
-	 SWVector(C1(vector),C2(vector),C3(vector)); %(inverse of iv)%
-
-then %implies
-     vars x:Point; w:Vector; p:SWPoint; v:SWVector
-     . ip_i(ip(p)) = p %(ip left inverse)%
-     . ip(ip_i(x)) = x %(ip right inverse)%
-
-     . iv_i(iv(v)) = v %(iv left inverse)%
-     . iv(iv_i(w)) = w %(iv right inverse)%
 
 end
