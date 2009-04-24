@@ -1,5 +1,5 @@
 library HasCASL/Real3D/SolidWorks/SolidWorks
-version 0.1
+version 0.2
 
 %author: E. Schulz
 %date: 12-12-2008
@@ -153,6 +153,8 @@ then %implies
 	 %{ The following part provides some basic facts about
 	 these constructor }%
 	 vars v:Vector;s:Real
+
+	 . ||v|| = s => VWithLength(v,s) = v %(vwl identity)%
 
 	 . not (v=0) => ||VWithLength(v,s)|| = abs(s) %(vwl length)%
 

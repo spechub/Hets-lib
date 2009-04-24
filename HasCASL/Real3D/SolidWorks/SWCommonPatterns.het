@@ -1,5 +1,5 @@
 library HasCASL/Real3D/SolidWorks/SWCommonPatterns
-version 0.1
+version 0.2
 
 %author: E. Schulz
 %date: 12-12-2008
@@ -80,7 +80,7 @@ view SWCylByAE_IsCylinder: Cylinder to
      { SolidWorksCylByArcExtrusion
        then
        op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
-	  = let bpCond = \p:Point .! let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
+	  = let bpCond = \p:Point . let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
 	        boundarypoint = choose(bpCond)
        in
        i(SWCylinder(offset, boundarypoint, axis)) %(affine cylinder constructible in SW)%
