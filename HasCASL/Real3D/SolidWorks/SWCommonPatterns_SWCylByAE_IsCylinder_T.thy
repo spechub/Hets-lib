@@ -76,10 +76,10 @@ ML "Header.initialize
      \"VPlane_constr\", \"VPlane2_constr\", \"VConnected_constr\",
      \"VHalfSpace_constr\", \"VHalfSpace2_constr\", \"VBall_constr\",
      \"VCircle_constr\", \"ActAttach_constr\", \"ActExtrude_constr\",
-     \"vwl_length\", \"vwl_lindep\", \"semantics_for_Planes\",
-     \"semantics_for_ArcExtrusion\", \"plane_is_plane\",
-     \"def_of_SWCylinder\", \"affine_cylinder_constructible_in_SW\",
-     \"def_of_Cylinder\"]"
+     \"vwl_identity\", \"vwl_length\", \"vwl_lindep\",
+     \"semantics_for_Planes\", \"semantics_for_ArcExtrusion\",
+     \"plane_is_plane\", \"def_of_SWCylinder\",
+     \"affine_cylinder_constructible_in_SW\", \"def_of_Cylinder\"]"
 
 typedecl NonZero
 typedecl PointSet
@@ -1031,6 +1031,9 @@ ActExtrude_constr [rule_format] :
         y isIn points) &
        x = y +' (l *_3 axis))"
 
+vwl_identity [rule_format] :
+"ALL s. ALL v. || v || = s --> VWithLength(v, s) = v"
+
 vwl_length [rule_format] :
 "ALL s.
  ALL v.
@@ -1192,6 +1195,7 @@ declare ga_select_IsBaseExtrude [simp]
 declare ga_select_IsBossFeature [simp]
 declare ga_select_IsThinFeature [simp]
 declare SWExtrusion_subtype [simp]
+declare vwl_identity [simp]
 declare vwl_lindep [simp]
 
 theorem def_of_Cylinder :
@@ -1271,6 +1275,9 @@ theorem def_of_Cylinder :
       def planeI: plnI == "iX2 pln"
       def scaledAxis: axs == "VWithLength(gn_inj(NormalVector(pln)), ht)"
 
+      -- "we can identify gn_inj(axis) and axs via vwl_identity!"
+      from plane ga_select_NormalVector scaledAxis vwl_identity height
+      have axis_identity: "axs = gn_inj(axis)" by simp
       
 	-- "going in apply-mode again"
       show "(let r1 = vec(offset, bp); ball = ActAttach (offset, VBall ( || r1 || ));
@@ -1288,7 +1295,14 @@ theorem def_of_Cylinder :
       apply (simp only: scaledAxis [symmetric])
       unfolding Let_def
 
-      -- "next task: identifying gn_inj(axis) and axs via vwl_identity!"
+      apply (simp only: axis_identity [symmetric])
+      apply (rule ext)
+
+      -- "having normalized the problem we can now start the main proof!"
+      proof
+	
+	-- "subgoal 1"
+	fix x
 
 
 
