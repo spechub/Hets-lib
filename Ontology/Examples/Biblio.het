@@ -1,19 +1,24 @@
 library Ontology/Examples/Biblio
 
-logic DL
+logic OWL
 
-spec Biblio_DL =
+spec Biblio_OWL =
+  
+  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+
+  Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
   Class: Researcher
-  SubclassOf: name some string 
+  SubclassOf: name some xsd:string 
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubclassOf: author some Thing, title some string, hasJournal some Journal
+  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
   
   Class: Journal
-  SubclassOf: name some string, hasArticle some Thing, impactFactor some integer
+  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme
@@ -47,7 +52,7 @@ logic CASL
 %[  } ]%
 %[end]%
 
- view Biblio_DL_in_RS : Biblio_DL to
+ view Biblio_OWL_in_RS : Biblio_OWL to
   { {Biblio_RS with logic RelScheme -> CASL} with pointer |-> Thing
     then %def
       preds Researcher(x:Thing)      <=> (exists n:string; a:Thing . person(x,n) /\ author_of(x,a));

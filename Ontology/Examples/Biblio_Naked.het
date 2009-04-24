@@ -1,24 +1,24 @@
 library Ontology/Examples/Biblio
 
-logic DL
+logic OWL
 
-spec Biblio_DL =
+spec Biblio_OWL =
+  
+  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+
+  Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
   Class: Researcher
-  SubclassOf: name some string 
+  SubclassOf: name some xsd:string 
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubclassOf: author some Thing, title some string, hasJournal some Journal
+  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
   
   Class: Journal
-  SubclassOf: name some string, hasArticle some Thing, impactFactor some integer
-
-then %implies
-  Class: Journal
-  SubclassOf: hasArticle some Article
-
+  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme
