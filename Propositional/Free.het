@@ -1,0 +1,52 @@
+logic Propositional
+
+spec Liar1 =
+  free {
+    prop mary
+    props harry, john
+    . harry => john             %(whenjohn)%
+    . mary /\ john => not harry %(whenharry)%
+   }
+then %implies
+  . not harry %(notharry)%
+  . not john  %(notjohn)%
+  . not mary  %(notmary)%
+end
+
+spec Liar2 =
+  cofree {
+    prop mary
+    props harry, john
+    . harry => john             %(whenjohn)%
+    . mary /\ john => not harry %(whenharry)%
+   }
+then %implies
+  . false %(false)%
+end
+
+spec Liar3 =
+  prop mary
+then 
+  free {
+    props harry, john
+    . harry => john             %(whenjohn)%
+    . mary /\ john => not harry %(whenharry)%
+   }
+then %implies
+  . not harry %(harry)%
+  . not john  %(john)%
+end
+
+spec Liar4 =
+  prop mary
+then 
+  cofree {
+    props harry, john
+    . harry => john             %(whenjohn)%
+    . mary /\ john => not harry %(whenharry)%
+   }
+then %implies
+  . harry \/ mary %(harrymary)%
+  . john  %(john)%
+end
+
