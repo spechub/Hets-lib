@@ -35,7 +35,8 @@ ML "Header.initialize
      \"RealStar_pred_def_1_1\", \"Ax7\", \"VectorStar_subtype\",
      \"def_of_vector_addition\", \"def_of_minus_vector\",
      \"binary_inverse_1_1\", \"scalar_mutliplication\",
-     \"scalar_product\", \"vector_product\", \"cross_left_homogenity\",
+     \"scalar_product\", \"vector_product\", \"e1_onb_vector\",
+     \"e2_onb_vector\", \"e3_onb_vector\", \"cross_left_homogenity\",
      \"cross_product_antisymmetric\", \"ga_assoc___Xx___3_1\",
      \"ga_right_unit___Xx___3_1\", \"ga_left_unit___Xx___3_1\",
      \"inv_Group_2_1\", \"rinv_Group_2_1\", \"ga_comm___Xx___3\",
@@ -44,10 +45,12 @@ ML "Header.initialize
      \"inverse_by_XMinus1\", \"distributiv\", \"homogen\",
      \"commutativ\", \"pos_definit\", \"right_distributiv\",
      \"right_homogen\", \"lindep_def\", \"lindep_reflexivity\",
-     \"lindep_symmetry\", \"simple_lindep_condition\", \"sqr_def_1_1\",
+     \"lindep_symmetry\", \"simple_lindep_condition\",
+     \"lindep_nonlindep_transitivity\", \"sqr_def_1_1\",
      \"norm_from_scalar_prod_def\", \"orthogonal_def\",
      \"orth_symmetry\", \"lindep_orth_transitivity\",
-     \"cross_product_orthogonal\", \"cross_product_zero_iff_lindep\",
+     \"orthogonal_projection\", \"cross_product_orthogonal\",
+     \"cross_product_zero_iff_lindep\", \"e1e2_nonlindep\",
      \"point_to_vector_embedding\", \"vector_to_point_embedding\",
      \"Ax1_1_1\", \"vector_point_vector\", \"point_vector_point\",
      \"origin_to_zero\", \"vec_def\", \"compatibility_PVplus_Vplus\",
@@ -239,6 +242,9 @@ X_sqrt :: "RealNonNeg => Real" ("sqrt/'(_')" [3] 999)
 X_sup :: "Real => Real => Real partial" ("sup/'(_,/ _')" [3,3] 999)
 X_vec :: "Point => Point => Vector" ("vec/'(_,/ _')" [3,3] 999)
 bigunion :: "(('S => bool) => bool) => 'S => bool"
+e1 :: "Vector"
+e2 :: "Vector"
+e3 :: "Vector"
 iX1 :: "SWFeature => Point => bool"
 iX2 :: "SWPlane => Point => bool"
 infX1 :: "Real => Real => Real partial" ("inf''/'(_,/ _')" [3,3] 999)
@@ -437,7 +443,7 @@ Ax10 [rule_format] :
  gn_proj(makeTotal (makePartial (if 0'' <=' x then x else -' x)))"
 
 sqr_def [rule_format] :
-"ALL r. gn_inj(sqr'(r)) = makePartial (r *'' r)"
+"ALL r. gn_inj(sqr'(r)) = r *'' r"
 
 sqrt_def [rule_format] : "ALL q. sqr'(sqrt(q)) = q"
 
@@ -462,7 +468,7 @@ X9_def_Real [rule_format] : "9' = 8' +_3 gn_inj(1')"
 ZeroToNine_type [rule_format] :
 "ALL x.
  defOp (gn_proj(x)) =
- (((((((((x = 0'' | makePartial x = gn_inj(1')) | x = 2') |
+ (((((((((x = 0'' | x = gn_inj(1')) | x = 2') |
         x = 3') |
        x = 4') |
       x = 5') |
@@ -541,6 +547,12 @@ vector_product [rule_format] :
  (C3''(x) *'' C1''(y)) -' (C3''(y) *'' C1''(x)),
  (C1''(x) *'' C2''(y)) -' (C1''(y) *'' C2''(x)))"
 
+e1_onb_vector [rule_format] : "e1 = V(gn_inj(1'), 0'', 0'')"
+
+e2_onb_vector [rule_format] : "e2 = V(0'', gn_inj(1'), 0'')"
+
+e3_onb_vector [rule_format] : "e3 = V(0'', 0'', gn_inj(1'))"
+
 cross_left_homogenity [rule_format] :
 "ALL r. ALL x. ALL y. r *_3 (x #' y) = (r *_3 x) #' y"
 
@@ -605,6 +617,12 @@ lindep_symmetry [rule_format] :
 simple_lindep_condition [rule_format] :
 "ALL r. ALL x. ALL y. x = r *_3 y --> lindep(x, y)"
 
+lindep_nonlindep_transitivity [rule_format] :
+"ALL x.
+ ALL y.
+ ALL z.
+ (~ x = 0_3 & lindep(x, y)) & ~ lindep(y, z) --> ~ lindep(x, z)"
+
 sqr_def_1_1 [rule_format] :
 "ALL x. makePartial (sqr''(x)) = gn_proj(x *_4 x)"
 
@@ -620,11 +638,19 @@ orth_symmetry [rule_format] :
 lindep_orth_transitivity [rule_format] :
 "ALL x. ALL y. ALL z. lindep(x, y) & orth(y, z) --> orth(x, z)"
 
+orthogonal_projection [rule_format] :
+"ALL x.
+ ALL y.
+ (~ x = 0_3 & ~ y = 0_3) & ~ lindep(x, y) -->
+ (EX v. ~ v = 0_3 & orth(v, x))"
+
 cross_product_orthogonal [rule_format] :
 "ALL x. ALL y. orth(x, x #' y)"
 
 cross_product_zero_iff_lindep [rule_format] :
 "ALL x. ALL y. lindep(x, y) = (x #' y = 0_3)"
+
+e1e2_nonlindep [rule_format] : "~ lindep(e1, e2)"
 
 point_to_vector_embedding [rule_format] :
 "ALL p. asVector(p) = V(C1'(p), C2'(p), C3'(p))"
@@ -1038,7 +1064,7 @@ vwl_length [rule_format] :
 "ALL s.
  ALL v.
  ~ v = 0_3 -->
- makePartial ( || VWithLength(v, s) || ) = gn_inj(abs'(s))"
+ || VWithLength(v, s) || = gn_inj(abs'(s))"
 
 vwl_lindep [rule_format] :
 "ALL s. ALL v. lindep(v, VWithLength(v, s))"
@@ -1163,6 +1189,7 @@ declare lindep_reflexivity [simp]
 declare lindep_symmetry [simp]
 declare orth_symmetry [simp]
 declare cross_product_orthogonal [simp]
+declare e1e2_nonlindep [simp]
 declare vector_point_vector [simp]
 declare point_vector_point [simp]
 declare origin_to_zero [simp]
@@ -1354,8 +1381,7 @@ Point_choice [rule_format] :
 	  apply (simp only: r1 boundarypoint bpCond Let_def)
 	from main_knowledge have yInPlane: "y isIn plnI"
 	  by (simp only: def_of_intersection conjunct1)
-	  
-	
+
 
 
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
@@ -1363,15 +1389,16 @@ using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
       X2_def_Real X3_def_Real X4_def_Real X5_def_Real X6_def_Real
       X7_def_Real X8_def_Real X9_def_Real decimal_def Zero_Point
       Zero_Vector RealStar_pred_def_1_1 scalar_mutliplication
-      scalar_product vector_product lindep_def sqr_def_1_1
-      norm_from_scalar_prod_def orthogonal_def point_to_vector_embedding
-      vector_to_point_embedding Ax1_1_1 vec_def
-      compatibility_PVplus_Vplus set_comprehension function_image
-      def_of_interval plus_PointSet_Vector plus_Point_VectorSet
-      plus_PointSet_VectorSet def_of_Plane E1_def E2_def E3_def
-      VLine_constr VWithLength_constr VPlane_constr VPlane2_constr
-      VConnected_constr VHalfSpace_constr VHalfSpace2_constr VBall_constr
-      VCircle_constr ActAttach_constr ActExtrude_constr def_of_SWCylinder
+      scalar_product vector_product e1_onb_vector e2_onb_vector
+      e3_onb_vector lindep_def sqr_def_1_1 norm_from_scalar_prod_def
+      orthogonal_def point_to_vector_embedding vector_to_point_embedding
+      Ax1_1_1 vec_def compatibility_PVplus_Vplus set_comprehension
+      function_image def_of_interval plus_PointSet_Vector
+      plus_Point_VectorSet plus_PointSet_VectorSet def_of_Plane E1_def
+      E2_def E3_def VLine_constr VWithLength_constr VPlane_constr
+      VPlane2_constr VConnected_constr VHalfSpace_constr
+      VHalfSpace2_constr VBall_constr VCircle_constr ActAttach_constr
+      ActExtrude_constr def_of_SWCylinder
       affine_cylinder_constructible_in_SW
 by (auto)
 
