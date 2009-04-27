@@ -93,6 +93,9 @@ ExtInverse[Vectors3DBase fit
 				      C3(x)*C1(y)-C3(y)*C1(x),
 				      C1(x)*C2(y)-C1(y)*C2(x));
 				      %(vector product)%
+	 e1:Vector = V(1,0,0); %(e1 onb vector)%
+	 e2:Vector = V(0,1,0); %(e2 onb vector)%
+	 e3:Vector = V(0,0,1); %(e3 onb vector)%
 
 then %implies
      var x,y,z:Vector; r:Real
@@ -110,6 +113,7 @@ then %implies
      %{ mixed props }%
      . orth(x,x # y)       %(cross product orthogonal)%
      . lindep(x,y) <=> (x # y = 0) %(cross product zero iff lindep)%
+     . not(lindep(e1,e2)); %(e1e2 nonlindep)%
 
 end
 

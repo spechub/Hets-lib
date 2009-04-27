@@ -45,11 +45,13 @@ spec ExtVectorSpace[VectorSpace[Field]] = %def
 
 
 then %implies
-     var x,y:Space; r:Elem
+     var x,y,z:Space; r:Elem
      %{ lindep props }%
      . lindep(x,x) %(lindep reflexivity)%
      . lindep(x,y) => lindep(y,x) %(lindep symmetry)%
      . x = r * y => lindep(x,y)  %(simple lindep condition)%
+     . not(x=0) /\ lindep(x,y) /\ not(lindep(y,z)) => not(lindep(x,z))
+       %(lindep nonlindep transitivity)%
 end
 
 spec NormedSpace[FieldWithValuation] =
@@ -99,6 +101,10 @@ then %implies
 
      %{ mixed props }%
      . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitivity)%
+
+     . not(x=0) /\ not(y=0) /\ not(lindep(x,y))
+	  => exists v:Space. not(v=0) /\ orth(v,x) %(orthogonal projection)%
+
 end
 
 view EuclideanSpaceIsNormedSpace:

@@ -1102,7 +1102,7 @@ affine_cylinder_constructible_in_SW [rule_format] :
  Cylinder ((offset, r), axis) =
  (let bpCond =
       % p. let v = vec(offset, p)
-           in orth(v, gn_inj(axis)) & makePartial ( || v || ) = gn_inj(r);
+           in orth(v, gn_inj(axis)) & || v || = gn_inj(r);
       boundarypoint = choose'(bpCond)
   in iX1 (SWCylinder(offset, boundarypoint, axis)))"
 
@@ -1222,7 +1222,7 @@ theorem def_of_Cylinder :
     fix offset r
 
     -- "providing vars for the let-constructs"
-    def bpCond: bpc == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> makePartial ( || v || ) = gn_inj(r)"
+    def bpCond: bpc == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
     def boundarypoint: bp == "choose'(bpc)"
     def plane: pln == "X_SWPlane offset axis (V(0'', 0'', 0''))"
     def arc: arc1 == "X_SWArc offset bp bp"
@@ -1233,7 +1233,7 @@ theorem def_of_Cylinder :
 
     -- "going in apply-mode again"
     show "(let bpCond =
-              \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> makePartial ( || v || ) = gn_inj(r);
+              \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
             boundarypoint = choose'(bpCond)
         in iX1 (let plane = X_SWPlane offset axis (V(0'', 0'', 0''));
                     arc = X_SWArc offset boundarypoint boundarypoint; height = || gn_inj(axis) ||;
@@ -1304,8 +1304,58 @@ theorem def_of_Cylinder :
 	-- "subgoal 1"
 	fix x
 
+	assume "\<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
+	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
 
+	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
 
+	-- "show the four subgoals (conjuncts)"
+	hence subgoal1: "?I l" by force
+
+	-- "now we need to find a matching y' for the conclusion."
+	-- "we set y' = vec(offset, y) to satisfy the equation:"
+	-- "y +' (l *_3 axs) === offset +' (l *_3 axs) + y'"
+
+	def have_y': y' == "vec(offset, y)"
+	from main_knowledge have yInBall: "y isIn bll"
+	  by (simp only: def_of_intersection conjunct1)
+
+	-- "we use the Vball definition to obtain a parameterization of y in z"
+	-- "then we identify z and y' and get the desired properties from those for z"
+	hence vball_y': "VBall ( || radius || ) y'"
+	proof (simp add: vec_def ball ActAttach_constr plus_Point_VectorSet function_image set_comprehension)
+	  assume "\<exists>z. VBall ( || radius || ) z \<and> offset +' z = y" (is "\<exists>z. ?VB z")
+	  then obtain z where k_VB: "?VB z" (is "?VB1 \<and> ?VB2") by force
+	    
+	  from k_VB have_y' vec_shift_unique_lemma have "z = y'" by simp
+	  with k_VB show "VBall ( || radius || ) y'" by simp
+	qed
+
+thm ball
+thm r1
+thm boundarypoint
+thm bpCond
+thm plane
+	have "bpc bp"
+	  apply (simp only: boundarypoint)
+thm bpCond
+	  
+
+	have "|| radius || = gn_inj(r)"
+	  apply (subst r1)
+thm bpCond
+thm boundarypoint
+by auto
+choose'(bpCond)
+
+Point_choice [rule_format] :
+"ALL X_P. (EX y. X_P y) --> X_P (choose'(X_P))"
+
+	  apply (simp only: r1 boundarypoint bpCond Let_def)
+	from main_knowledge have yInPlane: "y isIn plnI"
+	  by (simp only: def_of_intersection conjunct1)
+	  
+	
 
 
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
