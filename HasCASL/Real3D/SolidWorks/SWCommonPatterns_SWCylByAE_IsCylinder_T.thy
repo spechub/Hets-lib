@@ -1238,6 +1238,149 @@ theorem def_of_Cylinder :
         || y || <=' gn_inj(r)) &
        x = (offset +' (l *_3 gn_inj(axis))) +' y)"
 
+  -- "unfolding some initial definitions"
+  unfolding affine_cylinder_constructible_in_SW
+  unfolding def_of_SWCylinder
+
+  proof (rule allI)+
+
+    fix axis::VectorStar
+    fix offset r
+
+    -- "providing vars for the let-constructs"
+    def bpCond: bpc == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
+    def boundarypoint: bp == "choose'(bpc)"
+    def plane: pln == "X_SWPlane offset axis (V(0'', 0'', 0''))"
+    def arc: arc1 == "X_SWArc offset bp bp"
+    def height: ht == "|| gn_inj(axis) ||"
+
+    -- "additional definitions, not stemming from let-vars"
+    def I01: interv01 == "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1'))"
+
+    -- "going in apply-mode again"
+    show "(let bpCond =
+              \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
+            boundarypoint = choose'(bpCond)
+        in iX1 (let plane = X_SWPlane offset axis (V(0'', 0'', 0''));
+                    arc = X_SWArc offset boundarypoint boundarypoint; height = || gn_inj(axis) ||;
+                    x1 = 0''; b = False
+                in SWExtrusion_inj
+                   (X_SWExtrusion (X_SWSketch (gn_inj(arc) ::' [ ]') plane) height x1 b b x1 x1 b b
+                     b))) =
+       XLBrace__XRBrace
+        (\<lambda>x. \<exists>l y. ((l isIn XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (0'', gn_inj(1')) \<and> orth(y, gn_inj
+                     (axis))) \<and>
+                    || y || <=' gn_inj(r)) \<and>
+                   x = (offset +' (l *_3 gn_inj(axis))) +' y)"
+
+      apply (simp only: bpCond [symmetric])
+      -- "get the boundarypoint definition replaced"
+      apply (subst Let_def)
+      apply (simp only: boundarypoint [symmetric])
+      apply (simp only: plane [symmetric])
+      -- "get the boundarypoint definition replaced"
+      apply (subst Let_def)
+      apply (simp only: height [symmetric])
+      unfolding Let_def
+
+      -- "second round of let-elimination, but first some definition unfoldings"
+      unfolding semantics_for_ArcExtrusion ActExtrude_constr set_comprehension
+
+      -- "we simplify the if immediately"
+      apply (subst if_P, simp)
+
+      apply (simp only: I01 [symmetric])
+      
+      -- "get the cp definition replaced"
+      apply (subst Let_def)
+
+      proof-
+
+      def r1: radius == "vec(offset, bp)"
+      def ball: bll == "ActAttach (offset, VBall ( || radius || ))"
+      def planeI: plnI == "iX2 pln"
+      def scaledAxis: axs == "VWithLength(gn_inj(NormalVector(pln)), ht)"
+
+      -- "we can identify gn_inj(axis) and axs via vwl_identity!"
+      from plane ga_select_NormalVector scaledAxis vwl_identity height
+      have axis_identity: "axs = gn_inj(axis)" by simp
+      
+	-- "going in apply-mode again"
+      show "(let r1 = vec(offset, bp); ball = ActAttach (offset, VBall ( || r1 || ));
+	planeI = iX2 pln; scaledAxis = VWithLength(gn_inj(NormalVector(pln)), ht)
+	in \<lambda>x. \<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (ball, planeI)) \<and>
+        x = y +' (l *_3 scaledAxis)) =
+	(\<lambda>x. \<exists>l y. ((l isIn interv01 \<and> orth(y, gn_inj(axis))) \<and> || y || <=' gn_inj(r)) \<and>
+        x = (offset +' (l *_3 gn_inj(axis))) +' y)"
+
+      apply (simp only: r1 [symmetric])
+      -- "get the r1 definition replaced"
+      apply (subst Let_def)
+      apply (simp only: ball [symmetric])
+      apply (simp only: planeI [symmetric])
+      apply (simp only: scaledAxis [symmetric])
+      unfolding Let_def
+
+      apply (simp only: axis_identity [symmetric])
+      apply (rule ext)
+
+      -- "having normalized the problem we can now start the main proof!"
+      proof
+	
+	-- "subgoal 1"
+	fix x
+
+	assume "\<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
+	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
+
+	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
+
+	-- "show the four subgoals (conjuncts)"
+	hence subgoal1: "?I l" by force
+
+	-- "now we need to find a matching y' for the conclusion."
+	-- "we set y' = vec(offset, y) to satisfy the equation:"
+	-- "y +' (l *_3 axs) === offset +' (l *_3 axs) + y'"
+
+	def have_y': y' == "vec(offset, y)"
+	from main_knowledge have yInBall: "y isIn bll"
+	  by (simp only: def_of_intersection conjunct1)
+
+	-- "we use the Vball definition to obtain a parameterization of y in z"
+	-- "then we identify z and y' and get the desired properties from those for z"
+	hence vball_y': "VBall ( || radius || ) y'"
+	proof (simp add: vec_def ball ActAttach_constr plus_Point_VectorSet function_image set_comprehension)
+	  assume "\<exists>z. VBall ( || radius || ) z \<and> offset +' z = y" (is "\<exists>z. ?VB z")
+	  then obtain z where k_VB: "?VB z" (is "?VB1 \<and> ?VB2") by force
+	    
+	  from k_VB have_y' vec_shift_unique_lemma have "z = y'" by simp
+	  with k_VB show "VBall ( || radius || ) y'" by simp
+	qed
+
+
+thm ball
+thm r1
+thm boundarypoint
+thm bpCond
+thm plane
+	have "bpc bp"
+	  apply (simp only: boundarypoint)
+thm bpCond
+	  
+
+	have "|| radius || = gn_inj(r)"
+	  apply (subst r1)
+thm bpCond
+thm boundarypoint
+by auto
+choose'(bpCond)
+
+Point_choice [rule_format] :
+"ALL X_P. (EX y. X_P y) --> X_P (choose'(X_P))"
+
+	  apply (simp only: r1 boundarypoint bpCond Let_def)
+	from main_knowledge have yInPlane: "y isIn plnI"
+	  by (simp only: def_of_intersection conjunct1)
 
 
 
