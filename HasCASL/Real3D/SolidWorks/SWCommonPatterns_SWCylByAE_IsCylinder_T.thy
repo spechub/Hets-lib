@@ -1357,7 +1357,9 @@ theorem def_of_Cylinder :
 	  with k_VB show "VBall ( || radius || ) y'" by simp
 	qed
 
-
+	-- "Now we need to extract a property for bp from bpCond via Point_choice,"
+	-- "for that we need to prove that bpCond is not empty!"
+	have "EX z. bpc z" proof (simp only: bpCond)
 thm ball
 thm r1
 thm boundarypoint

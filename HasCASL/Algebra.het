@@ -36,7 +36,8 @@ spec SubtypeHandling =
 	      %(subtype def)%
 	  isSubtypeWithPred(P:Pred(t); injection:s->t; projection:t->s)
 	  <=> isSubtype(injection, projection)
-	      /\ (forall x:t. P x => x = injection(projection(x)));
+	      /\ (forall x:t. P x => x = injection(projection(x)))
+	      /\ (forall x:s. P(injection(x)));
 	      %(subtype pred def)%
 
      %% This workaround is mainly important for doing proofs in Isabelle

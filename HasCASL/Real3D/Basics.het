@@ -142,6 +142,7 @@ spec SetsWithComprehension =
       __disjoint__ : Pred( Set(S) * Set(S) );
       __*__ : Set S * Set T -> Set (S*T);
       {__}(s:Set S):Set S = s; %(set comprehension)%
+      setFromProperty:Set S -> Set S = {__}; %(abbrev of set comprehension)%
       image(f:(S->T);X:Set S):Set T
 	   = { \x:T . exists y:S. y isIn X /\ f(y) = x }; %(function image)%
 
@@ -166,6 +167,7 @@ then
 	   RealSet := Set Real;
 
      ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b); %(def of interval)%
+	 closedinterval:Real*Real->RealSet= [__ ... __]; %(abbrev of interval)%
 
 	 %{Lifting operations for +}%
 

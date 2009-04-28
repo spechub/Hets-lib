@@ -102,7 +102,7 @@ spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
 
 	 %{ The plane orthogonal to the normal vector }%
 	 VLine(p1:Vector;p2:Vector):VectorSet
-	  = image(\y:Real .! p1 + (y*(p2-p1)), [0...1]); %(VLine constr)%
+	  = image(\y:Real .! p1 + (y*(p2-p1)), closedinterval(0,1)); %(VLine constr)%
 
 	 %{ Normalize the given Vector and scale it by the scalar }%
 	 VWithLength(v:Vector;s:Real):Vector
@@ -110,7 +110,7 @@ spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
 
 	 %{ The plane orthogonal to the normal vector }%
 	 VPlane(normal:Vector):VectorSet
-	  = { \y:Vector .! orth(y,normal) }; %(VPlane constr)%
+	  = \y:Vector . orth(y,normal); %(VPlane constr)%
 
 	 %{ The plane spanned by the given to axes }%
 	 VPlane2(axis1:Vector;axis2:Vector):VectorSet
@@ -120,7 +120,7 @@ spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
 	 by the given frontier }%
 	 VConnected(frontier:VectorSet;point:Vector):VectorSet
 	  = frontier when (frontier point) else 
-	       { \y:Vector .!  VLine(point,y) intersection frontier = emptySet }; %(VConnected constr)%
+	       \y:Vector . VLine(point,y) intersection frontier = emptySet; %(VConnected constr)%
 
 	 %{ The halfspace separated by the plane defined
 	 by the given normal vector, where the normal vector points to. }%
@@ -133,7 +133,7 @@ spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
 
 	 %{ The ball with radius r }%
 	 VBall(r:Real):VectorSet
-	  = { \y:Vector .!  ||y|| <= r }; %(VBall constr)%
+	  = \y:Vector .  ||y|| <= r; %(VBall constr)%
 
 	 %{ The circle as intersection of a plane with a ball }%
 	 VCircle(r:Real;axis:Vector):VectorSet
@@ -148,8 +148,9 @@ spec SolidWorksSemanticConstructors = AffineRealSpace3DWithSets then
 	 %{ This action adds points to the given points by moving along
 	 the axis }%
 	 ActExtrude(axis:Vector;points:PointSet):PointSet
-	  = { \x:Point .! exists l:Real. exists y:Point.
-	      l isIn [0...1] /\ y isIn points /\ x= y + l * axis }; %(ActExtrude constr)%
+	  = \x:Point . exists l:Real. exists y:Point.
+	      l isIn closedinterval(0,1) /\
+	      y isIn points /\ x= y + l * axis; %(ActExtrude constr)%
 then %implies
 
 	 %{ The following part provides some basic facts about
