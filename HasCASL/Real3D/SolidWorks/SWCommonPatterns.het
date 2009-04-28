@@ -80,8 +80,8 @@ view SWCylByAE_IsCylinder: Cylinder to
      { SolidWorksCylByArcExtrusion
        then
        op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
-	  = let bpCond = \p:Point . let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
-	        boundarypoint = choose(bpCond)
+	  = let boundary = \p:Point . let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
+	        boundarypoint = choose(boundary)
        in
        i(SWCylinder(offset, boundarypoint, axis)) %(affine cylinder constructible in SW)%
        %% every affine cylinder can be produced in SolidWorks
