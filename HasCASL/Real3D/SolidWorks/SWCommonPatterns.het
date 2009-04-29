@@ -54,7 +54,7 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
 
 
      %{The main theorem}%
-     . i(SWExtrusion(SWSketch([arc],plane),height,x1,b1,b2,x2,x3,b3,b4,b5))
+     . i(SWExtrusion(SWSketch([arc],plane),height)) %%,x1,b1,b2,x2,x3,b3,b4,b5))
 	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
 
 end
@@ -66,13 +66,13 @@ spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
      op SWCylinder(center, boundarypoint:Point; axis:VectorStar):SWFeature
 	  = let plane = SWPlane(center, axis, V(0,0,0));
 		arc = SWArc(center,boundarypoint,boundarypoint);
-		height = ||axis||;
-		x1 = 0:Real;
-		b = false
+		height = ||axis||
+%%		x1 = 0:Real;
+%%		b = false
 	    in
 	    SWExtrusion_inj
 	       (SWExtrusion
-		(SWSketch([arc],plane),height,x1,b,b,x1,x1,b,b,b));
+		(SWSketch([arc],plane),height)); %%,x1,b,b,x1,x1,b,b,b));
 		%(def of SWCylinder)%
 end
 
