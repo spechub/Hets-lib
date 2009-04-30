@@ -1233,12 +1233,9 @@ declare vwl_identity [simp]
 declare vwl_lindep [simp]
 
 theorem def_of_Cylinder :
-"ALL axis.
- ALL offset.
- ALL r.
+"ALL axis offset r.
  Cylinder ((offset, r), axis) =
- (% x. EX l.
-       EX y.
+ (% x. EX l y.
        ((l isIn closedinterval (0'', gn_inj(1')) &
          orth(y, gn_inj(axis))) &
         || y || <=' gn_inj(r)) &
@@ -1335,7 +1332,8 @@ theorem def_of_Cylinder :
 
 	assume "\<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
 	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
-
+thm lindep_orth_transitivity
+thm vec_shift_unique_lemma vec_def ball ActAttach_constr plus_Point_VectorSet function_image
 	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
 
 	-- "show the four subgoals (conjuncts)"
