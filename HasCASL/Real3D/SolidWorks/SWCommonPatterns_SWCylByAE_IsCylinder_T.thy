@@ -45,7 +45,7 @@ ML "Header.initialize
      \"commutativ\", \"pos_definit\", \"right_distributiv\",
      \"right_homogen\", \"lindep_def\", \"lindep_reflexivity\",
      \"lindep_symmetry\", \"simple_lindep_condition\",
-     \"lindep_nonlindep_transitivity\", \"sqr_def\",
+     \"lindep_nonlindep_transitivity\",
      \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
      \"orthogonal_def\", \"orth_symmetry\",
      \"lindep_orth_transitivity\", \"orthogonal_on_zero_projection\",
@@ -422,7 +422,7 @@ Ax7 [rule_format] :
  gn_proj(makeTotal (makePartial (if 0'' <=' x then x else -' x)))"
 
 sqr_def [rule_format] :
-"ALL r. gn_inj(sqr'(r)) = makePartial (r *'' r)"
+"ALL r. gn_inj(sqr'(r)) = r *'' r"
 
 sqrt_def [rule_format] : "ALL q. sqr'(sqrt(q)) = q"
 
@@ -447,7 +447,7 @@ X9_def_Real [rule_format] : "9' = 8' +_3 gn_inj(1')"
 ZeroToNine_type [rule_format] :
 "ALL x.
  defOp (gn_proj(x)) =
- (((((((((x = 0'' | makePartial x = gn_inj(1')) | x = 2') |
+ (((((((((x = 0'' | x = gn_inj(1')) | x = 2') |
         x = 3') |
        x = 4') |
       x = 5') |
@@ -601,9 +601,6 @@ lindep_nonlindep_transitivity [rule_format] :
  ALL y.
  ALL z.
  (~ x = 0_3 & lindep(x, y)) & ~ lindep(y, z) --> ~ lindep(x, z)"
-
-sqr_def [rule_format] :
-"ALL x. makePartial (sqr''(x)) = gn_proj(x *_4 x)"
 
 norm_from_inner_prod_def [rule_format] :
 "ALL x. || x || = sqrt(sqr''(x))"
@@ -906,7 +903,7 @@ vwl_length [rule_format] :
 "ALL s.
  ALL v.
  ~ v = 0_3 -->
- makePartial ( || VWithLength(v, s) || ) = gn_inj(abs'(s))"
+ || VWithLength(v, s) || = gn_inj(abs'(s))"
 
 vwl_lindep [rule_format] :
 "ALL s. ALL v. lindep(v, VWithLength(v, s))"
@@ -958,7 +955,7 @@ affine_cylinder_constructible_in_SW [rule_format] :
  Cylinder ((offset, r), axis) =
  (let boundary =
       % p. let v = vec(offset, p)
-           in orth(v, gn_inj(axis)) & makePartial ( || v || ) = gn_inj(r);
+           in orth(v, gn_inj(axis)) & || v || = gn_inj(r);
       boundarypoint = choose'(boundary)
   in iX1 (SWCylinder(offset, boundarypoint, axis)))"
 
@@ -1045,21 +1042,153 @@ declare SWExtrusion_subtype [simp]
 declare vwl_identity [simp]
 declare vwl_lindep [simp]
 
+(*
+-- let-simplifier
+declare flip_def [simp]
+definition compose_def [simp]: "compose f g x = f (g x)"
+
+lemma Let_simps:
+  "!!f m g. f (Let m g) = Let m (compose f g)"
+  "!!m f n. (Let m f) n = Let m (flip f n)"
+  "!!f g. compose f (%x. g x) = (%x. f (g x))"
+  "!!f y. flip (%x. f x) y = (%x. f x y)"
+  "!!f g. compose f (split g) = split (compose (compose f) g)"
+  "!!f x. flip (split f) x = split (flip (compose flip f) x)"
+unfolding Let_def expand_fun_eq by simp_all
+
+*)
+
 theorem def_of_Cylinder :
-"ALL axis.
- ALL offset.
- ALL r.
+"ALL axis offset r.
  Cylinder ((offset, r), axis) =
  (% x. let v = vec(offset, x)
        in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || &
             || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) &
           v *_4 gn_inj(axis) >=' 0'')"
+
+  -- "unfolding some initial definitions"
+  unfolding affine_cylinder_constructible_in_SW
+  unfolding def_of_SWCylinder
+
+  proof (rule allI)+
+
+    fix axis::VectorStar
+    fix offset r
+
+    -- "providing vars for the let-constructs"
+    def boundary: boundary == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
+    def boundarypoint: bp == "choose'(boundary)"
+    def plane: pln == "X_SWPlane offset axis (V(0'', 0'', 0''))"
+    def arc: arc == "X_SWArc offset bp bp"
+    def height: ht == "|| gn_inj(axis) ||"
+
+    -- "additional definitions, not stemming from let-vars"
+    def I01: I01 == "closedinterval (0'', gn_inj(1'))"
+
+    -- "we don't want to manipulate the right hand side, so we replace it by rhs"
+    def rhs: rhs == "(\<lambda>x. let v = vec(offset, x)
+            in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
+                || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
+               v *_4 gn_inj(axis) >=' 0'')"
+
+    -- "going in apply-mode again"
+    show "(let boundary = \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
+            boundarypoint = choose'(boundary)
+        in iX1 (let plane = X_SWPlane offset axis (V(0'', 0'', 0''));
+                    arc = X_SWArc offset boundarypoint boundarypoint; height = || gn_inj(axis) ||
+                in SWExtrusion_inj(X_SWExtrusion (X_SWSketch (gn_inj(arc) ::' [ ]') plane) height))) =
+       (\<lambda>x. let v = vec(offset, x)
+            in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
+                || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
+               v *_4 gn_inj(axis) >=' 0'')"
+      
+      apply (subst rhs [symmetric])
+
+      apply (subst boundary [symmetric])
+      -- "get the boundarypoint definition replaced"
+      apply (subst Let_def)
+      apply (subst boundarypoint [symmetric])
+      apply (subst plane [symmetric])
+      -- "get the boundarypoint definition replaced"
+      apply (subst Let_def)
+      apply (subst height [symmetric])
+      unfolding Let_def
+
+      -- "second round of let-elimination, but first some definition unfoldings"
+      unfolding semantics_for_ArcExtrusion ActExtrude_constr
+
+      -- "we simplify the if immediately"
+      apply (subst if_P, simp)
+
+      apply (subst I01 [symmetric])
+      
+      -- "get the cp definition replaced"
+      apply (subst Let_def)
+
+      proof-
+
+      def r1: r1 == "vec(offset, bp)"
+      def ball: bll == "ActAttach (offset, VBall ( || r1 || ))"
+      def planeI: plnI == "iX2 pln"
+      def scaledAxis: axs == "VWithLength(gn_inj(NormalVector(pln)), ht)"
+
+      -- "we can identify gn_inj(axis) and axs via vwl_identity!"
+      from plane ga_select_NormalVector scaledAxis vwl_identity height
+      have axis_identity: "axs = gn_inj(axis)" by simp
+      
+	-- "going in apply-mode again"
+      show "(let r1 = vec(offset, bp); ball = ActAttach (offset, VBall ( || r1 || )); planeI = iX2 pln;
+         scaledAxis = VWithLength(gn_inj(NormalVector(pln)), ht)
+     in \<lambda>x. \<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (ball, planeI)) \<and>
+                  x = y +' (l *_3 scaledAxis)) =
+	rhs"
+
+
+      apply (subst r1 [symmetric])
+      -- "get the r1 definition replaced"
+      apply (subst Let_def)
+      apply (subst ball [symmetric])
+      apply (subst planeI [symmetric])
+      apply (subst scaledAxis [symmetric])
+      unfolding Let_def
+
+      apply (subst rhs)
+      apply (rule ext)
+      
+      proof-
+	fix x
+	def v: v == "vec(offset, x)"
+	def vp: vp == "proj(v, axs)" -- "the axis-parallel component"
+	def vo: vo == "orthcomp(v, axs)" -- "the axis-orthogonal component"
+
+	-- "going in apply-mode again"
+	show "(\<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)) =
+        (let v = vec(offset, x)
+         in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
+             || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
+            v *_4 gn_inj(axis) >=' 0'')"
+
+      apply (subst v [symmetric])
+      apply (subst Let_def)
+      apply (simp only: axis_identity [symmetric])
+      apply (subst vp [symmetric])
+      apply (subst vo [symmetric])
+
+      -- "having normalized the problem we can now start the main proof!"
+      proof
+
+	assume "\<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
+	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
+	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
+
+	def yvec: y' == "vec(offset, y)" -- "the offset-based component of y"
+
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
       RealPos_pred_def Ax7 sqr_def sqrt_def X2_def_Real X3_def_Real
       X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
       X9_def_Real decimal_def Zero_Point Zero_Vector VectorStar_pred_def
       scalar_multiplication scalar_product vector_product ONB1 ONB2 ONB3
-      lindep_def sqr_def norm_from_inner_prod_def proj_def orthcomp_def
+      lindep_def norm_from_inner_prod_def proj_def orthcomp_def
       orthogonal_def point_vector_map vec_def set_comprehension
       abbrev_of_set_comprehension function_image def_of_interval
       abbrev_of_interval plus_PointSet_Vector plus_Point_VectorSet

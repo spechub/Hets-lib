@@ -86,14 +86,14 @@ then %implies
      . x * inv(x) = e   %(rinv_Group)%
 end
 
-spec ExtInverseSig = 
+spec InverseSig = 
      sort Elem
      ops  __ * __: Elem * Elem -> Elem;
 	  inv: Elem->Elem
 end
 
 %( Definitional extension of unary inv to binary inv (= /) )%
-spec ExtInverse[ExtInverseSig] = %def
+spec ExtInverse[InverseSig] = %def
   op __ / __:Elem*Elem->Elem;
 
   forall x,y:Elem

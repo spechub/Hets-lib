@@ -70,15 +70,15 @@ then
      op __*__ : Space * Space -> Real   %% (bilinear form)
 
      forall a:Real ; v,v',w: Space
-     . (v+v') * w = (v * w) + (v' * w)  %(distributiv)%
-     . (a*v) * w = a * (v * w) 		%(homogen)%
-     . v * w  = w * v   		%(commutativ)%
-     . v * v = 0 =>  v = 0		%(pos_definit)%
+     . (v+v') * w = (v * w) + (v' * w)  %(distributive)%
+     . (a*v) * w = a * (v * w) 		%(homogeneous)%
+     . v * w  = w * v   		%(commutative)%
+     . v * v = 0 =>  v = 0		%(pos definite)%
 
 then %implies
      forall a:Real ; v,v',w: Space
-     . w * (v+v') = (w * v) + (w * v')  %(right_distributiv)%
-     . v * (a*w) = a * (v * w) 		%(right_homogen)%
+     . w * (v+v') = (w * v) + (w * v')  %(right distributive)%
+     . v * (a*w) = a * (v * w) 		%(right homogeneous)%
 end
 
 %( Definition of Norm and Projection )%
@@ -96,10 +96,10 @@ then %implies
      vars x,y,z:Space; r:Real
 
      %{ orth props }%
-     . orth(x,y) => orth(y,x) %(orth symmetry)%
+     . orth(x,y) => orth(y,x) %(orth symmetric)%
 
      %{ mixed props }%
-     . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitivity)%
+     . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitive)%
 
      . proj(x,y)=0 => orth(x,y)  %(orthogonal on zero projection)%
 
