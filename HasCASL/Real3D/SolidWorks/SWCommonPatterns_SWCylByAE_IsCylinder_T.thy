@@ -23,20 +23,19 @@ ML "Header.initialize
      \"ga_left_comm_max\", \"min_def_ExtTotalOrder\",
      \"max_def_ExtTotalOrder\", \"min_inf_relation\",
      \"max_sup_relation\", \"RealNonNeg_pred_def\",
-     \"RealPos_pred_def\", \"RealStar_pred_def\", \"Ax4\", \"Ax5\",
-     \"Ax6\", \"RealNonNeg_subtype\", \"RealPos_subtype\",
-     \"RealStar_subtype\", \"Ax10\", \"sqr_def\", \"sqrt_def\",
+     \"RealPos_pred_def\", \"Ax3\", \"Ax4\", \"RealNonNeg_subtype\",
+     \"RealPos_subtype\", \"Ax7\", \"sqr_def\", \"sqrt_def\",
      \"Ax1_2_1\", \"X2_def_Real\", \"X3_def_Real\", \"X4_def_Real\",
      \"X5_def_Real\", \"X6_def_Real\", \"X7_def_Real\", \"X8_def_Real\",
      \"X9_def_Real\", \"ZeroToNine_type\", \"decimal_def\",
      \"ga_select_C1\", \"ga_select_C2\", \"ga_select_C3\",
      \"Zero_Point\", \"Point_choice\", \"ga_select_C1_1\",
      \"ga_select_C2_1\", \"ga_select_C3_1\", \"Zero_Vector\",
-     \"RealStar_pred_def_1_1\", \"Ax7\", \"VectorStar_subtype\",
+     \"VectorStar_pred_def\", \"Ax7_1_1\", \"VectorStar_subtype\",
      \"def_of_vector_addition\", \"def_of_minus_vector\",
-     \"binary_inverse_1_1\", \"scalar_mutliplication\",
-     \"scalar_product\", \"vector_product\", \"e1_onb_vector\",
-     \"e2_onb_vector\", \"e3_onb_vector\", \"cross_left_homogenity\",
+     \"binary_inverse_1_1\", \"scalar_multiplication\",
+     \"scalar_product\", \"vector_product\", \"ONB1\", \"ONB2\",
+     \"ONB3\", \"cross_left_homogenity\",
      \"cross_product_antisymmetric\", \"ga_assoc___Xx___3_1\",
      \"ga_right_unit___Xx___3_1\", \"ga_left_unit___Xx___3_1\",
      \"inv_Group_2_1\", \"rinv_Group_2_1\", \"ga_comm___Xx___3\",
@@ -46,17 +45,18 @@ ML "Header.initialize
      \"commutativ\", \"pos_definit\", \"right_distributiv\",
      \"right_homogen\", \"lindep_def\", \"lindep_reflexivity\",
      \"lindep_symmetry\", \"simple_lindep_condition\",
-     \"lindep_nonlindep_transitivity\", \"sqr_def_1_1\",
-     \"norm_from_scalar_prod_def\", \"orthogonal_def\",
-     \"orth_symmetry\", \"lindep_orth_transitivity\",
-     \"orthogonal_projection\", \"cross_product_orthogonal\",
+     \"lindep_nonlindep_transitivity\", \"sqr_def\",
+     \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
+     \"orthogonal_def\", \"orth_symmetry\",
+     \"lindep_orth_transitivity\", \"orthogonal_on_zero_projection\",
+     \"orthogonal_projection_theorem\",
+     \"orthogonal_decomposition_theorem\", \"cross_product_orthogonal\",
      \"cross_product_zero_iff_lindep\", \"e1e2_nonlindep\",
-     \"point_to_vector_embedding\", \"vector_to_point_embedding\",
-     \"Ax1_1_1\", \"vector_point_vector\", \"point_vector_point\",
-     \"origin_to_zero\", \"vec_def\", \"compatibility_PVplus_Vplus\",
-     \"transitivity_of_vec_XPlus\", \"antisymmetry_of_vec\",
-     \"vec_shift_unique_lemma\", \"vec_shift_def_lemma\",
-     \"point_vector_add_comm_lemma\", \"set_comprehension\",
+     \"point_vector_map\", \"plus_injective\", \"plus_surjective\",
+     \"point_vector_plus_associative\",
+     \"point_vector_plus_commutative\", \"vec_def\",
+     \"transitivity_of_vec_plus\", \"antisymmetry_of_vec\",
+     \"plus_vec_identity\", \"set_comprehension\",
      \"abbrev_of_set_comprehension\", \"function_image\",
      \"emptySet_not_empty\", \"allSet_contains_all\", \"def_of_isIn\",
      \"def_of_subset\", \"def_of_union\", \"def_of_bigunion\",
@@ -71,11 +71,7 @@ ML "Header.initialize
      \"ga_select_Center\", \"ga_select_Start\", \"ga_select_End\",
      \"ga_select_From\", \"ga_select_To\", \"ga_select_Points\",
      \"ga_select_Objects\", \"ga_select_Plane\", \"ga_select_Sketch\",
-     \"ga_select_Depth\", \"ga_select_DraftAngle\",
-     \"ga_select_DraftOutward\", \"ga_select_DraftWhileExtruding\",
-     \"ga_select_EndCondition\", \"ga_select_WallThickness\",
-     \"ga_select_IsBaseExtrude\", \"ga_select_IsBossFeature\",
-     \"ga_select_IsThinFeature\", \"E1_def\", \"E2_def\", \"E3_def\",
+     \"ga_select_Depth\", \"E1_def\", \"E2_def\", \"E3_def\",
      \"SWExtrusion_subtype\", \"VLine_constr\", \"VWithLength_constr\",
      \"VPlane_constr\", \"VPlane2_constr\", \"VConnected_constr\",
      \"VHalfSpace_constr\", \"VHalfSpace2_constr\", \"VBall_constr\",
@@ -91,7 +87,6 @@ typedecl Real
 typedecl RealNonNeg
 typedecl RealPos
 typedecl RealSet
-typedecl RealStar
 typedecl SWArc
 typedecl SWExtrusion
 typedecl SWFeature
@@ -153,16 +148,9 @@ XOSqBr__XPeriodXPeriodXPeriod__XCSqBr :: "Real * Real => Real => bool"
 XVBarXVBar__XVBarXVBar :: "Vector => Real" ("(||/ _/ ||)" [10] 999)
 X_Center :: "SWArc => Point" ("Center/'(_')" [3] 999)
 X_Depth :: "SWExtrusion => Real" ("Depth/'(_')" [3] 999)
-X_DraftAngle :: "SWExtrusion => Real" ("DraftAngle/'(_')" [3] 999)
-X_DraftOutward :: "SWExtrusion => bool" ("DraftOutward/'(_')" [3] 999)
-X_DraftWhileExtruding :: "SWExtrusion => bool" ("DraftWhileExtruding/'(_')" [3] 999)
 X_End :: "SWArc => Point" ("End/'(_')" [3] 999)
-X_EndCondition :: "SWExtrusion => Real" ("EndCondition/'(_')" [3] 999)
 X_From :: "SWLine => Point" ("From/'(_')" [3] 999)
 X_InnerCS :: "SWPlane => Vector" ("InnerCS/'(_')" [3] 999)
-X_IsBaseExtrude :: "SWExtrusion => bool" ("IsBaseExtrude/'(_')" [3] 999)
-X_IsBossFeature :: "SWExtrusion => bool" ("IsBossFeature/'(_')" [3] 999)
-X_IsThinFeature :: "SWExtrusion => bool" ("IsThinFeature/'(_')" [3] 999)
 X_NormalVector :: "SWPlane => VectorStar" ("NormalVector/'(_')" [3] 999)
 X_Objects :: "SWSketch => SWSketchObject SWList" ("Objects/'(_')" [3] 999)
 X_Points :: "SWSpline => Point SWList" ("Points/'(_')" [3] 999)
@@ -173,12 +161,9 @@ X_RealNonNeg_proj :: "Real => RealNonNeg" ("RealNonNeg'_proj/'(_')" [3] 999)
 X_RealPos_inj :: "RealPos => Real" ("RealPos'_inj/'(_')" [3] 999)
 X_RealPos_pred :: "Real => bool" ("RealPos'_pred/'(_')" [3] 999)
 X_RealPos_proj :: "Real => RealPos" ("RealPos'_proj/'(_')" [3] 999)
-X_RealStar_inj :: "RealStar => Real" ("RealStar'_inj/'(_')" [3] 999)
-X_RealStar_pred :: "Real => bool" ("RealStar'_pred/'(_')" [3] 999)
-X_RealStar_proj :: "Real => RealStar" ("RealStar'_proj/'(_')" [3] 999)
 X_SWArc :: "Point => Point => Point => SWArc"
 X_SWCylinder :: "Point => Point => VectorStar => SWFeature" ("SWCylinder/'(_,/ _,/ _')" [3,3,3] 999)
-X_SWExtrusion :: "SWSketch => Real => Real => bool => bool => Real => Real => bool => bool => bool => SWExtrusion"
+X_SWExtrusion :: "SWSketch => Real => SWExtrusion"
 X_SWExtrusion_inj :: "SWExtrusion => SWFeature" ("SWExtrusion'_inj/'(_')" [3] 999)
 X_SWExtrusion_proj :: "SWFeature => SWExtrusion" ("SWExtrusion'_proj/'(_')" [3] 999)
 X_SWLine :: "Point => Point => SWLine"
@@ -194,7 +179,6 @@ X_VWithLength :: "Vector => Real => Vector" ("VWithLength/'(_,/ _')" [3,3] 999)
 X_VectorStar_inj :: "VectorStar => Vector" ("VectorStar'_inj/'(_')" [3] 999)
 X_VectorStar_pred :: "Vector => bool" ("VectorStar'_pred/'(_')" [3] 999)
 X_VectorStar_proj :: "Vector => VectorStar" ("VectorStar'_proj/'(_')" [3] 999)
-X_WallThickness :: "SWExtrusion => Real" ("WallThickness/'(_')" [3] 999)
 X__XAtXAt__X :: "ZeroToNine => Real => Real" ("(_/ @@/ _)" [54,54] 52)
 X__XBslashXBslash__X :: "('S => bool) * ('S => bool) => 'S => bool"
 X__XGtXEq__X :: "Real => Real => bool" ("(_/ >=''/ _)" [44,44] 42)
@@ -223,8 +207,6 @@ X__subset__X :: "('S => bool) => ('S => bool) => bool" ("(_/ subset/ _)" [44,44]
 X__union__X :: "('S => bool) * ('S => bool) => 'S => bool"
 X_abs :: "Real => RealNonNeg" ("abs''/'(_')" [3] 999)
 X_allSet :: "'S => bool" ("allSet/'(_')" [3] 999)
-X_asPoint :: "Vector => Point" ("asPoint/'(_')" [3] 999)
-X_asVector :: "Point => Vector" ("asVector/'(_')" [3] 999)
 X_choose :: "(Point => bool) => Point" ("choose''/'(_')" [3] 999)
 X_emptySet :: "'S => bool" ("emptySet/'(_')" [3] 999)
 X_first :: "'a SWList => 'a partial" ("first/'(_')" [3] 999)
@@ -238,6 +220,8 @@ X_lindep :: "Vector => Vector => bool" ("lindep/'(_,/ _')" [3,3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
 X_orth :: "Vector => Vector => bool" ("orth/'(_,/ _')" [3,3] 999)
+X_orthcomp :: "Vector => Vector => Vector" ("orthcomp/'(_,/ _')" [3,3] 999)
+X_proj :: "Vector => Vector => Vector" ("proj/'(_,/ _')" [3,3] 999)
 X_rest :: "'a SWList => 'a SWList partial" ("rest/'(_')" [3] 999)
 X_sqrt :: "RealNonNeg => Real" ("sqrt/'(_')" [3] 999)
 X_sup :: "Real => Real => Real partial" ("sup/'(_,/ _')" [3,3] 999)
@@ -420,15 +404,10 @@ RealNonNeg_pred_def [rule_format] :
 RealPos_pred_def [rule_format] :
 "ALL x. RealPos_pred(x) = (x >' 0'')"
 
-RealStar_pred_def [rule_format] :
-"ALL x. RealStar_pred(x) = (~ x = 0'')"
-
-Ax4 [rule_format] :
+Ax3 [rule_format] :
 "ALL x. defOp (gn_proj(x)) = RealNonNeg_pred(x)"
 
-Ax5 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
-
-Ax6 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealStar_pred(x)"
+Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
 
 RealNonNeg_subtype [rule_format] :
 "isSubtypeWithPred(X_RealNonNeg_pred, X_RealNonNeg_inj,
@@ -437,11 +416,7 @@ RealNonNeg_subtype [rule_format] :
 RealPos_subtype [rule_format] :
 "isSubtypeWithPred(X_RealPos_pred, X_RealPos_inj, X_RealPos_proj)"
 
-RealStar_subtype [rule_format] :
-"isSubtypeWithPred(X_RealStar_pred, X_RealStar_inj,
- X_RealStar_proj)"
-
-Ax10 [rule_format] :
+Ax7 [rule_format] :
 "ALL x.
  makePartial (abs'(x)) =
  gn_proj(makeTotal (makePartial (if 0'' <=' x then x else -' x)))"
@@ -510,10 +485,10 @@ ga_select_C3_1 [rule_format] :
 
 Zero_Vector [rule_format] : "0_3 = V(0'', 0'', 0'')"
 
-RealStar_pred_def_1_1 [rule_format] :
+VectorStar_pred_def [rule_format] :
 "ALL x. VectorStar_pred(x) = (~ x = 0_3)"
 
-Ax7 [rule_format] :
+Ax7_1_1 [rule_format] :
 "ALL x. defOp (gn_proj(x)) = VectorStar_pred(x)"
 
 VectorStar_subtype [rule_format] :
@@ -532,7 +507,7 @@ def_of_minus_vector [rule_format] :
 binary_inverse_1_1 [rule_format] :
 "ALL x. ALL y. x -'' y = x +_4 -'' y"
 
-scalar_mutliplication [rule_format] :
+scalar_multiplication [rule_format] :
 "ALL x.
  ALL y. x *_3 y = V(x *'' C1''(y), x *'' C2''(y), x *'' C3''(y))"
 
@@ -551,11 +526,11 @@ vector_product [rule_format] :
  (C3''(x) *'' C1''(y)) -' (C3''(y) *'' C1''(x)),
  (C1''(x) *'' C2''(y)) -' (C1''(y) *'' C2''(x)))"
 
-e1_onb_vector [rule_format] : "e1 = V(gn_inj(1'), 0'', 0'')"
+ONB1 [rule_format] : "e1 = V(gn_inj(1'), 0'', 0'')"
 
-e2_onb_vector [rule_format] : "e2 = V(0'', gn_inj(1'), 0'')"
+ONB2 [rule_format] : "e2 = V(0'', gn_inj(1'), 0'')"
 
-e3_onb_vector [rule_format] : "e3 = V(0'', 0'', gn_inj(1'))"
+ONB3 [rule_format] : "e3 = V(0'', 0'', gn_inj(1'))"
 
 cross_left_homogenity [rule_format] :
 "ALL r. ALL x. ALL y. r *_3 (x #' y) = (r *_3 x) #' y"
@@ -627,11 +602,23 @@ lindep_nonlindep_transitivity [rule_format] :
  ALL z.
  (~ x = 0_3 & lindep(x, y)) & ~ lindep(y, z) --> ~ lindep(x, z)"
 
-sqr_def_1_1 [rule_format] :
+sqr_def [rule_format] :
 "ALL x. makePartial (sqr''(x)) = gn_proj(x *_4 x)"
 
-norm_from_scalar_prod_def [rule_format] :
+norm_from_inner_prod_def [rule_format] :
 "ALL x. || x || = sqrt(sqr''(x))"
+
+proj_def [rule_format] :
+"ALL v.
+ ALL w.
+ makePartial (proj(v, w)) =
+ (if w = 0_3 then makePartial 0_3
+     else restrictOp
+          (makePartial (((v *_4 w) /' makeTotal (gn_proj(w *_4 w))) *_3 w))
+          (defOp (gn_proj(w *_4 w))))"
+
+orthcomp_def [rule_format] :
+"ALL v. ALL w. orthcomp(v, w) = v -'' proj(v, w)"
 
 orthogonal_def [rule_format] :
 "ALL x. ALL y. orth(x, y) = (x *_4 y = 0'')"
@@ -642,11 +629,14 @@ orth_symmetry [rule_format] :
 lindep_orth_transitivity [rule_format] :
 "ALL x. ALL y. ALL z. lindep(x, y) & orth(y, z) --> orth(x, z)"
 
-orthogonal_projection [rule_format] :
-"ALL x.
- ALL y.
- (~ x = 0_3 & ~ y = 0_3) & ~ lindep(x, y) -->
- (EX v. ~ v = 0_3 & orth(v, x))"
+orthogonal_on_zero_projection [rule_format] :
+"ALL x. ALL y. proj(x, y) = 0_3 --> orth(x, y)"
+
+orthogonal_projection_theorem [rule_format] :
+"ALL x. ALL y. orth(orthcomp(x, y), y)"
+
+orthogonal_decomposition_theorem [rule_format] :
+"ALL x. ALL y. proj(x, y) +_4 orthcomp(x, y) = x"
 
 cross_product_orthogonal [rule_format] :
 "ALL x. ALL y. orth(x, x #' y)"
@@ -656,42 +646,33 @@ cross_product_zero_iff_lindep [rule_format] :
 
 e1e2_nonlindep [rule_format] : "~ lindep(e1, e2)"
 
-point_to_vector_embedding [rule_format] :
-"ALL p. asVector(p) = V(C1'(p), C2'(p), C3'(p))"
+point_vector_map [rule_format] :
+"ALL p.
+ ALL v.
+ p +' v =
+ P(C1'(p) +_3 C1''(v), C2'(p) +_3 C2''(v), C3'(p) +_3 C3''(v))"
 
-vector_to_point_embedding [rule_format] :
-"ALL v. asPoint(v) = P(C1''(v), C2''(v), C3''(v))"
+plus_injective [rule_format] :
+"ALL p. ALL v. ALL w. p +' v = p +' w --> v = w"
 
-Ax1_1_1 [rule_format] : "0' = asPoint(0_3)"
+plus_surjective [rule_format] : "ALL p. ALL q. EX y. p +' y = q"
 
-vector_point_vector [rule_format] :
-"ALL v. asVector(asPoint(v)) = v"
+point_vector_plus_associative [rule_format] :
+"ALL p. ALL v. ALL w. p +' (v +_4 w) = (p +' v) +' w"
 
-point_vector_point [rule_format] :
-"ALL p. asPoint(asVector(p)) = p"
+point_vector_plus_commutative [rule_format] :
+"ALL p. ALL v. ALL w. (p +' v) +' w = (p +' w) +' v"
 
-origin_to_zero [rule_format] : "asVector(0') = 0_3"
+vec_def [rule_format] : "ALL p. ALL q. p +' vec(p, q) = q"
 
-vec_def [rule_format] :
-"ALL p. ALL q. vec(p, q) = asVector(q) -'' asVector(p)"
-
-compatibility_PVplus_Vplus [rule_format] :
-"ALL p. ALL v. p +' v = asPoint(asVector(p) +_4 v)"
-
-transitivity_of_vec_XPlus [rule_format] :
+transitivity_of_vec_plus [rule_format] :
 "ALL p. ALL q. ALL r. vec(p, q) +_4 vec(q, r) = vec(p, r)"
 
 antisymmetry_of_vec [rule_format] :
 "ALL p. ALL q. vec(p, q) = -'' vec(q, p)"
 
-vec_shift_unique_lemma [rule_format] :
+plus_vec_identity [rule_format] :
 "ALL p. ALL q. ALL v. p +' v = q --> v = vec(p, q)"
-
-vec_shift_def_lemma [rule_format] :
-"ALL p. ALL q. p +' vec(p, q) = q"
-
-point_vector_add_comm_lemma [rule_format] :
-"ALL p. ALL v. ALL w. (p +' v) +' w = (p +' w) +' v"
 
 set_comprehension [rule_format] : "ALL s. XLBrace__XRBrace s = s"
 
@@ -699,10 +680,7 @@ abbrev_of_set_comprehension [rule_format] :
 "setFromProperty = XLBrace__XRBrace"
 
 function_image [rule_format] :
-"ALL XX.
- ALL f.
- X_image (f, XX) =
-  (% x. EX y. y isIn XX & f y = x)"
+"ALL XX. ALL f. X_image (f, XX) = (% x. EX y. y isIn XX & f y = x)"
 
 emptySet_not_empty [rule_format] : "ALL x. ~ x isIn X_emptySet"
 
@@ -832,152 +810,10 @@ ga_select_Plane [rule_format] :
 "ALL x_1. ALL x_2. Plane'(X_SWSketch x_1 x_2) = x_2"
 
 ga_select_Sketch [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- Sketch(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9 x_10) =
- x_1"
+"ALL x_1. ALL x_2. Sketch(X_SWExtrusion x_1 x_2) = x_1"
 
 ga_select_Depth [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- Depth(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9 x_10) =
- x_2"
-
-ga_select_DraftAngle [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- DraftAngle(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-            x_10) =
- x_3"
-
-ga_select_DraftOutward [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- DraftOutward(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-              x_10) =
- x_4"
-
-ga_select_DraftWhileExtruding [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- DraftWhileExtruding(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8
-                     x_9 x_10) =
- x_5"
-
-ga_select_EndCondition [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- EndCondition(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-              x_10) =
- x_6"
-
-ga_select_WallThickness [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- WallThickness(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-               x_10) =
- x_7"
-
-ga_select_IsBaseExtrude [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- IsBaseExtrude(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-               x_10) =
- x_8"
-
-ga_select_IsBossFeature [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- IsBossFeature(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-               x_10) =
- x_9"
-
-ga_select_IsThinFeature [rule_format] :
-"ALL x_1.
- ALL x_2.
- ALL x_3.
- ALL x_4.
- ALL x_5.
- ALL x_6.
- ALL x_7.
- ALL x_8.
- ALL x_9.
- ALL x_10.
- IsThinFeature(X_SWExtrusion x_1 x_2 x_3 x_4 x_5 x_6 x_7 x_8 x_9
-               x_10) =
- x_10"
+"ALL x_1. ALL x_2. Depth(X_SWExtrusion x_1 x_2) = x_2"
 
 E1_def [rule_format] :
 "E1 =
@@ -1070,7 +906,7 @@ vwl_length [rule_format] :
 "ALL s.
  ALL v.
  ~ v = 0_3 -->
- || VWithLength(v, s) || = gn_inj(abs'(s))"
+ makePartial ( || VWithLength(v, s) || ) = gn_inj(abs'(s))"
 
 vwl_lindep [rule_format] :
 "ALL s. ALL v. lindep(v, VWithLength(v, s))"
@@ -1083,23 +919,14 @@ semantics_for_Planes [rule_format] :
  ActAttach (X_o, VPlane (gn_inj(X_n)))"
 
 semantics_for_ArcExtrusion [rule_format] :
-"ALL b1.
- ALL b2.
- ALL b3.
- ALL b4.
- ALL b5.
- ALL l.
+"ALL l.
  ALL plane.
  ALL x.
- ALL x1.
- ALL x2.
- ALL x3.
  ALL y.
  ALL z.
  iX1
  (SWExtrusion_inj(X_SWExtrusion
-                  (X_SWSketch (gn_inj(X_SWArc x y z) ::' [ ]') plane) l x1 b1 b2
-                  x2 x3 b3 b4 b5)) =
+                  (X_SWSketch (gn_inj(X_SWArc x y z) ::' [ ]') plane) l)) =
  (if y = z
      then let cp = x;
               r1 = vec(cp, y);
@@ -1120,12 +947,9 @@ def_of_SWCylinder [rule_format] :
  SWCylinder(center, boundarypoint, axis) =
  (let plane = X_SWPlane center axis (V(0'', 0'', 0''));
       arc = X_SWArc center boundarypoint boundarypoint;
-      height = || gn_inj(axis) ||;
-      x1 = 0'';
-      b = False
+      height = || gn_inj(axis) ||
   in SWExtrusion_inj(X_SWExtrusion
-                     (X_SWSketch (gn_inj(arc) ::' [ ]') plane) height x1 b b x1
-                     x1 b b b))"
+                     (X_SWSketch (gn_inj(arc) ::' [ ]') plane) height))"
 
 affine_cylinder_constructible_in_SW [rule_format] :
 "ALL axis.
@@ -1134,10 +958,9 @@ affine_cylinder_constructible_in_SW [rule_format] :
  Cylinder ((offset, r), axis) =
  (let boundary =
       % p. let v = vec(offset, p)
-           in orth(v, gn_inj(axis)) & || v || = gn_inj(r);
+           in orth(v, gn_inj(axis)) & makePartial ( || v || ) = gn_inj(r);
       boundarypoint = choose'(boundary)
   in iX1 (SWCylinder(offset, boundarypoint, axis)))"
-
 
 declare ga_assoc___Xx__ [simp]
 declare ga_right_unit___Xx__ [simp]
@@ -1167,12 +990,10 @@ declare ga_left_comm_min [simp]
 declare ga_left_comm_max [simp]
 declare min_inf_relation [simp]
 declare max_sup_relation [simp]
+declare Ax3 [simp]
 declare Ax4 [simp]
-declare Ax5 [simp]
-declare Ax6 [simp]
 declare RealNonNeg_subtype [simp]
 declare RealPos_subtype [simp]
-declare RealStar_subtype [simp]
 declare sqrt_def [simp]
 declare ga_select_C1 [simp]
 declare ga_select_C2 [simp]
@@ -1180,7 +1001,7 @@ declare ga_select_C3 [simp]
 declare ga_select_C1_1 [simp]
 declare ga_select_C2_1 [simp]
 declare ga_select_C3_1 [simp]
-declare Ax7 [simp]
+declare Ax7_1_1 [simp]
 declare VectorStar_subtype [simp]
 declare ga_assoc___Xx___3_1 [simp]
 declare ga_right_unit___Xx___3_1 [simp]
@@ -1195,13 +1016,13 @@ declare inverse_by_XMinus1 [simp]
 declare lindep_reflexivity [simp]
 declare lindep_symmetry [simp]
 declare orth_symmetry [simp]
+declare orthogonal_on_zero_projection [simp]
+declare orthogonal_projection_theorem [simp]
+declare orthogonal_decomposition_theorem [simp]
 declare cross_product_orthogonal [simp]
 declare e1e2_nonlindep [simp]
-declare vector_point_vector [simp]
-declare point_vector_point [simp]
-declare origin_to_zero [simp]
-declare transitivity_of_vec_XPlus [simp]
-declare vec_shift_def_lemma [simp]
+declare vec_def [simp]
+declare transitivity_of_vec_plus [simp]
 declare emptySet_not_empty [simp]
 declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
@@ -1220,183 +1041,26 @@ declare ga_select_Objects [simp]
 declare ga_select_Plane [simp]
 declare ga_select_Sketch [simp]
 declare ga_select_Depth [simp]
-declare ga_select_DraftAngle [simp]
-declare ga_select_DraftOutward [simp]
-declare ga_select_DraftWhileExtruding [simp]
-declare ga_select_EndCondition [simp]
-declare ga_select_WallThickness [simp]
-declare ga_select_IsBaseExtrude [simp]
-declare ga_select_IsBossFeature [simp]
-declare ga_select_IsThinFeature [simp]
 declare SWExtrusion_subtype [simp]
 declare vwl_identity [simp]
 declare vwl_lindep [simp]
 
 theorem def_of_Cylinder :
-"ALL axis offset r.
+"ALL axis.
+ ALL offset.
+ ALL r.
  Cylinder ((offset, r), axis) =
- (% x. EX l y.
-       ((l isIn closedinterval (0'', gn_inj(1')) &
-         orth(y, gn_inj(axis))) &
-        || y || <=' gn_inj(r)) &
-       x = (offset +' (l *_3 gn_inj(axis))) +' y)"
-
-  -- "unfolding some initial definitions"
-  unfolding affine_cylinder_constructible_in_SW
-  unfolding def_of_SWCylinder
-
-  proof (rule allI)+
-
-    fix axis::VectorStar
-    fix offset r
-
-    -- "providing vars for the let-constructs"
-    def boundary: bpc == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
-    def boundarypoint: bp == "choose'(bpc)"
-    def plane: pln == "X_SWPlane offset axis (V(0'', 0'', 0''))"
-    def arc: arc1 == "X_SWArc offset bp bp"
-    def height: ht == "|| gn_inj(axis) ||"
-
-    -- "additional definitions, not stemming from let-vars"
-    def I01: interv01 == "closedinterval (0'', gn_inj(1'))"
-
-    -- "going in apply-mode again"
-    show "(let boundary = \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
-            boundarypoint = choose'(boundary)
-        in iX1 (let plane = X_SWPlane offset axis (V(0'', 0'', 0''));
-                    arc = X_SWArc offset boundarypoint boundarypoint; height = || gn_inj(axis) ||;
-                    x1 = 0''; b = False
-                in SWExtrusion_inj
-                   (X_SWExtrusion (X_SWSketch (gn_inj(arc) ::' [ ]') plane) height x1 b b x1 x1 b b
-                     b))) =
-       (\<lambda>x. \<exists>l y. ((l isIn closedinterval (0'', gn_inj(1')) \<and> orth(y, gn_inj(axis))) \<and>
-                   || y || <=' gn_inj(r)) \<and>
-                  x = (offset +' (l *_3 gn_inj(axis))) +' y)"
-
-      apply (simp only: boundary [symmetric])
-      -- "get the boundarypoint definition replaced"
-      apply (subst Let_def)
-      apply (simp only: boundarypoint [symmetric])
-      apply (simp only: plane [symmetric])
-      -- "get the boundarypoint definition replaced"
-      apply (subst Let_def)
-      apply (simp only: height [symmetric])
-      unfolding Let_def
-
-      -- "second round of let-elimination, but first some definition unfoldings"
-      unfolding semantics_for_ArcExtrusion ActExtrude_constr
-
-      -- "we simplify the if immediately"
-      apply (subst if_P, simp)
-
-      apply (simp only: I01 [symmetric])
-      
-      -- "get the cp definition replaced"
-      apply (subst Let_def)
-
-      proof-
-
-      def r1: radius == "vec(offset, bp)"
-      def ball: bll == "ActAttach (offset, VBall ( || radius || ))"
-      def planeI: plnI == "iX2 pln"
-      def scaledAxis: axs == "VWithLength(gn_inj(NormalVector(pln)), ht)"
-
-      -- "we can identify gn_inj(axis) and axs via vwl_identity!"
-      from plane ga_select_NormalVector scaledAxis vwl_identity height
-      have axis_identity: "axs = gn_inj(axis)" by simp
-      
-	-- "going in apply-mode again"
-      show "(let r1 = vec(offset, bp); ball = ActAttach (offset, VBall ( || r1 || )); planeI = iX2 pln;
-         scaledAxis = VWithLength(gn_inj(NormalVector(pln)), ht)
-     in \<lambda>x. \<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (ball, planeI)) \<and>
-                  x = y +' (l *_3 scaledAxis)) =
-    (\<lambda>x. \<exists>l y. ((l isIn interv01 \<and> orth(y, gn_inj(axis))) \<and> || y || <=' gn_inj(r)) \<and>
-               x = (offset +' (l *_3 gn_inj(axis))) +' y)"
-
-      apply (simp only: r1 [symmetric])
-      -- "get the r1 definition replaced"
-      apply (subst Let_def)
-      apply (simp only: ball [symmetric])
-      apply (simp only: planeI [symmetric])
-      apply (simp only: scaledAxis [symmetric])
-      unfolding Let_def
-
-      apply (simp only: axis_identity [symmetric])
-      apply (rule ext)
-
-      -- "having normalized the problem we can now start the main proof!"
-      proof
-	
-	-- "subgoal 1"
-	fix x
-
-	assume "\<exists>l y. (l isIn interv01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
-	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
-thm lindep_orth_transitivity
-thm vec_shift_unique_lemma vec_def ball ActAttach_constr plus_Point_VectorSet function_image
-	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
-
-	-- "show the four subgoals (conjuncts)"
-	hence subgoal1: "?I l" by force
-
-	-- "now we need to find a matching y' for the conclusion."
-	-- "we set y' = vec(offset, y) to satisfy the equation:"
-	-- "y +' (l *_3 axs) === offset +' (l *_3 axs) + y'"
-
-	def have_y': y' == "vec(offset, y)"
-	from main_knowledge have yInBall: "y isIn bll"
-	  by (simp only: def_of_intersection conjunct1)
-
-	-- "we use the Vball definition to obtain a parameterization of y in z"
-	-- "then we identify z and y' and get the desired properties from those for z"
-	hence vball_y': "VBall ( || radius || ) y'"
-	proof (simp add: vec_def ball ActAttach_constr plus_Point_VectorSet function_image)
-	  assume "\<exists>z. VBall ( || radius || ) z \<and> offset +' z = y" (is "\<exists>z. ?VB z")
-	  then obtain z where k_VB: "?VB z" (is "?VB1 \<and> ?VB2") by force
-	    
-	  from k_VB have_y' vec_shift_unique_lemma have "z = y'" by simp
-	  with k_VB show "VBall ( || radius || ) y'" by simp
-	qed
-
-
-thm ball
-thm r1
-thm boundarypoint
-thm bpCond
-thm plane
-	have "bpc bp"
-	  apply (simp only: boundarypoint)
-thm bpCond
-	  
-
-	have "|| radius || = gn_inj(r)"
-	  apply (subst r1)
-thm bpCond
-thm boundarypoint
-by auto
-choose'(bpCond)
-
-Point_choice [rule_format] :
-"ALL X_P. (EX y. X_P y) --> X_P (choose'(X_P))"
-
-	  apply (simp only: r1 boundarypoint bpCond Let_def)
-	from main_knowledge have yInPlane: "y isIn plnI"
-	  by (simp only: def_of_intersection conjunct1)
-
-
-
-
-
-
+ (% x. let v = vec(offset, x)
+       in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || &
+            || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) &
+          v *_4 gn_inj(axis) >=' 0'')"
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
-      RealPos_pred_def RealStar_pred_def Ax10 sqr_def sqrt_def
-      X2_def_Real X3_def_Real X4_def_Real X5_def_Real X6_def_Real
-      X7_def_Real X8_def_Real X9_def_Real decimal_def Zero_Point
-      Zero_Vector RealStar_pred_def_1_1 scalar_mutliplication
-      scalar_product vector_product e1_onb_vector e2_onb_vector
-      e3_onb_vector lindep_def sqr_def_1_1 norm_from_scalar_prod_def
-      orthogonal_def point_to_vector_embedding vector_to_point_embedding
-      Ax1_1_1 vec_def compatibility_PVplus_Vplus set_comprehension
+      RealPos_pred_def Ax7 sqr_def sqrt_def X2_def_Real X3_def_Real
+      X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
+      X9_def_Real decimal_def Zero_Point Zero_Vector VectorStar_pred_def
+      scalar_multiplication scalar_product vector_product ONB1 ONB2 ONB3
+      lindep_def sqr_def norm_from_inner_prod_def proj_def orthcomp_def
+      orthogonal_def point_vector_map vec_def set_comprehension
       abbrev_of_set_comprehension function_image def_of_interval
       abbrev_of_interval plus_PointSet_Vector plus_Point_VectorSet
       plus_PointSet_VectorSet def_of_Plane E1_def E2_def E3_def
