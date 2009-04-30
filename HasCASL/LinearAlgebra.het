@@ -81,17 +81,16 @@ then %implies
      . v * (a*w) = a * (v * w) 		%(right_homogen)%
 end
 
-%( Definitional extension of unary inv to binary inv (= /) )%
+%( Definition of Norm and Projection )%
 spec ExtEuclideanVectorSpace[EuclideanVectorSpace] given RealFunctions
 = %def
 ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then 
-     ops  sqr(x:Space):RealNonNeg = x*x as RealNonNeg; %(sqr_def)%
-	  ||__|| (x:Space): Real = sqrt(sqr(x)); %(norm_from_scalar_prod_def)%
-
-     pred orth:Space*Space
-
-     vars x,y:Space
-     . orth(x,y) <=> x*y=0 %(orthogonal_def)%
+     ops  sqr(x:Space):RealNonNeg = x*x as RealNonNeg; %(sqr def)%
+	  ||__|| (x:Space): Real = sqrt(sqr(x)); %(norm from inner prod def)%
+	  proj(v,w:Space):Space
+	       = 0 when w = 0 else ((v*w)/(w*w as NonZero)) * w; %(proj def)%
+	  orthcomp(v,w:Space):Space = v - proj(v,w); %(orthcomp def)%
+     pred orth(x,y:Space) <=> x*y=0 %(orthogonal def)%
 
 then %implies
      vars x,y,z:Space; r:Real
@@ -102,9 +101,11 @@ then %implies
      %{ mixed props }%
      . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitivity)%
 
-     . not(x=0) /\ not(y=0) /\ not(lindep(x,y))
-	  => exists v:Space. not(v=0) /\ orth(v,x) %(orthogonal projection)%
+     . proj(x,y)=0 => orth(x,y)  %(orthogonal on zero projection)%
 
+     . orth(orthcomp(x,y), y) %(orthogonal projection theorem)%
+
+     . proj(x,y) + orthcomp(x,y) = x %(orthogonal decomposition theorem)%
 end
 
 view EuclideanSpaceIsNormedSpace:

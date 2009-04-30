@@ -19,31 +19,38 @@ from HasCASL/LinearAlgebra get VectorSpace
 
 spec AffineSpace[VectorSpace[Field]] =
      sort Point
-     ops asPoint  : Space -> Point;
-	 asVector : Point -> Space;
-	 origin: Point = asPoint(0);
-
+     op __+__:Point*Space->Point; %(point space map)%
 
      vars p,q:Point; v,w:Space
-     . asVector(asPoint(v)) = v %(vector_point_vector)%
-     . asPoint(asVector(p)) = p %(point_vector_point)%
+     . p+v = p+w => v = w %(plus injective)%
+     . exists y:Space. p+y = q %(plus surjective)%
+     . p+(v+w) = (p+v)+w %(point vector plus associative)%
+
+then %implies
+     forall p:Point;v,w:Space. (p + v) + w = (p + w) + v
+     %(point vector plus commutative)% 
+end
+
+spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] = %def
+     op vec:Point*Point->Space; 
+
+     forall p,q:Point. p + vec(p,q) = q %(vec def)%
+then %implies
+     vars p,q,r:Point; v,w:Space
+     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity of vec plus)%
+     . vec(p,q) = - vec(q,p)          %(antisymmetry of vec)%
+     . p + v = q => v = vec(p,q)      %(plus vec identity)%
+end
+
+%[ NOT NEEDED FOR THE MOMENT
+spec ExtAffineSpaceWithOrigin[ExtAffineSpace[AffineSpace[VectorSpace[Field]]]] =
+     ops origin  : Point;
+	 asPoint(v:Space):Point = origin + v; %(vector point embedding)%
+	 asVector(p:Point):Space = vec(origin,p); %(point vector embedding)%
 
 then %implies
      vars p,q,r:Point; v,w:Space
-     . asVector(origin) = 0  %(origin_to_zero)%
+     . asVector(asPoint(v)) = v %(vector point identity)%
+     . asPoint(asVector(p)) = p %(point vector identity)%
 end
-
-spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] =
-     ops vec(p,q:Point):Space = asVector(q) - asVector(p); %(vec_def)%
-	 __+__(p:Point; v:Space):Point = asPoint(asVector(p) + v);
-	 %(compatibility_PVplus_Vplus)%
-
-then %implies
-     vars p,q,r:Point; v,w:Space
-     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity_of_vec_+)%
-     . vec(p,q) = - vec(q,p)          %(antisymmetry_of_vec)%
-     . p + v = q => v = vec(p,q) %(vec_shift_unique_lemma)%
-     . p + vec(p,q) = q  %(vec_shift_def_lemma)%
-     . (p + v) + w = (p + w) + v %(point_vector_add_comm_lemma)%
-end
-
+]%

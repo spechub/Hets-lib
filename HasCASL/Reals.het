@@ -93,25 +93,19 @@ spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
 then %def
      preds RealNonNeg_pred(x:Real) <=> x >= 0; %(RealNonNeg_pred_def)%
 	   RealPos_pred(x:Real) <=> x > 0; %(RealPos_pred_def)%
-	   RealStar_pred(x:Real) <=> not x = 0; %(RealStar_pred_def)%
 
      types RealNonNeg = {x:Real. RealNonNeg_pred x};
 	   RealPos = {x:Real. RealPos_pred x};
-	   RealStar = {x:Real. RealStar_pred x};
 
      ops RealNonNeg_inj: RealNonNeg -> Real;
 	 RealPos_inj: RealPos -> Real;
-	 RealStar_inj: RealStar -> Real;
          RealNonNeg_proj: Real -> RealNonNeg;
 	 RealPos_proj: Real -> RealPos;
-	 RealStar_proj: Real -> RealStar;
 
      . isSubtypeWithPred(RealNonNeg_pred, RealNonNeg_inj, RealNonNeg_proj);
      %(RealNonNeg_subtype)%
      . isSubtypeWithPred(RealPos_pred, RealPos_inj, RealPos_proj);
      %(RealPos_subtype)%
-     . isSubtypeWithPred(RealStar_pred, RealStar_inj, RealStar_proj);
-     %(RealStar_subtype)%
 
      op abs(x:Real):RealNonNeg = x when 0 <= x else -x
 end

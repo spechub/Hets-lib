@@ -67,7 +67,7 @@ spec Vectors3DBase = RealBase then
 	 __+__ : Vector * Vector -> Vector;
 	 - __ : Vector -> Vector;
 
-     pred VectorStar_pred(x:Vector) <=> not x = 0; %(RealStar_pred_def)%
+     pred VectorStar_pred(x:Vector) <=> not x = 0; %(VectorStar_pred_def)%
      type VectorStar = {x:Vector. VectorStar_pred x};
      ops VectorStar_inj: VectorStar -> Vector;
          VectorStar_proj: Vector -> VectorStar;
@@ -86,16 +86,16 @@ ExtInverse[Vectors3DBase fit
      with __ / __:Vector*Vector->Vector |-> __ - __ then
 
      ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y));
-     %(scalar mutliplication)%
+     %(scalar multiplication)%
 	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y);
 	 %(scalar product)%
 	 __#__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
 				      C3(x)*C1(y)-C3(y)*C1(x),
 				      C1(x)*C2(y)-C1(y)*C2(x));
 				      %(vector product)%
-	 e1:Vector = V(1,0,0); %(e1 onb vector)%
-	 e2:Vector = V(0,1,0); %(e2 onb vector)%
-	 e3:Vector = V(0,0,1); %(e3 onb vector)%
+	 e1:Vector = V(1,0,0); %(ONB1)%
+	 e2:Vector = V(0,1,0); %(ONB2)%
+	 e3:Vector = V(0,0,1); %(ONB3)%
 
 then %implies
      var x,y,z:Vector; r:Real
@@ -119,14 +119,12 @@ end
 
 spec AffineRealSpace3D_aux = Points3D and Vectors3DSpace
 then
-     ops asVector(p: Point):Vector = V(C1(p),C2(p),C3(p)); %(point_to_vector_embedding)%
-	 asPoint(v: Vector):Point  = P(C1(v),C2(v),C3(v)); %(vector_to_point_embedding)%
+     op __ + __(p: Point;v: Vector):Point =
+	P(C1(p)+C1(v),C2(p)+C2(v),C3(p)+C3(v)); %(point vector map)%
 end
 
 spec AffineRealSpace3D = ExtAffineSpace[AffineRealSpace3D_aux
-					fit Space |-> Vector,
-					Elem |-> Real,
-					origin |-> 0:Point]
+					fit Space |-> Vector, Elem |-> Real]
 
 
 %( taken from Set.het but changed the meaning of {f} )%
