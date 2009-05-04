@@ -93,7 +93,7 @@ ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then
      pred orth(x,y:Space) <=> x*y=0 %(orthogonal def)%
 
 then %implies
-     vars x,y,z:Space; r:Real
+     vars v,w,x,y,z:Space; r:Real
 
      %{ orth props }%
      . orth(x,y) => orth(y,x) %(orth symmetric)%
@@ -106,6 +106,9 @@ then %implies
      . orth(orthcomp(x,y), y) %(orthogonal projection theorem)%
 
      . proj(x,y) + orthcomp(x,y) = x %(orthogonal decomposition theorem)%
+
+     . not(x=0) /\ lindep(x,v) /\ orth(x,y) /\ orth(x,w) /\ x+y=v+w
+	  => x=v /\ y=w %(unique orthogonal decomposition)%
 end
 
 view EuclideanSpaceIsNormedSpace:

@@ -635,6 +635,15 @@ orthogonal_projection_theorem [rule_format] :
 orthogonal_decomposition_theorem [rule_format] :
 "ALL x. ALL y. proj(x, y) +_4 orthcomp(x, y) = x"
 
+unique_orthogonal_decomposition [rule_format] :
+"ALL v.
+ ALL w.
+ ALL x.
+ ALL y.
+ (((~ x = 0_3 & lindep(x, v)) & orth(x, y)) & orth(x, w)) &
+ x +_4 y = v +_4 w -->
+ x = v & y = w"
+
 cross_product_orthogonal [rule_format] :
 "ALL x. ALL y. orth(x, x #' y)"
 
@@ -1059,7 +1068,9 @@ unfolding Let_def expand_fun_eq by simp_all
 *)
 
 theorem def_of_Cylinder :
-"ALL axis offset r.
+"ALL axis.
+ ALL offset.
+ ALL r.
  Cylinder ((offset, r), axis) =
  (% x. let v = vec(offset, x)
        in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || &
