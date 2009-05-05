@@ -41,16 +41,17 @@ ML "Header.initialize
      \"inv_Group_2_1\", \"rinv_Group_2_1\", \"ga_comm___Xx___3\",
      \"unit\", \"mix_assoc\", \"distr_Field\", \"distr_Space\",
      \"zero_by_left_zero\", \"zero_by_right_zero\",
-     \"inverse_by_XMinus1\", \"distributiv\", \"homogen\",
-     \"commutativ\", \"pos_definit\", \"right_distributiv\",
-     \"right_homogen\", \"lindep_def\", \"lindep_reflexivity\",
+     \"inverse_by_XMinus1\", \"distributive\", \"homogeneous\",
+     \"commutative\", \"pos_definite\", \"right_distributive\",
+     \"right_homogeneous\", \"lindep_def\", \"lindep_reflexivity\",
      \"lindep_symmetry\", \"simple_lindep_condition\",
-     \"lindep_nonlindep_transitivity\",
+     \"lindep_nonlindep_transitivity\", \"sqr2_def\",
      \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
-     \"orthogonal_def\", \"orth_symmetry\",
-     \"lindep_orth_transitivity\", \"orthogonal_on_zero_projection\",
+     \"orthogonal_def\", \"orth_symmetric\", \"lindep_orth_transitive\",
+     \"orthogonal_on_zero_projection\",
      \"orthogonal_projection_theorem\",
-     \"orthogonal_decomposition_theorem\", \"cross_product_orthogonal\",
+     \"orthogonal_decomposition_theorem\",
+     \"unique_orthogonal_decomposition\", \"cross_product_orthogonal\",
      \"cross_product_zero_iff_lindep\", \"e1e2_nonlindep\",
      \"point_vector_map\", \"plus_injective\", \"plus_surjective\",
      \"point_vector_plus_associative\",
@@ -77,7 +78,11 @@ ML "Header.initialize
      \"VHalfSpace_constr\", \"VHalfSpace2_constr\", \"VBall_constr\",
      \"VCircle_constr\", \"ActAttach_constr\", \"ActExtrude_constr\",
      \"vwl_identity\", \"vwl_length\", \"vwl_lindep\",
-     \"semantics_for_Planes\", \"semantics_for_ArcExtrusion\",
+     \"semantics_for_Planes\",
+     \"semantics_for_SketchObject_listsXMinusBaseCase\",
+     \"semantics_for_SketchObject_listsXMinusRecursiveCase\",
+     \"semantics_for_Arcs\", \"semantics_for_Sketches\",
+     \"semantics_for_Planes_1\", \"semantics_for_ArcExtrusion\",
      \"plane_is_plane\", \"def_of_SWCylinder\",
      \"affine_cylinder_constructible_in_SW\", \"def_of_Cylinder\"]"
 
@@ -87,15 +92,9 @@ typedecl Real
 typedecl RealNonNeg
 typedecl RealPos
 typedecl RealSet
-typedecl SWArc
-typedecl SWExtrusion
 typedecl SWFeature
-typedecl SWLine
 typedecl SWObject
-typedecl SWPlane
-typedecl SWSketch
 typedecl SWSketchObject
-typedecl SWSpline
 typedecl ('a1) Set
 typedecl VectorSet
 typedecl VectorStar
@@ -104,6 +103,12 @@ typedecl ZeroToNine
 datatype Point = X_P "Real" "Real" "Real" ("P/'(_,/ _,/ _')" [3,3,3] 999)
 datatype Vector = X_V "Real" "Real" "Real" ("V/'(_,/ _,/ _')" [3,3,3] 999)
 datatype 'a SWList = XOSqBrXCSqBr ("[/ ]''") | X__XColonXColon__X 'a "'a SWList" ("(_/ ::''/ _)" [54,54] 52)
+datatype SWPlane = X_SWPlane "Point" "VectorStar" "Vector"
+datatype SWArc = X_SWArc "Point" "Point" "Point"
+datatype SWLine = X_SWLine "Point" "Point"
+datatype SWSpline = X_SWSpline "Point SWList"
+datatype SWSketch = X_SWSketch "SWSketchObject SWList" "SWPlane"
+datatype SWExtrusion = X_SWExtrusion "SWSketch" "Real"
 
 consts
 ActAttach :: "Point * (Vector => bool) => Point => bool"
@@ -161,16 +166,10 @@ X_RealNonNeg_proj :: "Real => RealNonNeg" ("RealNonNeg'_proj/'(_')" [3] 999)
 X_RealPos_inj :: "RealPos => Real" ("RealPos'_inj/'(_')" [3] 999)
 X_RealPos_pred :: "Real => bool" ("RealPos'_pred/'(_')" [3] 999)
 X_RealPos_proj :: "Real => RealPos" ("RealPos'_proj/'(_')" [3] 999)
-X_SWArc :: "Point => Point => Point => SWArc"
 X_SWCylinder :: "Point => Point => VectorStar => SWFeature" ("SWCylinder/'(_,/ _,/ _')" [3,3,3] 999)
-X_SWExtrusion :: "SWSketch => Real => SWExtrusion"
 X_SWExtrusion_inj :: "SWExtrusion => SWFeature" ("SWExtrusion'_inj/'(_')" [3] 999)
 X_SWExtrusion_proj :: "SWFeature => SWExtrusion" ("SWExtrusion'_proj/'(_')" [3] 999)
-X_SWLine :: "Point => Point => SWLine"
-X_SWPlane :: "Point => VectorStar => Vector => SWPlane"
 X_SWReal :: "Real => Real => Real" ("SWReal/'(_,/ _')" [3,3] 999)
-X_SWSketch :: "SWSketchObject SWList => SWPlane => SWSketch"
-X_SWSpline :: "Point SWList => SWSpline"
 X_Sketch :: "SWExtrusion => SWSketch" ("Sketch/'(_')" [3] 999)
 X_SpacePoint :: "SWPlane => Point" ("SpacePoint/'(_')" [3] 999)
 X_Start :: "SWArc => Point" ("Start/'(_')" [3] 999)
@@ -216,6 +215,8 @@ X_image :: "('S => 'T) * ('S => bool) => 'T => bool"
 X_inv :: "NonZero => NonZero" ("inv''/'(_')" [3] 999)
 X_isSubtype :: "('s => 't) => ('t => 's) => bool" ("isSubtype/'(_,/ _')" [3,3] 999)
 X_isSubtypeWithPred :: "('t => bool) => ('s => 't) => ('t => 's) => bool" ("isSubtypeWithPred/'(_,/ _,/ _')" [3,3,3] 999)
+X_isX1 :: "SWSketchObject * SWPlane => Point => bool"
+X_isX2 :: "SWSketchObject SWList * SWPlane => Point => bool"
 X_lindep :: "Vector => Vector => bool" ("lindep/'(_,/ _')" [3,3] 999)
 X_max :: "Real => Real => Real" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "Real => Real => Real" ("min''/'(_,/ _')" [3,3] 999)
@@ -233,6 +234,7 @@ e2 :: "Vector"
 e3 :: "Vector"
 iX1 :: "SWFeature => Point => bool"
 iX2 :: "SWPlane => Point => bool"
+iX3 :: "SWSketch => Point => bool"
 infX1 :: "Real => Real => Real partial" ("inf''/'(_,/ _')" [3,3] 999)
 infX2 :: "(Real => bool) => Real partial" ("inf''''/'(_')" [3] 999)
 setFromProperty :: "('S => bool) => 'S => bool"
@@ -569,20 +571,20 @@ zero_by_right_zero [rule_format] : "ALL r. r *_3 0_3 = 0_3"
 inverse_by_XMinus1 [rule_format] :
 "ALL x. -' gn_inj(1') *_3 x = -'' x"
 
-distributiv [rule_format] :
+distributive [rule_format] :
 "ALL v. ALL v'. ALL w. (v +_4 v') *_4 w = (v *_4 w) +_3 (v' *_4 w)"
 
-homogen [rule_format] :
+homogeneous [rule_format] :
 "ALL a. ALL v. ALL w. (a *_3 v) *_4 w = a *'' (v *_4 w)"
 
-commutativ [rule_format] : "ALL v. ALL w. v *_4 w = w *_4 v"
+commutative [rule_format] : "ALL v. ALL w. v *_4 w = w *_4 v"
 
-pos_definit [rule_format] : "ALL v. v *_4 v = 0'' --> v = 0_3"
+pos_definite [rule_format] : "ALL v. v *_4 v = 0'' --> v = 0_3"
 
-right_distributiv [rule_format] :
+right_distributive [rule_format] :
 "ALL v. ALL v'. ALL w. w *_4 (v +_4 v') = (w *_4 v) +_3 (w *_4 v')"
 
-right_homogen [rule_format] :
+right_homogeneous [rule_format] :
 "ALL a. ALL v. ALL w. v *_4 (a *_3 w) = a *'' (v *_4 w)"
 
 lindep_def [rule_format] :
@@ -602,6 +604,9 @@ lindep_nonlindep_transitivity [rule_format] :
  ALL z.
  (~ x = 0_3 & lindep(x, y)) & ~ lindep(y, z) --> ~ lindep(x, z)"
 
+sqr2_def [rule_format] :
+"ALL x. makePartial (sqr''(x)) = gn_proj(x *_4 x)"
+
 norm_from_inner_prod_def [rule_format] :
 "ALL x. || x || = sqrt(sqr''(x))"
 
@@ -620,10 +625,10 @@ orthcomp_def [rule_format] :
 orthogonal_def [rule_format] :
 "ALL x. ALL y. orth(x, y) = (x *_4 y = 0'')"
 
-orth_symmetry [rule_format] :
+orth_symmetric [rule_format] :
 "ALL x. ALL y. orth(x, y) --> orth(y, x)"
 
-lindep_orth_transitivity [rule_format] :
+lindep_orth_transitive [rule_format] :
 "ALL x. ALL y. ALL z. lindep(x, y) & orth(y, z) --> orth(x, z)"
 
 orthogonal_on_zero_projection [rule_format] :
@@ -924,23 +929,44 @@ semantics_for_Planes [rule_format] :
  iX2 (X_SWPlane X_o X_n ics) =
  ActAttach (X_o, VPlane (gn_inj(X_n)))"
 
-semantics_for_ArcExtrusion [rule_format] :
-"ALL l.
- ALL plane.
+semantics_for_SketchObject_listsXMinusBaseCase [rule_format] :
+"ALL plane. X_isX2 ([ ]', plane) = X_emptySet"
+
+semantics_for_SketchObject_listsXMinusRecursiveCase [rule_format] :
+"ALL plane.
+ ALL sko.
+ ALL skos.
+ X_isX2 (sko ::' skos, plane) =
+ X__union__X (X_isX1 (sko, plane), X_isX2 (skos, plane))"
+
+semantics_for_Arcs [rule_format] :
+"ALL plane.
  ALL x.
  ALL y.
  ALL z.
- iX1
- (SWExtrusion_inj(X_SWExtrusion
-                  (X_SWSketch (gn_inj(X_SWArc x y z) ::' [ ]') plane) l)) =
- (if y = z
-     then let cp = x;
-              r1 = vec(cp, y);
-              ball = ActAttach (cp, VBall ( || r1 || ));
-              planeI = iX2 plane;
-              scaledAxis = VWithLength(gn_inj(NormalVector(plane)), l)
-          in ActExtrude (scaledAxis, X__intersection__X (ball, planeI))
-     else X_emptySet)"
+ X_isX1 (gn_inj(X_SWArc x y z), plane) =
+ (let r1 = vec(x, y);
+      ball = ActAttach (x, VBall ( || r1 || ));
+      planeI = iX2 plane
+  in X__intersection__X (ball, planeI))"
+
+semantics_for_Sketches [rule_format] :
+"ALL plane.
+ ALL skos. iX3 (X_SWSketch skos plane) = X_isX2 (skos, plane)"
+
+semantics_for_Planes_1 [rule_format] :
+"ALL ics.
+ ALL X_n.
+ ALL X_o.
+ iX2 (X_SWPlane X_o X_n ics) =
+ ActAttach (X_o, VPlane (gn_inj(X_n)))"
+
+semantics_for_ArcExtrusion [rule_format] :
+"ALL l.
+ ALL sk.
+ iX1 (SWExtrusion_inj(X_SWExtrusion sk l)) =
+ ActExtrude
+ (VWithLength(gn_inj(NormalVector(Plane'(sk))), l), iX3 sk)"
 
 plane_is_plane [rule_format] :
 "ALL plane.
@@ -1021,7 +1047,7 @@ declare zero_by_right_zero [simp]
 declare inverse_by_XMinus1 [simp]
 declare lindep_reflexivity [simp]
 declare lindep_symmetry [simp]
-declare orth_symmetry [simp]
+declare orth_symmetric [simp]
 declare orthogonal_on_zero_projection [simp]
 declare orthogonal_projection_theorem [simp]
 declare orthogonal_decomposition_theorem [simp]
@@ -1050,6 +1076,10 @@ declare ga_select_Depth [simp]
 declare SWExtrusion_subtype [simp]
 declare vwl_identity [simp]
 declare vwl_lindep [simp]
+declare semantics_for_SketchObject_listsXMinusBaseCase [simp]
+declare semantics_for_Sketches [simp]
+
+
 
 (*
 -- let-simplifier
@@ -1128,14 +1158,12 @@ theorem def_of_Cylinder :
       -- "second round of let-elimination, but first some definition unfoldings"
       unfolding semantics_for_ArcExtrusion ActExtrude_constr
 
+(*
       -- "we simplify the if immediately"
       apply (subst if_P, simp)
-
+*)
       apply (subst I01 [symmetric])
       
-      -- "get the cp definition replaced"
-      apply (subst Let_def)
-
       proof-
 
       def r1: r1 == "vec(offset, bp)"
@@ -1148,11 +1176,9 @@ theorem def_of_Cylinder :
       have axis_identity: "axs = gn_inj(axis)" by simp
       
 	-- "going in apply-mode again"
-      show "(let r1 = vec(offset, bp); ball = ActAttach (offset, VBall ( || r1 || )); planeI = iX2 pln;
-         scaledAxis = VWithLength(gn_inj(NormalVector(pln)), ht)
-     in \<lambda>x. \<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (ball, planeI)) \<and>
-                  x = y +' (l *_3 scaledAxis)) =
-	rhs"
+      show "(\<lambda>x. \<exists>l y. (l isIn I01 \<and> y isIn iX3 (X_SWSketch (gn_inj(X_SWArc offset bp bp) ::' [ ]') pln)) \<and>
+               x = y +' (l *_3 VWithLength(gn_inj(NormalVector(Plane'
+                         (X_SWSketch (gn_inj(X_SWArc offset bp bp) ::' [ ]') pln))), ht))) = rhs"
 
 
       apply (subst r1 [symmetric])
@@ -1195,7 +1221,7 @@ theorem def_of_Cylinder :
 	def yvec: y' == "vec(offset, y)" -- "the offset-based component of y"
 
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
-      RealPos_pred_def Ax7 sqr_def sqrt_def X2_def_Real X3_def_Real
+      RealPos_pred_def Ax7 sqr_def sqr2_def sqrt_def X2_def_Real X3_def_Real
       X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
       X9_def_Real decimal_def Zero_Point Zero_Vector VectorStar_pred_def
       scalar_multiplication scalar_product vector_product ONB1 ONB2 ONB3

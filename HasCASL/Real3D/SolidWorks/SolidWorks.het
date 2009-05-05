@@ -46,14 +46,25 @@ spec SolidWorks = AffineRealSpace3DWithSets then
      var a:Type
      free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
 
-     free types
+     free type
      SWPlane ::= SWPlane(SpacePoint:Point;NormalVector:VectorStar;InnerCS:Vector); %(SWPlane datatype)%
+
+     free type
      SWArc ::= SWArc(Center:Point;Start:Point;End:Point);  %(SWArc datatype)%
+
+     free type
      SWLine ::= SWLine(From:Point;To:Point);  %(SWLine datatype)%
+
+     free type
      SWSpline ::= SWSpline(Points:SWList Point);  %(SWSpline datatype)%
+
+     free type
      SWSketchObject ::= type SWArc | type SWLine | type SWSpline ;  %(SWSketchObject datatype)%
+
+     free type
      SWSketch ::= SWSketch(Objects:SWList SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
 
+     free type
      SWExtrusion ::= SWExtrusion(Sketch:SWSketch;
 				 Depth:Real);
 %[				 DraftAngle:Real;
@@ -66,9 +77,12 @@ spec SolidWorks = AffineRealSpace3DWithSets then
 				 IsThinFeature:Logical);
 ]%  %(SWExtrusion datatype)%
 
+
+     free type
      %% This Features are missing: Revolution, Sweep, Loft, Chamfer
      SWFeature ::= type SWExtrusion;  %(SWFeature datatype)%
 
+     free type
      SWObject ::= type SWSketchObject
 		| type SWSketch
 		| type SWPlane
