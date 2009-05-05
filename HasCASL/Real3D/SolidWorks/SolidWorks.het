@@ -174,24 +174,37 @@ then
      %% i = interpretation for solid works features
      i:SWFeature->PointSet;
 
+     %% i = interpretation for solid works sketches
+     i:SWSketch->PointSet;
+
+     %% i = interpretation for solid works sketch objects
+     is:SWSketchObject*SWPlane->PointSet;
+     is:(SWList SWSketchObject)*SWPlane->PointSet;
+
      %% i = interpretation for solid works planes
      i:SWPlane->PointSet;
 
-     vars o,x,y,z:Point; n:VectorStar; ics:Vector; l,x1,x2,x3:Real;
-	  plane:SWPlane; b1,b2,b3,b4,b5:Logical
+     vars o,x,y,z:Point; n:VectorStar; ics:Vector; l:Real; sk: SWSketch;
+	  plane:SWPlane; sko: SWSketchObject; skos: SWList SWSketchObject
 
      . i(SWPlane(o,n,ics)) = ActAttach(o, VPlane(n));
      %(semantics for Planes)%
 
-     %% we ignore all parameters after the length
-     . i(SWExtrusion_inj(SWExtrusion(SWSketch([SWArc(x,y,z)],plane), l))) =
-%%				     x1,b1,b2,x2,x3,b3,b4,b5))) =
-       (let cp = x;
-	    r1 = vec(cp, y);
-	    ball = ActAttach(cp, VBall( ||r1|| ));
-	    planeI = i(plane);
-	    scaledAxis = VWithLength(NormalVector(plane), l)
-        in ActExtrude(scaledAxis, ball intersection planeI)) when y = z else emptySet
-       %(semantics for ArcExtrusion)%
+     . is([], plane) = emptySet; %(semantics for SketchObject lists-BaseCase)%
+     . is(sko :: skos, plane) = is(sko, plane) union is(skos, plane);
+     %(semantics for SketchObject lists-RecursiveCase)%
 
+     . is(SWArc(x,y,z), plane) =
+       let r1 = vec(x, y);
+	   ball = ActAttach(x, VBall( ||r1|| ));
+	   planeI = i(plane)
+       in ball intersection planeI; %(semantics for Arcs)%
+
+     . i(SWSketch(skos, plane)) = is(skos, plane); %(semantics for Sketches)%
+
+     . i(SWPlane(o,n,ics)) = ActAttach(o, VPlane(n)); %(semantics for Planes)%
+
+     . i(SWExtrusion_inj(SWExtrusion(sk, l))) =
+       ActExtrude(VWithLength(NormalVector(Plane(sk)), l), i(sk));
+       %(semantics for ArcExtrusion)%
 end
