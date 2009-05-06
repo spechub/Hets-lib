@@ -82,7 +82,7 @@ ML "Header.initialize
      \"semantics_for_SketchObject_listsXMinusBaseCase\",
      \"semantics_for_SketchObject_listsXMinusRecursiveCase\",
      \"semantics_for_Arcs\", \"semantics_for_Sketches\",
-     \"semantics_for_Planes_1\", \"semantics_for_ArcExtrusion\",
+     \"semantics_for_ArcExtrusion\",
      \"plane_is_plane\", \"def_of_SWCylinder\",
      \"affine_cylinder_constructible_in_SW\", \"def_of_Cylinder\"]"
 
@@ -954,13 +954,6 @@ semantics_for_Sketches [rule_format] :
 "ALL plane.
  ALL skos. iX3 (X_SWSketch skos plane) = X_isX2 (skos, plane)"
 
-semantics_for_Planes_1 [rule_format] :
-"ALL ics.
- ALL X_n.
- ALL X_o.
- iX2 (X_SWPlane X_o X_n ics) =
- ActAttach (X_o, VPlane (gn_inj(X_n)))"
-
 semantics_for_ArcExtrusion [rule_format] :
 "ALL l.
  ALL sk.
@@ -1122,9 +1115,30 @@ theorem def_of_Cylinder :
     def plane: pln == "X_SWPlane offset axis (V(0'', 0'', 0''))"
     def arc: arc == "X_SWArc offset bp bp"
     def height: ht == "|| gn_inj(axis) ||"
+    def sketch: sketch == "X_SWSketch (gn_inj(arc) ::' [ ]') pln"
 
     -- "additional definitions, not stemming from let-vars"
     def I01: I01 == "closedinterval (0'', gn_inj(1'))"
+
+
+    -- "we know that Plane(sketch) = pln"
+    from plane sketch ga_select_Plane
+    have sketchplane_identity: "pln = Plane'(sketch)" by simp
+
+    -- "we know that NormalVector(pln) = axis"
+    from plane ga_select_NormalVector
+    have nv_identity: "axis = NormalVector(pln)" by simp
+    
+
+    def r1: r1 == "vec(offset, bp)"
+    def ball: bll == "ActAttach (offset, VBall ( || r1 || ))"
+    def planeI: plnI == "iX2 pln"
+    def scaledAxis: axs == "VWithLength(gn_inj(axis), ht)"
+    
+
+    -- "we can identify gn_inj(axis) and axs via vwl_identity!"
+    from scaledAxis vwl_identity height
+    have axis_identity: "axs = gn_inj(axis)" by simp
 
     -- "we don't want to manipulate the right hand side, so we replace it by rhs"
     def rhs: rhs == "(\<lambda>x. let v = vec(offset, x)
@@ -1153,34 +1167,25 @@ theorem def_of_Cylinder :
       -- "get the boundarypoint definition replaced"
       apply (subst Let_def)
       apply (subst height [symmetric])
+      apply (subst arc [symmetric])
       unfolding Let_def
+      apply (subst sketch [symmetric])
 
       -- "second round of let-elimination, but first some definition unfoldings"
       unfolding semantics_for_ArcExtrusion ActExtrude_constr
 
-(*
-      -- "we simplify the if immediately"
-      apply (subst if_P, simp)
-*)
+      apply (subst sketchplane_identity [symmetric])
+      apply (subst nv_identity [symmetric])
+      apply (subst sketch)
+
+      unfolding semantics_for_Sketches semantics_for_SketchObject_listsXMinusRecursiveCase
+
+      apply (subst arc)
+
+      unfolding semantics_for_Arcs
+
       apply (subst I01 [symmetric])
       
-      proof-
-
-      def r1: r1 == "vec(offset, bp)"
-      def ball: bll == "ActAttach (offset, VBall ( || r1 || ))"
-      def planeI: plnI == "iX2 pln"
-      def scaledAxis: axs == "VWithLength(gn_inj(NormalVector(pln)), ht)"
-
-      -- "we can identify gn_inj(axis) and axs via vwl_identity!"
-      from plane ga_select_NormalVector scaledAxis vwl_identity height
-      have axis_identity: "axs = gn_inj(axis)" by simp
-      
-	-- "going in apply-mode again"
-      show "(\<lambda>x. \<exists>l y. (l isIn I01 \<and> y isIn iX3 (X_SWSketch (gn_inj(X_SWArc offset bp bp) ::' [ ]') pln)) \<and>
-               x = y +' (l *_3 VWithLength(gn_inj(NormalVector(Plane'
-                         (X_SWSketch (gn_inj(X_SWArc offset bp bp) ::' [ ]') pln))), ht))) = rhs"
-
-
       apply (subst r1 [symmetric])
       -- "get the r1 definition replaced"
       apply (subst Let_def)
@@ -1188,6 +1193,10 @@ theorem def_of_Cylinder :
       apply (subst planeI [symmetric])
       apply (subst scaledAxis [symmetric])
       unfolding Let_def
+
+      unfolding semantics_for_SketchObject_listsXMinusBaseCase
+
+      -- "need A union empty = A here!"
 
       apply (subst rhs)
       apply (rule ext)
