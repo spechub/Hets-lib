@@ -1,4 +1,4 @@
-theory Functions_Functions
+theory Functions_MainHC
 imports "$HETS_LIB/Isabelle/MainHC"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
@@ -51,7 +51,7 @@ apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
 done
 
-theorem restrict_out2 : "restrictOp (t b) (a&b) = restrictOp (t True) (a&b)"
+theorem restrict_out2[simp] : "restrictOp (t b) (a&b) = restrictOp (t True) (a&b)"
 apply (case_tac "b")
 apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
@@ -100,12 +100,11 @@ apply (case_tac b)
 apply (auto)
 done
 
-theorem restrictOp_outbool : "(restrictOp (restrictOp a b) c) = (restrictOp a (b & c))"
+theorem restrictOp_outbool [simp]: "(restrictOp (restrictOp a b) c) = (restrictOp a (b & c))"
 apply (case_tac "c")
 apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
 done
-
 
 theorem o_assoc  :
 "ALL f.
@@ -114,10 +113,11 @@ theorem o_assoc  :
 apply (auto)
 apply (rule ext)
 apply (simp add: o_def comp_def)
-apply (subst restrict_out [of _ "defOp (f x)"]) back back back back
+apply (subst restrict_out2 [of _ "defOp (f x)"])
 apply (subst restrict_trivial)
 apply (simp)
 done
+
 
 theorem id_neut [rule_format] : "ALL f'. X__o__X (f', X_id) = f'"
 by (simp add: o_def comp_def id_def)
@@ -151,7 +151,6 @@ theorem X3comp_assoc1  :
 apply (auto)
 apply (rule ext)
 apply (simp add: o_def X3comp_def)
-apply (simp add: restrictOp_outbool)
 done
 
 theorem X3comp_assoc2 :
@@ -160,7 +159,6 @@ theorem X3comp_assoc2 :
 apply (auto)
 apply (rule ext)
 apply (simp add: o_def X3comp_def)
-apply (subst restrictOp_outbool)
 apply (subst restrict_out_general [of "(defOp (g (makeTotal (f x))) & defOp (f x))" "defOp (f x)"]) back back back back
 apply (simp)
 apply (simp)

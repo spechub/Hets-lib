@@ -16,6 +16,7 @@ axioms
 o_def [rule_format] :
 "ALL f. ALL g. X__o__X (g, f) = (% x. lift2partial g (f x))"
 
+
 id_def [rule_format] : "X_id = makePartial o (% x. x)"
 
 X3comp_def [rule_format] :
@@ -25,12 +26,16 @@ X3comp_def [rule_format] :
  comp3 ((h, g), f) = (% x. lift2partial h (lift2partial g (f x)))"
 
 
+(* theorem o2_def : "x=y" *)
+(* apply (insert X3comp_def) *)
+(* apply (simp only: lift2partial_def restrictOp_def) *)
+
 theorem X3comp_assoc1  :
 "ALL f.
  ALL g. ALL h. comp3 ((h, g), f) = X__o__X (X__o__X (h, g), f)"
 apply (auto)
 apply (rule ext)
-apply (simp only: o_def X3comp_def lift2partial_def restrictOp_def)
+apply (simp only: o_def X3comp_def restrictOp_def lift2partial_def)
 apply (case_tac "defOp (f x)")
 apply (simp)
 apply (simp add: undefinedOp_def)
@@ -41,7 +46,7 @@ theorem X3comp_assoc2  :
  ALL g. ALL h. comp3 ((h, g), f) = X__o__X (h, X__o__X (g, f))"
 apply (auto)
 apply (rule ext)
-apply (simp add: o_def X3comp_def)
+apply (simp only: o_def X3comp_def)
 done
 
 theorem o_assoc :
@@ -50,8 +55,9 @@ theorem o_assoc :
  ALL h. X__o__X (h, X__o__X (g, f)) = X__o__X (X__o__X (h, g), f)"
 apply (auto)
 apply (rule ext)
-apply (simp add: o_def X3comp_def lift2partial_def restrictOp_def)
-apply (simp add: undefinedOp_def)
+apply (simp only: o_def X3comp_def )
+apply (simp only: lift2partial_def restrictOp_def  undefinedOp_def)
+apply (simp)
 done
 
 theorem mkpartial_cancel [simp]: "makeTotal(makePartial x) = x"

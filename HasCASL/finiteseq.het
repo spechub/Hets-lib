@@ -1,0 +1,24 @@
+library HasCASL/Functions
+
+from Basic/Numbers get Nat
+
+logic HasCASL
+
+spec FiniteSeq = Nat
+then
+  var S: Type
+  type Seq S := Nat ->? S;
+  ops 
+    tail: Seq S -> Seq S;
+    hd: Seq S ->? S;
+    filter: Seq S -> Pred S -> Seq S;
+    emptyseq: Seq S;
+    nf : Seq S -> Seq S;
+    h : Seq S ->? S;
+    concat : Seq S * Seq S -> Seq S;
+  forall s:Seq S; P:Pred S
+  . hd(nf(s))=h(s)
+  . nf (filter s P) =  filter (nf s) P
+  . hd (filter s P) = hd(s) 
+  . tail (filter s P) = filter (tail s) P
+end

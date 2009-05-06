@@ -1,4 +1,4 @@
-theory Functions_Functions
+theory Functions_MainHC2
 imports "$HETS_LIB/Isabelle/MainHC"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
@@ -115,11 +115,11 @@ theorem X3comp_assoc1  :
  ALL g. ALL h. comp3 ((h, g), f) = X__o__X (X__o__X (h, g), f)"
 apply (auto)
 apply (rule ext)
-apply (simp only: o_def X3comp_def lift2partial_def)
-apply (simp)
+apply (simp add: o_def X3comp_def lift2partial_def)
 apply (subst restrict_out2)
 apply (simp)
 done
+(*restrictOp (t b) (a&b) = restrictOp (t True) (a&b)*)
 
 theorem X3comp_assoc2  :
 "ALL f.
@@ -136,6 +136,7 @@ theorem o_assoc :
 apply (auto)
 apply (rule ext)
 apply (simp add: o_def X3comp_def lift2partial_def)
+(* "restrictOp (t b) (a&b) = restrictOp (t True) (a&b)" *)
 apply (subst restrict_out2)
 apply (simp)
 done
