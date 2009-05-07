@@ -109,6 +109,7 @@ apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
 done
 
+ML "reset show_types"
 
 theorem X3comp_assoc1  :
 "ALL f.
