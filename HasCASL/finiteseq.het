@@ -10,25 +10,29 @@ then
   type Seq S := Nat ->? S;
   ops 
     tail: Seq S -> Seq S;
-    hd: Seq S ->? S;
+    head: Seq S ->? S;
     filter: Seq S -> Pred S -> Seq S;    
     nf : Seq S -> Seq S;
     h : Seq S ->? S;
     concat : Seq S * Seq S -> Seq S;
-    length : Seq S -> Nat;
+    length : Seq S ->? Nat;    
   preds
-    emptyseq: Seq S;
+    empty: Seq S;
     finite:Seq S;
+    all : Seq S * Pred(S)
   vars s,s2:Seq S; P:Pred S; n:Nat; r:S;
-  . hd(nf(s))=h(s)
+  . head(s) = s(1)
+  . tail(s) = \x:Nat. s(x+1)
+  . head(nf(s))=h(s)
   . nf (filter s P) =  filter (nf s) P
-  . hd (filter s P) = hd(s) 
-  . def(hd(s)) <=> not emptyseq(s);
+  . head (filter s P) = head(s) 
   . tail (filter s P) = filter (tail s) P
-  . def(h(s)) <=> not emptyseq(s);
-  . h(s) = r <=> exists n:Nat . s(n)=r /\ forall m:Nat. m<n => not exists r':S. s(m)=r'
+  . h(s) = r <=> exists n:Nat . s(n)=r /\ forall m:Nat. m<n => not def(s m)
+  . finite(s) <=> exists n:Nat. forall m:Nat. m>n => not def(s m)
+  . empty(s) <=> forall n:Nat. not def(s n)
 then %implies
 var S: Type
 vars s:Seq S; P:Pred S; n:Nat;
   . filter (filter s P) P = filter s P
+  . def(h(s)) <=> not empty(s);
 end
