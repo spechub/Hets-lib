@@ -59,7 +59,7 @@ ML "Header.initialize
      \"transitivity_of_vec_plus\", \"antisymmetry_of_vec\",
      \"plus_vec_identity\", \"set_comprehension\",
      \"abbrev_of_set_comprehension\", \"function_image\",
-     \"emptySet_not_empty\", \"allSet_contains_all\", \"def_of_isIn\",
+     \"emptySet_empty\", \"allSet_contains_all\", \"def_of_isIn\",
      \"def_of_subset\", \"def_of_union\", \"def_of_bigunion\",
      \"def_of_intersection\", \"def_of_difference\",
      \"def_of_disjoint\", \"def_of_productset\", \"def_of_interval\",
@@ -641,13 +641,13 @@ orthogonal_decomposition_theorem [rule_format] :
 "ALL x. ALL y. proj(x, y) +_4 orthcomp(x, y) = x"
 
 unique_orthogonal_decomposition [rule_format] :
-"ALL v.
+"ALL z.
+ ALL v.
  ALL w.
  ALL x.
  ALL y.
- (((~ x = 0_3 & lindep(x, v)) & orth(x, y)) & orth(x, w)) &
- x +_4 y = v +_4 w -->
- x = v & y = w"
+ ((((~ z = 0_3 & x +_4 y = v +_4 w) & lindep(x, z)) & lindep(v, z))
+  & orth(z, y)) & orth(z, w) --> x = v & y = w"
 
 cross_product_orthogonal [rule_format] :
 "ALL x. ALL y. orth(x, x #' y)"
@@ -693,7 +693,7 @@ abbrev_of_set_comprehension [rule_format] :
 function_image [rule_format] :
 "ALL XX. ALL f. X_image (f, XX) = (% x. EX y. y isIn XX & f y = x)"
 
-emptySet_not_empty [rule_format] : "ALL x. ~ x isIn X_emptySet"
+emptySet_empty [rule_format] : "ALL x. ~ x isIn X_emptySet"
 
 allSet_contains_all [rule_format] : "ALL x. x isIn X_allSet"
 
@@ -1048,7 +1048,7 @@ declare cross_product_orthogonal [simp]
 declare e1e2_nonlindep [simp]
 declare vec_def [simp]
 declare transitivity_of_vec_plus [simp]
-declare emptySet_not_empty [simp]
+declare emptySet_empty [simp]
 declare allSet_contains_all [simp]
 declare def_of_isIn [simp]
 declare ga_select_first [simp]
@@ -1132,7 +1132,7 @@ theorem def_of_Cylinder :
 
     def r1: r1 == "vec(offset, bp)"
     def ball: bll == "ActAttach (offset, VBall ( || r1 || ))"
-    def planeI: plnI == "iX2 pln"
+    def planeI: plnI == "ActAttach (offset, VPlane (gn_inj(axis)))"
     def scaledAxis: axs == "VWithLength(gn_inj(axis), ht)"
     
 
@@ -1145,6 +1145,19 @@ theorem def_of_Cylinder :
             in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
                 || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
                v *_4 gn_inj(axis) >=' 0'')"
+
+
+    -- "need A union empty = A here!"
+    have union_with_empty_identity: "!!A. X__union__X(A, X_emptySet ) = A"
+      by (rule set_ext,
+	(subst mem_def)+,
+	  subst def_of_isIn [symmetric], 
+	  subst def_of_union,
+	  subst def_of_isIn [symmetric],
+	  subst not_not [symmetric], subst emptySet_empty, simp)
+
+      from function_image have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
+	sorry
 
     -- "going in apply-mode again"
     show "(let boundary = \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
@@ -1190,15 +1203,21 @@ theorem def_of_Cylinder :
       -- "get the r1 definition replaced"
       apply (subst Let_def)
       apply (subst ball [symmetric])
+      apply (subst Let_def)
+
+      apply (subst plane)
+      unfolding semantics_for_Planes
+
       apply (subst planeI [symmetric])
       apply (subst scaledAxis [symmetric])
       unfolding Let_def
 
       unfolding semantics_for_SketchObject_listsXMinusBaseCase
-
-      -- "need A union empty = A here!"
+      apply (subst union_with_empty_identity)
+      apply (subst def_of_intersection)
 
       apply (subst rhs)
+      apply (simp only: axis_identity [symmetric])
       apply (rule ext)
       
       proof-
@@ -1208,26 +1227,82 @@ theorem def_of_Cylinder :
 	def vo: vo == "orthcomp(v, axs)" -- "the axis-orthogonal component"
 
 	-- "going in apply-mode again"
-	show "(\<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)) =
+	show "(\<exists>l y. (l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and>
+               x = y +' (l *_3 axs)) =
         (let v = vec(offset, x)
-         in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
-             || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
-            v *_4 gn_inj(axis) >=' 0'')"
+         in ( || proj(v, axs) || <=' || axs || \<and>
+             || orthcomp(v, axs) || <=' gn_inj(r)) \<and>
+            v *_4 axs >=' 0'')"
 
-      apply (subst v [symmetric])
-      apply (subst Let_def)
-      apply (simp only: axis_identity [symmetric])
-      apply (subst vp [symmetric])
-      apply (subst vo [symmetric])
+	  apply (subst v [symmetric])
+	  apply (subst Let_def)
+	  apply (subst vp [symmetric])
+	  apply (subst vo [symmetric])
 
-      -- "having normalized the problem we can now start the main proof!"
-      proof
+	  -- "having normalized the problem we can now start the main proof!"
+	proof
 
-	assume "\<exists>l y. (l isIn I01 \<and> y isIn X__intersection__X (bll, plnI)) \<and> x = y +' (l *_3 axs)"
-	(is "\<exists>l y. (?I l \<and> ?A y) \<and> ?E l y")
-	then obtain l y where main_knowledge: "(?I l \<and> ?A y) \<and> ?E l y" by blast
+	assume "\<exists>l y. (l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and> x = y +' (l *_3 axs)"
+	(is "\<exists>l y. (?I l \<and> ?B y \<and> ?P y) \<and> ?S l y")
+	then obtain l y where main_knowledge: "(?I l \<and> ?B y \<and> ?P y) \<and> ?S l y" by blast
 
 	def yvec: y' == "vec(offset, y)" -- "the offset-based component of y"
+
+        -- "we know that y' is in the given VBall because of its structure"
+	have yprime_in_ball: "y' isIn VBall ( || r1 || ) \<and> offset +' y' = y" (is "?L y'")
+	proof-
+	  from main_knowledge	have "EX y1. ?L y1"
+	    by (subst (asm) ball, subst (asm) ActAttach_constr,
+	      subst (asm) plus_Point_VectorSet, subst (asm) struct_of_image, simp)
+	  then obtain y1 where obtained_from_ball: "?L y1" ..
+	  with yvec plus_injective vec_def have "y' = y1" by blast
+	  with obtained_from_ball show ?thesis by simp
+	qed
+
+        -- "identically we know that y' is in the given VPlane because of its structure"
+	have yprime_in_plane: "y' isIn  VPlane(gn_inj(axis)) \<and> offset +' y' = y" (is "?L' y'")
+	proof-
+	  from main_knowledge	have "EX y1. ?L' y1"
+	    by (subst (asm) planeI, subst (asm) ActAttach_constr,
+	      subst (asm) plus_Point_VectorSet, subst (asm) struct_of_image, simp)
+	  then obtain y1 where obtained_from_plane: "?L' y1" ..
+	  with yvec plus_injective vec_def have "y' = y1" by blast
+	  with obtained_from_plane show ?thesis by simp
+	qed
+
+	from v have "x = offset +' v" by simp
+	with yprime_in_ball main_knowledge have "offset +' v = (offset +' y') +'(l *_3 axs)" by simp
+	hence "v = y' +_4 (l *_3 axs)"
+	  by (simp only:  point_vector_plus_associative [symmetric] plus_injective)
+	hence "vp +_4 vo = y' +_4 (l *_3 axs)" 
+	  by (simp only: vo vp orthogonal_decomposition_theorem)
+	hence "vp +_4 vo = (l *_3 axs) +_4 y'" (is "?M") by (simp only: ga_comm___Xx___3)
+	hence main_identity: "vp = l *_3 axs \<and> vo = y'"
+	  proof (rule_tac z="axs" in unique_orthogonal_decomposition)
+	    assume mi_hyp: "?M"
+	    -- "can't prove it now, have the fact that axis is in VectorStar and axs = gn_inj(axis)"
+	    -- "but what is missing is that !x:VectorStar. gn_inj(x) \<noteq> 0_3"
+	    have mi_subgoal1: "axs \<noteq> 0_3" sorry
+	    from mi_hyp have mi_subgoal2: "vp +_4 vo = (l *_3 axs) +_4 y'" .
+
+	    -- "need this fact to use the proj_def"
+	    have "!!A x. VectorStar_pred(x) --> (restrictOp A (defOp(gn_proj(x)))) = A"
+	      by (simp add: restrictOp_def)
+
+	    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
+	    thm proj_def
+
+	    have mi_subgoal3: "lindep(vp, axs)"
+	      unfolding lindep_def
+
+VectorStar_pred_def [rule_format] :
+"ALL x. VectorStar_pred(x) = (~ x = 0_3)"
+
+Ax7_1_1 [rule_format] :
+"ALL x. defOp (gn_proj(x)) = VectorStar_pred(x)"
+	      
+
+by auto	    
 
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
       RealPos_pred_def Ax7 sqr_def sqr2_def sqrt_def X2_def_Real X3_def_Real

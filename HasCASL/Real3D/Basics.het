@@ -145,7 +145,7 @@ spec SetsWithComprehension =
 	   = \x:T . exists y:S. y isIn X /\ f(y) = x; %(function image)%
 
   vars x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
-  . not (x isIn emptySet)  %(emptySet not empty)%
+  . not (x isIn emptySet)  %(emptySet empty)%
   . x isIn allSet %(allSet contains all)%
   . x isIn s <=> s x %(def of isIn)%
   . s subset s' <=> forall x:S . x isIn s => x isIn s' %(def of subset)%
