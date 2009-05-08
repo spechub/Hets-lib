@@ -430,26 +430,26 @@ sqrt_def [rule_format] : "ALL q. sqr'(sqrt(q)) = q"
 
 Ax1_2_1 [rule_format] : "ALL x. Pos(x) = (0'' <=' x)"
 
-X2_def_Real [rule_format] : "2' = gn_inj(1') +_3 gn_inj(1')"
+X2_def_Real [rule_format] : "2' = 1'' +_3 1''"
 
-X3_def_Real [rule_format] : "3' = 2' +_3 gn_inj(1')"
+X3_def_Real [rule_format] : "3' = 2' +_3 1''"
 
-X4_def_Real [rule_format] : "4' = 3' +_3 gn_inj(1')"
+X4_def_Real [rule_format] : "4' = 3' +_3 1''"
 
-X5_def_Real [rule_format] : "5' = 4' +_3 gn_inj(1')"
+X5_def_Real [rule_format] : "5' = 4' +_3 1''"
 
-X6_def_Real [rule_format] : "6' = 5' +_3 gn_inj(1')"
+X6_def_Real [rule_format] : "6' = 5' +_3 1''"
 
-X7_def_Real [rule_format] : "7' = 6' +_3 gn_inj(1')"
+X7_def_Real [rule_format] : "7' = 6' +_3 1''"
 
-X8_def_Real [rule_format] : "8' = 7' +_3 gn_inj(1')"
+X8_def_Real [rule_format] : "8' = 7' +_3 1''"
 
-X9_def_Real [rule_format] : "9' = 8' +_3 gn_inj(1')"
+X9_def_Real [rule_format] : "9' = 8' +_3 1''"
 
 ZeroToNine_type [rule_format] :
 "ALL x.
  defOp (gn_proj(x)) =
- (((((((((x = 0'' | x = gn_inj(1')) | x = 2') |
+ (((((((((x = 0'' | x = 1'') | x = 2') |
         x = 3') |
        x = 4') |
       x = 5') |
@@ -460,7 +460,7 @@ ZeroToNine_type [rule_format] :
 
 decimal_def [rule_format] :
 "ALL m.
- ALL X_n. m @@ X_n = (gn_inj(m) *'' (9' +_3 gn_inj(1'))) +_3 X_n"
+ ALL X_n. m @@ X_n = (gn_inj(m) *'' (9' +_3 1'')) +_3 X_n"
 
 ga_select_C1 [rule_format] :
 "ALL x_1. ALL x_2. ALL x_3. C1'(P(x_1, x_2, x_3)) = x_1"
@@ -528,11 +528,11 @@ vector_product [rule_format] :
  (C3''(x) *'' C1''(y)) -' (C3''(y) *'' C1''(x)),
  (C1''(x) *'' C2''(y)) -' (C1''(y) *'' C2''(x)))"
 
-ONB1 [rule_format] : "e1 = V(gn_inj(1'), 0'', 0'')"
+ONB1 [rule_format] : "e1 = V(1'', 0'', 0'')"
 
-ONB2 [rule_format] : "e2 = V(0'', gn_inj(1'), 0'')"
+ONB2 [rule_format] : "e2 = V(0'', 1'', 0'')"
 
-ONB3 [rule_format] : "e3 = V(0'', 0'', gn_inj(1'))"
+ONB3 [rule_format] : "e3 = V(0'', 0'', 1'')"
 
 cross_left_homogenity [rule_format] :
 "ALL r. ALL x. ALL y. r *_3 (x #' y) = (r *_3 x) #' y"
@@ -553,7 +553,7 @@ rinv_Group_2_1 [rule_format] : "ALL x. x +_4 -'' x = 0_3"
 
 ga_comm___Xx___3 [rule_format] : "ALL x. ALL y. x +_4 y = y +_4 x"
 
-unit [rule_format] : "ALL x. gn_inj(1') *_3 x = x"
+unit [rule_format] : "ALL x. 1'' *_3 x = x"
 
 mix_assoc [rule_format] :
 "ALL r. ALL s. ALL x. (r *'' s) *_3 x = r *_3 (s *_3 x)"
@@ -569,7 +569,7 @@ zero_by_left_zero [rule_format] : "ALL x. 0'' *_3 x = 0_3"
 zero_by_right_zero [rule_format] : "ALL r. r *_3 0_3 = 0_3"
 
 inverse_by_XMinus1 [rule_format] :
-"ALL x. -' gn_inj(1') *_3 x = -'' x"
+"ALL x. -' 1'' *_3 x = -'' x"
 
 distributive [rule_format] :
 "ALL v. ALL v'. ALL w. (v +_4 v') *_4 w = (v *_4 w) +_3 (v' *_4 w)"
@@ -829,20 +829,20 @@ ga_select_Depth [rule_format] :
 E1_def [rule_format] :
 "E1 =
  X_SWPlane (P(0'', 0'', 0''))
- (VectorStar_proj(V(0'', 0'', gn_inj(1'))))
- (V(gn_inj(1'), 0'', 0''))"
+ (VectorStar_proj(V(0'', 0'', 1'')))
+ (V(1'', 0'', 0''))"
 
 E2_def [rule_format] :
 "E2 =
  X_SWPlane (P(0'', 0'', 0''))
- (VectorStar_proj(V(0'', gn_inj(1'), 0'')))
- (V(gn_inj(1'), 0'', 0''))"
+ (VectorStar_proj(V(0'', 1'', 0'')))
+ (V(1'', 0'', 0''))"
 
 E3_def [rule_format] :
 "E3 =
  X_SWPlane (P(0'', 0'', 0''))
- (VectorStar_proj(V(gn_inj(1'), 0'', 0'')))
- (V(0'', gn_inj(1'), 0''))"
+ (VectorStar_proj(V(1'', 0'', 0'')))
+ (V(0'', 1'', 0''))"
 
 SWExtrusion_subtype [rule_format] :
 "isSubtype(X_SWExtrusion_inj, X_SWExtrusion_proj)"
@@ -853,7 +853,7 @@ VLine_constr [rule_format] :
  VLine (p1, p2) =
  X_image
  (% y. p1 +_4 (y *_3 (p2 -'' p1)),
-  closedinterval (0'', gn_inj(1')))"
+  closedinterval (0'', 1''))"
 
 VWithLength_constr [rule_format] :
 "ALL s.
@@ -907,7 +907,7 @@ ActExtrude_constr [rule_format] :
  ActExtrude (axis, points) =
  (% x. EX l.
        EX y.
-       (l isIn closedinterval (0'', gn_inj(1')) & y isIn points) &
+       (l isIn closedinterval (0'', 1'') & y isIn points) &
        x = y +' (l *_3 axis))"
 
 vwl_identity [rule_format] :
@@ -1073,7 +1073,6 @@ declare semantics_for_SketchObject_listsXMinusBaseCase [simp]
 declare semantics_for_Sketches [simp]
 
 
-
 (*
 -- let-simplifier
 declare flip_def [simp]
@@ -1107,7 +1106,12 @@ theorem def_of_Cylinder :
   proof (rule allI)+
 
     fix axis::VectorStar
-    fix offset r
+    fix offset::Point
+    fix r::RealPos
+
+    -- "we need the information about the subtypes:"
+    have r_subtype: "RealPos_pred(gn_inj(r))" sorry -- "can't prove it with current encoding"
+    have axis_subtype: "VectorStar_pred(gn_inj(axis))" sorry -- "can't prove it with current encoding"
 
     -- "providing vars for the let-constructs"
     def boundary: boundary == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
@@ -1118,7 +1122,7 @@ theorem def_of_Cylinder :
     def sketch: sketch == "X_SWSketch (gn_inj(arc) ::' [ ]') pln"
 
     -- "additional definitions, not stemming from let-vars"
-    def I01: I01 == "closedinterval (0'', gn_inj(1'))"
+    def I01: I01 == "closedinterval (0'', 1'')"
 
 
     -- "we know that Plane(sketch) = pln"
@@ -1157,7 +1161,7 @@ theorem def_of_Cylinder :
 	  subst not_not [symmetric], subst emptySet_empty, simp)
 
       from function_image have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
-	sorry
+	sorry -- "can prove it!"
 
     -- "going in apply-mode again"
     show "(let boundary = \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
@@ -1282,27 +1286,122 @@ theorem def_of_Cylinder :
 	    assume mi_hyp: "?M"
 	    -- "can't prove it now, have the fact that axis is in VectorStar and axs = gn_inj(axis)"
 	    -- "but what is missing is that !x:VectorStar. gn_inj(x) \<noteq> 0_3"
-	    have mi_subgoal1: "axs \<noteq> 0_3" sorry
+	    have mi_subgoal1: "axs \<noteq> 0_3" 
+	      by (simp only: axis_identity VectorStar_pred_def [symmetric] axis_subtype)
+ 
 	    from mi_hyp have mi_subgoal2: "vp +_4 vo = (l *_3 axs) +_4 y'" .
 
 	    -- "need this fact to use the proj_def"
-	    have "!!A x. VectorStar_pred(x) --> (restrictOp A (defOp(gn_proj(x)))) = A"
-	      by (simp add: restrictOp_def)
+	    have subtype_cond: "!!A x. (x \<noteq> 0'') --> (restrictOp A (defOp(gn_proj(x)))) = A"
+	      proof
+		fix A x
+		assume hyp: "x \<noteq> 0''"
+		show "restrictOp A (defOp (gn_proj(x))) = A"
+		  apply (subst restrictOp_def)
+		  apply (subst if_P)
+		  apply (subst Ax1)
+		  by (simp add: hyp, simp)
+		qed
+
+	    from mi_subgoal1 pos_definite rev_contrapos
+	    have axs_norm_nonzero: "axs *_4 axs \<noteq> 0''" by blast
 
 	    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
-	    thm proj_def
+	    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
+	      by (simp only: snd_conv makeTotal_def makePartial_def)
 
 	    have mi_subgoal3: "lindep(vp, axs)"
-	      unfolding lindep_def
+	      unfolding lindep_def vp
+	      apply (subst partial_identity [symmetric], subst proj_def)
+	      apply (subst if_not_P, simp add: mi_subgoal1)
+	      apply (subst subtype_cond, simp add: axs_norm_nonzero)
+	      apply (subst partial_identity)
+	      by auto
 
-VectorStar_pred_def [rule_format] :
-"ALL x. VectorStar_pred(x) = (~ x = 0_3)"
+	    from lindep_def have mi_subgoal4: "lindep(l *_3 axs, axs)" by auto
+	    
+	    -- "using the orthogonal projection theorem here!"
+	    from vo have mi_subgoal5: "orth(axs, vo)" by simp
 
-Ax7_1_1 [rule_format] :
-"ALL x. defOp (gn_proj(x)) = VectorStar_pred(x)"
-	      
+	    from axis_identity yprime_in_plane VPlane_constr
+	    have mi_subgoal6: "orth(axs, y')" by simp
 
-by auto	    
+	    with mi_subgoal1 mi_subgoal2 mi_subgoal3 mi_subgoal4 mi_subgoal5
+	    show "((((((axs \<noteq> 0_3) \<and> ((vp +_4 vo) = ((l *_3 axs) +_4 y'))) \<and> (lindep(vp, axs))) \<and>
+              (lindep((l *_3 axs), axs))) \<and> (orth(axs, vo))) \<and> (orth(axs, y')))" by blast
+	  qed
+
+	  -- "(vp = l * axs) and 0 <= l <= 1 should gives us the result"
+	  -- "we need some lemmas first:"
+
+	  -- "homogenity for positive reals"
+	  have norm_pos_homogen: "!!x y. 0'' <=' x \<Longrightarrow> || x *_3 y || = x *'' || y ||"
+	    sorry (* can't probably prove it with current sqrt definition!
+	             The better approach would be using the axioms coming
+	             with the view in LinearAlgebra.het but then the view
+	             has to be proved and we need the correct sqrt def. *)
+
+	  -- "norm_nonnegative"
+	  have norm_nonnegative: "!!x. 0'' <=' || x ||" sorry -- "see comment above"
+
+	  -- "0 <= l <= 1"
+	  have l_in_unitinterval: "0'' <=' l \<and> l <=' 1''"
+	    proof-
+	      from main_knowledge I01 have "l isIn closedinterval(0'', 1'')" by blast
+	      with abbrev_of_interval have "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr(0'', 1'') l"
+		by simp
+	      thus ?thesis by (simp add: def_of_interval geq_def_ExtPartialOrder)
+	    qed
+
+	  have subgoal1: "|| vp || <=' || axs ||"
+	  proof-
+	    from main_identity have "|| vp || = || l *_3 axs ||" by simp
+	    also have "\<dots> = l *'' || axs ||" by (simp only: norm_pos_homogen l_in_unitinterval)
+	    also have "\<dots> <=' || axs ||"
+	      by (subst ga_left_unit___Xx___1 [symmetric],
+		rule FWO_times_left,
+		simp add: l_in_unitinterval norm_nonnegative)
+	    finally show ?thesis .
+	  qed
+
+	  -- "for this subgoal we need to derive the boundary-property for bp"
+	  -- "first we need to show that there is always a nontrivial orthogonal vector"
+	  have orth_exists_in_2dim: "!! x. (EX v w. \<not> lindep(v,w)) \<Longrightarrow> EX y. y \<noteq> 0_3 \<and> orth(y,x)" sorry
+	  from e1e2_nonlindep have "EX v w. \<not> lindep(v,w)" by blast
+	  with orth_exists_in_2dim have
+	    orth_exists: "EX x. x \<noteq> 0_3 \<and> orth(x, gn_inj(axis))" by blast
+	    
+	  have bp_in_boundary: "boundary bp"
+	  proof (subst boundarypoint, rule Point_choice, subst boundary)
+	    from orth_exists obtain v' where vprime: "v' \<noteq> 0_3 \<and> orth(v', gn_inj(axis))" ..
+	    def v2: v2 == "VWithLength(v', gn_inj(r))"
+	    with vprime vwl_length have "||v2|| = gn_inj(abs'(gn_inj(r)))" by blast
+	    have "gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
+	      -- "need this stuff here, so move it to toplevel!"
+	      apply (subst partial_identity)
+by Ax7
+	      by auto
+
+(*
+*)	    have "|| v2 || = gn_inj(r)"
+	      apply (subst v2)
+	      thm vwl_length
+	      apply (simp add: vwl_length )
+
+	      apply (simp add: vwl_length [symmetric])
+
+	      by (auto simp add: vprime v2)
+
+
+	  have subgoal2: "|| vo || <=' gn_inj(r)"
+	  proof-
+	    from main_identity have "|| vo || = || y' ||" by simp
+	    also have "\<dots> <=' ||  ||"
+
+
+-- 	    vwl_length, vwl_lindep
+
+
 
 using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
       RealPos_pred_def Ax7 sqr_def sqr2_def sqrt_def X2_def_Real X3_def_Real
