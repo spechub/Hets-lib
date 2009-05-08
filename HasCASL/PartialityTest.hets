@@ -1,0 +1,13 @@
+library PartialityTest
+
+logic HasCASL
+
+spec Test = 
+ type a
+ ops f: a * a  ->? a;
+ vars x,y,z:a
+ . def f(x,y) /\ def f(y,z) => f(x,f(y,z)) = f(f(x,y),z)
+ then %implies
+ vars x,y,z,w:a
+ . def f(x,f(y,z)) /\ def f(y,f(z,w)) => f(f(x,f(y,z)),w) = f(x,f(y,f(z,w)))
+     
