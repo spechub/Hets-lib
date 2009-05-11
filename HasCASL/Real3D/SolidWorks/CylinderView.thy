@@ -42,8 +42,8 @@ ML "Header.initialize
      \"unit\", \"mix_assoc\", \"distr_Field\", \"distr_Space\",
      \"zero_by_left_zero\", \"zero_by_right_zero\",
      \"inverse_by_XMinus1\", \"distributive\", \"homogeneous\",
-     \"commutative\", \"pos_definite\", \"right_distributive\",
-     \"right_homogeneous\", \"lindep_def\", \"lindep_reflexivity\",
+     \"symmetric\", \"pos_definite\", \"right_distributive\",
+     \"right_homogeneous\", \"degenerate\", \"lindep_def\", \"lindep_reflexivity\",
      \"lindep_symmetry\", \"simple_lindep_condition\",
      \"lindep_nonlindep_transitivity\", \"sqr2_def\",
      \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
@@ -577,15 +577,17 @@ distributive [rule_format] :
 homogeneous [rule_format] :
 "ALL a. ALL v. ALL w. (a *_3 v) *_4 w = a *'' (v *_4 w)"
 
-commutative [rule_format] : "ALL v. ALL w. v *_4 w = w *_4 v"
+symmetric [rule_format] : "ALL v. ALL w. v *_4 w = w *_4 v"
 
-pos_definite [rule_format] : "ALL v. v *_4 v = 0'' --> v = 0_3"
+pos_definite [rule_format] : "ALL v. ~ v = 0_3 --> v *_4 v >' 0''"
 
 right_distributive [rule_format] :
 "ALL v. ALL v'. ALL w. w *_4 (v +_4 v') = (w *_4 v) +_3 (w *_4 v')"
 
 right_homogeneous [rule_format] :
 "ALL a. ALL v. ALL w. v *_4 (a *_3 w) = a *'' (v *_4 w)"
+
+non_degenerate [rule_format] : "ALL v. v *_4 v = 0'' --> v = 0_3"
 
 lindep_def [rule_format] :
 "ALL x. ALL y. lindep(x, y) = (y = 0_3 | (EX r. x = r *_3 y))"
@@ -1105,13 +1107,66 @@ theorem def_of_Cylinder :
 
   proof (rule allI)+
 
+    -- "GENERAL LEMMAS"
+
+      -- "need A union empty = A here!"
+    have union_with_empty_identity: "!!A. X__union__X(A, X_emptySet ) = A"
+      by (rule set_ext,
+      (subst mem_def)+,
+	subst def_of_isIn [symmetric], 
+	subst def_of_union,
+	subst def_of_isIn [symmetric],
+	subst not_not [symmetric], subst emptySet_empty, simp)
+    
+    from function_image
+    have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
+      sorry -- "can prove it but should be outsourced!"
+
+    -- "need this fact to use the proj_def"
+    have subtype_cond: "!!A x. (x \<noteq> 0'') --> (restrictOp A (defOp(gn_proj(x)))) = A"
+    proof
+      fix A x
+      assume hyp: "x \<noteq> 0''"
+      show "restrictOp A (defOp (gn_proj(x))) = A"
+	apply (subst restrictOp_def)
+	apply (subst if_P)
+	apply (subst Ax1)
+	by (simp add: hyp, simp)
+    qed
+
+    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
+    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
+      by (simp only: snd_conv makeTotal_def makePartial_def)
+
+
+    -- "homogenity for positive reals"
+    have norm_pos_homogen: "!!x y. 0'' <=' x \<Longrightarrow> || x *_3 y || = x *'' || y ||"
+      sorry (* can't probably prove it with current sqrt definition!
+	The better approach would be using the axioms coming
+	with the view in LinearAlgebra.het but then the view
+	has to be proved and we need the correct sqrt def. *)
+
+    -- "norm_nonnegative"
+    have norm_nonnegative: "!!x. 0'' <=' || x ||" sorry -- "see comment above"
+
+    -- "we need to show that there is always a nontrivial orthogonal vector"
+    have orth_exists_in_2dim:
+      "!! x. (EX v w. \<not> lindep(v,w)) \<Longrightarrow> EX y. y \<noteq> 0_3 \<and> orth(y,x)" sorry
+    -- "can prove it but should be outsourced!"
+
+    from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
+
+    -- "END LEMMAS"
+
     fix axis::VectorStar
     fix offset::Point
     fix r::RealPos
 
     -- "we need the information about the subtypes:"
-    have r_subtype: "RealPos_pred(gn_inj(r))" sorry -- "can't prove it with current encoding"
-    have axis_subtype: "VectorStar_pred(gn_inj(axis))" sorry -- "can't prove it with current encoding"
+    have r_subtype: "RealPos_pred(gn_inj(r))"
+      sorry -- "can't prove it with current encoding"
+    have axis_subtype: "VectorStar_pred(gn_inj(axis))"
+      sorry -- "can't prove it with current encoding"
 
     -- "providing vars for the let-constructs"
     def boundary: boundary == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
@@ -1144,6 +1199,9 @@ theorem def_of_Cylinder :
     from scaledAxis vwl_identity height
     have axis_identity: "axs = gn_inj(axis)" by simp
 
+    have axs_nonzero: "axs \<noteq> 0_3" 
+      by (simp only: axis_identity VectorStar_pred_def [symmetric] axis_subtype)
+
     -- "we don't want to manipulate the right hand side, so we replace it by rhs"
     def rhs: rhs == "(\<lambda>x. let v = vec(offset, x)
             in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
@@ -1151,17 +1209,6 @@ theorem def_of_Cylinder :
                v *_4 gn_inj(axis) >=' 0'')"
 
 
-    -- "need A union empty = A here!"
-    have union_with_empty_identity: "!!A. X__union__X(A, X_emptySet ) = A"
-      by (rule set_ext,
-	(subst mem_def)+,
-	  subst def_of_isIn [symmetric], 
-	  subst def_of_union,
-	  subst def_of_isIn [symmetric],
-	  subst not_not [symmetric], subst emptySet_empty, simp)
-
-      from function_image have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
-	sorry -- "can prove it!"
 
     -- "going in apply-mode again"
     show "(let boundary = \<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r);
@@ -1230,6 +1277,10 @@ theorem def_of_Cylinder :
 	def vp: vp == "proj(v, axs)" -- "the axis-parallel component"
 	def vo: vo == "orthcomp(v, axs)" -- "the axis-orthogonal component"
 
+	-- "here we provide already the knowledge that v = vp + vo"
+	have v_decomp: "v = vp +_4 vo" by (simp only: vo vp orthogonal_decomposition_theorem)
+
+
 	-- "going in apply-mode again"
 	show "(\<exists>l y. (l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and>
                x = y +' (l *_3 axs)) =
@@ -1275,74 +1326,45 @@ theorem def_of_Cylinder :
 	qed
 
 	from v have "x = offset +' v" by simp
-	with yprime_in_ball main_knowledge have "offset +' v = (offset +' y') +'(l *_3 axs)" by simp
+	with yprime_in_ball main_knowledge
+	have "offset +' v = (offset +' y') +'(l *_3 axs)" by simp
 	hence "v = y' +_4 (l *_3 axs)"
 	  by (simp only:  point_vector_plus_associative [symmetric] plus_injective)
 	hence "vp +_4 vo = y' +_4 (l *_3 axs)" 
-	  by (simp only: vo vp orthogonal_decomposition_theorem)
-	hence "vp +_4 vo = (l *_3 axs) +_4 y'" (is "?M") by (simp only: ga_comm___Xx___3)
-	hence main_identity: "vp = l *_3 axs \<and> vo = y'"
+	  by (simp only: v_decomp)
+	hence vyprime_rel: "vp +_4 vo = (l *_3 axs) +_4 y'" 
+	  by (simp only: ga_comm___Xx___3)
+	have main_identity: "vp = l *_3 axs \<and> vo = y'"
 	  proof (rule_tac z="axs" in unique_orthogonal_decomposition)
-	    assume mi_hyp: "?M"
-	    -- "can't prove it now, have the fact that axis is in VectorStar and axs = gn_inj(axis)"
-	    -- "but what is missing is that !x:VectorStar. gn_inj(x) \<noteq> 0_3"
-	    have mi_subgoal1: "axs \<noteq> 0_3" 
-	      by (simp only: axis_identity VectorStar_pred_def [symmetric] axis_subtype)
+	    -- "mi_subgoal1 is equal to axs_nonzero"
  
-	    from mi_hyp have mi_subgoal2: "vp +_4 vo = (l *_3 axs) +_4 y'" .
+	    from vyprime_rel have mi_subgoal2: "vp +_4 vo = (l *_3 axs) +_4 y'" .
 
-	    -- "need this fact to use the proj_def"
-	    have subtype_cond: "!!A x. (x \<noteq> 0'') --> (restrictOp A (defOp(gn_proj(x)))) = A"
-	      proof
-		fix A x
-		assume hyp: "x \<noteq> 0''"
-		show "restrictOp A (defOp (gn_proj(x))) = A"
-		  apply (subst restrictOp_def)
-		  apply (subst if_P)
-		  apply (subst Ax1)
-		  by (simp add: hyp, simp)
-		qed
-
-	    from mi_subgoal1 pos_definite rev_contrapos
+	    from axs_nonzero non_degenerate rev_contrapos
 	    have axs_norm_nonzero: "axs *_4 axs \<noteq> 0''" by blast
-
-	    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
-	    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
-	      by (simp only: snd_conv makeTotal_def makePartial_def)
 
 	    have mi_subgoal3: "lindep(vp, axs)"
 	      unfolding lindep_def vp
 	      apply (subst partial_identity [symmetric], subst proj_def)
-	      apply (subst if_not_P, simp add: mi_subgoal1)
+	      apply (subst if_not_P, simp add: axs_nonzero)
 	      apply (subst subtype_cond, simp add: axs_norm_nonzero)
 	      apply (subst partial_identity)
 	      by auto
 
 	    from lindep_def have mi_subgoal4: "lindep(l *_3 axs, axs)" by auto
-	    
+	    -- "TODO: refactor this here, will be used later"
 	    -- "using the orthogonal projection theorem here!"
 	    from vo have mi_subgoal5: "orth(axs, vo)" by simp
 
 	    from axis_identity yprime_in_plane VPlane_constr
 	    have mi_subgoal6: "orth(axs, y')" by simp
 
-	    with mi_subgoal1 mi_subgoal2 mi_subgoal3 mi_subgoal4 mi_subgoal5
+	    with axs_nonzero mi_subgoal2 mi_subgoal3 mi_subgoal4 mi_subgoal5
 	    show "((((((axs \<noteq> 0_3) \<and> ((vp +_4 vo) = ((l *_3 axs) +_4 y'))) \<and> (lindep(vp, axs))) \<and>
               (lindep((l *_3 axs), axs))) \<and> (orth(axs, vo))) \<and> (orth(axs, y')))" by blast
 	  qed
 
 	  -- "(vp = l * axs) and 0 <= l <= 1 should gives us the result"
-	  -- "we need some lemmas first:"
-
-	  -- "homogenity for positive reals"
-	  have norm_pos_homogen: "!!x y. 0'' <=' x \<Longrightarrow> || x *_3 y || = x *'' || y ||"
-	    sorry (* can't probably prove it with current sqrt definition!
-	             The better approach would be using the axioms coming
-	             with the view in LinearAlgebra.het but then the view
-	             has to be proved and we need the correct sqrt def. *)
-
-	  -- "norm_nonnegative"
-	  have norm_nonnegative: "!!x. 0'' <=' || x ||" sorry -- "see comment above"
 
 	  -- "0 <= l <= 1"
 	  have l_in_unitinterval: "0'' <=' l \<and> l <=' 1''"
@@ -1365,25 +1387,20 @@ theorem def_of_Cylinder :
 	  qed
 
 	  -- "for this subgoal we need to derive the boundary-property for bp"
-	  -- "first we need to show that there is always a nontrivial orthogonal vector"
-	  have orth_exists_in_2dim: "!! x. (EX v w. \<not> lindep(v,w)) \<Longrightarrow> EX y. y \<noteq> 0_3 \<and> orth(y,x)" sorry
-	  from e1e2_nonlindep have "EX v w. \<not> lindep(v,w)" by blast
-	  with orth_exists_in_2dim have
-	    orth_exists: "EX x. x \<noteq> 0_3 \<and> orth(x, gn_inj(axis))" by blast
+	  from space_at_least_2dim orth_exists_in_2dim
+	  have orth_exists: "EX x. x \<noteq> 0_3 \<and> orth(x, gn_inj(axis))" by blast
 	    
-	  have bp_in_boundary: "boundary bp"
+	  have bp_in_boundary: "boundary bp" sorry 
+	  -- "can't prove it, because of abs-translation and vwl_length"
+(*
 	  proof (subst boundarypoint, rule Point_choice, subst boundary)
 	    from orth_exists obtain v' where vprime: "v' \<noteq> 0_3 \<and> orth(v', gn_inj(axis))" ..
 	    def v2: v2 == "VWithLength(v', gn_inj(r))"
 	    with vprime vwl_length have "||v2|| = gn_inj(abs'(gn_inj(r)))" by blast
 	    have "gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
-	      -- "need this stuff here, so move it to toplevel!"
-	      apply (subst partial_identity)
-by Ax7
-	      by auto
+	      apply (subst partial_identity [symmetric])
 
-(*
-*)	    have "|| v2 || = gn_inj(r)"
+	    have "|| v2 || = gn_inj(r)"
 	      apply (subst v2)
 	      thm vwl_length
 	      apply (simp add: vwl_length )
@@ -1392,32 +1409,46 @@ by Ax7
 
 	      by (auto simp add: vprime v2)
 
+*)
 
-	  have subgoal2: "|| vo || <=' gn_inj(r)"
-	  proof-
-	    from main_identity have "|| vo || = || y' ||" by simp
-	    also have "\<dots> <=' ||  ||"
+	  -- "we should make this knowledge available already at the beginning"
+	  from bp_in_boundary have "|| r1 || = gn_inj(r)"
+	    by (simp add: r1 boundary Let_def)
 
+	  with VBall_constr yprime_in_ball main_identity
+	  have subgoal2: "|| vo || <=' gn_inj(r)" by simp
 
--- 	    vwl_length, vwl_lindep
+          -- "using the orthogonal projection theorem here!"
+	  -- "see TODO above"
+	  have vo_mult_axs_zero: "vo *_4 axs = 0''"
+	    by (simp add: vo orthogonal_def [symmetric])
 
+	  -- "PP = ProofPower remark"
+	  -- "PP: doesn't work in one step!"
+	  from axs_nonzero pos_definite have "axs *_4 axs >' 0''" by blast
+	  with geq_def_ExtPartialOrder less_def_ExtPartialOrder
+	    greater_def_ExtPartialOrder
+	  have axs_sqr_nonneg: "axs *_4 axs >=' 0''" by blast
 
+	  -- "should be available as lemma: r * 0 = 0"
+	  have realZero_by_right_zero: "!!r. r *'' 0'' = 0''" (is "!!r. ?R r")
+	    sorry -- "can prove it but should be outsourced!"
 
-using subtype_def subtype_pred_def Ax1_1 RealNonNeg_pred_def
-      RealPos_pred_def Ax7 sqr_def sqr2_def sqrt_def X2_def_Real X3_def_Real
-      X4_def_Real X5_def_Real X6_def_Real X7_def_Real X8_def_Real
-      X9_def_Real decimal_def Zero_Point Zero_Vector VectorStar_pred_def
-      scalar_multiplication scalar_product vector_product ONB1 ONB2 ONB3
-      lindep_def norm_from_inner_prod_def proj_def orthcomp_def
-      orthogonal_def point_vector_map vec_def set_comprehension
-      abbrev_of_set_comprehension function_image def_of_interval
-      abbrev_of_interval plus_PointSet_Vector plus_Point_VectorSet
-      plus_PointSet_VectorSet def_of_Plane E1_def E2_def E3_def
-      VLine_constr VWithLength_constr VPlane_constr VPlane2_constr
-      VConnected_constr VHalfSpace_constr VHalfSpace2_constr VBall_constr
-      VCircle_constr ActAttach_constr ActExtrude_constr def_of_SWCylinder
-      affine_cylinder_constructible_in_SW
-by (auto)
+	  from v_decomp have "v *_4 axs = (vp +_4 vo) *_4 axs" by simp
+	  also have "\<dots> = (vp *_4 axs) +_3 (vo *_4 axs)" by (simp only: distributive)
+	  also have "\<dots> = (vp *_4 axs)" by (simp add: vo_mult_axs_zero)
+	  also have "\<dots> = l *'' (axs *_4 axs)" by (simp add: main_identity homogeneous)
+	  also from axs_sqr_nonneg l_in_unitinterval geq_def_ExtPartialOrder
+	    FWO_times_right have "\<dots> >=' l *'' 0''" by blast
+	  also from realZero_by_right_zero have "\<dots> = 0''" by blast
+	  finally have subgoal3: "v *_4 axs >=' 0''" by simp
+
+	  with subgoal1 subgoal2
+	  show "( || vp || <=' || axs || \<and> 
+	    || vo || <=' gn_inj(r)) \<and> v *_4 axs >=' 0''" by blast
+	
+        -- "tackle other direction here"
+	next
 
 ML "Header.record \"def_of_Cylinder\""
 
