@@ -1109,6 +1109,12 @@ theorem def_of_Cylinder :
 
     -- "GENERAL LEMMAS"
 
+      -- "should be available as lemma: r * 0 = 0"
+    have realZero_by_left_zero: "!!r. 0'' *'' r = 0''"
+      sorry -- "can prove it but should be outsourced!"
+    have realZero_by_right_zero: "!!r. r *'' 0'' = 0''"
+      sorry -- "can prove it but should be outsourced!"
+
       -- "need A union empty = A here!"
     have union_with_empty_identity: "!!A. X__union__X(A, X_emptySet ) = A"
       by (rule set_ext,
@@ -1179,7 +1185,6 @@ theorem def_of_Cylinder :
     -- "additional definitions, not stemming from let-vars"
     def I01: I01 == "closedinterval (0'', 1'')"
 
-
     -- "we know that Plane(sketch) = pln"
     from plane sketch ga_select_Plane
     have sketchplane_identity: "pln = Plane'(sketch)" by simp
@@ -1201,13 +1206,46 @@ theorem def_of_Cylinder :
 
     have axs_nonzero: "axs \<noteq> 0_3" 
       by (simp only: axis_identity VectorStar_pred_def [symmetric] axis_subtype)
+    with non_degenerate rev_contrapos
+    have axs_norm_nonzero: "axs *_4 axs \<noteq> 0''" by blast
+
+    -- "PP = ProofPower remark"
+    -- "PP: doesn't work in one step!"
+    from axs_nonzero pos_definite have "axs *_4 axs >' 0''" by blast
+    with geq_def_ExtPartialOrder less_def_ExtPartialOrder
+      greater_def_ExtPartialOrder
+    have axs_sqr_nonneg: "axs *_4 axs >=' 0''" by blast
+
+    -- "show facts about bp, r and r1"
+    have bp_in_boundary: "boundary bp" sorry 
+      -- "can't prove it, because of abs-translation and vwl_length"
+(*
+	  proof (subst boundarypoint, rule Point_choice, subst boundary)
+	    from orth_exists obtain v' where vprime: "v' \<noteq> 0_3 \<and> orth(v', gn_inj(axis))" ..
+	    def v2: v2 == "VWithLength(v', gn_inj(r))"
+	    with vprime vwl_length have "||v2|| = gn_inj(abs'(gn_inj(r)))" by blast
+	    have "gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
+	      apply (subst partial_identity [symmetric])
+
+	    have "|| v2 || = gn_inj(r)"
+	      apply (subst v2)
+	      thm vwl_length
+	      apply (simp add: vwl_length )
+
+	      apply (simp add: vwl_length [symmetric])
+
+	      by (auto simp add: vprime v2)
+
+*)
+      -- "we should make this knowledge available already at the beginning"
+    hence r1_r_relation: "|| r1 || = gn_inj(r)"
+      by (simp add: r1 boundary Let_def)
 
     -- "we don't want to manipulate the right hand side, so we replace it by rhs"
     def rhs: rhs == "(\<lambda>x. let v = vec(offset, x)
             in ( || proj(v, gn_inj(axis)) || <=' || gn_inj(axis) || \<and>
                 || orthcomp(v, gn_inj(axis)) || <=' gn_inj(r)) \<and>
                v *_4 gn_inj(axis) >=' 0'')"
-
 
 
     -- "going in apply-mode again"
@@ -1277,10 +1315,28 @@ theorem def_of_Cylinder :
 	def vp: vp == "proj(v, axs)" -- "the axis-parallel component"
 	def vo: vo == "orthcomp(v, axs)" -- "the axis-orthogonal component"
 
+        -- "using the orthogonal projection theorem here!"
+	hence vo_axs_orth: "orth(axs, vo)" by simp
+	hence vo_mult_axs_zero: "vo *_4 axs = 0''"
+	  by (simp only: orth_symmetric orthogonal_def [symmetric])
+
+	have vp_structure: "EX k. vp = k *_3 axs"
+	  unfolding vp
+	  apply (subst partial_identity [symmetric], subst proj_def)
+	  apply (subst if_not_P, simp add: axs_nonzero)
+	  apply (subst subtype_cond, simp add: axs_norm_nonzero)
+	  apply (subst partial_identity)
+	  by auto
+
 	-- "here we provide already the knowledge that v = vp + vo"
 	have v_decomp: "v = vp +_4 vo" by (simp only: vo vp orthogonal_decomposition_theorem)
 
 
+	from v_decomp have "v *_4 axs = (vp +_4 vo) *_4 axs" by simp
+	also have "\<dots> = (vp *_4 axs) +_3 (vo *_4 axs)" by (simp only: distributive)
+	also have "\<dots> = (vp *_4 axs)" by (simp add: vo_mult_axs_zero)
+	finally have v_mult_axs_simp: "v *_4 axs = vp *_4 axs" by simp
+	
 	-- "going in apply-mode again"
 	show "(\<exists>l y. (l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and>
                x = y +' (l *_3 axs)) =
@@ -1340,26 +1396,17 @@ theorem def_of_Cylinder :
  
 	    from vyprime_rel have mi_subgoal2: "vp +_4 vo = (l *_3 axs) +_4 y'" .
 
-	    from axs_nonzero non_degenerate rev_contrapos
-	    have axs_norm_nonzero: "axs *_4 axs \<noteq> 0''" by blast
+	    from vp_structure lindep_def have mi_subgoal3: "lindep(vp, axs)"
+	      by blast
 
-	    have mi_subgoal3: "lindep(vp, axs)"
-	      unfolding lindep_def vp
-	      apply (subst partial_identity [symmetric], subst proj_def)
-	      apply (subst if_not_P, simp add: axs_nonzero)
-	      apply (subst subtype_cond, simp add: axs_norm_nonzero)
-	      apply (subst partial_identity)
-	      by auto
+	    from lindep_def have mi_subgoal4: "lindep(l *_3 axs, axs)" by blast
 
-	    from lindep_def have mi_subgoal4: "lindep(l *_3 axs, axs)" by auto
-	    -- "TODO: refactor this here, will be used later"
-	    -- "using the orthogonal projection theorem here!"
-	    from vo have mi_subgoal5: "orth(axs, vo)" by simp
+	    -- "mi_subgoal5 is equal to vo_axs_orth"
 
 	    from axis_identity yprime_in_plane VPlane_constr
 	    have mi_subgoal6: "orth(axs, y')" by simp
 
-	    with axs_nonzero mi_subgoal2 mi_subgoal3 mi_subgoal4 mi_subgoal5
+	    with axs_nonzero mi_subgoal2 mi_subgoal3 mi_subgoal4 vo_axs_orth
 	    show "((((((axs \<noteq> 0_3) \<and> ((vp +_4 vo) = ((l *_3 axs) +_4 y'))) \<and> (lindep(vp, axs))) \<and>
               (lindep((l *_3 axs), axs))) \<and> (orth(axs, vo))) \<and> (orth(axs, y')))" by blast
 	  qed
@@ -1390,54 +1437,11 @@ theorem def_of_Cylinder :
 	  from space_at_least_2dim orth_exists_in_2dim
 	  have orth_exists: "EX x. x \<noteq> 0_3 \<and> orth(x, gn_inj(axis))" by blast
 	    
-	  have bp_in_boundary: "boundary bp" sorry 
-	  -- "can't prove it, because of abs-translation and vwl_length"
-(*
-	  proof (subst boundarypoint, rule Point_choice, subst boundary)
-	    from orth_exists obtain v' where vprime: "v' \<noteq> 0_3 \<and> orth(v', gn_inj(axis))" ..
-	    def v2: v2 == "VWithLength(v', gn_inj(r))"
-	    with vprime vwl_length have "||v2|| = gn_inj(abs'(gn_inj(r)))" by blast
-	    have "gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
-	      apply (subst partial_identity [symmetric])
-
-	    have "|| v2 || = gn_inj(r)"
-	      apply (subst v2)
-	      thm vwl_length
-	      apply (simp add: vwl_length )
-
-	      apply (simp add: vwl_length [symmetric])
-
-	      by (auto simp add: vprime v2)
-
-*)
-
-	  -- "we should make this knowledge available already at the beginning"
-	  from bp_in_boundary have "|| r1 || = gn_inj(r)"
-	    by (simp add: r1 boundary Let_def)
-
-	  with VBall_constr yprime_in_ball main_identity
+	  from r1_r_relation VBall_constr yprime_in_ball main_identity
 	  have subgoal2: "|| vo || <=' gn_inj(r)" by simp
 
-          -- "using the orthogonal projection theorem here!"
-	  -- "see TODO above"
-	  have vo_mult_axs_zero: "vo *_4 axs = 0''"
-	    by (simp add: vo orthogonal_def [symmetric])
-
-	  -- "PP = ProofPower remark"
-	  -- "PP: doesn't work in one step!"
-	  from axs_nonzero pos_definite have "axs *_4 axs >' 0''" by blast
-	  with geq_def_ExtPartialOrder less_def_ExtPartialOrder
-	    greater_def_ExtPartialOrder
-	  have axs_sqr_nonneg: "axs *_4 axs >=' 0''" by blast
-
-	  -- "should be available as lemma: r * 0 = 0"
-	  have realZero_by_right_zero: "!!r. r *'' 0'' = 0''" (is "!!r. ?R r")
-	    sorry -- "can prove it but should be outsourced!"
-
-	  from v_decomp have "v *_4 axs = (vp +_4 vo) *_4 axs" by simp
-	  also have "\<dots> = (vp *_4 axs) +_3 (vo *_4 axs)" by (simp only: distributive)
-	  also have "\<dots> = (vp *_4 axs)" by (simp add: vo_mult_axs_zero)
-	  also have "\<dots> = l *'' (axs *_4 axs)" by (simp add: main_identity homogeneous)
+	  from v_mult_axs_simp have "v *_4 axs = l *'' (axs *_4 axs)"
+	    by (simp add: main_identity homogeneous)
 	  also from axs_sqr_nonneg l_in_unitinterval geq_def_ExtPartialOrder
 	    FWO_times_right have "\<dots> >=' l *'' 0''" by blast
 	  also from realZero_by_right_zero have "\<dots> = 0''" by blast
@@ -1449,6 +1453,74 @@ theorem def_of_Cylinder :
 	
         -- "tackle other direction here"
 	next
+
+	  assume main_knowledge:
+	    "( || vp || <=' || axs || \<and> || vo || <=' gn_inj(r)) \<and> v *_4 axs >=' 0''"
+	  
+(*
+   We show vp = k * axs, and set l := k, y := offset + vo and
+   verify the four conditions for l and y.
+*)
+	  from vp_structure obtain l where l_def: "vp = l *_3 axs" ..
+	  def y_def: y == "offset +' vo"
+	  have "(l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and> x = y +' (l *_3 axs)"
+	    (is "?G l y")
+	  proof-
+
+	    -- "PROOF for first conjunct"
+
+	    have mult_nonneg_cond: "!!x y z. x *'' y <=' z *'' y \<and> y >=' 0'' \<Longrightarrow> x <=' z"
+	      sorry -- "can prove it but should be outsourced!"
+            -- "instance of the lemma above with z=0"
+	    hence mult_nonneg_zero_cond: "!!x y. 0'' <=' x *'' y \<and> y >=' 0'' \<Longrightarrow> 0'' <=' x"
+	      sorry -- "can prove it but should be outsourced!"
+
+	    from norm_nonnegative have axs_norm_nonneg: "||axs|| >=' 0''"
+	      by (simp only: geq_def_ExtPartialOrder)
+
+	    from v_mult_axs_simp main_knowledge l_def homogeneous
+	    have "l *'' (axs *_4 axs) >=' 0''" by simp
+
+	    with mult_nonneg_zero_cond axs_sqr_nonneg geq_def_ExtPartialOrder
+	    have I01_first: "0'' <=' l" by blast
+
+	    with main_knowledge l_def norm_pos_homogen
+	    have "l *'' || axs || <=' || axs ||" by (simp only: geq_def_ExtPartialOrder)
+
+	    with axs_norm_nonneg have I01_second: "l <=' 1''"
+	      by (subst (asm) ga_left_unit___Xx___1 [symmetric],
+	      (rule_tac y="||axs||" in mult_nonneg_cond), simp)
+
+	    with I01_first I01 def_of_interval abbrev_of_interval
+	      def_of_isIn geq_def_ExtPartialOrder
+	    have subgoal1: "l isIn I01" by auto
+	    
+	    -- "PROOF for second conjunct"
+
+	    from main_knowledge r1_r_relation VBall_constr
+	    have "vo isIn VBall( || r1 || )" by simp
+	    hence subgoal2: "y isIn bll"
+	      by (subst y_def,subst ball, 
+		subst ActAttach_constr,
+		subst plus_Point_VectorSet,
+		subst function_image,
+		subst def_of_isIn, auto)
+	    -- "the same way we obtain the third subgoal!"
+ by auto
+
+
+by auto
+
+	    -- "baue iterativ mit consecutiven haves auf!"
+
+	    with ActAttach_constr plus_Point_VectorSet ball y_def
+	    function_image
+	    have "y isIn bll"
+	      by auto
+	    by auto
+
+	    
+by auto
 
 ML "Header.record \"def_of_Cylinder\""
 
