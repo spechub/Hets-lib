@@ -80,7 +80,7 @@ done
 typedecl a
 
 consts
-X_f :: "a => a => a partial" ("f/'(_,/ _')" [3,3] 999)
+f :: "(a * a ) => a partial"
 
 axioms
 Ax1 [rule_format] :
@@ -90,6 +90,38 @@ Ax1 [rule_format] :
  defOp (f(x, y)) & defOp (f(y, z)) -->
  restrictOp (f(x, makeTotal (f(y, z)))) (defOp (f(y, z))) =
  restrictOp (f(makeTotal (f(x, y)), z)) (defOp (f(x, y)))"
+
+Ax1_monad [rule_format] :
+"ALL x.
+ ALL y.
+ ALL z.
+ defOp (lift2partial f (pair x y)) & 
+ defOp (lift2partial f (pair y z)) -->
+ lift2partial f (pair x (lift2partial f (pair y z))) =
+ lift2partial f (pair (lift2partial f (pair x y)) z)"
+
+Ax1_monad_unsound [rule_format] :
+"ALL x.
+ ALL y.
+ ALL z.
+ lift2partial f (pair x (lift2partial f (pair y z))) =
+ lift2partial f (pair (lift2partial f (pair x y)) z)"
+
+
+theorem Ax1_1_monadic:
+"ALL w.
+ ALL x.
+ ALL y.
+ ALL z.
+ preDefOp (lift2partial f (pair x (lift2partial f (pair y z)))) &
+ preDefOp (lift2partial f (pair y (lift2partial f (pair z w)))) --> 
+ lift2partial f (pair (lift2partial f (pair x (lift2partial f (pair y z)))) w)
+ =
+ lift2partial f (pair x (lift2partial f (pair y (lift2partial f (pair z w)))))"
+apply (clarify)
+apply (simp add: Ax1_monad)
+
+back
 
 lemma assoc_dom : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
   (defOp (f(x, makeTotal (f(y, z)))) & defOp (f(y, z))) = 
@@ -118,6 +150,9 @@ theorem Ax1_1 :
  (defOp (f(y, makeTotal (f(z, w)))) & defOp (f(z, w)))"
 apply (auto)
 apply (simp add: assoc_eq assoc_dom)
+done
+
+
 
 ML "Header.record \"Ax1_1\""
 

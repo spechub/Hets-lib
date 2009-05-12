@@ -66,15 +66,10 @@ done
 
 (* Some more stuff about removing extraneous restrictions *)
 
-theorem total_restrict [simp]: 
-"restrictOp (t (makeTotal  (restrictOp a b))) (defOp (restrictOp a b)) = 
-	   restrictOp (t (makeTotal a)) (defOp a & b)"
+theorem total_restrict2 [simp]: 
+"(c ==> b) ==> restrictOp (t (makeTotal  (restrictOp a b))) c = 
+	   restrictOp (t (makeTotal a)) c"
 apply (simp add: makeTotal_def restrictOp_def defOp.simps undefinedOp_def)
-done
-
-lemma restrictOp_cong [cong]:
-  "b = b' ==> (b' ==> a = a') ==> restrictOp a b = restrictOp a' b'"
-  apply (simp add: restrictOp_def defOp.simps undefinedOp_def)
 done
 
 theorem def_restrict [simp]:
@@ -82,6 +77,19 @@ theorem def_restrict [simp]:
 apply (simp add:  restrictOp_def defOp.simps undefinedOp_def split: split_if)
 done
 
+theorem total_restrict [simp]: 
+"restrictOp (t (makeTotal  (restrictOp a b))) (defOp (restrictOp a b)) = 
+	   restrictOp (t (makeTotal a)) (defOp a & b)"
+apply simp
+done
+
+lemma restrictOp_cong [cong]:
+  "b = b' ==> (b' ==> a = a') ==> restrictOp a b = restrictOp a' b'"
+  apply (simp add: restrictOp_def defOp.simps undefinedOp_def)
+done
+
+
+thm total_restrict
 
 
 
