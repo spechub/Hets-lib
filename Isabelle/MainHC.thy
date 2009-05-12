@@ -102,7 +102,7 @@ liftUnit2partial :: "(unit => 'a partial) => bool => 'a partial"
 "liftUnit2partial f b == restrictOp (f ()) b"
 
 liftUnit :: "(unit => 'a) => bool => 'a partial"
-"liftUnit f b == restrictOp (makePartial (f ())) b"
+"liftUnit f b ==restrictOp (makePartial (f ())) b"
 
 lift2unit :: "('b => 'c) => ('a partial => bool)"
 "lift2unit f == defOp"
@@ -142,5 +142,43 @@ primrec
 lemma some_inj : "Some x = Some y ==> x = y"
 apply (auto)
 done
+
+(* Monad law added by Lutz Schroeder *)
+
+lemma partial_monad_unit1[simp]: "lift2partial f (makePartial a) = f a"
+apply (simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def)
+done
+
+lemma partial_monad_unit2[simp]: "lift2partial makePartial m = m"
+apply (auto simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+apply (case_tac "m")
+apply (auto)
+apply (case_tac "m")
+apply (auto) 
+done
+
+lemma partial_monad_assoc[simp]:
+  "lift2partial g (lift2partial f m) =
+  lift2partial (%x. lift2partial g (f x)) m"
+apply (simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+done
+
+lemma strictness_closure:
+  "defOp (lift2partial f a) = (defOp (lift2partial f a) & defOp a)"
+apply (simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+done
+
+consts preDefOp :: "'a partial => bool"
+
+axioms 
+
+preDefOp_atom[simp]: "preDefOp a = defOp a"
+
+preDefOp_lift[simp]:
+"preDefOp (lift2partial f a) = (defOp (lift2partial f a) & preDefOp a)"
+
+
+
+
 
 end
