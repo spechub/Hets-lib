@@ -135,14 +135,12 @@ spec RealFunctions = OrderedReals
 then %def
 
      ops sqr: Real -> RealNonNeg;
-	 sqrt: RealNonNeg -> Real;
+	 sqrt: RealNonNeg -> RealNonNeg;
 
      var r:Real;q:RealNonNeg
      . sqr(r) = r * r    %(sqr_def)%
      %{ to see that this definition of sqrt is definitional one need the
-        injectivity of sqr on RealNonNeg e.g. via the intermediate value theorem
-	TODO: in effect, this definition of sqrt is not definitional as this axiomatization
-	      is also compatible with the negative root! So we need to add more axioms }%
+        injectivity of sqr on RealNonNeg e.g. via the intermediate value theorem }%
 	
      . sqr(sqrt(q)) = q  %(sqrt_def)%
 end
