@@ -107,7 +107,8 @@ then %def
      . isSubtypeWithPred(RealPos_pred, RealPos_inj, RealPos_proj);
      %(RealPos_subtype)%
 
-     op abs(x:Real):RealNonNeg = x when 0 <= x else -x
+     op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
+	%(abs def)%
 end
 
 spec FieldWithValuation =

@@ -1107,7 +1107,7 @@ theorem def_of_Cylinder :
 
   proof (rule allI)+
 
-    -- "GENERAL LEMMAS"
+    -- "GENERAL LEMMAS -- should be outsourced to basic libs"
 
       -- "should be available as lemma: r * 0 = 0"
     have realZero_by_left_zero: "!!r. 0'' *'' r = 0''"
@@ -1128,6 +1128,12 @@ theorem def_of_Cylinder :
     have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
       sorry -- "can prove it but should be outsourced!"
 
+    have mult_nonneg_cond: "!!x y z. x *'' y <=' z *'' y \<and> y >=' 0'' \<Longrightarrow> x <=' z"
+      sorry -- "can prove it but should be outsourced!"
+    -- "instance of the lemma above with z=0"
+    hence mult_nonneg_zero_cond: "!!x y. 0'' <=' x *'' y \<and> y >=' 0'' \<Longrightarrow> 0'' <=' x"
+      sorry -- "can prove it but should be outsourced!"
+
     -- "need this fact to use the proj_def"
     have subtype_cond: "!!A x. (x \<noteq> 0'') --> (restrictOp A (defOp(gn_proj(x)))) = A"
     proof
@@ -1143,7 +1149,6 @@ theorem def_of_Cylinder :
     -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
     have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
       by (simp only: snd_conv makeTotal_def makePartial_def)
-
 
     -- "homogenity for positive reals"
     have norm_pos_homogen: "!!x y. 0'' <=' x \<Longrightarrow> || x *_3 y || = x *'' || y ||"
@@ -1469,12 +1474,6 @@ theorem def_of_Cylinder :
 
 	    -- "PROOF for first conjunct"
 
-	    have mult_nonneg_cond: "!!x y z. x *'' y <=' z *'' y \<and> y >=' 0'' \<Longrightarrow> x <=' z"
-	      sorry -- "can prove it but should be outsourced!"
-            -- "instance of the lemma above with z=0"
-	    hence mult_nonneg_zero_cond: "!!x y. 0'' <=' x *'' y \<and> y >=' 0'' \<Longrightarrow> 0'' <=' x"
-	      sorry -- "can prove it but should be outsourced!"
-
 	    from norm_nonnegative have axs_norm_nonneg: "||axs|| >=' 0''"
 	      by (simp only: geq_def_ExtPartialOrder)
 
@@ -1506,21 +1505,34 @@ theorem def_of_Cylinder :
 		subst function_image,
 		subst def_of_isIn, auto)
 	    -- "the same way we obtain the third subgoal!"
- by auto
 
+	    -- "PROOF for third conjunct"
 
-by auto
+	    from vo_axs_orth axis_identity VPlane_constr
+	    have "vo isIn VPlane(axs)" by simp
+	    hence subgoal3: "y isIn plnI"
+	      by (subst y_def, subst planeI, subst ActAttach_constr
+		, subst plus_Point_VectorSet
+		, subst function_image
+		, (subst def_of_isIn)+
+		, subst axis_identity [symmetric]
+		, auto)
 
-	    -- "baue iterativ mit consecutiven haves auf!"
+	    -- "PROOF for fourth conjunct"
 
-	    with ActAttach_constr plus_Point_VectorSet ball y_def
-	    function_image
-	    have "y isIn bll"
-	      by auto
-	    by auto
+	    have subgoal4: "x = y +' (l *_3 axs)"
+	      by (subst y_def, subst l_def [symmetric]
+		, subst point_vector_plus_associative [symmetric]
+		, subst ga_comm___Xx___3
+		, subst v_decomp [symmetric]
+		, simp only: ga_comm___Xx___3 v vec_def)
 
-	    
-by auto
+	    with subgoal1 subgoal2 subgoal3 show ?thesis by blast
+	  qed
+	  thus "EX l y. ?G l y" by auto
+	qed
+      qed
+    qed
 
 ML "Header.record \"def_of_Cylinder\""
 

@@ -7,7 +7,7 @@ version 0.1
 logic HasCASL
 
 from HasCASL/Reals get
-     Reals, FieldWithValuation, RealFunctions,
+     FieldWithValuation, RealFunctions,
      OrderedReals, OrderedReals_as_FieldWithValuation
 from HasCASL/Algebra get
      ExtInverse, AbelianGroup, Field
@@ -65,20 +65,21 @@ then
 end
 
 spec EuclideanVectorSpace = 
-     VectorSpace[Reals fit Elem |-> Real]
+     VectorSpace[OrderedReals fit Elem |-> Real]
 then
      op __*__ : Space * Space -> Real   %% (bilinear form)
 
      forall a:Real ; v,v',w: Space
      . (v+v') * w = (v * w) + (v' * w)  %(distributive)%
      . (a*v) * w = a * (v * w) 		%(homogeneous)%
-     . v * w  = w * v   		%(commutative)%
-     . v * v = 0 =>  v = 0		%(pos definite)%
+     . v * w  = w * v   		%(symmetric)%
+     . not(v = 0) =>  v * v > 0		%(pos definite)%
 
 then %implies
      forall a:Real ; v,v',w: Space
      . w * (v+v') = (w * v) + (w * v')  %(right distributive)%
      . v * (a*w) = a * (v * w) 		%(right homogeneous)%
+     . v * v = 0 =>  v = 0		%(non degenerate)%
 end
 
 %( Definition of Norm and Projection )%
