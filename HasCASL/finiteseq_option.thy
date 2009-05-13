@@ -191,7 +191,11 @@ done
 
 theorem bisim2: "(%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P)) s t ==> head(s)=head(t) & ((%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P)) (tail s) (tail t))"
 apply (auto)
-apply (simp add: Ax5)
+apply (subst Ax1[THEN sym])
+apply (subst Ax3)
+apply (subst Ax5')
+apply (simp add: resOp_def bool2partial_def)
+apply (subst Ax7)
 apply (simp add: resOp_def bool2partial_def)
 apply (frule exE)
 sorry
