@@ -173,24 +173,13 @@ theorem defop_filter2: "((defOp (head(a))) & (P (makeTotal (head(a))))) = defOp(
 apply (simp add: Ax8 bool2partial_def resOp_def lift2bool_def)
 done
 
-lemma andassoc: "ALL A. ALL B. ALL C. (A & (B & C)) = ((A & B) & C)"
-by (auto)
-
-lemma asd: "[|defOp (head(a)) ; P (makeTotal (head(a)))|] ==> P (makeTotal (restrictOp (head(a)) (defOp (head(a)) & P (makeTotal (head(a))))))"
-apply (simp)
-done
-
-lemma asd2: "(defOp (head(a)) & P (makeTotal (head(a)))) ==> (P (makeTotal (restrictOp (head(a)) (defOp (head(a)) & P (makeTotal (head(a)))))))"
-apply (simp)
-done
-
 lemma double_filter_head[simp]: "head(X_filter (X_filter a P) P) = head(X_filter a P)"
 (*apply (case_tac "defOp(a 0) & P(makeTotal (a 0))")*)
 apply (simp add: Ax8 resOp_def bool2partial_def lift2bool_def)
 apply (simp add: defop_filter2 cong: conj_cong)
 done
 
-theorem filter_double : "ALL P. ALL s. X_filter s P=X_filter (X_filter s P) P"
+theorem filter_double : "ALL P. ALL s. X_filter (X_filter s P) P=X_filter s P"
 apply (auto)
 apply (rule_tac R="(%x y. EX a. (x=X_filter a P) & y=(X_filter (X_filter a P) P))" in coinduct)
 apply (auto)

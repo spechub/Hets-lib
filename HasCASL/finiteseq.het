@@ -24,6 +24,7 @@ then
     empty: Seq S;
     finite:Seq S;
     all : Seq S * Pred(S)
+
   vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred(Nat)
   . def (min Q) => exists m:Nat. Q m 
   . (exists m:Nat. Q m) => min Q =  0 when Q 0 else min (\ m:Nat. Q (m+1))
