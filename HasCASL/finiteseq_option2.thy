@@ -34,7 +34,7 @@ Ax1 [rule_format] :
 
 Ax2 [rule_format] : "ALL Q. defOp (min''(Q)) = (EX m. Q m)"
 
-Ax3 [rule_format] : "ALL s. start(s) = min''(% m. defOp (s m))"
+Ax3 [rule_format] : "ALL s. X_start(s) = min''(% m. defOp (s m))"
 
 Ax4 [rule_format] : "ALL s. head(s) = s 0"
 
@@ -54,24 +54,25 @@ Ax9 [rule_format] :
 "ALL P. ALL s. tail (X_filter s P) = X_filter (tail s) P"
 
 Ax10 [rule_format] :
-"ALL s.
- h(s) =
-  restrictOp (s (makeTotal (start s))) (defOp (start s))"
+ "ALL s. 
+  h(s) = 
+   restrictOp (s (makeTotal (X_start s))) (defOp (X_start s))" 
+
 
 Ax10_monadic [rule_format] :
 "ALL s.
  h(s) =
-  (lift2partial s) (start s)"
+  ((lift2partial s) (X_start s))"
 
 Ax11 [rule_format] :
 "ALL s.
  t s =
- (% k. restrictOp (s (k + 1 + makeTotal (start s))) (defOp (start s))"
+ (% k. restrictOp (s (k + 1 + makeTotal (X_start s))) (defOp (X_start s)))"
 
 Ax11_monadic [rule_format] :
 "ALL s.
  t s =
- (% k. (lift2partial s) ((mapPartial ((op +) (k + 1))) (start s)))"
+ (% k. (lift2partial s) ((mapPartial ((op +) (k + 1))) (X_start s)))"
 
 Ax12 [rule_format] :
 "ALL s. finite'(s) = (EX X_n. ALL m. m > X_n --> ~ defOp (s m))"
@@ -183,7 +184,7 @@ apply (simp add: Ax8 resOp_def bool2partial_def lift2bool_def)
 apply (simp add: defop_filter2 cong: conj_cong)
 done
 
-theorem filter_double : "ALL P. ALL s. X_filter (X_filter s P) P=X_filter s P"
+theorem filter_double : "ALL P. ALL s. X_filter s P=X_filter (X_filter s P) P"
 apply (auto)
 apply (rule_tac R="(%x y. EX a. (x=X_filter a P) & y=(X_filter (X_filter a P) P))" in coinduct)
 apply (auto)
@@ -191,24 +192,38 @@ apply (rule_tac x="tail a" in exI)
 apply (simp add: Ax9)
 done
 
-(*theorem bisim2: "(%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P)) u v ==> head(u)=head(v) & ((%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P)) (tail u) (tail v))"
-apply (auto)
-apply (subst Ax1[THEN sym])
-apply (subst Ax3)
-apply (subst Ax5')
-apply (simp add: resOp_def bool2partial_def)
-apply (subst Ax7)
-apply (simp add: resOp_def bool2partial_def)
-apply (frule exE)
-sorry
 
 
 theorem filter_nfcom: "ALL P. ALL s. nf (X_filter s P) = X_filter (nf s) P"
 apply (auto)
 apply (rule_tac R="(%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P))" in coinduct)
+apply clarify
+apply (rule conjI)
+apply (auto)
+apply (simp add: Ax6 Ax8 resOp_def bool2partial_def lift2bool_def Ax10 cong: conj_cong)
+apply (subst Ax10)
+apply (auto)
 apply (simp add: bisim2)
 apply (rule_tac x="s" in exI)
 apply (auto)
 done
-*)
+
+
+lemma asd: "h(X_filter s P)=min'' (% m. (defOp (s m) & P (makeTotal (s m))))"
+apply (subst Ax10)
+apply (simp add: Ax3)
+apply (subst Ax1)
+
+lemma asd: "P (makeTotal (head(nf s))) ==> head(nf (X_filter s P)) = head(X_filter (nf s) P)"
+apply (simp only: Ax6)
+apply (simp only: bool2partial_def lift2bool_def resOp_def)
+apply clarsimp
+apply (simp only: Ax6)
+apply (auto)
+apply (subst Ax10)
+apply (simp)
+apply (simp only: Ax6)
+
+apply (simp add: Ax6 Ax8)
+
 end
