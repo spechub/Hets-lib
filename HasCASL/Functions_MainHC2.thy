@@ -25,6 +25,22 @@ X3comp_def [rule_format] :
  comp3 ((h, g), f) = (% x. lift2partial h (lift2partial g (f x)))"
 
 
+theorem X3comp_def_unfolded:
+" ALL f g h. comp3 ((h, g), f) =
+               (%x. restrictOp (h (makeTotal (restrictOp (g (makeTotal (f x))) (defOp (f x))))) (defOp (restrictOp (g (makeTotal (f x))) (defOp (f x)))))"
+apply (insert X3comp_def)
+apply (unfold lift2partial_def)
+apply (auto)
+done
+
+theorem o_def_unfolded: "ALL f g. X__o__X (g, f) = (%x. restrictOp (g (makeTotal (f x))) (defOp (f x)))"
+apply (insert o_def)
+apply (unfold lift2partial_def)
+apply (auto)
+done
+
+
+
 theorem restrict1 : "restrictOp (restrictOp a (defOp b)) c = restrictOp (restrictOp a c) (defOp (restrictOp b c))"
 apply (case_tac c)
 apply (simp add: restrictOp_def)
@@ -109,6 +125,29 @@ apply (simp add: restrictOp_def)
 apply (simp add: restrictOp_def)
 done
 
+theorem total_restrict2 [simp]: 
+"(c ==> b) ==> restrictOp (t (makeTotal  (restrictOp a b))) c = 
+	   restrictOp (t (makeTotal a)) c"
+apply (simp add: makeTotal_def restrictOp_def defOp.simps undefinedOp_def)
+done
+
+theorem def_restrict [simp]:
+"defOp (restrictOp a b) = (defOp a & b)"
+apply (simp add:  restrictOp_def defOp.simps undefinedOp_def split: split_if)
+done
+
+theorem total_restrict [simp]: 
+"restrictOp (t (makeTotal  (restrictOp a b))) (defOp (restrictOp a b)) = 
+	   restrictOp (t (makeTotal a)) (defOp a & b)"
+apply simp
+done
+
+lemma restrictOp_cong [cong]:
+  "b = b' ==> (b' ==> a = a') ==> restrictOp a b = restrictOp a' b'"
+  apply (simp add: restrictOp_def defOp.simps undefinedOp_def)
+done
+
+
 ML "reset show_types"
 
 theorem X3comp_assoc1  :
@@ -117,10 +156,7 @@ theorem X3comp_assoc1  :
 apply (auto)
 apply (rule ext)
 apply (simp add: o_def X3comp_def lift2partial_def)
-apply (subst restrict_out2)
-apply (simp)
 done
-(*restrictOp (t b) (a&b) = restrictOp (t True) (a&b)*)
 
 theorem X3comp_assoc2  :
 "ALL f.
@@ -138,8 +174,6 @@ apply (auto)
 apply (rule ext)
 apply (simp add: o_def X3comp_def lift2partial_def)
 (* "restrictOp (t b) (a&b) = restrictOp (t True) (a&b)" *)
-apply (subst restrict_out2)
-apply (simp)
 done
 
 theorem id_neut [rule_format] : "ALL f'. X__o__X (f', X_id) = f'"
@@ -168,5 +202,13 @@ apply (rule_tac x="makeTotal (f' x)" in exI)
 apply (drule_tac x = "x" in fun_cong)
 apply (simp add: lift2partial_def o_def comp_def id_def restrictOp_mkpartial_defined)
 done
+
+theorem move_test1 : " ALL f g h. comp3 ((h, g), f) =
+               (%x. restrictOp (h (makeTotal (restrictOp (g (makeTotal (f x))) (defOp (f x))))) (defOp (restrictOp (g (makeTotal (f x))) (defOp (f x)))))"
+apply (simp only: total_restrict)
+sorry
+
+theorem move_test2 : "ALL f g. X__o__X (g, f) = (%x. restrictOp (g (makeTotal (f x))) (defOp (f x)))"
+
 
 end
