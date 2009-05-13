@@ -76,6 +76,10 @@ lemma restrictOp_cong [cong]:
   apply (simp add: restrictOp_def defOp.simps undefinedOp_def)
 done
 
+thm conj_cong
+declare conj_cong[cong]
+lemma conj_cong
+
 
 typedecl a
 

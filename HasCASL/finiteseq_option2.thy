@@ -56,18 +56,22 @@ Ax9 [rule_format] :
 Ax10 [rule_format] :
 "ALL s.
  h(s) =
- (case start(s) of
-  None => undefinedOp |
-  Some Xc0 => s Xc0)"
+  restrictOp (s (makeTotal (start s))) (defOp (start s))"
+
+Ax10_monadic [rule_format] :
+"ALL s.
+ h(s) =
+  (lift2partial s) (start s)"
 
 Ax11 [rule_format] :
 "ALL s.
  t s =
- (% k. case case start(s) of
-            None => undefinedOp |
-            Some Xc0 => makePartial ((k + 1) + Xc0) of
-       None => undefinedOp |
-       Some Xc1 => s Xc1)"
+ (% k. restrictOp (s (k + 1 + makeTotal (start s))) (defOp (start s))"
+
+Ax11_monadic [rule_format] :
+"ALL s.
+ t s =
+ (% k. (lift2partial s) ((mapPartial ((op +) (k + 1))) (start s)))"
 
 Ax12 [rule_format] :
 "ALL s. finite'(s) = (EX X_n. ALL m. m > X_n --> ~ defOp (s m))"
