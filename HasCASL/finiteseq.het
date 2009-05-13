@@ -24,9 +24,9 @@ then
     empty: Seq S;
     finite:Seq S;
     all : Seq S * Pred(S)
-  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred Nat
-  . min Q = None when forall m:Nat. not Q m 
-          else 0 when Q 0 else min (\ m:Nat. Q (m+1))
+  vars s,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred Nat
+  . min Q = 0 when Q 0 else min (\ m:Nat. Q (m+1))
+  . def(min Q) <=> exists m:Nat. Q m 
   . start s = min (\m:Nat. def (s m))
   . head(s) = s(0);
   . tail(s) = \x:Nat. s(x+1);
@@ -38,8 +38,8 @@ then
   . t s = \k:Nat. s(k + 1 + (start s))
   . finite(s) <=> exists n:Nat. forall m:Nat. m>n => not def(s m);
   . empty(s) <=> forall m:Nat. not def(s m);
-  . head(concat(s,t)) = head(s) when not(empty(s)) else head(t);
-  . tail(concat(s,t)) = concat(tail(s),t) when not(empty(s)) else tail(t);
+  . head(concat(s,s2)) = head(s) when not(empty(s)) else head(s2);
+  . tail(concat(s,s2)) = concat(tail(s),s2) when not(empty(s)) else tail(s2);
 then %implies
 var S: Type
 vars s:Seq S; P:Pred S; n:Nat;
