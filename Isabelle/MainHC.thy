@@ -63,8 +63,12 @@ whenElseOp :: "('a partial * bool) * 'a partial => 'a partial"
 "whenElseOp t == case t of
     (p, e) => if snd p then fst p else e"
 
-resOp :: "'a partial * 'b partial => 'a"
-"resOp p == makeTotal (restrictOp (fst p) (defOp (snd p)))"
+(*resOp :: "'a partial * 'b partial => 'a"
+"resOp p == makeTotal (restrictOp (fst p) (defOp (snd p)))"*)
+
+resOp :: "'a partial * 'b partial => 'a partial"
+ "resOp p == restrictOp (fst p) (defOp (snd p))"
+
 
 (* conversions *)
 lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
