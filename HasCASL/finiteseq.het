@@ -15,20 +15,27 @@ then
     filter: Seq S -> Pred S -> Seq S;    
     nf : Seq S -> Seq S;
     h : Seq S ->? S;
+    t : Seq S -> Seq S;
     concat : Seq S * Seq S -> Seq S;
     length : Seq S ->? Nat;    
+    min: Pred Nat ->? Nat;
+    start: Seq S ->? Nat;
   preds
     empty: Seq S;
     finite:Seq S;
     all : Seq S * Pred(S)
-  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S;
+  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred Nat
+  . min Q = None when forall m:Nat. not Q m 
+          else 0 when Q 0 else min (\ m:Nat. Q (m+1))
+  . start s = min (\m:Nat. def (s m))
   . head(s) = s(0);
   . tail(s) = \x:Nat. s(x+1);
-  . head(nf(s))=h(s);
-  . nf (filter s P) =  filter (nf s) P;
-  . head (filter s P) = head(s) res P(s(0));
+  . head (nf s) = h s;
+  . tail (nf s) = nf (t s);
+  . head (filter s P) = (head s) res P (head s);
   . tail (filter s P) = filter (tail s) P;
-  . h(s) = r <=> exists n:Nat . s(n)=r /\ forall m:Nat. m<n => not def(s m);
+  . h s = s (start s)
+  . t s = \k:Nat. s(k + 1 + (start s))
   . finite(s) <=> exists n:Nat. forall m:Nat. m>n => not def(s m);
   . empty(s) <=> forall m:Nat. not def(s m);
   . head(concat(s,t)) = head(s) when not(empty(s)) else head(t);
@@ -36,6 +43,7 @@ then
 then %implies
 var S: Type
 vars s:Seq S; P:Pred S; n:Nat;
+  . nf (filter s P) =  filter (nf s) P;
   . filter (filter s P) P = filter s P
   . def(h(s)) <=> not empty(s);
 end
