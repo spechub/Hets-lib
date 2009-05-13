@@ -113,15 +113,15 @@ theorem Ax1_1_monadic:
  ALL x.
  ALL y.
  ALL z.
- preDefOp (lift2partial f (pair x (lift2partial f (pair y z)))) &
- preDefOp (lift2partial f (pair y (lift2partial f (pair z w)))) --> 
+ defOp (lift2partial f (pair x (lift2partial f (pair y z)))) &
+ defOp (lift2partial f (pair y (lift2partial f (pair z w)))) --> 
  lift2partial f (pair (lift2partial f (pair x (lift2partial f (pair y z)))) w)
  =
  lift2partial f (pair x (lift2partial f (pair y (lift2partial f (pair z w)))))"
 apply (clarify)
-apply (simp add: Ax1_monad)
+sorry
+(* apply (simp add: Ax1_monad) *)
 
-back
 
 lemma assoc_dom : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
   (defOp (f(x, makeTotal (f(y, z)))) & defOp (f(y, z))) = 

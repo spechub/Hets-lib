@@ -31,7 +31,7 @@ tail :: "(nat => 'S partial) => nat => 'S partial"
 axioms
 Ax1 [rule_format] : "ALL s. head(s) = s 0"
 
-Ax2 [rule_format] : "ALL s. tail s = (% x. s (x + 0))"
+Ax2 [rule_format] : "ALL s. tail s = (% x. s (x + 1))"
 
 Ax3 [rule_format] : "ALL s. head(nf s) = h(s)"
 
@@ -78,7 +78,9 @@ Ax11 [rule_format] :
 declare Ax1[simp]
 lemmas Ax5' = Ax5 [simplified]
 
-theorem coinduct: "(R s t --> (head(s)=head(t) & (R (tail s) (tail t)))) & R s t ==> s=t"
+theorem coinduct: "[|R s t ==> (head(s)=head(t) & (R (tail s) (tail t)));  R s t|] ==> s=t"
+apply (rule ext)
+apply (induct_tac x)
 sorry
 
 theorem restrict1 : "restrictOp (restrictOp a (defOp b)) c = restrictOp (restrictOp a c) (defOp (restrictOp b c))"
