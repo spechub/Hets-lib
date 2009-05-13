@@ -64,6 +64,17 @@ Ax8 [rule_format] :
 
 Ax9 [rule_format] : "ALL s. empty'(s) = (ALL X_n. ~ defOp (s X_n))"
 
+Ax10 [rule_format] :
+"ALL s.
+ ALL t.
+ head(X_concat (s, t)) = (if ~ empty'(s) then head(s) else head(t))"
+
+Ax11 [rule_format] :
+"ALL s.
+ ALL t.
+ tail (X_concat (s, t)) =
+ (if ~ empty'(s) then X_concat (tail s, t) else tail t)"
+
 declare Ax1[simp]
 lemmas Ax5' = Ax5 [simplified]
 
