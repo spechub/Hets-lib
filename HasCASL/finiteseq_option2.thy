@@ -229,7 +229,7 @@ lemma defophead2: "defOp (X_head s) ==> head (X_map f s) = f(makeTotal (X_head s
 apply (simp add: Ax16)
 done
 
-lemma test: "((restrictOp (restrictOp a b) c) = (restrictOp (restrictOp d e) c)) = (c --> ((restrictOp a b) = (restrictOp d e)))"
+lemma test: "((restrictOp a c) = (restrictOp b c)) = (c --> (a = b))"
 apply (simp add: restrictOp_def)
 done
 
@@ -253,6 +253,7 @@ theorem Ax4_1_monadic :
  head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
 apply (auto)
 apply (simp only: o_def_monadic Ax16_monadic)
+apply (simp)
 done
 
 theorem Ax4_1v2: 
