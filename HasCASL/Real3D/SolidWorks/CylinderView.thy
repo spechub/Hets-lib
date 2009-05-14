@@ -54,9 +54,8 @@ ML "Header.initialize
      \"unique_orthogonal_decomposition\", \"cross_product_orthogonal\",
      \"cross_product_zero_iff_lindep\", \"e1e2_nonlindep\",
      \"point_vector_map\", \"plus_injective\", \"plus_surjective\",
-     \"point_vector_plus_associative\",
-     \"point_vector_plus_commutative\", \"vec_def\",
-     \"transitivity_of_vec_plus\", \"antisymmetry_of_vec\",
+     \"point_vector_plus_associative\", \"vec_def\",
+     \"transitivity_of_vec_plus\",
      \"plus_vec_identity\", \"set_comprehension\",
      \"abbrev_of_set_comprehension\", \"function_image\",
      \"emptySet_empty\", \"allSet_contains_all\", \"def_of_isIn\",
@@ -673,16 +672,10 @@ plus_surjective [rule_format] : "ALL p. ALL q. EX y. p +' y = q"
 point_vector_plus_associative [rule_format] :
 "ALL p. ALL v. ALL w. p +' (v +_4 w) = (p +' v) +' w"
 
-point_vector_plus_commutative [rule_format] :
-"ALL p. ALL v. ALL w. (p +' v) +' w = (p +' w) +' v"
-
 vec_def [rule_format] : "ALL p. ALL q. p +' vec(p, q) = q"
 
 transitivity_of_vec_plus [rule_format] :
 "ALL p. ALL q. ALL r. vec(p, q) +_4 vec(q, r) = vec(p, r)"
-
-antisymmetry_of_vec [rule_format] :
-"ALL p. ALL q. vec(p, q) = -'' vec(q, p)"
 
 plus_vec_identity [rule_format] :
 "ALL p. ALL q. ALL v. p +' v = q --> v = vec(p, q)"

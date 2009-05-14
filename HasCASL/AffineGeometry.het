@@ -25,10 +25,6 @@ spec AffineSpace[VectorSpace[Field]] =
      . p+v = p+w => v = w %(plus injective)%
      . exists y:Space. p+y = q %(plus surjective)%
      . p+(v+w) = (p+v)+w %(point vector plus associative)%
-
-then %implies
-     forall p:Point;v,w:Space. (p + v) + w = (p + w) + v
-     %(point vector plus commutative)% 
 end
 
 spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] = %def
@@ -38,7 +34,8 @@ spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] = %def
 then %implies
      vars p,q,r:Point; v,w:Space
      . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity of vec plus)%
-     . vec(p,q) = - vec(q,p)          %(antisymmetry of vec)%
+     %% the following is not true if one does not assume that p + 0 = p!
+     %% . vec(p,q) = - vec(q,p)          %(antisymmetry of vec)%
      . p + v = q => v = vec(p,q)      %(plus vec identity)%
 end
 
