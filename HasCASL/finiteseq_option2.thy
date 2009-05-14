@@ -25,6 +25,8 @@ X_start :: "(nat => 'S partial) => nat partial" ("start/'(_')" [3] 999)
 nf :: "(nat => 'S partial) => nat => 'S partial"
 t :: "(nat => 'S partial) => nat => 'S partial"
 tail :: "(nat => 'S partial) => nat => 'S partial"
+X__o__X :: "('b => 'c partial) * ('a => 'b partial) => 'a => 'c partial"
+X_map :: "('S => 'S partial) => (nat => 'S partial) => nat => 'S partial"
 
 axioms
 Ax1 [rule_format] :
@@ -91,6 +93,22 @@ Ax15 [rule_format] :
  tail (X_concat (s, s2)) =
  (if ~ empty'(s) then X_concat (tail s, s2) else tail s2)"
 
+
+Ax16 [rule_format] :
+"ALL f.
+ ALL s.
+ head(X_map f s) =
+ (resOp
+  (restrictOp (f (makeTotal (head(s)))) (defOp (head(s))), head(s)))"
+
+Ax17 [rule_format] :
+"ALL f. ALL s. tail (X_map f s) = X_map f (tail s)"
+
+o_def [rule_format] :
+"ALL f.
+ ALL g.
+ X__o__X (g, f) =
+ (% x. restrictOp (g (makeTotal (f x))) (defOp (f x)))"
 
 theorem coinduct: "[|R u v ==> (head(u)=head(v) & (R (tail u) (tail v)));  R u v|] ==> u=v"
 apply (rule ext)
@@ -192,11 +210,64 @@ apply (rule_tac x="tail a" in exI)
 apply (simp add: Ax9)
 done
 
+term "head(X_map f s)"
+term "(X_map f s)"
+term "X_map (X__o__X (f, g)) s"
+term "head(X_map (X__o__X (f, g)) s)"
+term "X_map f"
+term "(X_map g::(nat => 'S partial) => (nat => 'S partial)) o (X_map f::(nat => 'S partial) => (nat => 'S partial))"
+term "makePartial(X_map f::(nat => 'S partial) => (nat => 'S partial))"
 
+lemma asdasd: "head(makeTotal((makePartial o X_map (X__o__X (f, g))) x)) = head(makeTotal (X__o__X (makePartial o X_map f, makePartial o X_map g) x))"
+apply (simp only: o_def )
+sorry
 
-theorem filter_nfcom: "ALL P. ALL s. nf (X_filter s P) = X_filter (nf s) P"
+theorem Ax4_1 :
+"ALL f.
+ ALL g.
+ ALL s.
+ head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
 apply (auto)
-apply (rule_tac R="(%x y. EX a. (x=nf(X_filter a P)) & (y=X_filter (nf a) P))" in coinduct)
+apply (simp only: o_def)
+apply (simp add: Ax16)
+
+theorem Ax4_1 :
+"ALL f.
+ ALL g.
+ X_map (X__o__X (f, g)) = (X_map f) o (X_map g)"
+apply (auto)
+apply (rule ext)
+apply (simp only: o_def comp_def)
+oops
+
+
+
+
+
+
+
+
+lemma asd: "(defOp (X_start (nf s))) = defOp (X_start s)"
+apply (subst Ax3)
+apply (subst Ax3)
+apply (subst Ax2)
+apply (subst Ax2)
+sorry
+
+lemma asd2: "(EX m. defOp (nf s m)) = (EX m. defOp (s m))"
+sorry
+
+lemma asd2: "h(X_filter (nf s) P) = h(X_filter s P)"
+apply (rule_tac R="(%x y. EX a. (x=nf a) & (y=nf a))" in coinduct)
+apply (simp add: Ax10)
+apply (simp only: Ax3)
+apply (simp only: Ax2)
+apply (subst asd2)
+
+theorem filter_nfcom: "ALL P. ALL s. nf (X_filter (nf s) P) = nf (X_filter s P)"
+apply (auto)
+apply (rule_tac R="(%x y. EX a. (x=nf (X_filter (nf s) P)) & (y=nf (X_filter s P)))" in coinduct)
+apply (simp add: Ax6)
 apply clarify
 apply (rule conjI)
 apply (auto)
