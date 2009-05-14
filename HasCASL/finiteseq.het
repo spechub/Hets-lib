@@ -20,12 +20,15 @@ then
     length : Seq S ->? Nat;    
     min: Pred(Nat) ->? Nat;
     start: Seq S ->? Nat;
+    map : (S ->? S) -> Seq S -> Seq S;
+    __o__ : forall a, b, c:Type . 
+               (b ->? c) * (a ->? b) -> (a ->? c);
   preds
     empty: Seq S;
     finite:Seq S;
     all : Seq S * Pred(S)
 
-  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred(Nat)
+  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred(Nat); f,g:S ->? S;
   . def (min Q) => exists m:Nat. Q m 
   . (exists m:Nat. Q m) => min Q =  0 when Q 0 else min (\ m:Nat. Q (m+1))
   . start s = min (\m:Nat. def (s m))
@@ -41,10 +44,14 @@ then
   . empty(s) <=> forall m:Nat. not def(s m);
   . head(concat(s,s2)) = head(s) when not(empty(s)) else head(s2);
   . tail(concat(s,s2)) = concat(tail(s),s2) when not(empty(s)) else tail(s2);
+  . head (map f s) = f(head(s)) res (head s);
+  . tail (map f s) = map f (tail s);
+  . g o f = \ x . g (f x)               %(o_def)%
 then %implies
 var S: Type
-vars s:Seq S; P:Pred S; n:Nat;
+vars s:Seq S; P:Pred S; n:Nat; f,g:S ->? S;
   . nf (filter s P) =  filter (nf s) P;
   . filter (filter s P) P = filter s P
   . def(nfh(s)) <=> not empty(s);
+  . map (f o g) = (map f) o (map g)
 end
