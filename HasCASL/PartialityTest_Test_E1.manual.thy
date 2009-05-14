@@ -78,7 +78,9 @@ done
 
 thm conj_cong
 declare conj_cong[cong]
-lemma conj_cong
+(*lemma conj_cong*)
+
+
 
 
 typedecl a

@@ -28,6 +28,7 @@ tail :: "(nat => 'S partial) => nat => 'S partial"
 X__o__X :: "('b => 'c partial) * ('a => 'b partial) => 'a => 'c partial"
 X_map :: "('S => 'S partial) => (nat => 'S partial) => nat => 'S partial"
 
+
 axioms
 Ax1 [rule_format] :
 "ALL Q.
@@ -97,9 +98,13 @@ Ax15 [rule_format] :
 Ax16 [rule_format] :
 "ALL f.
  ALL s.
- head(X_map f s) =
- (resOp
-  (restrictOp (f (makeTotal (head(s)))) (defOp (head(s))), head(s)))"
+ X_head(X_map f s) = (restrictOp (f (makeTotal (X_head s))) (defOp (X_head s)))"
+
+Ax16_monadic [rule_format] :
+"ALL f.
+ ALL s.
+ X_head(X_map f s) =(lift2partial f) (X_head s)"
+
 
 Ax17 [rule_format] :
 "ALL f. ALL s. tail (X_map f s) = X_map f (tail s)"
@@ -109,6 +114,12 @@ o_def [rule_format] :
  ALL g.
  X__o__X (g, f) =
  (% x. restrictOp (g (makeTotal (f x))) (defOp (f x)))"
+
+o_def_monadic [rule_format] : 
+"ALL f. 
+ ALL g. 
+ X__o__X (g,f) = 
+ (%x. lift2partial g (f x))"
 
 theorem coinduct: "[|R u v ==> (head(u)=head(v) & (R (tail u) (tail v)));  R u v|] ==> u=v"
 apply (rule ext)
@@ -210,26 +221,68 @@ apply (rule_tac x="tail a" in exI)
 apply (simp add: Ax9)
 done
 
-term "head(X_map f s)"
-term "(X_map f s)"
-term "X_map (X__o__X (f, g)) s"
-term "head(X_map (X__o__X (f, g)) s)"
-term "X_map f"
-term "(X_map g::(nat => 'S partial) => (nat => 'S partial)) o (X_map f::(nat => 'S partial) => (nat => 'S partial))"
-term "makePartial(X_map f::(nat => 'S partial) => (nat => 'S partial))"
+lemma defophead1: "defOp (X_head (X_map f s)) = (defOp (f(makeTotal (X_head s))) & defOp (X_head s))"
+apply (simp add: Ax16)
+done
 
-lemma asdasd: "head(makeTotal((makePartial o X_map (X__o__X (f, g))) x)) = head(makeTotal (X__o__X (makePartial o X_map f, makePartial o X_map g) x))"
-apply (simp only: o_def )
-sorry
+lemma defophead2: "defOp (X_head s) ==> head (X_map f s) = f(makeTotal (X_head s))"
+apply (simp add: Ax16)
+done
 
-theorem Ax4_1 :
+lemma test: "((restrictOp (restrictOp a b) c) = (restrictOp (restrictOp d e) c)) = (c --> ((restrictOp a b) = (restrictOp d e)))"
+apply (simp add: restrictOp_def)
+done
+
+lemma res_overlap[simp]: "restrictOp (restrictOp a b) c = restrictOp a (b & c)"
+apply (simp add: restrictOp_def)
+done
+
+
+theorem Ax4_1v1 :
+"ALL f.
+ ALL g.
+ ALL s.
+ head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
+apply (auto simp add: o_def Ax16) 
+done
+
+theorem Ax4_1_monadic :
 "ALL f.
  ALL g.
  ALL s.
  head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
 apply (auto)
-apply (simp only: o_def)
-apply (simp add: Ax16)
+apply (simp only: o_def_monadic Ax16_monadic)
+done
+
+theorem Ax4_1v2: 
+"ALL f.
+ ALL g.
+ ALL s.
+ head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
+apply (auto)
+apply (simp add: Ax16 o_def)
+apply (case_tac "defOp (head(s))")
+apply (simp)
+apply (simp)
+apply (simp add: restrictOp_def)
+done
+
+theorem Ax4_1v3: 
+"ALL f.
+ ALL g.
+ ALL s.
+ head(X_map (X__o__X (f, g)) s) = head(((X_map f) o (X_map g)) s)"
+apply (auto)
+apply (simp only: Ax16 o_def)
+apply (subst def_restrict)
+apply (subst restrictOp_cong)
+apply (simp)
+apply (subst restrict_assoc)
+apply (simp)
+done
+
+
 
 theorem Ax4_1 :
 "ALL f.

@@ -44,7 +44,7 @@ then
   . empty(s) <=> forall m:Nat. not def(s m);
   . head(concat(s,s2)) = head(s) when not(empty(s)) else head(s2);
   . tail(concat(s,s2)) = concat(tail(s),s2) when not(empty(s)) else tail(s2);
-  . head (map f s) = f(head(s)) res (head s);
+  . head (map f s) = f(head(s));
   . tail (map f s) = map f (tail s);
   . g o f = \ x . g (f x)               %(o_def)%
 then %implies
