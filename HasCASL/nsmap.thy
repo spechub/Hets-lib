@@ -7,6 +7,7 @@ consts
 X_all :: "('a => bool) => 'a list => bool"
 X_map :: "('a => 'b partial) => 'a list => 'b list partial"
 nsMap :: "('a => 'b partial) => 'a list => 'b partial list"
+X_filter :: "'a list => ('a => bool) => 'a list"
 
 axioms 
 Ax1 [rule_format] : "ALL f. X_map f [] = makePartial []"
@@ -27,6 +28,14 @@ Ax3 [rule_format] : "ALL P. X_all P nil"
 
 Ax4 [rule_format] :
 "ALL P. ALL l. ALL x. X_all P (Cons x l) = (P x & X_all P l)"
+
+Ax5 [rule_format] :
+"ALL P.
+ ALL s.
+ (X_filter (Cons x l) P) = (if (P x) then (Cons x (X_filter l P)) else (Cons x (X_filter l P)))"
+
+Ax6 [rule_format] :
+"ALL P. ALL s. X_filter [] P = []"
 
 theorem restrict1 : "restrictOp (restrictOp a (defOp b)) c = restrictOp (restrictOp a c) (defOp (restrictOp b c))"
 apply (case_tac c)
@@ -127,6 +136,24 @@ apply (induct_tac "k")
 apply (simp add: Ax1)
 apply (simp add: Ax2 conj_ac)
 done
+
+term "(X_filter l (P o f))"
+term "(map f l)"
+term "X_filter (map f l) P"
+term "(makeTotal (X_map f (X_filter l (P o f))))"
+term "X_filter (makeTotal (X_map f l)) P"
+
+lemma mapdef: "defOp (X_map f list) --> defOp(X_map f (X_filter list P))"
+apply (induct_tac list)
+apply (auto simp add: Ax1 Ax6 Ax5 Ax2)
+done
+
+theorem mapfilter: "defOp(X_map f l) --> (makeTotal (X_map f (X_filter l P))) = (X_filter (makeTotal (X_map f l)) P)"
+apply (induct_tac "l")
+apply (simp add: Ax1 Ax6)
+apply (auto simp add: Ax5 Ax2 mapdef)
+done
+
 
 theorem Ax2_1 :
 "ALL f. ALL l. defOp (X_map f l) = X_all (% y. defOp (f y)) l"
