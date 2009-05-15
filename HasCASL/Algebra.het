@@ -113,6 +113,10 @@ then
      forall x,y,z:Elem
      . (x + y) * z = (x * z) + (y * z)          %(distr1_Ring)%
      . z * ( x + y ) = (z * x) + (z * y)        %(distr2_Ring)%
+then %implies
+     var x:Elem
+     . 0 * x = 0 %(left zero)%
+     . x * 0 = 0 %(right zero)%
 end
 
 spec CommutativeRing = Ring and Commutative

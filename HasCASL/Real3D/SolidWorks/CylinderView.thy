@@ -24,7 +24,7 @@ ML "Header.initialize
      \"max_def_ExtTotalOrder\", \"min_inf_relation\",
      \"max_sup_relation\", \"RealNonNeg_pred_def\",
      \"RealPos_pred_def\", \"Ax3\", \"Ax4\", \"RealNonNeg_subtype\",
-     \"RealPos_subtype\", \"Ax7\", \"sqr_def\", \"sqrt_def\",
+     \"RealPos_subtype\", \"abs_def\", \"sqr_def\", \"sqrt_def\",
      \"Ax1_2_1\", \"X2_def_Real\", \"X3_def_Real\", \"X4_def_Real\",
      \"X5_def_Real\", \"X6_def_Real\", \"X7_def_Real\", \"X8_def_Real\",
      \"X9_def_Real\", \"ZeroToNine_type\", \"decimal_def\",
@@ -83,7 +83,10 @@ ML "Header.initialize
      \"semantics_for_Arcs\", \"semantics_for_Sketches\",
      \"semantics_for_ArcExtrusion\",
      \"plane_is_plane\", \"def_of_SWCylinder\",
-     \"affine_cylinder_constructible_in_SW\", \"def_of_Cylinder\"]"
+     \"affine_cylinder_constructible_in_SW\", \"def_of_Cylinder\",
+     \"left_zero\", \"right_zero\", \"emptySet_union_right_unit\",
+     \"function_image_structure\", \"times_cancel_right_nonneg_leq\",
+     \"times_leq_nonneg_cond\", \"orthogonal_existence_theorem\"]"
 
 typedecl NonZero
 typedecl PointSet
@@ -282,6 +285,10 @@ distr1_Ring [rule_format] :
 distr2_Ring [rule_format] :
 "ALL x. ALL y. ALL z. z *'' (x +_3 y) = (z *'' x) +_3 (z *'' y)"
 
+left_zero [rule_format] : "ALL x. 0'' *'' x = 0''"
+
+right_zero [rule_format] : "ALL x. x *'' 0'' = 0''"
+
 ga_comm___Xx___1 [rule_format] : "ALL x. ALL y. x *'' y = y *'' x"
 
 noZeroDiv [rule_format] :
@@ -417,10 +424,16 @@ RealNonNeg_subtype [rule_format] :
 RealPos_subtype [rule_format] :
 "isSubtypeWithPred(X_RealPos_pred, X_RealPos_inj, X_RealPos_proj)"
 
-Ax7 [rule_format] :
+abs_def [rule_format] :
 "ALL x.
  makePartial (abs'(x)) =
  gn_proj(makeTotal (makePartial (if 0'' <=' x then x else -' x)))"
+
+times_cancel_right_nonneg_leq [rule_format] :
+"ALL a. ALL b. ALL c. a *'' b <=' c *'' b & b >=' 0'' --> a <=' c"
+
+times_leq_nonneg_cond [rule_format] :
+"ALL a. ALL b. 0'' <=' a *'' b & b >=' 0'' --> 0'' <=' a"
 
 sqr_def [rule_format] :
 "ALL r. gn_inj(sqr'(r)) = r *'' r"
@@ -632,6 +645,10 @@ orth_symmetric [rule_format] :
 lindep_orth_transitive [rule_format] :
 "ALL x. ALL y. ALL z. lindep(x, y) & orth(y, z) --> orth(x, z)"
 
+orthogonal_existence_theorem [rule_format] :
+"ALL x.
+ (EX a. EX b. ~ lindep(a, b)) --> (EX c. ~ c = 0_3 & orth(c, x))"
+
 orthogonal_on_zero_projection [rule_format] :
 "ALL x. ALL y. proj(x, y) = 0_3 --> orth(x, y)"
 
@@ -728,6 +745,13 @@ def_of_productset [rule_format] :
  ALL t.
  ALL x.
  ALL y. ((x, y) isIn X__Xx__XX5 (s, t)) = (x isIn s & y isIn t)"
+
+emptySet_union_right_unit [rule_format] :
+"ALL a. X__union__X (a, X_emptySet) = a"
+
+function_image_structure [rule_format] :
+"ALL a.
+ ALL f. ALL x. (x isIn X_image (f, a)) = (EX y. y isIn a & f y = x)"
 
 def_of_interval [rule_format] :
 "ALL a.
@@ -1100,36 +1124,39 @@ theorem def_of_Cylinder :
 
   proof (rule allI)+
 
-    -- "GENERAL LEMMAS -- should be outsourced to basic libs"
+    -- "GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
 
-      -- "should be available as lemma: r * 0 = 0"
-    have realZero_by_left_zero: "!!r. 0'' *'' r = 0''"
-      sorry -- "can prove it but should be outsourced!"
-    have realZero_by_right_zero: "!!r. r *'' 0'' = 0''"
-      sorry -- "can prove it but should be outsourced!"
+    -- "homogenity for positive reals"
+    -- "not clear where to outsource this, Normed Space is not built on ordered fields"
+    have norm_pos_homogen: "!x y. 0'' <=' x \<longrightarrow> || x *_3 y || = x *'' || y ||"
+      sorry 
 
-      -- "need A union empty = A here!"
-    have union_with_empty_identity: "!!A. X__union__X(A, X_emptySet ) = A"
-      by (rule set_ext,
-      (subst mem_def)+,
-	subst def_of_isIn [symmetric], 
-	subst def_of_union,
-	subst def_of_isIn [symmetric],
-	subst not_not [symmetric], subst emptySet_empty, simp)
-    
-    from function_image
-    have struct_of_image: "!!f X y. y isIn X_image(f, X) == EX x. x isIn X & f x = y"
-      sorry -- "can prove it but should be outsourced!"
+    -- "LinearAlgebra/NormedSpace/pos definite: norm_nonnegative"
+    -- "can't replace it now, because theorems from view are not available yet"
+    have norm_nonnegative: "!x. 0'' <=' || x ||" sorry
 
-    have mult_nonneg_cond: "!!x y z. x *'' y <=' z *'' y \<and> y >=' 0'' \<Longrightarrow> x <=' z"
-      sorry -- "can prove it but should be outsourced!"
-    -- "instance of the lemma above with z=0"
-    hence mult_nonneg_zero_cond: "!!x y. 0'' <=' x *'' y \<and> y >=' 0'' \<Longrightarrow> 0'' <=' x"
-      sorry -- "can prove it but should be outsourced!"
+    from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
+
+    -- "will be used later to proof orth_exists"
+    from space_at_least_2dim orthogonal_existence_theorem
+    have orth_exists_aux: "!!w. EX x. x \<noteq> 0_3 \<and> orth(x, w)" by blast
+
+    have orth_exists:
+      "!!q w (r::RealPos). EX p. let v = vec(q, p) in orth(v, w) & || v || = gn_inj(r)"
+      (is "!!q w r. EX p. ?P q w r p")
+    proof-
+      fix q w
+      fix r::RealPos
+      from orth_exists_aux obtain v where "v \<noteq> 0_3 \<and> orth(v, w)" ..
+      def vprime_def: v' == "VWithLength(w, gn_inj(r))"
+      def p: p == "q +' v'"
+      have "?P q w r p" sorry -- "need gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
+      thus "EX p. ?P q w r p" ..
+    qed
 
     -- "need this fact to use the proj_def"
-    have subtype_cond: "!!A x. (x \<noteq> 0'') --> (restrictOp A (defOp(gn_proj(x)))) = A"
-    proof
+    have subtype_cond: "!A x. (x \<noteq> 0'') \<longrightarrow> (restrictOp A (defOp(gn_proj(x)))) = A"
+    proof ((rule allI)+, rule impI)
       fix A x
       assume hyp: "x \<noteq> 0''"
       show "restrictOp A (defOp (gn_proj(x))) = A"
@@ -1142,23 +1169,6 @@ theorem def_of_Cylinder :
     -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
     have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
       by (simp only: snd_conv makeTotal_def makePartial_def)
-
-    -- "homogenity for positive reals"
-    have norm_pos_homogen: "!!x y. 0'' <=' x \<Longrightarrow> || x *_3 y || = x *'' || y ||"
-      sorry (* can't probably prove it with current sqrt definition!
-	The better approach would be using the axioms coming
-	with the view in LinearAlgebra.het but then the view
-	has to be proved and we need the correct sqrt def. *)
-
-    -- "norm_nonnegative"
-    have norm_nonnegative: "!!x. 0'' <=' || x ||" sorry -- "see comment above"
-
-    -- "we need to show that there is always a nontrivial orthogonal vector"
-    have orth_exists_in_2dim:
-      "!! x. (EX v w. \<not> lindep(v,w)) \<Longrightarrow> EX y. y \<noteq> 0_3 \<and> orth(y,x)" sorry
-    -- "can prove it but should be outsourced!"
-
-    from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
 
     -- "END LEMMAS"
 
@@ -1215,27 +1225,11 @@ theorem def_of_Cylinder :
     have axs_sqr_nonneg: "axs *_4 axs >=' 0''" by blast
 
     -- "show facts about bp, r and r1"
-    have bp_in_boundary: "boundary bp" sorry 
-      -- "can't prove it, because of abs-translation and vwl_length"
-(*
-	  proof (subst boundarypoint, rule Point_choice, subst boundary)
-	    from orth_exists obtain v' where vprime: "v' \<noteq> 0_3 \<and> orth(v', gn_inj(axis))" ..
-	    def v2: v2 == "VWithLength(v', gn_inj(r))"
-	    with vprime vwl_length have "||v2|| = gn_inj(abs'(gn_inj(r)))" by blast
-	    have "gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
-	      apply (subst partial_identity [symmetric])
-
-	    have "|| v2 || = gn_inj(r)"
-	      apply (subst v2)
-	      thm vwl_length
-	      apply (simp add: vwl_length )
-
-	      apply (simp add: vwl_length [symmetric])
-
-	      by (auto simp add: vprime v2)
-
-*)
-      -- "we should make this knowledge available already at the beginning"
+    have bp_in_boundary: "boundary bp" 
+      proof-
+	from boundary orth_exists have "Ex boundary" by blast
+	with Point_choice boundarypoint show ?thesis by blast
+      qed
     hence r1_r_relation: "|| r1 || = gn_inj(r)"
       by (simp add: r1 boundary Let_def)
 
@@ -1300,7 +1294,7 @@ theorem def_of_Cylinder :
       unfolding Let_def
 
       unfolding semantics_for_SketchObject_listsXMinusBaseCase
-      apply (subst union_with_empty_identity)
+      apply (subst emptySet_union_right_unit)
       apply (subst def_of_intersection)
 
       apply (subst rhs)
@@ -1362,7 +1356,7 @@ theorem def_of_Cylinder :
 	proof-
 	  from main_knowledge	have "EX y1. ?L y1"
 	    by (subst (asm) ball, subst (asm) ActAttach_constr,
-	      subst (asm) plus_Point_VectorSet, subst (asm) struct_of_image, simp)
+	      subst (asm) plus_Point_VectorSet, subst (asm) function_image_structure, simp)
 	  then obtain y1 where obtained_from_ball: "?L y1" ..
 	  with yvec plus_injective vec_def have "y' = y1" by blast
 	  with obtained_from_ball show ?thesis by simp
@@ -1373,7 +1367,7 @@ theorem def_of_Cylinder :
 	proof-
 	  from main_knowledge	have "EX y1. ?L' y1"
 	    by (subst (asm) planeI, subst (asm) ActAttach_constr,
-	      subst (asm) plus_Point_VectorSet, subst (asm) struct_of_image, simp)
+	      subst (asm) plus_Point_VectorSet, subst (asm) function_image_structure, simp)
 	  then obtain y1 where obtained_from_plane: "?L' y1" ..
 	  with yvec plus_injective vec_def have "y' = y1" by blast
 	  with obtained_from_plane show ?thesis by simp
@@ -1431,10 +1425,6 @@ theorem def_of_Cylinder :
 	    finally show ?thesis .
 	  qed
 
-	  -- "for this subgoal we need to derive the boundary-property for bp"
-	  from space_at_least_2dim orth_exists_in_2dim
-	  have orth_exists: "EX x. x \<noteq> 0_3 \<and> orth(x, gn_inj(axis))" by blast
-	    
 	  from r1_r_relation VBall_constr yprime_in_ball main_identity
 	  have subgoal2: "|| vo || <=' gn_inj(r)" by simp
 
@@ -1442,7 +1432,7 @@ theorem def_of_Cylinder :
 	    by (simp add: main_identity homogeneous)
 	  also from axs_sqr_nonneg l_in_unitinterval geq_def_ExtPartialOrder
 	    FWO_times_right have "\<dots> >=' l *'' 0''" by blast
-	  also from realZero_by_right_zero have "\<dots> = 0''" by blast
+	  also from right_zero have "\<dots> = 0''" by blast
 	  finally have subgoal3: "v *_4 axs >=' 0''" by simp
 
 	  with subgoal1 subgoal2
@@ -1473,7 +1463,7 @@ theorem def_of_Cylinder :
 	    from v_mult_axs_simp main_knowledge l_def homogeneous
 	    have "l *'' (axs *_4 axs) >=' 0''" by simp
 
-	    with mult_nonneg_zero_cond axs_sqr_nonneg geq_def_ExtPartialOrder
+	    with times_leq_nonneg_cond axs_sqr_nonneg geq_def_ExtPartialOrder
 	    have I01_first: "0'' <=' l" by blast
 
 	    with main_knowledge l_def norm_pos_homogen
@@ -1481,7 +1471,8 @@ theorem def_of_Cylinder :
 
 	    with axs_norm_nonneg have I01_second: "l <=' 1''"
 	      by (subst (asm) ga_left_unit___Xx___1 [symmetric],
-	      (rule_tac y="||axs||" in mult_nonneg_cond), simp)
+		insert times_cancel_right_nonneg_leq [of l "||axs||"],
+		simp)
 
 	    with I01_first I01 def_of_interval abbrev_of_interval
 	      def_of_isIn geq_def_ExtPartialOrder

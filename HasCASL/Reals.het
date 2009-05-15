@@ -23,16 +23,14 @@ from HasCASL/Algebra get Field, RichField
 logic HasCASL
 
 spec FieldWithOrdering =
-
      RichField and TotalOrder
-
 then
-    forall a, b, c:Elem
+    vars a, b, c:Elem
     . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
 %% doesn't work with if!!!
     . (a <= b /\ 0 <= c) => (a * c) <= (b * c) %(FWO_times_left)%
 then %implies
-    forall a, b, c, d: Elem
+    vars a, b, c, d: Elem
     . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%
     . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(FWO_times_right)%
     . (a + b) <= (c + d) if a <= c /\ b <= d    %(FWO_plus)%
@@ -43,7 +41,7 @@ spec OrderedField =
      RichField
 then
      pred Pos: Elem
-     forall x,y: Elem
+     vars x,y: Elem
      . Pos(x) /\ Pos(y) => Pos(x*y)             %(OF_plus)%
      . Pos(x) /\ Pos(y) => Pos(x+y)             %(OF_times)%
      . Pos(x) /\ Pos(-x) => x = 0               %(OF_mutex)%
@@ -52,13 +50,13 @@ end
 
 spec ExtOrderedField[OrderedField] = %def
      pred __<=__: Elem * Elem
-       forall x,y: Elem
+       vars x,y: Elem
        . x <= y  <=> Pos(y - x) %(leq def)%
 end
 
 spec ExtFieldWithOrdering[FieldWithOrdering] = %def
        pred Pos: Elem
-       forall x: Elem
+       vars x: Elem
        . Pos(x) <=> 0 <= x %(Pos def)%
 end
 
@@ -109,6 +107,11 @@ then %def
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
 	%(abs def)%
+
+then %implies
+     vars a,b,c:Real
+    . (a * b) <= (c * b) /\ b >= 0 => a <= c    %(times_cancel_right_nonneg_leq)%
+    . 0 <= (a * b) /\ b >= 0 => 0 <= a    %(times_leq_nonneg_cond)%
 end
 
 spec FieldWithValuation =
@@ -116,13 +119,13 @@ spec FieldWithValuation =
 and  OrderedReals
 then
      op val: Elem -> RealNonNeg
-     forall x,y:Elem
-     . val(x) >= 0              %(non-negative)%
-     . val(x) = 0 <=> x = 0     %(pos-definite)%
+     vars x,y:Elem
+     . val(x) >= 0              %(pos definite)%
+     . val(x) = 0 <=> x = 0     %(definite)%
      . val(x * y) = val(x) * val(y) %(multiplic)%
-     . val(x + y) <= val(x) + val(y) %(triangle)%
+     . val(x + y) <= val(x) + val(y) %(triangle inequality)%
 then %implies
-     . val(1) = 1
+     . val(1) = 1 %(val one fixpoint)%
 end
 
 view OrderedReals_as_FieldWithValuation :

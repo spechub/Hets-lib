@@ -58,10 +58,12 @@ spec NormedSpace[FieldWithValuation] =
 VectorSpace[FieldWithValuation]
 then
      op ||__|| : Space -> Real 
-     forall a:Elem ; v,w: Space   
-     . ||a * v|| = val(a) * ||v||	%(homogen)%
-     . ||v + w|| <= ||v|| + ||w||      	%(triangle)%
-     . ||v|| = 0 <=> v = 0  	 	%(definit)%
+     vars a:Elem ; v,w: Space   
+     . ||a * v|| = val(a) * ||v||	%(homogeneous)%
+     . ||v + w|| <= ||v|| + ||w||      	%(triangle inequality)%
+     . ||v|| = 0 <=> v = 0  	 	%(definite)%
+then %implies
+     forall v:Space. 0 <= ||v||          %(pos definite)%
 end
 
 spec EuclideanVectorSpace = 
@@ -69,14 +71,14 @@ spec EuclideanVectorSpace =
 then
      op __*__ : Space * Space -> Real   %% (bilinear form)
 
-     forall a:Real ; v,v',w: Space
+     vars a:Real ; v,v',w: Space
      . (v+v') * w = (v * w) + (v' * w)  %(distributive)%
      . (a*v) * w = a * (v * w) 		%(homogeneous)%
      . v * w  = w * v   		%(symmetric)%
      . not(v = 0) =>  v * v > 0		%(pos definite)%
 
 then %implies
-     forall a:Real ; v,v',w: Space
+     vars a:Real ; v,v',w: Space
      . w * (v+v') = (w * v) + (w * v')  %(right distributive)%
      . v * (a*w) = a * (v * w) 		%(right homogeneous)%
      . v * v = 0 =>  v = 0		%(non degenerate)%
@@ -100,6 +102,9 @@ then %implies
 
      %{ mixed props }%
      . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitive)%
+
+     . (exists a,b:Space. not(lindep(a,b)))
+	  => exists c:Space. not(c=0) /\ orth(c,x) %(orthogonal existence theorem)%
 
      . proj(x,y)=0 => orth(x,y)  %(orthogonal on zero projection)%
 

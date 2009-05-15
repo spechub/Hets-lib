@@ -156,6 +156,12 @@ spec SetsWithComprehension =
   . s disjoint s' <=> s intersection s' = emptySet %(def of disjoint)%
   . (x,y) isIn s * t <=> x isIn s /\ y isIn t %(def of productset)%
 
+then %implies
+     var S,T : Type; a:Set S; f:(S->T); x:T
+
+     . a union emptySet = a %(emptySet union right unit)%
+     . x isIn image(f,a) <=> exists y:S. y isIn a /\ f(y) = x
+     %(function image structure)%
 end
 
 spec AffineRealSpace3DWithSets = AffineRealSpace3D and SetsWithComprehension
