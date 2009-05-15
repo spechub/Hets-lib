@@ -19,11 +19,12 @@ theorem restrict_trivial [simp]: "restrictOp t True = t"
 apply (simp)
 done
 
+
 theorem restrict_assoc[simp] : "restrictOp a (defOp (restrictOp b c)) = restrictOp (restrictOp a (defOp b)) c"
 apply (case_tac c)
 apply (simp add: restrictOp_def)
-apply (simp add: restrictOp_def noneOp_def defOp.simps)
-sorry
+apply (simp add: restrictOp_def noneOp_def defOp.simps undefinedOp_def)
+done
 
 
 theorem restrict_out[simp] : "restrictOp (t b) b = restrictOp (t True) b"
@@ -114,6 +115,20 @@ Ax1_monad_unsound [rule_format] :
  lift2partial f (pair (lift2partial f (pair x y)) z)"
 
 
+
+lemma assoc_dom : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
+  (defOp (f(x, makeTotal (f(y, z)))) & defOp (f(y, z))) = 
+  (defOp (f(makeTotal (f(x, y)), z)) & defOp (f(x, y)))"
+apply (frule Ax1)
+apply (simp)
+done
+
+lemma assoc_eq : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
+  f(x, makeTotal (f(y, z))) = f(makeTotal (f(x, y)), z)"
+apply (frule Ax1)
+apply (simp)
+done
+
 theorem Ax1_1_monadic:
 "ALL w.
  ALL x.
@@ -127,20 +142,6 @@ theorem Ax1_1_monadic:
 apply (clarify)
 sorry
 (* apply (simp add: Ax1_monad) *)
-
-
-lemma assoc_dom : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
-  (defOp (f(x, makeTotal (f(y, z)))) & defOp (f(y, z))) = 
-  (defOp (f(makeTotal (f(x, y)), z)) & defOp (f(x, y)))"
-apply (frule Ax1)
-apply (simp add: makeTotal_def restrictOp_def defOp.simps undefinedOp_def)
-done
-
-lemma assoc_eq : "defOp (f(x, y)) & defOp (f(y, z)) ==> 
-  f(x, makeTotal (f(y, z))) = f(makeTotal (f(x, y)), z)"
-apply (frule Ax1)
-apply (simp add: makeTotal_def restrictOp_def defOp.simps undefinedOp_def)
-done
 
 theorem Ax1_1 :
 "ALL w.
@@ -157,8 +158,6 @@ theorem Ax1_1 :
 apply (auto)
 apply (simp add: assoc_eq assoc_dom)
 done
-
-
 
 ML "Header.record \"Ax1_1\""
 
