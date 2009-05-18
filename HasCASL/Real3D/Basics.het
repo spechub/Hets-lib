@@ -98,6 +98,8 @@ ExtInverse[Vectors3DBase fit
 	 e3:Vector = V(0,0,1); %(ONB3)%
 
 then %implies
+%% proofs in Basics_Vectors3D_E1.thy
+
      var x,y,z:Vector; r:Real
 
      %{ cross prod props }%
@@ -106,8 +108,11 @@ then %implies
 
 end
 
+%% proofs for instantiation in Basics_Vectors3DSpace_E1A.thy
 spec Vectors3DSpace = ExtEuclideanVectorSpace[Vectors3D fit Space |-> Vector]
 then %implies
+%% proofs in Basics_Vectors3DSpace_E1.thy
+
      var x,y,z:Vector; r:Real
 
      %{ mixed props }%
@@ -123,6 +128,7 @@ then
 	P(C1(p)+C1(v),C2(p)+C2(v),C3(p)+C3(v)); %(point vector map)%
 end
 
+%% proofs for instantiation in Basics_AffineRealSpace3D_aux.thy
 spec AffineRealSpace3D = ExtAffineSpace[AffineRealSpace3D_aux
 					fit Space |-> Vector, Elem |-> Real]
 
@@ -157,6 +163,8 @@ spec SetsWithComprehension =
   . (x,y) isIn s * t <=> x isIn s /\ y isIn t %(def of productset)%
 
 then %implies
+%% proofs in Basics_SetsWithComprehension_E1.thy
+
      var S,T : Type; a:Set S; f:(S->T); x:T
 
      . a union emptySet = a %(emptySet union right unit)%
