@@ -6,9 +6,9 @@ version 0.2
 %author: E. Schulz
 %date: 12-12-2008
 
-%list [__], [], __::__
-
 logic HasCASL
+
+from HasCASL/StructuredDatatypes get List
 
 from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
@@ -28,23 +28,20 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
             |  |      |
             |  |      | constructed of
             |  |      |
-            |  \   SWSketch
-            \   \     |
-             \   \    | list of
-              \   \   |
-               \   SWSketchObject
-                \     |
-                 \    |
-                  \   |
-                   SWLine, SWArc and SWSpline
+            |  \   SWSketch---------------------------
+            \   \     |						SWSkchCtrts
+             \   \    | list of				| list of
+              \   \   |						| 
+               \   SWSketchObject				SWSkchCtrtObject 
+                \     |						|
+                 \    |						|
+                  \   |						|
+                   SWLine, SWArc and SWSpline		SWLineCtrt, SWArcCtrt, SWSplineCtrt
              
 
 ]%
 
-spec SolidWorks = AffineRealSpace3DWithSets then
-
-     var a:Type
-     free type SWList a ::=  [] |  __ :: __ (first:? a; rest:? SWList a) %(SWList datatype)%
+spec SolidWorks = AffineRealSpace3DWithSets and List then
 
      free type
      SWPlane ::= SWPlane(SpacePoint:Point;NormalVector:VectorStar;InnerCS:Vector); %(SWPlane datatype)%
@@ -56,13 +53,59 @@ spec SolidWorks = AffineRealSpace3DWithSets then
      SWLine ::= SWLine(From:Point;To:Point);  %(SWLine datatype)%
 
      free type
-     SWSpline ::= SWSpline(Points:SWList Point);  %(SWSpline datatype)%
+     SWSpline ::= SWSpline(Points:List Point);  %(SWSpline datatype)%
 
      free type
      SWSketchObject ::= type SWArc | type SWLine | type SWSpline ;  %(SWSketchObject datatype)%
 
      free type
-     SWSketch ::= SWSketch(Objects:SWList SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
+     SWSketch ::= SWSketch(Objects:List SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%Here is the new Constraint stuff%%%%%%%%%%%%%%%%%%%%%%%%%%%
+     free type
+     SWSkchCtrtParam ::= sgHORIZONTAL | sgHORIZPOINTS | sgVERTICAL
+				      | sgVERTPOINTS | sgCOLINEAR
+				      | sgCORADIAL | sgPERPENDICULAR
+				      | sgPARALLEL | sgTANGENT | sgCONCENTRIC
+				      | sgCOINCIDENT | sgSYMMETRIC | sgATMIDDLE
+				      | sgATINTERSECT | sgATPIERCE | sgFIXED
+				      | sgANGLE | sgARCANG180 | sgARCANG270
+				      | sgARCANG90 | sgARCANGBOTTOM
+				      | sgARCANGLEFT | sgARCANGRIGHT | sgARCANGTOP
+				      | sgDIAMETER | sgDISTANCE | sgSAMELENGTH
+				      | sgOFFSETEDGE | sgSNAPANGLE | sgSNAPGRID
+				      | sgSNAPLENGTH | sgUSEEDGE ;  %(SWSkchCtrtParam datatype)%
+
+     free type
+     SWSkchCtrtStatus ::= Under_constrained | Fully_constrained | Over_constrained
+					    | No_solution | Autosolve_off ;  %(SWSkchCtrtStatus datatype)%
+
+%[
+%% duplication of structures
+     free type
+     SWArcCtrt ::= SWArcCtrt(Objects:List SWSkchCtrtParam);  %(SWArcCtrt datatype)%
+
+     free type
+     SWLineCtrt ::= SWLineCtrt(Objects:List SWSkchCtrtParam);  %(SWLineCtrt datatype)%
+
+     free type
+     SWSplineCtrt ::= SWSplineCtrt(Objects:List SWSkchCtrtParam);  %(SWSplineCtrt datatype)%
+
+     free type
+     SWSkchCtrtObject ::= type SWArcCtrt | type SWLineCtrt | type SWSplineCtrt ;  %(SWSkchCtrtObject datatype)%
+]%
+
+%% condensed form, a link is missing to which objects the constraints belong
+
+     free type
+     SWSkchCtrtObject ::= SWSkchCtrtObject(Objects:List SWSkchCtrtParam);  %(SWSkchCtrtObject datatype)%
+
+     free type
+     SWSkchCtrts ::= SWSkchCtrts(SkchCtrtStatus: SWSkchCtrtStatus;Objects:List SWSkchCtrtObject);  %(SWSkchCtrts datatype)%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%Old file resumes%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
      free type
      SWExtrusion ::= SWExtrusion(Sketch:SWSketch;
@@ -188,13 +231,13 @@ then
 
      %% i = interpretation for solid works sketch objects
      is:SWSketchObject*SWPlane->PointSet;
-     is:(SWList SWSketchObject)*SWPlane->PointSet;
+     is:(List SWSketchObject)*SWPlane->PointSet;
 
      %% i = interpretation for solid works planes
      i:SWPlane->PointSet;
 
      vars o,x,y,z:Point; n:VectorStar; ics:Vector; l:Real; sk: SWSketch;
-	  plane:SWPlane; sko: SWSketchObject; skos: SWList SWSketchObject
+	  plane:SWPlane; sko: SWSketchObject; skos: List SWSketchObject
 
      . i(SWPlane(o,n,ics)) = ActAttach(o, VPlane(n));
      %(semantics for Planes)%

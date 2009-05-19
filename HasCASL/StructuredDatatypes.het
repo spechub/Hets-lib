@@ -1,0 +1,17 @@
+library HasCASL/StructuredDatatypes
+version 0.1
+%authors: E. Schulz
+%date: 19 Mai 2009
+
+%right_assoc __ :: __
+%list [__], [], __::__
+
+logic HasCASL
+
+spec List =
+
+     var a:Type
+     free type List a ::=  [] |  __ :: __ (first:? a; rest:? List a)
+     %(List datatype)%
+
+end
