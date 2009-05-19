@@ -2,11 +2,21 @@ library DL/Family
 
 logic OWL
 
+spec FamilySkel=
+     Class: Person
+     Class: Female
+     Class: Woman EquivalentTo: Person and Female
+     Class: Man EquivalentTo:   Person and not Female
+	    DisjointWith: Woman
+     ObjectProperty: hasHusband
+     Class: Wife    EquivalentTo: Woman and hasHusband some Man
+end
+
 spec FamilyBase =
   Class: Person
   Class: Female
   Class: Woman   EquivalentTo: Person and Female
-  Class: Man     EquivalentTo: Person and not Woman
+  Class: Man     EquivalentTo: Person and not Female
 
   ObjectProperty: hasChild
   ObjectProperty: hasHusband
@@ -18,10 +28,10 @@ spec FamilyBase =
   Class: MotherWithManyChildren EquivalentTo: Mother and (hasChild min 3)
   Class: MotherWithoutDaughter  EquivalentTo: Mother and (hasChild only (not Woman))
   Class: Wife    EquivalentTo: Woman and hasHusband some Man
+  Class: Hybird  EquivalentTo: Man and Woman
   Class: Married
   Class: MarriedMother EquivalentTo: Mother and Married 
          SubclassOf: Female and Person
-  Class: Hybrid  EquivalentTo: Woman and Man
   Individual: mary Types: Mother
     Facts: 
         hasChild  john
@@ -29,10 +39,26 @@ spec FamilyBase =
     Facts: 
         hasChild  clara
   Individual: clara
-  Class: Mother SubclassOf: Parent %%implied
+end
+
+view v1: {FamilySkel with logic OWL2CASL} to {FamilyBase with logic OWL2CASL}
+
+spec NotConser =
+     FamilyBase
 then %cons
-  Class: Grandfather            EquivalentTo: Father and hasChild some Parent
-  Class: Scientist SubclassOf: Person
+   Class: MotherWithManyChildren EquivalentTo: Mother and (hasChild max 2)
+   Class: Hybrid  EquivalentTo: Woman and not Man
+   Individual: mary Types: Grandmother
+end
+
+spec Conser =
+     FamilyBase
+then %cons
+     Class: Animal
+
+     ObjectProperty: likesBones
+
+     Class: Dog SubclassOf: likesBones some Animal
 end
 
 spec Family =
@@ -40,15 +66,19 @@ FamilyBase
 then %implies
   Class: Mother SubclassOf: Parent
    Individual: mary Types: Grandmother
+  Class: Man
+   EquivalentTo: Woman
 end
 
+logic CASL
 
-spec FamilyHiding =
-{
-  Class: Person
-  Class: Female
-  Class: Woman   EquivalentTo: Person and Female
-  Class: Man     EquivalentTo: Person and not Woman
-}
-  hide Person, Female
+spec LittleFamily = 
+     FamilyBase
+then
+     pred oneChildFamily : Thing * Thing * Thing
+
+     forall a,b,c:Thing
+     . oneChildFamily (a,b,c) <=> Mother(a) /\ Father(b) /\ 
+       hasHusband(a,b) /\ hasChild(a,c) /\ hasChild(b,c) /\
+       (forall x : Thing . (hasChild(a,x) \/ hasChild(b,x)) => c = x)
 end
