@@ -6,46 +6,6 @@ version 0.1
 
 logic HasCASL
 
-spec SubtypeHandling = 
-     %% For subtypes defined by a predicate ( ST = {x:T. P(x)} )
-     %% there is a common pattern how to handle the type coercions.
-     %% As this pattern is not yet implemented we introduce a
-     %% convention how to handle subtype declarations and provide
-     %% a polymorphic predicate to express the subtype relation explicitly.
-
-     %% The pattern looks as follows:
-     %% (1) define a predicate for a subtype, name it as the subtype but add
-     %%     the suffix "_pred"
-     %% (2) define the subtype by using the defined predicate, e.g.,
-     %%     type the_subtype = {x:the_type. the_subtype_pred x}
-     %% (3) define the injection for the subtype, name it as the subtype but
-     %%     add the suffix "_inj", e.g.,
-     %%     op the_subtype_inj:the_subtype -> the_type
-     %% (4) define the projection for the subtype, name it as the subtype but
-     %%     add the suffix "_proj", e.g.,
-     %%     op the_subtype_proj:the_type -> the_subtype
-     %%     REMARK: This shouldn't be used with empty types/subtypes !!
-     %% (5) add an axiom using the predicate isSubtypeWithPred, name it as
-     %%     the subtype but add the suffix "_subtype", e.g.,
-     %%     . isSubtypeWithPred(the_subtype_pred, the_subtype_inj, the_subtype_proj)
-
-     vars s,t:Type
-
-     preds isSubtype(injection:s->t; projection:t->s)
-	  <=> forall x:s. x = projection(injection(x));
-	      %(subtype def)%
-	  isSubtypeWithPred(P:Pred(t); injection:s->t; projection:t->s)
-	  <=> isSubtype(injection, projection)
-	      /\ (forall x:t. P x => x = injection(projection(x)))
-	      /\ (forall x:s. P(injection(x)));
-	      %(subtype pred def)%
-
-     %% This workaround is mainly important for doing proofs in Isabelle
-     %% and the naming convention should prevent you from being lost in
-     %% a haystack of user-defined names.
-
-end
-
 
 spec Commutative =
      sort Elem
@@ -55,7 +15,7 @@ spec Commutative =
      forall x : Elem; y : Elem . x * y = y * x %(ga_comm___*__)%
 end
 
-spec Semigroup = SubtypeHandling then
+spec Semigroup =
      sort Elem
      op  __ * __: Elem * Elem -> Elem, assoc
 

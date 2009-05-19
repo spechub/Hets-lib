@@ -85,7 +85,7 @@ end
 
 
 
-spec SimpleReals = Reals hide NonZero, isSubtypeWithPred, isSubtype
+spec SimpleReals = Reals hide NonZero
 
 spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
 then %def
@@ -94,16 +94,6 @@ then %def
 
      types RealNonNeg = {x:Real. RealNonNeg_pred x};
 	   RealPos = {x:Real. RealPos_pred x};
-
-     ops RealNonNeg_inj: RealNonNeg -> Real;
-	 RealPos_inj: RealPos -> Real;
-         RealNonNeg_proj: Real -> RealNonNeg;
-	 RealPos_proj: Real -> RealPos;
-
-     . isSubtypeWithPred(RealNonNeg_pred, RealNonNeg_inj, RealNonNeg_proj);
-     %(RealNonNeg_subtype)%
-     . isSubtypeWithPred(RealPos_pred, RealPos_inj, RealPos_proj);
-     %(RealPos_subtype)%
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
 	%(abs def)%

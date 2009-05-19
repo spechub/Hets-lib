@@ -91,22 +91,17 @@ spec SolidWorks = AffineRealSpace3DWithSets then
      ops
      SWReal:Real*Real -> Real; %(Real representation def)%
 
-     SWExtrusion_inj: SWExtrusion -> SWFeature;
-     SWExtrusion_proj: SWFeature -> SWExtrusion;
-
-
      %% the base objects of SolidWorks
      E1:SWPlane =
-     SWPlane(P(0,0,0),VectorStar_proj(V(0,0,1)),V(1,0,0));
+     SWPlane(P(0,0,0),V(0,0,1) as VectorStar,V(1,0,0));
      %(E1 def)%
      E2:SWPlane =
-     SWPlane(P(0,0,0),VectorStar_proj(V(0,1,0)),V(1,0,0));
+     SWPlane(P(0,0,0),V(0,1,0) as VectorStar,V(1,0,0));
      %(E2 def)%
      E3:SWPlane =
-     SWPlane(P(0,0,0),VectorStar_proj(V(1,0,0)),V(0,1,0));
+     SWPlane(P(0,0,0),V(1,0,0) as VectorStar,V(0,1,0));
      %(E3 def)%
 
-     . isSubtype(SWExtrusion_inj, SWExtrusion_proj); %(SWExtrusion_subtype)%
 end
 
 
@@ -216,7 +211,7 @@ then
 
      . i(SWSketch(skos, plane)) = is(skos, plane); %(semantics for Sketches)%
 
-     . i(SWExtrusion_inj(SWExtrusion(sk, l))) =
+     . i(SWExtrusion(sk, l)) =
        ActExtrude(VWithLength(NormalVector(Plane(sk)), l), i(sk));
        %(semantics for ArcExtrusion)%
 end

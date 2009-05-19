@@ -107,4 +107,36 @@ lift2unit :: "('b => 'c) => ('a partial => bool)"
 lift2bool :: "('a => bool) => 'a partial => bool"
 "lift2bool f s == defOp s & f (makeTotal s)"
 
+-- "subtype encoding"
+
+consts
+
+subt :: "'a => 'b => bool"
+gn_inj :: "'a => 'b"
+gn_proj :: "'a => 'b partial"
+
+axioms
+
+gn_inj_def [rule_format] :
+"!!(x::'a) (y::'b). (subt x y) ==>
+  (EX z::'b. gn_inj(x) = z & defOp(gn_proj(z)) & makeTotal(gn_proj(z)) = x)"
+
+gn_proj_def [rule_format] :
+"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y))
+  ==> EX z::'a partial. gn_proj(y) = z & gn_inj(makeTotal(z)) = y)"
+
+lemma gn_inj_fact1: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+proof-
+  fix x y
+  assume hyp: "subt (x\<Colon>'a) (y\<Colon>'b)"
+  have "\<exists>z\<Colon>'b. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
+    by (insert gn_inj_def [of x y], simp add: hyp)
+  thus "makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x" by blast
+qed
+    (* this instead doesn't work!
+	  assume hyp: "subt x y"
+	  have "\<exists>z. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
+	  thus "makeTotal(gn_proj(gn_inj(x))) = x" by blast
+    *)	  
+
 end

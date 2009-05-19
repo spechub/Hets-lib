@@ -4,7 +4,7 @@ uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
-    [\"subtype_def\", \"subtype_pred_def\", \"ga_assoc___Xx__\",
+    [\"ga_assoc___Xx__\",
      \"ga_right_unit___Xx__\", \"ga_left_unit___Xx__\", \"inv_Group\",
      \"rinv_Group\", \"ga_comm___Xx__\", \"ga_assoc___Xx___1\",
      \"ga_right_unit___Xx___1\", \"ga_left_unit___Xx___1\",
@@ -23,15 +23,15 @@ ML "Header.initialize
      \"ga_left_comm_max\", \"min_def_ExtTotalOrder\",
      \"max_def_ExtTotalOrder\", \"min_inf_relation\",
      \"max_sup_relation\", \"RealNonNeg_pred_def\",
-     \"RealPos_pred_def\", \"Ax3\", \"Ax4\", \"RealNonNeg_subtype\",
-     \"RealPos_subtype\", \"abs_def\", \"sqr_def\", \"sqrt_def\",
+     \"RealPos_pred_def\", \"Ax3\", \"Ax4\",
+     \"abs_def\", \"sqr_def\", \"sqrt_def\",
      \"Ax1_2_1\", \"X2_def_Real\", \"X3_def_Real\", \"X4_def_Real\",
      \"X5_def_Real\", \"X6_def_Real\", \"X7_def_Real\", \"X8_def_Real\",
      \"X9_def_Real\", \"ZeroToNine_type\", \"decimal_def\",
      \"ga_select_C1\", \"ga_select_C2\", \"ga_select_C3\",
      \"Zero_Point\", \"Point_choice\", \"ga_select_C1_1\",
      \"ga_select_C2_1\", \"ga_select_C3_1\", \"Zero_Vector\",
-     \"VectorStar_pred_def\", \"Ax7_1_1\", \"VectorStar_subtype\",
+     \"VectorStar_pred_def\", \"Ax7_1_1\",
      \"def_of_vector_addition\", \"def_of_minus_vector\",
      \"binary_inverse_1_1\", \"scalar_multiplication\",
      \"scalar_product\", \"vector_product\", \"ONB1\", \"ONB2\",
@@ -72,7 +72,7 @@ ML "Header.initialize
      \"ga_select_From\", \"ga_select_To\", \"ga_select_Points\",
      \"ga_select_Objects\", \"ga_select_Plane\", \"ga_select_Sketch\",
      \"ga_select_Depth\", \"E1_def\", \"E2_def\", \"E3_def\",
-     \"SWExtrusion_subtype\", \"VLine_constr\", \"VWithLength_constr\",
+     \"VLine_constr\", \"VWithLength_constr\",
      \"VPlane_constr\", \"VPlane2_constr\", \"VConnected_constr\",
      \"VHalfSpace_constr\", \"VHalfSpace2_constr\", \"VBall_constr\",
      \"VCircle_constr\", \"ActAttach_constr\", \"ActExtrude_constr\",
@@ -111,6 +111,22 @@ datatype SWLine = X_SWLine "Point" "Point"
 datatype SWSpline = X_SWSpline "Point SWList"
 datatype SWSketch = X_SWSketch "SWSketchObject SWList" "SWPlane"
 datatype SWExtrusion = X_SWExtrusion "SWSketch" "Real"
+
+-- "subtype definitions"
+axioms
+
+subt_VectorStar_Vector [rule_format] :
+"!!(x::VectorStar) (y::Vector). subt x y"
+
+subt_NonZero_Real [rule_format] :
+"!!(x::NonZero) (y::Real). subt x y"
+
+subt_RealNonNeg_Real [rule_format] :
+"!!(x::RealNonNeg) (y::Real). subt x y"
+
+subt_RealPos_Real [rule_format] :
+"!!(x::RealPos) (y::Real). subt x y"
+
 
 consts
 ActAttach :: "Point * (Vector => bool) => Point => bool"
@@ -211,12 +227,10 @@ X_allSet :: "'S => bool" ("allSet/'(_')" [3] 999)
 X_choose :: "(Point => bool) => Point" ("choose''/'(_')" [3] 999)
 X_emptySet :: "'S => bool" ("emptySet/'(_')" [3] 999)
 X_first :: "'a SWList => 'a partial" ("first/'(_')" [3] 999)
-X_gn_inj :: "'a => 'b" ("gn'_inj/'(_')" [3] 999)
-X_gn_proj :: "'a => 'b partial" ("gn'_proj/'(_')" [3] 999)
+X_gn_inj :: "'a => 'b" ("ggn'_inj/'(_')" [3] 999)
+X_gn_proj :: "'a => 'b partial" ("ggn'_proj/'(_')" [3] 999)
 X_image :: "('S => 'T) * ('S => bool) => 'T => bool"
 X_inv :: "NonZero => NonZero" ("inv''/'(_')" [3] 999)
-X_isSubtype :: "('s => 't) => ('t => 's) => bool" ("isSubtype/'(_,/ _')" [3,3] 999)
-X_isSubtypeWithPred :: "('t => bool) => ('s => 't) => ('t => 's) => bool" ("isSubtypeWithPred/'(_,/ _,/ _')" [3,3,3] 999)
 X_isX1 :: "SWSketchObject * SWPlane => Point => bool"
 X_isX2 :: "SWSketchObject SWList * SWPlane => Point => bool"
 X_lindep :: "Vector => Vector => bool" ("lindep/'(_,/ _')" [3,3] 999)
@@ -244,20 +258,6 @@ sqrX1 :: "Real => RealNonNeg" ("sqr''/'(_')" [3] 999)
 sqrX2 :: "Vector => RealNonNeg" ("sqr''''/'(_')" [3] 999)
 
 axioms
-subtype_def [rule_format] :
-"ALL injection.
- ALL projection.
- isSubtype(injection, projection) =
- (ALL x. x = projection (injection x))"
-
-subtype_pred_def [rule_format] :
-"ALL X_P.
- ALL injection.
- ALL projection.
- isSubtypeWithPred(X_P, injection, projection) =
- ((isSubtype(injection, projection) &
-   (ALL x. X_P x --> x = injection (projection x))) &
-  (ALL x. X_P (injection x)))"
 
 ga_assoc___Xx__ [rule_format] :
 "ALL x. ALL y. ALL z. (x +_3 y) +_3 z = x +_3 (y +_3 z)"
@@ -417,17 +417,10 @@ Ax3 [rule_format] :
 
 Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
 
-RealNonNeg_subtype [rule_format] :
-"isSubtypeWithPred(X_RealNonNeg_pred, X_RealNonNeg_inj,
- X_RealNonNeg_proj)"
-
-RealPos_subtype [rule_format] :
-"isSubtypeWithPred(X_RealPos_pred, X_RealPos_inj, X_RealPos_proj)"
-
 abs_def [rule_format] :
 "ALL x.
  makePartial (abs'(x)) =
- gn_proj(makeTotal (makePartial (if 0'' <=' x then x else -' x)))"
+ gn_proj(if 0'' <=' x then x else -' x)"
 
 times_cancel_right_nonneg_leq [rule_format] :
 "ALL a. ALL b. ALL c. a *'' b <=' c *'' b & b >=' 0'' --> a <=' c"
@@ -504,10 +497,6 @@ VectorStar_pred_def [rule_format] :
 
 Ax7_1_1 [rule_format] :
 "ALL x. defOp (gn_proj(x)) = VectorStar_pred(x)"
-
-VectorStar_subtype [rule_format] :
-"isSubtypeWithPred(X_VectorStar_pred, X_VectorStar_inj,
- X_VectorStar_proj)"
 
 def_of_vector_addition [rule_format] :
 "ALL x.
@@ -863,9 +852,6 @@ E3_def [rule_format] :
  (VectorStar_proj(V(1'', 0'', 0'')))
  (V(0'', 1'', 0''))"
 
-SWExtrusion_subtype [rule_format] :
-"isSubtype(X_SWExtrusion_inj, X_SWExtrusion_proj)"
-
 VLine_constr [rule_format] :
 "ALL p1.
  ALL p2.
@@ -1036,8 +1022,6 @@ declare min_inf_relation [simp]
 declare max_sup_relation [simp]
 declare Ax3 [simp]
 declare Ax4 [simp]
-declare RealNonNeg_subtype [simp]
-declare RealPos_subtype [simp]
 declare sqrt_def [simp]
 declare ga_select_C1 [simp]
 declare ga_select_C2 [simp]
@@ -1046,7 +1030,6 @@ declare ga_select_C1_1 [simp]
 declare ga_select_C2_1 [simp]
 declare ga_select_C3_1 [simp]
 declare Ax7_1_1 [simp]
-declare VectorStar_subtype [simp]
 declare ga_assoc___Xx___3_1 [simp]
 declare ga_right_unit___Xx___3_1 [simp]
 declare ga_left_unit___Xx___3_1 [simp]
@@ -1085,7 +1068,6 @@ declare ga_select_Objects [simp]
 declare ga_select_Plane [simp]
 declare ga_select_Sketch [simp]
 declare ga_select_Depth [simp]
-declare SWExtrusion_subtype [simp]
 declare vwl_identity [simp]
 declare vwl_lindep [simp]
 declare semantics_for_SketchObject_listsXMinusBaseCase [simp]
@@ -1126,6 +1108,11 @@ theorem def_of_Cylinder :
 
     -- "GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
 
+    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
+    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
+      by (simp only: snd_conv makeTotal_def makePartial_def)
+
+
     -- "homogenity for positive reals"
     -- "not clear where to outsource this, Normed Space is not built on ordered fields"
     have norm_pos_homogen: "!x y. 0'' <=' x \<longrightarrow> || x *_3 y || = x *'' || y ||"
@@ -1141,12 +1128,107 @@ theorem def_of_Cylinder :
     from space_at_least_2dim orthogonal_existence_theorem
     have orth_exists_aux: "!!w. EX x. x \<noteq> 0_3 \<and> orth(x, w)" by blast
 
+    from subt_RealPos_Real have "!!x::RealPos. \<exists>z::Real. (gn_inj x = z) \<and>
+      (defOp (gn_proj z::Real partial)) \<and>
+      (makeTotal (gn_proj z) = x)" (is "!!x. \<exists>z. ?V x z")
+      by (simp only: gn_inj_def)
+    with RealPos_pred_def Ax4 have "!!x::RealPos. gn_inj x >' 0''" by simp
+    hence "!!x::RealPos. 0'' <=' gn_inj x"
+      by (simp only: greater_def_ExtPartialOrder less_def_ExtPartialOrder)
+
+    hence "!!x::RealPos. gn_inj(abs'(gn_inj(x))) = (gn_inj(x)::Real)"
+      apply (subst partial_identity [THEN sym], subst abs_def)
+      apply simp
+      proof-
+
+	have "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+	proof-
+	  fix x y
+	  assume hyp: "subt (x\<Colon>'a) (y\<Colon>'b)"
+	  have "\<exists>z\<Colon>'b. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
+	    by (insert gn_inj_def [of x y], simp add: hyp)
+	  thus "makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x" by blast
+	qed
+(* this instead doesn't work!
+	  assume hyp: "subt x y"
+	  have "\<exists>z. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
+	  thus "makeTotal(gn_proj(gn_inj(x))) = x" by blast
+ *)	  
+	    apply auto
+	    proof
+	      ap
+	    apply (insert gn_inj_def [of x y])
+	    apply (simp add: h11)
+	    apply auto
+	    apply blast
+	    
+	    have "\<exists>z\<Colon>'e. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
+	      apply (insert gn_inj_def [of x y])
+	      apply (simp only: h11)
+	      apply auto
+	      
+	      
+	  apply auto
+	  apply auto
+
+      unfolding abs_def
+    
     have orth_exists:
       "!!q w (r::RealPos). EX p. let v = vec(q, p) in orth(v, w) & || v || = gn_inj(r)"
       (is "!!q w r. EX p. ?P q w r p")
     proof-
       fix q w
       fix r::RealPos
+
+
+	by auto
+geq_def_ExtPartialOrder [rule_format] :
+"ALL x. ALL y. (x >=' y) = (y <=' x)"
+
+less_def_ExtPartialOrder [rule_format] :
+"ALL x. ALL y. (x <' y) = (x <=' y & ~ x = y)"
+
+greater_def_ExtPartialOrder [rule_format] :
+"ALL x. ALL y. (x >' y) = (y <' x)"
+
+
+      hence "0'' <=' gn_inj r" 
+	
+      have "gn_inj(abs'(gn_inj(r))) = (gn_inj(r)::Real)"
+	apply (subst partial_identity [THEN sym], subst abs_def)
+	  
+by auto
+by auto
+
+subt_RealNonNeg_Real [rule_format] :
+"!!(x::RealNonNeg) (y::Real). subt x y"
+
+subt_RealPos_Real [rule_format] :
+"!!(x::RealPos) (y::Real). subt x y"
+
+RealPos_pred_def [rule_format] :
+"ALL x. RealPos_pred(x) = (x >' 0'')"
+
+Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
+
+abs_def [rule_format] :
+"ALL x.
+ makePartial (abs'(x)) =
+ gn_proj(if 0'' <=' x then x else -' x)"
+
+
+gn_inj_def [rule_format] :
+"!!x (y::'a). (subt x y) ==>
+  (EX z::'a. gn_inj(x) = z & defOp(gn_proj(z)) & makeTotal(gn_proj(z)) = x)"
+
+gn_proj_def [rule_format] :
+"!!(x::'a) y. (subt x y) ==> (defOp(gn_proj(y))
+  ==> EX z::'a partial. gn_proj(y) = z & gn_inj(makeTotal(z)) = y)"
+
+
+
+
+
       from orth_exists_aux obtain v where "v \<noteq> 0_3 \<and> orth(v, w)" ..
       def vprime_def: v' == "VWithLength(w, gn_inj(r))"
       def p: p == "q +' v'"
@@ -1165,10 +1247,6 @@ theorem def_of_Cylinder :
 	apply (subst Ax1)
 	by (simp add: hyp, simp)
     qed
-
-    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
-    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
-      by (simp only: snd_conv makeTotal_def makePartial_def)
 
     -- "END LEMMAS"
 
