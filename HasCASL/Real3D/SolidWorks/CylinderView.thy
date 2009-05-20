@@ -47,7 +47,8 @@ ML "Header.initialize
      \"lindep_symmetry\", \"simple_lindep_condition\",
      \"lindep_nonlindep_transitivity\", \"sqr2_def\",
      \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
-     \"orthogonal_def\", \"orth_symmetric\", \"lindep_orth_transitive\",
+     \"orthogonal_def\",\"homogeneous_1\", \"pos_definite_1\",
+     \"pos_homogeneous\", \"orth_symmetric\", \"lindep_orth_transitive\",
      \"orthogonal_on_zero_projection\",
      \"orthogonal_projection_theorem\",
      \"orthogonal_decomposition_theorem\",
@@ -296,7 +297,7 @@ noZeroDiv [rule_format] :
 
 zeroNeqOne [rule_format] : "~ 1'' = 0''"
 
-Ax1 [rule_format] : "ALL x. defOp (gn_proj(x)) = (~ x = 0'')"
+Ax1 [rule_format] : "ALL x. defOp(gn_proj(x)\<Colon>NonZero partial) = (~ x = 0'')"
 
 ga_assoc___Xx___2 [rule_format] :
 "ALL x. ALL y. ALL z. (x *' y) *' z = x *' (y *' z)"
@@ -413,9 +414,9 @@ RealPos_pred_def [rule_format] :
 "ALL x. RealPos_pred(x) = (x >' 0'')"
 
 Ax3 [rule_format] :
-"ALL x. defOp (gn_proj(x)) = RealNonNeg_pred(x)"
+"ALL x. defOp (gn_proj(x)\<Colon>RealNonNeg partial) = RealNonNeg_pred(x)"
 
-Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
+Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)\<Colon>RealPos partial) = RealPos_pred(x)"
 
 abs_def [rule_format] :
 "ALL x.
@@ -496,7 +497,7 @@ VectorStar_pred_def [rule_format] :
 "ALL x. VectorStar_pred(x) = (~ x = 0_3)"
 
 Ax7_1_1 [rule_format] :
-"ALL x. defOp (gn_proj(x)) = VectorStar_pred(x)"
+"ALL x. defOp (gn_proj(x)\<Colon>VectorStar partial) = VectorStar_pred(x)"
 
 def_of_vector_addition [rule_format] :
 "ALL x.
@@ -627,6 +628,14 @@ orthcomp_def [rule_format] :
 
 orthogonal_def [rule_format] :
 "ALL x. ALL y. orth(x, y) = (x *_4 y = 0'')"
+
+homogeneous_1 [rule_format] :
+"ALL r. ALL v. || r *_3 v || = gn_inj(abs'(r)) *'' || v ||"
+
+pos_definite_1 [rule_format] : "ALL v. 0'' <=' || v ||"
+
+pos_homogeneous [rule_format] :
+"ALL r. ALL v. r >=' 0'' --> || r *_3 v || = r *'' || v ||"
 
 orth_symmetric [rule_format] :
 "ALL x. ALL y. orth(x, y) --> orth(y, x)"
@@ -1112,136 +1121,101 @@ theorem def_of_Cylinder :
     have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
       by (simp only: snd_conv makeTotal_def makePartial_def)
 
-
-    -- "homogenity for positive reals"
-    -- "not clear where to outsource this, Normed Space is not built on ordered fields"
-    have norm_pos_homogen: "!x y. 0'' <=' x \<longrightarrow> || x *_3 y || = x *'' || y ||"
-      sorry 
-
-    -- "LinearAlgebra/NormedSpace/pos definite: norm_nonnegative"
-    -- "can't replace it now, because theorems from view are not available yet"
-    have norm_nonnegative: "!x. 0'' <=' || x ||" sorry
-
     from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
 
     -- "will be used later to proof orth_exists"
     from space_at_least_2dim orthogonal_existence_theorem
     have orth_exists_aux: "!!w. EX x. x \<noteq> 0_3 \<and> orth(x, w)" by blast
 
-    from subt_RealPos_Real have "!!x::RealPos. \<exists>z::Real. (gn_inj x = z) \<and>
-      (defOp (gn_proj z::Real partial)) \<and>
-      (makeTotal (gn_proj z) = x)" (is "!!x. \<exists>z. ?V x z")
-      by (simp only: gn_inj_def)
-    with RealPos_pred_def Ax4 have "!!x::RealPos. gn_inj x >' 0''" by simp
-    hence "!!x::RealPos. 0'' <=' gn_inj x"
+    -- "to infer knowledge of the form"
+    -- "!!x::subtype. ?defining_predicate(gn_inj(x))"
+    -- "where the ? emphasizes the fact, that we want the predicate to be expanded,"
+    -- "we would need a tactic which retrieves for a given subtype the 3 rules:"
+    -- "S_pred_def, Ax4(linking the defining predicate to the defOp) and subt_S_T"
+    -- "As the subtype can be inferred from the context, no arguments would be"
+    -- "required for this tactic"
+    have RealPos_subtype: "!!x::RealPos. gn_inj x >' 0''"
+      by (simp only: RealPos_pred_def [THEN sym], subst Ax4 [THEN sym],
+	simp only: gn_inj_defOp subt_RealPos_Real)
+
+    have VectorStar_subtype: "!!x::VectorStar. (~ gn_inj x = 0_3)"
+      by (simp only: VectorStar_pred_def [THEN sym], subst Ax7_1_1 [THEN sym],
+	simp only: gn_inj_defOp subt_VectorStar_Vector)
+
+    have RealPos_identity: "!!x::RealPos. makeTotal(gn_proj((gn_inj x)\<Colon>Real)) = x"
+      by (simp only: gn_inj_identity subt_RealPos_Real)
+
+(*
+    from RealPos_subtype have
+      realpos_nonneg: "!!x::RealPos. 0'' <=' gn_inj x"
       by (simp only: greater_def_ExtPartialOrder less_def_ExtPartialOrder)
-
-    hence "!!x::RealPos. gn_inj(abs'(gn_inj(x))) = (gn_inj(x)::Real)"
-      apply (subst partial_identity [THEN sym], subst abs_def)
-      apply simp
-      proof-
-
-	have "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
-	proof-
-	  fix x y
-	  assume hyp: "subt (x\<Colon>'a) (y\<Colon>'b)"
-	  have "\<exists>z\<Colon>'b. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
-	    by (insert gn_inj_def [of x y], simp add: hyp)
-	  thus "makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x" by blast
-	qed
-(* this instead doesn't work!
-	  assume hyp: "subt x y"
-	  have "\<exists>z. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
-	  thus "makeTotal(gn_proj(gn_inj(x))) = x" by blast
- *)	  
-	    apply auto
-	    proof
-	      ap
-	    apply (insert gn_inj_def [of x y])
-	    apply (simp add: h11)
-	    apply auto
-	    apply blast
-	    
-	    have "\<exists>z\<Colon>'e. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
-	      apply (insert gn_inj_def [of x y])
-	      apply (simp only: h11)
-	      apply auto
-	      
-	      
-	  apply auto
-	  apply auto
-
-      unfolding abs_def
     
+    have "!!x::RealPos. abs'(gn_inj(x)) = gn_inj x"
+      apply (subst partial_identity [THEN sym], subst abs_def)
+      apply (simp only: if_P realpos_nonneg)
+
+	apply (subst RealPos_identity [THEN sym])
+
+    have vwl_pos_length: "!!(s::RealPos) v. ~ v = 0_3 -->
+      || VWithLength(v, gn_inj(s)) || = gn_inj(s)"
+
+*)
     have orth_exists:
       "!!q w (r::RealPos). EX p. let v = vec(q, p) in orth(v, w) & || v || = gn_inj(r)"
       (is "!!q w r. EX p. ?P q w r p")
+      sorry
+(*
     proof-
       fix q w
       fix r::RealPos
 
+      from RealPos_subtype have r_nonneg: "0'' <=' gn_inj r"
+	by (simp only: greater_def_ExtPartialOrder less_def_ExtPartialOrder)
+
+      from RealPos_identity have r_inj_identity: "makeTotal(gn_proj((gn_inj r)\<Colon>Real)) = r" by simp
+      
+      have "gn_inj(abs'(gn_inj(r))) = (gn_inj r\<Colon>Real)"
+	apply (subst partial_identity [THEN sym], subst abs_def)
+	apply (simp only: if_P r_nonneg)
+
+	apply (subst r_inj_identity [THEN sym])
+	back
+-- "problem: abs' ist auf nonneg definiert, r ist aber pos! hier muss noch ein schritt dazwischen!"
+
+	apply (blast)
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+	back
+
+	back
+
 
 	by auto
-geq_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x >=' y) = (y <=' x)"
-
-less_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x <' y) = (x <=' y & ~ x = y)"
-
-greater_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x >' y) = (y <' x)"
-
-
-      hence "0'' <=' gn_inj r" 
-	
-      have "gn_inj(abs'(gn_inj(r))) = (gn_inj(r)::Real)"
-	apply (subst partial_identity [THEN sym], subst abs_def)
-	  
-by auto
-by auto
-
-subt_RealNonNeg_Real [rule_format] :
-"!!(x::RealNonNeg) (y::Real). subt x y"
-
-subt_RealPos_Real [rule_format] :
-"!!(x::RealPos) (y::Real). subt x y"
-
-RealPos_pred_def [rule_format] :
-"ALL x. RealPos_pred(x) = (x >' 0'')"
-
-Ax4 [rule_format] : "ALL x. defOp (gn_proj(x)) = RealPos_pred(x)"
-
-abs_def [rule_format] :
-"ALL x.
- makePartial (abs'(x)) =
- gn_proj(if 0'' <=' x then x else -' x)"
-
-
-gn_inj_def [rule_format] :
-"!!x (y::'a). (subt x y) ==>
-  (EX z::'a. gn_inj(x) = z & defOp(gn_proj(z)) & makeTotal(gn_proj(z)) = x)"
-
-gn_proj_def [rule_format] :
-"!!(x::'a) y. (subt x y) ==> (defOp(gn_proj(y))
-  ==> EX z::'a partial. gn_proj(y) = z & gn_inj(makeTotal(z)) = y)"
-
-
-
-
-
+RealPos_subtype
       from orth_exists_aux obtain v where "v \<noteq> 0_3 \<and> orth(v, w)" ..
       def vprime_def: v' == "VWithLength(w, gn_inj(r))"
       def p: p == "q +' v'"
-      have "?P q w r p" sorry -- "need gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
+      have "?P q w r p" .. -- "need gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
       thus "EX p. ?P q w r p" ..
     qed
-
+*)
     -- "need this fact to use the proj_def"
-    have subtype_cond: "!A x. (x \<noteq> 0'') \<longrightarrow> (restrictOp A (defOp(gn_proj(x)))) = A"
+    have subtype_cond: "!A x. (x \<noteq> 0'') \<longrightarrow> (restrictOp A (defOp(gn_proj(x)\<Colon>NonZero partial))) = A"
     proof ((rule allI)+, rule impI)
       fix A x
       assume hyp: "x \<noteq> 0''"
-      show "restrictOp A (defOp (gn_proj(x))) = A"
+      show "restrictOp A (defOp (gn_proj(x)\<Colon>NonZero partial)) = A"
 	apply (subst restrictOp_def)
 	apply (subst if_P)
 	apply (subst Ax1)
@@ -1253,12 +1227,6 @@ gn_proj_def [rule_format] :
     fix axis::VectorStar
     fix offset::Point
     fix r::RealPos
-
-    -- "we need the information about the subtypes:"
-    have r_subtype: "RealPos_pred(gn_inj(r))"
-      sorry -- "can't prove it with current encoding"
-    have axis_subtype: "VectorStar_pred(gn_inj(axis))"
-      sorry -- "can't prove it with current encoding"
 
     -- "providing vars for the let-constructs"
     def boundary: boundary == "\<lambda>p. let v = vec(offset, p) in orth(v, gn_inj(axis)) \<and> || v || = gn_inj(r)"
@@ -1290,8 +1258,7 @@ gn_proj_def [rule_format] :
     from scaledAxis vwl_identity height
     have axis_identity: "axs = gn_inj(axis)" by simp
 
-    have axs_nonzero: "axs \<noteq> 0_3" 
-      by (simp only: axis_identity VectorStar_pred_def [symmetric] axis_subtype)
+    have axs_nonzero: "axs \<noteq> 0_3" by (subst axis_identity, rule VectorStar_subtype)
     with non_degenerate rev_contrapos
     have axs_norm_nonzero: "axs *_4 axs \<noteq> 0''" by blast
 
@@ -1495,11 +1462,12 @@ gn_proj_def [rule_format] :
 	  have subgoal1: "|| vp || <=' || axs ||"
 	  proof-
 	    from main_identity have "|| vp || = || l *_3 axs ||" by simp
-	    also have "\<dots> = l *'' || axs ||" by (simp only: norm_pos_homogen l_in_unitinterval)
+	    also have "\<dots> = l *'' || axs ||"
+	      by (simp only: geq_def_ExtPartialOrder pos_homogeneous l_in_unitinterval)
 	    also have "\<dots> <=' || axs ||"
 	      by (subst ga_left_unit___Xx___1 [symmetric],
 		rule FWO_times_left,
-		simp add: l_in_unitinterval norm_nonnegative)
+		simp add: l_in_unitinterval pos_definite_1)
 	    finally show ?thesis .
 	  qed
 
@@ -1535,17 +1503,19 @@ gn_proj_def [rule_format] :
 
 	    -- "PROOF for first conjunct"
 
-	    from norm_nonnegative have axs_norm_nonneg: "||axs|| >=' 0''"
+	    from pos_definite_1 have axs_norm_nonneg: "||axs|| >=' 0''"
 	      by (simp only: geq_def_ExtPartialOrder)
 
 	    from v_mult_axs_simp main_knowledge l_def homogeneous
 	    have "l *'' (axs *_4 axs) >=' 0''" by simp
 
 	    with times_leq_nonneg_cond axs_sqr_nonneg geq_def_ExtPartialOrder
-	    have I01_first: "0'' <=' l" by blast
+	    have I01_first: "l >=' 0''" by blast
 
-	    with main_knowledge l_def norm_pos_homogen
-	    have "l *'' || axs || <=' || axs ||" by (simp only: geq_def_ExtPartialOrder)
+	    with main_knowledge l_def pos_homogeneous
+	    have "l *'' || axs || <=' || axs ||"
+	      -- "TODO: check whether this means only the logical rules"
+	      by (simp only:)
 
 	    with axs_norm_nonneg have I01_second: "l <=' 1''"
 	      by (subst (asm) ga_left_unit___Xx___1 [symmetric],

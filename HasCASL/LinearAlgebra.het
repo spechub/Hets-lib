@@ -97,6 +97,13 @@ ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then
 then %implies
      vars v,w,x,y,z:Space; r:Real
 
+     %{workaround: should be available from the view below}%
+     . ||r * v|| = abs(r) * ||v||	%(homogeneous)%
+     . 0 <= ||v||          %(pos definite)%
+
+     %{ homogenity for positive factors }%
+     . r >= 0 => ||r * v|| = r * ||v||	%(pos homogeneous)%
+
      %{ orth props }%
      . orth(x,y) => orth(y,x) %(orth symmetric)%
 

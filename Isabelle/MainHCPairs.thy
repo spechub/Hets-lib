@@ -117,26 +117,59 @@ gn_proj :: "'a => 'b partial"
 
 axioms
 
+-- "general injection projection property"
+gn_inj_proj_def [rule_format] :
+"!!(x::'a) (y::'b). defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial) ==>
+  makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+
 gn_inj_def [rule_format] :
-"!!(x::'a) (y::'b). (subt x y) ==>
-  (EX z::'b. gn_inj(x) = z & defOp(gn_proj(z)) & makeTotal(gn_proj(z)) = x)"
+"!!(x::'a) (y::'b). (subt x y) ==
+  defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial)"
 
 gn_proj_def [rule_format] :
-"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y))
-  ==> EX z::'a partial. gn_proj(y) = z & gn_inj(makeTotal(z)) = y)"
+"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
+  ==> \<exists>z::'a. y = gn_inj(z))"
 
-lemma gn_inj_fact1: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+subt_subsumption [rule_format] :
+"!!(x::'a) (y::'b) (z::'c). (subt x z) & (subt y z)
+  ==> (!!(z'::'c). defOp(gn_proj(z')\<Colon>'a partial) ==> defOp(gn_proj(z')\<Colon>'b partial))
+  ==> (subt x y)"
+
+subt_identity [rule_format] :
+"!!(x::'a). defOp(gn_proj(x)\<Colon>'a partial)"
+
+lemma gn_proj_fact:
+"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
+  ==> gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y)"
+  proof-
+    fix x::'a
+    fix y::'b
+    assume hyp1: "subt x y" and hyp2: "defOp(gn_proj y\<Colon>'a partial)"
+    have "\<exists>z::'a. y = gn_inj(z)" (is "\<exists>z. ?P z")
+      by (rule gn_proj_def [of x y], (simp only: hyp1 hyp2)+)
+    then obtain z where y_def: "?P z" ..
+    from hyp2 have fact: "defOp(gn_proj(gn_inj(z)\<Colon>'b)\<Colon>'a partial)" by (simp only: y_def)
+    show "gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y"
+      by ((subst y_def)+, subst gn_inj_proj_def, simp_all only: fact)
+  qed
+
+
+(*
+lemma subt_reflexive:
+"!!(x::'a) (y::'a). subt x y"
 proof-
-  fix x y
-  assume hyp: "subt (x\<Colon>'a) (y\<Colon>'b)"
-  have "\<exists>z\<Colon>'b. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
-    by (insert gn_inj_def [of x y], simp add: hyp)
-  thus "makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x" by blast
+  fix x::'a
+  fix y::'a
+  have "(!!(z::'a). defOp(gn_proj(z)\<Colon>'a partial)) ==> subt x y"
+    by (rule subt_subsumption)
+  with subt_identity show "subt x y" by blast
 qed
-    (* this instead doesn't work!
-	  assume hyp: "subt x y"
-	  have "\<exists>z. gn_inj x = z \<and> defOp (gn_proj z) \<and> makeTotal (gn_proj z) = x"
-	  thus "makeTotal(gn_proj(gn_inj(x))) = x" by blast
-    *)	  
+*)
+
+lemma gn_inj_defOp: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial)"
+  by (simp only: gn_inj_def)
+
+lemma gn_inj_identity: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+  by (simp only: gn_inj_proj_def gn_inj_def)
 
 end
