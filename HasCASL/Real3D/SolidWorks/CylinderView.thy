@@ -40,14 +40,14 @@ ML "Header.initialize
      \"ga_right_unit___Xx___3_1\", \"ga_left_unit___Xx___3_1\",
      \"inv_Group_2_1\", \"rinv_Group_2_1\", \"ga_comm___Xx___3\",
      \"unit\", \"mix_assoc\", \"distr_Field\", \"distr_Space\",
-     \"zero_by_left_zero\", \"zero_by_right_zero\",
+     \"zero_by_left_zero\", \"zero_by_right_zero\", \"no_zero_divisor\",
      \"inverse_by_XMinus1\", \"distributive\", \"homogeneous\",
      \"symmetric\", \"pos_definite\", \"right_distributive\",
      \"right_homogeneous\", \"degenerate\", \"lindep_def\", \"lindep_reflexivity\",
      \"lindep_symmetry\", \"simple_lindep_condition\",
      \"lindep_nonlindep_transitivity\", \"sqr2_def\",
      \"norm_from_inner_prod_def\", \"proj_def\", \"orthcomp_def\",
-     \"orthogonal_def\",\"homogeneous_1\", \"pos_definite_1\",
+     \"orthogonal_def\",\"homogeneous_1\", \"definite\", \"pos_definite_1\",
      \"pos_homogeneous\", \"orth_symmetric\", \"lindep_orth_transitive\",
      \"orthogonal_on_zero_projection\",
      \"orthogonal_projection_theorem\",
@@ -570,6 +570,9 @@ zero_by_left_zero [rule_format] : "ALL x. 0'' *_3 x = 0_3"
 
 zero_by_right_zero [rule_format] : "ALL r. r *_3 0_3 = 0_3"
 
+no_zero_divisor [rule_format] :
+"ALL r. ALL x. ~ r = 0'' & ~ x = 0_3 --> ~ r *_3 x = 0_3"
+
 inverse_by_XMinus1 [rule_format] :
 "ALL x. -' 1'' *_3 x = -'' x"
 
@@ -631,6 +634,8 @@ orthogonal_def [rule_format] :
 
 homogeneous_1 [rule_format] :
 "ALL r. ALL v. || r *_3 v || = gn_inj(abs'(r)) *'' || v ||"
+
+definite [rule_format] : "ALL v. || v || = 0'' = (v = 0_3)"
 
 pos_definite_1 [rule_format] : "ALL v. 0'' <=' || v ||"
 
@@ -876,7 +881,7 @@ VWithLength_constr [rule_format] :
  (if v = 0_3 then makePartial v
      else restrictOp
           (makePartial ((s /' makeTotal (gn_proj( || v || ))) *_3 v))
-          (defOp (gn_proj( || v || ))))"
+          (defOp (gn_proj( || v || )\<Colon>NonZero partial)))"
 
 VPlane_constr [rule_format] :
 "ALL normal. VPlane normal = (% y. orth(y, normal))"
@@ -1099,6 +1104,11 @@ unfolding Let_def expand_fun_eq by simp_all
 
 *)
 
+lemmas PO_simps = 
+  geq_def_ExtPartialOrder
+  less_def_ExtPartialOrder 
+  greater_def_ExtPartialOrder
+
 theorem def_of_Cylinder :
 "ALL axis.
  ALL offset.
@@ -1115,17 +1125,11 @@ theorem def_of_Cylinder :
 
   proof (rule allI)+
 
-    -- "GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
+    -- "I. SUBTYPE AND PARTIALITY LEMMAS"
 
-    -- "need now something like makeTotal(makePartial(x)) = x to use the proj_def"
+    -- "need this to expand a term for application of lemmas"
     have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
       by (simp only: snd_conv makeTotal_def makePartial_def)
-
-    from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
-
-    -- "will be used later to proof orth_exists"
-    from space_at_least_2dim orthogonal_existence_theorem
-    have orth_exists_aux: "!!w. EX x. x \<noteq> 0_3 \<and> orth(x, w)" by blast
 
     -- "to infer knowledge of the form"
     -- "!!x::subtype. ?defining_predicate(gn_inj(x))"
@@ -1142,74 +1146,75 @@ theorem def_of_Cylinder :
       by (simp only: VectorStar_pred_def [THEN sym], subst Ax7_1_1 [THEN sym],
 	simp only: gn_inj_defOp subt_VectorStar_Vector)
 
-    have RealPos_identity: "!!x::RealPos. makeTotal(gn_proj((gn_inj x)\<Colon>Real)) = x"
-      by (simp only: gn_inj_identity subt_RealPos_Real)
-
-(*
     from RealPos_subtype have
       realpos_nonneg: "!!x::RealPos. 0'' <=' gn_inj x"
-      by (simp only: greater_def_ExtPartialOrder less_def_ExtPartialOrder)
-    
-    have "!!x::RealPos. abs'(gn_inj(x)) = gn_inj x"
-      apply (subst partial_identity [THEN sym], subst abs_def)
-      apply (simp only: if_P realpos_nonneg)
+      by (simp only: PO_simps)
 
-	apply (subst RealPos_identity [THEN sym])
+    from subt_RealPos_Real subt_RealNonNeg_Real
+    have subt_RealPos_RealNonNeg:
+      "!!(x::RealPos) (y::RealNonNeg). subt x y"
+      by (rule_tac subt_subsumption, blast,
+	simp add: RealPos_pred_def RealNonNeg_pred_def PO_simps)
+
+    from subt_RealPos_RealNonNeg subt_RealNonNeg_Real subt_RealPos_Real
+    have real_inj:
+      "!!(x::RealPos). (gn_inj(x)\<Colon>Real) = gn_inj(gn_inj(x)\<Colon>RealNonNeg)"
+      by (rule_tac subt_inj_diagram, simp)
+
+    have realnonneg_identity:
+      "!!x::RealNonNeg. makeTotal(gn_proj((gn_inj x)\<Colon>Real)) = x"
+      by (simp only: gn_inj_identity subt_RealNonNeg_Real)
+    
+    -- "II. GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
+
+    from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
+
+    have abs_on_realpos:
+      "!!x::RealPos. abs'(gn_inj(x)) = gn_inj x"
+      -- "INTERESTING: can't combine the two simp only's!"
+    by (subst partial_identity [THEN sym], subst abs_def,
+      simp only: if_P realpos_nonneg, simp only: real_inj realnonneg_identity)
 
     have vwl_pos_length: "!!(s::RealPos) v. ~ v = 0_3 -->
       || VWithLength(v, gn_inj(s)) || = gn_inj(s)"
+    proof (rule impI)
+      fix s::RealPos
+      fix v::Vector
+      assume hyp: "v \<noteq> 0_3"
+      with vwl_length have
+	"|| VWithLength(v, gn_inj s) || = gn_inj(abs'(gn_inj s))" by blast
+      also have "\<dots> = gn_inj(gn_inj s\<Colon>RealNonNeg)" by (simp only: abs_on_realpos)
+      also have "\<dots> = gn_inj(s)" by (simp only: real_inj)
+      finally show "|| VWithLength(v, gn_inj(s)) || = gn_inj(s)" by blast
+    qed
 
-*)
+    from space_at_least_2dim orthogonal_existence_theorem
+    have orth_exists_aux: "!!w. EX x. x \<noteq> 0_3 \<and> orth(x, w)" by blast
+
     have orth_exists:
       "!!q w (r::RealPos). EX p. let v = vec(q, p) in orth(v, w) & || v || = gn_inj(r)"
       (is "!!q w r. EX p. ?P q w r p")
-      sorry
-(*
     proof-
       fix q w
       fix r::RealPos
 
-      from RealPos_subtype have r_nonneg: "0'' <=' gn_inj r"
-	by (simp only: greater_def_ExtPartialOrder less_def_ExtPartialOrder)
-
-      from RealPos_identity have r_inj_identity: "makeTotal(gn_proj((gn_inj r)\<Colon>Real)) = r" by simp
-      
-      have "gn_inj(abs'(gn_inj(r))) = (gn_inj r\<Colon>Real)"
-	apply (subst partial_identity [THEN sym], subst abs_def)
-	apply (simp only: if_P r_nonneg)
-
-	apply (subst r_inj_identity [THEN sym])
-	back
--- "problem: abs' ist auf nonneg definiert, r ist aber pos! hier muss noch ein schritt dazwischen!"
-
-	apply (blast)
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-	back
-
-	back
-
-
-	by auto
-RealPos_subtype
-      from orth_exists_aux obtain v where "v \<noteq> 0_3 \<and> orth(v, w)" ..
-      def vprime_def: v' == "VWithLength(w, gn_inj(r))"
+      from orth_exists_aux obtain v where v_props: "v \<noteq> 0_3 \<and> orth(v, w)" ..
+      def vprime_def: v' == "VWithLength(v, gn_inj(r))"
       def p: p == "q +' v'"
-      have "?P q w r p" .. -- "need gn_inj(abs'(gn_inj(r))) = gn_inj(r)"
+
+      with plus_vec_identity have vp_rel: "v' = vec(q, p)" by simp
+
+      from  lindep_symmetry orth_symmetric vwl_lindep lindep_orth_transitive
+	v_props vprime_def have fact1: "orth(v', w)" by blast
+
+      with v_props vwl_pos_length vprime_def
+      have "orth(v', w) \<and> || v' || = gn_inj(r)" by blast
+
+      with vp_rel fact1 have "?P q w r p" by simp
+
       thus "EX p. ?P q w r p" ..
     qed
-*)
+
     -- "need this fact to use the proj_def"
     have subtype_cond: "!A x. (x \<noteq> 0'') \<longrightarrow> (restrictOp A (defOp(gn_proj(x)\<Colon>NonZero partial))) = A"
     proof ((rule allI)+, rule impI)
@@ -1265,8 +1270,7 @@ RealPos_subtype
     -- "PP = ProofPower remark"
     -- "PP: doesn't work in one step!"
     from axs_nonzero pos_definite have "axs *_4 axs >' 0''" by blast
-    with geq_def_ExtPartialOrder less_def_ExtPartialOrder
-      greater_def_ExtPartialOrder
+    with PO_simps
     have axs_sqr_nonneg: "axs *_4 axs >=' 0''" by blast
 
     -- "show facts about bp, r and r1"
@@ -1343,10 +1347,9 @@ RealPos_subtype
       apply (subst def_of_intersection)
 
       apply (subst rhs)
-      apply (simp only: axis_identity [symmetric])
-      apply (rule ext)
+      apply (subst axis_identity [symmetric])+
       
-      proof-
+      proof (rule ext)
 	fix x
 	def v: v == "vec(offset, x)"
 	def vp: vp == "proj(v, axs)" -- "the axis-parallel component"
@@ -1456,14 +1459,14 @@ RealPos_subtype
 	      from main_knowledge I01 have "l isIn closedinterval(0'', 1'')" by blast
 	      with abbrev_of_interval have "XOSqBr__XPeriodXPeriodXPeriod__XCSqBr(0'', 1'') l"
 		by simp
-	      thus ?thesis by (simp add: def_of_interval geq_def_ExtPartialOrder)
+	      thus ?thesis by (simp add: def_of_interval PO_simps)
 	    qed
 
 	  have subgoal1: "|| vp || <=' || axs ||"
 	  proof-
 	    from main_identity have "|| vp || = || l *_3 axs ||" by simp
 	    also have "\<dots> = l *'' || axs ||"
-	      by (simp only: geq_def_ExtPartialOrder pos_homogeneous l_in_unitinterval)
+	      by (simp only: PO_simps pos_homogeneous l_in_unitinterval)
 	    also have "\<dots> <=' || axs ||"
 	      by (subst ga_left_unit___Xx___1 [symmetric],
 		rule FWO_times_left,
@@ -1491,10 +1494,8 @@ RealPos_subtype
 	  assume main_knowledge:
 	    "( || vp || <=' || axs || \<and> || vo || <=' gn_inj(r)) \<and> v *_4 axs >=' 0''"
 	  
-(*
-   We show vp = k * axs, and set l := k, y := offset + vo and
-   verify the four conditions for l and y.
-*)
+	  -- "We show vp = k * axs, and set l := k, y := offset + vo and"
+          -- "verify the four conditions for l and y."
 	  from vp_structure obtain l where l_def: "vp = l *_3 axs" ..
 	  def y_def: y == "offset +' vo"
 	  have "(l isIn I01 \<and> y isIn bll \<and> y isIn plnI) \<and> x = y +' (l *_3 axs)"
@@ -1504,12 +1505,12 @@ RealPos_subtype
 	    -- "PROOF for first conjunct"
 
 	    from pos_definite_1 have axs_norm_nonneg: "||axs|| >=' 0''"
-	      by (simp only: geq_def_ExtPartialOrder)
+	      by (simp only: PO_simps)
 
 	    from v_mult_axs_simp main_knowledge l_def homogeneous
 	    have "l *'' (axs *_4 axs) >=' 0''" by simp
 
-	    with times_leq_nonneg_cond axs_sqr_nonneg geq_def_ExtPartialOrder
+	    with times_leq_nonneg_cond axs_sqr_nonneg PO_simps
 	    have I01_first: "l >=' 0''" by blast
 
 	    with main_knowledge l_def pos_homogeneous
@@ -1523,7 +1524,7 @@ RealPos_subtype
 		simp)
 
 	    with I01_first I01 def_of_interval abbrev_of_interval
-	      def_of_isIn geq_def_ExtPartialOrder
+	      def_of_isIn PO_simps
 	    have subgoal1: "l isIn I01" by auto
 	    
 	    -- "PROOF for second conjunct"

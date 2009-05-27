@@ -68,7 +68,7 @@ spec Vectors3DBase = RealBase then
 	 - __ : Vector -> Vector;
 
      pred VectorStar_pred(x:Vector) <=> not x = 0; %(VectorStar_pred_def)%
-     type VectorStar = {x:Vector. VectorStar_pred x};
+     type VectorStar = {x:Vector. VectorStar_pred x}; %(VectorStar type)%
 
      vars x,y:Vector
      . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))  %(def of vector addition)%

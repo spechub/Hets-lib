@@ -34,7 +34,9 @@ then %implies
      . r * 0:Space = 0 %(zero by right zero)%
 
      . -1 * x = -x %(inverse by -1)%
+     . not(r=0) /\ not(x=0) => not(r*x=0) %(no zero divisor)%
 end
+
 
 %( Definitional extension: lindep-pred )%
 spec ExtVectorSpace[VectorSpace[Field]] = %def
@@ -99,7 +101,8 @@ then %implies
 
      %{workaround: should be available from the view below}%
      . ||r * v|| = abs(r) * ||v||	%(homogeneous)%
-     . 0 <= ||v||          %(pos definite)%
+     . ||v|| = 0 <=> v = 0  	 	%(definite)%
+     . 0 <= ||v||                       %(pos definite)%
 
      %{ homogenity for positive factors }%
      . r >= 0 => ||r * v|| = r * ||v||	%(pos homogeneous)%

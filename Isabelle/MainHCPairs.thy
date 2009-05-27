@@ -138,6 +138,10 @@ subt_subsumption [rule_format] :
 subt_identity [rule_format] :
 "!!(x::'a). defOp(gn_proj(x)\<Colon>'a partial)"
 
+subt_inj_diagram [rule_format] :
+"!!(x::'a) (y::'b) (z::'c). (subt x z) & (subt y z) & (subt x y)
+  ==> (!!(x'::'a). (gn_inj(x')\<Colon>'c) = gn_inj(gn_inj(x')\<Colon>'b))"
+
 lemma gn_proj_fact:
 "!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
   ==> gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y)"
