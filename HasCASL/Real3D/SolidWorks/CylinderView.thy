@@ -1089,7 +1089,7 @@ declare semantics_for_Sketches [simp]
 
 
 (*
--- let-simplifier
+-- let-simplifier, not in use because of undesirable variable-renaming
 declare flip_def [simp]
 definition compose_def [simp]: "compose f g x = f (g x)"
 
@@ -1140,30 +1140,30 @@ theorem def_of_Cylinder :
     -- "required for this tactic"
     have RealPos_subtype: "!!x::RealPos. gn_inj x >' 0''"
       by (simp only: RealPos_pred_def [THEN sym], subst Ax4 [THEN sym],
-	simp only: gn_inj_defOp subt_RealPos_Real)
+	simp only: gn_proj_def subt_RealPos_Real)
 
     have VectorStar_subtype: "!!x::VectorStar. (~ gn_inj x = 0_3)"
       by (simp only: VectorStar_pred_def [THEN sym], subst Ax7_1_1 [THEN sym],
-	simp only: gn_inj_defOp subt_VectorStar_Vector)
+	simp only: gn_proj_def subt_VectorStar_Vector)
 
     from RealPos_subtype have
       realpos_nonneg: "!!x::RealPos. 0'' <=' gn_inj x"
       by (simp only: PO_simps)
 
-    from subt_RealPos_Real subt_RealNonNeg_Real
+    from subt_RealPos_Real
     have subt_RealPos_RealNonNeg:
       "!!(x::RealPos) (y::RealNonNeg). subt x y"
-      by (rule_tac subt_subsumption, blast,
-	simp add: RealPos_pred_def RealNonNeg_pred_def PO_simps)
+      by (rule_tac subtype_subsumption, blast,
+	simp_all add: subt_RealNonNeg_Real RealPos_pred_def RealNonNeg_pred_def PO_simps)
 
     from subt_RealPos_RealNonNeg subt_RealNonNeg_Real subt_RealPos_Real
     have real_inj:
       "!!(x::RealPos). (gn_inj(x)\<Colon>Real) = gn_inj(gn_inj(x)\<Colon>RealNonNeg)"
-      by (rule_tac subt_inj_diagram, simp)
+      by (rule_tac gn_inj_diagram, simp)
 
     have realnonneg_identity:
       "!!x::RealNonNeg. makeTotal(gn_proj((gn_inj x)\<Colon>Real)) = x"
-      by (simp only: gn_inj_identity subt_RealNonNeg_Real)
+      by (simp only: gn_proj_inj subt_RealNonNeg_Real)
     
     -- "II. GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
 

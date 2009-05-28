@@ -107,7 +107,7 @@ lift2unit :: "('b => 'c) => ('a partial => bool)"
 lift2bool :: "('a => bool) => 'a partial => bool"
 "lift2bool f s == defOp s & f (makeTotal s)"
 
--- "subtype encoding"
+-- "SUBTYPE ENCODING"
 
 consts
 
@@ -117,63 +117,70 @@ gn_proj :: "'a => 'b partial"
 
 axioms
 
--- "general injection projection property"
-gn_inj_proj_def [rule_format] :
-"!!(x::'a) (y::'b). defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial) ==>
-  makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+-- "SUBTYPE RULES"
 
-gn_inj_def [rule_format] :
-"!!(x::'a) (y::'b). (subt x y) ==
-  defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial)"
+-- "necessary when omitting the quantifiers in the axioms below"
+subtype_constant [rule_format] :
+"subt (x\<Colon>'a) (y\<Colon>'b) ==> (!!(u::'a) v::'b. subt u v)"
 
+subtype_reflexive [rule_format] :
+"subt (x\<Colon>'a) (y\<Colon>'a)"
+
+subtype_transitive [rule_format] :
+"[| subt (x\<Colon>'a) (y\<Colon>'b); subt (z\<Colon>'b) (t\<Colon>'c) |]  ==> subt (u\<Colon>'a) (v\<Colon>'c)"
+
+-- "is used for derivation of subtypes:"
+subtype_subsumption [rule_format] :
+"[| subt (x\<Colon>'a) (y\<Colon>'c); subt (z\<Colon>'b) (t\<Colon>'c);
+  (!!(z'::'c). defOp(gn_proj(z')\<Colon>'a partial) ==> defOp(gn_proj(z')\<Colon>'b partial)) |]
+  ==> (subt (u\<Colon>'a) (v\<Colon>'b))"
+
+
+-- "INJECTION PROJECTION RULES"
+
+-- "is used to derive defining predicate P for a subtype A, P(gn_inj(x::A))"
 gn_proj_def [rule_format] :
-"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
-  ==> \<exists>z::'a. y = gn_inj(z))"
+"subt (x\<Colon>'a) (y\<Colon>'b) ==> defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial)"
 
-subt_subsumption [rule_format] :
-"!!(x::'a) (y::'b) (z::'c). (subt x z) & (subt y z)
-  ==> (!!(z'::'c). defOp(gn_proj(z')\<Colon>'a partial) ==> defOp(gn_proj(z')\<Colon>'b partial))
-  ==> (subt x y)"
+gn_proj_inj [rule_format] :
+"subt (x\<Colon>'a) (y\<Colon>'b) ==> (!!(z::'a). makeTotal(gn_proj(gn_inj(z)\<Colon>'b)) = z)"
 
-subt_identity [rule_format] :
-"!!(x::'a). defOp(gn_proj(x)\<Colon>'a partial)"
+gn_inj_proj [rule_format] :
+"subt (x\<Colon>'a) (y\<Colon>'b) ==> (!!(z::'b). defOp(gn_proj(z)\<Colon>'a partial) ==>
+  gn_inj(makeTotal(gn_proj(z)\<Colon>'a partial)) = z)"
 
-subt_inj_diagram [rule_format] :
-"!!(x::'a) (y::'b) (z::'c). (subt x z) & (subt y z) & (subt x y)
+gn_inj_diagram [rule_format] :
+"[| subt (x\<Colon>'a) (y\<Colon>'b); subt (t\<Colon>'b) (z\<Colon>'c) |]
   ==> (!!(x'::'a). (gn_inj(x')\<Colon>'c) = gn_inj(gn_inj(x')\<Colon>'b))"
 
-lemma gn_proj_fact:
-"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
-  ==> gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y)"
-  proof-
+
+lemma gn_inj_injective :
+  "subt (u\<Colon>'a) (v\<Colon>'b) ==> inj (gn_inj\<Colon>'a => 'b)"
+  proof (rule injI)
     fix x::'a
-    fix y::'b
-    assume hyp1: "subt x y" and hyp2: "defOp(gn_proj y\<Colon>'a partial)"
-    have "\<exists>z::'a. y = gn_inj(z)" (is "\<exists>z. ?P z")
-      by (rule gn_proj_def [of x y], (simp only: hyp1 hyp2)+)
-    then obtain z where y_def: "?P z" ..
-    from hyp2 have fact: "defOp(gn_proj(gn_inj(z)\<Colon>'b)\<Colon>'a partial)" by (simp only: y_def)
-    show "gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y"
-      by ((subst y_def)+, subst gn_inj_proj_def, simp_all only: fact)
+    fix y::'a
+    assume hyp1: "subt (u\<Colon>'a) (v\<Colon>'b)"
+      and hyp2: "(gn_inj x\<Colon>'b) = gn_inj y"
+
+    from hyp1 subtype_constant 
+    have fact: "!!(z::'a). makeTotal(gn_proj(gn_inj(z)\<Colon>'b)) = z"
+      by (rule_tac gn_proj_inj, blast)
+
+    hence "x = makeTotal(gn_proj(gn_inj(x)\<Colon>'b))" ..
+    also from hyp2 have "\<dots> = makeTotal(gn_proj(gn_inj(y)\<Colon>'b))" by simp
+    also from fact have "\<dots> = y" by simp
+    finally show "x = y" by simp
   qed
 
-
-(*
-lemma subt_reflexive:
-"!!(x::'a) (y::'a). subt x y"
+lemma gn_inj_identity :
+"!!x::'a. (gn_inj(x)\<Colon>'a) = x"
 proof-
   fix x::'a
-  fix y::'a
-  have "(!!(z::'a). defOp(gn_proj(z)\<Colon>'a partial)) ==> subt x y"
-    by (rule subt_subsumption)
-  with subt_identity show "subt x y" by blast
+  have fact: "(gn_inj(x)\<Colon>'a) = gn_inj(gn_inj(x)\<Colon>'a)"
+    by (simp_all add: gn_inj_diagram subtype_reflexive)
+  thus "(gn_inj(x)\<Colon>'a) = x"
+    by (subst injD [of "(gn_inj\<Colon>'a=>'a)" "(gn_inj(x)\<Colon>'a)" x],
+      simp_all only: gn_inj_injective subtype_reflexive fact [symmetric])
 qed
-*)
-
-lemma gn_inj_defOp: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> defOp(gn_proj(gn_inj(x)\<Colon>'b)\<Colon>'a partial)"
-  by (simp only: gn_inj_def)
-
-lemma gn_inj_identity: "!!(x\<Colon>'a) (y\<Colon>'b). (subt x y) ==> makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
-  by (simp only: gn_inj_proj_def gn_inj_def)
 
 end
