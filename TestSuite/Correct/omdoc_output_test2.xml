@@ -1,0 +1,1004 @@
+<?xml version='1.0' ?>
+<omdoc version="1.6" name="library">
+  <theory name="B_E1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID B_E1 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="f" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="B_E1" name="s" />
+            <OMS cd="B_E1" name="s" />
+            <OMS cd="B_E1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="h" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="B_E1" name="s" />
+            <OMS cd="B_E1" name="s" />
+            <OMS cd="B_E1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+    <axiom name="myax3">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMV name="x" />
+                <OMV name="y" />
+              </OMA>
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMV name="y" />
+                <OMV name="x" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+    <axiom name="myax4">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMV name="x" />
+                <OMA>
+                  <OMS cd="B_E1" name="h" />
+                  <OMV name="y" />
+                  <OMV name="z" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMA>
+                  <OMS cd="B_E1" name="h" />
+                  <OMV name="x" />
+                  <OMV name="y" />
+                </OMA>
+                <OMV name="z" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="B" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?B_E1">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID B library -->
+    <!-- nonlocal symbol: gn_OM[s,B_E1,library] -->
+    <!-- nonlocal function: gn_OM[f,B_E1,library] -->
+    <!-- nonlocal function: gn_OM[h,B_E1,library] -->
+    <axiom name="myth6">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="B_E1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMV name="x" />
+                <OMA>
+                  <OMS cd="B_E1" name="h" />
+                  <OMV name="y" />
+                  <OMV name="z" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="B_E1" name="h" />
+                <OMA>
+                  <OMS cd="B_E1" name="h" />
+                  <OMV name="z" />
+                  <OMV name="x" />
+                </OMA>
+                <OMV name="y" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="A1_E1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID A1_E1 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="g" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="A1_E1" name="s" />
+            <OMS cd="A1_E1" name="s" />
+            <OMS cd="A1_E1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+    <axiom name="myax1">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A1_E1" name="g" />
+                <OMV name="x" />
+                <OMV name="y" />
+              </OMA>
+              <OMA>
+                <OMS cd="A1_E1" name="g" />
+                <OMV name="y" />
+                <OMV name="x" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+    <axiom name="myax2">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1_E1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A1_E1" name="g" />
+                <OMV name="x" />
+                <OMA>
+                  <OMS cd="A1_E1" name="g" />
+                  <OMV name="y" />
+                  <OMV name="z" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="A1_E1" name="g" />
+                <OMA>
+                  <OMS cd="A1_E1" name="g" />
+                  <OMV name="x" />
+                  <OMV name="z" />
+                </OMA>
+                <OMV name="y" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="A1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?A1_E1">
+      <morphism>
+        <conass name="s">
+          <OMOBJ>
+            <OMS cd="A1" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="g">
+          <OMOBJ>
+            <OMS cd="A1" name="g" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID A1 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="g" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="A1" name="s" />
+            <OMS cd="A1" name="s" />
+            <OMS cd="A1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+    <axiom name="myth5">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A1" name="g" />
+                <OMV name="x" />
+                <OMA>
+                  <OMS cd="A1" name="g" />
+                  <OMV name="y" />
+                  <OMV name="z" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="A1" name="g" />
+                <OMA>
+                  <OMS cd="A1" name="g" />
+                  <OMV name="y" />
+                  <OMV name="x" />
+                </OMA>
+                <OMV name="z" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="A_E1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID A_E1 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="g" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="A_E1" name="s" />
+            <OMS cd="A_E1" name="s" />
+            <OMS cd="A_E1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="A" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?A_E1">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID A library -->
+    <!-- nonlocal symbol: gn_OM[s,A_E1,library] -->
+    <!-- nonlocal function: gn_OM[g,A_E1,library] -->
+    <axiom name="myax7">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A_E1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A_E1" name="g" />
+                <OMV name="x" />
+                <OMA>
+                  <OMS cd="A_E1" name="g" />
+                  <OMV name="y" />
+                  <OMV name="z" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="A_E1" name="g" />
+                <OMA>
+                  <OMS cd="A_E1" name="g" />
+                  <OMV name="x" />
+                  <OMV name="y" />
+                </OMA>
+                <OMV name="z" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="C" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?A">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID C library -->
+    <!-- nonlocal symbol: gn_OM[s,A_E1,library] -->
+    <!-- nonlocal function: gn_OM[g,A_E1,library] -->
+    <axiom name="my_c_ax">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A_E1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A_E1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A_E1" name="g" />
+                <OMV name="x" />
+                <OMV name="y" />
+              </OMA>
+              <OMA>
+                <OMS cd="A_E1" name="g" />
+                <OMV name="y" />
+                <OMV name="x" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="G_E1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?A1">
+      <morphism />
+    </import>
+    <import from="?C">
+      <morphism>
+        <conass name="s">
+          <OMOBJ>
+            <OMS cd="A1" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="g">
+          <OMOBJ>
+            <OMS cd="A1" name="g" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID G_E1 library -->
+    <!-- nonlocal symbol: gn_OM[s,A1,library] -->
+    <!-- nonlocal function: gn_OM[g,A1,library] -->
+  </theory>
+  <theory name="G" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?G_E1">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID G library -->
+    <!-- nonlocal symbol: gn_OM[s,A1,library] -->
+    <!-- nonlocal function: gn_OM[g,A1,library] -->
+    <axiom name="myth8">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="y" />
+              </OMATTR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="A1" name="s" />
+                </OMATP>
+                <OMV name="z" />
+              </OMATTR>
+            </OMBVAR>
+            <OMA>
+              <OMS cd="casl" name="eq" />
+              <OMA>
+                <OMS cd="A1" name="g" />
+                <OMV name="z" />
+                <OMA>
+                  <OMS cd="A1" name="g" />
+                  <OMV name="y" />
+                  <OMV name="x" />
+                </OMA>
+              </OMA>
+              <OMA>
+                <OMS cd="A1" name="g" />
+                <OMA>
+                  <OMS cd="A1" name="g" />
+                  <OMV name="x" />
+                  <OMV name="z" />
+                </OMA>
+                <OMV name="y" />
+              </OMA>
+            </OMA>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="Aext" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?A">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID Aext library -->
+    <symbol name="t" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <!-- nonlocal symbol: gn_OM[s,A_E1,library] -->
+    <!-- nonlocal function: gn_OM[g,A_E1,library] -->
+    <symbol name="h" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="A_E1" name="s" />
+            <OMS cd="Aext" name="t" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+    <axiom name="h surj">
+      <FMP>
+        <OMOBJ>
+          <OMBIND>
+            <OMS cd="casl" name="forall" />
+            <OMBVAR>
+              <OMATTR>
+                <OMATP>
+                  <OMS cd="casl" name="type" />
+                  <OMS cd="Aext" name="t" />
+                </OMATP>
+                <OMV name="x" />
+              </OMATTR>
+            </OMBVAR>
+            <OMBIND>
+              <OMS cd="casl" name="exists" />
+              <OMBVAR>
+                <OMATTR>
+                  <OMATP>
+                    <OMS cd="casl" name="type" />
+                    <OMS cd="A_E1" name="s" />
+                  </OMATP>
+                  <OMV name="y" />
+                </OMATTR>
+              </OMBVAR>
+              <OMA>
+                <OMS cd="casl" name="eq" />
+                <OMA>
+                  <OMS cd="Aext" name="h" />
+                  <OMV name="y" />
+                </OMA>
+                <OMV name="x" />
+              </OMA>
+            </OMBIND>
+          </OMBIND>
+        </OMOBJ>
+      </FMP>
+    </axiom>
+  </theory>
+  <theory name="X3" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID X3 library -->
+    <symbol name="t" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="h" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="X3" name="t" />
+            <OMS cd="X3" name="t" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="X2" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID X2 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="h" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="X2" name="s" />
+            <OMS cd="X2" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="Z2_A" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?X2">
+      <morphism>
+        <conass name="s">
+          <OMOBJ>
+            <OMS cd="Z2_A" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="h">
+          <OMOBJ>
+            <OMS cd="Z2_A" name="f" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID Z2_A library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="f" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="Z2_A" name="s" />
+            <OMS cd="Z2_A" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="X1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID X1 library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="f" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="X1" name="s" />
+            <OMS cd="X1" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="X" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <!-- Signature of Spec: SPEC_ID X library -->
+    <symbol name="s" role="type">
+      <type>
+        <OMOBJ>
+          <OMS cd="casl" name="sort" />
+        </OMOBJ>
+      </type>
+    </symbol>
+    <symbol name="f" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="X" name="s" />
+            <OMS cd="X" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="Y" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?X">
+      <morphism />
+    </import>
+    <!-- Signature of Spec: SPEC_ID Y library -->
+    <!-- nonlocal symbol: gn_OM[s,X,library] -->
+    <!-- nonlocal function: gn_OM[f,X,library] -->
+    <symbol name="g" role="object">
+      <type>
+        <OMOBJ>
+          <OMA>
+            <OMS cd="casl" name="funtype" />
+            <OMS cd="X" name="s" />
+            <OMS cd="X" name="s" />
+            <OMS cd="X" name="s" />
+          </OMA>
+        </OMOBJ>
+      </type>
+    </symbol>
+  </theory>
+  <theory name="Z3" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?Y">
+      <morphism />
+    </import>
+    <import from="?X3">
+      <morphism>
+        <conass name="t">
+          <OMOBJ>
+            <OMS cd="X" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="h">
+          <OMOBJ>
+            <OMS cd="X" name="f" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID Z3 library -->
+    <!-- nonlocal symbol: gn_OM[s,X,library] -->
+    <!-- nonlocal function: gn_OM[f,X,library] -->
+    <!-- nonlocal function: gn_OM[g,Y,library] -->
+  </theory>
+  <theory name="Z2" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?Y">
+      <morphism />
+    </import>
+    <import from="?Z2_A">
+      <morphism>
+        <conass name="s">
+          <OMOBJ>
+            <OMS cd="X" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="f">
+          <OMOBJ>
+            <OMS cd="X" name="f" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID Z2 library -->
+    <!-- nonlocal symbol: gn_OM[s,X,library] -->
+    <!-- nonlocal function: gn_OM[f,X,library] -->
+    <!-- nonlocal function: gn_OM[g,Y,library] -->
+  </theory>
+  <theory name="Z1" meta="http://cds.omdoc.org/logics/casl.omdoc?casl">
+    <import from="?Y">
+      <morphism />
+    </import>
+    <import from="?X1">
+      <morphism>
+        <conass name="s">
+          <OMOBJ>
+            <OMS cd="X" name="s" />
+          </OMOBJ>
+        </conass>
+        <conass name="f">
+          <OMOBJ>
+            <OMS cd="X" name="f" />
+          </OMOBJ>
+        </conass>
+      </morphism>
+    </import>
+    <!-- Signature of Spec: SPEC_ID Z1 library -->
+    <!-- nonlocal symbol: gn_OM[s,X,library] -->
+    <!-- nonlocal function: gn_OM[f,X,library] -->
+    <!-- nonlocal function: gn_OM[g,Y,library] -->
+  </theory>
+  <view from="?X" to="?X1">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="X1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="f">
+        <OMOBJ>
+          <OMS cd="X1" name="f" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?X" to="?X3">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="X3" name="t" />
+        </OMOBJ>
+      </conass>
+      <conass name="f">
+        <OMOBJ>
+          <OMS cd="X3" name="h" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?X" to="?Z2_A">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="Z2_A" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="f">
+        <OMOBJ>
+          <OMS cd="Z2_A" name="f" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?A" to="?A1">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="A1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="g">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?A" to="?A1">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="A1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="g">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?A1" to="?A1_E1">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="A1_E1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="g">
+        <OMOBJ>
+          <OMS cd="A1_E1" name="g" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?B" to="?A1">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="A1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="f">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+      <conass name="h">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?B" to="?B_E1">
+    <morphism />
+  </view>
+  <view from="?B" to="?G">
+    <morphism>
+      <conass name="s">
+        <OMOBJ>
+          <OMS cd="A1" name="s" />
+        </OMOBJ>
+      </conass>
+      <conass name="f">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+      <conass name="h">
+        <OMOBJ>
+          <OMS cd="A1" name="g" />
+        </OMOBJ>
+      </conass>
+    </morphism>
+  </view>
+  <view from="?G" to="?G_E1">
+    <morphism />
+  </view>
+</omdoc>

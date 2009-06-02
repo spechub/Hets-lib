@@ -1,5 +1,3 @@
-library Test
-
 %% little example
 spec X = sort s; op f:s->s
 
@@ -11,8 +9,11 @@ spec Z1 = Y[X1]
 
 %% extension of little example
 spec X2 = sort s; op h:s->s
+spec X3 = sort t; op h:t->t
 
 spec Z2 = Y[X2 with h |-> f]
+
+spec Z3 = Y[X3 fit s |-> t, f |-> h]
 
 
 %[
