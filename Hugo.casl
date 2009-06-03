@@ -1,0 +1,28 @@
+library Hugo
+
+spec Witness =
+  free type s ::= a | b
+end
+
+spec Hugo =
+  sort s
+  ops a, b : s
+  . not a = b
+then %cons
+  sort t = {x : s . not x = a}
+then %cons
+  sort u = {x : t . not x = b}
+  . not a = b
+end
+
+spec Hugo2 =
+  sort s
+  ops a, b : s
+  . not a = b
+then %implies
+  . exists x : s . not x = a
+then %cons
+  sort t = { x : s . not x = a}
+then %implies
+  . not a = b
+end
