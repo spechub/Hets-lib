@@ -4,7 +4,7 @@ begin
 
 types 'a partial = "'a option"
 
-(* is_none *)
+(* negation of is_none *)
 consts defOp :: "'a partial => bool"
 primrec
 "defOp None = False"
