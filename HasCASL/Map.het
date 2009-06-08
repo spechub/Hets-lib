@@ -1,0 +1,46 @@
+library HasCASL/Map
+
+logic HasCASL
+
+spec List =
+    var a: Type
+    free type List a ::= nil | cons a (List a)
+
+spec Map = List 
+then
+    var a, b: Type
+    ops  map: (a ->? b) -> List a ->? List b;
+         all: Pred a -> List a -> Logical;
+         nsMap: (a ->? b) -> List a -> List (? b);
+         filter: List a -> Pred a -> List a
+    var x: a; l: List a; f: a ->? b; P: Pred a
+    . map f nil = nil
+    . map f (cons x l) = cons (f x) (map f l)
+
+    . all P nil
+    . all P (cons x l) <=> P x /\ all P l
+
+    . nsMap f nil = nil
+    . nsMap f (cons x l) = cons (f x) (nsMap f l)
+
+    . filter nil P = nil
+    . filter (cons x l) P = cons x (filter l P) when P x else filter l P
+
+then %implies
+    var a, b, c: Type
+    var l: List a; f: a ->? b; g: b ->? c; P: Pred a; Q: Pred b
+    . map (\x:a. g (f x)) l = map g (map f l)           %(map_compose)%
+    . def map f l <=> all (\x:a. def f x) l             %(map_all_def)%
+    . def map f l => map f l = nsMap f l                %(map_nsmap1)%
+    . map f l = (nsMap f l) res (all (\x:a. def f x) l) %(map_nsmap2)%
+
+    . def map f l => def map f (filter l P)             %(mapdef)%
+    . def map f l => 
+      filter (map f l) Q = map f (filter l (\x:a. Q (f x))) %(mapfilter)%
+
+
+
+
+
+
+ 
