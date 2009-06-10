@@ -85,15 +85,13 @@ unpackBool :: "(('a => 'b) => 'c => bool)
             => ('a => 'b) partial => 'c => bool"
 "unpackBool c s a == defOp s & c (makeTotal s) a"
 
-(* no longer used *)
-unpack2partial :: "(('a => 'b) => 'c => 'd partial)
+unpack2partial :: "(('a => 'b) => 'c => 'd)
             => ('a => 'b) partial => 'c => 'd partial"
-"unpack2partial == unpackPartial"
+"unpack2partial c s a == mapPartial (flip c a) s"
 
-(* no longer used *)
-unpack2bool :: "(('a => 'b) => 'c => bool)
+unpack2bool :: "(('a => 'b) => 'c => 'd)
             => ('a => 'b) partial => 'c => bool"
-"unpack2bool == unpackBool"
+"unpack2bool c s a == defOp s"
 
 bool2partial :: "bool => unit partial"
 "bool2partial b == restrictOp (makePartial ()) b"
