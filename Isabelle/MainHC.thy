@@ -77,21 +77,23 @@ lift2partial :: "('a => 'b partial) => 'a partial => 'b partial"
 mapPartial :: "('a => 'b) => 'a partial => 'b partial"
 "mapPartial f s == restrictOp (makePartial (f (makeTotal s))) (defOp s)"
 
-unpackPartial :: "(('a => 'b partial) => 'c => 'd partial)
-            => ('a => 'b partial) partial => 'c => 'd partial"
+unpackPartial :: "(('a => 'b) => 'c => 'd partial)
+            => ('a => 'b) partial => 'c => 'd partial"
 "unpackPartial c s a == lift2partial (flip c a) s"
 
-unpackBool :: "(('a => bool) => 'c => bool)
-            => ('a => bool) partial => 'c => bool"
+unpackBool :: "(('a => 'b) => 'c => bool)
+            => ('a => 'b) partial => 'c => bool"
 "unpackBool c s a == defOp s & c (makeTotal s) a"
 
-unpack2partial :: "(('a => 'b) => 'c => 'd)
+(* no longer used *)
+unpack2partial :: "(('a => 'b) => 'c => 'd partial)
             => ('a => 'b) partial => 'c => 'd partial"
-"unpack2partial c s a == mapPartial (flip c a) s"
+"unpack2partial == unpackPartial"
 
-unpack2bool :: "(('a => unit) => 'c => unit)
-            => ('a => unit) partial => 'c => bool"
-"unpack2bool c s a == defOp s"
+(* no longer used *)
+unpack2bool :: "(('a => 'b) => 'c => bool)
+            => ('a => 'b) partial => 'c => bool"
+"unpack2bool == unpackBool"
 
 bool2partial :: "bool => unit partial"
 "bool2partial b == restrictOp (makePartial ()) b"
@@ -158,7 +160,7 @@ apply (auto simp add: lift2partial_def makePartial_def defOp.simps restrictOp_de
 apply (case_tac "m")
 apply (auto)
 apply (case_tac "m")
-apply (auto) 
+apply (auto)
 done
 
 lemma partial_monad_assoc[simp]:
@@ -174,15 +176,11 @@ done
 
 consts preDefOp :: "'a partial => bool"
 
-axioms 
+axioms
 
 preDefOp_atom[simp]: "preDefOp a = defOp a"
 
 preDefOp_lift[simp]:
 "preDefOp (lift2partial f a) = (defOp (lift2partial f a) & preDefOp a)"
-
-
-
-
 
 end
