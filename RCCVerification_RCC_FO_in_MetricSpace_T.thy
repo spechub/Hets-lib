@@ -1,5 +1,5 @@
 theory RCCVerification_RCC_FO_in_MetricSpace_T
-imports "$HETS_LIB/Isabelle/MainHCPairs"
+imports "$HETS_LIB/Isabelle/MainHC"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
