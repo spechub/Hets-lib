@@ -1,18 +1,14 @@
-theory Numbers_Nat
-imports "$HETS_LIB/Isabelle/MainHCPairs" "Primes" "Parity"
+theory Nat_normalising
+imports "$HETS_LIB/Isabelle/MainHC" "Primes" "Parity" "$HETS_LIB/Isabelle/RestrictOpProps"
 uses "$HETS_LIB/Isabelle/prelude"
 begin
 
 ML "Header.initialize
-    [\"ga_function_monotonicity\", \"ga_function_monotonicity_1\",
-     \"ga_function_monotonicity_2\", \"ga_function_monotonicity_3\",
-     \"ga_function_monotonicity_4\", \"ga_function_monotonicity_5\",
-     \"ga_embedding_injectivity\", \"ga_projection_injectivity\",
-     \"ga_projection\", \"ga_selector_pre\", \"ga_injective_suc\",
-     \"ga_disjoint_0_suc\", \"ga_selector_undef_pre_0\", \"X1_def_Nat\",
-     \"X2_def_Nat\", \"X3_def_Nat\", \"X4_def_Nat\", \"X5_def_Nat\",
-     \"X6_def_Nat\", \"X7_def_Nat\", \"X8_def_Nat\", \"X9_def_Nat\",
-     \"decimal_def\", \"ga_comm___XPlus__\", \"ga_assoc___XPlus__\",
+    [\"ga_selector_pre\", \"ga_injective_suc\", \"ga_disjoint_0_suc\",
+     \"ga_selector_undef_pre_0\", \"X1_def_Nat\", \"X2_def_Nat\",
+     \"X3_def_Nat\", \"X4_def_Nat\", \"X5_def_Nat\", \"X6_def_Nat\",
+     \"X7_def_Nat\", \"X8_def_Nat\", \"X9_def_Nat\", \"decimal_def\",
+     \"ga_comm___XPlus__\", \"ga_assoc___XPlus__\",
      \"ga_right_unit___XPlus__\", \"ga_left_unit___XPlus__\",
      \"ga_left_comm___XPlus__\", \"ga_comm___Xx__\",
      \"ga_assoc___Xx__\", \"ga_right_unit___Xx__\",
@@ -27,18 +23,15 @@ ML "Header.initialize
      \"mult_suc_Nat\", \"power_0_Nat\", \"power_suc_Nat\",
      \"min_def_Nat\", \"max_def_Nat\", \"subTotal_def1_Nat\",
      \"subTotal_def2_Nat\", \"sub_dom_Nat\", \"sub_def_Nat\",
-     \"divide_dom_Nat\", \"divide_0_Nat\", \"divide_Pos_Nat\",
+     \"divide_dom_Nat\", \"divide_0_Nat\", \"divide_Nat_Nat\",
      \"div_dom_Nat\", \"div_Nat\", \"mod_dom_Nat\", \"mod_Nat\",
-     \"distr1_Nat\", \"distr2_Nat\", \"Pos_def\", \"X1_as_Pos_def\",
-     \"min_0\", \"div_mod_Nat\", \"power_Nat\"]"
+     \"distr1_Nat\", \"distr2_Nat\", \"min_0\", \"div_mod_Nat\",
+     \"power_Nat\"]"
 
-typedecl Pos
-
-datatype X_Nat = X0 ("0''") | sucX1 "X_Nat" ("suc''/'(_')" [3] 999)
+datatype X_Nat = X0 ("0''") | X_suc "X_Nat" ("suc/'(_')" [3] 999)
 
 consts
-X1X1 :: "X_Nat" ("1''")
-X1X2 :: "Pos" ("1''''")
+X1 :: "X_Nat" ("1''")
 X2 :: "X_Nat" ("2''")
 X3 :: "X_Nat" ("3''")
 X4 :: "X_Nat" ("4''")
@@ -56,23 +49,17 @@ X__XLtXEq__X :: "X_Nat => X_Nat => bool" ("(_/ <=''/ _)" [44,44] 42)
 X__XLt__X :: "X_Nat => X_Nat => bool" ("(_/ <''/ _)" [44,44] 42)
 X__XMinusXExclam__X :: "X_Nat => X_Nat => X_Nat" ("(_/ -!/ _)" [54,54] 52)
 X__XMinusXQuest__X :: "X_Nat => X_Nat => X_Nat partial" ("(_/ -?/ _)" [54,54] 52)
-X__XPlus__XX1 :: "X_Nat => X_Nat => X_Nat" ("(_/ +''/ _)" [54,54] 52)
-X__XPlus__XX2 :: "X_Nat => Pos => Pos" ("(_/ +''''/ _)" [54,54] 52)
-X__XPlus__XX3 :: "Pos => X_Nat => Pos" ("(_/ +'_3/ _)" [54,54] 52)
+X__XPlus__X :: "X_Nat => X_Nat => X_Nat" ("(_/ +''/ _)" [54,54] 52)
 X__XSlashXQuest__X :: "X_Nat => X_Nat => X_Nat partial" ("(_/ '/?/ _)" [54,54] 52)
-X__Xx__XX1 :: "X_Nat => X_Nat => X_Nat" ("(_/ *''/ _)" [54,54] 52)
-X__Xx__XX2 :: "Pos => Pos => Pos" ("(_/ *''''/ _)" [54,54] 52)
+X__Xx__X :: "X_Nat => X_Nat => X_Nat" ("(_/ *''/ _)" [54,54] 52)
 X__div__X :: "X_Nat => X_Nat => X_Nat partial" ("(_/ div''/ _)" [54,54] 52)
 X__dvd__X :: "X_Nat => X_Nat => bool" ("(_/ dvd''/ _)" [44,44] 42)
 X__mod__X :: "X_Nat => X_Nat => X_Nat partial" ("(_/ mod''/ _)" [54,54] 52)
 X_even :: "X_Nat => bool" ("even''/'(_')" [3] 999)
-X_gn_inj_Pos_Nat :: "Pos => X_Nat" ("gn'_inj'_Pos'_Nat/'(_')" [3] 999)
-X_gn_proj_Nat_Pos :: "X_Nat => Pos partial" ("gn'_proj'_Nat'_Pos/'(_')" [3] 999)
 X_max :: "X_Nat => X_Nat => X_Nat" ("max''/'(_,/ _')" [3,3] 999)
 X_min :: "X_Nat => X_Nat => X_Nat" ("min''/'(_,/ _')" [3,3] 999)
 X_odd :: "X_Nat => bool" ("odd''/'(_')" [3] 999)
 X_pre :: "X_Nat => X_Nat partial" ("pre/'(_')" [3] 999)
-sucX2 :: "X_Nat => Pos" ("suc''''/'(_')" [3] 999)
 
 section "Extension of Naturals"
 (* we introduce some new symbols *)
@@ -85,70 +72,37 @@ where
   pre_nat_0: "pre_nat 0 = noneOp"
   | pre_nat_suc: "pre_nat (Suc n) = makePartial n"
 
-
 axioms
-ga_function_monotonicity [rule_format] : "1' = gn_inj_Pos_Nat(1'')"
-
-ga_function_monotonicity_1 [rule_format] :
-"ALL x1.
- ALL x2.
- gn_inj_Pos_Nat(x1) *' gn_inj_Pos_Nat(x2) =
- gn_inj_Pos_Nat(x1 *'' x2)"
-
-ga_function_monotonicity_2 [rule_format] :
-"ALL x1.
- ALL x2. x1 +' gn_inj_Pos_Nat(x2) = gn_inj_Pos_Nat(x1 +'' x2)"
-
-ga_function_monotonicity_3 [rule_format] :
-"ALL x1.
- ALL x2. gn_inj_Pos_Nat(x1) +' x2 = gn_inj_Pos_Nat(x1 +_3 x2)"
-
-ga_function_monotonicity_4 [rule_format] :
-"ALL x1.
- ALL x2. gn_inj_Pos_Nat(x1) +'' x2 = x1 +_3 gn_inj_Pos_Nat(x2)"
-
-ga_function_monotonicity_5 [rule_format] :
-"ALL x1. suc'(x1) = gn_inj_Pos_Nat(suc''(x1))"
-
-ga_embedding_injectivity [rule_format] :
-"ALL x. ALL y. gn_inj_Pos_Nat(x) = gn_inj_Pos_Nat(y) --> x = y"
-
-ga_projection_injectivity [rule_format] :
-"ALL x. ALL y. gn_proj_Nat_Pos(x) =e= gn_proj_Nat_Pos(y) --> x = y"
-
-ga_projection [rule_format] :
-"ALL x. gn_proj_Nat_Pos(gn_inj_Pos_Nat(x)) = makePartial x"
-
 ga_selector_pre [rule_format] :
-"ALL XX1. pre(suc'(XX1)) = makePartial XX1"
+"ALL XX1. pre(suc(XX1)) = makePartial XX1"
 
 ga_injective_suc [rule_format] :
-"ALL XX1. ALL Y1. suc'(XX1) = suc'(Y1) = (XX1 = Y1)"
+"ALL XX1. ALL Y1. suc(XX1) = suc(Y1) = (XX1 = Y1)"
 
-ga_disjoint_0_suc [rule_format] : "ALL Y1. ~ 0' = suc'(Y1)"
+ga_disjoint_0_suc [rule_format] : "ALL Y1. ~ 0' = suc(Y1)"
 
 ga_selector_undef_pre_0 [rule_format] : "~ defOp (pre(0'))"
 
-X1_def_Nat [rule_format] : "1' = suc'(0')"
+X1_def_Nat [rule_format] : "1' = suc(0')"
 
-X2_def_Nat [rule_format] : "2' = suc'(1')"
+X2_def_Nat [rule_format] : "2' = suc(1')"
 
-X3_def_Nat [rule_format] : "3' = suc'(2')"
+X3_def_Nat [rule_format] : "3' = suc(2')"
 
-X4_def_Nat [rule_format] : "4' = suc'(3')"
+X4_def_Nat [rule_format] : "4' = suc(3')"
 
-X5_def_Nat [rule_format] : "5' = suc'(4')"
+X5_def_Nat [rule_format] : "5' = suc(4')"
 
-X6_def_Nat [rule_format] : "6' = suc'(5')"
+X6_def_Nat [rule_format] : "6' = suc(5')"
 
-X7_def_Nat [rule_format] : "7' = suc'(6')"
+X7_def_Nat [rule_format] : "7' = suc(6')"
 
-X8_def_Nat [rule_format] : "8' = suc'(7')"
+X8_def_Nat [rule_format] : "8' = suc(7')"
 
-X9_def_Nat [rule_format] : "9' = suc'(8')"
+X9_def_Nat [rule_format] : "9' = suc(8')"
 
 decimal_def [rule_format] :
-"ALL m. ALL X_n. m @@ X_n = (m *' suc'(9')) +' X_n"
+"ALL m. ALL X_n. m @@ X_n = (m *' suc(9')) +' X_n"
 
 ga_comm___XPlus__ [rule_format] : "ALL x. ALL y. x +' y = y +' x"
 
@@ -199,10 +153,10 @@ leq_def1_Nat [rule_format] : "ALL X_n. 0' <=' X_n"
 dvd_def_Nat [rule_format] :
 "ALL m. ALL X_n. (m dvd' X_n) = (EX k. X_n = m *' k)"
 
-leq_def2_Nat [rule_format] : "ALL X_n. ~ suc'(X_n) <=' 0'"
+leq_def2_Nat [rule_format] : "ALL X_n. ~ suc(X_n) <=' 0'"
 
 leq_def3_Nat [rule_format] :
-"ALL m. ALL X_n. (suc'(m) <=' suc'(X_n)) = (m <=' X_n)"
+"ALL m. ALL X_n. (suc(m) <=' suc(X_n)) = (m <=' X_n)"
 
 geq_def_Nat [rule_format] :
 "ALL m. ALL X_n. (m >=' X_n) = (X_n <=' m)"
@@ -215,29 +169,29 @@ greater_def_Nat [rule_format] :
 
 even_0_Nat [rule_format] : "even'(0')"
 
-even_suc_Nat [rule_format] : "ALL m. even'(suc'(m)) = odd'(m)"
+even_suc_Nat [rule_format] : "ALL m. even'(suc(m)) = odd'(m)"
 
 odd_def_Nat [rule_format] : "ALL m. odd'(m) = (~ even'(m))"
 
 factorial_0 [rule_format] : "0' !' = 1'"
 
 factorial_suc [rule_format] :
-"ALL X_n. suc'(X_n) !' = suc'(X_n) *' X_n !'"
+"ALL X_n. suc(X_n) !' = suc(X_n) *' X_n !'"
 
 add_0_Nat [rule_format] : "ALL m. 0' +' m = m"
 
 add_suc_Nat [rule_format] :
-"ALL m. ALL X_n. suc'(X_n) +' m = suc'(X_n +' m)"
+"ALL m. ALL X_n. suc(X_n) +' m = suc(X_n +' m)"
 
 mult_0_Nat [rule_format] : "ALL m. 0' *' m = 0'"
 
 mult_suc_Nat [rule_format] :
-"ALL m. ALL X_n. suc'(X_n) *' m = (X_n *' m) +' m"
+"ALL m. ALL X_n. suc(X_n) *' m = (X_n *' m) +' m"
 
 power_0_Nat [rule_format] : "ALL m. m ^' 0' = 1'"
 
 power_suc_Nat [rule_format] :
-"ALL m. ALL X_n. m ^' suc'(X_n) = m *' (m ^' X_n)"
+"ALL m. ALL X_n. m ^' suc(X_n) = m *' (m ^' X_n)"
 
 min_def_Nat [rule_format] :
 "ALL m. ALL X_n. min'(m, X_n) = (if m <=' X_n then m else X_n)"
@@ -264,7 +218,7 @@ divide_dom_Nat [rule_format] :
 
 divide_0_Nat [rule_format] : "ALL m. ~ defOp (m /? 0')"
 
-divide_Pos_Nat [rule_format] :
+divide_Nat_Nat [rule_format] :
 "ALL m.
  ALL X_n.
  ALL r. X_n >' 0' --> m /? X_n = makePartial r = (m = r *' X_n)"
@@ -295,11 +249,6 @@ distr1_Nat [rule_format] :
 distr2_Nat [rule_format] :
 "ALL r. ALL s. ALL t. t *' (r +' s) = (t *' r) +' (t *' s)"
 
-Pos_def [rule_format] :
-"ALL p. defOp (gn_proj_Nat_Pos(p)) = (p >' 0')"
-
-X1_as_Pos_def [rule_format] : "1'' = suc''(0')"
-
 min_0 [rule_format] : "ALL m. min'(m, 0') = 0'"
 
 div_mod_Nat [rule_format] :
@@ -307,13 +256,8 @@ div_mod_Nat [rule_format] :
  ALL X_n.
  ~ X_n = 0' -->
  makePartial m =
- (let (Xb5, Xc0) =
-      let (Xb4, Xc3) = m div' X_n
-      in if Xb4 then makePartial (Xc3 *' X_n) else noneOp
-  in if Xb5
-        then let (Xb2, Xc1) = m mod' X_n
-             in if Xb2 then makePartial (Xc0 +' Xc1) else noneOp
-        else noneOp)"
+ lift2partial (flip (mapPartial o X__XPlus__X) (m mod' X_n))
+ (mapPartial (flip X__Xx__X X_n) (m div' X_n))"
 
 power_Nat [rule_format] :
 "ALL m. ALL r. ALL s. m ^' (r +' s) = (m ^' r) *' (m ^' s)"
@@ -327,7 +271,6 @@ divide_Pos_nat [rule_format] :
 part_div_def : "x /??y = (if (x mod y = 0) then makePartial(x div y) else noneOp)"
 part_minus_def : "x -?? y = (if (x>=y) then makePartial(x-y) else noneOp)"
 
-declare ga_projection [simp]
 declare ga_selector_pre [simp]
 declare ga_selector_undef_pre_0 [simp]
 declare ga_comm___XPlus__ [simp]
@@ -372,64 +315,16 @@ declare sub_dom_Nat [simp]
 declare divide_0_Nat [simp]
 declare min_0 [simp]
 
-
-
-
-section "Strong Equality"
-
-lemma strong_equality : "!! (t::'a partial) (s::'a partial) . (t =s= s)  =  (! x . ((t = makePartial x) <-> (s = makePartial x)))"
-apply (rule iffI)
-defer
-apply (unfold makePartial_def)
-apply (unfold strongEqualOp_def)
-apply (auto)
-done
-
-lemma normal2strong: "!!a b. (a=b) ==> (a =s= b)"
-apply (unfold strongEqualOp_def)
-apply (auto)
-done
-
-lemma makepartial_intro : "(s=makePartial t) = (defOp(s) & (snd(s)=t))"
-apply (rule iffI)
-apply (simp add: makePartial_def)
-apply (subst defOp_def)
-apply (simp)
-apply (simp add: makePartial_def)
-apply (case_tac "s")
-apply (simp add: defOp_def)
-done
-
-lemma makepartial_intro_downfold : "(s=makePartial t) = (defOp(s) & (defOp(s) --> (snd(s)=t)))"
-apply (rule iffI)
-apply (simp add: makePartial_def)
-apply (subst defOp_def)
-apply (simp)
-apply (simp add: makePartial_def)
-apply (case_tac "s")
-apply (simp add: defOp_def)
-done
-
-lemma makepartial_intro_weak: "(s=makePartial t) ==> (snd(s)=t)"
-apply (simp add: makePartial_def)
-done
-
-
-lemma makePartialproj: "snd (makePartial x) = x"
-apply (simp add: makePartial_def)
-done
-
-section "Definition of the Isomorphism"
-
 primrec Nat2nat
 where 
   Nat2nat_0: "Nat2nat  0' = 0 " 
-  | Nat2nat_suc: "Nat2nat  (suc'(x)) = Suc (Nat2nat x)"
+  | Nat2nat_suc: "Nat2nat  (X_suc x) = Suc (Nat2nat x)"
+
 
 primrec nat2Nat
 where
   nat2Nat_0: "nat2Nat 0 = 0'"
-| nat2Nat_Suc: "nat2Nat (Suc x) = suc' (nat2Nat x)"
+| nat2Nat_Suc: "nat2Nat (Suc x) = X_suc (nat2Nat x)"
 
 lemma iso1 [simp] : "! x . nat2Nat(Nat2nat x) = x"
 apply (auto)
@@ -804,7 +699,7 @@ apply (auto)
 done
 
 
-lemma not_greater_suc : "~ (x>'y) <-> x <' suc'(y)"
+lemma not_greater_suc : "~ (x>'y) <-> x <' X_suc(y)"
 apply (insert Nat2nat_gt)
 apply (subst (asm) not_iff)
 apply (subst (asm) not_less_eq)
@@ -833,7 +728,7 @@ done
 
 (*forward reasoning anstatt makePartial einfügen ist hilfreich*)
 
-lemma minus_suc : "(suc'(x) -! suc'(y))=(x-!y)"
+lemma minus_suc : "(X_suc(x) -! X_suc(y))=(x-!y)"
 apply (case_tac "y>'x")
 apply (simp)
 apply (subst (asm) not_greater)
@@ -896,19 +791,27 @@ apply (simp only: Nat2nat_mul Nat2nat_suc Nat2nat_add Nat2nat_9_def_Nat[rule_for
 done
 
 
-theorem Nat2nat_pre : "!!x. x > 0 --> nat2Nat(snd (pre_nat(x))) = snd (pre (nat2Nat(x)))"
+theorem Nat2nat_pre : "!!x. x > 0 ==> nat2Nat(makeTotal(pre_nat(x))) = makeTotal(pre(nat2Nat(x)))"
+(* moeglichst schnell definition von pre einsetzen *)
 apply (case_tac x)
 apply (simp)
-apply (simp add: makePartial_def)
+apply (simp add: ga_selector_pre nat2Nat_Suc)
 done
 
-theorem nat2Nat_pre : "!!x. x >' 0' --> ( Nat2nat(snd (pre(x)))  = snd(pre_nat (Nat2nat x)))"
-apply (case_tac x)
+theorem nat2Nat_pre : "x >' 0' ==> Nat2nat(makeTotal(pre(x))) = makeTotal(pre_nat(Nat2nat(x)))"
+apply (subst (asm) Nat2nat_gt[THEN sym])
+apply (simp only: Nat2nat_0)
+apply (rule nat2Nat_injectivity)
+apply (subst Nat2nat_pre)
 apply (simp)
-apply (simp add: makePartial_def)
+apply (simp add: iso2)
 done
 
-theorem nat2Nat_div [simp] : " y ~= 0 ==> nat2Nat(x div y) = snd(nat2Nat(x) div' nat2Nat(y))"
+lemma makepartial_intro_weak: "(s=makePartial t) ==> (makeTotal(s)=t)"
+apply (simp add: makePartial_def makeTotal_def)
+done
+
+theorem nat2Nat_div [simp]: "y ~= 0 ==> nat2Nat(x div y) = makeTotal(nat2Nat(x) div' nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
 apply (subst div_Nat)
@@ -922,17 +825,14 @@ apply (rule mod_less_divisor)
 apply (arith)
 done
 
-theorem Nat2nat_div [simp] : " y ~= 0' ==> Nat2nat(snd (x div' y)) = Nat2nat(x) div Nat2nat(y)"
+theorem Nat2nat_div : " y ~= 0' ==> Nat2nat(makeTotal (x div' y)) = Nat2nat(x) div Nat2nat(y)"
 apply (frule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
 apply (rule nat2Nat_injectivity)
-apply (subst nat2Nat_div)
-apply (simp)
 apply (simp)
 done
 
-
-theorem nat2Nat_mod [simp] : "~(y = 0) ==> nat2Nat(x mod y) =snd (nat2Nat(x) mod' nat2Nat(y))"
+theorem nat2Nat_mod [simp] : "~(y = 0) ==> nat2Nat(x mod y) =makeTotal (nat2Nat(x) mod' nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
 (*apply (subst nat2Nat_mod_mp[rule_format,THEN sym])*)
@@ -950,36 +850,33 @@ apply (rule mod_less_divisor)
 apply (auto)
 done
 
-theorem Nat2nat_mod [simp]: "~(y = 0') ==>  Nat2nat (snd (x mod' y)) = (Nat2nat(x) mod Nat2nat(y))"
+theorem Nat2nat_mod : "~(y = 0') ==>  Nat2nat (makeTotal (x mod' y)) = (Nat2nat(x) mod Nat2nat(y))"
 apply (frule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
 apply (rule nat2Nat_injectivity)
-apply (subst nat2Nat_mod)
-apply (simp)
 apply (simp)
 done
 
-theorem nat2Nat_pdiv[simp] : "[|~ y = 0 ; x mod y = 0|] ==> nat2Nat(snd(x /?? y)) =snd(nat2Nat(x) /? nat2Nat(y))"
+theorem nat2Nat_pdiv : "[|~ y = 0 ; x mod y = 0|] ==> nat2Nat(makeTotal(x /?? y)) =makeTotal(nat2Nat(x) /? nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
-apply (subst divide_Pos_Nat)
+apply (subst divide_Nat_Nat)
 apply (subst Nat2nat_gt[THEN sym])
 apply (simp)
 apply (rule Nat2nat_injectivity)
 apply (simp only: Nat2nat_mul iso2)
 apply (subst part_div_def)
-apply (simp add: makePartialproj)
+apply (simp)
 apply (auto)
 done
 
-
-theorem Nat2nat_pdiv [simp] : "[|~ y = 0' ; x mod' y = makePartial 0'|] ==> Nat2nat(snd(x /? y)) =snd(Nat2nat(x) /?? Nat2nat(y))"
+theorem Nat2nat_pdiv : "[|~ y = 0' ; x mod' y = makePartial 0'|] ==> Nat2nat(makeTotal(x /? y)) =makeTotal(Nat2nat(x) /?? Nat2nat(y))"
 apply (drule iso1_negated1)
 apply (subst (asm) Nat2nat_0)
-apply (drule_tac f="%x. snd(x)" in arg_cong)
+apply (drule_tac f="%x. makeTotal(x)" in arg_cong)
 apply (drule_tac f="%x. Nat2nat(x)" in arg_cong)
+apply (simp only: makePartialproj)
 apply (subst (asm) Nat2nat_mod)
-apply (simp add: iso1_negated1)
 apply (rule Nat2nat_injectivity_negated)
 apply (simp)
 apply (simp  only: makePartialproj Nat2nat_0 Nat2nat_mod)
@@ -989,7 +886,7 @@ apply (simp)
 apply (simp)
 done
 
-theorem nat2Nat_pminus [simp] : "(x >= y) ==> nat2Nat(snd (x -?? y)) = snd(nat2Nat(x) -? nat2Nat(y))"
+theorem nat2Nat_pminus : "(x >= y) ==> nat2Nat(makeTotal (x -?? y)) = makeTotal(nat2Nat(x) -? nat2Nat(y))"
 apply (rule sym)
 apply (rule makepartial_intro_weak)
 apply (subst sub_def_Nat)
@@ -999,7 +896,7 @@ apply (subst part_minus_def)
 apply (simp add: makePartialproj)
 done
 
-theorem Nat2nat_pminus [simp]: "(x >=' y) ==> Nat2nat(snd(x -? y)) = snd(Nat2nat(x) -?? Nat2nat(y))"
+theorem Nat2nat_pminus : "(x >=' y) ==> Nat2nat(makeTotal(x -? y)) = makeTotal(Nat2nat(x) -?? Nat2nat(y))"
 apply (subst (asm) Nat2nat_gt_equal[THEN sym])
 apply (rule nat2Nat_injectivity)
 apply (subst nat2Nat_pminus)
@@ -1007,5 +904,5 @@ apply (simp)
 apply (simp)
 done
 
-end
 
+end

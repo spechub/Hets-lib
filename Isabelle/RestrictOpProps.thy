@@ -88,5 +88,13 @@ lemma normalizeeq_1: "b=c ==> ((restrictOp a b) = (restrictOp a c))"
 apply (simp)
 done
 
+(* ============================================================================= *)
+
+lemma makePartialproj: "makeTotal(makePartial x)=x"
+apply (subst makeTotal_def)
+apply (subst makePartial_def)
+apply (auto)
+done
+
 
 end
