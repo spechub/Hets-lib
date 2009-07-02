@@ -52,17 +52,3 @@ spec PlaneProps = Plane then %implies
 
 end
 
-
-%[
-spec ConstructiveCylinder = AffineRealSpace3DWithSets
-then
-     op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
-	  = \x:Point . exists l:Real. exists y:Vector.
-	    l isIn closedinterval(0,1) /\ orth(y,axis) /\
-            ||y|| <= r /\ x=offset + l*axis + y;  %(def of Cylinder)%
-end
-
-view Cylinder_IsConstructiveCylinder: Cylinder to ConstructiveCylinder
-
-]%
-

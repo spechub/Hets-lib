@@ -1165,7 +1165,10 @@ theorem def_of_Cylinder :
       "!!x::RealNonNeg. makeTotal(gn_proj((gn_inj x)\<Colon>Real)) = x"
       by (simp only: gn_proj_inj subt_RealNonNeg_Real)
     
-    -- "II. GENERAL LEMMAS -- these Lemmas can't be outsourced for the moment"
+
+
+
+    -- "II. GENERAL LEMMAS"
 
     from e1e2_nonlindep have space_at_least_2dim: "EX v w. \<not> lindep(v,w)" by blast
 

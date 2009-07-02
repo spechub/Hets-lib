@@ -1,0 +1,78 @@
+library HasCASL/Real3D/Principles
+version 0.1
+
+%author: E. Schulz
+%date: 29-06-2009
+
+logic HasCASL
+
+from HasCASL/Real3D/Geometry get Plane
+
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                  Geometric Concepts/Principles                   %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+%% oriented area
+%% cog
+%% 
+
+spec Principles = Plane then
+     %% the order of introduced signature elements fits to their use in HammerPrinciple
+
+     free type %% would need something as Maybe Surface later!
+     Surface ::= NoSurface | Surface(surface, interior: PointSet); %(Surface datatype)%
+
+     preds face:PointSet;
+	   surfaceOf, outerSetOf:PointSet*PointSet;
+
+     %% definitions:
+     %% - a face is a 2 dimensional regular manifold
+     %% - a surface is a face which is surface of the given set
+     %% - an outer set is a which shares most of its surface with the given set
+
+     op toSurface(x,y:PointSet):Surface = Surface(x,y) when surfaceOf(x,y) else NoSurface;
+
+     free type
+     Box ::= UnboundedBox | Box(width, height, depth: Real); %(Box datatype)%
+
+     pred bounded(s:PointSet) <=> exists r:Real. forall p:Point. p isIn s => ||vec(p,0)|| < r
+
+     op boundingBox:PointSet -> Box
+     %% definitions:
+     %% - if s is bounded then the bounding box yields the dimensions of the smallest boundingBox for s
+
+     var a:Type
+     preds __ << __:a*a; %(much smaller than)%
+	   __ <> __:a*a; %(around)%
+	   %% lindep and positive inner product, this subsumes for both args non null
+	   sameDirection(v,w:Vector) <=> lindep(v,w) /\ v*w > 0
+
+     ops cog:PointSet -> Point;
+         surfaceOrientation:Surface*Point -> VectorStar %% (only defined for oriented surfaces)
+
+     %% definitions:
+     %% - cog can be defined by a finite invariant: the sum of cog's of
+     %%   a finite partition of s is equal to the cog times cardinality of the partition
+     %% - the surface orientation for regular surfaces of connected interiors is the outside
+     %%   oriented normed vector at the given point of the surface
+
+     pred inSameHalfspace:PointSet*Point*Point;
+	  convexSurface(s:Surface)
+	       <=> forall p,q:Point. p isIn surface(s) /\ q isIn surface(s) =>
+		   let v = surfaceOrientation(s, p)
+		   in not inSameHalfspace(Plane(p, v), p + v, q) 
+
+     %% definitions:
+     %% - inSameHalfspace holds for a omega-closed two manifold p and two points x,y
+     %%   if x and y are in the same halfspace after having divided the space by p
+     %%   omega-closed means here that one cannot go from one side of the manifold
+     %%   to the other by a finite path without crossing it.
+     %%   Typically we will apply this predicate to planes.
+     %% - for the convex surface predicate the same restrictions apply as for
+     %%   the surface orientation.
+
+
+end
