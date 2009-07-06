@@ -24,8 +24,8 @@ from HasCASL/LinearAlgebra get VectorSpace
 spec Basics = Sequence and Reals then
      var a : Type
      types Mat a := Nat * Nat -> a; %% Matrices
-	   RMat := Mat Real;  %% Real Matrbices (we'll use only them)
-	   RSeq := Seq Real; %% The supertype of all finite real vector spaces
+           RMat := Mat Real;  %% Real Matrices (we'll use only them)
+           RSeq := Seq Real; %% The supertype of all finite real vector spaces
 
 end
 
@@ -44,23 +44,23 @@ end
 spec RN_aux [op dimension:Nat] given Nat = Basics
 then
      type VecRN =
-	  {X: RSeq. forall x:Nat. X(0) = 0 /\ x > dimension => X(x) = 0}
+          {X: RSeq. forall x:Nat. X(0) = 0 /\ x > dimension => X(x) = 0}
 then %def
      ops __ + __(x,y:VecRN):VecRN = \i:Nat.! x(i) + y(i);  %(vector_add)%
-	 __ * __(s:Real; x:VecRN):VecRN = \i:Nat.! s*x(i); %(scalar_mult)%
-	 0:VecRN = const(0:Real);
+         __ * __(s:Real; x:VecRN):VecRN = \i:Nat.! s*x(i); %(scalar_mult)%
+         0:VecRN = const(0:Real);
 end
 
 spec RN[op dimension:Nat] given Nat =
      Sum[RN_aux[op dimension:Nat] fit Elem |-> Real]
 then
      ops __ * __(x,y:RSeq):Real = sum(1,dimension,\i:Nat.! x(i) * y(i));
-	 %(scalar_product)%
-	 constvec(x:Real):VecRN =
-	      \i:Nat.! (x when i>0 /\ i<=dimension else 0);
-	 %(constant_vector)%
-	 kronecker(n:Nat):RSeq = \i:Nat.! (1 when i=n else 0);
-	 %(kronecker_delta)%
+         %(scalar_product)%
+         constvec(x:Real):VecRN =
+              \i:Nat.! (x when i>0 /\ i<=dimension else 0);
+         %(constant_vector)%
+         kronecker(n:Nat):RSeq = \i:Nat.! (1 when i=n else 0);
+         %(kronecker_delta)%
 
 then %implies
      forall n,m:Nat
@@ -95,8 +95,8 @@ end
 spec AffineSpace[RealVectorSpace] =
      sort Point = Space
      ops  0:Point;
-	  __+__ : Point * Space -> Point;
-	  vec : Point * Point -> Space;
+          __+__ : Point * Space -> Point;
+          vec : Point * Point -> Space;
 
 
      forall p:Point; v:Space
