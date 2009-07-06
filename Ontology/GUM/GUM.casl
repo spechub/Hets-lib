@@ -1,5 +1,5 @@
 library Ontology/GUM/GUM
-version 1.1
+version 1.2
 
 %% developers: University of Bremen, SFB/TR8 Spatial Cognition, I1-[OntoSpace] http://www.ontospace.uni-bremen.de
 %% The Generalized Upper Model 3.0 (GUM 3.0) is a linguistically motivated ontology, which aims primarily to mediate between natural language and application components. It is based on the semantic perspective of natural language as described in Halliday and Matthiessen [1999]. Therefore the concepts of the GUM ontology are influenced strongly by the lexicogrammar of natural language and they are applicable in arbitrary domains. The complete model and all of its concepts and principles are described in detail in Bateman et al. [2006a], its underlying experimental linguistic results and language analysis are documented in Bateman et al. [2006b]. This version of the Generalized Upper Model 3.0 is expressed in CASL.
@@ -18,7 +18,6 @@ spec GUM_Taxonomy =
 		forall x: Element . not(x in MultiConfiguration)
 		sorts BeingAndHaving, DoingAndHappening, SayingAndSensing < Configuration
 			forall x: BeingAndHaving . not(x in DoingAndHappening \/ x in SayingAndSensing)
-			forall x: DoingAndHappening . not(x in SayingAndSensing)
 			sorts Existence, Relating < BeingAndHaving
 				forall x: Existence . not(x in Relating)
 				sorts Circumstantial, GeneralizedPossession, GeneralizedPossessionInverse, Intensive < Relating
@@ -172,7 +171,6 @@ spec GUM_Taxonomy =
 						forall x: DisjunctiveSet . not(x in OrderedSet)
 				sorts Abstraction, SpatialTemporal, Substance < NonConsciousThing
 					forall x: Abstraction . not(x in SpatialTemporal \/ x in Substance)
-					forall x: SpatialTemporal . not(x in Substance)
 					sorts NaturalNumber, UMSet, Word < Abstraction
 						forall x: NaturalNumber . not(x in UMSet \/ x in Word)
 						forall x: UMSet . not(x in Word)
@@ -635,7 +633,7 @@ then
 			forall x: GUM_NonAffectingDoing . not(x in GUM_Spatial_NonAffectingDoing)
 
 	sorts SpatialTemporal < NonConsciousThing
-		forall x: SpatialTemporal . not(x in Abstraction \/ x in Substance)
+		forall x: SpatialTemporal . not(x in Abstraction)
 		sorts GUM_SpatialTemporal, GUM_Spatial_SpatialTemporal < SpatialTemporal
 			forall x: GUM_SpatialTemporal . not(x in GUM_Spatial_SpatialTemporal)
 
@@ -679,7 +677,7 @@ then
 					sorts PathRepresentingInternal < Support
 			sorts Connection, Disjointness, Distribution, Parthood, ProjectionRelation, ShapeCommitting < RelativeSpatialModality
 				forall x: Connection . not(x in Disjointness \/ x in Distribution)
-				forall x: Disjointness . not(x in Distribution \/ x in Parthood \/ x in ShapeCommitting)
+				forall x: Disjointness . not(x in Distribution \/ x in ShapeCommitting)
 				forall x: Distribution . not(x in Parthood \/ x in ProjectionRelation \/ x in ShapeCommitting)
 				forall x: ProjectionRelation . not(x in ShapeCommitting)
 				sorts AboveProjectionInternal, BackProjectionInternal, BelowProjectionInternal, Central, EastInternal, FrontProjectionInternal, LeftProjectionInternal, NorthInternal, Peripheral, RightProjectionInternal, SouthInternal, WestInternal < Parthood
@@ -699,7 +697,7 @@ then
 					forall x : BackProjectionExternal . not(x in BelowProjectionExternal \/ x in DenialOfFunctionalControl \/ x in DirectionalRelation \/ x in EastExternal \/ x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
 					forall x : BelowProjectionExternal . not(x in DenialOfFunctionalControl \/ x in DirectionalRelation \/ x in EastExternal \/ x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
 					forall x : DenialOfFunctionalControl . not(x in DirectionalRelation \/ x in EastExternal \/ x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
-					forall x : DirectionalRelation . not(x in EastExternal \/ x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
+					forall x : DirectionalRelation . not(x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in UnderProjectionExternal)
 					forall x : EastExternal . not(x in FrontProjectionExternal \/ x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
 					forall x : FrontProjectionExternal . not(x in LeftProjectionExternal \/ x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
 					forall x : LeftProjectionExternal . not(x in NonProjectionAxial \/ x in NorthExternal \/ x in OverProjectionExternal \/ x in RightProjectionExternal \/ x in Sequential \/ x in SouthExternal \/ x in UnderProjectionExternal \/ x in WestExternal)
@@ -929,6 +927,7 @@ then
 	forall x: SpatialLocating
 		. exists y: GeneralizedRoute . placement(x,y) \/ exists y: GeneralizedLocation . placement(x,y)
 
+. false %implied
 end
 
 

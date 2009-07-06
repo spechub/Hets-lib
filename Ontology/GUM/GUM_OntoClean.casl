@@ -1,0 +1,982 @@
+library GUM_OntoClean
+
+logic CASL_DL
+
+%%------------------------
+%% OntoClean_Taxonomy
+%%------------------------
+
+spec OntoClean_Taxonomy =
+	sorts
+		Dependent, NonDependent, NonIdentityCriteriaSupplying, Rigid, Sortal < OntoCleanProperty;
+			FormalRole, MaterialRole < Dependent;
+			PhasedSortal < NonDependent;
+			Attribution, Category, FormalRole, MaterialRole, Mixin, NonSortal, NonRigid, PhasedSortal, QuasiType < NonIdentityCriteriaSupplying;
+				Attribution, Category, FormalRole < NonSortal;
+				AntiRigid, Attribution, Mixin < NonRigid;
+					FormalRole, MaterialRole, PhasedSortal < AntiRigid;
+			Category, IdentityCriteriaSupplying, Type, QuasiType < Rigid;
+				Type < IdentityCriteriaSupplying;
+			IdentityCriteriaSupplying, MaterialRole, Mixin, PhasedSortal, Type, QuasiType < Sortal
+
+		forall x : Dependent . not(x in NonDependent)
+		forall x : IdentityCriteriaSupplying . not(x in NonIdentityCriteriaSupplying)
+		forall x : Rigid . not(x in NonRigid)
+		forall x : Sortal . not(x in NonSortal)
+
+%% Attribution needs this restriction to be fully described.
+		forall x : Attribution . not(x in AntiRigid /\ x in Dependent)
+
+	pred subsume : OntoCleanProperty * OntoCleanProperty
+
+		forall r: Rigid; ocp: OntoCleanProperty
+			. subsume(r, ocp) => ocp in Rigid
+
+		forall s: Sortal; ocp: OntoCleanProperty
+			. subsume(s, ocp) => ocp in Sortal
+
+		forall s: Dependent; ocp: OntoCleanProperty
+			. subsume(s, ocp) => ocp in Dependent
+
+end
+
+spec GUM_OntoClean =
+	OntoClean_Taxonomy 
+
+then
+	ops
+
+		Thing                                     : OntoCleanProperty;
+
+		Ability                                   : Rigid;
+		AboveProjection                           : Rigid;
+		AboveProjectionExternal                   : Rigid;
+		AboveProjectionInternal                   : Rigid;
+		Abstraction                               : Rigid;
+		Access                                    : Rigid;
+
+		AddresseeOriented                         : Dependent;
+		AddresseeOriented                         : Rigid;
+
+		Addressing                                : Dependent;
+		Addressing                                : Rigid;
+
+		AddressingVerbal                          : Dependent;
+		AddressingVerbal                          : Rigid;
+
+		AffectingAction                           : Dependent;
+		AffectingAction                           : Rigid;
+
+		AffectingDirectedMotion                   : Dependent;
+		AffectingDirectedMotion                   : Rigid;
+
+		AffectingMotion                           : Rigid;
+
+		AffectingOrientationChange                : Dependent;
+		AffectingOrientationChange                : Rigid;
+
+		AffectingOrienting                        : Dependent;
+		AffectingOrienting                        : Rigid;
+
+		AffectingSimpleMotion                     : Rigid;
+		AffectingSpatialAction                    : Rigid;
+		Age                                       : Rigid;
+
+		AgePropertyAscription                     : Dependent;
+		AgePropertyAscription                     : Rigid;
+
+		Ambience                                  : Dependent;
+		Ambience                                  : Rigid;
+
+		ArcDirectional                            : Rigid;
+
+		Ascription                                : Dependent;
+		Ascription                                : Rigid;
+
+		AscriptionInverse                         : Dependent;
+		AscriptionInverse                         : Rigid;
+
+		AtLeast                                   : Dependent;
+		AtLeast                                   : Rigid;
+
+		AtMost                                    : Dependent;
+		AtMost                                    : Rigid;
+
+		BackProjection                            : Rigid;
+		BackProjectionExternal                    : Rigid;
+		BackProjectionInternal                    : Rigid;
+		BehavioralQuality                         : Rigid;
+
+		BehavioralVerbal                          : Dependent;
+		BehavioralVerbal                          : Rigid;
+
+		BeingAndHaving                            : Dependent;
+		BeingAndHaving                            : Rigid;
+
+		Believe                                   : Dependent;
+		Believe                                   : Rigid;
+
+		BelowProjection                           : Rigid;
+		BelowProjectionExternal                   : Rigid;
+		BelowProjectionInternal                   : Rigid;
+		CardinalDirectional                       : Rigid;
+
+		Causal                                    : Dependent;
+		Causal                                    : Rigid;
+
+		Central                                   : Rigid;
+		Circumstance                              : Rigid;
+
+		Circumstantial                            : Dependent;
+		Circumstantial                            : Rigid;
+
+		CircumstantialOther                       : Dependent;
+		CircumstantialOther                       : Rigid;
+
+		ClassAscription                           : Rigid;
+		ClassQuality                              : Rigid;
+
+		Cognition                                 : Dependent;
+		Cognition                                 : Rigid;
+
+		Color                                     : Rigid;
+
+		ColorPropertyAscription                   : Dependent;
+		ColorPropertyAscription                   : Rigid;
+
+		CommunicativeAttitude                     : Dependent;
+		CommunicativeAttitude                     : Rigid;
+
+		Conditional                               : Rigid;
+
+		Configuration                             : Dependent;
+		Configuration                             : Rigid;
+
+		Conjunction                               : Dependent;
+		Conjunction                               : Rigid;
+
+		Connection                                : Rigid;
+		ConsciousBeing                            : Rigid;
+		Containment                               : Rigid;
+		Control                                   : Rigid;
+
+		CreativeMaterialAction                    : Dependent;
+		CreativeMaterialAction                    : Rigid;
+
+		DecomposableObject                        : Rigid;
+		DeicticSpatialTemporal                    : Rigid;
+		DenialOfFunctionalControl                 : Rigid;
+		DiffuseMatter                             : Rigid;
+		DirectionalRelation                       : Rigid;
+		Disjointness                              : Rigid;
+
+		Disjunction                               : Dependent;
+		Disjunction                               : Rigid;
+
+		DisjunctiveSet                            : Rigid;
+
+		Disliking                                 : Dependent;
+		Disliking                                 : Rigid;
+
+		DispositiveMaterialAction                 : Dependent;
+		DispositiveMaterialAction                 : Rigid;
+
+		Distal                                    : Rigid;
+		Distribution                              : Rigid;
+
+		DoingAndHappening                         : Dependent;
+		DoingAndHappening                         : Rigid;
+
+		DynamicQuality                            : Rigid;
+		East                                      : Rigid;
+		EastExternal                              : Rigid;
+		EastInternal                              : Rigid;
+
+		Elaboration                               : Dependent;
+		Elaboration                               : Rigid;
+
+		Element                                   : Rigid;
+
+		ElementList                               : Dependent;
+		ElementList                               : Rigid;
+
+		ElementOf                                 : Dependent;
+		ElementOf                                 : Rigid;
+
+		Enhancement                               : Dependent;
+		Enhancement                               : Rigid;
+
+		EvaluativeQuality                         : Rigid;
+
+		Exactly                                   : Dependent;
+		Exactly                                   : Rigid;
+
+		Existence                                 : Dependent;
+		Existence                                 : Rigid;
+
+		Expansion                                 : Dependent;
+		Expansion                                 : Rigid;
+
+		Extension                                 : Dependent;
+		Extension                                 : Rigid;
+
+		External                                  : Dependent;
+		External                                  : Rigid;
+
+		Fearing                                   : Dependent;
+		Fearing                                   : Rigid;
+
+		Female                                    : Rigid;
+		FrontProjection                           : Rigid;
+		FrontProjectionExternal                   : Rigid;
+		FrontProjectionInternal                   : Rigid;
+		FrontalProjection                         : Rigid;
+		FunctionalSpatialModality                 : Rigid;
+		Future                                    : Rigid;
+		GUM_Circumstance                          : Rigid;
+		GUM_DispositiveMaterialAction             : Rigid;
+		GUM_Element                               : Rigid;
+		GUM_GeneralizedLocating                   : Rigid;
+		GUM_NonAffectingDoing                     : Rigid;
+		GUM_SimpleQuality                         : Rigid;
+		GUM_SpatialTemporal                       : Rigid;
+		GUM_Spatial_Circumstance                  : Rigid;
+		GUM_Spatial_DispositiveMaterialAction     : Rigid;
+		GUM_Spatial_Element                       : Rigid;
+		GUM_Spatial_GeneralizedLocating           : Rigid;
+		GUM_Spatial_NonAffectingDoing             : Rigid;
+		GUM_Spatial_SimpleQuality                 : Rigid;
+		GUM_Spatial_SpatialTemporal               : Rigid;
+		GeneralDirectional                        : Rigid;
+		GeneralPossibility                        : Rigid;
+		GeneralizedComplexLocation                : Rigid;
+
+		GeneralizedLocating                       : Dependent;
+		GeneralizedLocating                       : Rigid;
+
+		GeneralizedLocation                       : Dependent;
+		GeneralizedLocation                       : Rigid;
+
+		GeneralizedPathLocation                   : Rigid;
+
+		GeneralizedPossession                     : Dependent;
+		GeneralizedPossession                     : Rigid;
+
+		GeneralizedPossessionInverse              : Dependent;
+		GeneralizedPossessionInverse              : Rigid;
+
+		GeneralizedRoleRelation                   : Dependent;
+		GeneralizedRoleRelation                   : Rigid;
+
+		GeneralizedRoute                          : Rigid;
+
+		GreaterThan                               : Dependent;
+		GreaterThan                               : Rigid;
+
+		GreaterThanComparison                     : Dependent;
+		GreaterThanComparison                     : Rigid;
+
+		Hailing                                   : Dependent;
+		Hailing                                   : Rigid;
+
+		HeightNonProjectionAxial                  : Rigid;
+		HorizontalProjection                      : Rigid;
+
+		IdeaProjection                            : Dependent;
+		IdeaProjection                            : Rigid;
+
+		IdeaQuoting                               : Dependent;
+		IdeaQuoting                               : Rigid;
+
+		IdeaReporting                             : Dependent;
+		IdeaReporting                             : Rigid;
+
+		Identity                                  : Dependent;
+		Identity                                  : Rigid;
+
+		Intensive                                 : Dependent;
+		Intensive                                 : Rigid;
+
+		Intention                                 : Dependent;
+		Intention                                 : Rigid;
+
+		Internal                                  : Dependent;
+		Internal                                  : Rigid;
+
+		Know                                      : Dependent;
+		Know                                      : Rigid;
+
+		LateralProjection                         : Rigid;
+		LeftProjection                            : Rigid;
+		LeftProjectionExternal                    : Rigid;
+		LeftProjectionInternal                    : Rigid;
+
+		LessThan                                  : Dependent;
+		LessThan                                  : Rigid;
+
+		LessThanComparison                        : Dependent;
+		LessThanComparison                        : Rigid;
+
+		Liking                                    : Dependent;
+		Liking                                    : Rigid;
+
+		LocutionProjection                        : Dependent;
+		LocutionProjection                        : Rigid;
+
+		LocutionQuoting                           : Dependent;
+		LocutionQuoting                           : Rigid;
+
+		LocutionReporting                         : Dependent;
+		LocutionReporting                         : Rigid;
+
+		LogicalPropertyAscription                 : Dependent;
+		LogicalPropertyAscription                 : Rigid;
+
+		LogicalQuality                            : Rigid;
+		LogicalUniqueness                         : Rigid;
+		Male                                      : Rigid;
+		MaterialClassQuality                      : Rigid;
+
+		MaterialPropertyAscription                : Dependent;
+		MaterialPropertyAscription                : Rigid;
+
+		MaterialWorldQuality                      : Rigid;
+
+		MentalActive                              : Dependent;
+		MentalActive                              : Rigid;
+
+		MentalInactive                            : Dependent;
+		MentalInactive                            : Rigid;
+
+		MessageOriented                           : Dependent;
+		MessageOriented                           : Rigid;
+
+		MessageTransfer                           : Dependent;
+		MessageTransfer                           : Rigid;
+
+		ModalPropertyAscription                   : Dependent;
+		ModalPropertyAscription                   : Rigid;
+
+		ModalQuality                              : Rigid;
+
+		MultiConfiguration                        : Dependent;
+		MultiConfiguration                        : Rigid;
+
+		MultipleDirectional                       : Rigid;
+		Name                                      : Rigid;
+
+		NameEvent                                 : Dependent;
+		NameEvent                                 : Rigid;
+
+		NameOf                                    : Dependent;
+		NameOf                                    : Rigid;
+
+		NameRelation                              : Dependent;
+		NameRelation                              : Rigid;
+
+		NamedObject                               : Rigid;
+		NaturalNumber                             : Rigid;
+		Necessity                                 : Rigid;
+
+		NonAddresseeOriented                      : Dependent;
+		NonAddresseeOriented                      : Rigid;
+
+		NonAddressing                             : Dependent;
+		NonAddressing                             : Rigid;
+
+		NonAffectingAction                        : Dependent;
+		NonAffectingAction                        : Rigid;
+
+		NonAffectingDirectedMotion                : Dependent;
+		NonAffectingDirectedMotion                : Rigid;
+
+		NonAffectingDoing                         : Dependent;
+		NonAffectingDoing                         : Rigid;
+
+		NonAffectingHappening                     : Dependent;
+		NonAffectingHappening                     : Rigid;
+
+		NonAffectingMotion                        : Rigid;
+
+		NonAffectingOrientationChange             : Dependent;
+		NonAffectingOrientationChange             : Rigid;
+
+		NonAffectingOrienting                     : Dependent;
+		NonAffectingOrienting                     : Rigid;
+
+		NonAffectingSimpleMotion                  : Rigid;
+		NonAffectingSpatialDoing                  : Rigid;
+		NonConditional                            : Rigid;
+		NonConsciousThing                         : Rigid;
+		NonDecomposableObject                     : Rigid;
+		NonDeicticSpatialTemporal                 : Rigid;
+
+		NonMessageOriented                        : Dependent;
+		NonMessageOriented                        : Rigid;
+
+		NonProjectionAxial                        : Rigid;
+		NonScalableQuality                        : Rigid;
+		NonVolitional                             : Rigid;
+		North                                     : Rigid;
+		NorthExternal                             : Rigid;
+		NorthInternal                             : Rigid;
+
+		NumberFocusing                            : Dependent;
+		NumberFocusing                            : Rigid;
+
+		OneOrTwoDLocation                         : Rigid;
+		OneOrTwoDTime                             : Rigid;
+		OrderedObject                             : Rigid;
+		OrderedSet                                : Rigid;
+		OverProjectionExternal                    : Rigid;
+
+		OwnedBy                                   : Dependent;
+		OwnedBy                                   : Rigid;
+
+		Ownership                                 : Dependent;
+		Ownership                                 : Rigid;
+
+		Part                                      : Dependent;
+		Part                                      : Rigid;
+
+		PartOf                                    : Dependent;
+		PartOf                                    : Rigid;
+
+		PartWhole                                 : Dependent;
+		PartWhole                                 : Rigid;
+
+		Parthood                                  : Rigid;
+		Past                                      : Rigid;
+		PathRepresenting                          : Rigid;
+		PathRepresentingExternal                  : Rigid;
+		PathRepresentingInternal                  : Rigid;
+
+		Perception                                : Dependent;
+		Perception                                : Rigid;
+
+		Peripheral                                : Rigid;
+		Person                                    : Rigid;
+		PolarQuality                              : Rigid;
+		Possibility                               : Rigid;
+		Present                                   : Rigid;
+		Process                                   : Rigid;
+
+		Projection                                : Dependent;
+		Projection                                : Rigid;
+
+		ProjectionRelation                        : Rigid;
+
+		ProperVerbal                              : Dependent;
+		ProperVerbal                              : Rigid;
+
+		PropertyAscription                        : Dependent;
+		PropertyAscription                        : Rigid;
+
+		PropertyOf                                : Dependent;
+		PropertyOf                                : Rigid;
+
+		ProvenanceClassQuality                    : Rigid;
+
+		ProvenancePropertyAscription              : Dependent;
+		ProvenancePropertyAscription              : Rigid;
+
+		Proximal                                  : Rigid;
+		QualitativeDistance                       : Rigid;
+		QualitativeSpatialTemporal                : Rigid;
+		QuantitativeDistance                      : Rigid;
+		QuantitativeSpatialTemporal               : Rigid;
+
+		Quantity                                  : Dependent;
+		Quantity                                  : Rigid;
+
+		QuantityAscription                        : Dependent;
+		QuantityAscription                        : Rigid;
+
+		Quoting                                   : Dependent;
+		Quoting                                   : Rigid;
+
+		Raining                                   : Dependent;
+		Raining                                   : Rigid;
+
+		ReactionAndEmotion                        : Dependent;
+		ReactionAndEmotion                        : Rigid;
+
+		Relating                                  : Dependent;
+		Relating                                  : Rigid;
+
+		RelativeNonProjectionAxial                : Rigid;
+		RelativeSpatialModality                   : Rigid;
+
+		Reporting                                 : Dependent;
+		Reporting                                 : Rigid;
+
+		RightProjection                           : Rigid;
+		RightProjectionExternal                   : Rigid;
+		RightProjectionInternal                   : Rigid;
+
+		RolePlaying                               : Dependent;
+		RolePlaying                               : Rigid;
+
+		SayingAndSensing                          : Dependent;
+		SayingAndSensing                          : Rigid;
+
+		ScalableQuality                           : Rigid;
+
+		ScaledComparison                          : Dependent;
+		ScaledComparison                          : Rigid;
+
+		SenseAndMeasureQuality                    : Rigid;
+		Sequential                                : Rigid;
+		SequentialQuality                         : Rigid;
+		ShapeCommitting                           : Rigid;
+
+		Signification                             : Dependent;
+		Signification                             : Rigid;
+
+		SimpleQuality                             : Rigid;
+		SimpleThing                               : Rigid;
+		Size                                      : Rigid;
+
+		SizePropertyAscription                    : Dependent;
+		SizePropertyAscription                    : Rigid;
+
+		Snowing                                   : Dependent;
+		Snowing                                   : Rigid;
+
+		South                                     : Rigid;
+		SouthExternal                             : Rigid;
+		SouthInternal                             : Rigid;
+		Space                                     : Rigid;
+		SpaceInterval                             : Rigid;
+		SpacePoint                                : Rigid;
+		SpatialDistanceModality                   : Rigid;
+
+		SpatialLocating                           : Dependent;
+		SpatialLocating                           : Rigid;
+
+		SpatialModality                           : Rigid;
+		SpatialObject                             : Rigid;
+		SpatialTemporal                           : Rigid;
+		SpatialTemporalLocating                   : Rigid;
+		SpecificDirectional                       : Rigid;
+		SpecificMatter                            : Rigid;
+		StativeQuality                            : Rigid;
+		StatusQuality                             : Rigid;
+
+		Striving                                  : Dependent;
+		Striving                                  : Rigid;
+
+		SubjectMatter                             : Rigid;
+		Substance                                 : Rigid;
+
+		Sunning                                   : Dependent;
+		Sunning                                   : Rigid;
+
+		Support                                   : Rigid;
+		Surrounding                               : Rigid;
+
+		Symbolization                             : Dependent;
+		Symbolization                             : Rigid;
+
+		TaxonomicQuality                          : Rigid;
+		TemporalLocating                          : Rigid;
+		TemporalObject                            : Rigid;
+
+		Think                                     : Dependent;
+		Think                                     : Rigid;
+
+		ThreeDLocation                            : Rigid;
+		ThreeDTime                                : Rigid;
+		Time                                      : Rigid;
+		TimeInterval                              : Rigid;
+		TimePoint                                 : Rigid;
+		TopographicDirectional                    : Rigid;
+		UMSet                                     : Rigid;
+		UnderProjectionExternal                   : Rigid;
+
+		UsePropertyAscription                     : Dependent;
+		UsePropertyAscription                     : Rigid;
+
+		VerticalProjection                        : Rigid;
+		Volitional                                : Rigid;
+
+		Wanting                                   : Dependent;
+		Wanting                                   : Rigid;
+
+		West                                      : Rigid;
+		WestExternal                              : Rigid;
+		WestInternal                              : Rigid;
+
+		Winding                                   : Dependent;
+		Winding                                   : Rigid;
+
+		Word                                      : Rigid;
+		ZeroDLocation                             : Rigid;
+		ZeroDTime                                 : Rigid;
+
+		. subsume(Thing, Configuration)
+		. subsume(Thing, Element)
+		. subsume(Thing, MultiConfiguration)
+			. subsume(Configuration, BeingAndHaving)
+			. subsume(Configuration, DoingAndHappening)
+			. subsume(Configuration, SayingAndSensing)
+				. subsume(BeingAndHaving, Existence)
+				. subsume(BeingAndHaving, Relating)
+					. subsume(Relating, Circumstantial)
+					. subsume(Relating, GeneralizedPossession)
+					. subsume(Relating, GeneralizedPossessionInverse)
+					. subsume(Relating, Intensive)
+						. subsume(Circumstantial, Causal)
+						. subsume(Circumstantial, CircumstantialOther)
+						. subsume(Circumstantial, GeneralizedLocating)
+						. subsume(GeneralizedPossession, AscriptionInverse)
+						. subsume(GeneralizedPossession, GeneralizedRoleRelation)
+						. subsume(GeneralizedPossession, NameOf)
+						. subsume(GeneralizedPossession, Ownership)
+						. subsume(GeneralizedPossession, PartWhole)
+							. subsume(AscriptionInverse, PropertyOf)
+							. subsume(PartWhole, Part)
+								. subsume(Part, ElementList)
+						. subsume(GeneralizedPossessionInverse, OwnedBy)
+						. subsume(GeneralizedPossessionInverse, PartOf)
+							. subsume(PartOf, ElementOf)
+						. subsume(Intensive, Ascription)
+						. subsume(Intensive, Identity)
+						. subsume(Intensive, Symbolization)
+							. subsume(Ascription, PropertyAscription)
+							. subsume(Ascription, QuantityAscription)
+								. subsume(PropertyAscription, AgePropertyAscription)
+								. subsume(PropertyAscription, ColorPropertyAscription)
+								. subsume(PropertyAscription, LogicalPropertyAscription)
+								. subsume(PropertyAscription, MaterialPropertyAscription)
+								. subsume(PropertyAscription, ModalPropertyAscription)
+								. subsume(PropertyAscription, ProvenancePropertyAscription)
+								. subsume(PropertyAscription, ScaledComparison)
+								. subsume(PropertyAscription, SizePropertyAscription)
+								. subsume(PropertyAscription, UsePropertyAscription)
+									. subsume(ScaledComparison, GreaterThanComparison)
+									. subsume(ScaledComparison, LessThanComparison)
+								. subsume(QuantityAscription, NumberFocusing)
+								. subsume(QuantityAscription, Quantity)
+									. subsume(NumberFocusing, AtLeast)
+									. subsume(NumberFocusing, AtMost)
+									. subsume(NumberFocusing, Exactly)
+									. subsume(NumberFocusing, GreaterThan)
+									. subsume(NumberFocusing, LessThan)
+							. subsume(Symbolization, NameRelation)
+							. subsume(Symbolization, RolePlaying)
+							. subsume(Symbolization, Signification)
+				. subsume(DoingAndHappening, AffectingAction)
+				. subsume(DoingAndHappening, NonAffectingAction)
+					. subsume(AffectingAction, CreativeMaterialAction)
+					. subsume(AffectingAction, DispositiveMaterialAction)
+						. subsume(DispositiveMaterialAction, NameEvent)
+					. subsume(NonAffectingAction, Ambience)
+					. subsume(NonAffectingAction, NonAffectingDoing)
+					. subsume(NonAffectingAction, NonAffectingHappening)
+						. subsume(Ambience, Hailing)
+						. subsume(Ambience, Raining)
+						. subsume(Ambience, Snowing)
+						. subsume(Ambience, Sunning)
+						. subsume(Ambience, Winding)
+				. subsume(SayingAndSensing, External)
+				. subsume(SayingAndSensing, Internal)
+					. subsume(External, BehavioralVerbal)
+					. subsume(External, NameEvent)
+					. subsume(External, ProperVerbal)
+						. subsume(BehavioralVerbal, Addressing)
+						. subsume(BehavioralVerbal, NonAddressing)
+						. subsume(ProperVerbal, AddresseeOriented)
+						. subsume(ProperVerbal, MessageOriented)
+						. subsume(ProperVerbal, NonAddresseeOriented)
+						. subsume(ProperVerbal, NonMessageOriented)
+							. subsume(AddresseeOriented, AddressingVerbal)
+							. subsume(MessageOriented, MessageTransfer)
+							. subsume(NonAddresseeOriented, CommunicativeAttitude)
+							. subsume(NonAddresseeOriented, MessageTransfer)
+							. subsume(NonMessageOriented, AddressingVerbal)
+							. subsume(NonMessageOriented, CommunicativeAttitude)
+					. subsume(Internal, Cognition)
+					. subsume(Internal, Intention)
+					. subsume(Internal, MentalActive)
+					. subsume(Internal, MentalInactive)
+					. subsume(Internal, Perception)
+					. subsume(Internal, ReactionAndEmotion)
+							. subsume(Cognition, Believe)
+							. subsume(Cognition, Know)
+							. subsume(Cognition, Think)
+							. subsume(ReactionAndEmotion, Disliking)
+							. subsume(ReactionAndEmotion, Fearing)
+							. subsume(ReactionAndEmotion, Liking)
+								. subsume(Liking, Striving)
+								. subsume(Liking, Wanting)
+			. subsume(Element, Circumstance)
+			. subsume(Element, Process)
+			. subsume(Element, SimpleQuality)
+			. subsume(Element, SimpleThing)
+				. subsume(Circumstance, SubjectMatter)
+					. subsume(SubjectMatter, DiffuseMatter)
+					. subsume(SubjectMatter, SpecificMatter)
+				. subsume(SimpleQuality, ClassAscription)
+				. subsume(SimpleQuality, LogicalQuality)
+				. subsume(SimpleQuality, MaterialWorldQuality)
+				. subsume(SimpleQuality, ModalQuality)
+					. subsume(LogicalQuality, LogicalUniqueness)
+					. subsume(MaterialWorldQuality, DynamicQuality)
+					. subsume(MaterialWorldQuality, NonScalableQuality)
+					. subsume(MaterialWorldQuality, PolarQuality)
+					. subsume(MaterialWorldQuality, ScalableQuality)
+					. subsume(MaterialWorldQuality, StativeQuality)
+					. subsume(MaterialWorldQuality, TaxonomicQuality)
+						. subsume(DynamicQuality, BehavioralQuality)
+						. subsume(NonScalableQuality, ClassQuality)
+						. subsume(NonScalableQuality, StatusQuality)
+							. subsume(ClassQuality, MaterialClassQuality)
+							. subsume(ClassQuality, ProvenanceClassQuality)
+						. subsume(PolarQuality, BehavioralQuality)
+						. subsume(PolarQuality, EvaluativeQuality)
+						. subsume(PolarQuality, SenseAndMeasureQuality)
+						. subsume(PolarQuality, StatusQuality)
+							. subsume(SenseAndMeasureQuality, Age)
+							. subsume(SenseAndMeasureQuality, Color)
+							. subsume(SenseAndMeasureQuality, Size)
+						. subsume(ScalableQuality, BehavioralQuality)
+						. subsume(ScalableQuality, EvaluativeQuality)
+						. subsume(ScalableQuality, SenseAndMeasureQuality)
+						. subsume(StativeQuality, ClassQuality)
+						. subsume(StativeQuality, EvaluativeQuality)
+						. subsume(StativeQuality, SenseAndMeasureQuality)
+						. subsume(StativeQuality, StatusQuality)
+						. subsume(TaxonomicQuality, ClassQuality)
+					. subsume(ModalQuality, Conditional)
+					. subsume(ModalQuality, NonConditional)
+					. subsume(ModalQuality, NonVolitional)
+					. subsume(ModalQuality, Volitional)
+						. subsume(NonVolitional, Necessity)
+						. subsume(NonVolitional, Possibility)
+							. subsume(Possibility, Ability)
+							. subsume(Possibility, GeneralPossibility)
+				. subsume(SimpleThing, ConsciousBeing)
+				. subsume(SimpleThing, DecomposableObject)
+				. subsume(SimpleThing, NamedObject)
+				. subsume(SimpleThing, NonConsciousThing)
+				. subsume(SimpleThing, NonDecomposableObject)
+					. subsume(ConsciousBeing, Person)
+						. subsume(Person, Female)
+						. subsume(Person, Male)
+					. subsume(DecomposableObject, OrderedObject)
+					. subsume(DecomposableObject, UMSet)
+						. subsume(OrderedObject, OrderedSet)
+						. subsume(OrderedObject, SpaceInterval)
+						. subsume(OrderedObject, TimeInterval)
+							. subsume(SpaceInterval, OneOrTwoDLocation)
+							. subsume(SpaceInterval, ThreeDLocation)
+							. subsume(TimeInterval, Future)
+							. subsume(TimeInterval, OneOrTwoDTime)
+							. subsume(TimeInterval, Past)
+							. subsume(TimeInterval, Present)
+							. subsume(TimeInterval, ThreeDTime)
+						. subsume(UMSet, DisjunctiveSet)
+						. subsume(UMSet, OrderedSet)
+					. subsume(NonConsciousThing, Abstraction)
+					. subsume(NonConsciousThing, SpatialTemporal)
+					. subsume(NonConsciousThing, Substance)
+						. subsume(Abstraction, NaturalNumber)
+						. subsume(Abstraction, UMSet)
+						. subsume(Abstraction, Word)
+							. subsume(Word, Name)
+						. subsume(SpatialTemporal, SpatialObject)
+						. subsume(SpatialTemporal, TemporalObject)
+							. subsume(SpatialObject, Space)
+							. subsume(SpatialObject, SpaceInterval)
+							. subsume(SpatialObject, SpacePoint)
+								. subsume(SpacePoint, ZeroDLocation)
+							. subsume(TemporalObject, Time)
+							. subsume(TemporalObject, TimeInterval)
+							. subsume(TemporalObject, TimePoint)
+								. subsume(TimePoint, ZeroDTime)
+						. subsume(Substance, Space)
+						. subsume(Substance, Time)
+					. subsume(NonDecomposableObject, SpacePoint)
+					. subsume(NonDecomposableObject, Substance)
+					. subsume(NonDecomposableObject, TimePoint)
+			. subsume(MultiConfiguration, Expansion)
+			. subsume(MultiConfiguration, Projection)
+				. subsume(Expansion, Elaboration)
+				. subsume(Expansion, Enhancement)
+				. subsume(Expansion, Extension)
+					. subsume(Extension, Conjunction)
+					. subsume(Extension, Disjunction)
+				. subsume(Projection, IdeaProjection)
+				. subsume(Projection, LocutionProjection)
+				. subsume(Projection, Quoting)
+				. subsume(Projection, Reporting)
+					. subsume(IdeaProjection, IdeaQuoting)
+					. subsume(IdeaProjection, IdeaReporting)
+					. subsume(LocutionProjection, LocutionQuoting)
+					. subsume(LocutionProjection, LocutionReporting)
+					. subsume(Quoting, IdeaQuoting)
+					. subsume(Quoting, LocutionQuoting)
+					. subsume(Reporting, IdeaReporting)
+					. subsume(Reporting, LocutionReporting)
+		. subsume(AffectingAction, DispositiveMaterialAction)
+			. subsume(DispositiveMaterialAction, GUM_DispositiveMaterialAction)
+			. subsume(DispositiveMaterialAction, GUM_Spatial_DispositiveMaterialAction)
+		. subsume(Circumstantial, GeneralizedLocating)
+			. subsume(GeneralizedLocating, GUM_GeneralizedLocating)
+			. subsume(GeneralizedLocating, GUM_Spatial_GeneralizedLocating)
+		. subsume(GUM_Element, Circumstance)
+		. subsume(GUM_Element, SimpleQuality)
+			. subsume(Circumstance, GUM_Circumstance)
+			. subsume(Circumstance, GUM_Spatial_Circumstance)
+			. subsume(SimpleQuality, GUM_SimpleQuality)
+			. subsume(SimpleQuality, GUM_Spatial_SimpleQuality)
+		. subsume(NonAffectingAction, NonAffectingDoing)
+			. subsume(NonAffectingDoing, GUM_NonAffectingDoing)
+			. subsume(NonAffectingDoing, GUM_Spatial_NonAffectingDoing)
+		. subsume(NonConsciousThing, SpatialTemporal)
+			. subsume(SpatialTemporal, GUM_SpatialTemporal)
+			. subsume(SpatialTemporal, GUM_Spatial_SpatialTemporal)
+		. subsume(Thing, Element)
+			. subsume(Element, GUM_Element)
+			. subsume(Element, GUM_Spatial_Element)
+		. subsume(GUM_Spatial_Circumstance, GeneralizedLocation)
+		. subsume(GUM_Spatial_Circumstance, GeneralizedRoute)
+			. subsume(GeneralizedLocation, GeneralizedComplexLocation)
+			. subsume(GeneralizedLocation, GeneralizedPathLocation)
+		. subsume(GUM_Spatial_DispositiveMaterialAction, AffectingSpatialAction)
+			. subsume(AffectingSpatialAction, AffectingMotion)
+			. subsume(AffectingSpatialAction, AffectingOrienting)
+				. subsume(AffectingMotion, AffectingDirectedMotion)
+				. subsume(AffectingMotion, AffectingOrientationChange)
+				. subsume(AffectingMotion, AffectingSimpleMotion)
+		. subsume(GUM_Spatial_Element, SpatialModality)
+			. subsume(SpatialModality, FunctionalSpatialModality)
+			. subsume(SpatialModality, RelativeSpatialModality)
+			. subsume(SpatialModality, SpatialDistanceModality)
+				. subsume(FunctionalSpatialModality, Access)
+				. subsume(FunctionalSpatialModality, Control)
+				. subsume(FunctionalSpatialModality, DenialOfFunctionalControl)
+					. subsume(Access, FrontProjectionExternal)
+					. subsume(Access, OverProjectionExternal)
+					. subsume(Access, Proximal)
+					. subsume(Access, Sequential)
+					. subsume(Access, Surrounding)
+					. subsume(Access, UnderProjectionExternal)
+					. subsume(Control, Containment)
+					. subsume(Control, Support)
+						. subsume(Support, PathRepresentingInternal)
+				. subsume(RelativeSpatialModality, Connection)
+				. subsume(RelativeSpatialModality, Disjointness)
+				. subsume(RelativeSpatialModality, Distribution)
+				. subsume(RelativeSpatialModality, Parthood)
+				. subsume(RelativeSpatialModality, ProjectionRelation)
+				. subsume(RelativeSpatialModality, ShapeCommitting)
+					. subsume(Parthood, AboveProjectionInternal)
+					. subsume(Parthood, BackProjectionInternal)
+					. subsume(Parthood, BelowProjectionInternal)
+					. subsume(Parthood, Central)
+					. subsume(Parthood, EastInternal)
+					. subsume(Parthood, FrontProjectionInternal)
+					. subsume(Parthood, LeftProjectionInternal)
+					. subsume(Parthood, NorthInternal)
+					. subsume(Parthood, Peripheral)
+					. subsume(Parthood, RightProjectionInternal)
+					. subsume(Parthood, SouthInternal)
+					. subsume(Parthood, WestInternal)
+					. subsume(Disjointness, AboveProjectionExternal)
+					. subsume(Disjointness, BackProjectionExternal)
+					. subsume(Disjointness, BelowProjectionExternal)
+					. subsume(Disjointness, DenialOfFunctionalControl)
+					. subsume(Disjointness, DirectionalRelation)
+					. subsume(Disjointness, EastExternal)
+					. subsume(Disjointness, FrontProjectionExternal)
+					. subsume(Disjointness, LeftProjectionExternal)
+					. subsume(Disjointness, NonProjectionAxial)
+					. subsume(Disjointness, NorthExternal)
+					. subsume(Disjointness, OverProjectionExternal)
+					. subsume(Disjointness, RightProjectionExternal)
+					. subsume(Disjointness, Sequential)
+					. subsume(Disjointness, SouthExternal)
+					. subsume(Disjointness, UnderProjectionExternal)
+					. subsume(Disjointness, WestExternal)
+						. subsume(DirectionalRelation, GeneralDirectional)
+						. subsume(DirectionalRelation, SpecificDirectional)
+							. subsume(GeneralDirectional, MultipleDirectional)
+							. subsume(SpecificDirectional, ArcDirectional)
+							. subsume(SpecificDirectional, CardinalDirectional)
+							. subsume(SpecificDirectional, TopographicDirectional)
+								. subsume(CardinalDirectional, East)
+								. subsume(CardinalDirectional, North)
+								. subsume(CardinalDirectional, South)
+								. subsume(CardinalDirectional, West)
+									. subsume(East, EastInternal)
+									. subsume(East, EastExternal)
+									. subsume(North, NorthInternal)
+									. subsume(North, NorthExternal)
+									. subsume(South, SouthInternal)
+									. subsume(South, SouthExternal)
+									. subsume(West, WestInternal)
+									. subsume(West, WestExternal)
+						. subsume(NonProjectionAxial, HeightNonProjectionAxial)
+						. subsume(NonProjectionAxial, RelativeNonProjectionAxial)
+					. subsume(ProjectionRelation, HorizontalProjection)
+					. subsume(ProjectionRelation, VerticalProjection)
+						. subsume(HorizontalProjection, FrontalProjection)
+						. subsume(HorizontalProjection, LateralProjection)
+							. subsume(FrontalProjection, BackProjection)
+							. subsume(FrontalProjection, FrontProjection)
+								. subsume(BackProjection, BackProjectionExternal)
+								. subsume(BackProjection, BackProjectionInternal)
+								. subsume(FrontProjection, FrontProjectionExternal)
+								. subsume(FrontProjection, FrontProjectionInternal)
+							. subsume(LateralProjection, LeftProjection)
+							. subsume(LateralProjection, RightProjection)
+								. subsume(LeftProjection, LeftProjectionExternal)
+								. subsume(LeftProjection, LeftProjectionInternal)
+								. subsume(RightProjection, RightProjectionExternal)
+								. subsume(RightProjection, RightProjectionInternal)
+						. subsume(VerticalProjection, AboveProjection)
+						. subsume(VerticalProjection, BelowProjection)
+						. subsume(VerticalProjection, OverProjectionExternal)
+						. subsume(VerticalProjection, UnderProjectionExternal)
+							. subsume(AboveProjection, AboveProjectionExternal)
+							. subsume(AboveProjection, AboveProjectionInternal)
+							. subsume(BelowProjection, BelowProjectionExternal)
+							. subsume(BelowProjection, BelowProjectionInternal)
+					. subsume(ShapeCommitting, PathRepresenting)
+					. subsume(ShapeCommitting, Surrounding)
+						. subsume(PathRepresenting, PathRepresentingExternal)
+						. subsume(PathRepresenting, PathRepresentingInternal)
+				. subsume(SpatialDistanceModality, AboveProjectionExternal)
+				. subsume(SpatialDistanceModality, BackProjectionExternal)
+				. subsume(SpatialDistanceModality, BelowProjectionExternal)
+				. subsume(SpatialDistanceModality, FrontProjectionExternal)
+				. subsume(SpatialDistanceModality, LeftProjectionExternal)
+				. subsume(SpatialDistanceModality, NonProjectionAxial)
+				. subsume(SpatialDistanceModality, OverProjectionExternal)
+				. subsume(SpatialDistanceModality, PathRepresentingExternal)
+				. subsume(SpatialDistanceModality, QualitativeDistance)
+				. subsume(SpatialDistanceModality, QuantitativeDistance)
+				. subsume(SpatialDistanceModality, RightProjectionExternal)
+				. subsume(SpatialDistanceModality, UnderProjectionExternal)
+					. subsume(NonProjectionAxial, HeightNonProjectionAxial)
+					. subsume(NonProjectionAxial, RelativeNonProjectionAxial)
+					. subsume(QualitativeDistance, Distal)
+					. subsume(QualitativeDistance, Proximal)
+		. subsume(GUM_Spatial_GeneralizedLocating, SpatialLocating)
+		. subsume(GUM_Spatial_GeneralizedLocating, TemporalLocating)
+			. subsume(SpatialLocating, SpatialTemporalLocating)
+			. subsume(TemporalLocating, SpatialTemporalLocating)
+		. subsume(GUM_Spatial_NonAffectingDoing, NonAffectingSpatialDoing)
+			. subsume(NonAffectingSpatialDoing, NonAffectingMotion)
+			. subsume(NonAffectingSpatialDoing, NonAffectingOrienting)
+				. subsume(NonAffectingMotion, NonAffectingDirectedMotion)
+				. subsume(NonAffectingMotion, NonAffectingOrientationChange)
+				. subsume(NonAffectingMotion, NonAffectingSimpleMotion)
+		. subsume(GUM_Spatial_SimpleQuality, SequentialQuality)
+		. subsume(GUM_Spatial_SpatialTemporal, DeicticSpatialTemporal)
+		. subsume(GUM_Spatial_SpatialTemporal, NonDeicticSpatialTemporal)
+		. subsume(GUM_Spatial_SpatialTemporal, QualitativeSpatialTemporal)
+		. subsume(GUM_Spatial_SpatialTemporal, QuantitativeSpatialTemporal)
+end
