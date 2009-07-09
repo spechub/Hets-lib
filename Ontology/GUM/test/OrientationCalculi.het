@@ -1,0 +1,67 @@
+library Ontology/GUM/test/OrientationCalculi
+version 0.23
+
+spec EgoOrientation = 
+	free type Orientation2 ::= front | back
+	sort Orientation2 < Orientation
+end 
+
+spec EgoOrientation4 = EgoOrientation then
+	free type Orientation4 ::= sort Orientation2 | right | left
+	sort Orientation4 < Orientation
+end 
+
+spec EgoOrientation8 = EgoOrientation4 then
+	free type Orientation8 ::= sort Orientation4 | rightFront | 
+                                   rightBack | leftFront | leftBack
+	sort Orientation8 < Orientation
+end
+
+spec Identities =
+        sort Id    
+end
+
+spec Locations = Identities then
+        sort Location
+	op id: Location -> Id;
+	pred __==__ : Location * Location;
+	forall x, y: Location 
+	. x == y <=> id(x) = id(y)
+end
+
+spec Arrows = EgoOrientation8 and Locations then
+   free type Pair ::= __-->*__ (source,target: Location) %% edge or loop
+   sort Arrow = {v : Pair . not source(v) = target(v)} %% proper edge, no loop
+   op __-->__ : Location * Location ->? Arrow
+
+   forall x,y: Location
+   . def x --> y <=> x -->* y in Arrow
+   . x --> y = x -->* y if def x --> y
+
+	ops __|__ :  Arrow * Arrow -> Orientation  
+end
+
+
+spec DoubleCrossCalculus8 = EgoOrientation8 and Arrows then
+	sort Orientation8 < OrientationDCC13
+	sort OrientationDCC13 < Orientation
+	%% Theorie lokal filtrierend machen 
+	%% (d.h. je zwei verbundene Sorten haben eine gemeinsame Obersorte):
+	sort Orientation8 < Orientation
+	pred __#__>__ : Arrow * Arrow * OrientationDCC13
+	forall a, b, c, d: Location; o: OrientationDCC13
+	. a-->b # c-->d > o => a==c \/ b==c \/ a==d \/ b==d
+
+	forall entry, exit, c: Location; u, v, w: Arrow
+	. v = entry-->exit /\ w = exit-->c /\ u = entry-->c => 
+	   (v#w>leftFront  <=> v|w=leftFront  /\ v|u=leftFront)
+	/\ (v#w>left       <=> v|w=leftBack   /\ v|u=leftFront)
+	/\ (v#w>leftBack   <=> v|w=leftBack   /\ v|u=leftBack )
+	/\ (v#w>front      <=> v|w=front      /\ v|u=front)
+	/\ (v#w>back       <=> v|w=back       /\ v|u=back )
+	/\ (v#w>rightFront <=> v|w=rightFront /\ v|u=rightFront)
+	/\ (v#w>right      <=> v|w=rightBack  /\ v|u=rightFront)
+	/\ (v#w>rightBack  <=> v|w=rightBack  /\ v|u=rightBack )
+end
+
+
