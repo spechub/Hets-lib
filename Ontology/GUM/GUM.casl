@@ -710,9 +710,9 @@ then
 					forall x : UnderProjectionExternal . not(x in WestExternal)
 					sorts GeneralDirectional, SpecificDirectional < DirectionalRelation
 						forall x: GeneralDirectional . not(x in SpecificDirectional)
-						sorts GeneralDistancing, GeneralNearing, MultipleDirectional < GeneralDirectional
-							forall x : GeneralDistancing . not(x in GeneralNearing \/ x in MultipleDirectional)
-							forall x : GeneralNearing . not(x in MultipleDirectional)
+						sorts GeneralDirectionalDistancing, GeneralDirectionalNearing, MultipleDirectional < GeneralDirectional
+							forall x : GeneralDirectionalDistancing . not(x in GeneralDirectionalNearing \/ x in MultipleDirectional)
+							forall x : GeneralDirectionalNearing . not(x in MultipleDirectional)
 						sorts ArcDirectional, CardinalDirectional, TopographicDirectional < SpecificDirectional
 							forall x: ArcDirectional . not(x in CardinalDirectional \/ x in TopographicDirectional)
 							forall x: CardinalDirectional . not(x in TopographicDirectional)
