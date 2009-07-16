@@ -1,4 +1,4 @@
-logic DL
+logic OWL
 
 spec Predators =
      ObjectProperty: isFaster
@@ -11,13 +11,18 @@ spec Predators =
      SubclassOf: Carnivore, isSlower some Tiger
 end
 
-logic CASL_DL
+logic CASL
 
 spec Prey =
+     sort Thing
      pred Hare      : Thing
      pred Mouse     : Thing
      pred isTastier : Thing * Thing
+     pred Nothing : Thing
+     pred Thing : Thing
      forall a,b :Thing
+     . not(Nothing(a))
+     . Thing(a)
      . isTastier (a,b) => not isTastier (b,a)  %(Tastier_asym)%
      . Hare(a)  /\ Mouse (b) => isTastier (a,b) %(Hare_Tastier)%
      then %implies

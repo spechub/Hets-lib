@@ -1,4 +1,4 @@
-logic DL
+logic OWL
 spec Cats =
      ObjectProperty: isFaster
      Characteristics: Transitive, Irreflexive
@@ -12,15 +12,19 @@ spec Cats =
      DisjointWith: Cheetah
 end
 
-logic CASL_DL
+logic CASL
 spec MoreCats =
+     sort Thing
      pred Universal : Thing * Thing
      pred Self : Thing
      pred Cheetah, Tiger, Lion : Thing
      pred isFaster  : Thing * Thing
      pred Carnivore : Thing
      pred Nothing : Thing
+     pred Thing : Thing
      forall a,b,c :Thing
+     . not(Nothing(a))
+     . Thing(a)
      . Cheetah (a) => Carnivore (a)
      . Tiger   (a) => Carnivore (a)
      . Lion    (a) => Carnivore (a)
