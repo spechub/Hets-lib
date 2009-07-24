@@ -18,7 +18,7 @@ spec HolNum =
 
    . not(SUC(n) = 0)      %(NOT_SUC)%
    . SUC(m) = SUC(n) <=> m = n %(SUC_INJ)%
-   . forall P:Num->Logical. P(0) /\ (forall n:Num. P(n) => P(SUC(n))) => forall n:Num. P(n) %(num_INDUCTION)%
+   . forall P:Pred Num. P(0) /\ (forall n:Num. P(n) => P(SUC(n))) => forall n:Num. P(n) %(num_INDUCTION)%
 %%   . !forall (e:A) . forall f. ?!fn. (fn _0 = e) /\ (!n. fn (SUC n) = f (fn n) n) %(num_Axiom)%
    . forall m:Num. (m = 0) \/ (exists n:Num. m = SUC n) %(num_CASES)%
 end
