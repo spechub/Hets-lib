@@ -1,30 +1,14 @@
-# goal add_assoc_Nat is provable with Isabelle
-# use this:
-# declare add_suc_Nat [simp]
-# theorem add_assoc_Nat :
-# "ALL m. ALL X_n. ALL k. m +' (X_n +' k) = (m +' X_n) +' k"
-# apply(rule allI)
-# apply(rule allI)
-# apply(rule allI)
-# apply(induct_tac m)
-# by auto
+# automatically generated hets proof-script
 
-use Datatypes
-
-dg-all auto
-
-# ------------------------------------------------------------------------------
+use Datatypes.casl
 
 dg basic Nat
-translate CASL2SoftFOLInduction
-prover SPASS
-set goals add_0_Nat_right add_suc_Nat_1
-set time-limit 40
-prove
-
 drop-translations
+translate CASL2PCFOL
 translate CASL2SoftFOLInduction
-set goals add_comm_Nat
-set time-limit 40
+prover Darwin
+set goals add_0_Nat_right
+set axioms ga_injective_suc ga_disjoint_0_suc ga_generated_Nat add_0_Nat add_suc_Nat
+set time-limit 20
 prove
-
+#basic inference on Nat

@@ -64,11 +64,11 @@ spec ExtField[Field] = %def
         sqr__: Elem -> Elem;
         __/__: Elem * Elem ->? Elem
      forall x,y,z: Elem
-     . 2:Elem = 1:Elem + 1:Elem
+     . 2:Elem = 1 + 1:Elem
      . x-y = x + -y
      . sqr(x) = x * x
      . def(x/y) <=> not y =0
-     . x/y = inv(y) *  x if def(x/y)
+     . x/y = inv(y) *  x if def(x/y);
 then %implies
      forall x,y,z: Elem
      . 2 * x = x + x                             %(th_ef1)%

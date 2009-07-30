@@ -9,8 +9,6 @@ from Basic/RelationsAndOrders get
 from Basic/Algebra_I get
         Field |-> BasicField
 
-logic CASL
-
 spec Field =
      BasicField with op e |-> 1
 then %def
@@ -24,7 +22,7 @@ spec FieldWithOrdering =
 then
     vars a, b, c:Elem
     . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
-    . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(FWO_times_left)%
+    . (a * c) <= (b * c) if a <= b /\ 0 <= c;   %(FWO_times_left)%
 then %implies
     vars a, b, c, d: Elem
     . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%

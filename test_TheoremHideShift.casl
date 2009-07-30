@@ -8,11 +8,14 @@ spec target =
   hide a
 end
 
+spec t2 = target then
+op a : s
+
 spec source =
   sort s
   op f:s->s
   . exists x:s . f(x)=x
 end
 
-view v : source to target
+view v : source to t2
 end
