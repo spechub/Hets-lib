@@ -154,7 +154,7 @@ apply (simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def)
 done
 
 lemma partial_monad_unit2[simp]: "lift2partial makePartial m = m"
-apply (auto simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+apply (auto simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def undefinedOp_def)
 apply (case_tac "m")
 apply (auto)
 apply (case_tac "m")
@@ -164,12 +164,12 @@ done
 lemma partial_monad_assoc[simp]:
   "lift2partial g (lift2partial f m) =
   lift2partial (%x. lift2partial g (f x)) m"
-apply (simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+apply (simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def undefinedOp_def)
 done
 
 lemma strictness_closure:
   "defOp (lift2partial f a) = (defOp (lift2partial f a) & defOp a)"
-apply (simp add: lift2partial_def makePartial_def defOp.simps restrictOp_def makeTotal_def undefinedOp_def)
+apply (simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def undefinedOp_def)
 done
 
 consts preDefOp :: "'a partial => bool"
