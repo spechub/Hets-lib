@@ -69,216 +69,404 @@ supX1 :: "Real => Real => Real partial" ("sup''/'(_,/ _')" [3,3] 999)
 supX2 :: "(Real => bool) => Real partial" ("sup''''/'(_')" [3] 999)
 
 axioms
-Field_unary_minus_idef [rule_format] : "ALL x. -' x +' x = 0''"
+Field_unary_minus_idef [rule_format] :
+"ALL (x :: Real). -' (x :: Real) +' (x :: Real) = 0''"
 
-refl [rule_format] : "ALL x. x <=' x"
+refl [rule_format] : "ALL (x :: Real). (x :: Real) <=' (x :: Real)"
 
 trans [rule_format] :
-"ALL x. ALL y. ALL z. x <=' y & y <=' z --> x <=' z"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ (x :: Real) <=' (y :: Real) & (y :: Real) <=' (z :: Real) -->
+ (x :: Real) <=' (z :: Real)"
 
-antisym [rule_format] : "ALL x. ALL y. x <=' y & y <=' x --> x = y"
+antisym [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ (x :: Real) <=' (y :: Real) & (y :: Real) <=' (x :: Real) -->
+ (x :: Real) = (y :: Real)"
 
 dichotomy_TotalOrder [rule_format] :
-"ALL x. ALL y. x <=' y | y <=' x"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ (x :: Real) <=' (y :: Real) | (y :: Real) <=' (x :: Real)"
 
 FWO_plus_left [rule_format] :
-"ALL a. ALL b. ALL c. a <=' b --> a +' c <=' b +' c"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ (a :: Real) <=' (b :: Real) -->
+ (a :: Real) +' (c :: Real) <=' (b :: Real) +' (c :: Real)"
 
 FWO_times_left [rule_format] :
-"ALL a. ALL b. ALL c. a <=' b & 0'' <=' c --> a *' c <=' b *' c"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ (a :: Real) <=' (b :: Real) & 0'' <=' (c :: Real) -->
+ (a :: Real) *' (c :: Real) <=' (b :: Real) *' (c :: Real)"
 
 FWO_plus_right [rule_format] :
-"ALL a. ALL b. ALL c. b <=' c --> a +' b <=' a +' c"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ (b :: Real) <=' (c :: Real) -->
+ (a :: Real) +' (b :: Real) <=' (a :: Real) +' (c :: Real)"
 
 FWO_times_right [rule_format] :
-"ALL a. ALL b. ALL c. b <=' c & 0'' <=' a --> a *' b <=' a *' c"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ (b :: Real) <=' (c :: Real) & 0'' <=' (a :: Real) -->
+ (a :: Real) *' (b :: Real) <=' (a :: Real) *' (c :: Real)"
 
 FWO_plus [rule_format] :
-"ALL a.
- ALL b. ALL c. ALL X_d. a <=' c & b <=' X_d --> a +' b <=' c +' X_d"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ ALL (X_d :: Real).
+ (a :: Real) <=' (c :: Real) & (b :: Real) <=' (X_d :: Real) -->
+ (a :: Real) +' (b :: Real) <=' (c :: Real) +' (X_d :: Real)"
 
 geq_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x >=' y) = (y <=' x)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ((x :: Real) >=' (y :: Real)) = ((y :: Real) <=' (x :: Real))"
 
 less_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x <' y) = (x <=' y & ~ x = y)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ((x :: Real) <' (y :: Real)) =
+ ((x :: Real) <=' (y :: Real) & ~ (x :: Real) = (y :: Real))"
 
 greater_def_ExtPartialOrder [rule_format] :
-"ALL x. ALL y. (x >' y) = (y <' x)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ((x :: Real) >' (y :: Real)) = ((y :: Real) <' (x :: Real))"
 
-ga_comm_inf [rule_format] : "ALL x. ALL y. inf'(x, y) = inf'(y, x)"
+ga_comm_inf [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ inf'((x :: Real), (y :: Real)) = inf'((y :: Real), (x :: Real))"
 
-ga_comm_sup [rule_format] : "ALL x. ALL y. sup'(x, y) = sup'(y, x)"
+ga_comm_sup [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ sup'((x :: Real), (y :: Real)) = sup'((y :: Real), (x :: Real))"
 
 inf_def_ExtPartialOrder [rule_format] :
-"ALL x.
- ALL y.
- ALL z.
- inf'(x, y) = makePartial z =
- (z <=' x & z <=' y & (ALL t. t <=' x & t <=' y --> t <=' z))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ inf'((x :: Real), (y :: Real)) = makePartial (z :: Real) =
+ ((z :: Real) <=' (x :: Real) &
+  (z :: Real) <=' (y :: Real) &
+  (ALL (t :: Real).
+   (t :: Real) <=' (x :: Real) & (t :: Real) <=' (y :: Real) -->
+   (t :: Real) <=' (z :: Real)))"
 
 sup_def_ExtPartialOrder [rule_format] :
-"ALL x.
- ALL y.
- ALL z.
- sup'(x, y) = makePartial z =
- (x <=' z & y <=' z & (ALL t. x <=' t & y <=' t --> z <=' t))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ sup'((x :: Real), (y :: Real)) = makePartial (z :: Real) =
+ ((x :: Real) <=' (z :: Real) &
+  (y :: Real) <=' (z :: Real) &
+  (ALL (t :: Real).
+   (x :: Real) <=' (t :: Real) & (y :: Real) <=' (t :: Real) -->
+   (z :: Real) <=' (t :: Real)))"
 
-ga_comm_min [rule_format] : "ALL x. ALL y. min'(x, y) = min'(y, x)"
+ga_comm_min [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ min'((x :: Real), (y :: Real)) = min'((y :: Real), (x :: Real))"
 
-ga_comm_max [rule_format] : "ALL x. ALL y. max'(x, y) = max'(y, x)"
+ga_comm_max [rule_format] :
+"ALL (x :: Real).
+ ALL (y :: Real).
+ max'((x :: Real), (y :: Real)) = max'((y :: Real), (x :: Real))"
 
 ga_assoc_min [rule_format] :
-"ALL x. ALL y. ALL z. min'(min'(x, y), z) = min'(x, min'(y, z))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ min'(min'((x :: Real), (y :: Real)), (z :: Real)) =
+ min'((x :: Real), min'((y :: Real), (z :: Real)))"
 
 ga_assoc_max [rule_format] :
-"ALL x. ALL y. ALL z. max'(max'(x, y), z) = max'(x, max'(y, z))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ max'(max'((x :: Real), (y :: Real)), (z :: Real)) =
+ max'((x :: Real), max'((y :: Real), (z :: Real)))"
 
 ga_left_comm_min [rule_format] :
-"ALL x. ALL y. ALL z. min'(x, min'(y, z)) = min'(y, min'(x, z))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ min'((x :: Real), min'((y :: Real), (z :: Real))) =
+ min'((y :: Real), min'((x :: Real), (z :: Real)))"
 
 ga_left_comm_max [rule_format] :
-"ALL x. ALL y. ALL z. max'(x, max'(y, z)) = max'(y, max'(x, z))"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ ALL (z :: Real).
+ max'((x :: Real), max'((y :: Real), (z :: Real))) =
+ max'((y :: Real), max'((x :: Real), (z :: Real)))"
 
 min_def_ExtTotalOrder [rule_format] :
-"ALL x. ALL y. min'(x, y) = (if x <=' y then x else y)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ min'((x :: Real), (y :: Real)) =
+ (if (x :: Real) <=' (y :: Real) then (x :: Real) else (y :: Real))"
 
 max_def_ExtTotalOrder [rule_format] :
-"ALL x. ALL y. max'(x, y) = (if x <=' y then y else x)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ max'((x :: Real), (y :: Real)) =
+ (if (x :: Real) <=' (y :: Real) then (y :: Real) else (x :: Real))"
 
 min_inf_relation [rule_format] :
-"ALL x. ALL y. makePartial (min'(x, y)) = inf'(x, y)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ makePartial (min'((x :: Real), (y :: Real))) =
+ inf'((x :: Real), (y :: Real))"
 
 max_sup_relation [rule_format] :
-"ALL x. ALL y. makePartial (max'(x, y)) = sup'(x, y)"
+"ALL (x :: Real).
+ ALL (y :: Real).
+ makePartial (max'((x :: Real), (y :: Real))) =
+ sup'((x :: Real), (y :: Real))"
 
 Real_ub_def [rule_format] :
-"ALL M. ALL r. (M <=_3 r) = (ALL s. M s --> s <=' r)"
+"ALL (M :: Real => bool).
+ ALL (r :: Real).
+ ((M :: Real => bool) <=_3 (r :: Real)) =
+ (ALL (s :: Real).
+  (M :: Real => bool) (s :: Real) --> (s :: Real) <=' (r :: Real))"
 
 Real_lb_def [rule_format] :
-"ALL M. ALL r. (r <='' M) = (ALL s. M s --> r <=' s)"
+"ALL (M :: Real => bool).
+ ALL (r :: Real).
+ ((r :: Real) <='' (M :: Real => bool)) =
+ (ALL (s :: Real).
+  (M :: Real => bool) (s :: Real) --> (r :: Real) <=' (s :: Real))"
 
 Real_inf_def [rule_format] :
-"ALL M.
- ALL r.
- inf''(M) = makePartial r =
- (r <='' M & (ALL s. s <='' M --> s <=' r))"
+"ALL (M :: Real => bool).
+ ALL (r :: Real).
+ inf''((M :: Real => bool)) = makePartial (r :: Real) =
+ ((r :: Real) <='' (M :: Real => bool) &
+  (ALL (s :: Real).
+   (s :: Real) <='' (M :: Real => bool) -->
+   (s :: Real) <=' (r :: Real)))"
 
 Real_sup_def [rule_format] :
-"ALL M.
- ALL r.
- sup''(M) = makePartial r =
- (M <=_3 r & (ALL s. M <=_3 s --> r <=' s))"
+"ALL (M :: Real => bool).
+ ALL (r :: Real).
+ sup''((M :: Real => bool)) = makePartial (r :: Real) =
+ ((M :: Real => bool) <=_3 (r :: Real) &
+  (ALL (s :: Real).
+   (M :: Real => bool) <=_3 (s :: Real) -->
+   (r :: Real) <=' (s :: Real)))"
 
 Real_isBounded_def [rule_format] :
-"ALL M. isBounded(M) = (EX ub. EX lb. lb <='' M & M <=_3 ub)"
+"ALL (M :: Real => bool).
+ isBounded((M :: Real => bool)) =
+ (EX (ub :: Real).
+  EX (lb :: Real).
+  (lb :: Real) <='' (M :: Real => bool) &
+  (M :: Real => bool) <=_3 (ub :: Real))"
 
 completeness [rule_format] :
-"ALL M. isBounded(M) --> defOp (inf''(M)) & defOp (sup''(M))"
+"ALL (M :: Real => bool).
+ isBounded((M :: Real => bool)) -->
+ defOp (inf''((M :: Real => bool))) &
+ defOp (sup''((M :: Real => bool)))"
 
 Real_inj_0 [rule_format] : "inj'(0') = 0''"
 
 Real_inj_suc [rule_format] :
-"ALL X_n. inj'(suc(X_n)) = 1' +' inj'(X_n)"
+"ALL (X_n :: X_Nat).
+ inj'(suc((X_n :: X_Nat))) = 1' +' inj'((X_n :: X_Nat))"
 
-Real_archimedian [rule_format] : "ALL r. EX X_n. r <=' inj'(X_n)"
+Real_archimedian [rule_format] :
+"ALL (r :: Real).
+ EX (X_n :: X_Nat). (r :: Real) <=' inj'((X_n :: X_Nat))"
 
-Real_abs_def [rule_format] : "ALL r. | r | = max'(r, -' r)"
+Real_abs_def [rule_format] :
+"ALL (r :: Real).
+ | (r :: Real) | = max'((r :: Real), -' (r :: Real))"
 
-Real_sqr_def [rule_format] : "ALL r. sqr r = r *' r"
+Real_sqr_def [rule_format] :
+"ALL (r :: Real). sqr (r :: Real) = (r :: Real) *' (r :: Real)"
 
-Real_sqrt_dom [rule_format] : "ALL r. defOp (sqrt r) = (r >=' 0'')"
+Real_sqrt_dom [rule_format] :
+"ALL (r :: Real). defOp (sqrt (r :: Real)) = ((r :: Real) >=' 0'')"
 
 Real_sqrt_idef [rule_format] :
-"ALL r. sqrt sqr r = makePartial ( | r | )"
+"ALL (r :: Real).
+ sqrt sqr (r :: Real) = makePartial ( | (r :: Real) | )"
 
 Real_2_def [rule_format] : "2' = 1' +' 1'"
 
 Real_minus_def [rule_format] :
-"ALL r. ALL r'. r -' r' = r +' -' r'"
+"ALL (r :: Real).
+ ALL (r' :: Real).
+ (r :: Real) -' (r' :: Real) = (r :: Real) +' -' (r' :: Real)"
 
-Real_divide_dom [rule_format] : "ALL r. ~ defOp (r /' 0'')"
+Real_divide_dom [rule_format] :
+"ALL (r :: Real). ~ defOp ((r :: Real) /' 0'')"
 
 Real_divide_idef [rule_format] :
-"ALL r.
- ALL r'.
- ALL r''.
- (~ r' = 0'' --> r /' r' = makePartial r'') = (r'' *' r' = r)"
+"ALL (r :: Real).
+ ALL (r' :: Real).
+ ALL (r'' :: Real).
+ (~ (r' :: Real) = 0'' -->
+  (r :: Real) /' (r' :: Real) = makePartial (r'' :: Real)) =
+ ((r'' :: Real) *' (r' :: Real) = (r :: Real))"
 
-Real_half_idef [rule_format] : "ALL r. 2' *' half(r) = r"
+Real_half_idef [rule_format] :
+"ALL (r :: Real). 2' *' half((r :: Real)) = (r :: Real)"
 
 one_greater_zero [rule_format] : "1' >' 0''"
 
 zero_leq_one [rule_format] : "0'' <=' 1'"
 
-half_gt_zero [rule_format] : "ALL r. r >' 0'' --> half(r) >' 0''"
+half_gt_zero [rule_format] :
+"ALL (r :: Real). (r :: Real) >' 0'' --> half((r :: Real)) >' 0''"
 
 half_plus_minus [rule_format] :
-"ALL r. ALL s. r <=' s --> s +' half(r -' s) <=' s"
+"ALL (r :: Real).
+ ALL (s :: Real).
+ (r :: Real) <=' (s :: Real) -->
+ (s :: Real) +' half((r :: Real) -' (s :: Real)) <=' (s :: Real)"
 
 add_monotone [rule_format] :
-"ALL a.
- ALL b. ALL c. ALL e. a <=' b & c <=' e --> a +' c <=' b +' e"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ALL (c :: Real).
+ ALL (e :: Real).
+ (a :: Real) <=' (b :: Real) & (c :: Real) <=' (e :: Real) -->
+ (a :: Real) +' (c :: Real) <=' (b :: Real) +' (e :: Real)"
 
-sub_leq [rule_format] : "ALL a. ALL b. ~ a <=' b --> a -' b >' 0''"
+sub_leq [rule_format] :
+"ALL (a :: Real).
+ ALL (b :: Real).
+ ~ (a :: Real) <=' (b :: Real) -->
+ (a :: Real) -' (b :: Real) >' 0''"
 
 half_leq [rule_format] :
-"ALL a. ALL b. a <=' half(a -' b) +' b --> a <=' b"
+"ALL (a :: Real).
+ ALL (b :: Real).
+ (a :: Real) <=' half((a :: Real) -' (b :: Real)) +' (b :: Real) -->
+ (a :: Real) <=' (b :: Real)"
 
 half_leq_zero [rule_format] :
-"ALL r. 0'' <=' r --> 0'' <=' half(r)"
+"ALL (r :: Real).
+ 0'' <=' (r :: Real) --> 0'' <=' half((r :: Real))"
 
-comm_add [rule_format] : "ALL a. ALL b. a +' b = b +' a"
+comm_add [rule_format] :
+"ALL (a :: Real).
+ ALL (b :: Real).
+ (a :: Real) +' (b :: Real) = (b :: Real) +' (a :: Real)"
 
 Real_half_plus [rule_format] :
-"ALL r. ALL s. half(r +' s) = half(r) +' half(s)"
+"ALL (r :: Real).
+ ALL (s :: Real).
+ half((r :: Real) +' (s :: Real)) =
+ half((r :: Real)) +' half((s :: Real))"
 
 Real_half_minus [rule_format] :
-"ALL r. ALL s. half(r -' s) = half(r) -' half(s)"
+"ALL (r :: Real).
+ ALL (s :: Real).
+ half((r :: Real) -' (s :: Real)) =
+ half((r :: Real)) -' half((s :: Real))"
 
-Real_minus_half [rule_format] : "ALL r. r -' half(r) = half(r)"
+Real_minus_half [rule_format] :
+"ALL (r :: Real).
+ (r :: Real) -' half((r :: Real)) = half((r :: Real))"
 
 Real_half_monot [rule_format] :
-"ALL r. ALL s. (half(r) <=' half(s)) = (r <=' s)"
+"ALL (r :: Real).
+ ALL (s :: Real).
+ (half((r :: Real)) <=' half((s :: Real))) =
+ ((r :: Real) <=' (s :: Real))"
 
 MS_pos_definite [rule_format] :
-"ALL x. ALL y. d(x, y) = 0'' = (x = y)"
+"ALL (x :: S).
+ ALL (y :: S). d((x :: S), (y :: S)) = 0'' = ((x :: S) = (y :: S))"
 
-MS_symm [rule_format] : "ALL x. ALL y. d(x, y) = d(y, x)"
+MS_symm [rule_format] :
+"ALL (x :: S).
+ ALL (y :: S). d((x :: S), (y :: S)) = d((y :: S), (x :: S))"
 
 MS_triangle [rule_format] :
-"ALL x. ALL y. ALL z. d(x, z) <=' d(x, y) +' d(y, z)"
+"ALL (x :: S).
+ ALL (y :: S).
+ ALL (z :: S).
+ d((x :: S), (z :: S)) <='
+ d((x :: S), (y :: S)) +' d((y :: S), (z :: S))"
 
-MS_pos [rule_format] : "ALL x. ALL y. 0'' <=' d(x, y)"
+MS_pos [rule_format] :
+"ALL (x :: S). ALL (y :: S). 0'' <=' d((x :: S), (y :: S))"
 
-MS_zero [rule_format] : "ALL x. d(x, x) = 0''"
+MS_zero [rule_format] : "ALL (x :: S). d((x :: S), (x :: S)) = 0''"
 
 EMSCB_rep_pos [rule_format] :
-"ALL r.
- ALL x.
- ALL y. r >' 0'' --> rep (closedBall(x, r)) y = (d(x, y) <=' r)"
+"ALL (r :: Real).
+ ALL (x :: S).
+ ALL (y :: S).
+ (r :: Real) >' 0'' -->
+ rep (closedBall((x :: S), (r :: Real))) (y :: S) =
+ (d((x :: S), (y :: S)) <=' (r :: Real))"
 
 EMSCB_rep_0 [rule_format] :
-"ALL r. ALL x. ALL y. ~ r >' 0'' --> ~ rep (closedBall(x, r)) y"
+"ALL (r :: Real).
+ ALL (x :: S).
+ ALL (y :: S).
+ ~ (r :: Real) >' 0'' -->
+ ~ rep (closedBall((x :: S), (r :: Real))) (y :: S)"
 
 EMSCB_rep_inj [rule_format] :
-"ALL a. ALL b. rep a = rep b --> a = b"
+"ALL (a :: ClosedBall).
+ ALL (b :: ClosedBall).
+ rep (a :: ClosedBall) = rep (b :: ClosedBall) -->
+ (a :: ClosedBall) = (b :: ClosedBall)"
 
-Ax4 [rule_format] : "ALL a. EX z. EX t. a = closedBall(z, t)"
+Ax4 [rule_format] :
+"ALL (a :: ClosedBall).
+ EX (z :: S).
+ EX (t :: Real).
+ (a :: ClosedBall) = closedBall((z :: S), (t :: Real))"
 
 EMSCB_center [rule_format] :
-"ALL r. ALL x. r >' 0'' --> rep (closedBall(x, r)) x"
+"ALL (r :: Real).
+ ALL (x :: S).
+ (r :: Real) >' 0'' -->
+ rep (closedBall((x :: S), (r :: Real))) (x :: S)"
 
 EMSCB_closed [rule_format] :
-"ALL a.
- ALL x.
- ~ rep a x -->
- (EX r. ALL y. ~ (rep (closedBall(x, r)) y & ~ rep a y))"
+"ALL (a :: ClosedBall).
+ ALL (x :: S).
+ ~ rep (a :: ClosedBall) (x :: S) -->
+ (EX (r :: Real).
+  ALL (y :: S).
+  ~
+  (rep (closedBall((x :: S), (r :: Real))) (y :: S) &
+   ~ rep (a :: ClosedBall) (y :: S)))"
 
-Ax1 [rule_format] : "ALL x. nonempty(x) = (x C x)"
+Ax1 [rule_format] :
+"ALL (x :: ClosedBall).
+ nonempty((x :: ClosedBall)) =
+ ((x :: ClosedBall) C (x :: ClosedBall))"
 
 C_def [rule_format] :
-"ALL x. ALL y. (x C y) = (EX s. rep x s & rep y s)"
+"ALL (x :: ClosedBall).
+ ALL (y :: ClosedBall).
+ ((x :: ClosedBall) C (y :: ClosedBall)) =
+ (EX (s :: S).
+  rep (x :: ClosedBall) (s :: S) & rep (y :: ClosedBall) (s :: S))"
 
 declare Field_unary_minus_idef [simp]
 declare refl [simp]
@@ -305,20 +493,28 @@ declare sub_leq [simp]
 declare half_leq_zero [simp]
 declare Real_minus_half [simp]
 declare Real_half_monot [simp]
-declare MS_pos_definite [simp]
 declare MS_triangle [simp]
 declare MS_pos [simp]
+declare MS_pos_definite [simp]
 declare MS_zero [simp]
 declare EMSCB_rep_pos [simp]
 declare EMSCB_rep_0 [simp]
 declare EMSCB_center [simp]
 
-theorem C_non_null : "ALL x. ALL y. x C y --> x C x"
+theorem C_non_null :
+"ALL (x :: ClosedBall).
+ ALL (y :: ClosedBall).
+ (x :: ClosedBall) C (y :: ClosedBall) -->
+ (x :: ClosedBall) C (x :: ClosedBall)"
 using C_def by auto
 
 ML "Header.record \"C_non_null\""
 
-theorem C_sym : "ALL x. ALL y. x C y --> y C x"
+theorem C_sym :
+"ALL (x :: ClosedBall).
+ ALL (y :: ClosedBall).
+ (x :: ClosedBall) C (y :: ClosedBall) -->
+ (y :: ClosedBall) C (x :: ClosedBall)"
 using C_def by auto
 
 ML "Header.record \"C_sym\""
@@ -388,7 +584,13 @@ apply(rule reflLemma)
 apply(rule MS_symm)
 done
 
-theorem C_id : "ALL x. ALL y. (ALL z. (z C x) = (z C y)) --> x = y"
+theorem C_id :
+"ALL (x :: ClosedBall).
+ ALL (y :: ClosedBall).
+ (ALL (z :: ClosedBall).
+  ((z :: ClosedBall) C (x :: ClosedBall)) =
+  ((z :: ClosedBall) C (y :: ClosedBall))) -->
+ (x :: ClosedBall) = (y :: ClosedBall)"
 apply (auto simp add: C_def)
 apply (rule EMSCB_rep_inj)
 apply (rule ext)
@@ -401,7 +603,8 @@ done
 
 ML "Header.record \"C_id\""
 
-theorem C_non_triv : "EX x. x C x"
+theorem C_non_triv :
+"EX (x :: ClosedBall). (x :: ClosedBall) C (x :: ClosedBall)"
 apply (simp add: C_def)
 apply (rule exI)
 apply (rule exI)
