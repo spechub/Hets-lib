@@ -1810,26 +1810,50 @@ proof-
 qed
 
 
+lemma defOp_implies_makePartial:
+"defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
+  by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def)
+
+-- "need this to expand a term for application of lemmas"
+lemma partial_identity: "!!x. makeTotal(makePartial(x)) = x"
+  by (simp add: makeTotal_def makePartial_def)
 
 
 -- "INJECTION PROJECTION RULES"
 
+lemma gn_proj_inj:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'a). makePartial(z) = gn_proj(gn_inj(z):: 'b))"
+proof-
+  assume hyp: "X_gn_subt x y"
+  fix z :: 'a
+
+  have "(gn_inj(z) :: 'b) = gn_inj(z) = (makePartial z = gn_proj(gn_inj(z) :: 'b))"
+    by (rule ga_subt_inj_proj, rule subtype_constant [of x y], simp only: hyp)
+  thus "makePartial z = gn_proj(gn_inj(z) :: 'b)" by simp
+qed
+
+lemma gn_makeTotal_proj_inj:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'a). makeTotal(gn_proj(gn_inj(z):: 'b)) = z)"
+ by (simp only: partial_identity gn_proj_inj [symmetric])
+
+
 -- "is used to derive defining predicate P for a subtype A, P(gn_inj(x::A))"
 lemma gn_proj_def:
 "X_gn_subt (x:: 'a) (y:: 'b) ==> defOp(gn_proj(gn_inj(x):: 'b):: 'a partial)"
-
-lemma gn_proj_inj:
-"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'a). makeTotal(gn_proj(gn_inj(z):: 'b)) = z)"
+ sorry
 
 lemma gn_inj_proj:
 "X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'b). defOp(gn_proj(z):: 'a partial) ==>
   gn_inj(makeTotal(gn_proj(z):: 'a partial)) = z)"
+ sorry
 
 lemma gn_inj_diagram:
 "[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (t:: 'b) (z:: 'c) |]
   ==> (!!(x':: 'a). (gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b))"
 
 --   "X_gn_subt (u:: 'a) (v:: 'b) ==> inj (gn_inj:: 'a => 'b)"
+ sorry
+
 
 lemma gn_inj_injective :
   "X_gn_subt (u :: 'a) (v:: 'b) ==> inj (X_gn_inj :: 'a => 'b)"
@@ -1841,7 +1865,7 @@ lemma gn_inj_injective :
 
     from hyp1 subtype_constant 
     have fact: "!!(z:: 'a). makeTotal(gn_proj(gn_inj(z):: 'b)) = z"
-      by (rule_tac gn_proj_inj, blast)
+      by (rule_tac gn_makeTotal_proj_inj, blast)
 
     hence "x = makeTotal(gn_proj(gn_inj(x):: 'b))" ..
     also from hyp2 have "... = makeTotal(gn_proj(gn_inj(y):: 'b))" by simp
@@ -1860,25 +1884,6 @@ proof-
       simp_all only: gn_inj_injective subtype_reflexive fact [symmetric])
 qed
 
-
-
-axioms
-
-kga_subt_inj_proj [rule_format] :
-"ALL (x :: 'a).
- ALL (y :: 'b).
- gn_subt((x :: 'a), (y :: 'b)) -->
- (y :: 'b) = gn_inj((x :: 'a)) =
- (makePartial (x :: 'a) =
-  (X_gn_proj :: 'b => 'a partial) (y :: 'b))"
-
-kga_inj_transitive [rule_format] :
-"ALL (x :: 'a).
- ALL (y :: 'b).
- ALL (z :: 'c).
- gn_subt((x :: 'a), (y :: 'b)) & gn_subt((y :: 'b), (z :: 'c)) -->
- (z :: 'c) = gn_inj((x :: 'a)) ==
- ((y :: 'b) = gn_inj((x :: 'a)) & (z :: 'c) = gn_inj((y :: 'b)))"
 
 
 -- "TODO: this should be already available by the encoding"
@@ -1928,10 +1933,6 @@ theorem def_of_Cylinder :
 
     -- "I. SUBTYPE AND PARTIALITY LEMMAS"
 
-    -- "need this to expand a term for application of lemmas"
-    have partial_identity: "!!x. makeTotal(makePartial(x)) = x"
-      by (simp add: makeTotal_def makePartial_def)
-
     -- "to infer knowledge of the form"
     -- "!!x::subtype. ?defining_predicate(gn_inj(x))"
     -- "where the ? emphasizes the fact, that we want the predicate to be expanded,"
@@ -1964,7 +1965,7 @@ theorem def_of_Cylinder :
 
     have realnonneg_identity:
       "!!x::RealNonNeg. makeTotal(gn_proj((X_gn_inj x)\<Colon>Real)) = x"
-      by (simp only: gn_proj_inj ga_subt_RealNonNeg_XLt_Real)
+      by (simp only: gn_makeTotal_proj_inj ga_subt_RealNonNeg_XLt_Real)
 
 
 
