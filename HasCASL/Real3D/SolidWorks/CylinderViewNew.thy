@@ -287,17 +287,13 @@ ga_subt_inj_proj [rule_format] :
  (makePartial (x :: 'a) =
   (X_gn_proj :: 'b => 'a partial) (y :: 'b))"
 
-(*
- this is false, consider, e.g., 1::Real, 2::NonZero, 1'::RealPos
- we have RealPos < NonZero < Real, and 1 = gn_inj(1') but not 1 = gn_inj(2) !
-*)
+-- "TODO: adapted this rule by hand, has to be done by HasCASL subtype encoding!"
 ga_inj_transitive [rule_format] :
 "ALL (x :: 'a).
  ALL (y :: 'b).
  ALL (z :: 'c).
  gn_subt((x :: 'a), (y :: 'b)) & gn_subt((y :: 'b), (z :: 'c)) -->
- (z :: 'c) = gn_inj((x :: 'a)) =
- ((y :: 'b) = gn_inj((x :: 'a)) & (z :: 'c) = gn_inj((y :: 'b)))"
+ (gn_inj(x) :: 'c) = gn_inj(gn_inj(x) :: 'b)"
 
 ga_subt_NonZero_XLt_Real [rule_format] :
 "gn_subt((x :: NonZero), (y :: Real))"
@@ -1778,13 +1774,14 @@ declare semantics_for_Sketches [simp]
 
 axioms
 
+-- "TODO: remove this axiom and put the subtype derivations as explicit statements in Hets already"
 -- "is used for derivation of subtypes:"
 subtype_subsumption:
 "[| X_gn_subt (x:: 'a) (y:: 'c); X_gn_subt (z:: 'b) (t:: 'c);
   (!!(z':: 'c). defOp(gn_proj(z'):: 'a partial) ==> defOp(gn_proj(z'):: 'b partial)) |]
   ==> (X_gn_subt (u:: 'a) (v:: 'b))"
 
-
+-- "TODO: outsource this lemmas into a locale"
 lemma subtype_reflexive:
 "X_gn_subt (x:: 'a) (y:: 'a)" by (simp only: ga_subt_reflexive)
 
@@ -1840,19 +1837,52 @@ lemma gn_makeTotal_proj_inj:
 -- "is used to derive defining predicate P for a subtype A, P(gn_inj(x::A))"
 lemma gn_proj_def:
 "X_gn_subt (x:: 'a) (y:: 'b) ==> defOp(gn_proj(gn_inj(x):: 'b):: 'a partial)"
- sorry
+proof-
+  assume hyp: "gn_subt(x, y)"
+  hence A: "makePartial(x) = gn_proj(gn_inj(x):: 'b)" by (rule gn_proj_inj [of x y x])
+  show "defOp(gn_proj(gn_inj(x):: 'b):: 'a partial)"
+    by (simp add: A [symmetric] makePartial_def)
+qed
 
 lemma gn_inj_proj:
 "X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'b). defOp(gn_proj(z):: 'a partial) ==>
   gn_inj(makeTotal(gn_proj(z):: 'a partial)) = z)"
- sorry
+proof-
+  assume hyp: "gn_subt(x, y)"
+  fix z :: 'b
+  assume hyp': "defOp(gn_proj(z):: 'a partial)"
+  have "EX (t :: 'a). gn_proj(z) = makePartial t"
+    by (rule defOp_implies_makePartial [of "gn_proj(z)"], simp only: hyp')
+  then obtain t :: 'a where eq1: "makePartial t = gn_proj(z)" by auto
+  from hyp have A: "gn_subt(t, z)" by (simp only: subtype_constant)
+  have B: "t=makeTotal(gn_proj(gn_inj(t):: 'b)) "
+    by (rule gn_makeTotal_proj_inj [symmetric,of x y], simp only: hyp)
+  have C: "z = gn_inj(t)"
+    by (simp only: ga_subt_inj_proj subtype_reflexive A eq1)
+  also have "\<dots> = gn_inj(makeTotal(gn_proj(gn_inj(t):: 'b)):: 'a)"
+    by (subst B, simp)
+  also have "\<dots> = gn_inj(makeTotal(gn_proj(z)):: 'a)" by (simp only: C)
+  finally show "gn_inj(makeTotal(gn_proj(z)):: 'a) = z" ..
+qed
+
 
 lemma gn_inj_diagram:
-"[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (t:: 'b) (z:: 'c) |]
+"[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (z:: 'b) (t:: 'c) |]
   ==> (!!(x':: 'a). (gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b))"
 
 --   "X_gn_subt (u:: 'a) (v:: 'b) ==> inj (gn_inj:: 'a => 'b)"
- sorry
+proof-
+  assume hypAB: "X_gn_subt (x:: 'a) (y:: 'b)"
+  assume hypBC: "X_gn_subt (z:: 'b) (t:: 'c)"
+  fix x' :: 'a
+  
+  from hypAB have A: "gn_subt(x',y)" by (simp only: subtype_constant)
+  from hypBC have B: "gn_subt(y,t)" by (simp only: subtype_constant)
+  
+  
+  show "(gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b)"
+    by (rule ga_inj_transitive [of x' y t], simp add: A B)
+qed
 
 
 lemma gn_inj_injective :
