@@ -181,4 +181,34 @@ preDefOp_atom[simp]: "preDefOp a = defOp a"
 preDefOp_lift[simp]:
 "preDefOp (lift2partial f a) = (defOp (lift2partial f a) & preDefOp a)"
 
+
+(*
+   A facility to reason about subtypes
+
+This doesn't work, because Isabelle doesn't allow polymorphic constants in the
+fixes list, i.e., the 'a and 'b are constant inside the context of the locale!
+
+locale subtype = 
+  fixes
+  i :: "'a => 'b"
+  and p :: "'a => 'b partial"
+  and subt :: "'a => 'b => bool"
+
+  assumes
+
+  refl :
+  "ALL (x :: 'a) (y :: 'a). subt x y"
+
+  and trans :
+  "ALL (x :: 'a) (y :: 'b) (z :: 'c). subt x y & subt y z --> subt x z"
+
+  and inj_proj :
+  "ALL (x :: 'a) (y :: 'b). subt x y --> y = i(x) = (makePartial x = p(y))"
+
+  and inj_trans :
+  "ALL (x :: 'a) (y :: 'b) (z :: 'c). subt x y & subt y z -->
+  (i(x) :: 'c) = i(i(x) :: 'b)"
+
+*)
+
 end
