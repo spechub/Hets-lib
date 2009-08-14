@@ -7,7 +7,8 @@ ML "Header.initialize
     [\"ga_subt_reflexive\", \"ga_subt_transitive\",
      \"ga_subt_inj_proj\", \"ga_inj_transitive\",
      \"ga_subt_NonZero_XLt_Real\", \"ga_subt_RealNonNeg_XLt_Real\",
-     \"ga_subt_RealPos_XLt_Real\", \"ga_subt_SWArc_XLt_SWSketchObject\",
+     \"ga_subt_RealPos_XLt_Real\", \"ga_subt_RealPos_XLt_RealNonNeg\",
+     \"ga_subt_SWArc_XLt_SWSketchObject\",
      \"ga_subt_SWExtrusion_XLt_SWFeature\",
      \"ga_subt_SWFeature_XLt_SWObject\",
      \"ga_subt_SWLine_XLt_SWSketchObject\",
@@ -299,6 +300,9 @@ ga_subt_RealNonNeg_XLt_Real [rule_format] :
 
 ga_subt_RealPos_XLt_Real [rule_format] :
 "ALL (x :: RealPos). ALL (y :: Real). gn_subt(x, y)"
+
+ga_subt_RealPos_XLt_RealNonNeg [rule_format] :
+"ALL (x :: RealPos). ALL (y :: RealNonNeg). gn_subt(x, y)"
 
 ga_subt_SWArc_XLt_SWSketchObject [rule_format] :
 "ALL (x :: SWArc). ALL (y :: SWSketchObject). gn_subt(x, y)"
@@ -1430,15 +1434,6 @@ declare semantics_for_Sketches [simp]
 
 -- "SUBTYPE RULES"
 
-axioms
-
--- "TODO: remove this axiom and put the subtype derivations as explicit statements in Hets already"
--- "is used for derivation of subtypes:"
-subtype_subsumption:
-"[| X_gn_subt (x:: 'a) (y:: 'c); X_gn_subt (z:: 'b) (t:: 'c);
-  (!!(z':: 'c). defOp(gn_proj(z'):: 'a partial) ==> defOp(gn_proj(z'):: 'b partial)) |]
-  ==> (X_gn_subt (u:: 'a) (v:: 'b))"
-
 -- "TODO: outsource this lemmas into a locale"
 -- "actually not possible because of the polymorphic functions"
 lemma subtype_reflexive:
@@ -1464,15 +1459,6 @@ proof-
   fix v:: 'b
   show "X_gn_subt u v" by (rule subtype_transitive [of x x x y u v], simp add: ga_subt_reflexive hyp)
 qed
-
-
-lemma defOp_implies_makePartial:
-"defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
-  by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def)
-
--- "need this to expand a term for application of lemmas"
-lemma partial_identity: "!!x. makeTotal(makePartial(x)) = x"
-  by (simp add: makeTotal_def makePartial_def)
 
 
 -- "INJECTION PROJECTION RULES"
@@ -1641,12 +1627,6 @@ theorem def_of_Cylinder :
     from RealPos_subtype have
       realpos_nonneg: "!!x::RealPos. 0'' <=' gn_inj(x)"
       by (simp only: PO_simps)
-
-    from ga_subt_RealPos_XLt_Real
-    have ga_subt_RealPos_XLt_RealNonNeg:
-      "!!(x::RealPos) (y::RealNonNeg). X_gn_subt x y"
-      by (rule_tac subtype_subsumption, blast,
-	simp_all add: ga_subt_RealNonNeg_XLt_Real RealPos_pred_def RealNonNeg_pred_def PO_simps)
 
     from ga_subt_RealPos_XLt_RealNonNeg ga_subt_RealNonNeg_XLt_Real ga_subt_RealPos_XLt_Real
     have real_inj:

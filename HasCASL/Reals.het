@@ -94,6 +94,7 @@ then %def
 
      types RealNonNeg = {x:Real. RealNonNeg_pred x}; %(RealNonNeg type)%
 	   RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
+	   RealPos < RealNonNeg; 
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
 	%(abs def)%
