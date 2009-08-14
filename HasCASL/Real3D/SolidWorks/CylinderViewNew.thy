@@ -24,10 +24,10 @@ ML "Header.initialize
      \"ga_comm___Xx___14\", \"noZeroDiv\", \"zeroNeqOne\",
      \"NonZero_type\", \"ga_assoc___Xx___22\",
      \"ga_right_unit___Xx___18\", \"ga_left_unit___Xx___20\",
-     \"inv_Group_21\", \"rinv_Group_19\", \"binary_inverse\", \"binary_field_inverse\",
-     \"refl\", \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
-     \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\",
-     \"FWO_times_right\", \"FWO_plus\", \"inf_def\",
+     \"inv_Group_21\", \"rinv_Group_19\", \"binary_inverse\",
+     \"binary_field_inverse\", \"refl\", \"trans\", \"antisym\",
+     \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
+     \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\", \"inf_def\",
      \"Real_completeness\", \"geq_def_ExtPartialOrder\",
      \"less_def_ExtPartialOrder\", \"greater_def_ExtPartialOrder\",
      \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\",
@@ -270,812 +270,616 @@ setFromProperty :: "('S => bool) => 'S => bool"
 
 axioms
 ga_subt_reflexive [rule_format] :
-"ALL (x :: 'a). ALL (y :: 'a). gn_subt((x :: 'a), (y :: 'a))"
+"ALL (x :: 'a). ALL (y :: 'a). gn_subt(x, y)"
 
 ga_subt_transitive [rule_format] :
 "ALL (x :: 'a).
  ALL (y :: 'b).
- ALL (z :: 'c).
- gn_subt((x :: 'a), (y :: 'b)) & gn_subt((y :: 'b), (z :: 'c)) -->
- gn_subt((x :: 'a), (z :: 'c))"
+ ALL (z :: 'c). gn_subt(x, y) & gn_subt(y, z) --> gn_subt(x, z)"
 
 ga_subt_inj_proj [rule_format] :
 "ALL (x :: 'a).
  ALL (y :: 'b).
- gn_subt((x :: 'a), (y :: 'b)) -->
- (y :: 'b) = gn_inj((x :: 'a)) =
- (makePartial (x :: 'a) =
-  (X_gn_proj :: 'b => 'a partial) (y :: 'b))"
+ gn_subt(x, y) -->
+ y = (X_gn_inj :: 'a => 'b) x =
+ (makePartial x = (X_gn_proj :: 'b => 'a partial) y)"
 
--- "TODO: adapted this rule by hand, has to be done by HasCASL subtype encoding!"
 ga_inj_transitive [rule_format] :
 "ALL (x :: 'a).
  ALL (y :: 'b).
  ALL (z :: 'c).
- gn_subt((x :: 'a), (y :: 'b)) & gn_subt((y :: 'b), (z :: 'c)) -->
- (gn_inj(x) :: 'c) = gn_inj(gn_inj(x) :: 'b)"
+ gn_subt(x, y) & gn_subt(y, z) & y = (X_gn_inj :: 'a => 'b) x -->
+ z = (X_gn_inj :: 'a => 'c) x = (z = (X_gn_inj :: 'b => 'c) y)"
 
 ga_subt_NonZero_XLt_Real [rule_format] :
-"gn_subt((x :: NonZero), (y :: Real))"
+"ALL (x :: NonZero). ALL (y :: Real). gn_subt(x, y)"
 
 ga_subt_RealNonNeg_XLt_Real [rule_format] :
-"gn_subt((x :: RealNonNeg), (y :: Real))"
+"ALL (x :: RealNonNeg). ALL (y :: Real). gn_subt(x, y)"
 
 ga_subt_RealPos_XLt_Real [rule_format] :
-"gn_subt((x :: RealPos), (y :: Real))"
+"ALL (x :: RealPos). ALL (y :: Real). gn_subt(x, y)"
 
 ga_subt_SWArc_XLt_SWSketchObject [rule_format] :
-"gn_subt((x :: SWArc), (y :: SWSketchObject))"
+"ALL (x :: SWArc). ALL (y :: SWSketchObject). gn_subt(x, y)"
 
 ga_subt_SWExtrusion_XLt_SWFeature [rule_format] :
-"gn_subt((x :: SWExtrusion), (y :: SWFeature))"
+"ALL (x :: SWExtrusion). ALL (y :: SWFeature). gn_subt(x, y)"
 
 ga_subt_SWFeature_XLt_SWObject [rule_format] :
-"gn_subt((x :: SWFeature), (y :: SWObject))"
+"ALL (x :: SWFeature). ALL (y :: SWObject). gn_subt(x, y)"
 
 ga_subt_SWLine_XLt_SWSketchObject [rule_format] :
-"gn_subt((x :: SWLine), (y :: SWSketchObject))"
+"ALL (x :: SWLine). ALL (y :: SWSketchObject). gn_subt(x, y)"
 
 ga_subt_SWPlane_XLt_SWObject [rule_format] :
-"gn_subt((x :: SWPlane), (y :: SWObject))"
+"ALL (x :: SWPlane). ALL (y :: SWObject). gn_subt(x, y)"
 
 ga_subt_SWSketch_XLt_SWObject [rule_format] :
-"gn_subt((x :: SWSketch), (y :: SWObject))"
+"ALL (x :: SWSketch). ALL (y :: SWObject). gn_subt(x, y)"
 
 ga_subt_SWSketchObject_XLt_SWObject [rule_format] :
-"gn_subt((x :: SWSketchObject), (y :: SWObject))"
+"ALL (x :: SWSketchObject). ALL (y :: SWObject). gn_subt(x, y)"
 
 ga_subt_SWSpline_XLt_SWSketchObject [rule_format] :
-"gn_subt((x :: SWSpline), (y :: SWSketchObject))"
+"ALL (x :: SWSpline). ALL (y :: SWSketchObject). gn_subt(x, y)"
 
 ga_subt_VectorStar_XLt_Vector [rule_format] :
-"gn_subt((x :: VectorStar), (y :: Vector))"
+"ALL (x :: VectorStar). ALL (y :: Vector). gn_subt(x, y)"
 
 ga_subt_ZeroToNine_XLt_Real [rule_format] :
-"gn_subt((x :: ZeroToNine), (y :: Real))"
+"ALL (x :: ZeroToNine). ALL (y :: Real). gn_subt(x, y)"
 
 ga_assoc___Xx__ [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- ((x :: Real) +_3 (y :: Real)) +_3 (z :: Real) =
- (x :: Real) +_3 ((y :: Real) +_3 (z :: Real))"
+ ALL (z :: Real). (x +_3 y) +_3 z = x +_3 (y +_3 z)"
 
 ga_right_unit___Xx__ [rule_format] :
-"ALL (x :: Real). (x :: Real) +_3 0'' = (x :: Real)"
+"ALL (x :: Real). x +_3 0'' = x"
 
 ga_left_unit___Xx__ [rule_format] :
-"ALL (x :: Real). 0'' +_3 (x :: Real) = (x :: Real)"
+"ALL (x :: Real). 0'' +_3 x = x"
 
-inv_Group [rule_format] :
-"ALL (x :: Real). -' (x :: Real) +_3 (x :: Real) = 0''"
+inv_Group [rule_format] : "ALL (x :: Real). -' x +_3 x = 0''"
 
-rinv_Group [rule_format] :
-"ALL (x :: Real). (x :: Real) +_3 -' (x :: Real) = 0''"
+rinv_Group [rule_format] : "ALL (x :: Real). x +_3 -' x = 0''"
 
 ga_comm___Xx__ [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) +_3 (y :: Real) = (y :: Real) +_3 (x :: Real)"
+"ALL (x :: Real). ALL (y :: Real). x +_3 y = y +_3 x"
 
 ga_assoc___Xx___9 [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- ((x :: Real) *'' (y :: Real)) *'' (z :: Real) =
- (x :: Real) *'' ((y :: Real) *'' (z :: Real))"
+ ALL (z :: Real). (x *'' y) *'' z = x *'' (y *'' z)"
 
 ga_right_unit___Xx___7 [rule_format] :
-"ALL (x :: Real). (x :: Real) *'' 1'' = (x :: Real)"
+"ALL (x :: Real). x *'' 1'' = x"
 
 ga_left_unit___Xx___8 [rule_format] :
-"ALL (x :: Real). 1'' *'' (x :: Real) = (x :: Real)"
+"ALL (x :: Real). 1'' *'' x = x"
 
 distr1_Ring [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- ((x :: Real) +_3 (y :: Real)) *'' (z :: Real) =
- ((x :: Real) *'' (z :: Real)) +_3 ((y :: Real) *'' (z :: Real))"
+ ALL (z :: Real). (x +_3 y) *'' z = (x *'' z) +_3 (y *'' z)"
 
 distr2_Ring [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- (z :: Real) *'' ((x :: Real) +_3 (y :: Real)) =
- ((z :: Real) *'' (x :: Real)) +_3 ((z :: Real) *'' (y :: Real))"
+ ALL (z :: Real). z *'' (x +_3 y) = (z *'' x) +_3 (z *'' y)"
 
-left_zero [rule_format] :
-"ALL (x :: Real). 0'' *'' (x :: Real) = 0''"
+left_zero [rule_format] : "ALL (x :: Real). 0'' *'' x = 0''"
 
-right_zero [rule_format] :
-"ALL (x :: Real). (x :: Real) *'' 0'' = 0''"
+right_zero [rule_format] : "ALL (x :: Real). x *'' 0'' = 0''"
 
 ga_comm___Xx___14 [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) *'' (y :: Real) = (y :: Real) *'' (x :: Real)"
+"ALL (x :: Real). ALL (y :: Real). x *'' y = y *'' x"
 
 noZeroDiv [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) *'' (y :: Real) = 0'' -->
- (x :: Real) = 0'' | (y :: Real) = 0''"
+ ALL (y :: Real). x *'' y = 0'' --> x = 0'' | y = 0''"
 
 zeroNeqOne [rule_format] : "~ 1'' = 0''"
 
 NonZero_type [rule_format] :
 "ALL (x :: Real).
- defOp ((X_gn_proj :: Real => NonZero partial) (x :: Real)) =
- (~ (x :: Real) = 0'')"
+ defOp ((X_gn_proj :: Real => NonZero partial) x) = (~ x = 0'')"
 
 ga_assoc___Xx___22 [rule_format] :
 "ALL (x :: NonZero).
  ALL (y :: NonZero).
- ALL (z :: NonZero).
- ((x :: NonZero) *' (y :: NonZero)) *' (z :: NonZero) =
- (x :: NonZero) *' ((y :: NonZero) *' (z :: NonZero))"
+ ALL (z :: NonZero). (x *' y) *' z = x *' (y *' z)"
 
 ga_right_unit___Xx___18 [rule_format] :
-"ALL (x :: NonZero). (x :: NonZero) *' 1' = (x :: NonZero)"
+"ALL (x :: NonZero). x *' 1' = x"
 
 ga_left_unit___Xx___20 [rule_format] :
-"ALL (x :: NonZero). 1' *' (x :: NonZero) = (x :: NonZero)"
+"ALL (x :: NonZero). 1' *' x = x"
 
 inv_Group_21 [rule_format] :
-"ALL (x :: NonZero). inv'((x :: NonZero)) *' (x :: NonZero) = 1'"
+"ALL (x :: NonZero). inv'(x) *' x = 1'"
 
 rinv_Group_19 [rule_format] :
-"ALL (x :: NonZero). (x :: NonZero) *' inv'((x :: NonZero)) = 1'"
+"ALL (x :: NonZero). x *' inv'(x) = 1'"
 
 binary_inverse [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) -' (y :: Real) = (x :: Real) +_3 -' (y :: Real)"
+"ALL (x :: Real). ALL (y :: Real). x -' y = x +_3 -' y"
 
 binary_field_inverse [rule_format] :
 "ALL (x :: Real).
  ALL (y :: NonZero).
- (x :: Real) /' (y :: NonZero) =
- (x :: Real) *'' gn_inj(inv'((y :: NonZero)))"
+ x /' y = x *'' (X_gn_inj :: NonZero => Real) (inv'(y))"
 
-refl [rule_format] : "ALL (x :: Real). (x :: Real) <=' (x :: Real)"
+refl [rule_format] : "ALL (x :: Real). x <=' x"
 
 trans [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- ALL (z :: Real).
- (x :: Real) <=' (y :: Real) & (y :: Real) <=' (z :: Real) -->
- (x :: Real) <=' (z :: Real)"
+ ALL (y :: Real). ALL (z :: Real). x <=' y & y <=' z --> x <=' z"
 
 antisym [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) <=' (y :: Real) & (y :: Real) <=' (x :: Real) -->
- (x :: Real) = (y :: Real)"
+"ALL (x :: Real). ALL (y :: Real). x <=' y & y <=' x --> x = y"
 
 dichotomy_TotalOrder [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- (x :: Real) <=' (y :: Real) | (y :: Real) <=' (x :: Real)"
+"ALL (x :: Real). ALL (y :: Real). x <=' y | y <=' x"
 
 FWO_plus_left [rule_format] :
 "ALL (a :: Real).
- ALL (b :: Real).
- ALL (c :: Real).
- (a :: Real) <=' (b :: Real) -->
- (a :: Real) +_3 (c :: Real) <=' (b :: Real) +_3 (c :: Real)"
+ ALL (b :: Real). ALL (c :: Real). a <=' b --> a +_3 c <=' b +_3 c"
 
 FWO_times_left [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
- ALL (c :: Real).
- (a :: Real) <=' (b :: Real) & 0'' <=' (c :: Real) -->
- (a :: Real) *'' (c :: Real) <=' (b :: Real) *'' (c :: Real)"
+ ALL (c :: Real). a <=' b & 0'' <=' c --> a *'' c <=' b *'' c"
 
 FWO_plus_right [rule_format] :
 "ALL (a :: Real).
- ALL (b :: Real).
- ALL (c :: Real).
- (b :: Real) <=' (c :: Real) -->
- (a :: Real) +_3 (b :: Real) <=' (a :: Real) +_3 (c :: Real)"
+ ALL (b :: Real). ALL (c :: Real). b <=' c --> a +_3 b <=' a +_3 c"
 
 FWO_times_right [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
- ALL (c :: Real).
- (b :: Real) <=' (c :: Real) & 0'' <=' (a :: Real) -->
- (a :: Real) *'' (b :: Real) <=' (a :: Real) *'' (c :: Real)"
+ ALL (c :: Real). b <=' c & 0'' <=' a --> a *'' b <=' a *'' c"
 
 FWO_plus [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
  ALL (c :: Real).
- ALL (d :: Real).
- (a :: Real) <=' (c :: Real) & (b :: Real) <=' (d :: Real) -->
- (a :: Real) +_3 (b :: Real) <=' (c :: Real) +_3 (d :: Real)"
+ ALL (d :: Real). a <=' c & b <=' d --> a +_3 b <=' c +_3 d"
 
 inf_def [rule_format] :
 "ALL (S :: Real => bool).
  ALL (m :: Real).
- inf''((S :: Real => bool)) = makePartial (m :: Real) =
+ inf''(S) = makePartial m =
  (ALL (m2 :: Real).
-  (ALL (x :: Real).
-   (S :: Real => bool) (x :: Real) -->
-   (x :: Real) <=' (m2 :: Real)) -->
-  (m :: Real) <=' (m2 :: Real))"
+  (ALL (x :: Real). S x --> x <=' m2) --> m <=' m2)"
 
 Real_completeness [rule_format] :
 "ALL (S :: Real => bool).
- (EX (x :: Real). (S :: Real => bool) (x :: Real)) &
- (EX (B :: Real).
-  ALL (x :: Real).
-  (S :: Real => bool) (x :: Real) -->
-  (x :: Real) <=' (B :: Real)) -->
- (EX (m :: Real).
-  makePartial (m :: Real) = inf''((S :: Real => bool)))"
+ (EX (x :: Real). S x) &
+ (EX (B :: Real). ALL (x :: Real). S x --> x <=' B) -->
+ (EX (m :: Real). makePartial m = inf''(S))"
 
 geq_def_ExtPartialOrder [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- ((x :: Real) >=' (y :: Real)) = ((y :: Real) <=' (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). (x >=' y) = (y <=' x)"
 
 less_def_ExtPartialOrder [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- ((x :: Real) <' (y :: Real)) =
- ((x :: Real) <=' (y :: Real) & ~ (x :: Real) = (y :: Real))"
+"ALL (x :: Real). ALL (y :: Real). (x <' y) = (x <=' y & ~ x = y)"
 
 greater_def_ExtPartialOrder [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- ((x :: Real) >' (y :: Real)) = ((y :: Real) <' (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). (x >' y) = (y <' x)"
 
 ga_comm_inf [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- inf'((x :: Real), (y :: Real)) = inf'((y :: Real), (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). inf'(x, y) = inf'(y, x)"
 
 ga_comm_sup [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- sup((x :: Real), (y :: Real)) = sup((y :: Real), (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). sup(x, y) = sup(y, x)"
 
 inf_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real).
- inf'((x :: Real), (y :: Real)) = makePartial (z :: Real) =
- ((z :: Real) <=' (x :: Real) &
-  (z :: Real) <=' (y :: Real) &
-  (ALL (t :: Real).
-   (t :: Real) <=' (x :: Real) & (t :: Real) <=' (y :: Real) -->
-   (t :: Real) <=' (z :: Real)))"
+ inf'(x, y) = makePartial z =
+ (z <=' x &
+  z <=' y & (ALL (t :: Real). t <=' x & t <=' y --> t <=' z))"
 
 sup_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real).
- sup((x :: Real), (y :: Real)) = makePartial (z :: Real) =
- ((x :: Real) <=' (z :: Real) &
-  (y :: Real) <=' (z :: Real) &
-  (ALL (t :: Real).
-   (x :: Real) <=' (t :: Real) & (y :: Real) <=' (t :: Real) -->
-   (z :: Real) <=' (t :: Real)))"
+ sup(x, y) = makePartial z =
+ (x <=' z &
+  y <=' z & (ALL (t :: Real). x <=' t & y <=' t --> z <=' t))"
 
 ga_comm_min [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- min'((x :: Real), (y :: Real)) = min'((y :: Real), (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). min'(x, y) = min'(y, x)"
 
 ga_comm_max [rule_format] :
-"ALL (x :: Real).
- ALL (y :: Real).
- max'((x :: Real), (y :: Real)) = max'((y :: Real), (x :: Real))"
+"ALL (x :: Real). ALL (y :: Real). max'(x, y) = max'(y, x)"
 
 ga_assoc_min [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- min'(min'((x :: Real), (y :: Real)), (z :: Real)) =
- min'((x :: Real), min'((y :: Real), (z :: Real)))"
+ ALL (z :: Real). min'(min'(x, y), z) = min'(x, min'(y, z))"
 
 ga_assoc_max [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- max'(max'((x :: Real), (y :: Real)), (z :: Real)) =
- max'((x :: Real), max'((y :: Real), (z :: Real)))"
+ ALL (z :: Real). max'(max'(x, y), z) = max'(x, max'(y, z))"
 
 ga_left_comm_min [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- min'((x :: Real), min'((y :: Real), (z :: Real))) =
- min'((y :: Real), min'((x :: Real), (z :: Real)))"
+ ALL (z :: Real). min'(x, min'(y, z)) = min'(y, min'(x, z))"
 
 ga_left_comm_max [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
- ALL (z :: Real).
- max'((x :: Real), max'((y :: Real), (z :: Real))) =
- max'((y :: Real), max'((x :: Real), (z :: Real)))"
+ ALL (z :: Real). max'(x, max'(y, z)) = max'(y, max'(x, z))"
 
 min_def_ExtTotalOrder [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- min'((x :: Real), (y :: Real)) =
- (if (x :: Real) <=' (y :: Real) then (x :: Real) else (y :: Real))"
+ ALL (y :: Real). min'(x, y) = (if x <=' y then x else y)"
 
 max_def_ExtTotalOrder [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- max'((x :: Real), (y :: Real)) =
- (if (x :: Real) <=' (y :: Real) then (y :: Real) else (x :: Real))"
+ ALL (y :: Real). max'(x, y) = (if x <=' y then y else x)"
 
 min_inf_relation [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- makePartial (min'((x :: Real), (y :: Real))) =
- inf'((x :: Real), (y :: Real))"
+ ALL (y :: Real). makePartial (min'(x, y)) = inf'(x, y)"
 
 max_sup_relation [rule_format] :
 "ALL (x :: Real).
- ALL (y :: Real).
- makePartial (max'((x :: Real), (y :: Real))) =
- sup((x :: Real), (y :: Real))"
+ ALL (y :: Real). makePartial (max'(x, y)) = sup(x, y)"
 
 RealNonNeg_pred_def [rule_format] :
-"ALL (x :: Real).
- RealNonNeg_pred((x :: Real)) = ((x :: Real) >=' 0'')"
+"ALL (x :: Real). RealNonNeg_pred(x) = (x >=' 0'')"
 
 RealPos_pred_def [rule_format] :
-"ALL (x :: Real). RealPos_pred((x :: Real)) = ((x :: Real) >' 0'')"
+"ALL (x :: Real). RealPos_pred(x) = (x >' 0'')"
 
 RealNonNeg_type [rule_format] :
 "ALL (x :: Real).
- defOp ((X_gn_proj :: Real => RealNonNeg partial) (x :: Real)) =
- RealNonNeg_pred((x :: Real))"
+ defOp ((X_gn_proj :: Real => RealNonNeg partial) x) =
+ RealNonNeg_pred(x)"
 
 RealPos_type [rule_format] :
 "ALL (x :: Real).
- defOp ((X_gn_proj :: Real => RealPos partial) (x :: Real)) =
- RealPos_pred((x :: Real))"
+ defOp ((X_gn_proj :: Real => RealPos partial) x) = RealPos_pred(x)"
 
 abs_def [rule_format] :
 "ALL (x :: Real).
- makePartial (abs'((x :: Real))) =
- (if 0'' <=' (x :: Real)
-     then (X_gn_proj :: Real => RealNonNeg partial) (x :: Real)
-     else (X_gn_proj :: Real => RealNonNeg partial) (-' (x :: Real)))"
+ makePartial (abs'(x)) =
+ (if 0'' <=' x then (X_gn_proj :: Real => RealNonNeg partial) x
+     else (X_gn_proj :: Real => RealNonNeg partial) (-' x))"
 
 times_cancel_right_nonneg_leq [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
- ALL (c :: Real).
- (a :: Real) *'' (b :: Real) <=' (c :: Real) *'' (b :: Real) &
- (b :: Real) >=' 0'' -->
- (a :: Real) <=' (c :: Real)"
+ ALL (c :: Real). a *'' b <=' c *'' b & b >=' 0'' --> a <=' c"
 
 times_leq_nonneg_cond [rule_format] :
 "ALL (a :: Real).
- ALL (b :: Real).
- 0'' <=' (a :: Real) *'' (b :: Real) & (b :: Real) >=' 0'' -->
- 0'' <=' (a :: Real)"
+ ALL (b :: Real). 0'' <=' a *'' b & b >=' 0'' --> 0'' <=' a"
 
 sqr_def [rule_format] :
 "ALL (r :: Real).
- gn_inj(sqr((r :: Real))) =
- makePartial ((r :: Real) *'' (r :: Real))"
+ (X_gn_inj :: RealNonNeg => Real) (sqr(r)) = r *'' r"
 
 sqrt_def [rule_format] :
 "ALL (q :: RealNonNeg).
- sqr(gn_inj(sqrt((q :: RealNonNeg)))) = (q :: RealNonNeg)"
+ sqr((X_gn_inj :: RealNonNeg => Real) (sqrt(q))) = q"
 
-Pos_def [rule_format] :
-"ALL (x :: Real). Pos((x :: Real)) = (0'' <=' (x :: Real))"
+Pos_def [rule_format] : "ALL (x :: Real). Pos(x) = (0'' <=' x)"
 
-X2_def_Real [rule_format] : "2' = gn_inj(1') +_3 gn_inj(1')"
+X2_def_Real [rule_format] :
+"2' =
+ (X_gn_inj :: NonZero => Real) 1' +_3
+ (X_gn_inj :: NonZero => Real) 1'"
 
-X3_def_Real [rule_format] : "3' = 2' +_3 gn_inj(1')"
+X3_def_Real [rule_format] :
+"3' = 2' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X4_def_Real [rule_format] : "4' = 3' +_3 gn_inj(1')"
+X4_def_Real [rule_format] :
+"4' = 3' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X5_def_Real [rule_format] : "5' = 4' +_3 gn_inj(1')"
+X5_def_Real [rule_format] :
+"5' = 4' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X6_def_Real [rule_format] : "6' = 5' +_3 gn_inj(1')"
+X6_def_Real [rule_format] :
+"6' = 5' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X7_def_Real [rule_format] : "7' = 6' +_3 gn_inj(1')"
+X7_def_Real [rule_format] :
+"7' = 6' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X8_def_Real [rule_format] : "8' = 7' +_3 gn_inj(1')"
+X8_def_Real [rule_format] :
+"8' = 7' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
-X9_def_Real [rule_format] : "9' = 8' +_3 gn_inj(1')"
+X9_def_Real [rule_format] :
+"9' = 8' +_3 (X_gn_inj :: NonZero => Real) 1'"
 
 ZeroToNine_type [rule_format] :
 "ALL (x :: Real).
- defOp ((X_gn_proj :: Real => ZeroToNine partial) (x :: Real)) =
- ((((((((((x :: Real) = 0'' |
-          makePartial (x :: Real) = gn_inj(1')) |
-         (x :: Real) = 2') |
-        (x :: Real) = 3') |
-       (x :: Real) = 4') |
-      (x :: Real) = 5') |
-     (x :: Real) = 6') |
-    (x :: Real) = 7') |
-   (x :: Real) = 8') |
-  (x :: Real) = 9')"
+ defOp ((X_gn_proj :: Real => ZeroToNine partial) x) =
+ (((((((((x = 0'' | x = (X_gn_inj :: NonZero => Real) 1') |
+         x = 2') |
+        x = 3') |
+       x = 4') |
+      x = 5') |
+     x = 6') |
+    x = 7') |
+   x = 8') |
+  x = 9')"
 
 decimal_def [rule_format] :
 "ALL (m :: ZeroToNine).
  ALL (X_n :: Real).
- (m :: ZeroToNine) @@ (X_n :: Real) =
- (gn_inj((m :: ZeroToNine)) *'' (9' +_3 gn_inj(1'))) +_3
- (X_n :: Real)"
+ m @@ X_n =
+ ((X_gn_inj :: ZeroToNine => Real) m *''
+  (9' +_3 (X_gn_inj :: NonZero => Real) 1'))
+ +_3 X_n"
 
 ga_select_C1 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C1'(P((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_1 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C1'(P(x_1, x_2, x_3)) = x_1"
 
 ga_select_C2 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C2'(P((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_2 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C2'(P(x_1, x_2, x_3)) = x_2"
 
 ga_select_C3 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C3'(P((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_3 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C3'(P(x_1, x_2, x_3)) = x_3"
 
 Zero_Point [rule_format] : "0' = P(0'', 0'', 0'')"
 
 Point_choice [rule_format] :
 "ALL (X_P :: Point => bool).
- (EX (y :: Point). (X_P :: Point => bool) (y :: Point)) -->
- (X_P :: Point => bool) (choose'((X_P :: Point => bool)))"
+ (EX (y :: Point). X_P y) --> X_P (choose'(X_P))"
 
 ga_select_C1_151 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C1''(V((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_1 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C1''(V(x_1, x_2, x_3)) = x_1"
 
 ga_select_C2_152 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C2''(V((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_2 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C2''(V(x_1, x_2, x_3)) = x_2"
 
 ga_select_C3_153 [rule_format] :
 "ALL (x_1 :: Real).
- ALL (x_2 :: Real).
- ALL (x_3 :: Real).
- C3''(V((x_1 :: Real), (x_2 :: Real), (x_3 :: Real))) =
- (x_3 :: Real)"
+ ALL (x_2 :: Real). ALL (x_3 :: Real). C3''(V(x_1, x_2, x_3)) = x_3"
 
 Zero_Vector [rule_format] : "0_3 = V(0'', 0'', 0'')"
 
 VectorStar_pred_def [rule_format] :
-"ALL (x :: Vector).
- VectorStar_pred((x :: Vector)) = (~ (x :: Vector) = 0_3)"
+"ALL (x :: Vector). VectorStar_pred(x) = (~ x = 0_3)"
 
 VectorStar_type [rule_format] :
 "ALL (x :: Vector).
- defOp ((X_gn_proj :: Vector => VectorStar partial) (x :: Vector)) =
- VectorStar_pred((x :: Vector))"
+ defOp ((X_gn_proj :: Vector => VectorStar partial) x) =
+ VectorStar_pred(x)"
 
 def_of_vector_addition [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- (x :: Vector) +_4 (y :: Vector) =
- V(C1''((x :: Vector)) +_3 C1''((y :: Vector)),
- C2''((x :: Vector)) +_3 C2''((y :: Vector)),
- C3''((x :: Vector)) +_3 C3''((y :: Vector)))"
+ x +_4 y =
+ V(C1''(x) +_3 C1''(y), C2''(x) +_3 C2''(y), C3''(x) +_3 C3''(y))"
 
 def_of_minus_vector [rule_format] :
-"ALL (x :: Vector).
- -'' (x :: Vector) =
- V(-' C1''((x :: Vector)), -' C2''((x :: Vector)),
- -' C3''((x :: Vector)))"
+"ALL (x :: Vector). -'' x = V(-' C1''(x), -' C2''(x), -' C3''(x))"
 
 binary_inverse_82 [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- (x :: Vector) -'' (y :: Vector) =
- (x :: Vector) +_4 -'' (y :: Vector)"
+"ALL (x :: Vector). ALL (y :: Vector). x -'' y = x +_4 -'' y"
 
 scalar_multiplication [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Vector).
- (x :: Real) *_3 (y :: Vector) =
- V((x :: Real) *'' C1''((y :: Vector)),
- (x :: Real) *'' C2''((y :: Vector)),
- (x :: Real) *'' C3''((y :: Vector)))"
+ x *_3 y = V(x *'' C1''(y), x *'' C2''(y), x *'' C3''(y))"
 
 scalar_product [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- (x :: Vector) *_4 (y :: Vector) =
- ((C1''((x :: Vector)) *'' C1''((y :: Vector))) +_3
-  (C2''((x :: Vector)) *'' C2''((y :: Vector))))
- +_3 (C3''((x :: Vector)) *'' C3''((y :: Vector)))"
+ x *_4 y =
+ ((C1''(x) *'' C1''(y)) +_3 (C2''(x) *'' C2''(y))) +_3
+ (C3''(x) *'' C3''(y))"
 
 vector_product [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- (x :: Vector) #' (y :: Vector) =
- V((C2''((x :: Vector)) *'' C3''((y :: Vector))) -'
-   (C2''((y :: Vector)) *'' C3''((x :: Vector))),
- (C3''((x :: Vector)) *'' C1''((y :: Vector))) -'
- (C3''((y :: Vector)) *'' C1''((x :: Vector))),
- (C1''((x :: Vector)) *'' C2''((y :: Vector))) -'
- (C1''((y :: Vector)) *'' C2''((x :: Vector))))"
+ x #' y =
+ V((C2''(x) *'' C3''(y)) -' (C2''(y) *'' C3''(x)),
+ (C3''(x) *'' C1''(y)) -' (C3''(y) *'' C1''(x)),
+ (C1''(x) *'' C2''(y)) -' (C1''(y) *'' C2''(x)))"
 
-ONB1 [rule_format] : "e1 = V(gn_inj(1'), 0'', 0'')"
+ONB1 [rule_format] :
+"e1 = V((X_gn_inj :: NonZero => Real) 1', 0'', 0'')"
 
-ONB2 [rule_format] : "e2 = V(0'', gn_inj(1'), 0'')"
+ONB2 [rule_format] :
+"e2 = V(0'', (X_gn_inj :: NonZero => Real) 1', 0'')"
 
-ONB3 [rule_format] : "e3 = V(0'', 0'', gn_inj(1'))"
+ONB3 [rule_format] :
+"e3 = V(0'', 0'', (X_gn_inj :: NonZero => Real) 1')"
 
 cross_left_homogenity [rule_format] :
 "ALL (r :: Real).
  ALL (x :: Vector).
- ALL (y :: Vector).
- (r :: Real) *_3 ((x :: Vector) #' (y :: Vector)) =
- ((r :: Real) *_3 (x :: Vector)) #' (y :: Vector)"
+ ALL (y :: Vector). r *_3 (x #' y) = (r *_3 x) #' y"
 
 cross_product_antisymmetric [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- (x :: Vector) #' (y :: Vector) =
- -'' ((y :: Vector) #' (x :: Vector))"
+"ALL (x :: Vector). ALL (y :: Vector). x #' y = -'' (y #' x)"
 
 ga_assoc___Xx___82 [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- ALL (z :: Vector).
- ((x :: Vector) +_4 (y :: Vector)) +_4 (z :: Vector) =
- (x :: Vector) +_4 ((y :: Vector) +_4 (z :: Vector))"
+ ALL (z :: Vector). (x +_4 y) +_4 z = x +_4 (y +_4 z)"
 
 ga_right_unit___Xx___76 [rule_format] :
-"ALL (x :: Vector). (x :: Vector) +_4 0_3 = (x :: Vector)"
+"ALL (x :: Vector). x +_4 0_3 = x"
 
 ga_left_unit___Xx___78 [rule_format] :
-"ALL (x :: Vector). 0_3 +_4 (x :: Vector) = (x :: Vector)"
+"ALL (x :: Vector). 0_3 +_4 x = x"
 
-inv_Group_79 [rule_format] :
-"ALL (x :: Vector). -'' (x :: Vector) +_4 (x :: Vector) = 0_3"
+inv_Group_79 [rule_format] : "ALL (x :: Vector). -'' x +_4 x = 0_3"
 
 rinv_Group_77 [rule_format] :
-"ALL (x :: Vector). (x :: Vector) +_4 -'' (x :: Vector) = 0_3"
+"ALL (x :: Vector). x +_4 -'' x = 0_3"
 
 ga_comm___Xx___80 [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- (x :: Vector) +_4 (y :: Vector) = (y :: Vector) +_4 (x :: Vector)"
+"ALL (x :: Vector). ALL (y :: Vector). x +_4 y = y +_4 x"
 
 unit [rule_format] :
-"ALL (x :: Vector). gn_inj(1') *_3 (x :: Vector) = (x :: Vector)"
+"ALL (x :: Vector). (X_gn_inj :: NonZero => Real) 1' *_3 x = x"
 
 mix_assoc [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real).
- ALL (x :: Vector).
- ((r :: Real) *'' (s :: Real)) *_3 (x :: Vector) =
- (r :: Real) *_3 ((s :: Real) *_3 (x :: Vector))"
+ ALL (x :: Vector). (r *'' s) *_3 x = r *_3 (s *_3 x)"
 
 distr_Field [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real).
- ALL (x :: Vector).
- ((r :: Real) +_3 (s :: Real)) *_3 (x :: Vector) =
- ((r :: Real) *_3 (x :: Vector)) +_4
- ((s :: Real) *_3 (x :: Vector))"
+ ALL (x :: Vector). (r +_3 s) *_3 x = (r *_3 x) +_4 (s *_3 x)"
 
 distr_Space [rule_format] :
 "ALL (r :: Real).
  ALL (x :: Vector).
- ALL (y :: Vector).
- (r :: Real) *_3 ((x :: Vector) +_4 (y :: Vector)) =
- ((r :: Real) *_3 (x :: Vector)) +_4
- ((r :: Real) *_3 (y :: Vector))"
+ ALL (y :: Vector). r *_3 (x +_4 y) = (r *_3 x) +_4 (r *_3 y)"
 
 zero_by_left_zero [rule_format] :
-"ALL (x :: Vector). 0'' *_3 (x :: Vector) = 0_3"
+"ALL (x :: Vector). 0'' *_3 x = 0_3"
 
 zero_by_right_zero [rule_format] :
-"ALL (r :: Real). (r :: Real) *_3 0_3 = 0_3"
+"ALL (r :: Real). r *_3 0_3 = 0_3"
 
 inverse_by_XMinus1 [rule_format] :
 "ALL (x :: Vector).
- -' gn_inj(1') *_3 (x :: Vector) = -'' (x :: Vector)"
+ -' (X_gn_inj :: NonZero => Real) 1' *_3 x = -'' x"
 
 no_zero_divisor [rule_format] :
 "ALL (r :: Real).
- ALL (x :: Vector).
- ~ (r :: Real) = 0'' & ~ (x :: Vector) = 0_3 -->
- ~ (r :: Real) *_3 (x :: Vector) = 0_3"
+ ALL (x :: Vector). ~ r = 0'' & ~ x = 0_3 --> ~ r *_3 x = 0_3"
 
 distributive [rule_format] :
 "ALL (v :: Vector).
  ALL (v' :: Vector).
- ALL (w :: Vector).
- ((v :: Vector) +_4 (v' :: Vector)) *_4 (w :: Vector) =
- ((v :: Vector) *_4 (w :: Vector)) +_3
- ((v' :: Vector) *_4 (w :: Vector))"
+ ALL (w :: Vector). (v +_4 v') *_4 w = (v *_4 w) +_3 (v' *_4 w)"
 
 homogeneous [rule_format] :
 "ALL (a :: Real).
  ALL (v :: Vector).
- ALL (w :: Vector).
- ((a :: Real) *_3 (v :: Vector)) *_4 (w :: Vector) =
- (a :: Real) *'' ((v :: Vector) *_4 (w :: Vector))"
+ ALL (w :: Vector). (a *_3 v) *_4 w = a *'' (v *_4 w)"
 
 symmetric [rule_format] :
-"ALL (v :: Vector).
- ALL (w :: Vector).
- (v :: Vector) *_4 (w :: Vector) = (w :: Vector) *_4 (v :: Vector)"
+"ALL (v :: Vector). ALL (w :: Vector). v *_4 w = w *_4 v"
 
 pos_definite [rule_format] :
-"ALL (v :: Vector).
- ~ (v :: Vector) = 0_3 --> (v :: Vector) *_4 (v :: Vector) >' 0''"
+"ALL (v :: Vector). ~ v = 0_3 --> v *_4 v >' 0''"
 
 right_distributive [rule_format] :
 "ALL (v :: Vector).
  ALL (v' :: Vector).
- ALL (w :: Vector).
- (w :: Vector) *_4 ((v :: Vector) +_4 (v' :: Vector)) =
- ((w :: Vector) *_4 (v :: Vector)) +_3
- ((w :: Vector) *_4 (v' :: Vector))"
+ ALL (w :: Vector). w *_4 (v +_4 v') = (w *_4 v) +_3 (w *_4 v')"
 
 right_homogeneous [rule_format] :
 "ALL (a :: Real).
  ALL (v :: Vector).
- ALL (w :: Vector).
- (v :: Vector) *_4 ((a :: Real) *_3 (w :: Vector)) =
- (a :: Real) *'' ((v :: Vector) *_4 (w :: Vector))"
+ ALL (w :: Vector). v *_4 (a *_3 w) = a *'' (v *_4 w)"
 
 non_degenerate [rule_format] :
-"ALL (v :: Vector).
- (v :: Vector) *_4 (v :: Vector) = 0'' --> (v :: Vector) = 0_3"
+"ALL (v :: Vector). v *_4 v = 0'' --> v = 0_3"
 
 lindep_def [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- lindep((x :: Vector), (y :: Vector)) =
- ((y :: Vector) = 0_3 |
-  (EX (r :: Real). (x :: Vector) = (r :: Real) *_3 (y :: Vector)))"
+ lindep(x, y) = (y = 0_3 | (EX (r :: Real). x = r *_3 y))"
 
 lindep_reflexivity [rule_format] :
-"ALL (x :: Vector). lindep((x :: Vector), (x :: Vector))"
+"ALL (x :: Vector). lindep(x, x)"
 
 lindep_symmetry [rule_format] :
 "ALL (x :: Vector).
- ALL (y :: Vector).
- lindep((x :: Vector), (y :: Vector)) -->
- lindep((y :: Vector), (x :: Vector))"
+ ALL (y :: Vector). lindep(x, y) --> lindep(y, x)"
 
 simple_lindep_condition [rule_format] :
 "ALL (r :: Real).
- ALL (x :: Vector).
- ALL (y :: Vector).
- (x :: Vector) = (r :: Real) *_3 (y :: Vector) -->
- lindep((x :: Vector), (y :: Vector))"
+ ALL (x :: Vector). ALL (y :: Vector). x = r *_3 y --> lindep(x, y)"
 
 lindep_nonlindep_transitivity [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
  ALL (z :: Vector).
- (~ (x :: Vector) = 0_3 & lindep((x :: Vector), (y :: Vector))) &
- ~ lindep((y :: Vector), (z :: Vector)) -->
- ~ lindep((x :: Vector), (z :: Vector))"
+ (~ x = 0_3 & lindep(x, y)) & ~ lindep(y, z) --> ~ lindep(x, z)"
 
 norm_from_inner_prod_def [rule_format] :
 "ALL (x :: Vector).
- makePartial ( || (x :: Vector) || ) =
+ makePartial ( || x || ) =
  restrictOp
- ((X_gn_proj :: RealNonNeg => Real partial)
-  (sqrt(makeTotal
-        ((X_gn_proj :: Real => RealNonNeg partial)
-         ((x :: Vector) *_4 (x :: Vector))))))
- (defOp
-  ((X_gn_proj :: Real => RealNonNeg partial)
-   ((x :: Vector) *_4 (x :: Vector))))"
+ (makePartial
+  ((X_gn_inj :: RealNonNeg => Real)
+   (sqrt(makeTotal
+         ((X_gn_proj :: Real => RealNonNeg partial) (x *_4 x))))))
+ (defOp ((X_gn_proj :: Real => RealNonNeg partial) (x *_4 x)))"
 
 proj_def [rule_format] :
 "ALL (v :: Vector).
  ALL (w :: Vector).
- makePartial (proj((v :: Vector), (w :: Vector))) =
- (if (w :: Vector) = 0_3 then makePartial 0_3
+ makePartial (proj(v, w)) =
+ (if w = 0_3 then makePartial 0_3
      else restrictOp
           (makePartial
-           ((((v :: Vector) *_4 (w :: Vector)) /'
-             makeTotal
-             ((X_gn_proj :: Real => NonZero partial)
-              ((w :: Vector) *_4 (w :: Vector))))
-            *_3 (w :: Vector)))
-          (defOp
-           ((X_gn_proj :: Real => NonZero partial)
-            ((w :: Vector) *_4 (w :: Vector)))))"
+           (((v *_4 w) /'
+             makeTotal ((X_gn_proj :: Real => NonZero partial) (w *_4 w)))
+            *_3 w))
+          (defOp ((X_gn_proj :: Real => NonZero partial) (w *_4 w))))"
 
 orthcomp_def [rule_format] :
 "ALL (v :: Vector).
- ALL (w :: Vector).
- orthcomp((v :: Vector), (w :: Vector)) =
- (v :: Vector) -'' proj((v :: Vector), (w :: Vector))"
+ ALL (w :: Vector). orthcomp(v, w) = v -'' proj(v, w)"
 
 orthogonal_def [rule_format] :
 "ALL (x :: Vector).
- ALL (y :: Vector).
- orth((x :: Vector), (y :: Vector)) =
- ((x :: Vector) *_4 (y :: Vector) = 0'')"
+ ALL (y :: Vector). orth(x, y) = (x *_4 y = 0'')"
 
 homogeneous_93 [rule_format] :
 "ALL (r :: Real).
  ALL (v :: Vector).
- || (r :: Real) *_3 (v :: Vector) || =
- gn_inj(abs'((r :: Real))) *'' || (v :: Vector) ||"
+ || r *_3 v || =
+ (X_gn_inj :: RealNonNeg => Real) (abs'(r)) *'' || v ||"
 
 definite [rule_format] :
-"ALL (v :: Vector).
- || (v :: Vector) || = 0'' = ((v :: Vector) = 0_3)"
+"ALL (v :: Vector). || v || = 0'' = (v = 0_3)"
 
 pos_definite_94 [rule_format] :
-"ALL (v :: Vector). 0'' <=' || (v :: Vector) ||"
+"ALL (v :: Vector). 0'' <=' || v ||"
 
 pos_homogeneous [rule_format] :
 "ALL (r :: Real).
- ALL (v :: Vector).
- (r :: Real) >=' 0'' -->
- || (r :: Real) *_3 (v :: Vector) || =
- (r :: Real) *'' || (v :: Vector) ||"
+ ALL (v :: Vector). r >=' 0'' --> || r *_3 v || = r *'' || v ||"
 
 orth_symmetric [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- orth((x :: Vector), (y :: Vector)) -->
- orth((y :: Vector), (x :: Vector))"
+"ALL (x :: Vector). ALL (y :: Vector). orth(x, y) --> orth(y, x)"
 
 lindep_orth_transitive [rule_format] :
 "ALL (x :: Vector).
  ALL (y :: Vector).
- ALL (z :: Vector).
- lindep((x :: Vector), (y :: Vector)) &
- orth((y :: Vector), (z :: Vector)) -->
- orth((x :: Vector), (z :: Vector))"
+ ALL (z :: Vector). lindep(x, y) & orth(y, z) --> orth(x, z)"
 
 orthogonal_existence_theorem [rule_format] :
 "ALL (x :: Vector).
- (EX (a :: Vector).
-  EX (b :: Vector). ~ lindep((a :: Vector), (b :: Vector))) -->
- (EX (c :: Vector).
-  ~ (c :: Vector) = 0_3 & orth((c :: Vector), (x :: Vector)))"
+ (EX (a :: Vector). EX (b :: Vector). ~ lindep(a, b)) -->
+ (EX (c :: Vector). ~ c = 0_3 & orth(c, x))"
 
 orthogonal_on_zero_projection [rule_format] :
 "ALL (x :: Vector).
- ALL (y :: Vector).
- proj((x :: Vector), (y :: Vector)) = 0_3 -->
- orth((x :: Vector), (y :: Vector))"
+ ALL (y :: Vector). proj(x, y) = 0_3 --> orth(x, y)"
 
 orthogonal_projection_theorem [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- orth(orthcomp((x :: Vector), (y :: Vector)), (y :: Vector))"
+"ALL (x :: Vector). ALL (y :: Vector). orth(orthcomp(x, y), y)"
 
 orthogonal_decomposition_theorem [rule_format] :
 "ALL (x :: Vector).
- ALL (y :: Vector).
- proj((x :: Vector), (y :: Vector)) +_4
- orthcomp((x :: Vector), (y :: Vector)) =
- (x :: Vector)"
+ ALL (y :: Vector). proj(x, y) +_4 orthcomp(x, y) = x"
 
 unique_orthogonal_decomposition [rule_format] :
 "ALL (v :: Vector).
@@ -1083,78 +887,53 @@ unique_orthogonal_decomposition [rule_format] :
  ALL (x :: Vector).
  ALL (y :: Vector).
  ALL (z :: Vector).
- ((((~ (z :: Vector) = 0_3 &
-     (x :: Vector) +_4 (y :: Vector) =
-     (v :: Vector) +_4 (w :: Vector)) &
-    lindep((x :: Vector), (z :: Vector))) &
-   lindep((v :: Vector), (z :: Vector))) &
-  orth((z :: Vector), (y :: Vector))) &
- orth((z :: Vector), (w :: Vector)) -->
- (x :: Vector) = (v :: Vector) & (y :: Vector) = (w :: Vector)"
+ ((((~ z = 0_3 & x +_4 y = v +_4 w) & lindep(x, z)) &
+   lindep(v, z)) &
+  orth(z, y)) &
+ orth(z, w) -->
+ x = v & y = w"
 
 cross_product_orthogonal [rule_format] :
-"ALL (x :: Vector).
- ALL (y :: Vector).
- orth((x :: Vector), (x :: Vector) #' (y :: Vector))"
+"ALL (x :: Vector). ALL (y :: Vector). orth(x, x #' y)"
 
 cross_product_zero_iff_lindep [rule_format] :
 "ALL (x :: Vector).
- ALL (y :: Vector).
- lindep((x :: Vector), (y :: Vector)) =
- ((x :: Vector) #' (y :: Vector) = 0_3)"
+ ALL (y :: Vector). lindep(x, y) = (x #' y = 0_3)"
 
 e1e2_nonlindep [rule_format] : "~ lindep(e1, e2)"
 
 point_vector_map [rule_format] :
 "ALL (p :: Point).
  ALL (v :: Vector).
- (p :: Point) +' (v :: Vector) =
- P(C1'((p :: Point)) +_3 C1''((v :: Vector)),
- C2'((p :: Point)) +_3 C2''((v :: Vector)),
- C3'((p :: Point)) +_3 C3''((v :: Vector)))"
+ p +' v =
+ P(C1'(p) +_3 C1''(v), C2'(p) +_3 C2''(v), C3'(p) +_3 C3''(v))"
 
 plus_injective [rule_format] :
 "ALL (p :: Point).
- ALL (v :: Vector).
- ALL (w :: Vector).
- (p :: Point) +' (v :: Vector) = (p :: Point) +' (w :: Vector) -->
- (v :: Vector) = (w :: Vector)"
+ ALL (v :: Vector). ALL (w :: Vector). p +' v = p +' w --> v = w"
 
 plus_surjective [rule_format] :
-"ALL (p :: Point).
- ALL (q :: Point).
- EX (y :: Vector). (p :: Point) +' (y :: Vector) = (q :: Point)"
+"ALL (p :: Point). ALL (q :: Point). EX (y :: Vector). p +' y = q"
 
 point_vector_plus_associative [rule_format] :
 "ALL (p :: Point).
  ALL (v :: Vector).
- ALL (w :: Vector).
- (p :: Point) +' ((v :: Vector) +_4 (w :: Vector)) =
- ((p :: Point) +' (v :: Vector)) +' (w :: Vector)"
+ ALL (w :: Vector). p +' (v +_4 w) = (p +' v) +' w"
 
 vec_def [rule_format] :
-"ALL (p :: Point).
- ALL (q :: Point).
- (p :: Point) +' vec((p :: Point), (q :: Point)) = (q :: Point)"
+"ALL (p :: Point). ALL (q :: Point). p +' vec(p, q) = q"
 
 transitivity_of_vec_plus [rule_format] :
 "ALL (p :: Point).
  ALL (q :: Point).
- ALL (r :: Point).
- vec((p :: Point), (q :: Point)) +_4
- vec((q :: Point), (r :: Point)) =
- vec((p :: Point), (r :: Point))"
+ ALL (r :: Point). vec(p, q) +_4 vec(q, r) = vec(p, r)"
 
 plus_vec_identity [rule_format] :
 "ALL (p :: Point).
- ALL (q :: Point).
- ALL (v :: Vector).
- (p :: Point) +' (v :: Vector) = (q :: Point) -->
- (v :: Vector) = vec((p :: Point), (q :: Point))"
+ ALL (q :: Point). ALL (v :: Vector). p +' v = q --> v = vec(p, q)"
 
 set_comprehension [rule_format] :
-"ALL (s :: 'S => bool).
- XLBrace__XRBrace (s :: 'S => bool) = (s :: 'S => bool)"
+"ALL (s :: 'S => bool). XLBrace__XRBrace s = s"
 
 abbrev_of_set_comprehension [rule_format] :
 "setFromProperty = XLBrace__XRBrace"
@@ -1162,101 +941,71 @@ abbrev_of_set_comprehension [rule_format] :
 function_image [rule_format] :
 "ALL (XX :: 'S => bool).
  ALL (f :: 'S => 'T).
- X_image ((f :: 'S => 'T), (XX :: 'S => bool)) =
- (% (x :: 'T). EX (y :: 'S).
-               (y :: 'S) isIn (XX :: 'S => bool) &
-               (f :: 'S => 'T) (y :: 'S) = (x :: 'T))"
+ X_image (f, XX) = (% x. EX (y :: 'S). y isIn XX & f y = x)"
 
-emptySet_empty [rule_format] :
-"ALL (x :: 'S). ~ (x :: 'S) isIn X_emptySet"
+emptySet_empty [rule_format] : "ALL (x :: 'S). ~ x isIn X_emptySet"
 
 allSet_contains_all [rule_format] :
-"ALL (x :: 'S). (x :: 'S) isIn X_allSet"
+"ALL (x :: 'S). x isIn X_allSet"
 
 def_of_isIn [rule_format] :
-"ALL (s :: 'S => bool).
- ALL (x :: 'S).
- ((x :: 'S) isIn (s :: 'S => bool)) = (s :: 'S => bool) (x :: 'S)"
+"ALL (s :: 'S => bool). ALL (x :: 'S). (x isIn s) = s x"
 
 def_of_subset [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (s' :: 'S => bool).
- ((s :: 'S => bool) subset (s' :: 'S => bool)) =
- (ALL (x :: 'S).
-  (x :: 'S) isIn (s :: 'S => bool) -->
-  (x :: 'S) isIn (s' :: 'S => bool))"
+ (s subset s') = (ALL (x :: 'S). x isIn s --> x isIn s')"
 
 def_of_union [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (s' :: 'S => bool).
  ALL (x :: 'S).
- ((x :: 'S) isIn
-  X__union__X ((s :: 'S => bool), (s' :: 'S => bool))) =
- ((x :: 'S) isIn (s :: 'S => bool) |
-  (x :: 'S) isIn (s' :: 'S => bool))"
+ (x isIn X__union__X (s, s')) = (x isIn s | x isIn s')"
 
 def_of_bigunion [rule_format] :
 "ALL (XXXX :: ('S => bool) => bool).
  ALL (x :: 'S).
- ((x :: 'S) isIn bigunion (XXXX :: ('S => bool) => bool)) =
- (EX (XX :: 'S => bool).
-  (XX :: 'S => bool) isIn (XXXX :: ('S => bool) => bool) &
-  (x :: 'S) isIn (XX :: 'S => bool))"
+ (x isIn bigunion XXXX) =
+ (EX (XX :: 'S => bool). XX isIn XXXX & x isIn XX)"
 
 def_of_intersection [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (s' :: 'S => bool).
  ALL (x :: 'S).
- ((x :: 'S) isIn
-  X__intersection__X ((s :: 'S => bool), (s' :: 'S => bool))) =
- ((x :: 'S) isIn (s :: 'S => bool) &
-  (x :: 'S) isIn (s' :: 'S => bool))"
+ (x isIn X__intersection__X (s, s')) = (x isIn s & x isIn s')"
 
 def_of_difference [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (s' :: 'S => bool).
  ALL (x :: 'S).
- ((x :: 'S) isIn
-  X__XBslashXBslash__X ((s :: 'S => bool), (s' :: 'S => bool))) =
- ((x :: 'S) isIn (s :: 'S => bool) &
-  ~ (x :: 'S) isIn (s' :: 'S => bool))"
+ (x isIn X__XBslashXBslash__X (s, s')) = (x isIn s & ~ x isIn s')"
 
 def_of_disjoint [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (s' :: 'S => bool).
- ((s :: 'S => bool) disjoint (s' :: 'S => bool)) =
- (X__intersection__X ((s :: 'S => bool), (s' :: 'S => bool)) =
-  X_emptySet)"
+ (s disjoint s') = (X__intersection__X (s, s') = X_emptySet)"
 
 def_of_productset [rule_format] :
 "ALL (s :: 'S => bool).
  ALL (t :: 'T => bool).
  ALL (x :: 'S).
  ALL (y :: 'T).
- (((x :: 'S), (y :: 'T)) isIn
-  X__Xx__XX5 ((s :: 'S => bool), (t :: 'T => bool))) =
- ((x :: 'S) isIn (s :: 'S => bool) &
-  (y :: 'T) isIn (t :: 'T => bool))"
+ ((x, y) isIn X__Xx__XX5 (s, t)) = (x isIn s & y isIn t)"
 
 emptySet_union_right_unit [rule_format] :
-"ALL (a :: 'S => bool).
- X__union__X ((a :: 'S => bool), X_emptySet) = (a :: 'S => bool)"
+"ALL (a :: 'S => bool). X__union__X (a, X_emptySet) = a"
 
 function_image_structure [rule_format] :
 "ALL (a :: 'S => bool).
  ALL (f :: 'S => 'T).
  ALL (x :: 'T).
- ((x :: 'T) isIn X_image ((f :: 'S => 'T), (a :: 'S => bool))) =
- (EX (y :: 'S).
-  (y :: 'S) isIn (a :: 'S => bool) &
-  (f :: 'S => 'T) (y :: 'S) = (x :: 'T))"
+ (x isIn X_image (f, a)) = (EX (y :: 'S). y isIn a & f y = x)"
 
 def_of_interval [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
- XOSqBr__XPeriodXPeriodXPeriod__XCSqBr ((a :: Real), (b :: Real)) =
- (% (r :: Real). (r :: Real) >=' (a :: Real) &
-                 (r :: Real) <=' (b :: Real))"
+ XOSqBr__XPeriodXPeriodXPeriod__XCSqBr (a, b) =
+ (% r. r >=' a & r <=' b)"
 
 abbrev_of_interval [rule_format] :
 "closedinterval = XOSqBr__XPeriodXPeriodXPeriod__XCSqBr"
@@ -1264,172 +1013,123 @@ abbrev_of_interval [rule_format] :
 plus_PointSet_Vector [rule_format] :
 "ALL (X_P :: Point => bool).
  ALL (v :: Vector).
- X__XPlus__XX5 ((X_P :: Point => bool), (v :: Vector)) =
- X_image
- (% (x :: Point). (x :: Point) +' (v :: Vector),
-  (X_P :: Point => bool))"
+ X__XPlus__XX5 (X_P, v) = X_image (% x. x +' v, X_P)"
 
 plus_Point_VectorSet [rule_format] :
 "ALL (X_V :: Vector => bool).
  ALL (p :: Point).
- X__XPlus__XX2 ((p :: Point), (X_V :: Vector => bool)) =
- X_image
- (% (x :: Vector). (p :: Point) +' (x :: Vector),
-  (X_V :: Vector => bool))"
+ X__XPlus__XX2 (p, X_V) = X_image (% x. p +' x, X_V)"
 
 plus_PointSet_VectorSet [rule_format] :
 "ALL (X_P :: Point => bool).
  ALL (X_V :: Vector => bool).
- X__XPlus__XX6 ((X_P :: Point => bool), (X_V :: Vector => bool)) =
- bigunion
- (X_image
-  (% (x :: Vector). X__XPlus__XX5
-                    ((X_P :: Point => bool), (x :: Vector)),
-   (X_V :: Vector => bool)))"
+ X__XPlus__XX6 (X_P, X_V) =
+ bigunion (X_image (% x. X__XPlus__XX5 (X_P, x), X_V))"
 
 def_of_Plane [rule_format] :
 "ALL (normal :: VectorStar).
  ALL (offset :: Point).
- PlaneX2 ((offset :: Point), (normal :: VectorStar)) =
- (% (x :: Point). orth(vec((x :: Point), (offset :: Point)),
-                  gn_inj((normal :: VectorStar))))"
+ PlaneX2 (offset, normal) =
+ (% x. orth(vec(x, offset),
+       (X_gn_inj :: VectorStar => Vector) normal))"
 
 plane_condition_for_2_points [rule_format] :
 "ALL (normal :: VectorStar).
  ALL (offset :: Point).
  ALL (x :: Point).
  ALL (y :: Point).
- let (plane :: Point => bool) =
-     PlaneX2 ((offset :: Point), (normal :: VectorStar))
- in (x :: Point) isIn (plane :: Point => bool) &
-    (y :: Point) isIn (plane :: Point => bool) -->
-    orth(vec((x :: Point), (y :: Point)),
-    gn_inj((normal :: VectorStar)))"
+ let plane = PlaneX2 (offset, normal)
+ in x isIn plane & y isIn plane -->
+    orth(vec(x, y), (X_gn_inj :: VectorStar => Vector) normal)"
 
 plane_condition_for_point_and_vector [rule_format] :
 "ALL (normal :: VectorStar).
  ALL (offset :: Point).
  ALL (v :: Vector).
  ALL (x :: Point).
- let (plane :: Point => bool) =
-     PlaneX2 ((offset :: Point), (normal :: VectorStar))
- in (x :: Point) isIn (plane :: Point => bool) &
-    orth((v :: Vector), gn_inj((normal :: VectorStar))) -->
-    (x :: Point) +' (v :: Vector) isIn (plane :: Point => bool)"
+ let plane = PlaneX2 (offset, normal)
+ in x isIn plane &
+    orth(v, (X_gn_inj :: VectorStar => Vector) normal) -->
+    x +' v isIn plane"
 
 ga_select_first [rule_format] :
 "ALL (x_1 :: 'a).
- ALL (x_2 :: 'a List).
- first((x_1 :: 'a) ::' (x_2 :: 'a List)) = makePartial (x_1 :: 'a)"
+ ALL (x_2 :: 'a List). first(x_1 ::' x_2) = makePartial x_1"
 
 ga_select_rest [rule_format] :
 "ALL (x_1 :: 'a).
- ALL (x_2 :: 'a List).
- rest((x_1 :: 'a) ::' (x_2 :: 'a List)) =
- makePartial (x_2 :: 'a List)"
+ ALL (x_2 :: 'a List). rest(x_1 ::' x_2) = makePartial x_2"
 
 ga_select_SpacePoint [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: VectorStar).
- ALL (x_3 :: Vector).
- SpacePoint(X_SWPlane (x_1 :: Point) (x_2 :: VectorStar)
-            (x_3 :: Vector)) =
- (x_1 :: Point)"
+ ALL (x_3 :: Vector). SpacePoint(X_SWPlane x_1 x_2 x_3) = x_1"
 
 ga_select_NormalVector [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: VectorStar).
- ALL (x_3 :: Vector).
- NormalVector(X_SWPlane (x_1 :: Point) (x_2 :: VectorStar)
-              (x_3 :: Vector)) =
- (x_2 :: VectorStar)"
+ ALL (x_3 :: Vector). NormalVector(X_SWPlane x_1 x_2 x_3) = x_2"
 
 ga_select_InnerCS [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: VectorStar).
- ALL (x_3 :: Vector).
- InnerCS(X_SWPlane (x_1 :: Point) (x_2 :: VectorStar)
-         (x_3 :: Vector)) =
- (x_3 :: Vector)"
+ ALL (x_3 :: Vector). InnerCS(X_SWPlane x_1 x_2 x_3) = x_3"
 
 ga_select_Center [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: Point).
- ALL (x_3 :: Point).
- Center(X_SWArc (x_1 :: Point) (x_2 :: Point) (x_3 :: Point)) =
- (x_1 :: Point)"
+ ALL (x_3 :: Point). Center(X_SWArc x_1 x_2 x_3) = x_1"
 
 ga_select_Start [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: Point).
- ALL (x_3 :: Point).
- Start(X_SWArc (x_1 :: Point) (x_2 :: Point) (x_3 :: Point)) =
- (x_2 :: Point)"
+ ALL (x_3 :: Point). Start(X_SWArc x_1 x_2 x_3) = x_2"
 
 ga_select_End [rule_format] :
 "ALL (x_1 :: Point).
  ALL (x_2 :: Point).
- ALL (x_3 :: Point).
- End(X_SWArc (x_1 :: Point) (x_2 :: Point) (x_3 :: Point)) =
- (x_3 :: Point)"
+ ALL (x_3 :: Point). End(X_SWArc x_1 x_2 x_3) = x_3"
 
 ga_select_From [rule_format] :
 "ALL (x_1 :: Point).
- ALL (x_2 :: Point).
- From(X_SWLine (x_1 :: Point) (x_2 :: Point)) = (x_1 :: Point)"
+ ALL (x_2 :: Point). From(X_SWLine x_1 x_2) = x_1"
 
 ga_select_To [rule_format] :
 "ALL (x_1 :: Point).
- ALL (x_2 :: Point).
- To(X_SWLine (x_1 :: Point) (x_2 :: Point)) = (x_2 :: Point)"
+ ALL (x_2 :: Point). To(X_SWLine x_1 x_2) = x_2"
 
 ga_select_Points [rule_format] :
-"ALL (x_1 :: Point List).
- Points(X_SWSpline (x_1 :: Point List)) = (x_1 :: Point List)"
+"ALL (x_1 :: Point List). Points(X_SWSpline x_1) = x_1"
 
 ga_select_Objects [rule_format] :
 "ALL (x_1 :: SWSketchObject List).
- ALL (x_2 :: SWPlane).
- Objects_3(X_SWSketch (x_1 :: SWSketchObject List)
-           (x_2 :: SWPlane)) =
- (x_1 :: SWSketchObject List)"
+ ALL (x_2 :: SWPlane). Objects_3(X_SWSketch x_1 x_2) = x_1"
 
 ga_select_Plane [rule_format] :
 "ALL (x_1 :: SWSketchObject List).
- ALL (x_2 :: SWPlane).
- Plane'(X_SWSketch (x_1 :: SWSketchObject List) (x_2 :: SWPlane)) =
- (x_2 :: SWPlane)"
+ ALL (x_2 :: SWPlane). Plane'(X_SWSketch x_1 x_2) = x_2"
 
 ga_select_Objects_1 [rule_format] :
 "ALL (x_1 :: SWSkchCtrtParam List).
- Objects'(X_SWSkchCtrtObject (x_1 :: SWSkchCtrtParam List)) =
- (x_1 :: SWSkchCtrtParam List)"
+ Objects'(X_SWSkchCtrtObject x_1) = x_1"
 
 ga_select_SkchCtrtStatus [rule_format] :
 "ALL (x_1 :: SWSkchCtrtStatus).
  ALL (x_2 :: SWSkchCtrtObject List).
- SkchCtrtStatus(X_SWSkchCtrts (x_1 :: SWSkchCtrtStatus)
-                (x_2 :: SWSkchCtrtObject List)) =
- (x_1 :: SWSkchCtrtStatus)"
+ SkchCtrtStatus(X_SWSkchCtrts x_1 x_2) = x_1"
 
 ga_select_Objects_2 [rule_format] :
 "ALL (x_1 :: SWSkchCtrtStatus).
  ALL (x_2 :: SWSkchCtrtObject List).
- Objects''(X_SWSkchCtrts (x_1 :: SWSkchCtrtStatus)
-           (x_2 :: SWSkchCtrtObject List)) =
- (x_2 :: SWSkchCtrtObject List)"
+ Objects''(X_SWSkchCtrts x_1 x_2) = x_2"
 
 ga_select_Sketch [rule_format] :
 "ALL (x_1 :: SWSketch).
- ALL (x_2 :: Real).
- Sketch(X_SWExtrusion (x_1 :: SWSketch) (x_2 :: Real)) =
- (x_1 :: SWSketch)"
+ ALL (x_2 :: Real). Sketch(X_SWExtrusion x_1 x_2) = x_1"
 
 ga_select_Depth [rule_format] :
 "ALL (x_1 :: SWSketch).
- ALL (x_2 :: Real).
- Depth(X_SWExtrusion (x_1 :: SWSketch) (x_2 :: Real)) =
- (x_2 :: Real)"
+ ALL (x_2 :: Real). Depth(X_SWExtrusion x_1 x_2) = x_2"
 
 E1_def [rule_format] :
 "makePartial E1 =
@@ -1438,11 +1138,11 @@ E1_def [rule_format] :
   (X_SWPlane (P(0'', 0'', 0''))
    (makeTotal
     ((X_gn_proj :: Vector => VectorStar partial)
-     (V(0'', 0'', gn_inj(1')))))
-   (V(gn_inj(1'), 0'', 0''))))
+     (V(0'', 0'', (X_gn_inj :: NonZero => Real) 1'))))
+   (V((X_gn_inj :: NonZero => Real) 1', 0'', 0''))))
  (defOp
   ((X_gn_proj :: Vector => VectorStar partial)
-   (V(0'', 0'', gn_inj(1')))))"
+   (V(0'', 0'', (X_gn_inj :: NonZero => Real) 1'))))"
 
 E2_def [rule_format] :
 "makePartial E2 =
@@ -1451,11 +1151,11 @@ E2_def [rule_format] :
   (X_SWPlane (P(0'', 0'', 0''))
    (makeTotal
     ((X_gn_proj :: Vector => VectorStar partial)
-     (V(0'', gn_inj(1'), 0''))))
-   (V(gn_inj(1'), 0'', 0''))))
+     (V(0'', (X_gn_inj :: NonZero => Real) 1', 0''))))
+   (V((X_gn_inj :: NonZero => Real) 1', 0'', 0''))))
  (defOp
   ((X_gn_proj :: Vector => VectorStar partial)
-   (V(0'', gn_inj(1'), 0''))))"
+   (V(0'', (X_gn_inj :: NonZero => Real) 1', 0''))))"
 
 E3_def [rule_format] :
 "makePartial E3 =
@@ -1464,137 +1164,110 @@ E3_def [rule_format] :
   (X_SWPlane (P(0'', 0'', 0''))
    (makeTotal
     ((X_gn_proj :: Vector => VectorStar partial)
-     (V(gn_inj(1'), 0'', 0''))))
-   (V(0'', gn_inj(1'), 0''))))
+     (V((X_gn_inj :: NonZero => Real) 1', 0'', 0''))))
+   (V(0'', (X_gn_inj :: NonZero => Real) 1', 0''))))
  (defOp
   ((X_gn_proj :: Vector => VectorStar partial)
-   (V(gn_inj(1'), 0'', 0''))))"
+   (V((X_gn_inj :: NonZero => Real) 1', 0'', 0''))))"
 
 VLine_constr [rule_format] :
 "ALL (p1 :: Vector).
  ALL (p2 :: Vector).
- VLine ((p1 :: Vector), (p2 :: Vector)) =
+ VLine (p1, p2) =
  X_image
- (% (y :: Real). (p1 :: Vector) +_4
-                 ((y :: Real) *_3 ((p2 :: Vector) -'' (p1 :: Vector))),
-  closedinterval (0'', gn_inj(1')))"
+ (% y. p1 +_4 (y *_3 (p2 -'' p1)),
+  closedinterval (0'', (X_gn_inj :: NonZero => Real) 1'))"
 
 VWithLength_constr [rule_format] :
 "ALL (s :: Real).
  ALL (v :: Vector).
- makePartial (VWithLength((v :: Vector), (s :: Real))) =
- (if (v :: Vector) = 0_3 then makePartial (v :: Vector)
+ makePartial (VWithLength(v, s)) =
+ (if v = 0_3 then makePartial v
      else restrictOp
           (makePartial
-           (((s :: Real) /'
-             makeTotal
-             ((X_gn_proj :: Real => NonZero partial) ( || (v :: Vector) || )))
-            *_3 (v :: Vector)))
-          (defOp
-           ((X_gn_proj :: Real => NonZero partial) ( || (v :: Vector) || ))))"
+           ((s /'
+             makeTotal ((X_gn_proj :: Real => NonZero partial) ( || v || )))
+            *_3 v))
+          (defOp ((X_gn_proj :: Real => NonZero partial) ( || v || ))))"
 
 VPlane_constr [rule_format] :
-"ALL (normal :: Vector).
- VPlane (normal :: Vector) =
- (% (y :: Vector). orth((y :: Vector), (normal :: Vector)))"
+"ALL (normal :: Vector). VPlane normal = (% y. orth(y, normal))"
 
 VPlane2_constr [rule_format] :
 "ALL (axis1 :: Vector).
  ALL (axis2 :: Vector).
- VPlane2 ((axis1 :: Vector), (axis2 :: Vector)) =
- VPlane ((axis1 :: Vector) #' (axis2 :: Vector))"
+ VPlane2 (axis1, axis2) = VPlane (axis1 #' axis2)"
 
 VConnected_constr [rule_format] :
 "ALL (frontier :: Vector => bool).
  ALL (point :: Vector).
- VConnected ((frontier :: Vector => bool), (point :: Vector)) =
- (if (frontier :: Vector => bool) (point :: Vector)
-     then (frontier :: Vector => bool)
-     else % (y :: Vector). X__intersection__X
-                           (VLine ((point :: Vector), (y :: Vector)),
-                            (frontier :: Vector => bool)) =
-                           X_emptySet)"
+ VConnected (frontier, point) =
+ (if frontier point then frontier
+     else % y. X__intersection__X (VLine (point, y), frontier) =
+               X_emptySet)"
 
 VHalfSpace_constr [rule_format] :
 "ALL (normal :: Vector).
- VHalfSpace (normal :: Vector) =
- VConnected (VPlane (normal :: Vector), (normal :: Vector))"
+ VHalfSpace normal = VConnected (VPlane normal, normal)"
 
 VHalfSpace2_constr [rule_format] :
 "ALL (normal :: Vector).
- VHalfSpace2 (normal :: Vector) =
- X__union__X
- (VConnected (VPlane (normal :: Vector), (normal :: Vector)),
-  VPlane (normal :: Vector))"
+ VHalfSpace2 normal =
+ X__union__X (VConnected (VPlane normal, normal), VPlane normal)"
 
 VBall_constr [rule_format] :
-"ALL (r :: Real).
- VBall (r :: Real) =
- (% (y :: Vector). || (y :: Vector) || <=' (r :: Real))"
+"ALL (r :: Real). VBall r = (% y. || y || <=' r)"
 
 VCircle_constr [rule_format] :
 "ALL (axis :: Vector).
  ALL (r :: Real).
- VCircle ((r :: Real), (axis :: Vector)) =
- X__intersection__X (VPlane (axis :: Vector), VBall (r :: Real))"
+ VCircle (r, axis) = X__intersection__X (VPlane axis, VBall r)"
 
 ActAttach_constr [rule_format] :
 "ALL (point :: Point).
  ALL (vectors :: Vector => bool).
- ActAttach ((point :: Point), (vectors :: Vector => bool)) =
- X__XPlus__XX2 ((point :: Point), (vectors :: Vector => bool))"
+ ActAttach (point, vectors) = X__XPlus__XX2 (point, vectors)"
 
 ActExtrude_constr [rule_format] :
 "ALL (axis :: Vector).
  ALL (points :: Point => bool).
- ActExtrude ((axis :: Vector), (points :: Point => bool)) =
- (% (x :: Point). EX (l :: Real).
-                  EX (y :: Point).
-                  ((l :: Real) isIn closedinterval (0'', gn_inj(1')) &
-                   (y :: Point) isIn (points :: Point => bool)) &
-                  (x :: Point) =
-                  (y :: Point) +' ((l :: Real) *_3 (axis :: Vector)))"
+ ActExtrude (axis, points) =
+ (% x. EX (l :: Real).
+       EX (y :: Point).
+       (l isIn closedinterval (0'', (X_gn_inj :: NonZero => Real) 1') &
+        y isIn points) &
+       x = y +' (l *_3 axis))"
 
 vwl_identity [rule_format] :
 "ALL (s :: Real).
- ALL (v :: Vector).
- || (v :: Vector) || = (s :: Real) -->
- VWithLength((v :: Vector), (s :: Real)) = (v :: Vector)"
+ ALL (v :: Vector). || v || = s --> VWithLength(v, s) = v"
 
 vwl_length [rule_format] :
 "ALL (s :: Real).
  ALL (v :: Vector).
- ~ (v :: Vector) = 0_3 -->
- || VWithLength((v :: Vector), (s :: Real)) || =
- gn_inj(abs'((s :: Real)))"
+ ~ v = 0_3 -->
+ || VWithLength(v, s) || =
+ (X_gn_inj :: RealNonNeg => Real) (abs'(s))"
 
 vwl_lindep [rule_format] :
-"ALL (s :: Real).
- ALL (v :: Vector).
- lindep((v :: Vector), VWithLength((v :: Vector), (s :: Real)))"
+"ALL (s :: Real). ALL (v :: Vector). lindep(v, VWithLength(v, s))"
 
 semantics_for_Planes [rule_format] :
 "ALL (ics :: Vector).
  ALL (X_n :: VectorStar).
  ALL (X_o :: Point).
- iX2
- (X_SWPlane (X_o :: Point) (X_n :: VectorStar) (ics :: Vector)) =
- ActAttach ((X_o :: Point), VPlane (gn_inj((X_n :: VectorStar))))"
+ iX2 (X_SWPlane X_o X_n ics) =
+ ActAttach (X_o, VPlane ((X_gn_inj :: VectorStar => Vector) X_n))"
 
 semantics_for_SketchObject_listsXMinusBaseCase [rule_format] :
-"ALL (plane :: SWPlane).
- X_isX2 (['], (plane :: SWPlane)) = X_emptySet"
+"ALL (plane :: SWPlane). X_isX2 (['], plane) = X_emptySet"
 
 semantics_for_SketchObject_listsXMinusRecursiveCase [rule_format] :
 "ALL (plane :: SWPlane).
  ALL (sko :: SWSketchObject).
  ALL (skos :: SWSketchObject List).
- X_isX2
- ((sko :: SWSketchObject) ::' (skos :: SWSketchObject List),
-  (plane :: SWPlane)) =
- X__union__X
- (X_isX1 ((sko :: SWSketchObject), (plane :: SWPlane)),
-  X_isX2 ((skos :: SWSketchObject List), (plane :: SWPlane)))"
+ X_isX2 (sko ::' skos, plane) =
+ X__union__X (X_isX1 (sko, plane), X_isX2 (skos, plane))"
 
 semantics_for_Arcs [rule_format] :
 "ALL (plane :: SWPlane).
@@ -1602,68 +1275,56 @@ semantics_for_Arcs [rule_format] :
  ALL (y :: Point).
  ALL (z :: Point).
  X_isX1
- (gn_inj(X_SWArc (x :: Point) (y :: Point) (z :: Point)),
-  (plane :: SWPlane)) =
- (let (r1 :: Vector) = vec((x :: Point), (y :: Point));
-      (ball :: Point => bool) =
-      ActAttach ((x :: Point), VBall ( || (r1 :: Vector) || ));
-      (planeI :: Point => bool) = iX2 (plane :: SWPlane)
-  in X__intersection__X
-     ((ball :: Point => bool), (planeI :: Point => bool)))"
+ ((X_gn_inj :: SWArc => SWSketchObject) (X_SWArc x y z), plane) =
+ (let r1 = vec(x, y);
+      ball = ActAttach (x, VBall ( || r1 || ));
+      planeI = iX2 plane
+  in X__intersection__X (ball, planeI))"
 
 semantics_for_Sketches [rule_format] :
 "ALL (plane :: SWPlane).
  ALL (skos :: SWSketchObject List).
- iX3 (X_SWSketch (skos :: SWSketchObject List) (plane :: SWPlane)) =
- X_isX2 ((skos :: SWSketchObject List), (plane :: SWPlane))"
+ iX3 (X_SWSketch skos plane) = X_isX2 (skos, plane)"
 
 semantics_for_ArcExtrusion [rule_format] :
 "ALL (l :: Real).
  ALL (sk :: SWSketch).
- iX1 (gn_inj(X_SWExtrusion (sk :: SWSketch) (l :: Real))) =
+ iX1 ((X_gn_inj :: SWExtrusion => SWFeature) (X_SWExtrusion sk l)) =
  ActExtrude
- (VWithLength(gn_inj(NormalVector(Plane'((sk :: SWSketch)))),
-  (l :: Real)),
-  iX3 (sk :: SWSketch))"
+ (VWithLength((X_gn_inj :: VectorStar => Vector)
+              (NormalVector(Plane'(sk))),
+  l),
+  iX3 sk)"
 
 plane_is_plane [rule_format] :
 "ALL (plane :: SWPlane).
- iX2 (plane :: SWPlane) =
- PlaneX2
- (SpacePoint((plane :: SWPlane)), NormalVector((plane :: SWPlane)))"
+ iX2 plane = PlaneX2 (SpacePoint(plane), NormalVector(plane))"
 
--- "TODO: removed the partial encoding by hand!"
 def_of_SWCylinder [rule_format] :
 "ALL (axis :: VectorStar).
  ALL (boundarypoint :: Point).
  ALL (center :: Point).
- SWCylinder((center :: Point), (boundarypoint :: Point), (axis :: VectorStar)) =
- gn_inj(let (plane :: SWPlane) =
-      X_SWPlane (center :: Point) (axis :: VectorStar)
-      (V(0'', 0'', 0''));
-      (arc :: SWArc) =
-      X_SWArc (center :: Point) (boundarypoint :: Point)
-      (boundarypoint :: Point);
-      (height :: Real) = || gn_inj((axis :: VectorStar)) ||
+ SWCylinder(center, boundarypoint, axis) =
+ (X_gn_inj :: SWExtrusion => SWFeature)
+ (let plane = X_SWPlane center axis (V(0'', 0'', 0''));
+      arc = X_SWArc center boundarypoint boundarypoint;
+      height = || (X_gn_inj :: VectorStar => Vector) axis ||
   in X_SWExtrusion
-     (X_SWSketch (gn_inj((arc :: SWArc)) ::' [']) (plane :: SWPlane))
-     (height :: Real))"
+     (X_SWSketch ((X_gn_inj :: SWArc => SWSketchObject) arc ::' ['])
+      plane)
+     height)"
 
 affine_cylinder_constructible_in_SW [rule_format] :
 "ALL (axis :: VectorStar).
  ALL (offset :: Point).
  ALL (r :: RealPos).
- Cylinder
- (((offset :: Point), (r :: RealPos)), (axis :: VectorStar)) =
- (let (boundary :: Point => bool) =
-      % (p :: Point). let (v :: Vector) =
-                          vec((offset :: Point), (p :: Point))
-                      in orth((v :: Vector), gn_inj((axis :: VectorStar))) &
-                         || (v :: Vector) || = gn_inj((r :: RealPos));
-      (boundarypoint :: Point) = choose'((boundary :: Point => bool))
-  in iX1
-     (SWCylinder((offset :: Point), (boundarypoint :: Point),
-      (axis :: VectorStar))))"
+ Cylinder ((offset, r), axis) =
+ (let boundary =
+      % p. let v = vec(offset, p)
+           in orth(v, (X_gn_inj :: VectorStar => Vector) axis) &
+              || v || = (X_gn_inj :: RealPos => Real) r;
+      boundarypoint = choose'(boundary)
+  in iX1 (SWCylinder(offset, boundarypoint, axis)))"
 
 declare ga_subt_reflexive [simp]
 declare ga_subt_NonZero_XLt_Real [simp]
@@ -1767,9 +1428,6 @@ declare vwl_lindep [simp]
 declare semantics_for_SketchObject_listsXMinusBaseCase [simp]
 declare semantics_for_Sketches [simp]
 
-
-
-
 -- "SUBTYPE RULES"
 
 axioms
@@ -1869,21 +1527,24 @@ qed
 lemma gn_inj_diagram:
 "[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (z:: 'b) (t:: 'c) |]
   ==> (!!(x':: 'a). (gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b))"
-
---   "X_gn_subt (u:: 'a) (v:: 'b) ==> inj (gn_inj:: 'a => 'b)"
 proof-
   assume hypAB: "X_gn_subt (x:: 'a) (y:: 'b)"
   assume hypBC: "X_gn_subt (z:: 'b) (t:: 'c)"
   fix x' :: 'a
-  
-  from hypAB have A: "gn_subt(x',y)" by (simp only: subtype_constant)
-  from hypBC have B: "gn_subt(y,t)" by (simp only: subtype_constant)
-  
-  
-  show "(gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b)"
-    by (rule ga_inj_transitive [of x' y t], simp add: A B)
-qed
 
+  def y_def: y' == "gn_inj(x'):: 'b"
+  def z_def: z' == "gn_inj(x'):: 'c"
+
+  from hypAB hypBC have A: "gn_subt(x',y') \<and> gn_subt(y',z')"
+    by (simp add: subtype_constant)
+
+  have B: "(z' = gn_inj(x')) = (z' = gn_inj(y'))"
+    by (rule ga_inj_transitive [of x' y' z'], simp only: A, simp add: y_def)
+
+  show "(gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b)"
+    by (simp only:  y_def [symmetric] z_def [symmetric], subst B [symmetric]
+      , simp only: z_def)
+qed
 
 lemma gn_inj_injective :
   "X_gn_subt (u :: 'a) (v:: 'b) ==> inj (X_gn_inj :: 'a => 'b)"
@@ -1945,16 +1606,14 @@ theorem def_of_Cylinder :
 "ALL (axis :: VectorStar).
  ALL (offset :: Point).
  ALL (r :: RealPos).
- Cylinder
- (((offset :: Point), (r :: RealPos)), (axis :: VectorStar)) =
- (% (x :: Point). let (v :: Vector) =
-                      vec((offset :: Point), (x :: Point))
-                  in ( || proj((v :: Vector), gn_inj((axis :: VectorStar))) ||
-                       <=' || gn_inj((axis :: VectorStar)) || &
-                       || orthcomp((v :: Vector), gn_inj((axis :: VectorStar)))
-                       ||
-                       <=' gn_inj((r :: RealPos))) &
-                     (v :: Vector) *_4 gn_inj((axis :: VectorStar)) >=' 0'')"
+ Cylinder ((offset, r), axis) =
+ (% x. let v = vec(offset, x)
+       in ( || proj(v, (X_gn_inj :: VectorStar => Vector) axis) || <='
+            || (X_gn_inj :: VectorStar => Vector) axis || &
+            || orthcomp(v, (X_gn_inj :: VectorStar => Vector) axis) || <='
+            (X_gn_inj :: RealPos => Real) r) &
+          v *_4 (X_gn_inj :: VectorStar => Vector) axis >=' 0'')"
+
   -- "unfolding some initial definitions"
   unfolding affine_cylinder_constructible_in_SW
   unfolding def_of_SWCylinder
