@@ -1,4 +1,4 @@
-library HasCASL/Real3D/HammerPrinciple
+library HasCASL/Real3D/SolidWorks/HammerPrinciple
 version 0.1
 
 %author: E. Schulz
@@ -6,7 +6,7 @@ version 0.1
 
 logic HasCASL
 
-from HasCASL/Real3D/Principles get Principles
+from HasCASL/Real3D/SolidWorks/Principles get Principles
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
@@ -53,6 +53,8 @@ spec HammerPrinciple = Principles then
      free type
      Hammer ::= Hammer(body, wf1, wf2:PointSet); %(Hammer datatype)%
 
+     op 2 : NonZero %implied
+
      var h:Hammer
 
 %%2 body is a pointset (by type!)
@@ -81,7 +83,7 @@ spec HammerPrinciple = Principles then
 
      . let bb = boundingBox(body(h));
            w = width(bb)
-       in depth(bb) << w /\ height(bb) <> (3/(2 as NonZero)) * w
+       in depth(bb) << w /\ height(bb) <> (3/2) * w
 
 
 %%7 Hammer, wf1 and wf2 have a z-plane symmetry
