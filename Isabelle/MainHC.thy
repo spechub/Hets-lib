@@ -172,18 +172,6 @@ lemma strictness_closure:
 apply (simp add: lift2partial_def makePartial_def restrictOp_def makeTotal_def undefinedOp_def)
 done
 
-(*
-   Identities added by Ewaryst Schulz
-*)
-lemma defOp_implies_makePartial:
-"defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
-  by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def)
-
--- "need this to expand a term for application of lemmas"
-lemma partial_identity: "!!x. makeTotal(makePartial(x)) = x"
-  by (simp add: makeTotal_def makePartial_def)
-
-
 consts preDefOp :: "'a partial => bool"
 
 axioms
