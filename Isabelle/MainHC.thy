@@ -177,9 +177,13 @@ done
 *)
 lemma defOp_implies_makePartial:
 "defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
+-- "for isabelle 2009"
+-- "  by (rule Option.option.exhaust [of x], simp, simp add: exI makePartial_def) "
+-- "for isabelle 2008"
+-- " by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def) "
+-- "for both versions:"
   sorry
-(*  by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def)
-*)
+
 
 -- "need this to expand a term for application of lemmas"
 lemma partial_identity: "!!x. makeTotal(makePartial(x)) = x"
