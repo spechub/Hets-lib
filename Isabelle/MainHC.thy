@@ -175,14 +175,21 @@ done
 (*
    Identities added by Ewaryst Schulz
 *)
+(* 
 lemma defOp_implies_makePartial:
 "defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
 -- "for isabelle 2009"
--- "  by (rule Option.option.exhaust [of x], simp, simp add: exI makePartial_def) "
+  by (rule Option.option.exhaust [of x], simp, simp add: exI makePartial_def)
 -- "for isabelle 2008"
--- " by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def) "
+ by (rule Datatype.option.exhaust [of x], simp, simp add: exI makePartial_def)
 -- "for both versions:"
   sorry
+*)
+
+axioms
+
+defOp_implies_makePartial:
+"defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
 
 
 -- "need this to expand a term for application of lemmas"
