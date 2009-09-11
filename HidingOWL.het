@@ -18,12 +18,15 @@ spec FoodOntology =
  ObjectProperty: grows_in
 
  Class: PlantEater 
- EquivalentTo: Human and eats onlyPlant 
-end
+ EquivalentTo: Human and eats only  Plant 
+
 
 spec FoodOntologyHide = 
  FoodOntology hide Food
-then %implied
+
+spec FoodOntologyGoal = 
+ FoodOntologyHide
+then %implies
  Class: PlantEater
  SubclassOf: eats some Vegetarian
  
