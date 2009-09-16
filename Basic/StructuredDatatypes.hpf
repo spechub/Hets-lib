@@ -10,15 +10,6 @@ prove-all
 
 # ------------------------------------------------------------------------------
 
-dg basic Int_E1
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-prove-all
-
-# ------------------------------------------------------------------------------
-
 dg basic PowerSet
 prover SPASS
 prove-all
@@ -38,21 +29,14 @@ prove
 
 # ------------------------------------------------------------------------------
 
-dg basic Nat_E1
-prover SPASS
-set goals min_0
-prove
-
-# ------------------------------------------------------------------------------
-
-dg basic Set_E1
+dg basic Set_E2
 prover SPASS
 set goals ga_right_unit___union__
 prove
 
 # ------------------------------------------------------------------------------
 
-dg basic List_E1
+dg basic List_E2
 prover SPASS
 set goals first_partial_nil rest_nil ga_selector_front ga_disjoint_[]___+__
 prove
@@ -75,7 +59,7 @@ prove
 
 dg basic Monoid_in_List_T
 prover SPASS
-set goals ga_left_unit___*___1
+set goals ga_left_unit___*___73
 prove
 
 drop-translations
@@ -83,7 +67,7 @@ translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
-set goals ga_right_unit___*___1
+set goals ga_right_unit___*___72
 set time-limit 40
 prove
 

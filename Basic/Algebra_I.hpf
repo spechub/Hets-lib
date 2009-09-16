@@ -73,13 +73,13 @@ prove
 
 # ------------------------------------------------------------------------------
 
-dg basic ExtIntegralDomain_E1
+dg basic ExtIntegralDomain_E2
 prover SPASS
 prove-all
 
 # ------------------------------------------------------------------------------
 
-dg basic ExtCommutativeRing_E1
+dg basic ExtCommutativeRing_E2
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
@@ -88,7 +88,7 @@ prove-all
 
 # ------------------------------------------------------------------------------
 
-dg basic ExtField_E1
+dg basic ExtField_E3
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
@@ -107,13 +107,13 @@ prove-all
 
 # ------------------------------------------------------------------------------
 
-dg basic ExtGroup_E1
+dg basic ExtGroup_E2
 prover SPASS
 set goals invUnit_Group
 prove
 
 prover MathServe Broker
-set goals rightInv_Group leftCancel_Group rightCancel_Group invInv_Group
+set goals rightInv_Group leftCancel_Group
 prove
 
 drop-translations
@@ -121,7 +121,7 @@ translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
-set goals invMult_Group pow_unit_Group pow_add_Group pow_mult_Group
+set goals rightCancel_Group invInv_Group invMult_Group pow_unit_Group pow_add_Group pow_mult_Group
 prove
 
 # ------------------------------------------------------------------------------
