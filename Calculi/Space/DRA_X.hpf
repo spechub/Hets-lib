@@ -7,135 +7,60 @@ dg-all auto
 # ------------------------------------------------------------------------------
 
 dg basic Point
-
 drop-translations
 prover SPASS
-
 set goals neq_point
 set axioms eq_point
-set time-limit 20
 prove
-
-
 
 # ------------------------------------------------------------------------------
 
 dg basic OrderedField_in_FieldWithOrdering_T
-
 drop-translations
 prover SPASS
-
-set goals OF_times
-set axioms inv_Group NonZeroElem_def ga_right_unit___*__ Ax1 trans FWO_plus_left FWO_plus_right
-set time-limit 20
+set goals OF_times OF_mutex OF_exhaust
 prove
-
-set goals OF_mutex
-set axioms NonZeroElem_def ga_right_unit___*__ Ax1 Field_unary_minus_idef ga_comm___*__ antisym FWO_plus_right
-set time-limit 20
-prove
-
-set goals OF_exhaust
-set axioms refl NonZeroElem_def ga_left_unit___*__ Ax1 Field_unary_minus_idef dichotomy_TotalOrder FWO_plus_left
-set time-limit 20
-prove
-
 
 drop-translations
 prover Vampire
-
 set goals OF_plus
-set-all axioms
 set time-limit 40
 prove
 
-
-
 # ------------------------------------------------------------------------------
 
-dg basic PreReal_E1
-
+dg basic PreReal_E3
 drop-translations
 prover SPASS
-
-set goals one_greater_zero
-set axioms ga_totality_2 zeroNeqOne_Field ga_strictness_2 ga_totality_17 ga_left_unit___*___1 PreReal_sqrt_idef PreReal_sqr_def ga_predicate_strictness_3 ga_predicate_strictness_1 ga_predicate_strictness PreReal_sqrt_dom greater_def_ExtPartialOrder geq_def_ExtPartialOrder less_def_ExtPartialOrder
-set time-limit 20
+set goals one_greater_zero zero_leq_one add_monotone comm_add
 prove
 
-set goals zero_leq_one
-set axioms one_greater_zero ga_predicate_strictness_2 ga_predicate_strictness greater_def_ExtPartialOrder less_def_ExtPartialOrder
-set time-limit 20
-prove
-
+set time-limit 40
 set goals half_gt_zero
-set axioms ga_totality_4 ga_totality_2 ga_totality_1 PreReal_2_def ga_totality_12 Real_mult_with_zero_1 ga_left_unit___*___1 ga_left_unit___*__ PreReal_half_idef NonZeroElem_def ga_predicate_strictness_2 ga_predicate_strictness_1 ga_predicate_strictness dichotomy_TotalOrder greater_def_ExtPartialOrder less_def_ExtPartialOrder geq_def_ExtPartialOrder trans FWO_plus_left distr1_Ring
-set time-limit 20
 prove
-
-set goals add_monotone
-set axioms ga_predicate_strictness_1 FWO_plus
-set time-limit 20
-prove
-
-set goals half_leq_zero
-set axioms ga_totality_2 PreReal_2_def ga_totality_12 ga_left_unit___*___1 ga_left_unit___*__ PreReal_half_idef ga_predicate_strictness_2 ga_predicate_strictness_1 ga_predicate_strictness half_gt_zero dichotomy_TotalOrder greater_def_ExtPartialOrder less_def_ExtPartialOrder FWO_plus_left distr1_Ring
-set time-limit 20
-prove
-
-set goals comm_add
-set axioms ga_comm___*__
-set time-limit 20
-prove
-
 
 drop-translations
 prover MathServe Broker
-
-set goals Real_mult_by_minus_one
-set-all axioms
-set time-limit 20
+set goals Real_mult_by_minus_one Real_mult_by_minus_one_2
 prove
-
-
 
 # ------------------------------------------------------------------------------
 
-dg basic FieldWithOrdering_E1
-
+dg basic FieldWithOrdering_E2
 drop-translations
 prover SPASS
-
-set goals FWO_plus_right
-set axioms NonZeroElem_def ga_left_unit___*__ ga_right_unit___*__ ga_comm___*__ FWO_plus_left
-set time-limit 20
+set goals FWO_plus_right FWO_times_right
 prove
-
-set goals FWO_times_right
-set axioms NonZeroElem_def ga_comm___*___1 FWO_times_left
-set time-limit 20
-prove
-
 
 drop-translations
 prover Vampire
-
 set goals FWO_plus
-set-all axioms
-set time-limit 20
 prove
-
-
 
 # ------------------------------------------------------------------------------
 
 dg basic FieldWithOrdering_in_OrderedField_T
-
 drop-translations
 prover SPASS
-
 set goals refl
-set axioms OF_exhaust NonZeroElem_def ga_left_unit___*__ ga_right_unit___*__ Field_unary_minus_idef ga_comm___*__ Ax1
-set time-limit 20
 prove
-
