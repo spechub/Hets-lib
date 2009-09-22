@@ -48,7 +48,21 @@ then
 	      = ScrewsInFlange(f)*ScrewForce(s, ScrewMomentum(s))
 		   - CirclePressureForce(RadiusFromTube(TubeOfFlange(f)), p);
 
+	 %% Available screws:
+	 Scr1:screw;
+	 Scr2:screw;
+	 %% ...
+	 ScrN:screw;
 
 end
 
 
+spec TheFlange = FlangePhysics
+then
+     %% A given flange and pressure:
+     ops F:flange;
+	 p:Real;
+
+     . exists s:screw. FlangeForce(F,s,p) > 0; %(flange correct)% %implied
+
+end
