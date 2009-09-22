@@ -16,6 +16,19 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
+%[
+  The goal here is to express the forces on the cover of a flange which
+  result from the pressure in the tube of a flange and from the screws
+  which connect the flange with the cover.
+  Ideally one would like to express the forces seperately for the local
+  components, e.g., if we have a screw at point x which "connects" the
+  faces A, B which are put "flat" together (the faces are parallel), then
+  we can obtain a maximal force on A at point x which is directed towards B
+  and whose absolute value equals the internal traction of the connecting
+  screw. Then we would define the force on an object as the sum of all local
+  forces. Then we would state, that the resulting force of the cover has to
+  have a positive value in the direction towards the flange.
+]%
 spec FlangePhysics = AffineRealSpace3DWithSets and Nat
 then
      type Nat < Real;
