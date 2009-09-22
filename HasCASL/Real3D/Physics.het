@@ -1,0 +1,41 @@
+library HasCASL/Real3D/Physics
+version 0.2
+
+%author: E. Schulz
+%date: 13-11-2008
+
+logic HasCASL
+
+from Basic/Numbers get Nat
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
+
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                          Physics for Flange                      %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec FlangePhysics = AffineRealSpace3DWithSets and Nat
+then
+     type Nat < Real;
+
+     type tube, flange, screw;
+     ops Pi:Real;
+	 RadiusFromTube: tube -> Real;
+	 TubeOfFlange: flange -> tube;
+	 CircleArea(radius:Real):Real = Pi*radius*radius;
+	 CirclePressureForce(radius:Real;pressure:Real):Real
+	      = CircleArea(radius) * pressure;
+	 ScrewForce: screw * Real -> Real;
+	 ScrewMomentum: screw -> Real;
+	 ScrewsInFlange: flange -> Nat;
+	 FlangeForce(f:flange;s:screw;p:Real): Real
+	 %[ difference of the screw force and the pressure force ]%
+	      = ScrewsInFlange(f)*ScrewForce(s, ScrewMomentum(s))
+		   - CirclePressureForce(RadiusFromTube(TubeOfFlange(f)), p);
+
+
+end
+
+
