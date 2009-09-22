@@ -6,7 +6,6 @@ version 0.2
 
 logic HasCASL
 
-from Basic/Numbers get Nat
 from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 
@@ -29,10 +28,8 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
   forces. Then we would state, that the resulting force of the cover has to
   have a positive value in the direction towards the flange.
 ]%
-spec FlangePhysics = AffineRealSpace3DWithSets and Nat
+spec FlangePhysics = AffineRealSpace3DWithSets
 then
-     type Nat < Real;
-
      type tube, flange, screw;
      ops Pi:Real;
 	 RadiusFromTube: tube -> Real;
@@ -66,3 +63,4 @@ then
      . exists s:screw. FlangeForce(F,s,p) > 0; %(flange correct)% %implied
 
 end
+

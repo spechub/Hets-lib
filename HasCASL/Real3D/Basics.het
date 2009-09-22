@@ -12,6 +12,8 @@ version 0.2
 
 logic HasCASL
 
+from Basic/Numbers get
+     Rat
 from HasCASL/Algebra get
      ExtInverse
 from HasCASL/LinearAlgebra get
@@ -29,8 +31,10 @@ from HasCASL/Reals get
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
-spec RealBase = ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
+spec RealBase = Rat and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
 then
+     type Rat < Real
+
      ops  2: Real = 1 + 1;                      %(2_def_Real)%
 	  3: Real = 2 + 1;                      %(3_def_Real)%
 	  4: Real = 3 + 1;                      %(4_def_Real)%
