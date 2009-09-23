@@ -1,0 +1,57 @@
+
+logic HasCASL
+from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorks
+
+%[ REMARK I:
+   1. Give the spec a name (preferably the same as filename, but without the extension)
+   2. Solidworks -> SolidWorks (case sensitive)
+]%
+
+spec Teil1 = SolidWorks then
+
+
+op
+
+%%Tag:Arc(0)@Skizze1
+%[ REMARK II:
+   1. Use the type SWSketchObject instead of SWObject here
+   2. Don't use the Arc constructor in front of SWArc (check the new SolidWorks datatypes!)
+   3. Close all parantheses (weren't closed in the original version)
+   4. Use the Point datatype from the HasCASL/Real3D/Basics.het (with constructor P)
+   5. Try to figure out if there is a floating point in your number otherwise just use the
+      number, e.g., 0 instead of SWReal(0,0)
+   6. The SWArc constructor doesn't have the plane as argument anymore, this argument has moved
+      to the SWSketch constructor (see below)
+]%
+
+	Arc_0:SWSketchObject = SWArc(
+			P(SWReal(21,489843303629201), SWReal(54,479129460525975), 0),
+			P(SWReal(21,489843303629201), SWReal(54,479129460525975), 0),
+			P(SWReal(-53,847532467532474), SWReal(31,964415584415580), 0));
+
+%[REMARK III:
+   1. The SWSketch constructor has a new argument of type Plane
+      (check the new SolidWorks datatypes!)
+   2. Close the parens correctly!
+
+]%
+
+%%Tag:Skizze1
+	Skizze1:SWSketch = SWSketch([Arc_0], E1);
+%%Origin = ( 0, 0, 0)
+%%Xvector = ( 1, 0, 0)
+%%Normal = ( 0, 0, 1)
+
+%[REMARK IV:
+   1. The SWExtrude constructor became SWExtrusion
+      (check the new SolidWorks datatypes!) and for simplicity we just kept
+      two arguments (the SWSketch and the depth)
+   2. Check the names when referring to previously defined symbols (Sketch_1 -> Skizze1)
+]%
+
+%%Tag:Linear austragen1
+	Extrude_Sketch1:SWFeature = SWExtrusion(Skizze1, SWReal(0,85000000000000));
+
+
+
+end
