@@ -11,7 +11,7 @@ version 0.2
 logic HasCASL
 
 from Basic/Numbers get
-     Rat
+     DecimalFraction
 from HasCASL/Algebra get
      ExtInverse
 from HasCASL/LinearAlgebra get
@@ -29,13 +29,15 @@ from HasCASL/Reals get
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
-spec RealBase = Rat and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
+spec RealBase = DecimalFraction and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
 then
      type Rat < Real
 end
 
 spec Points3D = RealBase then
      free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
+     %% imagine that as the first projection
+     type Real < Point %(Real embedding into points)%
      ops 0:Point=P(0,0,0); %(Zero Point)%
 
 	 %% choice operators may only be defined on non-empty types,
@@ -49,6 +51,9 @@ end
 
 spec Vectors3DBase = RealBase then
      free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
+
+     %% imagine that as the first projection
+     type Real < Vector %(Real embedding into vectors)%
 
      ops 0:Vector=V(0,0,0); %(Zero Vector)%
 	 __+__ : Vector * Vector -> Vector;
