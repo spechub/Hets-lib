@@ -1,4 +1,4 @@
-library HasCASL/Real3D/SolidMechanics
+library HasCASL/Real3D/RigidBodyMechanics
 version 0.2
 
 %author: E. Schulz
@@ -29,13 +29,13 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
   have a positive value in the direction towards the flange.
 ]%
 
-spec SolidMechanics = AffineRealSpace3DWithSets
+spec RigidBodyMechanics = AffineRealSpace3DWithSets
 then
      ops %[ The law of the resulting Force on a system of mass points ]%
 	 ResultingForce(Fi:List Vector):Vector = veclistop Fi;
 end
 
-spec Screw = SolidMechanics
+spec Screw = RigidBodyMechanics
 then
      %[ a screw consists of a drawing of the screw and annotations which
         contain the material and physical properties ]%
