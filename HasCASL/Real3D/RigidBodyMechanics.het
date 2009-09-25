@@ -32,10 +32,12 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 spec RigidBodyMechanics = AffineRealSpace3DWithSets
 then
      ops %[ The law of the resulting Force on a system of mass points ]%
-	 ResultingForce(Fi:List Vector):Vector = veclistop Fi;
+	 ResultingForce(Fi:List Vector):Vector = veclistop Fi; %(resulting force)%
+	 %[ pressure and force ]%
+	 PressureForce(p:Real;A:Vector):Vector = p * A; %(pressure force)%
 end
 
-spec Screw = RigidBodyMechanics
+spec Screw = AffineRealSpace3DWithSets
 then
      %[ a screw consists of a drawing of the screw and annotations which
         contain the material and physical properties ]%
@@ -49,10 +51,16 @@ then
 
      %[ this function describes the traction of a screw when tightened
         by a given momentum ]%
-     ScrewForce: screw * Real -> Real;
+     ScrewForceForMomentum: screw * Real -> Real;
 
-     %[ this gives us the direction in which the screw works on the material ]%
+     %[ this gives us the normed direction in which the screw works on the material ]%
      ScrewWorkDirection: screw -> Vector;
+
+     %[ assuming we use the maximum momentum to tighten the screw, this is the
+        resulting force on the tightened material ]%
+     ScrewForce(s:screw):Vector =
+     ScrewForceForMomentum(s, ScrewMomentum(s)) * ScrewWorkDirection(s); %(screw force)%
+
 
      %% Available screws (coming from database):
      Scr1:screw;
@@ -72,9 +80,9 @@ spec Flange = Screw then type flange
 
 spec FlangeConfig = Flange
 then
-     %% the flange
-     ops F:flange;
-     %% the pressure
+     %% the normed axis of the flange
+     ops axis:Vector;
+     %% the maximal pressure
 	 p:Real;
 
          %[ the neccessary pressure to seal two plates such that no gas
@@ -82,18 +90,29 @@ then
             material constant, probably dependent on the pressure of the content ]%
 	 SealingPressure : Real -> Real;
 
-         %[ the neccessary pressure to seal two plates such that no gas
-            or fluid can escape from the interior
-            material constant, probably dependent on the pressure of the content ]%
+         %[ the inner and outer radius of the flange ]%
 	 innerRadius : Real;
+	 outerRadius : Real;
 
 	 %[ a collection of the screws used in this flange ]%
 	 screws: List screw;
 
 end
 
-spec FlangeMechanics[FlangeConfig] =
+spec FlangeMechanics[FlangeConfig] = RigidBodyMechanics
+then
+     %[ VERIFICATION CONDITION for the flange:
+        the resulting force of the forces sum of screw forces, sealing force
+        and pressure force has to have a positive value in opposite direction
+        of the axis of the flange ]%
+     . let innerSurface = Pi * innerRadius * innerRadius;
+           outerSurface = Pi * outerRadius * outerRadius;
+	   sealingSurface = (outerSurface - innerSurface) * axis;
+	   activePressureSurface = innerSurface * axis;
+	   sealingForce = PressureForce(SealingPressure(p), sealingSurface);
+	   actPrForce = PressureForce(p, activePressureSurface)
+       in ResultingForce(sealingForce :: actPrForce :: map ScrewForce screws)
+	    * axis < 0
 
-type shi
 end
 

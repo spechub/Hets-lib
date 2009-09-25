@@ -13,5 +13,10 @@ spec List =
      var a:Type
      free type List a ::=  [] |  __ :: __ (first:? a; rest:? List a)
      %(List datatype)%
+     ops map : forall a, b:Type . (a -> b) -> List a -> List b;
+
+     vars x:a; l:List a; b:Type; f:a->b
+     . map f [] = []
+     . map f (x::l) = f(x)::(map f l)
 
 end
