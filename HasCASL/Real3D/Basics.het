@@ -31,13 +31,13 @@ from HasCASL/Reals get
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
-spec ListOp[Monoid] = List
+spec Prod[Monoid] = List
 then
-     op listop: List Elem -> Elem
+     op prod: List Elem -> Elem
 
      vars x:Elem; l: List Elem
-     . listop([]) = e %(listop basecase)%
-     . listop(x::l) = x * listop(l) %(listop reccase)%
+     . prod([]) = e %(listop basecase)%
+     . prod(x::l) = x * prod(l) %(listop reccase)%
 end
 
 spec RealBase = DecimalFraction and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
@@ -107,16 +107,13 @@ then %implies
 
 end
 
-view Vectors3DIsMonoid:
-     Monoid to Vectors3D
-=    Elem |-> Vector, e |-> 0
-end
+view Vectors3DIsMonoid: Monoid to Vectors3D = Elem |-> Vector, e |-> 0
  
-spec VectListOp = ListOp[view Vectors3DIsMonoid] with listop |-> veclistop
+spec VectorSum = Prod[view Vectors3DIsMonoid] with prod |-> sum
 
 %% proofs for instantiation in Basics_Vectors3DSpace_E1A.thy
 spec Vectors3DSpace = ExtEuclideanVectorSpace[Vectors3D fit Space |-> Vector]
-     and VectListOp
+     and VectorSum
 then %implies
 %% proofs in Basics_Vectors3DSpace_E1.thy
 

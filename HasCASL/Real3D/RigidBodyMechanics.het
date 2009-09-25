@@ -32,7 +32,7 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 spec RigidBodyMechanics = AffineRealSpace3DWithSets
 then
      ops %[ The law of the resulting Force on a system of mass points ]%
-	 ResultingForce(Fi:List Vector):Vector = veclistop Fi; %(resulting force)%
+	 ResultingForce(Fi:List Vector):Vector = sum Fi; %(resulting force)%
 	 %[ pressure and force ]%
 	 PressureForce(p:Real;A:Vector):Vector = p * A; %(pressure force)%
 end
@@ -76,7 +76,8 @@ then
 end
 
 
-spec FlangeConfig[Screw] =
+spec FlangeConfig[Screw] = RigidBodyMechanics
+then
      %% the normed axis of the flange
      ops axis:Vector;
      %% the maximal pressure
@@ -92,12 +93,8 @@ spec FlangeConfig[Screw] =
 	 outerRadius : Real;
 
 	 %[ a collection of the screws used in this flange ]%
-	 screws: List screw;
+	 screws: List screw
 
-end
-
-spec FlangeMechanics[FlangeConfig[Screw]] = RigidBodyMechanics
-then
      %[ VERIFICATION CONDITION for the flange:
         the resulting force of the forces sum of screw forces, sealing force
         and pressure force has to have a positive value in opposite direction
