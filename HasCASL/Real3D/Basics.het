@@ -12,8 +12,10 @@ logic HasCASL
 
 from Basic/Numbers get
      DecimalFraction
+from HasCASL/StructuredDatatypes get
+     List
 from HasCASL/Algebra get
-     ExtInverse
+     Monoid, ExtInverse
 from HasCASL/LinearAlgebra get
      ExtEuclideanVectorSpace
 from HasCASL/AffineGeometry get
@@ -28,6 +30,15 @@ from HasCASL/Reals get
 %%                       Real 3D Vector Space                       %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec ListOp[Monoid] = List
+then
+     op listop: List Elem -> Elem
+
+     vars x:Elem; l: List Elem
+     . listop([]) = e %(listop basecase)%
+     . listop(x::l) = x * listop(l) %(listop reccase)%
+end
 
 spec RealBase = DecimalFraction and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
 then
@@ -96,8 +107,16 @@ then %implies
 
 end
 
+view Vectors3DIsMonoid:
+     Monoid to Vectors3D
+=    Elem |-> Vector, e |-> 0
+end
+ 
+spec VectListOp = ListOp[view Vectors3DIsMonoid] with listop |-> veclistop
+
 %% proofs for instantiation in Basics_Vectors3DSpace_E1A.thy
 spec Vectors3DSpace = ExtEuclideanVectorSpace[Vectors3D fit Space |-> Vector]
+     and VectListOp
 then %implies
 %% proofs in Basics_Vectors3DSpace_E1.thy
 

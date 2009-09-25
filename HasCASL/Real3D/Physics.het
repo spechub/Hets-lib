@@ -1,4 +1,4 @@
-library HasCASL/Real3D/Physics
+library HasCASL/Real3D/SolidMechanics
 version 0.2
 
 %author: E. Schulz
@@ -11,7 +11,7 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
-%%                          Physics for Flange                      %%
+%%                          Mechanics for Flange                    %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
@@ -28,39 +28,72 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
   forces. Then we would state that the resulting force of the cover has to
   have a positive value in the direction towards the flange.
 ]%
-spec FlangePhysics = AffineRealSpace3DWithSets
+
+spec SolidMechanics = AffineRealSpace3DWithSets
 then
-     type tube, flange, screw;
-     ops Pi:Real;
-	 RadiusFromTube: tube -> Real;
-	 TubeOfFlange: flange -> tube;
-	 CircleArea(radius:Real):Real = Pi*radius*radius;
-	 CirclePressureForce(radius:Real;pressure:Real):Real
-	      = CircleArea(radius) * pressure;
-	 ScrewForce: screw * Real -> Real;
-	 ScrewMomentum: screw -> Real;
-	 ScrewsInFlange: flange -> Nat;
-	 FlangeForce(f:flange;s:screw;p:Real): Real
-	 %[ difference of the screw force and the pressure force ]%
-	      = ScrewsInFlange(f)*ScrewForce(s, ScrewMomentum(s))
-		   - CirclePressureForce(RadiusFromTube(TubeOfFlange(f)), p);
+     ops %[ The law of the resulting Force on a system of mass points ]%
+	 ResultingForce(Fi:List Vector):Vector = veclistop Fi;
+end
 
-	 %% Available screws:
-	 Scr1:screw;
-	 Scr2:screw;
-	 %% ...
-	 ScrN:screw;
+spec Screw = SolidMechanics
+then
+     %[ a screw consists of a drawing of the screw and annotations which
+        contain the material and physical properties ]%
+     type screw
 
+     ops
+     %[ the maximal momentum to be used when tighten the screw
+     screw constant, depends on material, radius and
+     angle of inclination of screw thread ]%
+     ScrewMomentum : screw -> Real;
+
+     %[ this function describes the traction of a screw when tightened
+        by a given momentum ]%
+     ScrewForce: screw * Real -> Real;
+
+     %[ this gives us the direction in which the screw works on the material ]%
+     ScrewWorkDirection: screw -> Vector;
+
+     %% Available screws (coming from database):
+     Scr1:screw;
+     Scr2:screw;
+     %% ...
+     ScrN:screw;
+
+
+     %% Properties of available screws (coming from database): 
+     . ScrewMomentum(Scr1) = 1
+     . ScrewMomentum(Scr2) = 2
+     . ScrewMomentum(ScrN) = 14
 end
 
 
-spec TheFlange = FlangePhysics
+spec Flange = Screw then type flange
+
+spec FlangeConfig = Flange
 then
-     %% A given flange and pressure:
+     %% the flange
      ops F:flange;
+     %% the pressure
 	 p:Real;
 
-     . exists s:screw. FlangeForce(F,s,p) > 0; %(flange correct)% %implied
+         %[ the neccessary pressure to seal two plates such that no gas
+            or fluid can escape from the interior
+            material constant, probably dependent on the pressure of the content ]%
+	 SealingPressure : Real -> Real;
 
+         %[ the neccessary pressure to seal two plates such that no gas
+            or fluid can escape from the interior
+            material constant, probably dependent on the pressure of the content ]%
+	 innerRadius : Real;
+
+	 %[ a collection of the screws used in this flange ]%
+	 screws: List screw;
+
+end
+
+spec FlangeMechanics[FlangeConfig] =
+
+type shi
 end
 
