@@ -76,10 +76,7 @@ then
 end
 
 
-spec Flange = Screw then type flange
-
-spec FlangeConfig = Flange
-then
+spec FlangeConfig[Screw] =
      %% the normed axis of the flange
      ops axis:Vector;
      %% the maximal pressure
@@ -99,7 +96,7 @@ then
 
 end
 
-spec FlangeMechanics[FlangeConfig] = RigidBodyMechanics
+spec FlangeMechanics[FlangeConfig[Screw]] = RigidBodyMechanics
 then
      %[ VERIFICATION CONDITION for the flange:
         the resulting force of the forces sum of screw forces, sealing force
