@@ -1,7 +1,6 @@
 library HasCASL/Real3D/SolidWorks/SolidWorks
 version 0.2
 
-%% Proof Automatic trafo in the graphical hets interface took 5min20s on 24. Apr 2009
 
 %author: E. Schulz
 %date: 12-12-2008
@@ -119,7 +118,7 @@ spec SolidWorks = AffineRealSpace3DWithSets and List then
 
 
      free type
-     %% This Features are missing: Revolution, Sweep, Loft, Chamfer
+     %% These Features are missing: Revolution, Sweep, Loft, Chamfer
      SWFeature ::= type SWExtrusion;  %(SWFeature datatype)%
 
      free type
@@ -129,8 +128,7 @@ spec SolidWorks = AffineRealSpace3DWithSets and List then
 		| type SWFeature; %(SWObject datatype)%
 
      ops
-     SWReal:Real*Real -> Real; %(Real representation def)%
-
+ 
      %% the base objects of SolidWorks
      E1:SWPlane =
      SWPlane(P(0,0,0),V(0,0,1) as VectorStar,V(1,0,0));

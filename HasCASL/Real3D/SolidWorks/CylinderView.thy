@@ -1563,8 +1563,6 @@ proof-
 qed
 
 
-
--- "TODO: this should be already available by the encoding"
 axioms oneone: "1'' = gn_inj(1')"
 
 lemmas PO_simps = 
