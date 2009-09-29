@@ -23,13 +23,6 @@ spec SolidWorksPlane_is_AffinePlane =
 
 end
 
-%%view  SolidWorksPlane_is_AffinePlane: PlaneProps to
-%%     {SolidWorksWithSemantics then 
-%%      op Plane(p:Point;v:Vector): PointSet = 
-%%      i(SWPlane(p,v,0))
-%%      }
-%%
-
 %%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
 
 %% this version has the advantage over the view-version not to have
@@ -66,28 +59,3 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
 end
 
 
-%%%%%%%%%%%%% semantical equality by view %%%%%%%%%%%%%
-
-spec SolidWorksCylByArcExtrusion = SolidWorksPlane_is_AffinePlane then
-     op SWCylinder(center, boundarypoint:Point; axis:VectorStar):SWFeature
-	  = let plane = SWPlane(center, axis, V(0,0,0));
-		arc = SWArc(center,boundarypoint,boundarypoint);
-		height = ||axis||
-%%		x1 = 0:Real;
-%%		b = false
-	    in
-	    SWExtrusion
-	       (SWSketch([arc],plane),height); %%,x1,b,b,x1,x1,b,b,b));
-						 %(def of SWCylinder)%
-end
-
-view SWCylByAE_IsCylinder: Cylinder to 
-     { SolidWorksCylByArcExtrusion
-       then
-       op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
-	  = let boundary = \p:Point . let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
-	        boundarypoint = choose(boundary)
-       in
-       i(SWCylinder(offset, boundarypoint, axis)) %(affine cylinder constructible in SW)%
-       %% every affine cylinder can be produced in SolidWorks
-     }

@@ -1,0 +1,44 @@
+library HasCASL/Real3D/SolidWorks/SWCommonPatternsView
+version 0.2
+
+%author: E. Schulz
+%date: 12-12-2008
+
+logic HasCASL
+
+from HasCASL/Real3D/Geometry get Plane, Cylinder
+from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       The SolidWorks common patterns             %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+view  SolidWorksPlane_is_AffinePlane: Plane to
+     { SolidWorksWithSemantics then 
+       op Plane(p:Point;v:VectorStar):PointSet =
+       i(SWPlane(p,v,0)) %(plane is plane)%
+     }
+
+spec SolidWorksCylinderByArcExtrusion = SolidWorksWithSemantics then
+     op SWCylinder(center, boundarypoint:Point; axis:VectorStar):SWFeature
+	  = let plane = SWPlane(center, axis, 0);
+		arc = SWArc(center,boundarypoint,boundarypoint);
+		height = ||axis||
+	    in
+	    SWExtrusion
+	       (SWSketch([arc],plane),height); %(def of SWCylinder)%
+end
+
+view SWCylByAE_IsCylinder: Cylinder to 
+     { SolidWorksCylinderByArcExtrusion
+       then
+       op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
+	  = let boundary = \p:Point . let v = vec(offset, p) in orth(v,axis) /\ ||v|| = r;
+	        boundarypoint = choose(boundary)
+       in
+       i(SWCylinder(offset, boundarypoint, axis)) %(affine cylinder constructible in SW)%
+       %% every affine cylinder can be produced in SolidWorks
+     }
+
