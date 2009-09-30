@@ -90,7 +90,7 @@ end
 spec ExtEuclideanVectorSpace[EuclideanVectorSpace] given RealFunctions
 = %def
 ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then 
-     ops  ||__|| (x:Space): Real = sqrt(x*x as RealNonNeg):Real; %(norm from inner prod def)%
+     ops  ||__|| (x:Space): Real = sqrt(x*x as RealNonNeg); %(norm from inner prod def)%
 	  proj(v,w:Space):Space
 	       = 0 when w = 0 else ((v*w)/(w*w as NonZero)) * w; %(proj def)%
 	  orthcomp(v,w:Space):Space = v - proj(v,w); %(orthcomp def)%
