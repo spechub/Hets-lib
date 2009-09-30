@@ -1,4 +1,4 @@
-library HasCASL/Real3D/SolidWorks/SWCommonPatterns
+library HasCASL/Real3D/SolidWorks/SWCommonPatternsNoView
 version 0.2
 
 %author: E. Schulz
@@ -35,9 +35,6 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
 	 center,boundarypoint:Point;
 	 plane:SWPlane; %(real plane)%
          arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
-	 x1,x2,x3:Real; %(nonused reals for extrusion)%
-	 b1,b2,b3,b4,b5:Logical; %(nonused booleans for extrusion)%
-
 	 offset:Point = center; %(cylinder offset)%
 	 radius:RealPos = ||vec(center,boundarypoint)||; %(cylinder radius)%
 	 axis:VectorStar = VWithLength(NormalVector(plane),height); %(cylinder axis)%
@@ -53,7 +50,7 @@ spec SolidWorksCylByArcExtrusion_is_AffineCylinder =
 
 
      %{The main theorem}%
-     . i(SWExtrusion(SWSketch([arc],plane),height)) %%,x1,b1,b2,x2,x3,b3,b4,b5))
+     . i(SWExtrusion(SWSketch([arc],plane),height))
 	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
 
 end

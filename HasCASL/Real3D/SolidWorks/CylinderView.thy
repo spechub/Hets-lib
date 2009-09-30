@@ -1434,8 +1434,6 @@ declare semantics_for_Sketches [simp]
 
 -- "SUBTYPE RULES"
 
--- "TODO: outsource this lemmas into a locale"
--- "actually not possible because of the polymorphic functions"
 lemma subtype_reflexive:
 "X_gn_subt (x:: 'a) (y:: 'a)" by (simp only: ga_subt_reflexive)
 
@@ -1570,22 +1568,6 @@ lemmas PO_simps =
   less_def_ExtPartialOrder 
   greater_def_ExtPartialOrder
 
-
-(*
-
- TODO: 1. auto-generated axioms need to be bound, it is bad to rely on arbitrary numbers
-       Proposal: identify the theorems by operator name and keyword
-                 , e.g., ("assoc", +_4)
-                 , we have bad luck and point_vector_plus_associative
-                 would also match, but we should probably constrain the search
-                 to auto-generated names.
-
-       2. sometimes its nice to have global equalities which should be always considered
-          , e.g., 1'' = gn_inj(1') and in all reasoning steps we want to have this fact
-          without mentioning it explicitly. One could have that by internally
-          automatically rewrite by this global equalities.
-
-*)
 
 theorem def_of_Cylinder :
 "ALL (axis :: VectorStar).
