@@ -1434,8 +1434,26 @@ declare semantics_for_Sketches [simp]
 
 -- "SUBTYPE RULES"
 
+(*
+
+-- "New approach to handle the subtype rules with a locale"
+interpretation st: subtype
+  [ X_gn_inj X_gn_inj X_gn_inj X_gn_inj
+    X_gn_proj X_gn_proj
+    X_gn_subt X_gn_subt X_gn_subt X_gn_subt X_gn_subt X_gn_subt]
+  by (unfold_locales,
+    simp add: ga_subt_reflexive,
+    simp add: ga_subt_reflexive,
+    simp add: ga_subt_reflexive,
+    blast intro: ga_subt_transitive,
+    blast intro: ga_subt_transitive,
+    blast intro: ga_subt_transitive,
+    blast intro: ga_subt_transitive,
+    simp add: ga_subt_inj_proj, blast intro!: ga_inj_transitive)
+*)
+
 lemma subtype_reflexive:
-"X_gn_subt (x:: 'a) (y:: 'a)" by (simp only: ga_subt_reflexive)
+"X_gn_subt (x:: 'a) (y:: 'a)" by (rule ga_subt_reflexive)
 
 lemma subtype_transitive:
 "[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (z:: 'b) (t:: 'c) |]  ==> X_gn_subt (u:: 'a) (v:: 'c)"

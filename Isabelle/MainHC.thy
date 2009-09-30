@@ -211,34 +211,181 @@ preDefOp_lift[simp]:
 
 This doesn't work, because Isabelle doesn't allow polymorphic constants in the
 fixes list, i.e., the 'a and 'b are constant inside the context of the locale!
+*)
 
+(*
 locale subtype = 
   fixes
-  i1 :: "'a => 'b"
-  and i2 :: "'a => 'b"
-  and i3 :: "'a => 'b"
-  and p1 :: "'a => 'b partial"
-  and p2 :: "'a => 'b partial"
-  and p3 :: "'a => 'b partial"
-  and s1 :: "'a => 'b => bool"
-  and s2 :: "'a => 'b => bool"
-  and s3 :: "'a => 'b => bool"
+  iaa :: "'a => 'a"
+  and iab :: "'a => 'b"
+  and ibc :: "'b => 'c"
+  and iac :: "'a => 'c"
+  and pba :: "'b => 'a partial"
+  and pab :: "'a => 'b partial"
+  and saa :: "'a => 'a => bool"
+  and sbb :: "'b => 'b => bool"
+  and scc :: "'c => 'c => bool"
+  and sab :: "'a => 'b => bool"
+  and sbc :: "'b => 'c => bool"
+  and sac :: "'a => 'c => bool"
 
   assumes
 
-  refl :
-  "ALL (x :: 'a) (y :: 'a). s1 x y"
+  refl_a :
+  "!!x y. saa x y"
+  and refl_b :
+  "!!x y. sbb x y"
+  and refl_c :
+  "!!x y. scc x y"
 
-  and trans :
-  "ALL (x :: 'a) (y :: 'b) (z :: 'c). s1 x y & s2 y z --> s3 x z"
+  and trans_abc :
+  "!! x y z. sab x y & sbc y z ==> sac x z"
+  and trans_aab :
+  "!! x y z. saa x y & sab y z ==> sab x z"
+  and trans_bbc :
+  "!! x y z. sbb x y & sbc y z ==> sbc x z"
+  and trans_acc :
+  "!! x y z. sac x y & scc y z ==> sac x z"
 
   and inj_proj :
-  "ALL (x :: 'a) (y :: 'b). s1 x y --> y = i1(x) = (makePartial x = p1(y))"
+  "ALL x y. sab x y --> y = iab(x) = (makePartial x = pba(y))"
 
   and inj_trans :
-  "ALL (x :: 'a) (y :: 'b) (z :: 'c). s1 x y & s2 y z -->
-  (i1(x) :: 'c) = i2(i3(x) :: 'b)"
+  "ALL x. ALL y. ALL z. sab x y & sbc y z & y = iab(x) -->
+  (z = iac(x)) = (z = ibc(y))"
 
+begin
+
+lemma subtype_reflexive:
+"saa (x:: 'a) (y:: 'a)" by (simp only: refl_a)
+
+lemma subtype_transitive:
+"[| sab (x:: 'a) (y:: 'b); sbc (z:: 'b) (t:: 'c) |]  ==> sac (u:: 'a) (v:: 'c)"
+proof-
+  assume hypAB: "sab (x:: 'a) (y:: 'b)"
+  assume hypBC: "sbc (z:: 'b) (t:: 'c)"
+  have A: "sab u y" by (rule trans_aab [of u x y], simp add: refl_a hypAB)
+  have B: "sbc y t" by (rule trans_bbc [of y z t], simp add: refl_b hypBC)
+  have C: "sac u t" by (rule trans_abc [of u y t], simp add: A B)
+  show "sac u v" by (rule trans_acc [of u t v], simp add: refl_c C)
+qed
+
+-- " until here this can be checked "
+
+
+-- "necessary when omitting the quantifiers in the axioms below"
+lemma subtype_constant:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(u:: 'a) v:: 'b. X_gn_subt u v)"
+proof-
+  assume hyp: "X_gn_subt x y"
+  fix u:: 'a
+  fix v:: 'b
+  show "X_gn_subt u v" by (rule subtype_transitive [of x x x y u v], simp add: ga_subt_reflexive hyp)
+qed
+
+
+-- "INJECTION PROJECTION RULES"
+
+lemma gn_proj_inj:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'a). makePartial(z) = gn_proj(gn_inj(z):: 'b))"
+proof-
+  assume hyp: "X_gn_subt x y"
+  fix z :: 'a
+
+  have "(gn_inj(z) :: 'b) = gn_inj(z) = (makePartial z = gn_proj(gn_inj(z) :: 'b))"
+    by (rule ga_subt_inj_proj, rule subtype_constant [of x y], simp only: hyp)
+  thus "makePartial z = gn_proj(gn_inj(z) :: 'b)" by simp
+qed
+
+lemma gn_makeTotal_proj_inj:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'a). makeTotal(gn_proj(gn_inj(z):: 'b)) = z)"
+ by (simp only: partial_identity gn_proj_inj [symmetric])
+
+
+-- "is used to derive defining predicate P for a subtype A, P(gn_inj(x::A))"
+lemma gn_proj_def:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> defOp(gn_proj(gn_inj(x):: 'b):: 'a partial)"
+proof-
+  assume hyp: "gn_subt(x, y)"
+  hence A: "makePartial(x) = gn_proj(gn_inj(x):: 'b)" by (rule gn_proj_inj [of x y x])
+  show "defOp(gn_proj(gn_inj(x):: 'b):: 'a partial)"
+    by (simp add: A [symmetric] makePartial_def)
+qed
+
+lemma gn_inj_proj:
+"X_gn_subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'b). defOp(gn_proj(z):: 'a partial) ==>
+  gn_inj(makeTotal(gn_proj(z):: 'a partial)) = z)"
+proof-
+  assume hyp: "gn_subt(x, y)"
+  fix z :: 'b
+  assume hyp': "defOp(gn_proj(z):: 'a partial)"
+  have "EX (t :: 'a). gn_proj(z) = makePartial t"
+    by (rule defOp_implies_makePartial [of "gn_proj(z)"], simp only: hyp')
+  then obtain t :: 'a where eq1: "makePartial t = gn_proj(z)" by auto
+  from hyp have A: "gn_subt(t, z)" by (simp only: subtype_constant)
+  have B: "t=makeTotal(gn_proj(gn_inj(t):: 'b)) "
+    by (rule gn_makeTotal_proj_inj [symmetric,of x y], simp only: hyp)
+  have C: "z = gn_inj(t)"
+    by (simp only: ga_subt_inj_proj subtype_reflexive A eq1)
+  also have "\<dots> = gn_inj(makeTotal(gn_proj(gn_inj(t):: 'b)):: 'a)"
+    by (subst B, simp)
+  also have "\<dots> = gn_inj(makeTotal(gn_proj(z)):: 'a)" by (simp only: C)
+  finally show "gn_inj(makeTotal(gn_proj(z)):: 'a) = z" ..
+qed
+
+
+lemma gn_inj_diagram:
+"[| X_gn_subt (x:: 'a) (y:: 'b); X_gn_subt (z:: 'b) (t:: 'c) |]
+  ==> (!!(x':: 'a). (gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b))"
+proof-
+  assume hypAB: "X_gn_subt (x:: 'a) (y:: 'b)"
+  assume hypBC: "X_gn_subt (z:: 'b) (t:: 'c)"
+  fix x' :: 'a
+
+  def y_def: y' == "gn_inj(x'):: 'b"
+  def z_def: z' == "gn_inj(x'):: 'c"
+
+  from hypAB hypBC have A: "gn_subt(x',y') \<and> gn_subt(y',z')"
+    by (simp add: subtype_constant)
+
+  have B: "(z' = gn_inj(x')) = (z' = gn_inj(y'))"
+    by (rule ga_inj_transitive [of x' y' z'], simp only: A, simp add: y_def)
+
+  show "(gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b)"
+    by (simp only:  y_def [symmetric] z_def [symmetric], subst B [symmetric]
+      , simp only: z_def)
+qed
+
+lemma gn_inj_injective :
+  "X_gn_subt (u :: 'a) (v:: 'b) ==> inj (X_gn_inj :: 'a => 'b)"
+  proof (rule injI)
+    fix x:: 'a
+    fix y:: 'a
+    assume hyp1: "X_gn_subt (u:: 'a) (v:: 'b)"
+      and hyp2: "(X_gn_inj x :: 'b) = X_gn_inj y"
+
+    from hyp1 subtype_constant 
+    have fact: "!!(z:: 'a). makeTotal(gn_proj(gn_inj(z):: 'b)) = z"
+      by (rule_tac gn_makeTotal_proj_inj, blast)
+
+    hence "x = makeTotal(gn_proj(gn_inj(x):: 'b))" ..
+    also from hyp2 have "... = makeTotal(gn_proj(gn_inj(y):: 'b))" by simp
+    also from fact have "... = y" by simp
+    finally show "x = y" by simp
+  qed
+
+lemma gn_inj_identity :
+"!!x:: 'a. (gn_inj(x):: 'a) = x"
+proof-
+  fix x:: 'a
+  have fact: "(gn_inj(x):: 'a) = gn_inj(gn_inj(x):: 'a)"
+    by (simp_all add: gn_inj_diagram subtype_reflexive)
+  thus "(gn_inj(x):: 'a) = x"
+    by (subst injD [of "(X_gn_inj:: 'a=>'a)" "(gn_inj(x):: 'a)" x],
+      simp_all only: gn_inj_injective subtype_reflexive fact [symmetric])
+qed
+
+end
 *)
 
 end
