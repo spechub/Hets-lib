@@ -11,85 +11,68 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 %[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                  %%
-%%                          Mechanics for Flange                    %%
+%%                       Mechanics for Flange                       %%
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
 spec RigidBodyMechanics = AffineRealSpace3DWithSets
 then
-     ops %[ The law of the resulting Force on a system of mass points ]%
-	 ResultingForce(Fi:List Vector):Vector = sum Fi; %(resulting force)%
-	 %[ pressure and force ]%
-	 PressureForce(p:Real;A:Vector):Vector = p * A; %(pressure force)%
+     ops
+     %[ The law of the resulting Force on a system of mass points ]%
+     ResultingForce(Fi:List Vector):Vector = sum Fi; %(resulting force)%
+     %[ pressure and force ]%
+     PressureForce(p:Real;A:Vector):Vector = p * A; %(pressure force)%
 end
 
 spec Screw = AffineRealSpace3DWithSets
 then
-     %[ a screw consists of a drawing of the screw and annotations which
-        contain the material and physical properties ]%
+     %[ a screw consists of a drawing of the screw and annotations
+        which contain the material and physical properties ]%
      type screw
 
      ops
-     %[ the maximal momentum to be used when tighten the screw
-     screw constant, depends on material, radius and
-     angle of inclination of screw thread ]%
-     ScrewMomentum : screw -> Real;
-
-     %[ this function describes the traction of a screw when tightened
-        by a given momentum ]%
-     ScrewForceForMomentum: screw * Real -> Real;
-
-     %[ this gives us the normed direction in which the screw works on the material ]%
-     ScrewWorkDirection: screw -> Vector;
-
-     %[ assuming we use the maximum momentum to tighten the screw, this is the
-        resulting force on the tightened material ]%
-     ScrewForce(s:screw):Vector =
-     ScrewForceForMomentum(s, ScrewMomentum(s)) * ScrewWorkDirection(s); %(screw force)%
-
+     %[ assuming we use the maximal force to tighten the screw,
+        this is the resulting force on the tightened material ]%
+     ScrewForce:screw -> Vector; %(screw force)%
 
      %% Available screws (coming from database):
-     Scr1:screw;
-     Scr2:screw;
-     %% ...
-     ScrN:screw;
-
+     M24x3:screw;
 
      %% Properties of available screws (coming from database): 
-     . ScrewMomentum(Scr1) = 1
-     . ScrewMomentum(Scr2) = 2
-     . ScrewMomentum(ScrN) = 14
+     . ScrewForce(M24x3) = e1
 end
 
 
-spec FlangeConfig[Screw] = RigidBodyMechanics
+spec FlangeConfig = RigidBodyMechanics then Screw
 then
+     ops
      %% the normed axis of the flange
-     ops axis:Vector;
+     axis:Vector;
+
      %% the maximal pressure
-	 p:Real;
+     p:Real;
 
-         %[ the neccessary force to seal the two plates using a joint,
-            such that no gas or fluid can escape from the interior.
-            - material constant, depends on the area and axis of the flange ]%
-	 SealingForce : Vector;
+     %[ the neccessary force to seal the two plates using a joint,
+        such that no gas or fluid can escape from the interior.
+        - material constant, depends on the area and axis of the flange ]%
+     SealingForce : Vector;
 
-         %[ the inner and outer radius of the flange ]%
-	 innerRadius : Real;
-	 outerRadius : Real;
+     %[ the inner and outer radius of the flange ]%
+     innerRadius : Real;
+     outerRadius : Real;
 
-	 %[ a collection of the screws used in this flange ]%
-	 screws: List screw
+     %[ a collection of the screws used in this flange ]%
+     screws: List screw
 
      %[ VERIFICATION CONDITION for the flange:
-        the resulting force of the forces sum of screw forces, sealing force
-        and pressure force has to have a positive value in opposite direction
-        of the axis of the flange ]%
+        the resulting force of the forces sum of screw forces,
+        sealing force and pressure force has to have a positive value
+        in opposite direction of the axis of the flange ]%
      . let innerSurface = Pi * innerRadius * innerRadius;
 	   activePressureSurface = innerSurface * axis;
 	   actPrForce = PressureForce(p, activePressureSurface)
        in ResultingForce(SealingForce :: actPrForce :: map ScrewForce screws)
-	    * axis < 0
+            * axis < 0
 
 end
 

@@ -214,24 +214,30 @@ fixes list, i.e., the 'a and 'b are constant inside the context of the locale!
 
 locale subtype = 
   fixes
-  i :: "'a => 'b"
-  and p :: "'a => 'b partial"
-  and subt :: "'a => 'b => bool"
+  i1 :: "'a => 'b"
+  and i2 :: "'a => 'b"
+  and i3 :: "'a => 'b"
+  and p1 :: "'a => 'b partial"
+  and p2 :: "'a => 'b partial"
+  and p3 :: "'a => 'b partial"
+  and s1 :: "'a => 'b => bool"
+  and s2 :: "'a => 'b => bool"
+  and s3 :: "'a => 'b => bool"
 
   assumes
 
   refl :
-  "ALL (x :: 'a) (y :: 'a). subt x y"
+  "ALL (x :: 'a) (y :: 'a). s1 x y"
 
   and trans :
-  "ALL (x :: 'a) (y :: 'b) (z :: 'c). subt x y & subt y z --> subt x z"
+  "ALL (x :: 'a) (y :: 'b) (z :: 'c). s1 x y & s2 y z --> s3 x z"
 
   and inj_proj :
-  "ALL (x :: 'a) (y :: 'b). subt x y --> y = i(x) = (makePartial x = p(y))"
+  "ALL (x :: 'a) (y :: 'b). s1 x y --> y = i1(x) = (makePartial x = p1(y))"
 
   and inj_trans :
-  "ALL (x :: 'a) (y :: 'b) (z :: 'c). subt x y & subt y z -->
-  (i(x) :: 'c) = i(i(x) :: 'b)"
+  "ALL (x :: 'a) (y :: 'b) (z :: 'c). s1 x y & s2 y z -->
+  (i1(x) :: 'c) = i2(i3(x) :: 'b)"
 
 *)
 
