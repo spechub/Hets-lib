@@ -48,7 +48,7 @@ end
 spec Points3D = RealBase then
      free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
      %% imagine that as the first projection
-     type Real < Point %(Real embedding into points)%
+%%     type Real < Point %(Real embedding into points)%
      ops 0:Point=P(0,0,0); %(Zero Point)%
 
 	 %% choice operators may only be defined on non-empty types,
@@ -64,7 +64,7 @@ spec Vectors3DBase = RealBase then
      free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
 
      %% imagine that as the first projection
-     type Real < Vector %(Real embedding into vectors)%
+%%     type Real < Vector %(Real embedding into vectors)%
 
      ops 0:Vector=V(0,0,0); %(Zero Vector)%
 	 __+__ : Vector * Vector -> Vector;
@@ -107,8 +107,10 @@ then %implies
 
 end
 
-view Vectors3DIsMonoid: Monoid to Vectors3D = Elem |-> Vector, e |-> 0
- 
+view Vectors3DIsMonoid: Monoid to Vectors3D =
+     Elem |-> Vector, e |-> 0, __*__ |-> __+__
+end
+
 spec VectorSum = Prod[view Vectors3DIsMonoid] with prod |-> sum
 
 %% proofs for instantiation in Basics_Vectors3DSpace_E1A.thy
