@@ -1639,9 +1639,8 @@ proof-
 qed
 
 
-axioms
-  zerozero: "0_5 = gn_inj(0'')"
-  oneone: "1_6 = gn_inj(1_3)"
+lemma zerozero: "0_5 = gn_inj(0'')" sorry
+lemma oneone: "1_6 = gn_inj(1_3)" sorry
 
 lemmas PO_simps = 
   geq_def_ExtPartialOrder
