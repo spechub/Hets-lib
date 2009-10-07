@@ -2,6 +2,9 @@ theory MainHC
 imports Main
 begin
 
+-- "we need full proof object support to use translate_thm later on"
+ML {* proofs := 2 *}
+
 types 'a partial = "'a option"
 
 (* negation of is_none *)
