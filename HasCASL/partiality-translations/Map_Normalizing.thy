@@ -73,6 +73,7 @@ apply (auto)
 apply (subst (asm) Ax2)
 apply (simp)
 
+(* apply Ax1_5 somewhere *) 
 ML "Header.record \"Ax2_6\""
 
 end

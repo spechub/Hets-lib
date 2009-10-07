@@ -25,3 +25,7 @@ then %implies
 vars a,b,c,d:Nat
 . def(c-?a) /\ def(b-?(c-?a)) /\ def(a-?(b-?(c-?a))) /\ def(c-?b)
 		   => (a -? (b-? (c-? a))) = (c -? b)
+
+%% def(a-?(b-?(c-?a))) suffices for the left three assumptions 
+%% Implies c>= a, b>= (c-a), a >= (b- (c-a)) = b-c + a
+%% THUS 0 >=  b - c, i.e. c>= b
