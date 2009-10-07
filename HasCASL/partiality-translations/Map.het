@@ -13,12 +13,14 @@ var x:a; l: List a; f: a ->? b; P: Pred a
 . map f nil = nil
 . map f (cons x l) = cons (f x) (map f l)
 . filter (cons x l) P = (cons x (filter l P)) when (P x) else (filter l P)
+. filter nil P = nil
 then
 var a,b: Type
-var x:a; l: List a; f: a ->? b
+var x:a; l: List a; f: a ->? a
 then %implies
 var a,b,c: Type
-var x:a; l: List a; f: a ->? b; g: b ->? c; P: Pred a; Q: Pred b
+var x:a; l: List a; f: a ->? a; g: b ->? c; P: Pred a; Q: Pred a
 . def(map f l) => def(map f (filter l P))
-. def(map f l) => filter (map f l) Q = filter (map f l) Q
+. def(map f l) => (map f (filter l Q)) = filter (map f l) Q
+%%. map (\y:a. g (f y)) = \k:List a. (map g) ((map f) k)
 end
