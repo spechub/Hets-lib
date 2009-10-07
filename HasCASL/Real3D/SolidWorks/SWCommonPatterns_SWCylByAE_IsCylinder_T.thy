@@ -1522,6 +1522,7 @@ thymorph subtypes_morph : Subtypes --> SWCommonPatterns_SWCylByAE_IsCylinder_T
 translate_thm "Subtypes.gn_inj_identity" along subtypes_morph
 translate_thm "Subtypes.gn_proj_def" along subtypes_morph
 
+ML {* proofs := 1 *}
 
 lemma zerozero: "0_5 = gn_inj(0'')" sorry
 lemma oneone: "1_6 = gn_inj(1_3)" sorry
