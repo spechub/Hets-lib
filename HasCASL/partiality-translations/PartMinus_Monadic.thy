@@ -1,4 +1,4 @@
-theory PartialityTest_PartMinus_E1
+theory PartialityTest_PartMinus_E1 
 imports "$HETS_ISABELLE_LIB/MainHC" "$HETS_LIB/Isabelle/RestrictOpProps"
 uses "$HETS_ISABELLE_LIB/prelude"
 begin
@@ -36,22 +36,28 @@ declare Ax5 [simp]
 declare Ax6 [simp]
 
 theorem Ax1 :
-"defOp
- (restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
-  (defOp (b -? makeTotal (c -? a)) & defOp (c -? a))) ==>
+"ALL (a :: X_Nat).
+ ALL (b :: X_Nat).
+ ALL (c :: X_Nat).
+ defOp
+ (lift2partial (X__XMinusXQuest__X a)
+  (lift2partial (X__XMinusXQuest__X b) (c -? a))) -->
  defOp (c -? a)"
 apply (auto)
-done
+sorry
 
 ML "Header.record \"Ax1\""
 
 theorem Ax2 :
-"defOp
- (restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
-  (defOp (b -? makeTotal (c -? a)) & defOp (c -? a))) ==>
- defOp (restrictOp (b -? makeTotal (c -? a)) (defOp (c -? a)))"
+"ALL (a :: X_Nat).
+ ALL (b :: X_Nat).
+ ALL (c :: X_Nat).
+ defOp
+ (lift2partial (X__XMinusXQuest__X a)
+  (lift2partial (X__XMinusXQuest__X b) (c -? a))) -->
+ defOp (lift2partial (X__XMinusXQuest__X b) (c -? a))"
 apply (auto)
-done
+sorry
 
 
 ML "Header.record \"Ax2\""
@@ -61,15 +67,9 @@ theorem Ax3_8 :
  ALL (b :: X_Nat).
  ALL (c :: X_Nat).
  defOp
- (restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
-  (defOp (b -? makeTotal (c -? a)) & defOp (c -? a))) -->
+ (lift2partial (X__XMinusXQuest__X a)
+  (lift2partial (X__XMinusXQuest__X b) (c -? a))) -->
  defOp (c -? b)"
-apply (rule allI)+
-apply (rule impI)+
-apply (frule Ax2)
-apply (frule Ax1)
-apply (auto)
-apply (simp add: Ax1 Ax2)
 by (auto)
 
 ML "Header.record \"Ax3_8\""
@@ -79,10 +79,10 @@ theorem Ax4_7 :
  ALL (b :: X_Nat).
  ALL (c :: X_Nat).
  defOp
- (restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
-  (defOp (b -? makeTotal (c -? a)) & defOp (c -? a))) -->
- restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
- (defOp (b -? makeTotal (c -? a)) & defOp (c -? a)) =
+ (lift2partial (X__XMinusXQuest__X a)
+  (lift2partial (X__XMinusXQuest__X b) (c -? a))) -->
+ lift2partial (X__XMinusXQuest__X a)
+ (lift2partial (X__XMinusXQuest__X b) (c -? a)) =
  c -? b"
 by (auto)
 

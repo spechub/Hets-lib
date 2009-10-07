@@ -5,26 +5,28 @@ logic HasCASL
 %display __>=__ %LATEX __\geq__
 
 spec PartMinus = 
-  type Nat;
+  free type Nat ::= 0 | suc(pre:? Nat)
+
   preds    __ >= __ : Nat * Nat;
-          even, odd:           Nat
 
   ops   __ -?__ : Nat * Nat ->? Nat;
 	__ + __ : Nat * Nat -> Nat;
 
 
 
-forall a,b,m,n,r:Nat
+forall x,y:Nat
 
-. def(m-?n) <=> m >= n
-. m -? n = r <=> m = r + n
-. a + b = b + a
-
+. 0 -? 0 = 0
+. suc(x) -? 0 = suc(x)
+. not def(0 -? suc(x))
+. suc(x) -? suc(y) = x-?y
 
 then %implies
 vars a,b,c,d:Nat
-. def(c-?a) /\ def(b-?(c-?a)) /\ def(a-?(b-?(c-?a))) /\ def(c-?b)
-		   => (a -? (b-? (c-? a))) = (c -? b)
+. def(a-?(b-?(c-?a))) => def(c-?a)
+. def(a-?(b-?(c-?a))) => def(b-?(c-?a))
+. def(a-?(b-?(c-?a))) => def(c-?b)
+. def(a-?(b-?(c-?a))) => (a -? (b-? (c-? a))) = (c -? b)
 
 %% def(a-?(b-?(c-?a))) suffices for the left three assumptions 
 %% Implies c>= a, b>= (c-a), a >= (b- (c-a)) = b-c + a
