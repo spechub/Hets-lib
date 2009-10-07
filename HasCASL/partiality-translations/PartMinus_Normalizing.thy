@@ -29,6 +29,10 @@ Ax3 [rule_format] :
 
 declare Ax1 [simp]
 
+lemma truesimp: "(True & True) = True" 
+by (auto)
+
+
 theorem Ax1_4 :
 "ALL (a :: X_Nat).
  ALL (b :: X_Nat).
@@ -42,7 +46,27 @@ theorem Ax1_4 :
  restrictOp (a -? makeTotal (b -? makeTotal (c -? a)))
  (defOp (b -? makeTotal (c -? a)) & defOp (c -? a)) =
  c -? b"
-apply (auto)
+apply (rule allI)+
+apply (rule impI)
+apply (frule conjunct1, drule conjunct2)+
+apply (simp only: restrict_trivial truesimp)
+apply (frule defOp_implies_makePartial)
+apply (erule exE)
+apply (simp only:)
+apply (subst Ax2)
+apply (rule 
+apply (simp only: truesimp)
+apply (frule conjunct1)
+apply (drule conjunct2)
+apply (frule conjunct1)
+apply (drule conjunct2)
+
+apply (clarify)
+
+apply (simp only: )
+apply (subst (asm) restrict_trivial)
+apply (clarify)
+apply (simp)
 
 
 ML "Header.record \"Ax1_4\""
