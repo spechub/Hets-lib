@@ -1,0 +1,27 @@
+library PartialityTest
+
+logic HasCASL
+
+%display __>=__ %LATEX __\geq__
+
+spec PartMinus = 
+  type Nat;
+  preds    __ >= __ : Nat * Nat;
+          even, odd:           Nat
+
+  ops   __ -?__ : Nat * Nat ->? Nat;
+	__ + __ : Nat * Nat -> Nat;
+
+
+
+forall a,b,m,n,r:Nat
+
+. def(m-?n) <=> m >= n
+. m -? n = r <=> m = r + n
+. a + b = b + a
+
+
+then %implies
+vars a,b,c,d:Nat
+. def(c-?a) /\ def(b-?(c-?a)) /\ def(a-?(b-?(c-?a))) /\ def(c-?b)
+		   => (a -? (b-? (c-? a))) = (c -? b)

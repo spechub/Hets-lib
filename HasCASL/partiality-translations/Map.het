@@ -22,5 +22,4 @@ var a,b,c: Type
 var x:a; l: List a; f: a ->? a; g: b ->? c; P: Pred a; Q: Pred a
 . def(map f l) => def(map f (filter l P))
 . def(map f l) => (map f (filter l Q)) = filter (map f l) Q
-%%. map (\y:a. g (f y)) = \k:List a. (map g) ((map f) k)
 end
