@@ -4,7 +4,8 @@ uses "$HETS_ISABELLE_LIB/prelude"
 begin
 
 ML "Header.initialize
-    [\"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\", \"Ax1_5\", \"Ax2_6\"]"
+    [\"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\", \"Ax1_5\", \"Ax2_6\",
+     \"Ax3_7\"]"
 
 consts
 X_filter :: "'a list => ('a => bool) => 'a list"
@@ -38,13 +39,7 @@ theorem Ax1_5 :
  ALL (f :: 'a => 'a partial).
  ALL (l :: 'a list).
  defOp (X_map f l) --> defOp (X_map f (X_filter l P))"
-"ALL (P :: 'a => bool).
- ALL (f :: 'a => 'b partial).
- ALL (l :: 'a list).
- defOp (X_map f l) --> defOp (X_map f (X_filter l P))"
-apply (rule allI)
-apply (rule allI)
-apply (rule allI)
+apply (rule allI)+
 apply (induct_tac l)
 apply (simp add: Ax1 Ax2 Ax3 Ax4)
 apply (simp add: Ax1 Ax2 Ax3 Ax4)
@@ -57,15 +52,28 @@ theorem Ax2_6 :
  ALL (f :: 'a => 'a partial).
  ALL (l :: 'a list).
  defOp (X_map f l) -->
- X_map f (X_filter l Q) =
+ X_map f (X_filter l (% h. lift2bool Q (f h))) =
  unpack2partial id (mapPartial X_filter (X_map f l)) Q"
-apply (rule allI)
-apply (rule allI)
-apply (rule allI)
+apply (rule allI)+
 apply (induct_tac l)
-apply (simp add: Ax1 Ax2 Ax3 Ax4)
+apply (simp)
+(*apply (simp add: Ax3 Ax2)*)
 sorry
 
+
+
 ML "Header.record \"Ax2_6\""
+
+theorem Ax3_7 :
+"ALL (f :: 'a => 'a partial).
+ ALL (l :: 'a list).
+ ALL (x :: 'a).
+ defOp (f x) -->
+ defOp (unpack2partial id (mapPartial Cons (f x)) l)"
+apply (auto)
+sorry
+
+
+ML "Header.record \"Ax3_7\""
 
 end
