@@ -12,8 +12,6 @@ spec PartMinus =
   ops   __ -?__ : Nat * Nat ->? Nat;
 	__ + __ : Nat * Nat -> Nat;
 
-
-
 forall x,y:Nat
 
 . 0 -? 0 = 0
@@ -25,6 +23,11 @@ then %implies
 vars a,b,c,d:Nat
 . def(a-?(b-?(c-?a))) => def(c-?a)
 . def(a-?(b-?(c-?a))) => def(b-?(c-?a))
+. def(a -?(b-?c)) => def(b-?c)
+. a-?a = 0
+. def(a-?b) => c + (a-?b) = (c+a)-?b
+. def(a-?b) /\ def(b-?c) => (a-?b)+(b-?c) = a-?c
+. def(a -?(b-?c)) => a -?(b-?c) = (a+c) -? b
 . def(a-?(b-?(c-?a))) => def(c-?b)
 . def(a-?(b-?(c-?a))) => (a -? (b-? (c-? a))) = (c -? b)
 
