@@ -21,6 +21,6 @@ then %implies
 var a,b,c: Type
 var x:a; l: List a; f: a ->? a; g: b ->? c; P: Pred a; Q: Pred a
 . def(map f l) => def(map f (filter l P))
-. def(map f l) => (map f (filter l Q)) = filter (map f l) Q
+. def(map f l) => (map f (filter l \h:a.Q(f(h)))) = filter (map f l) Q
 . def(f x) => def(cons (f x) l);
 end

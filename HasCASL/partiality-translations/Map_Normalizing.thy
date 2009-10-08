@@ -4,8 +4,8 @@ uses "$HETS_ISABELLE_LIB/prelude"
 begin
 
 ML "Header.initialize
-    [\"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\", \"Ax1_5\", \"Ax2_6\"]"
-
+    [\"Ax1\", \"Ax2\", \"Ax3\", \"Ax4\", \"Ax1_5\", \"Ax2_6\",
+     \"Ax3_7\"]"
 
 consts
 X_filter :: "'a list => ('a => bool) => 'a list"
@@ -41,13 +41,28 @@ theorem Ax1_5 :
  ALL (f :: 'a => 'a partial).
  ALL (l :: 'a list).
  defOp (X_map f l) --> defOp (X_map f (X_filter l P))"
-apply (rule allI)
-apply (rule allI)
-apply (rule allI)
+apply (rule allI)+
 apply (induct_tac l)
 apply (simp add: Ax1 Ax2 Ax3 Ax4)
 apply (simp add: Ax1 Ax2 Ax3 Ax4)
 done
+
+lemma defopXmapcons: "defOp(X_map f (Cons h l)) -->defOp(f h) & defOp(X_map f l)"
+apply (auto)
+apply (simp add: Ax2)
+apply (simp add: Ax2)
+done
+
+lemma filter_under_xmap_meta : "!!f hd l. defOp (X_map f (X_filter (Cons hd l) P)) ==>  (~(P hd) | ((P hd) & defOp(f hd) )) & defOp(X_map f (X_filter l P)) "
+apply (auto)
+apply (simp add: Ax3 Ax2 if_P)
+apply (simp add: Ax3 Ax2 if_P)
+apply (case_tac "P hd")
+apply (simp add: Ax3 Ax2 if_P)
+apply (simp add: Ax3 Ax2 if_P)
+done
+
+
 
 ML "Header.record \"Ax1_5\""
 
@@ -56,24 +71,28 @@ theorem Ax2_6 :
  ALL (f :: 'a => 'a partial).
  ALL (l :: 'a list).
  defOp (X_map f l) -->
- X_map f (X_filter l Q) =
+ X_map f (X_filter l (% h. defOp (f h) & Q (makeTotal (f h)))) =
  restrictOp (makePartial (X_filter (makeTotal (X_map f l)) Q))
  (defOp (X_map f l))"
-apply (rule allI)
-apply (rule allI)
-apply (rule allI)
+apply (rule allI)+
 apply (induct_tac l)
 apply (simp)
-apply (rule impI)
-apply (simp)
-apply (subst Ax2)
-apply (subst Ax3)
-apply (simp)
-apply (auto)
-apply (subst (asm) Ax2)
-apply (simp)
+apply (simp add: Ax3 Ax2)
+done
 
-(* apply Ax1_5 somewhere *) 
 ML "Header.record \"Ax2_6\""
+
+theorem Ax3_7 :
+"ALL (f :: 'a => 'a partial).
+ ALL (l :: 'a list).
+ ALL (x :: 'a).
+ defOp (f x) -->
+ defOp
+ (restrictOp (makePartial (Cons (makeTotal (f x)) l))
+  (defOp (f x)))"
+apply (auto)
+done
+
+ML "Header.record \"Ax3_7\""
 
 end
