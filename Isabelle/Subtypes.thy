@@ -55,7 +55,10 @@ proof-
   assume hyp: "X_gn_subt x y"
   fix u:: 'a
   fix v:: 'b
-  show "X_gn_subt u v" by (rule subtype_transitive [of x x x y u v], simp add: ga_subt_reflexive hyp)
+  show "X_gn_subt u v"
+
+
+ by (rule subtype_transitive [of x x x y u v], (simp only: ga_subt_reflexive hyp)+)
 qed
 
 
