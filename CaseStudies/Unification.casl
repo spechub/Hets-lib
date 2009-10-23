@@ -1,8 +1,8 @@
 library Unification
 
-from Basic/StructuredDatatypes version 0.3 get Set,List,String
-from Basic/Numbers version 0.3 get  Nat
-from Basic/SimpleDatatypes version 0.3 get Char
+from Basic/StructuredDatatypes version 1.0 get Set,List
+from Basic/CharactersAndStrings get Char, String
+from Basic/Numbers version 1.0 get  Nat
 
 spec Function =
   Nat
@@ -12,7 +12,7 @@ then
   sort function;
   ops declare : String * Nat -> function;
       arity : function -> Nat
-  vars n : String; i : Nat 
+  vars n : String; i : Nat
       . arity(declare(n,i)) = i
 end
 
@@ -22,7 +22,7 @@ spec Const = Char with sorts Char |-> constant end
 
 spec Exp =  sort expression end
 
-spec Expression = 
+spec Expression =
   Function and
   Const and
   List [Exp fit sort Elem |-> expression] and
@@ -35,10 +35,10 @@ then
       variablesl : List[expression] -> Set[variable]
 pred is_valid : expression;
      is_validl : List[expression];
-vars  c : constant; 
-      v : variable; 
-      f:function; 
-      e : expression; 
+vars  c : constant;
+      v : variable;
+      f:function;
+      e : expression;
       l : List[expression]
 . is_valid(mk_c(c))
 . is_valid(mk_v(v))
@@ -49,12 +49,12 @@ vars  c : constant;
 . variables(mk_v(v)) = {v}
 . variables(mk_f(f,l)) = variablesl(l)
 . variablesl([]) = {}
-. variablesl(e::l) = (variables(e) union variablesl(l)) 
+. variablesl(e::l) = (variables(e) union variablesl(l))
 hide variablesl,is_validl
-end    
+end
 
 spec Substitution =
-  Expression 
+  Expression
 then
   sorts substitution
   ops empty : substitution;
@@ -65,19 +65,19 @@ then
       applyl : List[expression] * substitution -> List[expression];
       compose : substitution * substitution -> substitution;
   vars x : variable; e : expression; s : substitution
-  . dom(empty) = {} /\ rng(empty) = {} 
+  . dom(empty) = {} /\ rng(empty) = {}
   . ((not (x eps dom(s))) /\ (not e = mk_v(x))) =>
        ( (dom(add_s(x,e,s)) = {x} union dom(s)) /\
          (rng(add_s(x,e,s)) = variables(e) union rng(s)) )
-  vars  c : constant; x,y : variable; f : function; 
+  vars  c : constant; x,y : variable; f : function;
         e : expression; s,s' : substitution; l : List[expression]
-  . apply(e,empty) = e 
+  . apply(e,empty) = e
   . apply(mk_c(c),s) = mk_c(c)
   . apply(mk_v(x),add_s(x,e,s)) = e
   . (not x = y) => (apply(mk_v(y),add_s(x,e,s)) = apply(mk_v(y),s))
   .  apply(mk_f(f,l),s) = mk_f(f,applyl(l,s))
   .  applyl([],s) = []
-  . applyl((e::l),s) = apply(e,s)::applyl(l,s) 
+  . applyl((e::l),s) = apply(e,s)::applyl(l,s)
   . apply(e,compose(s,s')) = apply(apply(e,s),s')
   vars s,s',s'' : substitution
   . (compose(s,empty) = s) /\ (compose(empty,s) = s)
@@ -85,21 +85,21 @@ then
   hide applyl
 end
 
- 
+
 spec Unification =
- Substitution 
-then 
+ Substitution
+then
   op unify : expression * expression -> substitution;
   pred is_moregeneral : substitution * substitution;
-       is_idempotent : substitution;  
-  axiom  
-    forall e,e' : expression . 
+       is_idempotent : substitution;
+  axiom
+    forall e,e' : expression .
      (exists s: substitution . apply(e,s) = apply(e',s)) =>
       ( (apply(e,unify(e,e')) = apply(e',unify(e,e')))  /\
         (forall s':substitution .  apply(e,s') = apply(e',s') =>
                                    is_moregeneral(unify(e,e'),s'))  /\
         (is_idempotent(unify(e,e'))) )
-  axiom 
+  axiom
     forall s,s' : substitution .
      is_moregeneral(s,s') <=> (exists r: substitution . s' = compose(s,r))
   axiom forall s : substitution .
