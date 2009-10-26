@@ -1,0 +1,128 @@
+library Ontology/Blending/HouseBoat
+
+spec MEDIUM =
+  sort Medium < Thing
+  ops land, water : Medium
+end
+
+spec BASE =
+  MEDIUM
+then
+  sorts Person, Object < Thing
+  op person : Person
+  op object : Object
+  pred use : Person * Object
+  pred on : Object * Medium
+  . use(person, object)
+end
+
+spec HOUSE =
+  MEDIUM
+then
+  sorts Person, Object < Thing
+  op resident : Person
+  op house : Object
+  pred live_in : Person * Object
+  pred on: Object * Medium
+  . live_in(resident, house)
+  . on(house, land)
+end
+
+spec BOAT =
+  MEDIUM
+then
+  sorts Object, Person  < Thing
+  op boat : Object
+  op passenger : Person
+  pred ride : Person * Object
+  pred on : Object * Medium
+  . ride(passenger, boat)
+  . on(boat, water)
+end
+
+
+view M1 : BASE to HOUSE =
+  op person |-> resident,
+  op object |-> house,
+  pred use |-> live_in
+end
+
+view M2 : BASE to BOAT =
+  op person |-> passenger,
+  op object |-> boat,
+  pred use |-> ride
+end
+
+
+spec HOUSEBOAT =
+  MEDIUM
+then
+  sorts Object, Person < Thing
+  op house_boat : Object
+  op resident_passenger : Person
+  pred live_in_ride : Person * Object
+  pred on : Object * Medium
+  . live_in_ride(resident_passenger, house_boat)
+  . on(house_boat, water)
+end
+
+view M3 : HOUSE to HOUSEBOAT =
+  op resident |-> resident_passenger,
+  op house |-> house_boat,
+  pred live_in |-> live_in_ride
+end
+
+view M4 : BOAT to HOUSEBOAT =
+  op passenger |-> resident_passenger,
+  op boat |-> house_boat,
+  pred ride |-> live_in_ride
+end
+
+view C : BASE to HOUSEBOAT =
+  op person |-> resident_passenger,
+  op object |-> house_boat,
+  pred use |-> live_in_ride
+end
+
+spec BOATHOUSE =
+  MEDIUM
+then
+  sorts Person, Object < Thing
+  op passenger : Person
+  op resident_boat : Object
+  op house : Object
+  pred live_in : Person * Object
+  pred ride : Person * Object
+  pred on : Object * Medium
+  . ride(passenger, resident_boat)
+  . live_in(resident_boat : Thing as Person, house)
+  . on(house, land)
+  . on(resident_boat, water)
+end
+
+
+view M3a : HOUSE to {BOATHOUSE then op rbp:Person = resident_boat as Person} =
+  op resident |-> rbp 
+end
+
+
+view M4a : BOAT to {BOATHOUSE then op rbo:Object = resident_boat as Object} =
+  op boat |-> rbo
+end
+
+view Ca : BASE to {BOATHOUSE then op rbp:Person = resident_boat as Person} =
+  op person |-> rbp,
+  op object |-> house,
+  pred use |-> live_in
+end
+
+
+%[
+live_in |-> live_in_ride
+ride |-> live_in_ride
+house |-> house_boat
+boat |-> house_boat
+
+resident |-> resident_passenger
+passenger |-> resident_passenger
+]%
