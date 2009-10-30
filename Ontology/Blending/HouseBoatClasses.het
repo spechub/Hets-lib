@@ -1,0 +1,141 @@
+library Ontology/Blending/HouseBoatOWL
+
+logic OWL
+
+spec Medium =
+  Class: Medium 
+  Class: Land SubclassOf: Medium
+  Class: Water SubclassOf: Medium
+end
+
+
+spec Base =
+  Medium
+then
+  Class: Person
+  Class: Object 
+  ObjectProperty: use Domain: Person Range: Object
+  ObjectProperty: on Domain: Object Range: Medium
+end
+
+spec House =
+  Medium
+then
+  Class: Person
+  Class: Object
+  ObjectProperty: live_in Domain: Person Range: Object
+  ObjectProperty: on Domain: Object Range: Medium
+  Class: Resident SubclassOf: Person, live_in some House
+  Class: House SubclassOf: Object, on some Land
+end
+
+spec Boat =
+  Medium
+then
+  Class: Object
+  Class: Person
+  ObjectProperty: ride Domain: Person Range: Object
+  ObjectProperty: on Domain: Object Range: Medium
+  Class: Boat SubclassOf: Object, on some Water
+  Class: Passenger SubclassOf: Person, ride some Boat
+end
+
+
+view M1 : Base to House =
+  Person |-> Resident,
+  Object |-> House,
+  use |-> live_in
+end
+
+
+view M2 : Base to Boat =
+  Person |-> Passenger,
+  Object |-> Boat,
+  use |-> ride
+end
+
+
+spec HouseBoat =
+  Medium
+then
+  Class: Object
+  Class: Person
+  ObjectProperty: live_in_ride Domain: Person Range: Object
+  ObjectProperty: on Domain: Object Range: Medium
+  Class: House_Boat SubclassOf: Object, on some Water
+  Class: Resident_Passenger SubclassOf: Person, live_in_ride some House_Boat
+end
+
+
+view M3 : House to HouseBoat =
+  Resident |-> Resident_Passenger,
+  House |-> House_Boat,
+  Land |-> Water,  %% this was missing in the paper
+  live_in |-> live_in_ride
+end
+
+view M4 : Boat to HouseBoat =
+  Passenger |-> Resident_Passenger,
+  Boat |-> House_Boat,
+  ride |-> live_in_ride
+end
+
+view C : Base to HouseBoat =
+  Person |-> Resident_Passenger,
+  Object |-> House_Boat,
+  use |-> live_in_ride
+end
+
+
+spec BoatHouse =
+  Medium
+then
+  Class: Person
+  Class: Object
+  ObjectProperty: live_in Domain: Person Range: Object
+  ObjectProperty: ride Domain: Person Range: Object
+  ObjectProperty: on Domain: Object Range: Medium
+  Class: Passenger SubclassOf: Person, ride some Resident_Boat
+  Class: Resident_Boat SubclassOf: Object, live_in some House, on some Water
+  Class: House SubclassOf: Object, on some Land
+end
+
+
+view M3a : House to BoatHouse =
+  Resident |-> Resident_Boat
+end
+
+
+view M4a : Boat to BoatHouse =
+  Boat |-> Resident_Boat
+end
+
+view Ca : Base to BoatHouse =
+  Person |-> Resident_Boat,
+  Object |-> House,
+  use |-> live_in
+end
+
+
+%% Alignments
+
+spec BoatHouse_alignment =
+  House and Boat and {BoatHouse with House |-> Boat_House}
+  and HouseBoat
+then
+  Class: Boat_House SubclassOf: House
+  Class: House_Boat SubclassOf: House
+  Class: House_Boat SubclassOf: Boat
+end
+
+
+
+%[
+live_in |-> live_in_ride
+ride |-> live_in_ride
+House |-> House_Boat
+Boat |-> House_Boat
+
+Resident |-> Resident_Passenger
+Passenger |-> Resident_Passenger
+]%
