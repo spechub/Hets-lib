@@ -14,8 +14,10 @@ spec Base =
 then
   Class: Person
   Class: Object 
-  ObjectProperty: use Domain: Person Range: Object
+  ObjectProperty: use Domain: User Range: UsedObject
   ObjectProperty: on Domain: Object Range: Medium
+  Class: User SubclassOf: Person, use some Object
+  Class: UsedObject SubclassOf: Object
 end
 
 spec House =
@@ -23,7 +25,7 @@ spec House =
 then
   Class: Person
   Class: Object
-  ObjectProperty: live_in Domain: Person Range: Object
+  ObjectProperty: live_in Domain: Resident Range: House
   ObjectProperty: on Domain: Object Range: Medium
   Class: Resident SubclassOf: Person, live_in some House
   Class: House SubclassOf: Object, on some Land
@@ -34,7 +36,7 @@ spec Boat =
 then
   Class: Object
   Class: Person
-  ObjectProperty: ride Domain: Person Range: Object
+  ObjectProperty: ride Domain: Passenger Range: Boat
   ObjectProperty: on Domain: Object Range: Medium
   Class: Boat SubclassOf: Object, on some Water
   Class: Passenger SubclassOf: Person, ride some Boat
@@ -42,15 +44,15 @@ end
 
 
 view M1 : Base to House =
-  Person |-> Resident,
-  Object |-> House,
+  User |-> Resident,
+  UsedObject |-> House,
   use |-> live_in
 end
 
 
 view M2 : Base to Boat =
-  Person |-> Passenger,
-  Object |-> Boat,
+  User |-> Passenger,
+  UsedObject |-> Boat,
   use |-> ride
 end
 
@@ -60,7 +62,7 @@ spec HouseBoat =
 then
   Class: Object
   Class: Person
-  ObjectProperty: live_in_ride Domain: Person Range: Object
+  ObjectProperty: live_in_ride Domain: Resident_Passenger Range: House_Boat
   ObjectProperty: on Domain: Object Range: Medium
   Class: House_Boat SubclassOf: Object, on some Water
   Class: Resident_Passenger SubclassOf: Person, live_in_ride some House_Boat
@@ -81,8 +83,8 @@ view M4 : Boat to HouseBoat =
 end
 
 view C : Base to HouseBoat =
-  Person |-> Resident_Passenger,
-  Object |-> House_Boat,
+  User |-> Resident_Passenger,
+  UsedObject |-> House_Boat,
   use |-> live_in_ride
 end
 
@@ -92,8 +94,8 @@ spec BoatHouse =
 then
   Class: Person
   Class: Object
-  ObjectProperty: live_in Domain: Person Range: Object
-  ObjectProperty: ride Domain: Person Range: Object
+  ObjectProperty: live_in Domain: Resident_Boat Range: House
+  ObjectProperty: ride Domain: Passenger Range: Resident_Boat
   ObjectProperty: on Domain: Object Range: Medium
   Class: Passenger SubclassOf: Person, ride some Resident_Boat
   Class: Resident_Boat SubclassOf: Object, live_in some House, on some Water
@@ -111,8 +113,8 @@ view M4a : Boat to BoatHouse =
 end
 
 view Ca : Base to BoatHouse =
-  Person |-> Resident_Boat,
-  Object |-> House,
+  User |-> Resident_Boat,
+  UsedObject |-> House,
   use |-> live_in
 end
 
