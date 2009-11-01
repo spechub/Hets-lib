@@ -121,7 +121,7 @@ end
 
 %% Alignments
 
-spec BoatHouse_alignment =
+spec Alignment =
   House and Boat and {BoatHouse with House |-> Boat_House}
   and HouseBoat
 then
@@ -130,6 +130,12 @@ then
   Class: House_Boat SubclassOf: Boat
 end
 
+spec AlignmentWithoutPersonification =
+  Alignment hide Resident_Boat, Person
+and House and Boat 
+then
+  Class: Resident_Boat SubclassOf: Object
+end
 
 
 %[
