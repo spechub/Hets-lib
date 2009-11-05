@@ -4,21 +4,21 @@ version 0.2
 %author: T. Mossakowski, S. Wölfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
-%prec( 
-  { __ - __, __ + __ } < 
-  { __*__, __ / __ } 
+%prec(
+  { __ - __, __ + __ } <
+  { __*__, __ / __ }
 )%
 
-%prec( 
-  { __ * __, __ / __ } < 
-  { - __ } 
+%prec(
+  { __ * __, __ / __ } <
+  { - __ }
 )%
 
 %%from Basic/Numbers get Rat
 from Basic/RelationsAndOrders get
      TotalOrder, ExtTotalOrder
 from HasCASL/Algebra get Field, RichField
-     
+
 
 logic HasCASL
 
@@ -27,7 +27,7 @@ spec FieldWithOrdering =
 then
     vars a, b, c:Elem
     . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
-%% doesn't work with if!!!
+%% does work with "if", but needs a ";" before "then"!
     . (a <= b /\ 0 <= c) => (a * c) <= (b * c) %(FWO_times_left)%
 then %implies
     vars a, b, c, d: Elem
@@ -94,7 +94,7 @@ then %def
 
      types RealNonNeg = {x:Real. RealNonNeg_pred x}; %(RealNonNeg type)%
 	   RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
-	   RealPos < RealNonNeg; 
+	   RealPos < RealNonNeg;
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
 	%(abs def)%
@@ -136,7 +136,7 @@ then %def
      . sqr(r) = r * r    %(sqr_def)%
      %{ to see that this definition of sqrt is definitional one need the
         injectivity of sqr on RealNonNeg e.g. via the intermediate value theorem }%
-	
+
      . sqr(sqrt(q)) = q  %(sqrt_def)%
 end
 
