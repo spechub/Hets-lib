@@ -4,31 +4,30 @@ uses "$HETS_ISABELLE_LIB/prelude"
 begin
 
 ML "Header.initialize
-    [\"MS_pos\", \"MS_zero\", \"Field_unary_minus_idef\", \"refl\",
-     \"trans\", \"antisym\", \"dichotomy_TotalOrder\",
-     \"FWO_plus_left\", \"FWO_times_left\", \"FWO_plus_right\",
-     \"FWO_times_right\", \"FWO_plus\", \"geq_def_ExtPartialOrder\",
-     \"less_def_ExtPartialOrder\", \"greater_def_ExtPartialOrder\",
-     \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\",
-     \"sup_def_ExtPartialOrder\", \"ga_comm_min\", \"ga_comm_max\",
-     \"ga_assoc_min\", \"ga_assoc_max\", \"ga_left_comm_min\",
-     \"ga_left_comm_max\", \"min_def_ExtTotalOrder\",
-     \"max_def_ExtTotalOrder\", \"min_inf_relation\",
-     \"max_sup_relation\", \"Real_ub_def\", \"Real_lb_def\",
-     \"Real_inf_def\", \"Real_sup_def\", \"Real_isBounded_def\",
-     \"completeness\", \"Real_inj_0\", \"Real_inj_suc\",
-     \"Real_archimedian\", \"Real_abs_def\", \"Real_sqr_def\",
-     \"Real_sqrt_dom\", \"Real_sqrt_idef\", \"Real_2_def\",
-     \"Real_minus_def\", \"Real_divide_dom\", \"Real_divide_idef\",
-     \"Real_half_idef\", \"one_greater_zero\", \"zero_leq_one\",
-     \"half_gt_zero\", \"half_plus_minus\", \"add_monotone\",
-     \"sub_leq\", \"half_leq\", \"half_leq_zero\", \"comm_add\",
-     \"Real_half_plus\", \"Real_half_minus\", \"Real_minus_half\",
-     \"Real_half_monot\", \"MS_pos_definite\", \"MS_symm\",
-     \"MS_triangle\", \"EMSCB_rep_pos\", \"EMSCB_rep_0\",
-     \"EMSCB_rep_inj\", \"Ax4\", \"EMSCB_center\", \"EMSCB_closed\",
-     \"Ax1\", \"C_def\", \"C_non_null\", \"C_sym\", \"C_id\",
-     \"C_non_triv\"]"
+    [\"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
+     \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
+     \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\",
+     \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
+     \"greater_def_ExtPartialOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
+     \"inf_def_ExtPartialOrder\", \"sup_def_ExtPartialOrder\",
+     \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\",
+     \"ga_assoc_max\", \"ga_left_comm_min\", \"ga_left_comm_max\",
+     \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\",
+     \"min_inf_relation\", \"max_sup_relation\", \"Real_ub_def\",
+     \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\",
+     \"Real_isBounded_def\", \"completeness\", \"Real_inj_0\",
+     \"Real_inj_suc\", \"Real_archimedian\", \"Real_abs_def\",
+     \"Real_sqr_def\", \"Real_sqrt_dom\", \"Real_sqrt_idef\",
+     \"Real_2_def\", \"Real_minus_def\", \"Real_divide_dom\",
+     \"Real_divide_idef\", \"Real_half_idef\", \"one_greater_zero\",
+     \"zero_leq_one\", \"half_gt_zero\", \"half_plus_minus\",
+     \"add_monotone\", \"sub_leq\", \"half_leq\", \"half_leq_zero\",
+     \"comm_add\", \"Real_half_plus\", \"Real_half_minus\",
+     \"Real_minus_half\", \"Real_half_monot\", \"MS_pos_definite\",
+     \"MS_symm\", \"MS_triangle\", \"MS_pos\", \"MS_zero\",
+     \"EMSCB_rep_pos\", \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\",
+     \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\",
+     \"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -70,11 +69,6 @@ supX1 :: "Real => Real => Real partial" ("sup''/'(_,/ _')" [3,3] 999)
 supX2 :: "(Real => bool) => Real partial" ("sup''''/'(_')" [3] 999)
 
 axioms
-MS_pos [rule_format] :
-"ALL (x :: S). ALL (y :: S). 0'' <=' d(x, y)"
-
-MS_zero [rule_format] : "ALL (x :: S). d(x, x) = 0''"
-
 Field_unary_minus_idef [rule_format] :
 "ALL (x :: Real). -' x +' x = 0''"
 
@@ -306,6 +300,11 @@ MS_triangle [rule_format] :
 "ALL (x :: S).
  ALL (y :: S). ALL (z :: S). d(x, z) <=' d(x, y) +' d(y, z)"
 
+MS_pos [rule_format] :
+"ALL (x :: S). ALL (y :: S). 0'' <=' d(x, y)"
+
+MS_zero [rule_format] : "ALL (x :: S). d(x, x) = 0''"
+
 EMSCB_rep_pos [rule_format] :
 "ALL (r :: Real).
  ALL (x :: S).
@@ -342,8 +341,6 @@ C_def [rule_format] :
 "ALL (x :: ClosedBall).
  ALL (y :: ClosedBall). (x C y) = (EX (s :: S). rep x s & rep y s)"
 
-declare MS_pos [simp]
-declare MS_zero [simp]
 declare Field_unary_minus_idef [simp]
 declare refl [simp]
 declare FWO_plus_left [simp]
@@ -369,8 +366,10 @@ declare sub_leq [simp]
 declare half_leq_zero [simp]
 declare Real_minus_half [simp]
 declare Real_half_monot [simp]
-declare MS_triangle [simp]
 declare MS_pos_definite [simp]
+declare MS_triangle [simp]
+declare MS_pos [simp]
+declare MS_zero [simp]
 declare EMSCB_rep_pos [simp]
 declare EMSCB_rep_0 [simp]
 declare EMSCB_center [simp]
