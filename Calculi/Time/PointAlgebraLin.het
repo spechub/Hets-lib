@@ -31,9 +31,9 @@ from Calculi/Algebra/RelationAlgebraModel get
 	CompositionClosedBaseRelationModel,
 	CheckCompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get
-	DnsLinFlowOfTimeSEnd |-> CASL_DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime |-> CASL_LinFlowOfTime,
-	NTLinFlowOfTime |-> CASL_NTLinFlowOfTime
+	DnsLinFlowOfTimeSEnd,
+	LinFlowOfTime,
+	NTLinFlowOfTime
 
 %%from Calculi/Time/FlowOfTime get
 %%	ExtFlowOfTimeByConvexity,
@@ -152,10 +152,6 @@ end
 
 
 logic HasCASL
-
-spec DnsLinFlowOfTimeSEnd = CASL_DnsLinFlowOfTimeSEnd with logic -> HasCASL
-spec LinFlowOfTime = CASL_LinFlowOfTime with logic -> HasCASL
-spec NTLinFlowOfTime = CASL_NTLinFlowOfTime with logic -> HasCASL
 
 spec PAlinBaseRelationModel[LinFlowOfTime] = %def
      BaseRelationModel[LinFlowOfTime fit Elem |-> Instant]
