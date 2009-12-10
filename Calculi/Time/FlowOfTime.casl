@@ -296,12 +296,12 @@ spec Rich_DisFlowOfTime  = Ext_DisFlowOfTime [DisFlowOfTime]
 
 logic HasCASL
 
-spec ExtFlowOfTimeByConvexity[FlowOfTime with logic -> HasCASL] =
+spec ExtFlowOfTimeByConvexity[FlowOfTime] =
      ExtStrictPartialOrderByConvexity[StrictPartialOrder]
 	with sort Elem |-> Instant, pred __<__ |-> __pre__
 end
 
-spec ExtFlowOfTimeBySetRelations[FlowOfTime with logic -> HasCASL] =
+spec ExtFlowOfTimeBySetRelations[FlowOfTime] =
      ExtStrictPartialOrderBySetRelations[StrictPartialOrder]
 	with sort Elem |-> Instant,
 	preds __<__|->__pre__, __>__|->__suc__,
