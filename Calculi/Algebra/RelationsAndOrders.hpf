@@ -7,7 +7,6 @@ dg-all auto
 # ------------------------------------------------------------------------------
 
 dg basic ReflexiveRelation
-drop-translations
 prover SPASS
 set goals serial
 prove
@@ -15,13 +14,6 @@ prove
 # ------------------------------------------------------------------------------
 
 dg basic ExtStrictPartialOrderByOrderRelations_E1
-drop-translations
 prover SPASS
-set goals equi_preE_sucE
-set axioms def_sucE def_preE def_suc
+set goals equi_preE_sucE cmp_sym
 prove
-
-set goals cmp_sym
-set axioms def_cmp
-prove
-

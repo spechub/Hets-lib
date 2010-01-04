@@ -6,8 +6,7 @@ dg-all auto
 
 dg basic Int
 prover SPASS
-set goals ga_right_unit___*__ ga_left_unit___*__ distr1_Ring distr2_Ring zeroNeqOne
-set time-limit 40
+set goals zeroNeqOne
 prove
 
 prover MathServe Broker
@@ -15,33 +14,18 @@ set goals noZeroDiv
 set time-limit 40
 prove
 
-drop-translations
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-set goals inv_Group
-set time-limit 40
-prove
-
 # ------------------------------------------------------------------------------
 
 dg basic RichCommutativeRing
 prover SPASS
-set goals refl sym
+set goals refl refl_7 sym ga_assoc___*___175 ga_comm___*___176 ga_left_unit___*___177 ga_right_uni___*___178
 prove
 
-drop-translations
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
 prover MathServe Broker
-set goals trans
+set goals inv_Group_179
 prove
-
 
 # ------------------------------------------------------------------------------
-
 
 dg basic EqRel_in_ExtCRing_T
 prover SPASS
@@ -73,22 +57,46 @@ prove
 
 # ------------------------------------------------------------------------------
 
+dg basic AbelianGroup_in_ExtCRing_T
+prover SPASS
+set goals ga_assoc___*___144 ga_comm___*___145 ga_left_unit___*___146 ga_right_unit___*___147
+prove
+
+prover MathServe Broker
+set goals inv_Group_148
+prove
+
+# ------------------------------------------------------------------------------
+
 dg basic ExtIntegralDomain_E2
 prover SPASS
-prove-all
+set goals Ax1_177
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Group_in_ExtRing_T
+prover SPASS
+set goals ga_assoc___*___143 ga_left_unit___*___144 ga_right_unit___*___145
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic RichRing
+prover SPASS
+set goals ga_assoc___*___170 ga_left_unit___*___171 ga_right_unit___*___172
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ConstructField
+prover SPASS
+set goals ga_comm___*___15
+prove
 
 # ------------------------------------------------------------------------------
 
 dg basic ExtCommutativeRing_E2
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-prove-all
-
-# ------------------------------------------------------------------------------
-
-dg basic ExtField_E3
 translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
@@ -103,6 +111,15 @@ translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
 set time-limit 40
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtField_E3
+translate CASL2PCFOL
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
 prove-all
 
 # ------------------------------------------------------------------------------
@@ -122,16 +139,6 @@ translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
 set goals rightCancel_Group invInv_Group invMult_Group pow_unit_Group pow_add_Group pow_mult_Group
+set time-limit 40
 prove
 
-# ------------------------------------------------------------------------------
-
-# dg basic ExtMonoid_E1
-
-# ------------------------------------------------------------------------------
-
-# dg basic ExtCommutativeMonoid_E1
-
-# ------------------------------------------------------------------------------
-
-# dg basic Field
