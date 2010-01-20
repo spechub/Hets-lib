@@ -1,14 +1,13 @@
 structure Header :
-    sig val record : string -> unit
-        val initialize : string list -> unit
+    sig val record : string -> Context.theory -> Context.theory
+        val initialize : string list -> Context.theory -> Context.theory
     end =
 struct
 
 val thmlist = ref [""];
 
-fun record1 name =
-    let val ctxt = OldGoals.the_context ()
-        val thm = PureThy.get_thm ctxt name
+fun record name ctxt =
+    let val thm = PureThy.get_thm ctxt name
         val thy = ctxt |> Context.theory_name
         val thm_name = Thm.get_name thm
         fun incl f = String.isPrefix (thy ^ ".") f andalso
@@ -20,17 +19,15 @@ fun record1 name =
         val txt = foldl (fn (s, t) => s ^ "\n" ^ t) "" used_thms
         val filename = thy ^ "_" ^ name ^ ".deps"
     in
-        File.write (Path.basic filename) txt
+        File.write (Path.basic filename) txt;
+        ctxt
     end
 
-fun record name =
-    record1 name handle _ => ()
-
-fun initialize l =
-    let val ctxt = OldGoals.the_context ()
-        val thy = ctxt |> Context.theory_name
+fun initialize l ctxt =
+    let val thy = ctxt |> Context.theory_name
     in
-        thmlist := map (fn s => thy ^ "." ^ s) l
+        thmlist := map (fn s => thy ^ "." ^ s) l;
+        ctxt
     end
 
 end;
