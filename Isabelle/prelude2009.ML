@@ -7,7 +7,7 @@ struct
 val thmlist = ref [""];
 
 fun record1 name =
-    let val ctxt = the_context ()
+    let val ctxt = OldGoals.the_context ()
         val thm = PureThy.get_thm ctxt name
         val thy = ctxt |> Context.theory_name
         val thm_name = Thm.get_name thm
@@ -27,7 +27,7 @@ fun record name =
     record1 name handle _ => ()
 
 fun initialize l =
-    let val ctxt = the_context ()
+    let val ctxt = OldGoals.the_context ()
         val thy = ctxt |> Context.theory_name
     in
         thmlist := map (fn s => thy ^ "." ^ s) l
