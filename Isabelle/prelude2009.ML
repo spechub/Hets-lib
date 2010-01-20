@@ -16,7 +16,7 @@ fun record name ctxt =
               f mem (!thmlist)
         fun g (f, _, _) acc = if incl f then f :: acc else acc
         val used_thms = Proofterm.fold_body_thms g [Thm.proof_body_of thm] []
-        val txt = foldl (fn (s, t) => s ^ "\n" ^ t) "" used_thms
+        val txt = List.foldl (fn (s, t) => s ^ "\n" ^ t) "" used_thms
         val filename = thy ^ "_" ^ name ^ ".deps"
     in
         File.write (Path.basic filename) txt;
