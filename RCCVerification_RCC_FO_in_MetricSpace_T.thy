@@ -1,33 +1,33 @@
 theory RCCVerification_RCC_FO_in_MetricSpace_T
 imports "$HETS_ISABELLE_LIB/MainHC"
-uses "$HETS_ISABELLE_LIB/prelude"
+uses "$HETS_ISABELLE_LIB/prelude2009"
 begin
 
-ML "Header.initialize
-    [\"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
-     \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
-     \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\",
-     \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
-     \"greater_def_ExtPartialOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
-     \"inf_def_ExtPartialOrder\", \"sup_def_ExtPartialOrder\",
-     \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\",
-     \"ga_assoc_max\", \"ga_left_comm_min\", \"ga_left_comm_max\",
-     \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\",
-     \"min_inf_relation\", \"max_sup_relation\", \"Real_ub_def\",
-     \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\",
-     \"Real_isBounded_def\", \"completeness\", \"Real_inj_0\",
-     \"Real_inj_suc\", \"Real_archimedian\", \"Real_abs_def\",
-     \"Real_sqr_def\", \"Real_sqrt_dom\", \"Real_sqrt_idef\",
-     \"Real_2_def\", \"Real_minus_def\", \"Real_divide_dom\",
-     \"Real_divide_idef\", \"Real_half_idef\", \"one_greater_zero\",
-     \"zero_leq_one\", \"half_gt_zero\", \"half_plus_minus\",
-     \"add_monotone\", \"sub_leq\", \"half_leq\", \"half_leq_zero\",
-     \"comm_add\", \"Real_half_plus\", \"Real_half_minus\",
-     \"Real_minus_half\", \"Real_half_monot\", \"MS_pos_definite\",
-     \"MS_symm\", \"MS_triangle\", \"MS_pos\", \"MS_zero\",
-     \"EMSCB_rep_pos\", \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\",
-     \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\",
-     \"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\"]"
+setup "Header.initialize
+       [\"Field_unary_minus_idef\", \"refl\", \"trans\", \"antisym\",
+        \"dichotomy_TotalOrder\", \"FWO_plus_left\", \"FWO_times_left\",
+        \"FWO_plus_right\", \"FWO_times_right\", \"FWO_plus\",
+        \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
+        \"greater_def_ExtPartialOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
+        \"inf_def_ExtPartialOrder\", \"sup_def_ExtPartialOrder\",
+        \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\",
+        \"ga_assoc_max\", \"ga_left_comm_min\", \"ga_left_comm_max\",
+        \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\",
+        \"min_inf_relation\", \"max_sup_relation\", \"Real_ub_def\",
+        \"Real_lb_def\", \"Real_inf_def\", \"Real_sup_def\",
+        \"Real_isBounded_def\", \"completeness\", \"Real_inj_0\",
+        \"Real_inj_suc\", \"Real_archimedian\", \"Real_abs_def\",
+        \"Real_sqr_def\", \"Real_sqrt_dom\", \"Real_sqrt_idef\",
+        \"Real_2_def\", \"Real_minus_def\", \"Real_divide_dom\",
+        \"Real_divide_idef\", \"Real_half_idef\", \"one_greater_zero\",
+        \"zero_leq_one\", \"half_gt_zero\", \"half_plus_minus\",
+        \"add_monotone\", \"sub_leq\", \"half_leq\", \"half_leq_zero\",
+        \"comm_add\", \"Real_half_plus\", \"Real_half_minus\",
+        \"Real_minus_half\", \"Real_half_monot\", \"MS_pos_definite\",
+        \"MS_symm\", \"MS_triangle\", \"MS_pos\", \"MS_zero\",
+        \"EMSCB_rep_pos\", \"EMSCB_rep_0\", \"EMSCB_rep_inj\", \"Ax4\",
+        \"EMSCB_center\", \"EMSCB_closed\", \"Ax1\", \"C_def\",
+        \"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -382,7 +382,7 @@ using Field_unary_minus_idef Real_ub_def Real_lb_def Real_inf_def
       Real_half_idef Ax1 C_def
 by (auto)
 
-ML "Header.record \"C_non_null\""
+setup "Header.record \"C_non_null\""
 
 theorem C_sym :
 "ALL (x :: ClosedBall). ALL (y :: ClosedBall). x C y --> y C x"
@@ -392,7 +392,7 @@ using Field_unary_minus_idef Real_ub_def Real_lb_def Real_inf_def
       Real_half_idef Ax1 C_def
 by (auto)
 
-ML "Header.record \"C_sym\""
+setup "Header.record \"C_sym\""
 
 lemma swap : "A --> B=D ==> B ==> A-->D"
 by auto
@@ -473,7 +473,7 @@ apply (rule_tac x="y" in C_id_lemma)
 apply(auto)
 done
 
-ML "Header.record \"C_id\""
+setup "Header.record \"C_id\""
 
 theorem C_non_triv : "EX (x :: ClosedBall). x C x"
 apply (simp add: C_def)
@@ -490,6 +490,6 @@ apply(rule zero_leq_one)
 apply auto
 done
 
-ML "Header.record \"C_non_triv\""
+setup "Header.record \"C_non_triv\""
 
 end
