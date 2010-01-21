@@ -1,11 +1,8 @@
 structure Header :
-sig
-(* val get_axioms : string -> string list *)
-val record : string -> unit
-val initialize : string list -> unit 
-end
-
-= struct
+    sig val record : string -> Context.theory -> Context.theory
+        val initialize : string list -> Context.theory -> Context.theory
+    end =
+struct
 
 open Proofterm
 
@@ -22,36 +19,34 @@ fun axname s =
 fun get_axioms name =
      let val (l, r) = List.partition (fn s => s mem (!thmlist))
                (filter (fn s => s <> name)
-               (filter (fn s => length (filter 
+               (filter (fn s => length (filter
                           (fn c => c = ".") (explode s)) < 2)
                (filter (String.isPrefix (!thyname))
-                       (Symtab.keys (thms_of_proof 
+                       (Symtab.keys (thms_of_proof
                                     (Thm.proof_of (thm name)) Symtab.empty)))))
      in if null r then l
         else l @ List.concat (map get_axioms r)
      end
 
-fun record1 name = 
-  let val thy = the_context ()
-      val thms = PureThy.thms_of thy
+fun record name thy =
+  let val thms = PureThy.thms_of thy
   in if name mem (map (axname o fst) thms) then
      let
       val axs = map axname (get_axioms (!thyname ^ "." ^ name))
       val txt = foldl (fn (s, t) => s ^ "\n" ^ t) "" axs
       val filename = !thyname ^ "_" ^ name ^ ".deps"
      in
-        File.write (Path.basic filename) txt
+        File.write (Path.basic filename) txt;
+        thy
      end
-     else ()
+     else thy
   end
 
-fun record name =
-    record1 name handle _ => ()
-
-fun initialize l = 
-    let val thy = Context.theory_name (the_context ()) 
+fun initialize l ctxt =
+    let val thy = Context.theory_name ctxt
     in thmlist := map (fn s => thy ^ "." ^ s) l;
-       thyname := thy
+       thyname := thy;
+       ctxt
     end
 
 end;
