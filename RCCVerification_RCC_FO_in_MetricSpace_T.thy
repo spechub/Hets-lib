@@ -1,6 +1,6 @@
 theory RCCVerification_RCC_FO_in_MetricSpace_T
 imports "$HETS_ISABELLE_LIB/MainHC"
-uses "$HETS_ISABELLE_LIB/prelude2009"
+uses "$HETS_ISABELLE_LIB/prelude"
 begin
 
 setup "Header.initialize
