@@ -6,7 +6,7 @@ struct
 
 val thmlist = ref [""];
 
-fun record name ctxt =
+fun record1 name ctxt =
     let val thm = PureThy.get_thm ctxt name
         val thy = ctxt |> Context.theory_name
         val thm_name = Thm.get_name thm
@@ -22,6 +22,9 @@ fun record name ctxt =
         File.write (Path.basic filename) txt;
         ctxt
     end
+
+fun record name ctxt =
+    record1 name ctxt handle _ => ctxt
 
 fun initialize l ctxt =
     let val thy = ctxt |> Context.theory_name

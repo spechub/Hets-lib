@@ -28,7 +28,7 @@ fun get_axioms name =
         else l @ List.concat (map get_axioms r)
      end
 
-fun record name thy =
+fun record1 name thy =
   let val thms = PureThy.thms_of thy
   in if name mem (map (axname o fst) thms) then
      let
@@ -41,6 +41,9 @@ fun record name thy =
      end
      else thy
   end
+
+fun record name ctxt =
+    record1 name ctxt handle _ => ctxt
 
 fun initialize l ctxt =
     let val thy = Context.theory_name ctxt
