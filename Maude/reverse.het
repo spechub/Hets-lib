@@ -1,0 +1,21 @@
+logic Maude 
+
+spec MYLIST = free {
+ sorts Elt List  .
+ subsort Elt < List .
+ 
+ op nil : -> List [ctor] .
+ op __ : List List -> List [ctor assoc id: nil] .
+ 
+ var L : List .
+ var E : Elt .
+ 
+ op reverse : List -> List .
+ eq reverse(nil) = nil .
+ eq reverse(E L) = reverse(L) E .
+}
+then %implies
+{
+ var L : List .
+ eq reverse(reverse(L)) = L .
+ }
