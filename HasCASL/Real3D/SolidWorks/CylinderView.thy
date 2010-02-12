@@ -1,6 +1,6 @@
 theory SWCommonPatterns_SWCylByAE_IsCylinder_T
 imports "$HETS_LIB/Isabelle/MainHC"
-uses "$HETS_LIB/Isabelle/prelude"
+uses "$HETS_LIB/Isabelle/prelude.ML"
 begin
 
 ML "Header.initialize
@@ -1473,7 +1473,7 @@ proof-
   assume hyp: "X_gn_subt x y"
   fix u:: 'a
   fix v:: 'b
-  show "X_gn_subt u v" by (rule subtype_transitive [of x x x y u v], simp add: ga_subt_reflexive hyp)
+  show "X_gn_subt u v" by (rule subtype_transitive [of x x x y u v] ga_subt_reflexive hyp)+
 qed
 
 

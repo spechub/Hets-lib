@@ -1517,6 +1517,7 @@ declare semantics_for_Sketches [simp]
 
 use_thy "$AWE_HOME/Extensions/AWE_HOL"
 use_thy "$HETS_ISABELLE_LIB/Subtypes"
+
 thymorph subtypes_morph : Subtypes --> SWCommonPatterns_SWCylByAE_IsCylinder_T
 
 translate_thm "Subtypes.gn_inj_identity" along subtypes_morph
