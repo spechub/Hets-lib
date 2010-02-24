@@ -4,15 +4,10 @@ version 0.2
 %author: T. Mossakowski, S. Wölfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
-%prec(
-  { __ - __, __ + __ } <
-  { __*__, __ / __ }
-)%
-
-%prec(
-  { __ * __, __ / __ } <
-  { - __ }
-)%
+%prec { __-__, __+__ } < { __*__, __/__ }
+%prec { __+__ } < { __-__ }
+%prec { __*__ } < { __/__ }
+%prec { __*__, __/__ } < { -__ }
 
 %%from Basic/Numbers get Rat
 from Basic/RelationsAndOrders get
@@ -95,6 +90,7 @@ then %def
      types RealNonNeg = {x:Real. RealNonNeg_pred x}; %(RealNonNeg type)%
 	   RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
 	   RealPos < RealNonNeg;
+	   RealPos < NonZero;
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
 	%(abs def)%
@@ -129,7 +125,14 @@ spec RealFunctions = OrderedReals
 then %def
 
      ops sqr: Real -> RealNonNeg;
+	 sqr: NonZero -> RealPos;
 	 sqrt: RealNonNeg -> RealNonNeg;
+	 sqrt: RealPos -> RealPos;
+	 __+__: RealPos*RealPos -> RealPos;
+	 __*__: RealPos*RealPos -> RealPos;
+	 __/__: RealPos*RealPos -> RealPos;
+	 min: Real*Real -> Real;
+	 max: Real*Real -> Real;
 	 Pi: RealPos
 
      var r:Real;q:RealNonNeg
