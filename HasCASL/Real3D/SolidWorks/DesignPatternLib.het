@@ -1,0 +1,36 @@
+library HasCASL/Real3D/SolidWorks/DesignPatternLib
+version 0.2
+
+%author: E. Schulz
+%date: 26-02-2010
+
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/SWCommonPatterns
+get SolidWorksCylinderByArcExtrusion
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%       The Design Pattern Library will be ideally generated       %%
+%%       automatically from design pattern constructors (DPCs)      %%
+%%       , e.g., from SWCommonPatterns by a tool.                   %%
+%%                                                                  %%
+%%       For each DPC with name n there will be a specification     %%
+%%       with name DP_{n} containing one constant with the same     %%
+%%       name defined by the DPC and all function parameters        %%
+%%       of the DPC are replaced by newly defined constants.        %%
+%%       For an example see the specification below.                %%
+%%                                                                  %%
+%%       This constantification has to be made in order to map      %%
+%%       concrete specifications to this design patterns            %%
+%%       by means of signature morphisms.                           %%
+%%                                                                  %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec DP_SWCylinder1 = SolidWorksCylinderByArcExtrusion
+then
+     ops center, boundarypoint:Point; axis:VectorStar;
+	 DP_SWCylinder1:SWFeature =
+	 SWCylinder(center, boundarypoint, axis) %(def of SWCylinder_Const)%
+end
