@@ -19,6 +19,7 @@ drop-translations
 prover SPASS
 set goals Ax1
 set axioms no_minima irrefl
+set time-limit 60
 prove
 
 # ------------------------------------------------------------------------------
@@ -26,33 +27,30 @@ prove
 dg basic Nat
 
 drop-translations
-translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover Vampire
-set goals no_maxima no_minima linear irrefl trans
+set goals trans
 prove
 
 # ------------------------------------------------------------------------------
 
 dg basic Int
 drop-translations
-translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover Vampire
-set goals no_maxima no_minima linear irrefl trans
+set goals trans
 prove
 
 # ------------------------------------------------------------------------------
 
 dg basic Rat
 drop-translations
-translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover Vampire
-set goals dense no_maxima no_minima linear irrefl trans
+set goals trans
 prove
 
 # ------------------------------------------------------------------------------
