@@ -22,38 +22,12 @@ prover SPASS
 set goals refl
 prove
 
-drop-translations
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-set goals trans sym
-prove
-
 # ------------------------------------------------------------------------------
 
 dg basic EqRel_in_RichGroupAction_T
 prover SPASS
 set goals refl
 prove
-
-drop-translations
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-set goals trans sym
-prove
-
-# ------------------------------------------------------------------------------
-
-dg basic Polynomial_E1
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-set time-limit 40
-prove-all
 
 # ------------------------------------------------------------------------------
 

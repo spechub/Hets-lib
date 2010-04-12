@@ -15,11 +15,10 @@ set time-limit 40
 prove
 
 drop-translations
-translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
-set goals ga_assoc___+___136 ga_comm___+___138 ga_left_comm___+___140 ga_assoc___*___135 ga_comm___*___137 minus_INTEGER_dom abs_INTEGER_dom sub_INTEGER_dom mult_INTEGER_dom div_INTEGER_dom mod_INTEGER_dom quot_INTEGER_dom rem_INTEGER_dom
+set goals ga_comm___+___138 ga_comm___*___137
 set time-limit 40
 prove
 
@@ -31,7 +30,6 @@ set goals ga_assoc___+___77 ga_comm___+___79 ga_left_comm___+___81 ga_right_unit
 prove
 
 drop-translations
-translate CASL2PCFOL
 translate CASL2SubCFOL
 translate CASL2SoftFOLInduction
 prover MathServe Broker
@@ -40,26 +38,8 @@ prove
 
 # ------------------------------------------------------------------------------
 
-dg basic TotalOrder_in_INTEGER_T
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover MathServe Broker
-prove-all
-
-# ------------------------------------------------------------------------------
-
 dg basic TotalOrder_in_CARDINAL_T
 prover Vampire
 set goals dichotomy_TotalOrder antisym refl trans
 set time-limit 40
 prove
-
-# ------------------------------------------------------------------------------
-
-dg basic TotalOrder_in_TwoComplement_T
-translate CASL2PCFOL
-translate CASL2SubCFOL
-translate CASL2SoftFOLInduction
-prover Vampire
-prove-all
