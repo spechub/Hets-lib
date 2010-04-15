@@ -1,4 +1,4 @@
-theory RCCVerification_RCC_FO_in_MetricSpace_T
+theory RCCVerification_RCC_FO_in_MetricSpace__T
 imports "$HETS_ISABELLE_LIB/MainHC"
 uses "$HETS_ISABELLE_LIB/prelude"
 begin
