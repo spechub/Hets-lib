@@ -133,22 +133,25 @@ lemma ileq_plusE: "((r \<oplus> p) \<preceq> q) ==> (p \<preceq> q)"
   apply (simp only: plus)
   apply (subst comm) back
   apply (subst idmp)
-  by auto
+  by simp
 
 
-interpretation induced_po: order ["ileq" "ile"]
+interpretation induced_po: order "ileq" "ile"
 apply unfold_locales
 apply (unfold "ile_def")
-apply simp
 apply (unfold "ileq_def")
-apply (unfold idmp)
+prefer 2
 apply simp
 apply (fold "ileq_def")
+prefer 2
 apply (erule "ileq_assoc")
 apply simp
+prefer 2
 apply (erule "ileq_asym")
 apply simp
-done
+apply (unfold "ileq_def")
+apply (unfold "comm")
+by auto
 
 constdefs
   mnot :: "bool T \<Rightarrow> bool T"

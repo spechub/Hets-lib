@@ -116,7 +116,7 @@ translations
 text{* @{text "\<alpha> res \<Phi> = \<alpha> iff \<alpha>"} is defined and @{text \<Phi>} holds*}
 constdefs
   "res" :: "'a \<Rightarrow> bool \<Rightarrow> 'a" (infixl "res" 100)
-  "\<alpha> res \<Phi> == if \<Phi> then \<alpha> else arbitrary"
+  "\<alpha> res \<Phi> == if \<Phi> then \<alpha> else undefined"
  
 text{* if\_then\_else lifted to monadic values *}
 constdefs 
