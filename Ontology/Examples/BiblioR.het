@@ -1,0 +1,105 @@
+library Ontology/Examples/Biblio
+
+logic OWL
+
+spec Biblio_OWL =
+  
+  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+
+  Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
+  Class: researcher
+  SubclassOf: name some xsd:string 
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: article
+  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
+  
+  Class: journal
+  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+  
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
+end
+
+logic CASL
+
+spec BiblioR =
+     sort Thing
+     sort DATA
+     pred Working_Person : Thing
+     pred Tangible_Thing : Thing
+     pred String : DATA
+     pred Name : Thing * DATA
+     pred Researcher : Thing
+     pred Publication : Thing
+     pred Has_Publication : Thing * Thing
+     pred Composite_Publication : Thing
+     pred Journal : Thing
+     pred Article : Thing
+     pred Has_Article : Thing * Thing
+     pred Nothing : Thing
+     pred Thing : Thing
+     pred Proceedings : Thing
+     pred Paper : Thing
+     pred Has_Paper : Thing * Thing
+     pred Author : Thing * Thing
+     pred Title : Thing * DATA
+     pred Integer :DATA
+     pred Impact_Factor : Thing * DATA
+     forall s,t:Thing
+     . not (Nothing(t))
+     . Thing(t)
+     . Working_Person(t) => Tangible_Thing(t) /\ 
+			     exists y:DATA.(String(y) /\ Name(t,y))
+     . Researcher(t)     => Working_Person(t)
+     . Composite_Publication(t) => Tangible_Thing(t) /\ 
+                                    exists y:DATA. (String(y) /\
+					   Name(t,y)) /\
+                                    exists z:Thing. (Publication(z) /\
+						     Has_Publication(t,z))
+     . Journal(t) => Composite_Publication(t) /\ 
+                      exists y:Thing. (Article(y) /\ Has_Article(t,y)) /\
+			     exists i:DATA . (Integer(i) /\ 
+					      Impact_Factor(t,i))
+     . Has_Article(s,t) => Has_Publication(s,t)
+     . Proceedings(t) => Composite_Publication(t) /\ 
+                          exists y:Thing. (Paper(y) /\ Has_Paper(t,y))
+     . Has_Paper(s,t) => Has_Publication(s,t)
+     . Publication(t) => Tangible_Thing(t) /\ 
+                          exists y:Thing. (Researcher(y) /\ Author(t,y)) /\
+			  exists z:DATA. (String(z) /\ Title(t,z))
+     . Article(t) => Publication(t)
+     . Paper(t)   => Publication(t)
+end
+
+view OWL2R : Biblio_OWL to 
+     {BiblioR
+      then %def 
+       preds 
+        researcher (p : Thing) <=> Reseacher(p);
+        name (p:Thing; n:DATA) <=> Working_Person(t) /\ String(n) /\ Name(p,n);
+        article(a:Thing) <=> Publication(a);
+        author(a:Thing; p:Thing) <=> Researcher(p) /\ Article(a) /\
+                                     Author(a,p) /\ 
+                                     exists j:Thing . (Journal(j) /\ 
+						       Has_Article(j,a));
+      
+     }
+     end
+
+%%view RS2R  : Biblio_RS  to BiblioR
