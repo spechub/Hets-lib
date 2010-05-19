@@ -1,0 +1,54 @@
+library Ontology/Examples/Biblio
+
+logic OWL
+
+spec Biblio_OWL =
+  
+  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+
+  Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
+  Class: Researcher
+  SubclassOf: name some xsd:string 
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: Article
+  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
+  
+  Class: Journal
+  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+  
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
+end
+
+logic CASL
+
+spec BiblioV =
+     {Biblio_OWL with logic OWL -> CASL}
+and
+     {Biblio_RS with logic RelScheme -> CASL} with pointer |-> Thing
+then
+     sort string < DATA
+     sort integer < DATA
+     forall p, a, j:Thing; n:string; i:integer
+     . person (p, n)   =>  Researcher(p) /\ name(p, n)                                        %(person)%
+     . author_of(p, a) =>  Researcher(p) /\ Article(a) /\                                     %(author_of)%
+                            author(a,p) /\ exists j:Thing . (Journal(j) /\ hasArticle(j,a))
+     . paper(a, n, j)  =>  Article(a) /\ title(a, n) /\ Journal(j) /\ hasJournal(a,j)         %(paper)%
+     . journal (j,n,i) =>  Journal(j) /\ name(j,n) /\ impactFactor(j,i)                       %(journal)%
+end
