@@ -89,17 +89,47 @@ end
 
 view OWL2R : Biblio_OWL to 
      {BiblioR
-      then %def 
+      then %def
        preds 
-        researcher (p : Thing) <=> Reseacher(p);
-        name (p:Thing; n:DATA) <=> Working_Person(t) /\ String(n) /\ Name(p,n);
+        researcher (p : Thing) <=> Researcher(p);
+        name (p:Thing; n:DATA) <=> String(n) /\ Name(p,n);
         article(a:Thing) <=> Publication(a);
         author(a:Thing; p:Thing) <=> Researcher(p) /\ Article(a) /\
                                      Author(a,p) /\ 
                                      exists j:Thing . (Journal(j) /\ 
 						       Has_Article(j,a));
-      
+        hasArticle(j:Thing; a:Thing) <=> Journal(j) /\ Has_Article(j,a) /\
+                                         Publication(a) /\ exists n:DATA .
+                                         (String(n) /\ Name(j, n)) /\ exists
+                                         i:DATA . (Integer(i) /\ Impact_Factor(j,i));
+        hasJournal(a:Thing; j:Thing) <=> Journal(j) /\ Has_Article(j,a) /\
+                                         Publication(a) /\ exists n:DATA .
+                                         (String(n) /\ Name(j, n)) /\ exists
+                                         i:DATA . (Integer(i) /\ Impact_Factor(j,i));
+        impactFactor(j:Thing; i:DATA) <=> Journal(j) /\ Integer(i) /\
+                                             Impact_Factor(j,i) /\ exists n:DATA . 
+                                             (String(n) /\ Name(j,n)) /\ exists
+                                             i:DATA . (Integer(i) /\ Impact_Factor(j,i));
+        journal(j:Thing) <=> Journal(j);
+        title(a:Thing;t:DATA) <=> String(t) /\ Article(a) /\ Title(a,t) /\
+                                   exists p:Thing . (Researcher(p) /\
+                                                    author(a,p)) /\
+                                   exists j:Thing . (Journal(j) /\
+                                                     Has_Article(a,j))
      }
      end
 
-%%view RS2R  : Biblio_RS  to BiblioR
+view RS2R  : {Biblio_RS  with pointer |-> Thing, integer |-> DATA, string |-> DATA 
+	      hide author_of_paper, author_of_person, journal_id, journal_impact_factor, 
+	      journal_name, paper_id, paper_published_in, paper_title, 
+	      person_id, person_name} to 
+     {BiblioR
+      then %def
+       preds 
+        person(p:Thing; n:DATA) <=> Researcher(p) /\ Name(p,n) /\ String(n);
+        author_of(p:Thing; a:Thing) <=> Author(a,p) /\ Article(a) /\ Researcher(p);
+        paper(a:Thing; n:DATA; j:Thing) <=> Article(a) /\ String(n) /\ Journal(j) /\
+                                              Title(a,n) /\ Has_Article(j,a);
+        journal(j:Thing; n:DATA; i:DATA) <=> Journal(j) /\ String(n) /\ Integer(i) /\
+                                             Name(j,n) /\ Impact_Factor(j,i);
+     }
