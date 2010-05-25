@@ -17,7 +17,7 @@ axioms
  unf_left:  "(p^[*]) = (\<lambda>x. ret x \<oplus> (p x \<guillemotright>= (p^[*])))"
  ind_right: "((p \<guillemotright>= q) \<preceq> p) \<Longrightarrow> ((p \<guillemotright>= (q^[*])) \<preceq> p)"
  ind_left:  "\<forall>x. ((p x \<guillemotright>= q) \<preceq> (q x)) \<Longrightarrow> \<forall>x. (((p^[*]) x \<guillemotright>= q) \<preceq> (q x))"
-
+ 
 syntax
   "_monstar"  :: "monseq \<Rightarrow> 'a T" ("(star {(_)})"    [5] 100)
 
