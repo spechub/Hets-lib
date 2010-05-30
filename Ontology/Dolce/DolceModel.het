@@ -95,6 +95,27 @@ end
 
 arch spec Constitution_Model =
    units  ParthoodM : arch spec Parthood_Model;
+          TempParthoodED = ParthoodM reveal 
+                       sorts ED, F, M, NPED, PED, POB, T, 
+                       sorts AS, NPED, PED,  ED, F, M, POB, PED,
+                       pred At : T,
+                       pred AtP : T * T,
+                       pred Dif : T * T * T,
+                       pred Ov : T * T,
+                       pred P : T * T,
+                       pred PP : T * T,
+                       pred PRE : ED * T,
+                       pred Sum : T * T * T,
+                       %%pred tAt : ED * T, 
+                       %%pred tAtP : ED * ED * T,
+                       pred tDif : ED * ED * ED,
+                       pred tOv : ED * ED * T,
+                       pred tP : ED * ED * T,
+                       pred tPP : ED * ED * T,
+                       pred tSum : ED * ED * ED;
+
+          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
+				s2 |-> NPED} given TempParthoodED;
           ConstitutionPD     : {Constitution_Spec with s |-> PD} given ParthoodM;
           ConstitutionPED    : {Constantly_Generically_Constituted with 
 				s |-> PED, s1 |-> NAPO, s2 |-> M 	
@@ -102,7 +123,7 @@ arch spec Constitution_Model =
 				s |-> PED, s1 |-> APO, s2 |-> NAPO}
                                given ParthoodM;
           ConstitutionNPED   : {Constantly_Generically_Constituted with 
-				s |-> NPED, s1 |-> SC, s2 |-> SAG} given ParthoodM;
+				s |-> NPED, s1 |-> SC, s2 |-> SAG} given ParthoodM, DependenceAQNPED;
           Constitution       = ConstitutionPD and ConstitutionPED and 
 						  ConstitutionNPED;
    result Constitution           
@@ -147,10 +168,42 @@ units     Constitution: arch spec Constitution_Model;
                        pred PRE : PD * T,
                        pred Sum : T * T * T;
 
+          DependenceAQNPED = Constitution reveal 
+                       sorts AQ, ED, F, M, NPED, PED, POB, T,
+                       sorts AS,
+                       sorts AS, NPED, PED, ED, F, M, POB, PED,
+                       pred At : T,
+                       pred AtP : T * T,
+                       pred Dif : T * T * T,
+                       pred Ov : T * T,
+                       pred P : T * T,
+                       pred PP : T * T,
+                       pred PRE : AQ * T,
+                       pred PRE : ED * T,
+                       pred PRE : NPED * T,
+                       pred SD : AQ * NPED,
+                       pred SD : NPED * AQ,
+                       pred Sum : T * T * T,
+                       %%pred tAt : ED * T,
+                       %%pred tAtP : ED * ED * T,
+                       pred tDif : ED * ED * ED,
+                       pred tOv : ED * ED * T,
+                       pred tP : ED * ED * T,
+                       pred tPP : ED * ED * T,
+                       pred tSum : ED * ED * ED;
+
+          MereologyAR = Constitution reveal  
+                   sorts AR,
+                   pred At : AR,
+                   pred AtP : AR * AR,
+                   pred Dif : AR * AR * AR,
+                   pred Ov : AR * AR,
+                   pred P : AR * AR,
+                   pred PP : AR * AR,
+                   pred Sum : AR * AR * AR;
+
           ImmediateQuale     : Immediate_Quale given TM;
 
-          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given TempParthoodED;
 	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
 				s2 |-> PED} given TempParthoodED;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
@@ -188,13 +241,14 @@ units     Constitution: arch spec Constitution_Model;
                                 given BinTempDisS;
 
           %% AR
-          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR
-				then
-				. exists x:AR. x in AR
-			       } given DependenceAQNPED, TempQualeAR;
+%%          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR
+%%				then
+%%				. exists x:AR. x in AR
+%%			       } given DependenceAQNPED, TempQualeAR, MereologyAR;
 	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, 
 				s2 |-> AQ} given DependenceAQNPED, 
-			        ClassExtParthoodAR;
+                                                 MereologyAR;
+%%			        ClassExtParthoodAR;
           %% Direct Quality
           DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS, Constitution;
      result Constitution and DirectQuality and TempQuale 
