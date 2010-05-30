@@ -1,4 +1,4 @@
-theory gdjSyntax = MonadSyntax:
+theory gdjSyntax imports MonadSyntax begin
 
 text{*
   Definition of gdj-syntax for a calculus on which the
@@ -65,6 +65,7 @@ translations
 
   "gdj (_gdjOut tpl r) phi" == "gdj r (\<lambda>tpl. phi)"
 
+(*
 text{*syntax for encapsulation of sequences*}
 consts
  gdj' :: "pttrn \<Rightarrow> 'a T \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
@@ -82,5 +83,5 @@ translations
        =>  "_gdjSeq (_gdjBnd u p) (_gdjIn (tpl, u) (tpl', x) r)"
   "_gdjIn tpl tpl' (_gdjPBnd x u p)"
        =>  "_gdjOut (_reTpl tpl' u) (do {x\<leftarrow>p; ret(_reTpl tpl x)})"
-
+*)
 end

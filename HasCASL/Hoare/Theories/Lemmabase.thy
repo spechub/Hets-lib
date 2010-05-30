@@ -1,4 +1,4 @@
-theory Lemmabase = MonadSyntax:
+theory Lemmabase imports MonadSyntax begin
 
 (*<*)lemma allandI: "((r \<longrightarrow> q) = ((r \<and> q) = r))"
 (* {{{ Proof }}} *)
@@ -14,10 +14,10 @@ qed
 (* }}} *)(*>*)
 
 (*lemma 4.4: "(\<lbrakk>p = ret unit\<rbrakk> \<Longrightarrow> dis p) \<and> \<lbrakk>dis p\<rbrakk> \<Longrightarrow> p = ret unit"*)
-lemma "sef_retUnit": "(p = ret ()) = sef p"
+(*lemma "sef_retUnit": "(p = ret ()) = sef p"
   apply (rule iffI)
   apply (simp_all add: sef_def)
-done
+done*)
 
 (*lemma 4.4: "(\<lbrakk>p = ret unit\<rbrakk> \<Longrightarrow> dis p) \<and> \<lbrakk>dis p\<rbrakk> \<Longrightarrow> p = ret unit"*)
 
@@ -120,7 +120,7 @@ lemma ret2seqSw:
   shows "do {x\<leftarrow>p1;y\<leftarrow>p2 x;r x y} = do {x\<leftarrow>q1;y\<leftarrow>q2 x;r x y}"
 (* {{{ Proof }}} *)  
 proof -
-  have 
+  from prems have 
     "do {z\<leftarrow>(do{x\<leftarrow>p1;y\<leftarrow>p2 x;ret (y,x)});ret z} = 
      do {z\<leftarrow>(do{x\<leftarrow>q1;y\<leftarrow>q2 x;ret (y,x)});ret z}"
     by (simp only: sndUnitLaw)
@@ -133,13 +133,14 @@ proof -
 qed 
 (* }}} *)
 
+
 lemma ret2seqSw':
   assumes "do {x\<leftarrow>p1;y\<leftarrow>p2;ret (x,y)} = 
            do {y\<leftarrow>q1;x\<leftarrow>q2;ret (x,y)}"
   shows "do {x\<leftarrow>p1;y\<leftarrow>p2;r x y} = do {y\<leftarrow>q1;x\<leftarrow>q2;r x y}"
 (* {{{ Proof }}} *)  
 proof - 
-  have 
+  from prems have 
     "do {z\<leftarrow>(do{x\<leftarrow>p1;y\<leftarrow>p2;ret (x,y)});ret z} = 
      do {z\<leftarrow>(do{y\<leftarrow>q1;x\<leftarrow>q2;ret (x,y)});ret z}"
     by (simp only: sndUnitLaw)
@@ -151,6 +152,7 @@ proof -
     by simp
 qed 
 (* }}} *)
+
 
 lemma cp_ret2seq:
   assumes "cp p"

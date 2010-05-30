@@ -33,7 +33,6 @@ syntax
   "_gdjBnd"    :: "[pttrn, 'a T] \<Rightarrow> bndstep"      ("_\<leftarrow>_")
   "_gdjSeq"    :: "[bndstep, bndseq] \<Rightarrow> bndseq"   ("_;/ _")
   ""           :: "[bndstep] \<Rightarrow> bndseq"           ("_")
-  "_gdjStar"   :: "[bndseq] \<Rightarrow> bndseq" ("star{(_)}")
 
   "_gdjIn"     :: "[pttrn, bndseq] \<Rightarrow> bndseq"       
   "_gdjOut"    :: "[pttrn, bndseq] \<Rightarrow> bndseq"
@@ -46,9 +45,6 @@ syntax
   "_gdj (_gdjBnd x p) phi"  == "gdj p (\<lambda>x. phi)"
   "_gdj (_gdjSeq (_gdjBnd x p) r) phi"  
               =>  "gdj (_gdjSeq (_gdjBnd x p) (_gdjIn x x r)) phi"
-(*
-  "_gdj (_gdjStar (_gdjBnd x p)) phi" == "gdj (p^[*]) (\<lambda>x. phi)"
-  "_gdj (_gdjStar (_gdjSeq s)) phi" ... *)
 
   "_gdjIn tpl tpl' (_gdjSeq (_gdjBnd x p) r)"
               =>  "_gdjSeq (_gdjBnd x p) (_gdjIn (tpl, x) (tpl', x) r)"
@@ -56,8 +52,6 @@ syntax
               =>  "_gdjOut (_reTpl tpl' x) (do {x\<leftarrow>p; ret(_reTpl tpl x)})"
 
   "_gdjSeq (_gdjBnd x p) (_gdjOut tpl r)" ==  "_gdjOut tpl (do {x\<leftarrow>p; r})"
-(*
-  "_gdjSeq (_gdjStar (_gdjBnd x p) ...)" ... *)
 
   "_reTpl (_tuple tpl (_tuple_arg x)) y" 
           => "_reTpl tpl (_tuple x (_tuple_arg y))"
