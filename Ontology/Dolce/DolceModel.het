@@ -113,8 +113,8 @@ arch spec PreDolce_Model =
 units     Constitution: arch spec Constitution_Model;
       
           TM = Constitution reveal sort T, pred At : T, pred AtP : T * T, pred Dif : T * T * T, pred Ov : T * T, pred P : T * T, pred PP : T * T, pred Sum : T * T * T;
-          TempParthoodED = Constitution reveal 
-                       sorts ED, F, M, NPED, PED, POB, T,
+          TempParthoodEDSAR = Constitution reveal 
+                       sorts ED, F, M, NPED, PED, POB, T, S, AR,
                        sorts AS, NPED, PED,  ED, F, M, POB, PED,
                        pred At : T,
                        pred AtP : T * T,
@@ -132,6 +132,8 @@ units     Constitution: arch spec Constitution_Model;
                        pred tPP : ED * ED * T,
                        pred tSum : ED * ED * ED;
 
+          TempParthoodED =  TempParthoodEDSAR hide S,AR
+
           Particip = Constitution reveal
                        sorts ED, PD, T,
                        pred At : T,
@@ -144,6 +146,7 @@ units     Constitution: arch spec Constitution_Model;
                        pred PRE : ED * T,
                        pred PRE : PD * T,
                        pred Sum : T * T * T;
+
           ImmediateQuale     : Immediate_Quale given TM;
 
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
@@ -164,7 +167,7 @@ units     Constitution: arch spec Constitution_Model;
 			       DependenceAQNPED;
           %% Temporary_Quale and binary temporal dissective
 	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
-				s2 |-> SL} given DependencePQPED;
+				s2 |-> SL} given DependencePQPED and TempParthoodEDSAR;
 	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, 
 				s2 |-> PQ} given BeingPresentEDorDP, 
 			        BinTempDisS;
