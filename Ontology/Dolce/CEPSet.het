@@ -41,4 +41,41 @@ view v2 : Classical_Extensional_Parthood  to
    } = s |-> Set, P |-> __subset__
 end
 
+from Basic/RelationsAndOrders get BooleanAlgebra, RichBooleanAlgebra
 
+view v3 :  Classical_Extensional_Parthood  to 
+   {RichBooleanAlgebra
+    then
+    sort NzElem = {x:Elem . not x=0 /\ not x=1}
+    preds
+      __<=__ : NzElem * NzElem;
+      PP(x:NzElem; y:NzElem) <=> x <= y /\  not x=y;
+      %% Overlap
+      Ov(x:NzElem; y:NzElem) <=> x cap y in NzElem;
+      %% Atom
+      At(x:NzElem) <=> not exists y:NzElem. PP(y,x);
+      %%  Atomic Part
+      AtP(x:NzElem; y:NzElem) <=> x <= y /\  At(x);
+      %%  Binary Sum
+      Sum(z:NzElem; x:NzElem; y:NzElem) <=> z = x cup y;
+      %%  Binary Difference
+      Dif(z:NzElem; x:NzElem; y:NzElem) <=> z = x cap (compl y)
+   } = s |-> NzElem, P |-> __<=__
+end
+
+view v4: BooleanAlgebra to
+   {Classical_Extensional_Parthood
+    then
+    free type Elem ::= sort s | 0 | 1
+    op __cap__ : Elem * Elem -> Elem
+    op __cup__ : Elem * Elem -> Elem
+    forall x,y,z:s
+    . x cap y = z <=> Dif(z,x,y)
+    . x cup y = z <=> Sum(z,x,y)
+    forall a:Elem
+    . a cap 0 = 0
+    . 0 cap a = 0
+    . a cup 0 = a
+    . 0 cup a = a
+   }
+end

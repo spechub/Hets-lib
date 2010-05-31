@@ -1,35 +1,4 @@
 library Ontology/Dolce/DolceSimpl
-%%8621
-%[
-todo
-- [Claudio] add theorems with %implies, %implied
-- [Claudio] add views for theorems like T31, or equivalence of parthood + overlap
-- [Claudio] add Dd and Ad labels or comments whenever possible
-- [Claudio] add modalities, use "logic Modal" only where you really use modalities
-- [Claudio, Stefano] check use of hybrid modal logic
-- [Klaus, Till] prove theorems using Isabelle
-- [Till] open question: how to form disjunctions (and negations) of specifications, like in
-    spec SD[sort s] = ...
-    spec GD[sort s] = ...
-    spec D[sort s] = SD[sort s] or GD[sort s]
-- [Klaus, Till] CASL extension
-- [Klaus, Till] find out how to increase model size for consistency checks in Isabelle
-- [Till] add further consistency checkers (look at workshop on disproving theorems),
-- [Klaus] check consistency of DOLCE
-- [Till] mark imported theorems as proved theorems, not axioms
-- [Till, Klaus] use underscores for label disambiguation
-- [Klaus] automatic installer for Hets
-paper:
-ECAI, KI, FOIS
-report on practical experiences
-stress modularization
-]%
-
-%%logic Modal
-
-%%from DOLCE/LaTeX get display_annotations
-
-%%modality empty
 
 
 %%--------------------------------------------------------------------------------
@@ -82,7 +51,16 @@ MOB,SOB,ASO,SAG,SC,NASO,AS,PD,EV,ACH,ACC,STV,ST,PRO
 %%Definition of the taxonomy
 free type PT   ::= sorts  AB, EDorPDorQ
 free type EDorPDorQ ::= sorts ED, PD, Q
+
 free type ED   ::= sorts  PED, NPED, AS
+forall ed:ED . (exists ped:PED . ed=ped)
+               \/ (exists nped:NPED . ed=nped)
+               \/ (exists a:AS . ed=a)
+forall ped:PED; nped:NPED . not ped = nped
+forall ped:PED; a:AS . not ped = a
+forall a:AS; nped:NPED . not a = nped
+
+
 free type PD   ::= sorts  EV, STV
 free type Q    ::= sorts  TQ, PQ, AQ
 free type R    ::= sorts  TR, PR, AR
@@ -112,49 +90,9 @@ forall x,y,z: s
 . Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
 end
 
-%%-------------------
-%% Ext_Partial_Order
-%%-------------------
 
-spec Ext_Partial_Order =
-     Partial_Order
-
-then
-forall x,y: s
-. not Rel(x,y) => exists z:s.(Rel(z,x) /\ not exists w:s.(Rel(w,z) /\ Rel(w,y))) %(extensionality)%
-end
-
-%%------------------------------
-%% Ext_Overlap_or_Connection
-%%------------------------------
-
-spec Ext_Overlap_or_Connection =
-
-sort s
-pred OvCn:s*s
-forall x,y,z:s
-.OvCn(x,x) %(reflexivity)%
-.OvCn(x,y) => OvCn(y,x) %(simmetry)%
-.(OvCn(z,x) <=> OvCn(z,y)) => x=y %(extensionality)%
-end
-
-
-%%---------------------------
-%% Strict_Partial_Order (spo)
-%%---------------------------
-
-%[
-spec Strict_Partial_Order =
-
-sort s
-pred Rel: s * s
-forall x,y,z: s
-. Rel(x,y) => not Rel(y,x)
-. Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
-end
-]%
 %%-----------------------------------
-%% Classical_Extensional_Parhood (p)
+%% Classical_Extensional_Parthood (p)
 %%----------------------------------
 
 spec Classical_Extensional_Parthood =
@@ -166,23 +104,27 @@ preds
 PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
 
 %% Overlap
-Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
+Ov(x:s; y:s) <=> exists z:s. (P(z, x) /\  P(z, y)); %(Dd15)%
 
 %% Atom
-At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+At(x:s) <=> not exists y:s. (PP(y, x)); %(Dd16)%
 
 %%  Atomic Part
 AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
 
 %%  Binary Sum
-Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+Sum(z:s; x:s; y:s) <=> forall w:s. (Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y))); %(binary_sum)%
 
 %%  Binary Difference
-Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+Dif(z:s; x:s; y:s) <=> forall w:s. (P(w,z) <=> (P(w, x) /\ not Ov(w, y))); %(binary_difference)%
 
 forall x,y:s
-. not  P(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
-. exists z:s.(Sum(z,x,y)) %(Existence of the sum)%
+. not  P(x,y) => exists z:s. (Dif(z,x,y)) %(Extensionality+existence of the difference)%
+. exists z:s. (Sum(z,x,y)) %(Existence of the sum)%
+
+forall x,y,z:s
+. Sum(z,x,y) => P(x,z) /\ P(y,z) %(parts_of_sum)% %implied
+. not P(x,y) /\ Sum(z,x,y) => PP(y,z) %(proper_parts_of_sum)% %implied
 end
 
 
@@ -192,8 +134,7 @@ end
 %% Time_Mereology is needed in oder to specify the properties of perdurants
 
 spec Time_Mereology =
-%[     Taxonomy
-and ]% Classical_Extensional_Parthood with s |-> T
+     Classical_Extensional_Parthood with s |-> T
 end
 
 
@@ -208,7 +149,7 @@ sort s
 pred Rel: s * T
 
 forall x:s; t1,t2:T
-.(Rel(x,t1) /\ P(t2,t1)) => Rel(x,t2)
+. (Rel(x,t1) /\ P(t2,t1)) => Rel(x,t2)
 end
 
 
@@ -218,11 +159,11 @@ end
 
 spec Being_Present =
      Unary_Temporal_Dissective with Rel |-> PRE
-
+  %% PRE(x,t) means that x is present during all of t
 then
 
 forall x:s
-.exists t:T.(PRE(x,t))
+. exists t:T. (PRE(x,t)) %(everything_is_present_sometimes)%
 end
 
 
@@ -235,8 +176,7 @@ spec Mereology =
 and  Classical_Extensional_Parthood with s |-> PD
 and  Classical_Extensional_Parthood with s |-> S
 and  Classical_Extensional_Parthood with s |-> AR
-then %implies
-     forall x:S . P(x,x) %(reflex_th)%
+then forall x:S . P(x,x) %(reflex_th)% %implied
 end
 
 %%----------------------------
@@ -252,7 +192,7 @@ then
 pred
 
 %% Temporal Part
-P_T(x:PD; y:PD) <=> P(x,y) /\ forall z:PD.((P(z,y) /\ forall t:T.(PRE(z,t) => PRE(x,t))) => P(z,x))
+P_T(x:PD; y:PD) <=> P(x,y) /\ forall z:PD. ((P(z,y) /\ forall t:T. (PRE(z,t) => PRE(x,t))) => P(z,x))
 end
 
 %%---------------------
@@ -268,7 +208,7 @@ then
 pred Rel: s1 * s2 * T
 
 forall x1:s1; x2:s2; t:T
-.Rel(x1,x2,t) => PRE(x1,t) /\ PRE(x2,t)
+. Rel(x1,x2,t) => PRE(x1,t) /\ PRE(x2,t)
 end
 
 
@@ -284,7 +224,7 @@ sort s1,s2
 pred Rel: s1 * s2 * T
 
 forall x1:s1; x2:s2; t1,t2:T
-.(Rel(x1,x2,t1) /\ P(t2,t1)) => Rel(x1,x2,t2)
+. (Rel(x1,x2,t1) /\ P(t2,t1)) => Rel(x1,x2,t2)
 end
 
 
@@ -299,8 +239,9 @@ then
 pred Rel: s * s * T
 
 forall x,y,z:s; t:T
-.PRE(x,t) => Rel(x,x,t)
-.Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
+. PRE(x,t) => Rel(x,x,t)                 %(temporal_reflexivity)%
+. Rel(x,y,t) /\ Rel(y,x,t) => x = y %(antisymmetry)%
+. Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t) %(temporal_transitivity)%
 end
 
 
@@ -309,16 +250,12 @@ end
 %%-------------------------------------
 
 spec Temporary_Strict_Partial_Order =
-%[     Taxonomy
-
-then
-]%
 sorts s,T
 pred Rel: s * s * T
 
 forall x,y,z:s; t:T
-.Rel(x,y,t) => not Rel(y,x,t)
-.Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
+. Rel(x,y,t) => not Rel(y,x,t)
+. Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
 end
 
 
@@ -338,29 +275,42 @@ preds
 tPP(x:s; y:s; t:T) <=> tP(x,y,t) /\  not tP(y,x,t);
 
 %% Temporary Overlap
-tOv(x:s; y:s; t:T) <=> exists z:s.(tP(z,x,t) /\ tP(z,y,t));
+tOv(x:s; y:s; t:T) <=> exists z:s. (tP(z,x,t) /\ tP(z,y,t));
 
 %% Temporary Atom
-%% At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+tAt(x:s; t:T) <=> not exists y:s. (tPP(y, x, t)); %(Dd16)%
 
 %% Temporary Atomic Part
-%% AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+tAtP(x:s; y:s; t:T) <=> tP(x, y, t) /\  tAt(x, t); %(Dd17)%
 
 %% Temporary Binary Sum
-tSum(z:s; x:s; y:s) <=> forall w:s;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)));
+tSum(z:s; x:s; y:s) <=> forall w:s;t:T. (tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)));
 
-%% Temporary Binary Difference
-tDif(z:s; x:s; y:s) <=> forall w:s;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
+tDif(z:s; x:s; y:s) <=> forall w:s;t:T. (tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
 
-forall x,y:s; t:T
-.PRE(x,t) /\ PRE(y,t) /\ not tP(x,y,t) => exists z:s.(tP(z,x,t) /\ not tOv(z,y,t))
-.exists z:s.(tSum(z,x,y)) %(Existence of the sum)%
+forall x,y:s; t,t1,t2:T
+. exists z:s. (tSum(z,x,y)) %(Existence of the sum)%
+. (forall t:T . not tP(x,y,t)) => exists z:s.(tDif(z,x,y)) %(Extensionality+existence of the difference)%
+%%. PRE(x,t1) /\ PRE(x,t2) /\ Sum(t,t1,t2) => PRE(x,t)
+
+forall x,y,z:s; t:T
+. not forall x,y,z:s; t:T . PRE(x,t) /\ tSum(z,x,y) => tP(x,z,t) %(parts_of_sum1)% %%implied
+%%. PRE(y,t) /\ tSum(z,x,y) => tP(y,z,t) %(parts_of_sum1)% %implied
+%% . not tP(x,y,t) /\ tSum(z,x,y) => tPP(y,z,t) %(proper_parts_of_sum)% %implied
+
+end
 
 %% ----------------------------------------------------------------------------------------------------
 %% The case of difference for temporary parthood is more complex.... I need to control in Peter Simons
 %% .not tP(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
 %% ----------------------------------------------------------------------------------------------------
-end
+%% Temporary Binary Difference
+%% tDif(z:s; x:s; y:s) <=> forall w:s;t:T. (tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
+%% 
+%% forall x,y:s; t:T
+%% . PRE(x,t) /\ PRE(y,t) /\ not tP(x,y,t) => exists z:s. (tP(z,x,t) /\ not tOv(z,y,t))
+%% 
+%% end
 
 
 %%---------------------
@@ -386,7 +336,7 @@ and  Temporary_Parthood
 then
 
 forall x,y,y1:s; t:T
-.K(x,y,t) /\ tP(y1,y,t) => exists x1:s.(tP(x1,x,t) /\ K(x1,y1,t))
+. K(x,y,t) /\ tP(y1,y,t) => exists x1:s. (tP(x1,x,t) /\ K(x1,y1,t))
 then %implies
      forall x:s; t: T
      . not K(x,x,t)       %(Td1)%
@@ -405,10 +355,10 @@ then
 sorts s1 < s; s2 < s
 
 forall x:s1
-.exists t:T.(PRE(x,t))
+. exists t:T. (PRE(x,t))
 
 forall x:s1; t:T
-.At(t) /\ PRE(x,t) => exists y:s2.K(y,x,t)
+. At(t) /\ PRE(x,t) => exists y:s2. K(y,x,t)
 end
 
 
@@ -434,7 +384,7 @@ and  Binary_Present with s1 |-> ED, s2 |-> PD,  Rel |-> PC
 
 then
 forall y:PD; t:T
-.PRE(y,t) => exists x:ED.(PC(x,y,t))
+. PRE(y,t) => exists x:ED. (PC(x,y,t))
 
 
 forall x:ED;y:PD;t:T
@@ -444,7 +394,7 @@ then %implies
      forall x:ED;y:PD;t:T
      . PC(x,y,t) => PRE(x,t) /\ PRE(y,t) %(T33)%
      forall x:ED
-     .exists y:PD;t:T.(PC(x,y,t))        %(T35a)%
+     . exists y:PD;t:T. (PC(x,y,t))        %(T35a)%
 
 end
 
@@ -459,13 +409,13 @@ sorts s1, s2
 preds dqt : s1 * s2
 
 forall x:s1; y1,y2:s2
-.dqt(x,y1) /\ dqt(x,y2) => y1 = y2
+. dqt(x,y1) /\ dqt(x,y2) => y1 = y2
 
 forall x1,x2:s1; y:s2
-.dqt(x1,y) /\ dqt(x2,y) => x1 = x2
+. dqt(x1,y) /\ dqt(x2,y) => x1 = x2
 
 forall x:s1
-.exists! y:s2.dqt(x,y)
+. exists! y:s2. dqt(x,y)
 end
 %% the first two axioms can be introduced as two separated specification for
 %% functions and inverse functions
@@ -484,10 +434,10 @@ and  Direct_Quality_Spec with s1 |-> AQ, s2 |-> NPED
 then
 sorts TL < TQ; SL < PQ
 forall y:PD
-.exists x:TL.dqt(x,y)
+. exists x:TL. dqt(x,y)
 
 forall y:PED
-.exists x:SL.dqt(x,y)
+. exists x:SL. dqt(x,y)
 end
 
 
@@ -501,10 +451,10 @@ sorts s1, s2
 preds ql : s1 * s2
 
 forall x1,x2:s1; y:s2
-.ql(x1,y) /\ ql(x2,y) => x1 = x2
+. ql(x1,y) /\ ql(x2,y) => x1 = x2
 
 forall y:s2
-.exists x:s1.ql(x,y)
+. exists x:s1. ql(x,y)
 end
 
 
@@ -530,10 +480,10 @@ and  Binary_Temporal_Dissective with Rel |-> tql
 then
 
 forall y:s2; t:T
-.PRE(y,t) => exists x:s1.tql(x,y,t)
+. PRE(y,t) => exists x:s1. tql(x,y,t)
 
 forall x:s1; y:s2; t:T
-.tql(x,y,t) => PRE(y,t)
+. tql(x,y,t) => PRE(y,t)
 end
 
 
@@ -560,11 +510,11 @@ then
 
 preds
 %% Specific Dependence
-SD(x:s1; y:s2) <=> (exists t:T.(PRE(x,t))) /\
-                   (forall t:T.(PRE(x,t) => PRE(y,t)));
+SD(x:s1; y:s2) <=> (exists t:T. (PRE(x,t))) /\
+                   (forall t:T. (PRE(x,t) => PRE(y,t)));
 
 forall x:s1
-.exists y:s2.SD(x,y)
+. exists y:s2. SD(x,y)
 end
 
 
@@ -588,7 +538,7 @@ spec OneSide_Specific_Dependence =
 then
 
 forall y:s2; t:T
-.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+. not PRE(y,t) \/ exists x:s1. (PRE(y,t) /\ not PRE(x,t))
 %% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
 end
 
@@ -604,10 +554,10 @@ then
 then
 
 forall x:s1
-.exists t:T.PRE(x,t)
+. exists t:T. PRE(x,t)
 
 forall x:s1; t:T
-.At(t) /\ PRE(x,t) => exists y:s2.PRE(y,t)
+. At(t) /\ PRE(x,t) => exists y:s2. PRE(y,t)
 end
 
 %%--------------------------------
@@ -630,7 +580,7 @@ spec OneSide_Generic_Dependence =
 then
 
 forall y:s2; t:T
-.not PRE(y,t) \/ exists x:s1.(PRE(y,t) /\ not PRE(x,t))
+. not PRE(y,t) \/ exists x:s1. (PRE(y,t) /\ not PRE(x,t))
 %% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
 end
 
@@ -662,7 +612,7 @@ then
 sort s<PD;
 
 forall z:s
-.exists x,y:s.(not P(x,y) /\ not P(y,x))
+. exists x,y:s. (not P(x,y) /\ not P(y,x))
 end
 
 %%-----------------
@@ -676,7 +626,7 @@ then
 
 sort s<PD
 forall x,y:s
-.exists z:s.Sum(z,x,y)
+. exists z:s. Sum(z,x,y)
 end
 
 
@@ -691,7 +641,7 @@ then
 
 sort s<PD
 forall x,y:s
-.exists z:PD.(Sum(z,x,y) /\ not z in s)
+. exists z:PD. (Sum(z,x,y) /\ not z in s)
 end
 
 
@@ -706,7 +656,7 @@ then
 
 sort s<PD
 forall x:s; y:PD
-.P_T(y,x) => y in s
+. P_T(y,x) => y in s
 end
 
 
@@ -721,7 +671,7 @@ then
 
 sort s<PD
 forall x:s
-.exists y:PD.(P_T(y,x) /\ not y in s)
+. exists y:PD. (P_T(y,x) /\ not y in s)
 end
 
 
@@ -736,7 +686,7 @@ then
 
 sort s<PD
 forall x:s
-.At(x)
+. At(x)
 end
 
 
@@ -751,7 +701,7 @@ then
 
 sort s<PD
 forall x:s
-.not At(x)
+. not At(x)
 end
 
 
@@ -791,6 +741,35 @@ and
      Being_Present with s |-> EDorPDorQ
 end
 
+
+%%-------------------
+%% Ext_Partial_Order
+%%-------------------
+
+spec Ext_Partial_Order =
+     Partial_Order
+
+then
+forall x,y: s
+. not Rel(x,y) => exists z:s. (Rel(z,x) /\ not exists w:s. (Rel(w,z) /\ Rel(w,y))) %(extensionality)%
+end
+
+%%------------------------------
+%% Ext_Overlap_or_Connection
+%%------------------------------
+
+spec Ext_Overlap_or_Connection =
+
+sort s
+pred OvCn:s*s
+forall x,y:s
+. OvCn(x,x) %(reflexivity)%
+. OvCn(x,y) => OvCn(y,x) %(symmetry)%
+. (forall z:s. OvCn(z,x) <=> OvCn(z,y)) => x=y %(extensionality)%
+end
+
+
+
 %[
 view Td2 : Generic_Dependence to Constantly_Generically_Constituted
 end
@@ -807,5 +786,54 @@ end
 view T31a : { CGC[sort phi][sort chi] }
         to {    CGC[sort phi][sort psi]
             and CGC[sort psi][sort chi] }
+end
+]%
+
+
+%%8621
+%[
+todo
+- [Claudio] add theorems with %implies, %implied
+- [Claudio] add views for theorems like T31, or equivalence of parthood + overlap
+- [Claudio] add Dd and Ad labels or comments whenever possible
+- [Claudio] add modalities, use "logic Modal" only where you really use modalities
+- [Claudio, Stefano] check use of hybrid modal logic
+- [Klaus, Till] prove theorems using Isabelle
+- [Till] open question: how to form disjunctions (and negations) of specifications, like in
+    spec SD[sort s] = ...
+    spec GD[sort s] = ...
+    spec D[sort s] = SD[sort s] or GD[sort s]
+- [Klaus, Till] CASL extension
+- [Klaus, Till] find out how to increase model size for consistency checks in Isabelle
+- [Till] add further consistency checkers (look at workshop on disproving theorems),
+- [Klaus] check consistency of DOLCE
+- [Till] mark imported theorems as proved theorems, not axioms
+- [Till, Klaus] use underscores for label disambiguation
+- [Klaus] automatic installer for Hets
+paper:
+ECAI, KI, FOIS
+report on practical experiences
+stress modularization
+]%
+
+%%logic Modal
+
+%%from DOLCE/LaTeX get display_annotations
+
+%%modality empty
+
+
+%%---------------------------
+%% Strict_Partial_Order (spo)
+%%---------------------------
+
+%[
+spec Strict_Partial_Order =
+
+sort s
+pred Rel: s * s
+forall x,y,z: s
+. Rel(x,y) => not Rel(y,x)
+. Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
 end
 ]%
