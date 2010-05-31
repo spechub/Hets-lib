@@ -113,9 +113,27 @@ arch spec Constitution_Model =
                        pred tP : ED * ED * T,
                        pred tPP : ED * ED * T,
                        pred tSum : ED * ED * ED;
+          TempParthoodNPED = ParthoodM reveal 
+                       sorts ED, F, M, NPED, PED, POB, T, 
+                       sorts AS, NPED, PED,  ED, F, M, POB, PED,
+                       pred At : T,
+                       pred AtP : T * T,
+                       pred Dif : T * T * T,
+                       pred Ov : T * T,
+                       pred P : T * T,
+                       pred PP : T * T,
+                       pred PRE : NPED * T,
+                       pred Sum : T * T * T,
+                       %%pred tAt : NPED * T, 
+                       %%pred tAtP : NPED * NPED * T,
+                       pred tDif : NPED * NPED * NPED,
+                       pred tOv : NPED * NPED * T,
+                       pred tP : NPED * NPED * T,
+                       pred tPP : NPED * NPED * T,
+                       pred tSum : NPED * NPED * ED;
 
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given TempParthoodED;
+				s2 |-> NPED} given TempParthoodED, TempParthoodNPED;
           ConstitutionPD     : {Constitution_Spec with s |-> PD} given ParthoodM;
           ConstitutionPED    : {Constantly_Generically_Constituted with 
 				s |-> PED, s1 |-> NAPO, s2 |-> M 	
