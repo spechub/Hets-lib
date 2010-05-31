@@ -547,13 +547,12 @@ lemma "pre_exp":
 proof -
   from prems have "\<forall>u. ([v\<leftarrow>s u;x\<leftarrow>p u v] \<Phi> u v x)"
     by (simp add: pre)
-  from this have "\<forall>u. ([w\<leftarrow>do{(v,x)\<leftarrow>do{v\<leftarrow>s u;x\<leftarrow>p u v;ret(v,x)};ret(v,x)}] \<Phi> u v x)"
-    by simp
-  from this have 
-    "([u\<leftarrow>r;w\<leftarrow>(v,x)\<leftarrow>do{v\<leftarrow>s u;x\<leftarrow>p u v;ret(v,x)}] \<Phi> u v x)"
-    by (rule pre)
+  from this have "\<forall>u. [z\<leftarrow>do {v\<leftarrow>s u; x\<leftarrow>p u v; ret (v, x)}] \<Phi> u (fst z) (snd z)"
+    by (simp add: split_def)
+  from this have "[u\<leftarrow>r; z\<leftarrow>do {v\<leftarrow>s u; x\<leftarrow>p u v; ret (v, x)}] \<Phi> u (fst z) (snd z)"
+      by (rule pre [of _ "%x y. \<Phi> x (fst y) (snd y)"])
   from this show ?thesis
-    by simp
+    by (simp add: split_def)
 qed (* }}} *)
 
 (*<*)(* {{{ Help-Lemmata }}} *)

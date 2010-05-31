@@ -18,7 +18,7 @@ text {*
   for 
 @{text    "gdj (do {x\<leftarrow>p; y\<leftarrow>q; ret (x,y)}) (\<lambda>(x,y). (x=y))"}
   Essentially, these translations collect all bound variables inside the 
-  boxes and return them as a tuple. The lambda term that constitutes the 
+  boxes and return them as a tuple. The lambda term that constitutes the MonadSyntax
   second argument of gdj will then also take a tuple pattern as its sole
   argument. Moreover the tuple is sorted so that nested tupeling is 
   solved.
