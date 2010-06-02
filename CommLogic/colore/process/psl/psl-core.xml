@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:psl="http://stl.mie.utoronto.ca/Colore/psl" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="psl-core" axiomFile="psl-core.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for PSL-Core (PSL Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name>Model Theory of PSL-Core</name>
+                        <author>Michael Gruninger</author>
+                        <year>2010</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="activity" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="activity_occurrence" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="timepoint" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="object" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="before" type="relation" arity="2"/>
+		<primitiveLexicalSymbol symbol="occurrence_of" type="relation" arity="2"/>
+		<primitiveLexicalSymbol symbol="occurrence_of" type="relation" arity="2"/>
+		<primitiveLexicalSymbol symbol="beginof" type="function" arity="1"/>
+		<primitiveLexicalSymbol symbol="endof" type="function" arity="1"/>
+		<primitiveLexicalSymbol symbol="participates_in" type="relation" arity="3"/>
+		<primitiveLexicalSymbol symbol="inf-" type="constant" />
+		<primitiveLexicalSymbol symbol="inf+" type="constant" />
+		<definedLexicalSymbol symbol="between" type="relation" arity="3"/>
+		<definedLexicalSymbol symbol="beforeEq" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="betweenEq" type="relation" arity="3"/>
+		<definedLexicalSymbol symbol="exists_at" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="is_occurring_at" type="relation" arity="2"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extendedBy extensionType="non-conservative">psl:occtree</extendedBy>
+		<extendedBy extensionType="conservative">psl:subactivity</extendedBy>
+		<extends extensionType="conservative">time:lp-infinite-end</extends>
+		<faithfullyInterprets mappingExtension="psl:occ-partitioning">incidence:partitioning</faithfullyInterprets>
+		<faithfullyInterprets mappingExtension="psl:object-graph">incidence:graph-incidence</faithfullyInterprets>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

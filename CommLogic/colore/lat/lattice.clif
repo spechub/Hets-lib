@@ -1,0 +1,33 @@
+(cl-module Lattice
+
+(cl-imports Lattice_MeetJoin)
+
+(cl-comment 'This import is not necessary, but optional:' (cl-imports Lattice_Poset))
+						
+(cl-comment 'LEQ: Definition of the less-or-equals than operations in terms of meet and join')
+
+(forall (x y m)
+	(iff
+		(= 
+			(m) 
+			(meet x y)) 
+		(and	(leq m x)
+			(leq m y)
+			(forall (z)
+				(if	(and	(leq z x)
+						(leq z y))
+					(leq z m))))))
+
+(forall (x y j)
+	(iff
+		(= 
+			(j) 
+			(join x y)) 
+		(and	(leq x j)
+			(leq y j)
+			(forall (z)
+				(if	(and	(leq x z)
+						(leq y z))
+					(leq j z))))))
+
+)

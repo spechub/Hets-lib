@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:psl="http://stl.mie.utoronto.ca/Colore/psl" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="subactivity" axiomFile="subactivity.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for Subactivity (PSL Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name>Model Theory for Atomic Actvities</name>
+                        <author>Michael Gruninger</author>
+                        <year>2010</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="subactivity" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="primitive" type="relation" arity="2"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extends extensionType="conservative">psl:pslcore</extends>
+		<extendedBy extensionType="non-conservative">psl:atomic</extendedBy>
+                <faithfullyInterprets mappingExtension="psl:sub-partial">ordering:discrete-partial</faithfullyInterprets>
+
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

@@ -1,0 +1,15 @@
+
+(cl-module linear-space.clif
+
+(cl-imports near-linear.clif)
+
+(cl-comment 'Any two points are contained in a line.')
+(forall (x y)
+	(if	(and	(point x)
+			(point y))
+		(exists (z)
+			(and	(line z)
+				(in x z)
+				(in y z)))))
+
+)

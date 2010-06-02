@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:psl="http://stl.mie.utoronto.ca/Colore/process/psl" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="complex" axiomFile="complex.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for Complex Activities (PSL Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name>Model Theory of Complex Activities</name>
+                        <author>Michael Gruninger</author>
+                        <year>2010</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="min_precedes" type="relation" arity="3"/>
+		<primitiveLexicalSymbol symbol="root" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="do" type="relation" arity="3"/>
+		<definedLexicalSymbol symbol="leaf" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="next_subocc" type="relation" arity="3"/>
+		<definedLexicalSymbol symbol="subtree" type="relation" arity="4"/>
+		<definedLexicalSymbol symbol="sibling" type="relation" arity="3"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extends extensionType="conservative">psl:atomic</extends>
+		<extendedBy extensionType="conservative">psl:actocc</extendedBy>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

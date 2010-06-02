@@ -1,0 +1,31 @@
+(cl-module QuasicomplementedLattice
+
+(cl-imports BoundedLattice)
+
+(cl-comment "Quasicomplemented lattice axioms")
+
+
+/*
+(cl-comment "QC0: Existence of quasicomplements (dual pseudocomplements)")
+
+(forall (x)
+	(exists (y)
+		(= y (qc x))))
+*/
+
+
+(cl-comment "QC1: Quasicomplements are join-complements")
+
+(forall (x)
+	(joincomplement x (qc x)))
+
+
+(cl-comment "QC2: Behaviour of a quasicomplement")
+
+(forall (x y)
+	(if
+		(= 1 (join x y))
+		(leq (qc x) y)
+))
+
+)

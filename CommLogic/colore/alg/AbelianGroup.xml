@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:alg="http://stl.mie.utoronto.ca/Colore/Algebra" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema"
+					targetNamespace="http://stl.mie.utoronto.ca/Colore/Algebra">
+
+	<moduleDefinition module="AbelianGroup" axiomFile="AbelianGgroup.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2009-07-02</date>
+		<description>Group axioms</description>
+		<keyword>Abeliangroup</keyword>
+		<keyword>Commutativity</keyword>
+		<author>Atalay Ozgovde</author>
+		<parentOntology/>
+	</head>
+
+	
+	<lexicon/>
+	
+	<inheritedLexicon>
+		<primitiveLexicalSymbol symbol="+" type="function" arity="2"/>	
+	</inheritedLexicon>
+
+	<directRelations>
+		<imports>alg:Group</imports>	
+		<extendedBy extensionType="non-conservative">alg:Ring</extendedBy>	
+	</directRelations>
+
+	<additionalInformation/>
+
+</cl-module>

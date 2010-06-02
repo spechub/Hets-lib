@@ -1,0 +1,27 @@
+(cl-module OrthocomplementedLattice
+
+(cl-imports ComplementedLattice)
+
+(cl-comment 'Orthocomplemented lattice axioms')
+
+(cl-comment 'OC1: Orthocomplement is complement')
+
+(forall (x)
+	(complement x (oc x)))
+
+(cl-comment 'OC2: Orthocomplement is involutary')
+
+(forall (x)
+	(= x (oc (oc x)))
+)
+
+(cl-comment 'OC3: Orthocomplement is order-reversing')
+
+
+(forall (x y)
+(iff
+	(leq x y)
+	(leq (oc y) (oc x))	
+))
+
+)

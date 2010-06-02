@@ -1,0 +1,16 @@
+(cl:module (Groups)
+
+(cl:import (Monoid))
+
+(cl:comment: "Group axioms")
+
+(cl:comment "P1: Inverse element")
+
+(forall (x)
+	(exists (y)
+		(and
+			(= (+ x y) (+ y x))
+			(= (+ y x) 0)
+		)
+	)
+)

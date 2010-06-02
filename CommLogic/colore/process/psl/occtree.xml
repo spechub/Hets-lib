@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:psl="http://stl.mie.utoronto.ca/Colore/psl" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="occtree" axiomFile="occtree.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for Occurrence Trees (PSL Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name>Occurrence Trees in the PSL Ontology</name>
+                        <author>Michael Gruninger</author>
+                        <year>2010</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="earlier" type="relation" arity="2"/>
+		<primitiveLexicalSymbol symbol="initial" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="legal" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="successor" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="precedes" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="earlierEq" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="poss" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="generator" type="relation" arity="1"/>
+		<definedLexicalSymbol symbol="arboreal" type="relation" arity="1"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extends extensionType="non-conservative">psl:psl-core</extends>
+		<extendedBy extensionType="conservative">psl:atomic</extendedBy>
+		<extendedBy extensionType="conservative">psl:disc-state</extendedBy>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

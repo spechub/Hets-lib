@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:mt="http://stl.mie.utoronto.ca/Colore/Mereotopologies" 
+					xmlns:lat="http://stl.mie.utoronto.ca/Colore/Lattices" 
+					xmlns:ca="http://stl.mie.utoronto.ca/Colore/ContactAlgebras"
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema"
+					targetNamespace="http://stl.mie.utoronto.ca/Colore/Mereotopologies">
+
+	<moduleDefinition module="RCC" axiomFile="rcc.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-03-05</date>
+		<description>Axioms for the Region Connection Calculus (RCC)</description>
+		<keyword>RCC</keyword>
+		<keyword>Region</keyword>
+		<keyword>Mereotopology</keyword>
+		<keyword>Atomless Boolean Algebra</keyword>
+		<author>Torsten Hahmann</author>
+		<parentOntology>
+			<name>Mereotopologies</name>
+		</parentOntology>
+		<source>
+			<name>Boolean contact algebras: A new approach to the Region-Connection Calculus</name>
+			<description>Artificial Intelligence 122, pp.  111-136</description>
+			<author>Stell</author>
+			<year>2000</year>
+		</source>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="C" type="relation" arity="2"/>		
+		<definedLexicalSymbol symbol="-" type="function" arity="1"/>
+		<definedLexicalSymbol symbol="sum" type="function" arity="2"/>
+		<definedLexicalSymbol symbol="prod" type="function" arity="2"/>
+		<definedLexicalSymbol symbol="P" type="relation" arity="2"/>		
+		<definedLexicalSymbol symbol="PP" type="relation" arity="2"/>		
+		<definedLexicalSymbol symbol="O" type="relation" arity="2"/>		
+		<definedLexicalSymbol symbol="NTPP" type="relation" arity="2"/>		
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<definablyEquivalent mappingExtension="mt:RCC-RBCA">ca:RegionBooleanContactAlgebra</definablyEquivalent>
+		<definablyEquivalent mappingExtension="mt:RCC-RBCA">ca:AtomlessBooleanContactAlgebra</definablyEquivalent>
+		<faithfullyInterprets extensionType="non-conservative">lat:AtomlessBooleanLattice</faithfullyInterprets>
+		<relativelyInterprets extensionType="non-conservative">con:ExtensionalContact</relativelyInterprets>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

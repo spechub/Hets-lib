@@ -1,0 +1,11 @@
+(cl-module (edge-leq)
+
+(cl-comment 'Linking the edge relation to poset lte. Whenever an edge exists between two elements, x and y, then either x < y or y <x.')
+
+(cl-import (poset))
+
+	(forall (?x ?y) (iff 	(e ?x ?y)
+				(or (leq ?x ?y) (leq ?y ?x))
+			)
+	)
+)

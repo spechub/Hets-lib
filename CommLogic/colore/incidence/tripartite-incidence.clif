@@ -1,0 +1,16 @@
+
+(cl-module tripartite-incidence.clif
+
+(cl-imports weak-tripartite.clif)
+
+(forall (x)
+	(if	(point x)
+		(exists (y)
+			(in x y))))
+
+(forall (y)
+	(if	(plane y)
+		(exists (x)
+			(in x y))))
+
+)

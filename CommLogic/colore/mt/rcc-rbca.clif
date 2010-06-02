@@ -1,0 +1,29 @@
+(cl-module RCC-RBCA
+
+(cl-comment 'Mapping axioms between the Region Connection Calculus and Region Boolean Connection Algebras')
+
+(cl-imports RCC)
+
+(forall (x y)
+	(iff 
+		(P x y)
+		(leq x y)
+)	)
+
+
+(forall (x y)
+	(iff
+		(not (C x y))
+		(and	(not (= x y))
+					(leq x y)
+)	)	)
+
+
+(forall (x y)
+	(iff
+		(O x y)
+		(not (= (meet x y) 0))
+)	)
+
+
+)

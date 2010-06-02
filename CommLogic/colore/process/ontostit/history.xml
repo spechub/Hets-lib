@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:ontostit="http://stl.mie.utoronto.ca/Colore/process/ontostit" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="history" axiomFile="history.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for Histories (OntoSTIT Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name></name>
+                        <author></author>
+                        <year>2006</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="in" type="relation" arity="1"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extends extensionType="conservative">ontostit:moment</extends>
+		<extendedBy extensionType="conservative">ontostit:interval</extendedBy>
+		<extendedBy extensionType="non-conservative">ontostit:outcome</extendedBy>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

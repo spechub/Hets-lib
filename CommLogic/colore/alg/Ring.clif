@@ -1,0 +1,24 @@
+(cl:module (ring)
+
+(cl:import (abeliangroup))
+
+(cl:comment: "Ring axioms")
+
+(cl:comment "P1: Associativity")
+
+(forall (x y z)
+	(= 	(. x	(. y z))
+		(. z 	(. x y))
+	)
+)
+
+(cl:comment "P2: Distributivity")
+
+(forall (x y z)
+	(and
+		(= (. x (+ y z))
+		   (+ (. x y) (. x z)))
+		(= (. (+ x y) z)
+		   (+ (. x z) (. y z)))
+	)
+)

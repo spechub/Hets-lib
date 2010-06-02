@@ -1,0 +1,16 @@
+(cl-module (BooleanContactAlgebra)
+
+(cl-comment 'Boolean Contact algebra axioms')
+
+(cl-import (ContactAlgebra))
+
+(cl-comment 'Dis: Disconnection of C; this is equivalent to Ext in the presence o C0-C4')
+
+(forall (x) 	
+	(if 	(not (= x 0)) 
+		(exists (y)
+			(and 	(not (= y 1))
+				(not (C x y)))))
+
+
+)

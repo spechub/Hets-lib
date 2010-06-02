@@ -1,0 +1,18 @@
+
+(cl-module graph-incidence.clif
+
+(cl-imports weak-bipartite.clif)
+
+(cl-comment 'A line is incident with at most two points.')
+
+(forall (x y z w)
+	(if	(and	(point x)
+			(point y)
+			(point z)
+			(line w)
+			(in x w)
+			(in y w)
+			(in z w))
+		(or	(= z x)
+			(= z y))))
+)

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:ontostit="http://stl.mie.utoronto.ca/Colore/process/ontostit" 
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
+
+	<moduleDefinition module="action" axiomFile="action.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2010-02-26</date>
+		<description>Axioms for Actions (OntoSTIT Ontology)</description>
+		<keyword>process</keyword>
+                <source>
+                        <name></name>
+                        <author></author>
+                        <year>2006</year>
+                </source>
+		<author>Michael Gruninger</author>
+		<parentOntology/>
+	</head>
+
+	<lexicon>
+		<primitiveLexicalSymbol symbol="action" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="act" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="rt" type="relation" arity="2"/>
+		<primitiveLexicalSymbol symbol="co" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="Bact" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="Eact" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="Baction" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="lon" type="relation" arity="2"/>
+	</lexicon>
+
+	<inheritedLexicon/>
+
+	<directRelations>
+		<extends extensionType="conservative">ontostit:interval</extends>
+		<extendedBy extensionType="non-conservative">ontostit:agency</extendedBy>
+	</directRelations>
+
+	<inheritedRelations/>
+
+	<additionalInformation/>
+
+</cl-module>

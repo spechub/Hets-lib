@@ -1,0 +1,21 @@
+(cl-module RT0
+
+(cl-comment 'axioms of the mereotopology RT0')
+
+(cl-imports RT)
+
+(cl-comment 'A13: Existence of a smallest open neighborhood n(x) for every x')
+
+(forall (x)
+	(exists (y)
+		(and 	
+			(P x y)
+			(OP y)
+			(forall (z)
+				(if
+					(and 	
+						(P x z)
+						(OP z))
+					(C (c z) y))))))
+					
+)

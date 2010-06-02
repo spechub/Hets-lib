@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../COLORE.xsl"?>
+
+<cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
+					xmlns:lat="http://stl.mie.utoronto.ca/Colore/Lattices" 
+					xmlns:ca="http://stl.mie.utoronto.ca/Colore/ContactAlgebras"
+					xmlns:con="http://stl.mie.utoronto.ca/Colore/Contact"
+					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+					xmlns="http://stl.mie.utoronto.ca/ColoreSchema"
+					targetNamespace="http://stl.mie.utoronto.ca/Colore/ContactAlgebras">
+
+	<moduleDefinition module="ProximityBooleanContactAlgebra" axiomFile="proximitybooleancontactalgebra.clif" />
+
+	<head>
+		<version>1.0</version>
+		<date>2009-07-06</date>
+		<description>Axioms for proximity Boolean contact algebras (PBCA)</description>
+		<keyword>Lattice</keyword>
+		<keyword>Contact Relation</keyword>
+		<keyword>Contact Algebra</keyword>
+		<keyword>Boolean Contact Algebra</keyword>
+		<keyword>PBCA</keyword>
+		<keyword>connected</keyword>
+		<keyword>proximity</keyword>
+		<author>Torsten Hahmann</author>
+		<parentOntology>
+			<name>ContactAlgebras</name>
+		</parentOntology>
+		<source>
+			<name>Algebraization and representation o mereotopological structures</name>
+			<description>Proc. of FOIS-01, pp. 139-150</description>
+			<author>Duentsch</author>
+			<author>Winter</author>
+			<year>2004</year>
+		</source>
+	</head>
+
+	<lexicon/>
+
+	<inheritedLexicon>
+		<primitiveLexicalSymbol symbol="C" type="relation" arity="2"/>		
+		<primitiveLexicalSymbol symbol="0" type="constant" arity="0"/>
+		<primitiveLexicalSymbol symbol="1" type="constant" arity="0"/>
+		<primitiveLexicalSymbol symbol="meet" type="function" arity="2"/>
+		<primitiveLexicalSymbol symbol="join" type="function" arity="2"/>
+		<definedLexicalSymbol symbol="leq" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="meetcomplement" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="joincomplement" type="relation" arity="2"/>
+		<definedLexicalSymbol symbol="complement" type="relation" arity="2"/>
+	</inheritedLexicon>
+
+	<directRelations>
+		<extends extensionType="non-conservative">ca:BooleanContactAlgebra</extends>
+	</directRelations>
+
+	<inheritedRelations>
+		<relativelyInterprets extensionType="non-conservative">pos:Poset</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:LatticePoset</relativelyInterprets>
+		<extends extensionType="non-conservative">con:Contact</extends>
+		<extends extensionType="non-conservative">con:WeakContact</extends>
+		<extends extensionType="non-conservative">ca:WeakContactAlgebra</extends>
+		<extends extensionType="non-conservative">ca:DistributiveContactAlgebra</extends>
+		<extends extensionType="non-conservative">ca:ContactAlgebra</extends>
+		<extends extensionType="non-conservative">ca:GeneralizedBooleanContactAlgebra</extends>
+		<extends extensionType="non-conservative">ca:ExtensionalWeakContactAlgebra</extends>
+		<extends extensionType="non-conservative">ca:ExtensionalWeakBooleanContactAlgebra</extends>
+		<extends extensionType="non-conservative">lat:Lattice</extends>
+		<extends extensionType="non-conservative">lat:LatticeMeetJoin</extends>
+		<extends extensionType="non-conservative">lat:BoundedLattice</extends>
+		<extends extensionType="non-conservative">lat:ModularLattice</extends>
+		<extends extensionType="non-conservative">lat:DistributiveLattice</extends>
+		<extends extensionType="non-conservative">lat:UnicomplementedLattice</extends>
+		<extends extensionType="non-conservative">lat:BooleanLattice</extends>
+		<relativelyInterprets extensionType="non-conservative">pos:Poset</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:PatticePoset</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:PseudocomplementedLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:QuasicomplementedLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:OrthocomplementedLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:OrthoLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:OrthoModularLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:POrthoLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:StonianPOrthoLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:BooleanPOrthoLattice</relativelyInterprets>
+		<relativelyInterprets extensionType="non-conservative">lat:BooleanOrthoLattice</relativelyInterprets>
+	</inheritedRelations>
+
+	<additionalInformation/>
+
+</cl-module>
