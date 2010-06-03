@@ -2,11 +2,11 @@ library CSL/EN1591
 
 logic Reduce
 
-spec FlanschParameter =
+spec FlangeParameter =
  operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, dBs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
 end
 
-spec EN1591[FlanschParameter] =
+spec EN1591[FlangeParameter] =
  . d_3e:=d_3 * (1-2/n_B^2)
  . A_B:=min(d_Be,dBs)^2 * n_B * Pi/4
  . F_R0:=F_A0+(4/d_3e)*M_A0 
