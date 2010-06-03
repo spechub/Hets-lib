@@ -158,20 +158,22 @@ spec EN1591[FlangeParameter] =
  . F_Gmin := max(A_Ge * Q, --(F_Q + F_R)) %(eq50)%
 
      %% * 5.4 Interne Kraefte im Montagezustand
-%%     eq51: F_GDelta := maxOf(I != 0; F_GImin * Y_GI + F_QI * Y_QI  + (F_RI * Y_RI - F_R0 * Y_R0) + DeltaU_I)/Y_G0
+ . F_GDeltaTemp := F_Gmin * Y_G + F_Q * Y_Q  + (F_R * Y_R - F_R[I=0] * Y_R[I=0]) + DeltaU  %(eq51.prelim1)%
 
+  %% SIMP: We have only I=0,1,2
+ . F_GDelta := max(F_GDeltaTemp[I=1], F_GDeltaTemp[I=2])/Y_G[I=0]  %(eq51)%
 
-%%     eq51: F_GDelta := maxOf(I != 0; F_GImin * Y_GI + F_QI * Y_QI  + (F_RI * Y_RI - F_R0 * Y_R0) + DeltaU_I)/Y_G0
-
- . F_G0req := max(F_G0min, F_GDelta) %(eq52)%
- . F_B0req := F_G0req + F_R0 %(eq53)%
+ . F_G0req := max(F_Gmin[I=0], F_GDelta) %(eq52)%
+ . F_B0req := F_G0req + F_R[I=0] %(eq53)%
 
 %% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
 %% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
 %% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
 
- . F_G0req <= F_G0 %(eq54)%
+ . F_G0req <= F_G[I=0] %(eq54)%
+
      %% CONTROL: Iteration
+
 %% Der tatsaechliche Wert F_G0req kann durch Iteration gefunden werden derart, dass
 %% F_G0 ungefaehr gleich F_G0req (55)
 %% innerhalb der geforderten Genauigkeit gilt.
@@ -185,46 +187,61 @@ spec EN1591[FlangeParameter] =
      %% bekannt ist oder nicht.
 
      %% CONTROL: Cases
-     %% entweder
- . epsilon_plus := K_s + (epsilon_1plus - K_s)/sqrt(n_b) %(eq56a)%
- . epsilon_minus := K_s + (epsilon_1minus - K_s)/sqrt(n_b) %(eq56b)%
+     %% SIMP: we use 57,58
+%% . epsilon_plus := K_s + (epsilon_1plus - K_s)/sqrt(n_b) %(eq56a)%
+%% . epsilon_minus := K_s + (epsilon_1minus - K_s)/sqrt(n_b) %(eq56b)%
 
-
-     %% oder
-
- . K_s := 0.25 * epsilon_1plus    %(eq57a)%
- . K_s := 0.25 * epsilon_1minus %(eq57b)%
+ . K_s := 0.25 * epsilon_1plus    %(eq57)%
+     %% SIMP: we use the equation above
+ %% . K_s := 0.25 * epsilon_1minus %(eq57b)%
 
  . epsilon_plus := epsilon_1plus * (1 + 3/sqrt(n_b))/4 %(eq58a)%
  . epsilon_minus := epsilon_1minus * (1 + 3/sqrt(n_b))/4 %(eq58b)%
 
+ %% Apendix D: screw tightening with torque measuring
 
- . F_B0min <= F_B0 <= F_B0max %(eq59)%
- . F_B0min := F_B0av * (1 - epsilon_minus) %(eq60)%
- . F_B0max := F_B0av * (1 + epsilon_plus) %(eq61)%
+ . F_B0nom'(M_tnom') := n_B * M_tnom' / k_B  %(eqD.2)%
+
+ %% SIMP: we use this approximation:
+ . k_B := 0.16 * p_t + 1.17 * mu * d_B0  %(eqD.5)%
+
+ %% CHECK: We remove F_B0av by using the equality: F_B0av = F_B0nom
+ %% see also eq61 and eq65!
+
+ %% CHECK: I suppose we need to calculate Phi for F_B0 := F_B0min and F_B0 := F_B0max
+ . F_B0min <= F_B[I=0] <= F_B0max %(eq59)%
+
+ . F_B0min := F_B0nom * (1 - epsilon_minus) %(eq60)%
+ . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq61)%
 
  . F_B0min >= F_B0req %(eq62)%
 
-     %% a) Nenn-Schraubenkraft im Montagezustand, zur Festlegung der Schrauben-Anziehparameter
+ %% a) Nenn-Schraubenkraft im Montagezustand, zur Festlegung der Schrauben-Anziehparameter
 
-     %% mit Messung: F_B0nom so waehlen, dass eq63 erfuellt ist
+  %% mit Messung: F_B0nom so waehlen, dass eq63 erfuellt ist
+  %% CASFEATURE: minimalWith
+ . M_tnom := minimalWith(x, F_B0nom'(x) >= F_B0req/(1 - epsilon_minus)) %(eq63.Bis)%
+
+ . F_B0nom := F_B0nom'(M_tnom)  %(eq63.prel)%
+
  . F_B0nom >= F_B0req/(1 - epsilon_minus) %(eq63)%
 
      %% ohne Messung, F_B0nom auf F_B0av setzen, und epsilon_minus auf 0.5, dann kommt eq63 zum Tragen
- . F_B0nom := F_B0av >= F_B0req/(1 - epsilon_minus)  %(eq64)%
+%% . F_B0nom := F_B0av >= F_B0req/(1 - epsilon_minus)  %(eq64)%
 
      %% b) Maximale Schraubenkraft im Montagezustand, zur Berechnung der Belastungsgrenze (Abschnitt 5):
 
- . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq65)%
+ %% CHECK: subsumed by eq61
+ %% . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq65)%
 
- . F_G0max := F_B0max - F_R0 %(eq66)%
+ . F_G0max := F_B0max - F_R[I=0] %(eq66)%
      %% Die effektive Dichtungsbreite bGe muss in diesem Stadium der Berechnung nicht neu berechnet werden.
 
- . F_G0d := max(F_GDelta, (2/3) * (1 - 10/N_R) * F_B0max - F_R0) %(eq67)%
+ . F_G0d := max(F_GDelta, (2/3) * (1 - 10/N_R) * F_B0max - F_R[I=0]) %(eq67)%
 
- . F_GI := (F_G0d*Y_G0 - (F_QI*Y_QI + F_RI*Y_RI - F_R0*Y_R0+DeltaU_I))/Y_GI %(eq68)%
+ . F_G := (F_G0d*Y_G[I=0] - (F_Q*Y_Q + F_R*Y_R - F_R[I=0]*Y_R[I=0]+DeltaU))/Y_G %(eq68)%
 
- . F_BI := F_GI + F_QI + F_RI %(eq69)%
+ . F_B := F_G + F_Q + F_R %(eq69)%
      %% * 6 Ueberpruefung der zulaessigen Belastungsgrenzen
 
      %% CONTROL: Cases (breiter Flansch)
@@ -246,12 +263,19 @@ spec EN1591[FlangeParameter] =
      %% C haengt vom Zustand I und vom Schraubenwerkstoff ab, und ist fuer I > 0 Null.
      %% Das heisst z.B. auch, dass M_t.B fuer I > 0 nicht relevant ist!
 
+
+ . M_tBnom := (0.16 * p_t + 0.52 * mu * d_B0) * F_B0nom / n_B   %(eqD.9)%
+
      %% CONTROL: Cases (Zustand, Schrauben, Anziehverfahren)
-     %% Bei hydraulischen Drehmomentschrauben
- . M_t.B := 0 %(eq71_unnamed.1)%
-     %% sonst
- . M_t.B := M_t.Bmax := M_t.Bnom * (1 + epsilon_plus) %(eq71_unnamed.2)%
-     %% Mt, B nom kann nach Anhang D (informativ) bestimmt werden.
+     %% SIMP: 
+   %% Bei hydraulischen Drehmomentschrauben
+   %% . M_t.B := 0 %(eq71_unnamed.1)%
+
+   %% has only to be defined for I=0, otherwise it is eliminated from eq71 by the factor C.
+ . M_tB := M_tBmax %(eq71_unnamed.1)%
+ . M_tBmax := M_tBnom * (1 + epsilon_plus) %(eq71_unnamed.2)%
+
+
 
      %% * 6.3 Dichtung
  . Phi_G := F_G/(A_Gt * Q_max) <= 1 %(eq72)%
@@ -288,6 +312,7 @@ spec EN1591[FlangeParameter] =
  . Psi_max := Psi(1, 1, 1) %(eq84.2)%
  . Psi_min := Psi(--1, --1, 1) %(eq84.3)%
 
+  %% CASFEATURE: maximize
 
 %%     tbl2: case j_M := 1:
 %%             case Psi_max <= Psi_opt: k_M' := 1, Psi_Z := Psi_max

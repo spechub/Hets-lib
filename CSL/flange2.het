@@ -39,27 +39,70 @@ spec Flange2 = FlangeParameter then
 
 %% zylinder-schale, phi_S := 0
  . phi_S := 0 %(data18.2)%
+ %% depends on temperature T_F
+ . E_F[I=0] := 200000 %(dataE.1)%
+ . E_F[I=1] := 200000 %(dataE.2)%
+ . E_F[I=2] := 188000 %(dataE.3)%
+ . P[I=1] := 1.5 %(dataP.1)%
+ . P[I=2] := 1 %(dataP.2)%
+ . F_A := 0 %(dataF.1)%
+ . M_A := 0 %(dataM.1)%
 
- . E_F[I=0] := 200000 %(dataF.1)%
- . E_F[I=1] := 200000 %(dataF.2)%
- . E_F[I=2] := 188000 %(dataF.3)%
- . P[I=1] := 1.5 %(dataF.4)%
- . P[I=2] := 1 %(dataF.5)%
- . F_A := 0 %(dataF.6)%
- . M_A := 0 %(dataF.7)%
- . d_B0 := 16 %(data19)%
+%% temperature
+
+ . T_F[I=0] := 20 %(dataT.1)%
+ . T_F[I=1] := 20 %(dataT.2)%
+ . T_F[I=2] := 30 %(dataT.3)%
 
 %% Schraube
+ . d_B0 := 16 %(data19)%
+ . p_t := 2 %(data19.1)%
  . U := 3 %(data20)%
  . l_B := 42 %(data21)%
  . l_s := 0 %(data22)%
  . d_Bs := 16 %(data23)%
  . d_Be := 14.12 %(data24)%
  . mu := 0.2 %(data25)%
- . n_B := 14 %(data26)%
- . Q_maxy := 546.9 %(data27)%
+ . n_B := 8 %(data26)%
+
+
+%% temperature
+
+ . T_B[I=0] := 20 %(dataT.4)%
+ . T_B[I=1] := 20 %(dataT.5)%
+ . T_B[I=2] := 30 %(dataT.6)%
+
+%% not in EN (Sicherheitsbeiwerte, Sicherheitsfaktoren)
+ . S[I=0] := 1.05 %(data26.1)%
+ . S[I=1] := 1.05 %(data26.2)%
+ . S[I=2] := 1.5 %(data26.3)%
+
+%% Nenn-Berechnungsspannung
+ . f_Bd := 250 %(data26.4)%
+ . f_B := f_Bd / S %(data26.5)%
+
+
+%% Anziehverfahren: Drehmomentschluessel
+%% = Schraubenschluessel mit (ausschliesslich) Drehmoment-Messung
+ . epsilon_1minus := 0.1 + 0.5 * mu  %(tblC.1.1)%
+ . epsilon_1plus := 0.1 + 0.5 * mu  %(tblC.1.2)%
+
+ . M_tnom := 100 %(data100.1)% %% TODO: select a correct value
 
 %% Dichtungswerte
+ . Q_maxy := 546.9 %(data27)%
  . E_0 := 200000 %(data28)%
 
 
+%% temperature
+
+ . T_G[I=0] := 20 %(dataT.7)%
+ . T_G[I=1] := 20 %(dataT.8)%
+ . T_G[I=2] := 30 %(dataT.9)%
+
+
+%% Schraubenwerkstoffen mit Mindestbruchdehnung A >= 10%
+
+ . C[I=0] := 1
+ . C[I=1] := 0
+ . C[I=2] := 0
