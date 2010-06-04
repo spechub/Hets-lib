@@ -58,13 +58,15 @@ spec EN1591[FlangeParameter] =
 
  . theta := 0.55 * cos(phi_S) * sqrt(d_E * e_E)/e_F %(eq18)%
 
- . lambda := 1 - e_P/e_F := e_Q/e_F %(eq19)%
+ %% SIMP: only one assignment
+ %% . lambda1 := 1 - e_P/e_F := e_Q/e_F %(eq19)%
+ . lambda1 := e_Q/e_F %(eq19)%
 
- . c_F := (1 + gamma * theta) / (1 + gamma * theta * (4 * (1 - 3 * lambda + 3 * lambda^2) + 6 * (1 - 2 * lambda) * theta + 6 * theta^2) + 3 * gamma^2 * theta^4) %(eq20)%
+ . c_F := (1 + gamma * theta) / (1 + gamma * theta * (4 * (1 - 3 * lambda1 + 3 * lambda1^2) + 6 * (1 - 2 * lambda1) * theta + 6 * theta^2) + 3 * gamma^2 * theta^4) %(eq20)%
 
- . h_S := 1.1 * e_F * sqrt(e_E/d_E) * (1 - 2 * lambda + theta)/(1 + gamma + theta) %(eq21)%
+ . h_S := 1.1 * e_F * sqrt(e_E/d_E) * (1 - 2 * lambda1 + theta)/(1 + gamma + theta) %(eq21)%
 
- . h_T := e_F * (1 - 2 * lambda - gamma * theta^2)/(1 + gamma * theta) %(eq22)%
+ . h_T := e_F * (1 - 2 * lambda1 - gamma * theta^2)/(1 + gamma * theta) %(eq22)%
 
  . h_Q := (h_S * k_Q + h_T * (2 * d_F * e_P/d_E^2 - 0.5 * tan(phi_S))) * (d_E/d_Ge)^2 %(eq23)%
 
@@ -80,7 +82,7 @@ spec EN1591[FlangeParameter] =
 
      %% * 4.2 Schrauben-Parameter
 
- . A_B := min(d_Be, dBs)^2 * n_B * Pi/4 %(eq33)%
+ . A_B := min(d_Be,dBs)^2 * n_B * Pi/4 %(eq33)%
  . X_B := (l_s/d_Bs^2 + l_e/d_Be^2 + 0.8/d_B0) * 4/(n_B * Pi) %(eq34)%
 
      %% * 4.3 Dichtungs-Parameter
@@ -105,7 +107,6 @@ spec EN1591[FlangeParameter] =
  . A_Ge := Pi * d_Ge * b_Ge %(eq39)%
  . h_G0 := (d_3e - d_Ge)/2 %(eq40)%
 
-
  . X_G := (e_G/A_Gt) * (b_Gt + e_G/2)/(b_Ge + e_G/2) %(eq42)%
      %% Table 1 only for gasket type 1:
      %% Erste Naeherung
@@ -113,8 +114,8 @@ spec EN1591[FlangeParameter] =
 
      %% Genauer
      %% Z_F, Z_F~ nach Gleichung (27)
-%% SYNTAX: , im Namen
- . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0~ * Z_F~/E_F0~) + (F_G0 / (Pi * d_Ge * Q_max.y))^2) %(tbl1.2)%
+
+ . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2]) + (F_G0 / (Pi * d_Ge * Q_max.y))^2) %(tbl1.2)%
 
  . E_Gm := E_0 + 0.5 * K_1 * F_G0/A_Ge %(tbl1.3)%
 
@@ -138,18 +139,18 @@ spec EN1591[FlangeParameter] =
 
 
      %% 
- . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0) - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0) - e_Ft~ * alpha_F~ * (T_F~ - T_0) - e_L~ * alpha_L~ * (T_L~ - T_0) %(eq45.1)%
+ . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0) - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0) - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0) - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
      %% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
- . e_Ft + e_Ft~ + e_L + e_L~ + e_G := e_B %(eq45.2)%
+ . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G := e_B %(eq45.2)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
- . Y_G := Z_F * h_G^2/E_F + Z_F~ * h_G~^2/E_F~ + Z_L * h_L^2/E_L + Z_L~ * h_L~^2/E_L~ + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
+ . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
 
- . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F~ * h_G~ * (h_H~ - h_P~ + h_Q~)/E_F~ + Z_L * h_L^2/E_L + Z_L~ * h_L~^2/E_L~ + X_B/E_B %(eq47)%
+ . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2] - h_P[F=2] + h_Q[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B %(eq47)%
 
  %% Gleichung (48) wird nur fuer Belastungszustaende mit F_RI != 0 ausgewertet.
   %% eventually work with [I>0] here
- . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F~ * h_G~ * (h_H~ + h_R~)/E_F~ + Z_L * h_L^2/E_L + Z_L~ * h_L~^2/E_L~ + X_B/E_B %(eq48)%
+ . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2] + h_R[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B %(eq48)%
 
      %% * 5.3 Mindestkraefte fuer die Dichtung
 
@@ -284,7 +285,7 @@ spec EN1591[FlangeParameter] =
  . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M', Psi_Z) <= Phi_max %(eq73)%
 
      %% EFFECT: shadowing auf Psi_Z, da Psi_Z nicht als veraenderliche declariert
- . W_F(k_M, Psi_Z) := (Pi/4) * (f_F * 2 * b_F * e_F^2 * (1 + 2 * Psi_opt * Psi_Z - Psi_Z^2) + f_E * d_E * e_D^2 * c_M * j_M * k_M) %(eq74)%
+ . W_F(k_M, Psi_Z') := (Pi/4) * (f_F * 2 * b_F * e_F^2 * (1 + 2 * Psi_opt * Psi_Z' - Psi_Z'^2) + f_E * d_E * e_D^2 * c_M * j_M * k_M) %(eq74)%
 
  . e_D := e_1 * (1 + (beta - 1) * l_H/fthrt((beta/3)^4 * (d_1*e_1)^2 + l_H^4)) %(eq75)%
  . f_E := min(f_F, f_S) %(eq76)%
