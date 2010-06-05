@@ -310,16 +310,18 @@ spec	  BinTempDisAR	     = {Binary_Temporal_Dissective with s1 |-> AR,
 				s2 |-> AQ} and DependenceAQNPED and
                                                  MereologyAR 
 %%			        ClassExtParthoodAR 
+
+
           %% Direct Quality
-    spec      DirectQuality      = Direct_Quality and BeingPresentEDorDP and BinTempDisS and Constitution 
-    spec PreDolce_Model =  Constitution and DirectQuality and TempQuale 
+    spec      DirectQuality_Model      = Direct_Quality and BeingPresentEDorDP and BinTempDisS and Constitution 
+    spec PreDolce_Model =  Constitution_Model and DirectQuality_Model and TempQuale 
             and BinTempDisPR and BinTempDisAR and ClassExtParthoodS
 
 %%arch spec Dolce_Model =
      
 %% spec	  PreDolce =  PreDolce_Model 
 spec	  Tax      = Taxonomy and PreDolce_Model
-     spec Dolce_Model = Tax and PreDolce
+     spec Dolce_Model = Tax
 end
 
 refinement Dolce_Ref = Dolce refined to Dolce_Model
