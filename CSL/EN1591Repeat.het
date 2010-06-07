@@ -35,15 +35,13 @@ spec EN1591[FlangeParameter] =
     A_Ge:=Pi * d_Ge * b_Ge;
     h_G0:=(d_3e-d_Ge)/2;
     b_Gi:=sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0 * Z_F/E_F0) + (F_G0 / (Pi * d_Ge * Q_maxy))^2)
-  until convergence(0.001,b_Ge) %% && F_G0req <= F_G0
+  until convergence(0.001,b_Ge)
 
   . Phi_F:=0
   . Phi_max:=1
 end
 
 
-spec EN1591Correctness = operator Phi_F
-
-%% spec EN1591Correctness =
-%%   . Phi_F<=Phi_max
-%% end
+spec EN1591Correctness =
+  . Phi_F <= Phi_max
+end

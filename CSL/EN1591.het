@@ -93,7 +93,7 @@ spec EN1591[FlangeParameter] =
 
      %% Zu Beginn der Berechnung ist der Wert, den man fuer F_G0 einsetzt,
      %% nicht entscheidend. Es wird folgender realistischer Wert empfohlen.
- . F_G0 := A_B * f_B0/3 - F_R0 %(eq37)%
+ . F_G[I=0] := A_B * f_B/3 - F_R %(eq37)%
 
      %% CONTROL: Iteration
 %% Gleichungen (38) bis (40) werden so lange iterativ ausgewertet,
@@ -115,9 +115,7 @@ spec EN1591[FlangeParameter] =
      %% Genauer
      %% Z_F, Z_F~ nach Gleichung (27)
 
- . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2]) + (F_G0 / (Pi * d_Ge * Q_max.y))^2) %(tbl1.2)%
-
- . E_Gm := E_0 + 0.5 * K_1 * F_G0/A_Ge %(tbl1.3)%
+ . E_Gm := E_0 + 0.5 * K_1 * F_G[I=0]/A_Ge %(tbl1.3)%
 
  . d_Ge := d_G2 - b_Ge %(tbl1.4)%
 
@@ -141,7 +139,7 @@ spec EN1591[FlangeParameter] =
      %% 
  . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0) - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0) - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0) - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
      %% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
- . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G := e_B %(eq45.2)%
+ %% . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G := e_B %(eq45.2)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
  . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
@@ -170,10 +168,15 @@ spec EN1591[FlangeParameter] =
 %% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
 %% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
 %% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
+ . repeat
+     repeat
+       b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2]) + (F_G[I=0] / (Pi * d_Ge * Q_maxy))^2) %(tbl1.2)%
+     until convergence(0.001, b_Ge)
 
- . F_G0req <= F_G[I=0] %(eq54)%
+     F_G[I=0] := F_G0req
+   until convergence(0.001, F_G[I=0]) and F_G0req <= F_G[I=0] %(eq54)%
 
-     %% CONTROL: Iteration
+  %% CONTROL: Iteration
 
 %% Der tatsaechliche Wert F_G0req kann durch Iteration gefunden werden derart, dass
 %% F_G0 ungefaehr gleich F_G0req (55)
@@ -210,7 +213,7 @@ spec EN1591[FlangeParameter] =
  %% see also eq61 and eq65!
 
  %% CHECK: I suppose we need to calculate Phi for F_B0 := F_B0min and F_B0 := F_B0max
- . F_B0min <= F_B[I=0] <= F_B0max %(eq59)%
+ . F_B0min <= F_B[I=0] and F_B[I=0] <= F_B0max %(eq59)%
 
  . F_B0min := F_B0nom * (1 - epsilon_minus) %(eq60)%
  . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq61)%
@@ -259,7 +262,10 @@ spec EN1591[FlangeParameter] =
 
      %% * 6.2 Schrauben
 
- . Phi_B := 1/f_B * sqrt( (F_B/A_B)^2 + 3*(C* M_t.B/I_B)^2) <= 1 %(eq71)%
+ . Phi_B := 1/f_B * sqrt( (F_B/A_B)^2 + 3*(C* M_tB/I_B)^2) %(eq71.1)%
+
+ . Phi_B <= 1 %(eq71.1)%
+
      %% CONTROL: Cases (C)
      %% C haengt vom Zustand I und vom Schraubenwerkstoff ab, und ist fuer I > 0 Null.
      %% Das heisst z.B. auch, dass M_t.B fuer I > 0 nicht relevant ist!
@@ -279,10 +285,12 @@ spec EN1591[FlangeParameter] =
 
 
      %% * 6.3 Dichtung
- . Phi_G := F_G/(A_Gt * Q_max) <= 1 %(eq72)%
+ . Phi_G := F_G/(A_Gt * Q_max) %(eq72)%
+ . Phi_G <= 1 %(eq72.1)%
 
      %% * 6.4 Integrierter Flansch
- . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M', Psi_Z) <= Phi_max %(eq73)%
+ . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M', Psi_Z) %(eq73)%
+ . Phi_F <= Phi_max %(eq73.1)%
 
      %% EFFECT: shadowing auf Psi_Z, da Psi_Z nicht als veraenderliche declariert
  . W_F(k_M, Psi_Z') := (Pi/4) * (f_F * 2 * b_F * e_F^2 * (1 + 2 * Psi_opt * Psi_Z' - Psi_Z'^2) + f_E * d_E * e_D^2 * c_M * j_M * k_M) %(eq74)%
@@ -306,12 +314,12 @@ spec EN1591[FlangeParameter] =
  . Psi(j_S, k_M, k_S) := f_E * d_E * e_D * cos(phi_S)/(f_F * 2 * b_F * e_F) * ((0.5*delta_Q+delta_R) * tan(phi_S) - delta_Q * 2 * e_P/d_E + j_S * k_S * sqrt(e_D*c_M*c_S(j_S)*(1+j_S*k_M)/(d_E*cos(phi_S)^3))) %(eq82)%
 
  . Psi_opt := j_M * (2*e_P/e_F-1) %(eq83.1)%
- . --1 <= Psi_opt <= 1 %(eq83.2)%
+ . -1 <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
 
      %% CONTROL: Setval=function application
  . Psi_0 := Psi(0, 0, 0) %(eq84.1)%
  . Psi_max := Psi(1, 1, 1) %(eq84.2)%
- . Psi_min := Psi(--1, --1, 1) %(eq84.3)%
+ . Psi_min := Psi(-1, -1, 1) %(eq84.3)%
 
   %% CASFEATURE: maximize
 
@@ -330,8 +338,8 @@ spec EN1591[FlangeParameter] =
 end
 
 
-spec EN1591Correctness = operator Phi_F
+%%spec EN1591Correctness = operator Phi_F
 
-%% spec EN1591Correctness =
-%%   . Phi_F<=Phi_max
-%% end
+spec EN1591Correctness =
+  . Phi_F <= Phi_max and True
+end
