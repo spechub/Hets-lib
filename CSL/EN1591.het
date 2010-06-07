@@ -170,8 +170,8 @@ spec EN1591[FlangeParameter] =
 %% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
  . repeat
      repeat
-       b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2]) + (F_G[I=0] / (Pi * d_Ge * Q_maxy))^2) %(tbl1.2)%
-     until convergence(0.001, b_Ge)
+       b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2]) + (F_G[I=0] / (Pi * d_Ge * Q_maxy))^2)
+     until convergence(0.001, b_Ge);
 
      F_G[I=0] := F_G0req
    until convergence(0.001, F_G[I=0]) and F_G0req <= F_G[I=0] %(eq54)%
