@@ -587,11 +587,11 @@ lemma "**-":
   shows "[x\<leftarrow>p; y\<leftarrow>q x] \<Phi> x y = [z\<leftarrow>ret();x\<leftarrow>p; y\<leftarrow>q x] \<Phi> x y"
 (* {{{ Proof }}} *)
 proof -
-  have "[(x,y)\<leftarrow>do{x\<leftarrow>p; y\<leftarrow>q x;ret (x,y)}] \<Phi> x y = 
-       [z\<leftarrow>ret();u\<prec>-(x,y)\<leftarrow>do{x\<leftarrow>p; y\<leftarrow>q x;ret(x,y)}] \<Phi> x y"
+  have "[w\<leftarrow>do{x\<leftarrow>p; y\<leftarrow>q x;ret (x,y)}] \<Phi> (fst w) (snd w) = 
+       [z\<leftarrow>ret();w\<leftarrow>do{x\<leftarrow>p; y\<leftarrow>q x;ret(x,y)}] \<Phi> (fst w) (snd w)"
     by (rule "*-")
   from this show ?thesis
-    by simp
+    by (simp add: split_def)
 qed (* }}} *)
 
 lemma "***-": 
@@ -599,11 +599,11 @@ lemma "***-":
          [v\<leftarrow>ret();x\<leftarrow>p; y\<leftarrow>q x;z\<leftarrow>r x y] \<Phi> x y z"
 (* {{{ Proof }}} *)
 proof -
-  have "[x\<leftarrow>p; u\<prec>-(y,z)\<leftarrow>do{y\<leftarrow>q x;z\<leftarrow>r x y;ret (y,z)}] \<Phi> x y z = 
-       [v\<leftarrow>ret();x\<leftarrow>p;u\<prec>-(y,z)\<leftarrow>do{y\<leftarrow>q x;z\<leftarrow>r x y;ret(y,z)}] \<Phi> x y z"
+  have "[x\<leftarrow>p; w\<leftarrow>do{y\<leftarrow>q x;z\<leftarrow>r x y;ret (y,z)}] \<Phi> x (fst w) (snd w) = 
+       [v\<leftarrow>ret();x\<leftarrow>p;w\<leftarrow>do{y\<leftarrow>q x;z\<leftarrow>r x y;ret(y,z)}] \<Phi> x (fst w) (snd w)"
     by (rule "**-")
   from this show ?thesis
-    by simp
+    by (simp add: split_def)
 qed (* }}} *) (* }}} *)(*>*)
 
 lemma sef\<^isub>0: 
@@ -753,11 +753,7 @@ proof -
             (snd(snd(snd u))))"
     by simp
   moreover 
-  from b have
-    "[u\<prec>-(x,y,z,v)\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>s x y z;ret(x,y,z,v)}]
-                                                       (\<Phi> x y z v)"
-    by simp
-  from this have 
+  from b have 
     "[u\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>s x y z;ret(x,y,z,v)}] 
       (\<Phi> (fst u) (fst(snd u)) (fst(snd(snd u))) (snd(snd(snd u))))"
     by (simp add: gdj_def)
@@ -766,7 +762,7 @@ proof -
       (\<xi> (fst u) (fst(snd u)) (fst(snd(snd u))) (snd(snd(snd u))))"
     by (rule wk)
   from this have
-    "[u\<prec>-(x,y,z,v)\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>s x y z;ret(x,y,z,v)}]
+    "[(x,y,z,v)\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>s x y z;ret(x,y,z,v)}]
                                                        (\<xi> x y z v)"
     by (simp add: gdj_def)
   from this show ?thesis
