@@ -137,9 +137,13 @@ spec EN1591[FlangeParameter] =
 
 
      %% 
- . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0) - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0) - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0) - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
+ . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0)
+           - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0)
+           - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0)
+           - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
+
      %% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
- %% . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G := e_B %(eq45.2)%
+ . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G = e_B %(eq45.2)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
  . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
@@ -302,14 +306,14 @@ spec EN1591[FlangeParameter] =
      %% fuer Kegel- und Zylinderschale
      %% EXCEPTION: Wird der Wert unter der Wurzel negativ, ist der Hals Ueberlastet.
  . c_M := sqrt(1.33 * (1 - 0.75*(0.5*delta_Q + delta_R)^2) * (1 - (0.75*delta_Q^2 + delta_R^2))) %(eq78)%
+
+     %% CONTROL: Interval
+ vars j_S in {-1, 1}; k_M in [-1, 1]; k_S in [0, 1]
+
  . c_S(j_S) := Pi/4*(sqrt(1 - 0.75*(0.5*delta_Q + delta_R)^2) + j_S * (0.5*delta_R - 0.75*delta_Q)) %(eq79)%
 
  . j_M := sign(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H) %(eq80.1)%
 
-     %% CONTROL: Interval
-%%     eq80.2: j_S in {--1, 1}
-%%     eq81.1: k_M in [--1, 1]
-%%     eq81.2: k_S in [0, 1]
 
  . Psi(j_S, k_M, k_S) := f_E * d_E * e_D * cos(phi_S)/(f_F * 2 * b_F * e_F) * ((0.5*delta_Q+delta_R) * tan(phi_S) - delta_Q * 2 * e_P/d_E + j_S * k_S * sqrt(e_D*c_M*c_S(j_S)*(1+j_S*k_M)/(d_E*cos(phi_S)^3))) %(eq82)%
 
@@ -322,6 +326,29 @@ spec EN1591[FlangeParameter] =
  . Psi_min := Psi(-1, -1, 1) %(eq84.3)%
 
   %% CASFEATURE: maximize
+
+ . case j_M = 1:
+      case Psi_max <= Psi_opt:
+           k_M' := 1;
+           Psi_Z := Psi_max
+      case Psi_0 <= Psi_opt and Psi_opt < Psi_max:
+           k_M' := 1;
+           Psi_Z := Psi_opt
+      case Psi_opt < Psi_0:
+           k_M' := maximize(W_F(x, Psi(-1, x, 1)), x);
+           Psi_Z := Psi(-1, k_M', 1)
+      end
+   case j_M = -1:
+      case Psi_opt <= Psi_min:
+           k_M' := -1; Psi_Z := Psi_min
+      case Psi_min < Psi_opt and Psi_opt <= Psi_0:
+           k_M' := -1; Psi_Z := Psi_opt
+      case Psi_0 < Psi_opt:
+           k_M' := maximize(W_F(x, Psi(1, x, 1)), x);
+           Psi_Z := Psi(1, k_M', 1)
+      end
+   end
+
 
 %%     tbl2: case j_M := 1:
 %%             case Psi_max <= Psi_opt: k_M' := 1, Psi_Z := Psi_max
