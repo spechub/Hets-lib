@@ -1,0 +1,4519 @@
+logic CASL.FOL=
+sorts individual, list
+op 0 : individual
+op achieved : individual
+op activity : individual
+op activity_occurrence : individual
+op add : individual
+op agg_demand : individual
+op amorphous : individual
+op aperiodic : individual
+op arboreal : individual
+op artificial : individual
+op assistance : individual
+op assisted : individual
+op atomic : individual
+op atomocc : individual
+op available : individual
+op bag : individual
+op before : individual
+op beforeEq : individual
+op begin_equiv : individual
+op beginof : individual
+op between : individual
+op betweenEq : individual
+op bound : individual
+op bounded : individual
+op branch_automorphic : individual
+op branch_homomorphic : individual
+op branch_mono : individual
+op branch_monomorphic : individual
+op broken_ordered : individual
+op capacitated_resource : individual
+op capacity_based : individual
+op cardinality : individual
+op changes : individual
+op choice_poset : individual
+op classical : individual
+op clobbering : individual
+op common : individual
+op compacted : individual
+op complex_poset : individual
+op conc : individual
+op concurrent_superpose : individual
+op conditional : individual
+op conditional_duration : individual
+op conditional_launch : individual
+op conflict : individual
+op cons : individual * list -> list
+op conservative_pool : individual
+op constant : individual
+op constrained : individual
+op consumable : individual
+op consumes : individual
+op consumes_pile : individual
+op consumes_quantity : individual
+op context_duration : individual
+op context_free : individual
+op coo_precedes : individual
+op cousin : individual
+op creates : individual
+op dead_branch : individual
+op dead_occurrence : individual
+op delay : individual
+op delay_equiv : individual
+op demand : individual
+op destroys : individual
+op do : individual
+op dur : individual
+op dur_equiv : individual
+op duration : individual
+op duration_effects : individual
+op duration_equiv : individual
+op dysfunction : individual
+op earlier : individual
+op earlierEq : individual
+op effects_equiv : individual
+op embed_duration : individual
+op embed_occ : individual
+op embed_tree : individual
+op embedded : individual
+op end_iso : individual
+op endof : individual
+op envelope : individual
+op exclusive_use : individual
+op exists_at : individual
+op falsified : individual
+op final_processor_path : individual
+op fixed_quantity : individual
+op flip : individual
+op folded : individual
+op free' : individual
+op fun : individual * list -> individual
+op fused : individual
+op generator : individual
+op ghost : individual
+op global_clobber : individual
+op global_filter : individual
+op global_ideal : individual
+op global_interfere : individual
+op global_nonfilter : individual
+op global_nonideal : individual
+op greater : individual
+op greaterEq : individual
+op gridlock : individual
+op helpless : individual
+op historical : individual
+op holds : individual
+op hom : individual
+op homogeneous_set : individual
+op imiscible : individual
+op imperial : individual
+op in' : individual
+op in_resource_set : individual
+op infp : individual
+op infm : individual
+op initial : individual
+op initial_processor_path : individual
+op input_material : individual
+op interfering : individual
+op intermittent : individual
+op interval_duration : individual
+op inventory_contains : individual
+op inventory_pool : individual
+op inventory_resource : individual
+op irreversible : individual
+op is_occurring_at : individual
+op iso_occ : individual
+op launch : individual
+op layout : individual
+op leaf : individual
+op leaf_occ : individual
+op leaf_soo : individual
+op legal : individual
+op legal_equiv : individual
+op lesser : individual
+op lesserEq : individual
+op live_branch : individual
+op local' : individual
+op maintain_effects : individual
+op markov_effects : individual
+op markov_precond : individual
+op material_pool : individual
+op maxp : individual
+op maxm : individual
+op meddling : individual
+op min_capacity : individual
+op min_equiv : individual
+op min_precedes : individual
+op minus : individual
+op mixed_conditional : individual
+op mixed_duration : individual
+op mixed_precond : individual
+op modifies : individual
+op mono : individual
+op mono_tree : individual
+op mult : individual
+op multiform : individual
+op multiple_outcome : individual
+op natural : individual
+op newtonian : individual
+op next_processor_path : individual
+op next_soo : individual
+op next_subactivity : individual
+op next_subocc : individual
+op nil : list
+op nonclobbering : individual
+op nondet_choice : individual
+op nondet_compacted : individual
+op nondet_folded : individual
+op nondet_mixed_duration : individual
+op nondet_ordered : individual
+op nondet_outcome : individual
+op nondet_permuted : individual
+op nondet_plan : individual
+op nondet_quantity_select : individual
+op nondet_reordered : individual
+op nondet_repetitive : individual
+op nondet_res_activity : individual
+op nondet_select : individual
+op nondet_set_select : individual
+op nondet_treeordered : individual
+op nonduration_effects : individual
+op nonembed_duration : individual
+op nonhistorical : individual
+op noninterfering : individual
+op nonmaintain : individual
+op nonocc_effects : individual
+op nonreplenishable : individual
+op nonspoilage : individual
+op nontemporal : individual
+op nontrigger : individual
+op null : individual
+op object : individual
+op occ_depend_effects : individual
+op occ_effects : individual
+op occurence_of : individual
+op occurrence_constrained : individual
+op occurrence_dependent : individual
+op occurrence_independent : individual
+op occurrence_of : individual
+op occurs_over : individual
+op one : individual
+op order_tree : individual
+op ordered : individual
+op ordered_duration : individual
+op output_material : individual
+op partial_clobber : individual
+op partial_compacted : individual
+op partial_conditional : individual
+op partial_conditional_launch : individual
+op partial_constrained : individual
+op partial_duration_effects : individual
+op partial_embed_duration : individual
+op partial_folded : individual
+op partial_interfere : individual
+op partial_launch : individual
+op partial_maintain : individual
+op partial_mixed : individual
+op partial_mixed_conditional : individual
+op partial_ordered_duration : individual
+op partial_permuted : individual
+op partial_reordered : individual
+op partial_repetitive : individual
+op partial_scheduled : individual
+op partial_spread : individual
+op partial_state : individual
+op partial_state_effects : individual
+op partial_state_filter : individual
+op partial_state_ideal : individual
+op partial_state_nonfilter : individual
+op partial_state_nonideal : individual
+op partial_temporal : individual
+op partial_time : individual
+op partial_time_conditional : individual
+op partial_time_filter : individual
+op partial_time_ideal : individual
+op partial_time_nonfilter : individual
+op partial_time_nonideal : individual
+op partial_treeordered : individual
+op partial_trigger : individual
+op participates_in : individual
+op performed : individual
+op periodic : individual
+op permuted : individual
+op pile : individual
+op plan : individual
+op plus : individual
+op pool : individual
+op pool_demand : individual
+op poss : individual
+op poss_equiv : individual
+op possible_spoilage : individual
+op possibly_consumable : individual
+op possibly_historical : individual
+op possibly_preventable : individual
+op possibly_reusable : individual
+op precedes : individual
+op preserved_effects : individual
+op preserved_filter : individual
+op preventable : individual
+op primitive : individual
+op prior : individual
+op pro_precedes : individual
+op processor_activity : individual
+op processor_resource : individual
+op produces : individual
+op produces_pile : individual
+op produces_quantity : individual
+op profile : individual
+op provides : individual
+op provides_quantity : individual
+op quantum : individual
+op quark : individual
+op reflect : individual
+op relativistic : individual
+op renewable : individual
+op reordered : individual
+op rep_tree : individual
+op repetitive : individual
+op reptree : individual
+op requires : individual
+op requires_full_set : individual
+op requires_set : individual
+op resource_fluent : individual
+op resource_path : individual
+op resource_point : individual
+op resource_pool : individual
+op resource_set : individual
+op resource_subset : individual
+op restricted : individual
+op reusable : individual
+op rigid : individual
+op rigid_clobber : individual
+op rigid_conditional : individual
+op rigid_interfere : individual
+op rigid_launch : individual
+op rigid_mixed : individual
+op rigid_mixed_conditional : individual
+op rigid_mixed_duration : individual
+op rigid_state : individual
+op rigid_state_effects : individual
+op rigid_state_filter : individual
+op rigid_state_ideal : individual
+op rigid_state_nonfilter : individual
+op rigid_state_nonideal : individual
+op rigid_time : individual
+op rigid_time_conditional : individual
+op rigid_time_filter : individual
+op rigid_time_ideal : individual
+op rigid_time_nonfilter : individual
+op rigid_time_nonideal : individual
+op root : individual
+op root_automorphic : individual
+op root_equiv : individual
+op root_occ : individual
+op root_soo : individual
+op rotate : individual
+op rushhour : individual
+op same_bag : individual
+op same_grove : individual
+op same_tree : individual
+op scheduled : individual
+op scrambled : individual
+op semiclassical : individual
+op seminewton : individual
+op set_contention : individual
+op set_member : individual
+op sibling : individual
+op simple : individual
+op sometime_clobber : individual
+op sometime_interfere : individual
+op soo : individual
+op soo_precedes : individual
+op soomap : individual
+op spoilage : individual
+op spread : individual
+op state : individual
+op state_clobber : individual
+op state_equiv : individual
+op state_filter : individual
+op state_ideal : individual
+op state_interfere : individual
+op state_nonfilter : individual
+op state_nonideal : individual
+op stiff : individual
+op stock : individual
+op strict : individual
+op strict_consumes : individual
+op strict_consumes_quantity : individual
+op strict_produces : individual
+op strict_produces_quantity : individual
+op strong_parallel : individual
+op strong_poset : individual
+op subactivity : individual
+op subactivity_occurrence : individual
+op subocc_equiv : individual
+op subset : individual
+op subtree : individual
+op subtree_embed : individual
+op successor : individual
+op superpose : individual
+op superpose_select : individual
+op team : individual
+op temporal_effects : individual
+op tight : individual
+op time_add : individual
+op time_clobber : individual
+op time_conditional : individual
+op time_filter : individual
+op time_ideal : individual
+op time_interfere : individual
+op time_nonfilter : individual
+op time_nonideal : individual
+op time_precond : individual
+op timeduration : individual
+op timepoint : individual
+op tree_equiv : individual
+op treeordered : individual
+op trigger : individual
+op turn : individual
+op ubiquitous : individual
+op umbra : individual
+op unachievable : individual
+op unary_resource : individual
+op unbound : individual
+op unconditional_clobber : individual
+op unconditional_duration : individual
+op unconditional_interfere : individual
+op unconditional_launch : individual
+op unconstrained : individual
+op uniform : individual
+op uniform_demand : individual
+op universal : individual
+op unorderable : individual
+op unordered : individual
+op unordered_duration : individual
+op unplan : individual
+op unpreventable : individual
+op unrestricted : individual
+op unscheduled : individual
+op up_conflict : individual
+op up_ghost : individual
+op uses : individual
+op uses_pile : individual
+op uses_quantity : individual
+op variable : individual
+op variegated : individual
+op weak_outcome : individual
+op weakly_consumable : individual
+op weakly_reusable : individual
+op wearable : individual
+op weekend : individual
+op zero : individual
+pred rel : individual * list
+
+forall t1, t2 : individual
+. rel(before, cons(t1, cons(t2, nil)))
+  => rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+                                                          %(Ax_0)%
+
+forall t1, t2 : individual
+. rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+  => t1 = t2 \/ rel(before, cons(t1, cons(t2, nil)))
+     \/ rel(before, cons(t2, cons(t1, nil)))            %(Ax_1)%
+
+forall t1 : individual
+. not rel(before, cons(t1, cons(t1, nil)))              %(Ax_2)%
+
+forall t1, t2, t3 : individual
+. rel(before, cons(t1, cons(t2, nil)))
+  /\ rel(before, cons(t2, cons(t3, nil)))
+  => rel(before, cons(t1, cons(t3, nil)))               %(Ax_3)%
+
+forall t : individual
+. rel(timepoint, cons(t, nil)) /\ not t = infm
+  => rel(before, cons(infm, cons(t, nil)))               %(Ax_4)%
+
+forall t : individual
+. rel(timepoint, cons(t, nil)) /\ not t = infp
+  => rel(before, cons(t, cons(infp, nil)))               %(Ax_5)%
+
+forall t : individual
+. rel(timepoint, cons(t, nil)) /\ not t = infm
+  => exists u : individual
+     . rel(between, cons(infm, cons(u, cons(t, nil))))  %(Ax_6)%
+
+forall t : individual
+. rel(timepoint, cons(t, nil)) /\ not t = infp
+  => exists u : individual
+     . rel(between, cons(t, cons(u, cons(infp, nil))))  %(Ax_7)%
+
+forall x : individual
+. rel(activity, cons(x, nil))
+  \/ rel(activity_occurrence, cons(x, nil))
+  \/ rel(timepoint, cons(x, nil)) \/ rel(object, cons(x, nil))
+                                                          %(Ax_8)%
+
+forall x : individual
+. (rel(activity, cons(x, nil))
+   => not (rel(activity_occurrence, cons(x, nil))
+           \/ rel(object, cons(x, nil)) \/ rel(timepoint, cons(x, nil))))
+  /\ (rel(activity_occurrence, cons(x, nil))
+      => not (rel(object, cons(x, nil))
+              \/ rel(timepoint, cons(x, nil))))
+  /\ (rel(object, cons(x, nil))
+      => not rel(timepoint, cons(x, nil)))               %(Ax_9)%
+
+forall a, occ : individual
+. rel(occurrence_of, cons(occ, cons(a, nil)))
+  => rel(activity, cons(a, nil))
+     /\ rel(activity_occurrence, cons(occ, nil))        %(Ax_10)%
+
+forall occ : individual
+. rel(activity_occurrence, cons(occ, nil))
+  => exists a : individual
+     . rel(activity, cons(a, nil))
+       /\ rel(occurrence_of, cons(occ, cons(a, nil)))  %(Ax_11)%
+
+forall occ, a1, a2 : individual
+. rel(occurrence_of, cons(occ, cons(a1, nil)))
+  /\ rel(occurrence_of, cons(occ, cons(a2, nil)))
+  => a1 = a2                                           %(Ax_12)%
+
+forall a, x : individual
+. rel(occurrence_of, cons(x, cons(a, nil)))
+  \/ rel(object, cons(x, nil))
+  => rel(timepoint, cons(beginof, nil))
+     /\ rel(timepoint, cons(endof, nil))                 %(Ax_13)%
+
+forall x : individual
+. rel(activity_occurrence, cons(x, nil))
+  \/ rel(object, cons(x, nil))
+  => rel(beforeEq, cons(beginof, cons(endof, nil)))      %(Ax_14)%
+
+forall x, occ, t : individual
+. rel(participates_in, cons(x, cons(occ, cons(t, nil))))
+  => rel(object, cons(x, nil))
+     /\ rel(activity_occurrence, cons(occ, nil))
+     /\ rel(timepoint, cons(t, nil))                    %(Ax_15)%
+
+forall x, occ, t : individual
+. rel(participates_in, cons(x, cons(occ, cons(t, nil))))
+  => rel(exists_at, cons(x, cons(t, nil)))
+     /\ rel(is_occurring_at, cons(occ, cons(t, nil)))  %(Ax_16)%
+
+forall t1, t2, t3 : individual
+. rel(between, cons(t1, cons(t2, cons(t3, nil))))
+  <=> rel(before, cons(t1, cons(t2, nil)))
+      /\ rel(before, cons(t2, cons(t3, nil)))          %(Ax_17)%
+
+forall t1, t2 : individual
+. rel(beforeEq, cons(t1, cons(t2, nil)))
+  <=> rel(timepoint, cons(t1, nil))
+      /\ rel(timepoint, cons(t2, nil))
+      /\ (rel(before, cons(t1, cons(t2, nil))) \/ t1 = t2)
+                                                         %(Ax_18)%
+
+forall t1, t2, t3 : individual
+. rel(betweenEq, cons(t1, cons(t2, cons(t3, nil))))
+  <=> rel(beforeEq, cons(t1, cons(t2, nil)))
+      /\ rel(beforeEq, cons(t2, cons(t3, nil)))        %(Ax_19)%
+
+forall x, t : individual
+. rel(exists_at, cons(x, cons(t, nil)))
+  <=> rel(object, cons(x, nil))
+      /\ rel(betweenEq, cons(beginof, cons(t, cons(endof, nil))))
+                                                         %(Ax_20)%
+
+forall occ, t : individual
+. rel(is_occurring_at, cons(occ, cons(t, nil)))
+  <=> rel(betweenEq, cons(beginof, cons(t, cons(endof, nil))))
+                                                         %(Ax_21)%
+
+forall o1, o2 : individual
+. rel(subactivity_occurrence, cons(o1, cons(o2, nil)))
+  => rel(activity_occurrence, cons(o1, nil))
+     /\ rel(activity_occurrence, cons(o2, nil))         %(Ax_22)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => exists occ : individual
+     . rel(occurrence_of, cons(occ, cons(a, nil)))
+       /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+       /\ rel(subactivity_occurrence, cons(s2, cons(occ, nil)))
+                                                         %(Ax_23)%
+
+forall a, s : individual
+. rel(root, cons(s, cons(a, nil)))
+  => exists occ : individual
+     . rel(occurrence_of, cons(occ, cons(a, nil)))
+       /\ rel(subactivity_occurrence, cons(s, cons(occ, nil)))
+                                                         %(Ax_24)%
+
+forall occ, a : individual
+. rel(occurrence_of, cons(occ, cons(a, nil)))
+  /\ not rel(atomic, cons(a, nil))
+  => exists s : individual
+     . rel(root, cons(s, cons(a, nil)))
+       /\ rel(subactivity_occurrence, cons(s, cons(occ, nil)))
+                                                         %(Ax_25)%
+
+forall a, s1, occ1, occ2 : individual
+. rel(occurrence_of, cons(occ1, cons(a, nil)))
+  /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+  /\ not rel(atomic, cons(a, nil)) /\ not occ1 = occ2
+  /\ rel(arboreal, cons(s1, nil))
+  /\ rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+  /\ rel(subactivity_occurrence, cons(s1, cons(occ2, nil)))
+  => exists s2 : individual
+     . rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+       /\ rel(subactivity_occurrence, cons(s2, cons(occ1, nil)))
+       /\ not rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+                                                         %(Ax_26)%
+
+forall a, occ, s1, s2 : individual
+. rel(occurrence_of, cons(occ, cons(a, nil)))
+  /\ not rel(atomic, cons(a, nil)) /\ rel(arboreal, cons(s1, nil))
+  /\ rel(arboreal, cons(s2, nil))
+  /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+  /\ rel(subactivity_occurrence, cons(s2, cons(occ, nil)))
+  => rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+     \/ rel(min_precedes, cons(s2, cons(s1, cons(a, nil))))
+     \/ s1 = s2                                        %(Ax_27)%
+
+forall a, s1, s2, occ : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  /\ rel(subactivity_occurrence, cons(s2, cons(occ, nil)))
+  => rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+                                                         %(Ax_28)%
+
+forall a1, a2, occ1, occ2 : individual
+. rel(occurrence_of, cons(occ1, cons(a1, nil)))
+  /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+  /\ rel(subactivity_occurrence, cons(occ1, cons(occ2, nil)))
+  => rel(subactivity, cons(a1, cons(a2, nil)))         %(Ax_29)%
+
+forall occ1, occ2, occ3 : individual
+. rel(subactivity_occurrence, cons(occ1, cons(occ2, nil)))
+  /\ rel(subactivity_occurrence, cons(occ2, cons(occ3, nil)))
+  => rel(subactivity_occurrence, cons(occ1, cons(occ3, nil)))
+                                                         %(Ax_30)%
+
+forall a1, a2, occ1, occ2 : individual
+. rel(occurrence_of, cons(occ1, cons(a1, nil)))
+  /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+  /\ rel(subactivity, cons(a1, cons(a2, nil)))
+  /\ not rel(subactivity_occurrence, cons(occ1, cons(occ2, nil)))
+  => exists s : individual
+     . rel(subactivity_occurrence, cons(s, cons(occ2, nil)))
+       /\ not rel(subactivity_occurrence, cons(s, cons(occ1, nil)))
+                                                         %(Ax_31)%
+
+forall occ : individual
+. rel(activity_occurrence, cons(occ, nil)) => beginof = beginof
+                                                         %(Ax_32)%
+
+forall s, occ : individual
+. rel(leaf_occ, cons(s, cons(occ, nil))) => endof = endof
+                                                         %(Ax_33)%
+
+forall s1, s2, a : individual
+. rel(mono, cons(s1, cons(s2, cons(a, nil))))
+  => rel(hom, cons(s1, cons(s2, cons(a, nil))))       %(Ax_34)%
+
+forall s1, s2, a : individual
+. rel(hom, cons(s1, cons(s2, cons(a, nil))))
+  /\ not rel(mono, cons(s1, cons(s2, cons(a, nil))))
+  => exists s3 : individual
+     . (rel(min_precedes, cons(s3, cons(s2, cons(a, nil))))
+        /\ rel(mono, cons(s1, cons(s3, cons(a, nil)))))
+       \/ (rel(min_precedes, cons(s3, cons(s1, cons(a, nil))))
+           /\ rel(mono, cons(s2, cons(s3, cons(a, nil)))))
+                                                         %(Ax_35)%
+
+forall s1, s2, s3, a : individual
+. rel(mono, cons(s1, cons(s2, cons(a, nil))))
+  /\ rel(mono, cons(s3, cons(s2, cons(a, nil))))
+  => not (rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+          \/ rel(min_precedes, cons(s3, cons(s1, cons(a, nil)))))
+                                                         %(Ax_36)%
+
+forall s1, s2, a : individual
+. rel(mono, cons(s1, cons(s2, cons(a, nil))))
+  => rel(mono, cons(s2, cons(s1, cons(a, nil))))      %(Ax_37)%
+
+forall s1, s2, s3, a : individual
+. rel(mono, cons(s1, cons(s2, cons(a, nil))))
+  /\ rel(mono, cons(s2, cons(s3, cons(a, nil))))
+  => rel(mono, cons(s1, cons(s3, cons(a, nil))))      %(Ax_38)%
+
+forall s1, s2, a : individual
+. rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists a1, a2, a3 : individual
+      . rel(atomic, cons(a1, nil)) /\ rel(atomic, cons(a2, nil))
+        /\ rel(atomic, cons(a3, nil))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s1, cons(conc, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(conc, nil)))
+                                                         %(Ax_39)%
+
+forall s1, s2, a : individual
+. rel(hom, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists occ1, occ2 : individual
+      . rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+        /\ not rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+        /\ not rel(min_precedes, cons(s2, cons(s1, cons(a, nil))))
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+        /\ rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+        /\ rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+                                                         %(Ax_40)%
+
+forall s, occ : individual
+. rel(activity_occurrence, cons(s, nil))
+  /\ rel(activity_occurrence, cons(occ, nil))
+  => (s = root_occ
+      <=> exists a : individual
+          . rel(occurrence_of, cons(occ, cons(a, nil)))
+            /\ rel(subactivity_occurrence, cons(s, cons(occ, nil)))
+            /\ rel(root, cons(s, cons(a, nil))))       %(Ax_41)%
+
+forall s, occ : individual
+. rel(leaf_occ, cons(s, cons(occ, nil)))
+  <=> exists a : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ, nil)))
+        /\ rel(leaf, cons(s, cons(a, nil)))            %(Ax_42)%
+
+forall occ1, occ2 : individual
+. rel(same_grove, cons(occ1, cons(occ2, nil)))
+  <=> exists a : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ ((rel(initial, cons(root_occ, nil))
+             /\ rel(initial, cons(root_occ, nil)))
+            \/ exists s4, a1, a2 : individual
+               . root_occ = successor /\ root_occ = successor)
+                                                         %(Ax_43)%
+
+forall a : individual
+. rel(primitive, cons(a, nil)) => rel(atomic, cons(a, nil))
+                                                         %(Ax_44)%
+
+forall a : individual . a = conc %(Ax_45)%
+
+forall a1, a2 : individual . conc = conc %(Ax_46)%
+
+forall a1, a2, a3 : individual . conc = conc %(Ax_47)%
+
+forall a1, a2 : individual
+. rel(atomic, cons(conc, nil))
+  <=> rel(atomic, cons(a1, nil)) /\ rel(atomic, cons(a2, nil))
+                                                         %(Ax_48)%
+
+forall a1, a2 : individual
+. rel(atomic, cons(a1, nil)) /\ rel(atomic, cons(a2, nil))
+  => (rel(subactivity, cons(a1, cons(a2, nil))) <=> a2 = conc)
+                                                         %(Ax_49)%
+
+forall a1, a2 : individual
+. rel(atomic, cons(a2, nil))
+  /\ rel(subactivity, cons(a1, cons(a2, nil)))
+  => exists a3 : individual
+     . rel(atomic, cons(a3, nil)) /\ a2 = conc
+       /\ not exists a4 : individual
+              . rel(atomic, cons(a4, nil))
+                /\ rel(subactivity, cons(a4, cons(a1, nil)))
+                /\ rel(subactivity, cons(a4, cons(a3, nil)))
+                                                         %(Ax_50)%
+
+forall a, b0, b1 : individual
+. rel(atomic, cons(a, nil)) /\ rel(atomic, cons(b0, nil))
+  /\ rel(atomic, cons(b1, nil))
+  /\ rel(subactivity, cons(a, cons(conc, nil)))
+  /\ not rel(primitive, cons(a, nil))
+  => exists a0, a1 : individual
+     . rel(subactivity, cons(a0, cons(a, nil)))
+       /\ rel(subactivity, cons(a1, cons(a, nil))) /\ a = conc
+                                                         %(Ax_51)%
+
+forall a : individual
+. rel(generator, cons(a, nil)) => rel(atomic, cons(a, nil))
+                                                         %(Ax_52)%
+
+forall a : individual
+. rel(atomic, cons(a, nil)) => rel(activity, cons(a, nil))
+                                                         %(Ax_53)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => exists a1, a2 : individual
+     . rel(subactivity, cons(a1, cons(a, nil)))
+       /\ rel(atomic, cons(a2, nil))
+       /\ rel(subactivity, cons(a1, cons(a2, nil)))
+       /\ rel(occurrence_of, cons(s1, cons(a2, nil)))  %(Ax_54)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => exists a2, a3 : individual
+     . rel(subactivity, cons(a2, cons(a, nil)))
+       /\ rel(atomic, cons(a3, nil))
+       /\ rel(subactivity, cons(a2, cons(a3, nil)))
+       /\ rel(occurrence_of, cons(s2, cons(a3, nil)))  %(Ax_55)%
+
+forall a, s : individual
+. rel(root, cons(s, cons(a, nil)))
+  => exists a2, a3 : individual
+     . rel(subactivity, cons(a2, cons(a3, nil)))
+       /\ rel(atomic, cons(a3, nil))
+       /\ rel(subactivity, cons(a2, cons(a, nil)))
+       /\ rel(occurrence_of, cons(s, cons(a3, nil)))   %(Ax_56)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => exists s3 : individual
+     . rel(root, cons(s3, cons(a, nil)))
+       /\ (rel(min_precedes, cons(s3, cons(s1, cons(a, nil))))
+           \/ s3 = s1)                                 %(Ax_57)%
+
+forall s, a : individual
+. rel(root, cons(s, cons(a, nil)))
+  => not exists s2 : individual
+         . rel(activity_occurrence, cons(s2, nil))
+           /\ rel(min_precedes, cons(s2, cons(s, cons(a, nil))))
+                                                         %(Ax_58)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => rel(precedes, cons(s1, cons(s2, nil)))            %(Ax_59)%
+
+forall s, a : individual
+. rel(root, cons(s, cons(a, nil))) => rel(legal, cons(s, nil))
+                                                         %(Ax_60)%
+
+forall a1, a2, s : individual
+. rel(atomic, cons(a1, nil))
+  /\ rel(occurrence_of, cons(s, cons(a1, nil)))
+  /\ rel(legal, cons(s, nil))
+  /\ rel(subactivity, cons(a2, cons(a1, nil)))
+  => rel(root, cons(s, cons(a2, nil)))                 %(Ax_61)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => exists s3 : individual
+     . rel(next_subocc, cons(s1, cons(s3, cons(a, nil))))
+       /\ (rel(min_precedes, cons(s3, cons(s2, cons(a, nil))))
+           \/ s3 = s2)                                 %(Ax_62)%
+
+forall a, s1, s2, s3 : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  /\ rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+  /\ rel(precedes, cons(s2, cons(s3, nil)))
+  => rel(min_precedes, cons(s2, cons(s3, cons(a, nil))))
+                                                         %(Ax_63)%
+
+forall a1, a2 : individual
+. rel(subactivity, cons(a1, cons(a2, nil)))
+  => not exists s : individual
+         . rel(activity_occurrence, cons(s, nil))
+           /\ rel(subtree, cons(s, cons(a2, cons(a1, nil))))
+                                                         %(Ax_64)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => not rel(atomic, cons(a, nil))                      %(Ax_65)%
+
+forall a, s1, s2, s3 : individual
+. rel(min_precedes, cons(s2, cons(s1, cons(a, nil))))
+  /\ rel(min_precedes, cons(s3, cons(s1, cons(a, nil))))
+  /\ rel(precedes, cons(s2, cons(s3, nil)))
+  => rel(min_precedes, cons(s2, cons(s3, cons(a, nil))))
+                                                         %(Ax_66)%
+
+forall s, a : individual
+. rel(leaf, cons(s, cons(a, nil)))
+  <=> exists s1 : individual
+      . rel(arboreal, cons(s1, nil))
+        /\ (rel(root, cons(s, cons(a, nil)))
+            \/ rel(min_precedes, cons(s1, cons(s, cons(a, nil)))))
+        /\ not exists s2 : individual
+               . rel(min_precedes, cons(s, cons(s2, cons(a, nil))))
+                                                         %(Ax_67)%
+
+forall s1, s2, a : individual
+. rel(do, cons(a, cons(s1, cons(s2, nil))))
+  <=> rel(root, cons(s1, cons(a, nil)))
+      /\ rel(leaf, cons(s2, cons(a, nil)))
+      /\ (rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+          \/ s1 = s2)                                  %(Ax_68)%
+
+forall s1, s2, a : individual
+. rel(next_subocc, cons(s1, cons(s2, cons(a, nil))))
+  <=> rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+      /\ not exists s3 : individual
+             . rel(activity_occurrence, cons(s3, nil))
+               /\ rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+               /\ rel(min_precedes, cons(s3, cons(s2, cons(a, nil))))
+                                                         %(Ax_69)%
+
+forall s1, a1, a2 : individual
+. rel(subtree, cons(s1, cons(a1, cons(a2, nil))))
+  <=> rel(root, cons(s1, cons(a1, nil)))
+      /\ exists s2, s3 : individual
+         . rel(root, cons(s2, cons(a2, nil)))
+           /\ rel(min_precedes, cons(s1, cons(s2, cons(a1, nil))))
+           /\ rel(min_precedes, cons(s1, cons(s3, cons(a1, nil))))
+           /\ not rel(min_precedes, cons(s2, cons(s3, cons(a2, nil))))
+                                                         %(Ax_70)%
+
+forall s1, s2, a : individual
+. rel(sibling, cons(s1, cons(s2, cons(a, nil))))
+  <=> (exists s3 : individual
+       . rel(next_subocc, cons(s3, cons(s1, cons(a, nil))))
+         /\ rel(next_subocc, cons(s3, cons(s2, cons(a, nil)))))
+      \/ (rel(root, cons(s1, cons(a, nil)))
+          /\ rel(root, cons(s2, cons(a, nil)))
+          /\ ((rel(initial, cons(s1, nil)) /\ rel(initial, cons(s2, nil)))
+              \/ exists s4, a1, a2 : individual
+                 . s1 = successor /\ s2 = successor))  %(Ax_71)%
+
+forall f : individual
+. rel(state, cons(f, nil)) => rel(object, cons(f, nil))
+                                                         %(Ax_72)%
+
+forall f, occ : individual
+. rel(holds, cons(f, cons(occ, nil)))
+  => rel(state, cons(f, nil)) /\ rel(arboreal, cons(occ, nil))
+                                                         %(Ax_73)%
+
+forall f, occ : individual
+. rel(prior, cons(f, cons(occ, nil)))
+  => rel(state, cons(f, nil)) /\ rel(arboreal, cons(occ, nil))
+                                                         %(Ax_74)%
+
+forall occ1, occ2, f : individual
+. rel(initial, cons(occ1, nil)) /\ rel(initial, cons(occ2, nil))
+  => (rel(prior, cons(f, cons(occ1, nil)))
+      <=> rel(prior, cons(f, cons(occ2, nil))))        %(Ax_75)%
+
+forall f, a, occ : individual
+. rel(prior, cons(f, cons(successor, nil)))
+  <=> rel(holds, cons(f, cons(occ, nil)))
+      /\ rel(generator, cons(a, nil))                   %(Ax_76)%
+
+forall occ1, f : individual
+. rel(holds, cons(f, cons(occ1, nil)))
+  => exists occ2 : individual
+     . rel(earlierEq, cons(occ2, cons(occ1, nil)))
+       /\ rel(holds, cons(f, cons(occ2, nil)))
+       /\ (rel(initial, cons(occ2, nil))
+           \/ not rel(prior, cons(f, cons(occ2, nil))))
+       /\ forall occ3 : individual
+          . rel(earlier, cons(occ2, cons(occ3, nil)))
+            /\ rel(earlier, cons(occ3, cons(occ1, nil)))
+            => rel(holds, cons(f, cons(occ3, nil)))    %(Ax_77)%
+
+forall occ1, f : individual
+. rel(state, cons(f, nil)) /\ rel(arboreal, cons(occ1, nil))
+  /\ not rel(holds, cons(f, cons(occ1, nil)))
+  => exists occ2 : individual
+     . rel(earlierEq, cons(occ2, cons(occ1, nil)))
+       /\ not rel(holds, cons(f, cons(occ2, nil)))
+       /\ (rel(initial, cons(occ2, nil))
+           \/ rel(prior, cons(f, cons(occ2, nil))))
+       /\ not exists occ3 : individual
+              . rel(earlier, cons(occ2, cons(occ3, nil)))
+                /\ rel(earlier, cons(occ3, cons(occ1, nil)))
+                /\ rel(holds, cons(f, cons(occ3, nil)))
+                                                         %(Ax_78)%
+
+forall f, s1 : individual
+. rel(holds, cons(f, cons(s1, nil)))
+  => exists s2 : individual
+     . rel(holds, cons(f, cons(s2, nil)))
+       /\ rel(earlierEq, cons(s2, cons(s1, nil)))
+       /\ forall s3 : individual
+          . rel(holds, cons(f, cons(s3, nil)))
+            => not rel(earlier, cons(s3, cons(s2, nil)))
+                                                         %(Ax_79)%
+
+forall s1, s2 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  => rel(arboreal, cons(s1, nil)) /\ rel(arboreal, cons(s2, nil))
+                                                         %(Ax_80)%
+
+forall s1, s2 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  => not rel(earlier, cons(s2, cons(s1, nil)))         %(Ax_81)%
+
+forall s1, s2, s3 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  /\ rel(earlier, cons(s2, cons(s3, nil)))
+  => rel(earlier, cons(s1, cons(s3, nil)))             %(Ax_82)%
+
+forall s1, s2, s3 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  /\ rel(earlier, cons(s3, cons(s2, nil)))
+  => rel(earlier, cons(s1, cons(s3, nil)))
+     \/ rel(earlier, cons(s3, cons(s1, nil))) \/ s3 = s1
+                                                         %(Ax_83)%
+
+forall s : individual
+. rel(initial, cons(s, nil))
+  <=> rel(arboreal, cons(s, nil))
+      /\ not exists sp : individual
+             . rel(earlier, cons(sp, cons(s, nil)))    %(Ax_84)%
+
+forall s1, s2 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  => exists sp : individual
+     . rel(initial, cons(sp, nil))
+       /\ rel(earlierEq, cons(sp, cons(s1, nil)))      %(Ax_85)%
+
+forall s, a : individual
+. rel(occurrence_of, cons(s, cons(a, nil)))
+  => (rel(arboreal, cons(s, nil)) <=> rel(generator, cons(a, nil)))
+                                                         %(Ax_86)%
+
+forall s1, s2, a : individual
+. rel(initial, cons(s1, nil)) /\ rel(initial, cons(s2, nil))
+  /\ rel(occurrence_of, cons(s1, cons(a, nil)))
+  /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+  => s1 = s2                                           %(Ax_87)%
+
+forall a, o : individual
+. rel(occurrence_of, cons(successor, cons(a, nil)))
+  <=> rel(generator, cons(a, nil)) /\ rel(arboreal, cons(o, nil))
+                                                         %(Ax_88)%
+
+forall s1, s2 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  => exists a, s3 : individual
+     . rel(generator, cons(a, nil)) /\ s2 = successor  %(Ax_89)%
+
+forall a, s1, s2 : individual
+. rel(generator, cons(a, nil))
+  => (rel(earlier, cons(s1, cons(successor, nil)))
+      <=> rel(earlierEq, cons(s1, cons(s2, nil))))     %(Ax_90)%
+
+forall s : individual
+. rel(legal, cons(s, nil)) => rel(arboreal, cons(s, nil))
+                                                         %(Ax_91)%
+
+forall s1, s2 : individual
+. rel(legal, cons(s1, nil))
+  /\ rel(earlier, cons(s2, cons(s1, nil)))
+  => rel(legal, cons(s2, nil))                          %(Ax_92)%
+
+forall s1, s2 : individual
+. rel(earlier, cons(s1, cons(s2, nil)))
+  => rel(before, cons(endof, cons(beginof, nil)))        %(Ax_93)%
+
+forall s1, s2 : individual
+. rel(precedes, cons(s1, cons(s2, nil)))
+  <=> rel(earlier, cons(s1, cons(s2, nil)))
+      /\ rel(legal, cons(s2, nil))                      %(Ax_94)%
+
+forall s1, s2 : individual
+. rel(earlierEq, cons(s1, cons(s2, nil)))
+  <=> rel(arboreal, cons(s1, nil)) /\ rel(arboreal, cons(s2, nil))
+      /\ (rel(earlier, cons(s1, cons(s2, nil))) \/ s1 = s2)
+                                                         %(Ax_95)%
+
+forall a, s : individual
+. rel(poss, cons(a, cons(s, nil)))
+  <=> rel(legal, cons(successor, nil))                   %(Ax_96)%
+
+forall a : individual
+. rel(generator, cons(a, nil))
+  <=> exists s : individual
+      . rel(initial, cons(s, nil))
+        /\ rel(occurrence_of, cons(s, cons(a, nil)))   %(Ax_97)%
+
+forall s : individual
+. rel(arboreal, cons(s, nil))
+  <=> exists sp : individual
+      . rel(earlier, cons(s, cons(sp, nil)))           %(Ax_98)%
+
+forall a1, a2 : individual
+. rel(subactivity, cons(a1, cons(a2, nil)))
+  => rel(activity, cons(a1, nil)) /\ rel(activity, cons(a2, nil))
+                                                         %(Ax_99)%
+
+forall a : individual
+. rel(activity, cons(a, nil))
+  => rel(subactivity, cons(a, cons(a, nil)))          %(Ax_100)%
+
+forall a1, a2 : individual
+. rel(subactivity, cons(a1, cons(a2, nil)))
+  /\ rel(subactivity, cons(a2, cons(a1, nil)))
+  => a1 = a2                                          %(Ax_101)%
+
+forall a1, a2, a3 : individual
+. rel(subactivity, cons(a1, cons(a2, nil)))
+  /\ rel(subactivity, cons(a2, cons(a3, nil)))
+  => rel(subactivity, cons(a1, cons(a3, nil)))        %(Ax_102)%
+
+forall a1, a2 : individual
+. rel(subactivity, cons(a1, cons(a2, nil))) /\ not a1 = a2
+  => exists a3 : individual
+     . rel(subactivity, cons(a1, cons(a3, nil)))
+       /\ rel(subactivity, cons(a3, cons(a2, nil))) /\ not a3 = a1
+       /\ forall a4 : individual
+          . rel(subactivity, cons(a1, cons(a4, nil)))
+            /\ rel(subactivity, cons(a4, cons(a3, nil)))
+            => a4 = a1 \/ a4 = a3                   %(Ax_103)%
+
+forall a1, a2 : individual
+. rel(subactivity, cons(a1, cons(a2, nil))) /\ not a1 = a2
+  => exists a3 : individual
+     . rel(subactivity, cons(a1, cons(a3, nil)))
+       /\ rel(subactivity, cons(a3, cons(a2, nil))) /\ not a3 = a2
+       /\ forall a4 : individual
+          . rel(subactivity, cons(a3, cons(a4, nil)))
+            /\ rel(subactivity, cons(a4, cons(a2, nil)))
+            => a4 = a2 \/ a4 = a3                   %(Ax_104)%
+
+forall a : individual
+. rel(primitive, cons(a, nil))
+  <=> rel(activity, cons(a, nil))
+      /\ forall a1 : individual
+         . rel(subactivity, cons(a1, cons(a, nil))) => a1 = a
+                                                        %(Ax_105)%
+
+. rel(timeduration, cons(zero, nil))
+  /\ rel(timeduration, cons(maxp, nil))
+  /\ rel(timeduration, cons(maxm, nil))                 %(Ax_106)%
+
+forall d1, d2 : individual
+. rel(timeduration, cons(d1, nil))
+  /\ rel(timeduration, cons(d2, nil))
+  => rel(timeduration, cons(add, nil))                  %(Ax_107)%
+
+forall d1, d2, d3 : individual
+. rel(timeduration, cons(d1, nil))
+  /\ rel(timeduration, cons(d2, nil))
+  /\ rel(timeduration, cons(d3, nil))
+  => add = add                                          %(Ax_108)%
+
+forall d : individual
+. rel(timeduration, cons(d, nil)) => add = d          %(Ax_109)%
+
+forall d1 : individual
+. rel(timeduration, cons(d1, nil))
+  => exists d2 : individual
+     . rel(timeduration, cons(d2, nil)) /\ add = zero  %(Ax_110)%
+
+forall d1, d2 : individual
+. rel(timeduration, cons(d1, nil))
+  /\ rel(timeduration, cons(d2, nil))
+  => add = add                                          %(Ax_111)%
+
+forall d, r : individual
+. rel(timeduration, cons(d, nil))
+  => rel(timeduration, cons(mult, nil))                 %(Ax_112)%
+
+forall d1, d2, r : individual . mult = add %(Ax_113)%
+
+forall d, r, s : individual . mult = add %(Ax_114)%
+
+forall d, r, s : individual . mult = mult %(Ax_115)%
+
+forall d : individual . d = mult %(Ax_116)%
+
+forall d1, d2, d3 : individual
+. rel(timeduration, cons(d1, nil))
+  /\ rel(timeduration, cons(d2, nil))
+  /\ rel(timeduration, cons(d3, nil))
+  => (rel(lesser, cons(d1, cons(d2, nil)))
+      <=> rel(lesser, cons(add, cons(add, nil))))       %(Ax_117)%
+
+forall d1, d2, d3 : individual
+. rel(timeduration, cons(d1, nil))
+  /\ rel(timeduration, cons(d2, nil))
+  /\ rel(timeduration, cons(d3, nil))
+  => (d1 = d2 <=> add = add)                          %(Ax_118)%
+
+forall d : individual
+. rel(timeduration, cons(d, nil))
+  => rel(lesser, cons(d, cons(maxp, nil)))
+     /\ rel(lesser, cons(maxm, cons(d, nil)))          %(Ax_119)%
+
+forall d : individual
+. rel(timeduration, cons(d, nil))
+  => (not d = maxm => maxp = add) /\ (not d = maxp => maxm = add)
+     /\ zero = add                                      %(Ax_120)%
+
+forall t1, t2 : individual
+. rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+  => rel(timeduration, cons(duration, nil))             %(Ax_121)%
+
+forall d : individual
+. rel(timeduration, cons(d, nil))
+  => exists t1, t2 : individual
+     . rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+       /\ d = duration                                 %(Ax_122)%
+
+forall t1, t2 : individual
+. rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+  => (zero = duration <=> t1 = t2)                    %(Ax_123)%
+
+forall t1, t2 : individual
+. rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+  => zero = add                                         %(Ax_124)%
+
+forall t1, t2, t3 : individual
+. rel(timepoint, cons(t1, nil)) /\ rel(timepoint, cons(t2, nil))
+  /\ rel(timepoint, cons(t3, nil)) /\ not t1 = infm
+  /\ not t2 = infp /\ duration = duration
+  => t1 = t2                                          %(Ax_125)%
+
+forall t : individual
+. (rel(timepoint, cons(t, nil)) /\ not t = infm
+   => maxp = duration)
+  /\ (rel(timepoint, cons(t, nil)) /\ not t = infp
+      => maxm = duration)                               %(Ax_126)%
+
+forall t : individual
+. (rel(timepoint, cons(t, nil)) /\ not t = infm
+   => maxm = duration)
+  /\ (rel(timepoint, cons(t, nil)) /\ not t = infp
+      => maxp = duration)                               %(Ax_127)%
+
+forall t1, t2, d : individual
+. t2 = time_add
+  <=> rel(timepoint, cons(t1, nil))
+      /\ rel(timepoint, cons(t2, nil))
+      /\ rel(timeduration, cons(d, nil)) /\ d = duration
+                                                        %(Ax_128)%
+
+forall a1, s : individual
+. rel(root, cons(s, cons(a1, nil)))
+  => exists a2 : individual
+     . rel(envelope, cons(a2, cons(a1, cons(s, nil))))
+                                                        %(Ax_129)%
+
+forall a1, s : individual
+. rel(root, cons(s, cons(a1, nil)))
+  => exists a2 : individual
+     . rel(umbra, cons(a2, cons(a1, cons(s, nil))))  %(Ax_130)%
+
+forall a1, a2, s, s1 : individual
+. rel(envelope, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(live_branch, cons(s1, cons(s, cons(a2, nil))))
+  => not rel(dead_branch, cons(s1, cons(s, cons(a1, nil))))
+                                                        %(Ax_131)%
+
+forall a1, a2, s, s1 : individual
+. rel(umbra, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(live_branch, cons(s1, cons(s, cons(a2, nil))))
+  => not rel(live_branch, cons(s1, cons(s, cons(a1, nil))))
+                                                        %(Ax_132)%
+
+forall a1, a2, s, s1 : individual
+. rel(envelope, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(live_branch, cons(s1, cons(s, cons(a1, nil))))
+  => rel(live_branch, cons(s1, cons(s, cons(a2, nil))))
+                                                        %(Ax_133)%
+
+forall a1, a2, s, s1 : individual
+. rel(umbra, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(dead_branch, cons(s1, cons(s, cons(a1, nil))))
+  => rel(live_branch, cons(s1, cons(s, cons(a2, nil))))
+                                                        %(Ax_134)%
+
+forall a1, a2, s, o : individual
+. rel(envelope, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(occurrence_of, cons(o, cons(a2, nil))) /\ s = root_occ
+  => rel(unrestricted, cons(o, nil))                   %(Ax_135)%
+
+forall a1, a2, s, o : individual
+. rel(umbra, cons(a2, cons(a1, cons(s, nil))))
+  /\ rel(occurrence_of, cons(o, cons(a2, nil))) /\ s = root_occ
+  => rel(unrestricted, cons(o, nil))                   %(Ax_136)%
+
+forall a1, a2, s1, s2 : individual
+. rel(ubiquitous, cons(a1, cons(a2, nil)))
+  /\ rel(min_precedes, cons(s1, cons(s2, cons(a2, nil))))
+  => exists s3, s4, s5, s6 : individual
+     . rel(tree_equiv, cons(s1, cons(s2, nil)))
+       /\ rel(tree_equiv, cons(s3, cons(s4, nil)))
+       /\ rel(occurrence_of, cons(s5, cons(a1, nil)))
+       /\ rel(occurrence_of, cons(s6, cons(a1, nil)))
+       /\ rel(legal_equiv, cons(s5, cons(s6, nil)))
+       /\ rel(end_iso, cons(s3, cons(s4, cons(s5, cons(s6, nil)))))
+                                                        %(Ax_137)%
+
+forall a1, a2, s1, s2 : individual
+. rel(ubiquitous, cons(a1, cons(a2, nil)))
+  /\ rel(min_precedes, cons(s1, cons(s2, cons(a2, nil))))
+  => not exists s3, s4 : individual
+         . rel(occurrence_of, cons(s3, cons(a1, nil)))
+           /\ rel(occurrence_of, cons(s4, cons(a1, nil)))
+           /\ rel(legal_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(end_iso, cons(s1, cons(s2, cons(s3, cons(s4, nil)))))
+                                                        %(Ax_138)%
+
+forall a1, a2, s1, s2, s3, s4 : individual
+. rel(ubiquitous, cons(a1, cons(a2, nil)))
+  /\ rel(occurrence_of, cons(s3, cons(a1, nil)))
+  /\ rel(occurrence_of, cons(s4, cons(a1, nil)))
+  /\ rel(legal_equiv, cons(s3, cons(s4, nil)))
+  /\ rel(end_iso, cons(s1, cons(s2, cons(s3, cons(s4, nil)))))
+  => exists o1, o2 : individual
+     . rel(occurrence_of, cons(o1, cons(a1, nil)))
+       /\ rel(occurrence_of, cons(o2, cons(a1, nil)))
+       /\ rel(subactivity_occurrence, cons(s1, cons(o1, nil)))
+       /\ rel(subactivity_occurrence, cons(s2, cons(o1, nil)))
+                                                        %(Ax_139)%
+
+forall s1, s2, s3, s4 : individual
+. rel(end_iso, cons(s1, cons(s2, cons(s3, cons(s4, nil)))))
+  <=> exists s5, s6 : individual
+      . rel(precedes, cons(s5, cons(s1, nil)))
+        /\ rel(precedes, cons(s5, cons(s3, nil)))
+        /\ rel(precedes, cons(s6, cons(s2, nil)))
+        /\ rel(precedes, cons(s6, cons(s4, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s3, cons(s4, nil)))
+        /\ rel(tree_equiv, cons(s5, cons(s6, nil)))   %(Ax_140)%
+
+forall s1, s2, a : individual
+. rel(soo_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => rel(soo, cons(s1, cons(a, nil)))
+     /\ rel(soo, cons(s2, cons(a, nil)))              %(Ax_141)%
+
+forall a, s : individual
+. rel(soo, cons(s, cons(a, nil)))
+  => rel(root, cons(s, cons(a, nil)))
+     \/ exists s1 : individual
+        . rel(min_precedes, cons(s1, cons(s, cons(a, nil))))
+                                                        %(Ax_142)%
+
+forall s, occ, a : individual
+. rel(occurrence_of, cons(occ, cons(a, nil)))
+  /\ rel(subactivity_occurrence, cons(s, cons(occ, nil)))
+  /\ rel(arboreal, cons(s, nil))
+  => rel(soo, cons(soomap, cons(a, nil)))              %(Ax_143)%
+
+forall s, a : individual
+. rel(soo, cons(s, cons(a, nil))) => s = soomap      %(Ax_144)%
+
+forall s, a : individual
+. rel(mono, cons(s, cons(soomap, cons(a, nil)))) \/ s = soomap
+                                                        %(Ax_145)%
+
+forall s1, s2, a : individual
+. rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => (rel(soo_precedes, cons(soomap, cons(soomap, cons(a, nil))))
+      <=> not exists s3, s4 : individual
+              . rel(min_precedes, cons(s4, cons(s3, cons(a, nil))))
+                /\ soomap = soomap /\ soomap = soomap)  %(Ax_146)%
+
+forall a, s1, s2 : individual
+. rel(soo_precedes, cons(s1, cons(s2, cons(a, nil))))
+  => not rel(soo_precedes, cons(s2, cons(s1, cons(a, nil))))
+                                                        %(Ax_147)%
+
+forall a, s1, s2, s3 : individual
+. rel(soo_precedes, cons(s1, cons(s2, cons(a, nil))))
+  /\ rel(soo_precedes, cons(s2, cons(s3, cons(a, nil))))
+  => rel(soo_precedes, cons(s1, cons(s3, cons(a, nil))))
+                                                        %(Ax_148)%
+
+forall s, a : individual
+. rel(root_soo, cons(s, cons(a, nil)))
+  <=> rel(soo, cons(s, cons(a, nil)))
+      /\ not exists s1 : individual
+             . rel(soo_precedes, cons(s1, cons(s, cons(a, nil))))
+                                                        %(Ax_149)%
+
+forall s, a : individual
+. rel(leaf_soo, cons(s, cons(a, nil)))
+  <=> rel(soo, cons(s, cons(a, nil)))
+      /\ not exists s1 : individual
+             . rel(soo_precedes, cons(s, cons(s1, cons(a, nil))))
+                                                        %(Ax_150)%
+
+forall s1, s2, a : individual
+. rel(next_subactivity, cons(s1, cons(s2, cons(a, nil))))
+  <=> rel(soo_precedes, cons(s1, cons(s2, cons(a, nil))))
+      /\ not exists s3 : individual
+             . rel(soo_precedes, cons(s1, cons(s3, cons(a, nil))))
+               /\ rel(soo_precedes, cons(s3, cons(s2, cons(a, nil))))
+                                                        %(Ax_151)%
+
+forall a, a1, r, s : individual
+. rel(requires, cons(a, cons(r, nil)))
+  /\ rel(subactivity, cons(a1, cons(a, nil)))
+  /\ rel(atomic, cons(a1, nil))
+  /\ rel(holds, cons(available, cons(s, nil)))
+  => exists occ : individual
+     . rel(occurrence_of, cons(occ, cons(a, nil)))
+       /\ rel(subactivity_occurrence, cons(successor, cons(occ, nil)))
+                                                        %(Ax_152)%
+
+forall a, r : individual
+. rel(requires, cons(a, cons(r, nil)))
+  <=> exists a1 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(requires, cons(a1, cons(r, nil)))      %(Ax_153)%
+
+forall r, a, s : individual
+. rel(prior, cons(available, cons(s, nil)))
+  <=> exists q1, q2, q3 : individual
+      . rel(prior, cons(resource_point, cons(s, nil)))
+        /\ rel(prior, cons(agg_demand, cons(s, nil)))
+        /\ rel(prior, cons(demand, cons(s, nil)))
+        /\ rel(greater, cons(q1, cons(plus, nil)))     %(Ax_154)%
+
+forall r, a, q, s : individual
+. rel(prior, cons(demand, cons(s, nil)))
+  => rel(greater, cons(q, cons(zero, nil)))            %(Ax_155)%
+
+forall a1, a2, r, q, s : individual
+. rel(prior, cons(demand, cons(s, nil)))
+  <=> exists q1, q2 : individual
+      . rel(prior, cons(demand, cons(s, nil)))
+        /\ rel(prior, cons(demand, cons(s, nil))) /\ q = plus
+                                                        %(Ax_156)%
+
+forall r, q, s : individual
+. rel(holds, cons(agg_demand, cons(s, nil)))
+  <=> (exists a1, q1, q2 : individual
+       . rel(occurrence_of, cons(s, cons(a1, nil)))
+         /\ rel(prior, cons(demand, cons(s, nil)))
+         /\ rel(prior, cons(agg_demand, cons(s, nil))) /\ q = plus)
+      \/ exists a2, q1, q2 : individual
+         . rel(occurrence_of, cons(s, cons(a2, nil)))
+           /\ rel(prior, cons(demand, cons(s, nil)))
+           /\ rel(prior, cons(agg_demand, cons(s, nil))) /\ q1 = plus
+                                                        %(Ax_157)%
+
+forall i, r, occ : individual
+. rel(holds, cons(resource_set, cons(occ, nil)))
+  => forall rp : individual
+     . rel(set_member, cons(rp, cons(i, nil)))
+       => exists a : individual . rel(requires, cons(a, cons(rp, nil)))
+                                                        %(Ax_158)%
+
+forall i, r1, r2, a, occ : individual
+. rel(holds, cons(resource_set, cons(occ, nil)))
+  /\ rel(set_member, cons(r2, cons(i, nil)))
+  /\ rel(requires, cons(a, cons(r2, nil)))
+  => rel(requires, cons(a, cons(r1, nil)))            %(Ax_159)%
+
+forall i1, i2, r, occ : individual
+. rel(holds, cons(resource_set, cons(occ, nil)))
+  /\ rel(holds, cons(resource_set, cons(occ, nil)))
+  => i1 = i2                                          %(Ax_160)%
+
+forall r1, r2, occ : individual
+. rel(holds, cons(in_resource_set, cons(occ, nil)))
+  <=> exists i : individual
+      . rel(set_member, cons(r1, cons(i, nil)))
+        /\ rel(holds, cons(resource_set, cons(occ, nil)))
+                                                        %(Ax_161)%
+
+forall r1, r2, occ : individual
+. rel(holds, cons(resource_subset, cons(occ, nil)))
+  <=> forall r, i1, i2 : individual
+      . rel(holds, cons(resource_set, cons(occ, nil)))
+        /\ rel(holds, cons(resource_set, cons(occ, nil)))
+        /\ rel(set_member, cons(r, cons(i1, nil)))
+        => rel(set_member, cons(r, cons(i2, nil)))    %(Ax_162)%
+
+forall a : individual
+. rel(global_ideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_163)%
+
+forall a : individual
+. rel(global_nonideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_164)%
+
+forall a : individual
+. rel(global_filter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_165)%
+
+forall a : individual
+. rel(global_nonfilter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_166)%
+
+forall a : individual
+. rel(reordered, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        => rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_167)%
+
+forall a : individual
+. rel(nondet_reordered, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+             /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_168)%
+
+forall a : individual
+. rel(partial_reordered, cons(a, nil))
+  <=> exists occ1, occ2, occ3 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ rel(occurrence_of, cons(occ3, cons(a, nil)))
+        /\ rel(same_grove, cons(occ1, cons(occ3, nil)))
+        /\ forall occ4 : individual
+           . rel(occurrence_of, cons(occ4, cons(a, nil)))
+             /\ not occ2 = occ4
+             /\ rel(same_grove, cons(occ2, cons(occ4, nil)))
+             => not rel(branch_automorphic, cons(occ2, cons(occ4, nil)))
+                                                        %(Ax_169)%
+
+forall a : individual
+. rel(unorderable, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        => not rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_170)%
+
+forall a : individual
+. rel(compacted, cons(a, nil))
+  <=> exists occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ forall occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+             => rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_171)%
+
+forall a : individual
+. rel(nondet_compacted, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+             /\ rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_172)%
+
+forall a : individual
+. rel(partial_compacted, cons(a, nil))
+  <=> exists occ1, occ2, occ3 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+        /\ rel(occurrence_of, cons(occ3, cons(a, nil)))
+        /\ rel(same_grove, cons(occ3, cons(occ1, nil)))
+        /\ forall occ4 : individual
+           . rel(occurrence_of, cons(occ4, cons(a, nil)))
+             /\ not occ2 = occ4
+             /\ rel(same_grove, cons(occ2, cons(occ4, nil)))
+             => not rel(branch_homomorphic, cons(occ2, cons(occ4, nil)))
+                                                        %(Ax_173)%
+
+forall a : individual
+. rel(stiff, cons(a, nil))
+  => forall occ1, occ2 : individual
+     . rel(occurrence_of, cons(occ1, cons(a, nil)))
+       /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+       /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+       => not rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_174)%
+
+forall a, s : individual
+. rel(superpose, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s, nil)))
+        => rel(poss, cons(a1, cons(s, nil)))          %(Ax_175)%
+
+forall a, s : individual
+. rel(assistance, cons(a, cons(s, nil)))
+  <=> forall a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s, nil)))
+        => rel(poss, cons(conc, cons(s, nil)))         %(Ax_176)%
+
+forall a, s : individual
+. rel(team, cons(a, cons(s, nil)))
+  <=> exists a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s, nil)))
+        /\ not rel(poss, cons(conc, cons(s, nil)))     %(Ax_177)%
+
+forall a, s : individual
+. rel(ghost, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(poss, cons(a1, cons(s, nil)))
+        => rel(poss, cons(a, cons(s, nil)))           %(Ax_178)%
+
+forall a, s : individual
+. rel(conflict, cons(a, cons(s, nil)))
+  <=> forall a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ not rel(poss, cons(a1, cons(s, nil)))
+        /\ rel(poss, cons(conc, cons(s, nil)))
+        => rel(poss, cons(a, cons(s, nil)))           %(Ax_179)%
+
+forall a, s : individual
+. rel(dysfunction, cons(a, cons(s, nil)))
+  <=> exists a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ not rel(poss, cons(a1, cons(s, nil)))
+        /\ not rel(poss, cons(a, cons(s, nil)))
+        /\ rel(poss, cons(conc, cons(s, nil)))         %(Ax_180)%
+
+forall s1, s2, a : individual
+. rel(live_branch, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists occ : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s1 = root_occ
+        /\ rel(min_precedes, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_181)%
+
+forall s1, s2, a : individual
+. rel(embedded, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists s3 : individual
+      . rel(root, cons(s2, cons(a, nil)))
+        /\ rel(min_precedes, cons(s2, cons(s3, cons(a, nil))))
+        /\ rel(precedes, cons(s2, cons(s1, nil)))
+        /\ rel(precedes, cons(s1, cons(s3, nil)))
+        /\ not rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+                                                        %(Ax_182)%
+
+forall s1, s2, a : individual
+. rel(dead_branch, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists a1, s3 : individual
+      . rel(root, cons(s1, cons(a, nil)))
+        /\ rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+        /\ not rel(leaf, cons(s3, cons(a, nil))) /\ s2 = successor
+        /\ not exists s4 : individual
+               . rel(precedes, cons(s3, cons(s4, nil)))
+                 /\ rel(min_precedes, cons(s3, cons(s4, cons(a, nil))))
+                                                        %(Ax_183)%
+
+forall s1, s2, a : individual
+. rel(dead_occurrence, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists s3 : individual
+      . rel(dead_branch, cons(s1, cons(s3, cons(a, nil))))
+        /\ rel(precedes, cons(s1, cons(s2, nil)))
+        /\ rel(precedes, cons(s2, cons(s3, nil)))     %(Ax_184)%
+
+forall s1, s2, s3, a : individual
+. rel(embed_tree, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+  <=> exists a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s1, cons(a1, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a2, nil)))
+        /\ (rel(live_branch, cons(s3, cons(s1, cons(a, nil))))
+            \/ rel(dead_branch, cons(s3, cons(s1, cons(a, nil)))))
+        /\ (rel(live_branch, cons(s3, cons(s2, cons(a, nil))))
+            \/ rel(dead_branch, cons(s3, cons(s2, cons(a, nil)))))
+                                                        %(Ax_185)%
+
+forall s1, s2, s3, a : individual
+. rel(subocc_equiv, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+  <=> rel(embed_tree, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+      /\ (rel(min_precedes, cons(s3, cons(s1, cons(a, nil))))
+          <=> rel(min_precedes, cons(s3, cons(s2, cons(a, nil)))))
+                                                        %(Ax_186)%
+
+forall occ : individual
+. rel(unrestricted, cons(occ, nil))
+  <=> forall a, s1, s2, s3 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s3 = root_occ
+        /\ rel(embed_tree, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+        => rel(subocc_equiv,
+               cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+                                                        %(Ax_187)%
+
+forall occ1, occ2 : individual
+. rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+  <=> rel(same_grove, cons(occ1, cons(occ2, nil)))
+      /\ forall s1, a : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+           => exists s2 : individual
+              . rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+                /\ rel(hom, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_188)%
+
+forall occ : individual
+. rel(folded, cons(occ, nil))
+  <=> exists occ1 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ forall occ2 : individual
+           . rel(same_grove, cons(occ2, cons(occ, nil)))
+             => rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_189)%
+
+forall occ : individual
+. rel(nondet_folded, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        => exists occ2 : individual
+           . rel(same_grove, cons(occ2, cons(occ, nil)))
+             /\ not occ1 = occ2
+             /\ rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_190)%
+
+forall occ : individual
+. rel(partial_folded, cons(occ, nil))
+  <=> exists occ1, occ2, occ3 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ rel(same_grove, cons(occ2, cons(occ, nil)))
+        /\ not occ1 = occ2
+        /\ rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+        /\ rel(same_grove, cons(occ3, cons(occ, nil)))
+        /\ forall occ4 : individual
+           . rel(same_grove, cons(occ4, cons(occ, nil)))
+             /\ not occ3 = occ4
+             => not rel(branch_homomorphic, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_191)%
+
+forall occ : individual
+. rel(rigid, cons(occ, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ rel(same_grove, cons(occ2, cons(occ, nil)))
+        /\ not occ1 = occ2
+        => not rel(branch_homomorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_192)%
+
+forall s1, s2, a : individual
+. rel(mono_tree, cons(s1, cons(s2, cons(a, nil))))
+  <=> forall s3, s4, s5 : individual
+      . rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+        /\ rel(min_precedes, cons(s2, cons(s4, cons(a, nil))))
+        /\ rel(mono, cons(s3, cons(s4, cons(a, nil))))
+        /\ rel(min_precedes, cons(s3, cons(s5, cons(a, nil))))
+        => exists s6 : individual
+           . rel(mono, cons(s5, cons(s6, cons(a, nil))))
+             /\ rel(min_precedes, cons(s4, cons(s6, cons(a, nil))))
+                                                        %(Ax_193)%
+
+forall s1, s2, a : individual
+. rel(order_tree, cons(s1, cons(s2, cons(a, nil))))
+  <=> rel(mono_tree, cons(s1, cons(s2, cons(a, nil))))
+      /\ forall s3, s4, s5, s6 : individual
+         . rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+           /\ rel(min_precedes, cons(s2, cons(s4, cons(a, nil))))
+           /\ rel(cousin, cons(s3, cons(s4, cons(a, nil))))
+           /\ rel(min_precedes, cons(s3, cons(s5, cons(a, nil))))
+           /\ rel(cousin, cons(s5, cons(s6, cons(a, nil))))
+           => (rel(iso_occ, cons(s3, cons(s5, cons(a, nil))))
+               <=> rel(iso_occ, cons(s4, cons(s6, cons(a, nil)))))
+                                                        %(Ax_194)%
+
+forall occ1, occ2 : individual
+. rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+  <=> exists a, s1, s2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+        /\ rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+        /\ rel(order_tree, cons(s1, cons(s2, cons(a, nil))))
+        /\ rel(order_tree, cons(s2, cons(s1, cons(a, nil))))
+                                                        %(Ax_195)%
+
+forall occ1 : individual
+. rel(ordered, cons(occ1, nil))
+  <=> forall occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ2, nil)))
+        => rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_196)%
+
+forall occ1 : individual
+. rel(nondet_ordered, cons(occ1, nil))
+  <=> forall occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ2, nil)))
+        => exists occ3 : individual
+           . rel(same_grove, cons(occ1, cons(occ3, nil)))
+             /\ not occ3 = occ2
+             /\ rel(root_automorphic, cons(occ2, cons(occ3, nil)))
+                                                        %(Ax_197)%
+
+forall occ1 : individual
+. rel(broken_ordered, cons(occ1, nil))
+  <=> exists occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ not occ1 = occ2
+        /\ rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ forall occ3 : individual
+           . rel(same_grove, cons(occ3, cons(occ1, nil)))
+             /\ not occ3 = occ2
+             => not rel(root_automorphic, cons(occ3, cons(occ2, nil)))
+                                                        %(Ax_198)%
+
+forall occ1 : individual
+. rel(unordered, cons(occ1, nil))
+  <=> forall occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ not occ1 = occ2
+        => not rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_199)%
+
+forall occ1, occ2 : individual
+. rel(branch_monomorphic, cons(occ1, cons(occ2, nil)))
+  <=> forall s1, a : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+        => exists s2 : individual
+           . rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+             /\ rel(mono, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_200)%
+
+forall occ1, occ2 : individual
+. rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+  <=> rel(branch_monomorphic, cons(occ1, cons(occ2, nil)))
+      /\ rel(branch_monomorphic, cons(occ2, cons(occ1, nil)))
+                                                        %(Ax_201)%
+
+forall occ : individual
+. rel(permuted, cons(occ, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ rel(same_grove, cons(occ2, cons(occ, nil)))
+        => rel(branch_automorphic, cons(occ1, cons(occ, nil)))
+                                                        %(Ax_202)%
+
+forall occ : individual
+. rel(nondet_permuted, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        => exists occ2 : individual
+           . rel(same_grove, cons(occ1, cons(occ2, nil)))
+             /\ not occ1 = occ2
+             /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_203)%
+
+forall occ : individual
+. rel(partial_permuted, cons(occ, nil))
+  <=> exists occ1, occ2, occ3 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ rel(same_grove, cons(occ2, cons(occ, nil)))
+        /\ not occ1 = occ2
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ rel(same_grove, cons(occ3, cons(occ, nil)))
+        /\ forall occ4 : individual
+           . rel(same_grove, cons(occ3, cons(occ4, nil)))
+             /\ rel(branch_automorphic, cons(occ3, cons(occ4, nil)))
+             => occ3 = occ4                           %(Ax_204)%
+
+forall occ : individual
+. rel(simple, cons(occ, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(same_grove, cons(occ1, cons(occ, nil)))
+        /\ rel(same_grove, cons(occ2, cons(occ, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        => occ1 = occ2                                %(Ax_205)%
+
+forall s1, s2, s3, s4, a : individual
+. rel(branch_mono,
+      cons(s1, cons(s2, cons(s3, cons(s4, cons(a, nil))))))
+  <=> forall s5, s6 : individual
+      . rel(min_precedes, cons(s1, cons(s5, cons(a, nil))))
+        /\ rel(min_precedes, cons(s6, cons(s2, cons(a, nil))))
+        /\ rel(next_subocc, cons(s5, cons(s6, cons(a, nil))))
+        => exists s7, s8 : individual
+           . rel(min_precedes, cons(s3, cons(s7, cons(a, nil))))
+             /\ rel(min_precedes, cons(s8, cons(s4, cons(a, nil))))
+             /\ rel(next_subocc, cons(s7, cons(s8, cons(a, nil))))
+             /\ rel(iso_occ, cons(s5, cons(s7, cons(a, nil))))
+             /\ rel(iso_occ, cons(s6, cons(s8, cons(a, nil))))
+                                                        %(Ax_206)%
+
+forall s, occ : individual
+. rel(reptree, cons(s, cons(occ, nil)))
+  <=> forall s1, a : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        => exists s2, s3, s4, occ1 : individual
+           . rel(same_tree, cons(occ, cons(occ1, nil)))
+             /\ rel(leaf_occ, cons(s2, cons(occ1, nil)))
+             /\ rel(min_precedes, cons(s3, cons(s1, cons(a, nil))))
+             /\ rel(min_precedes, cons(s1, cons(s4, cons(a, nil))))
+             /\ rel(branch_mono,
+                    cons(s3, cons(s4, cons(s, cons(s2, cons(a, nil))))))
+                                                        %(Ax_207)%
+
+forall occ : individual
+. rel(repetitive, cons(occ, nil))
+  <=> exists s, occ2 : individual
+      . rel(same_tree, cons(occ, cons(occ2, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ2, nil)))
+        /\ forall occ1 : individual
+           . rel(same_tree, cons(occ, cons(occ1, nil)))
+             => rel(reptree, cons(s, cons(occ1, nil))) /\ not s = root_occ
+                                                        %(Ax_208)%
+
+forall occ : individual
+. rel(nondet_repetitive, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_tree, cons(occ, cons(occ1, nil)))
+        => exists s, occ2 : individual
+           . rel(same_tree, cons(occ, cons(occ2, nil)))
+             /\ rel(subactivity_occurrence, cons(s, cons(occ2, nil)))
+             /\ rel(reptree, cons(s, cons(occ1, nil))) /\ not s = root_occ
+                                                        %(Ax_209)%
+
+forall occ : individual
+. rel(partial_repetitive, cons(occ, nil))
+  <=> (exists occ1, occ2, s : individual
+       . rel(same_tree, cons(occ, cons(occ1, nil)))
+         /\ rel(same_tree, cons(occ, cons(occ2, nil)))
+         /\ rel(subactivity_occurrence, cons(s, cons(occ2, nil)))
+         /\ rel(rep_tree, cons(s, cons(occ1, nil))) /\ not s = root_occ)
+      /\ exists occ1 : individual
+         . forall s1 : individual
+           . rel(reptree, cons(s1, cons(occ1, nil))) => s1 = root_occ
+                                                        %(Ax_210)%
+
+forall occ : individual
+. rel(amorphous, cons(occ, nil))
+  <=> forall occ1, s : individual
+      . rel(same_tree, cons(occ1, cons(occ, nil)))
+        /\ rel(reptree, cons(s, cons(occ1, nil)))
+        => s = root_occ                                %(Ax_211)%
+
+forall occ : individual
+. rel(fused, cons(occ, nil))
+  <=> forall s1, s2, s3 : individual
+      . s1 = root_occ
+        /\ rel(subactivity_occurrence, cons(s2, cons(occ, nil)))
+        /\ rel(precedes, cons(s1, cons(s3, nil)))
+        /\ rel(precedes, cons(s3, cons(s2, nil)))
+        => rel(subactivity_occurrence, cons(s3, cons(occ, nil)))
+                                                        %(Ax_212)%
+
+forall occ : individual
+. rel(embed_occ, cons(occ, nil))
+  <=> forall a, s, s1, s2, s3 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s = root_occ
+        /\ rel(next_subocc, cons(s1, cons(s2, cons(occ, nil))))
+        /\ rel(precedes, cons(s1, cons(s3, nil)))
+        /\ rel(precedes, cons(s3, cons(s2, nil)))
+        => exists s4, s5, s6 : individual
+           . rel(precedes, cons(s4, cons(s5, nil)))
+             /\ rel(precedes, cons(s5, cons(s6, nil)))
+             /\ rel(iso_occ, cons(s4, cons(s1, cons(a, nil))))
+             /\ rel(iso_occ, cons(s5, cons(s3, cons(a, nil))))
+             /\ rel(iso_occ, cons(s6, cons(s3, cons(a, nil))))
+             /\ rel(dead_branch, cons(s1, cons(s4, cons(a, nil))))
+             /\ rel(dead_branch, cons(s1, cons(s6, cons(a, nil))))
+                                                        %(Ax_213)%
+
+forall occ : individual
+. rel(free', cons(occ, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(same_tree, cons(occ, cons(occ1, nil)))
+        /\ rel(same_tree, cons(occ, cons(occ2, nil)))
+        /\ not rel(fused, cons(occ1, nil)) /\ rel(fused, cons(occ2, nil))
+                                                        %(Ax_214)%
+
+forall occ : individual
+. rel(assisted, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_tree, cons(occ, cons(occ1, nil)))
+        => not rel(fused, cons(occ1, nil))             %(Ax_215)%
+
+forall occ : individual
+. rel(helpless, cons(occ, nil))
+  <=> forall s1, s2 : individual
+      . rel(next_subocc, cons(s1, cons(s2, cons(occ, nil))))
+        => exists s3 : individual
+           . rel(precedes, cons(s1, cons(s3, nil)))
+             /\ rel(precedes, cons(s3, cons(s2, nil)))
+             /\ not rel(subactivity_occurrence, cons(s3, cons(occ, nil)))
+                                                        %(Ax_216)%
+
+forall occ : individual
+. rel(unbound, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_tree, cons(occ1, cons(occ, nil)))
+        => not rel(embed_occ, cons(occ1, nil))         %(Ax_217)%
+
+forall occ : individual
+. rel(bound, cons(occ, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(same_tree, cons(occ1, cons(occ, nil)))
+        /\ not rel(embed_occ, cons(occ1, nil))
+        /\ rel(same_tree, cons(occ2, cons(occ, nil)))
+        /\ rel(embed_occ, cons(occ2, nil))             %(Ax_218)%
+
+forall occ : individual
+. rel(strict, cons(occ, nil))
+  <=> forall occ1 : individual
+      . rel(same_tree, cons(occ, cons(occ1, nil)))
+        => rel(fused, cons(occ1, nil))                 %(Ax_219)%
+
+forall s1, s2, a : individual
+. rel(subtree_embed, cons(s1, cons(s2, cons(a, nil))))
+  <=> forall s3 : individual
+      . rel(min_precedes, cons(s1, cons(s3, cons(a, nil))))
+        => exists s4 : individual
+           . rel(min_precedes, cons(s2, cons(s4, cons(a, nil))))
+             /\ rel(iso_occ, cons(s4, cons(s3, cons(a, nil))))
+                                                        %(Ax_220)%
+
+forall a : individual
+. rel(multiple_outcome, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(root, cons(s1, cons(a, nil)))
+        /\ rel(root, cons(s2, cons(a, nil)))
+        => rel(subtree_embed, cons(s1, cons(s2, cons(a, nil))))
+           \/ rel(subtree_embed, cons(s2, cons(s1, cons(a, nil))))
+                                                        %(Ax_221)%
+
+forall a : individual
+. rel(weak_outcome, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(root, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(root, cons(s2, cons(a, nil)))
+             => rel(subtree_embed, cons(s2, cons(s1, cons(a, nil))))
+                                                        %(Ax_222)%
+
+forall a : individual
+. rel(nondet_outcome, cons(a, nil))
+  <=> exists s1, s2, s3 : individual
+      . rel(root, cons(s1, cons(a, nil)))
+        /\ rel(root, cons(s2, cons(a, nil)))
+        /\ rel(subtree_embed, cons(s2, cons(s1, cons(a, nil))))
+        /\ rel(root, cons(s3, cons(a, nil)))
+        /\ forall s4 : individual
+           . rel(root, cons(s4, cons(a, nil)))
+             => not (rel(subtree_embed, cons(s3, cons(s4, cons(a, nil))))
+                     \/ rel(subtree_embed, cons(s4, cons(s3, cons(a, nil)))))
+                                                        %(Ax_223)%
+
+forall a : individual
+. rel(imiscible, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(root, cons(s1, cons(a, nil)))
+        /\ rel(root, cons(s2, cons(a, nil)))
+        => not (rel(subtree_embed, cons(s1, cons(s2, cons(a, nil))))
+                \/ rel(subtree_embed, cons(s2, cons(s1, cons(a, nil)))))
+                                                        %(Ax_224)%
+
+forall a : individual
+. rel(treeordered, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        => rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_225)%
+
+forall a : individual
+. rel(nondet_treeordered, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurence_of, cons(occ2, cons(a, nil)))
+             /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+             /\ rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_226)%
+
+forall a : individual
+. rel(partial_treeordered, cons(a, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ forall occ3 : individual
+           . rel(occurrence_of, cons(occ3, cons(a, nil)))
+             /\ not rel(same_grove, cons(occ3, cons(occ2, nil)))
+             => not rel(root_automorphic, cons(occ3, cons(occ2, nil)))
+                                                        %(Ax_227)%
+
+forall a : individual
+. rel(scrambled, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ not rel(same_grove, cons(occ1, cons(occ2, nil)))
+        => not rel(root_automorphic, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_228)%
+
+forall a, s : individual
+. rel(natural, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(poss, cons(a, cons(s, nil)))
+        /\ rel(poss, cons(a1, cons(s, nil)))
+        => rel(subactivity, cons(a, cons(a1, nil)))   %(Ax_229)%
+
+forall a, s : individual
+. rel(artificial, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(poss, cons(a, cons(s, nil)))
+        /\ rel(poss, cons(a1, cons(s, nil)))
+        /\ not rel(subactivity, cons(a1, cons(a, nil)))
+        => rel(poss, cons(conc, cons(s, nil)))         %(Ax_230)%
+
+forall a, s : individual
+. rel(performed, cons(a, cons(s, nil)))
+  <=> exists a1, a2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s, nil)))
+        /\ not rel(poss, cons(conc, cons(s, nil)))     %(Ax_231)%
+
+forall a, s : individual
+. rel(up_ghost, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(poss, cons(a1, cons(s, nil)))
+        /\ rel(subactivity, cons(a, cons(a1, nil)))
+        => rel(poss, cons(a, cons(s, nil)))           %(Ax_232)%
+
+forall a, s : individual
+. rel(up_conflict, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(poss, cons(conc, cons(s, nil)))
+        => rel(poss, cons(a, cons(s, nil)))
+           \/ rel(poss, cons(a1, cons(s, nil)))
+           \/ rel(subactivity, cons(a, cons(a1, nil)))
+                                                        %(Ax_233)%
+
+forall a, s : individual
+. rel(quark, cons(a, cons(s, nil)))
+  <=> exists a1 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(subactivity, cons(a, cons(a1, nil)))
+        /\ rel(poss, cons(a1, cons(s, nil)))
+        /\ not rel(poss, cons(a, cons(s, nil)))       %(Ax_234)%
+
+forall f, occ : individual
+. rel(achieved, cons(f, cons(occ, nil)))
+  <=> rel(holds, cons(f, cons(occ, nil)))
+      /\ not rel(prior, cons(f, cons(occ, nil)))      %(Ax_235)%
+
+forall f, occ : individual
+. rel(falsified, cons(f, cons(occ, nil)))
+  <=> not rel(holds, cons(f, cons(occ, nil)))
+      /\ rel(prior, cons(f, cons(occ, nil)))          %(Ax_236)%
+
+forall f : individual
+. rel(irreversible, cons(f, nil))
+  <=> not exists occ : individual
+          . rel(falsified, cons(f, cons(occ, nil)))   %(Ax_237)%
+
+forall f : individual
+. rel(unachievable, cons(f, nil))
+  <=> not exists occ : individual
+          . rel(achieved, cons(f, cons(occ, nil)))    %(Ax_238)%
+
+forall f : individual
+. rel(bounded, cons(f, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(achieved, cons(f, cons(occ1, nil)))
+        /\ rel(falsified, cons(f, cons(occ2, nil)))   %(Ax_239)%
+
+forall a, a1, s : individual
+. rel(preserved_effects, cons(a, cons(a1, cons(s, nil))))
+  <=> forall a2, f : individual
+      . rel(subactivity, cons(a, cons(a2, nil)))
+        => (rel(holds, cons(f, cons(successor, nil)))
+            <=> rel(holds, cons(f, cons(successor, nil))))
+                                                        %(Ax_240)%
+
+forall a, s : individual
+. rel(nonclobbering, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => rel(preserved_effects, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_241)%
+
+forall a, s : individual
+. rel(clobbering, cons(a, cons(s, nil)))
+  <=> exists a1 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ not rel(preserved_effects, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_242)%
+
+forall a, s : individual
+. rel(meddling, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => not rel(preserved_effects, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_243)%
+
+forall a : individual
+. rel(global_clobber, cons(a, nil))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => forall s1, s2 : individual
+           . rel(preserved_effects, cons(a, cons(a1, cons(s1, nil))))
+             <=> rel(preserved_effects, cons(a, cons(a1, cons(s2, nil))))
+                                                        %(Ax_244)%
+
+forall occ, a : individual
+. rel(profile, cons(occ, cons(a, nil)))
+  <=> exists occ1, occ2, a1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ, cons(a1, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        /\ occ2 = root_occ
+        /\ forall occ3, a2 : individual
+           . rel(subactivity_occurrence, cons(occ3, cons(occ1, nil)))
+             /\ rel(occurrence_of, cons(occ3, cons(a2, nil)))
+             => exists occ4 : individual
+                . rel(occurrence_of, cons(occ4, cons(a2, nil)))
+                  /\ rel(precedes, cons(occ, cons(occ4, nil)))
+                                                        %(Ax_245)%
+%{
+forall a, occ1, occ2 : individual
+. rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+  <=> rel(profile, cons(occ1, cons(a, nil)))
+      /\ rel(profile, cons(occ2, cons(a, nil)))
+      => (rel(root, cons(occ1, cons(a, nil)))
+          <=> rel(root, cons(occ2, cons(a, nil))))    %(Ax_246)%
+}%
+forall a : individual
+. rel(universal, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        /\ rel(profile, cons(occ2, cons(a, nil)))
+        => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_247)%
+
+forall a : individual
+. rel(restricted, cons(a, nil))
+  <=> (exists a1 : individual
+       . forall occ1, occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a1, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+           /\ rel(profile, cons(occ1, cons(a, nil)))
+           /\ rel(profile, cons(occ2, cons(a, nil)))
+           => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil)))))
+      /\ exists a2, occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a2, nil)))
+           /\ rel(occurrence_of, cons(occ4, cons(a2, nil)))
+           /\ rel(profile, cons(occ3, cons(a, nil)))
+           /\ rel(profile, cons(occ4, cons(a, nil)))
+           /\ not rel(root_equiv, cons(a, cons(occ3, cons(occ4, nil))))
+                                                        %(Ax_248)%
+
+forall a : individual
+. rel(local', cons(a, nil))
+  <=> forall a1 : individual
+      . exists occ1, occ2 : individual
+        . rel(occurrence_of, cons(occ1, cons(a1, nil)))
+          /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+          /\ rel(profile, cons(occ1, cons(a, nil)))
+          /\ rel(profile, cons(occ2, cons(a, nil)))
+          /\ not rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_249)%
+
+forall a : individual
+. rel(state_ideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_250)%
+
+forall a : individual
+. rel(partial_state_ideal, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a, cons(a1, nil)))
+           /\ rel(poss, cons(a, cons(s1, nil)))
+           /\ rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a, cons(a2, nil)))
+           /\ rel(poss, cons(a, cons(s3, nil)))
+           /\ rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_251)%
+
+forall a : individual
+. rel(rigid_state_ideal, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(subactivity, cons(a, cons(a1, nil)))
+          /\ rel(poss, cons(a, cons(s1, nil)))
+          /\ rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_252)%
+
+forall a : individual
+. rel(time_ideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_253)%
+
+forall a : individual
+. rel(partial_time_ideal, cons(a, nil))
+  <=> (exists s1, a1 : individual
+       . forall s2 : individual
+         . rel(subactivity, cons(a, cons(a1, nil)))
+           /\ rel(poss, cons(a, cons(s1, nil)))
+           /\ rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a, cons(a2, nil)))
+           /\ rel(poss, cons(a, cons(s3, nil)))
+           /\ rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_254)%
+
+forall a : individual
+. rel(rigid_time_ideal, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(poss, cons(a, cons(s1, nil)))
+          /\ rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_255)%
+
+forall a : individual
+. rel(state_nonideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_256)%
+
+forall a : individual
+. rel(partial_state_nonideal, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a, cons(a1, nil)))
+           /\ not rel(poss, cons(a, cons(s1, nil)))
+           /\ not rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a, cons(a2, nil)))
+           /\ not rel(poss, cons(a, cons(s3, nil)))
+           /\ not rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_257)%
+
+forall a : individual
+. rel(rigid_state_nonideal, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss, cons(a, cons(s1, nil)))
+          /\ not rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_258)%
+
+forall a : individual
+. rel(time_nonideal, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a, cons(a1, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_259)%
+
+forall a : individual
+. rel(partial_time_nonideal, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a, cons(a1, nil)))
+           /\ not rel(poss, cons(a, cons(s1, nil)))
+           /\ not rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a, cons(a2, nil)))
+           /\ not rel(poss, cons(a, cons(s3, nil)))
+           /\ not rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_260)%
+
+forall a : individual
+. rel(rigid_time_nonideal, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(subactivity, cons(a, cons(a1, nil)))
+          /\ not rel(poss, cons(a, cons(s1, nil)))
+          /\ not rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_261)%
+
+forall a, s1, s2 : individual
+. rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+  <=> rel(occurrence_of, cons(s1, cons(a, nil)))
+      /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+      /\ forall f : individual
+         . rel(holds, cons(f, cons(s1, nil)))
+           <=> rel(holds, cons(f, cons(s2, nil)))     %(Ax_262)%
+
+forall a : individual
+. rel(context_free, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_263)%
+
+forall a : individual
+. rel(null, cons(a, nil))
+  <=> forall s : individual
+      . rel(occurrence_of, cons(s, cons(a, nil)))
+        => forall f : individual
+           . rel(holds, cons(f, cons(s, nil)))
+             <=> rel(prior, cons(f, cons(s, nil)))    %(Ax_264)%
+
+forall a : individual
+. rel(historical, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(legal_equiv, cons(s1, cons(s2, nil)))  %(Ax_265)%
+
+forall a : individual
+. rel(possibly_historical, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_266)%
+
+forall a : individual
+. rel(nonhistorical, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_267)%
+
+forall a, a1, s : individual
+. rel(preserved_filter, cons(a, cons(a1, cons(s, nil))))
+  <=> forall a2 : individual
+      . rel(subactivity, cons(a, cons(a2, nil)))
+        => (rel(poss, cons(a2, cons(s, nil)))
+            <=> rel(poss, cons(conc, cons(s, nil))))   %(Ax_268)%
+
+forall a, s : individual
+. rel(noninterfering, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => rel(preserved_filter, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_269)%
+
+forall a, s : individual
+. rel(interfering, cons(a, cons(s, nil)))
+  <=> exists a1 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ not rel(preserved_filter, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_270)%
+
+forall a, s : individual
+. rel(imperial, cons(a, cons(s, nil)))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => not rel(preserved_filter, cons(a, cons(a1, cons(s, nil))))
+                                                        %(Ax_271)%
+
+forall a : individual
+. rel(global_interfere, cons(a, nil))
+  <=> forall a1 : individual
+      . rel(atomic, cons(a1, nil))
+        => forall s1, s2 : individual
+           . rel(preserved_filter, cons(a, cons(a1, cons(s1, nil))))
+             <=> rel(preserved_filter, cons(a, cons(a1, cons(s2, nil))))
+                                                        %(Ax_272)%
+
+forall a : individual
+. rel(conditional_launch, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        /\ rel(profile, cons(occ2, cons(a, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_273)%
+
+forall a : individual
+. rel(partial_conditional_launch, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(profile, cons(occ1, cons(a, nil)))
+           /\ rel(profile, cons(occ2, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(profile, cons(occ3, cons(a, nil)))
+           /\ rel(profile, cons(occ4, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(root_equiv, cons(a, cons(occ3, cons(occ4, nil))))
+                                                        %(Ax_274)%
+
+forall a : individual
+. rel(unconditional_launch, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(profile, cons(occ2, cons(a, nil)))
+             /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+             /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_275)%
+
+forall a : individual
+. rel(mixed_precond, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(state_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_276)%
+
+forall a : individual
+. rel(partial_mixed, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(state_equiv, cons(s1, cons(s2, nil)))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_277)%
+
+forall a : individual
+. rel(rigid_mixed, cons(a, nil))
+  <=> forall s1 : individual
+      . exists s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_278)%
+
+forall a : individual
+. rel(mixed_conditional, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(root, cons(occ1, cons(a, nil)))
+        /\ rel(root, cons(occ2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_279)%
+
+forall a : individual
+. rel(partial_mixed_conditional, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(root, cons(occ1, cons(a, nil)))
+           /\ rel(root, cons(occ2, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(root, cons(occ3, cons(a, nil)))
+           /\ rel(root, cons(occ4, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(min_equiv, cons(occ3, cons(occ4, cons(a, nil))))
+                                                        %(Ax_280)%
+
+forall a : individual
+. rel(rigid_mixed_conditional, cons(a, nil))
+  <=> forall occ1 : individual
+      . exists occ2 : individual
+        . rel(root, cons(occ1, cons(a, nil)))
+          /\ rel(root, cons(occ2, cons(a, nil)))
+          /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+          /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+          /\ not rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_281)%
+
+forall a : individual
+. rel(occ_effects, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_282)%
+
+forall a : individual
+. rel(occ_depend_effects, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_283)%
+
+forall a : individual
+. rel(nonocc_effects, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_284)%
+
+forall a, s1, s2 : individual
+. rel(tree_equiv, cons(successor, cons(successor, nil)))
+  <=> rel(legal_equiv, cons(s1, cons(s2, nil)))
+      /\ (rel(tree_equiv, cons(s1, cons(s2, nil)))
+          \/ rel(initial, cons(s1, nil)) \/ rel(initial, cons(s2, nil)))
+                                                        %(Ax_285)%
+
+forall a : individual
+. rel(occurrence_constrained, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(legal_equiv, cons(s1, cons(s2, nil)))  %(Ax_286)%
+
+forall a : individual
+. rel(occurrence_dependent, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_287)%
+
+forall a : individual
+. rel(occurrence_independent, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_288)%
+
+forall a : individual
+. rel(periodic, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(legal_equiv, cons(s1, cons(s2, nil)))  %(Ax_289)%
+
+forall a : individual
+. rel(intermittent, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_290)%
+
+forall a : individual
+. rel(aperiodic, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_291)%
+
+forall s : individual
+. rel(plan, cons(s, nil))
+  <=> forall a, s1, s2 : individual
+      . rel(root, cons(s, cons(a, nil)))
+        /\ rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(subocc_equiv, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+                                                        %(Ax_292)%
+
+forall s : individual
+. rel(nondet_plan, cons(s, nil))
+  <=> exists a, s1, s3, s4 : individual
+      . rel(root, cons(s, cons(a, nil)))
+        /\ (forall s2 : individual
+            . rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+              /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+              => rel(subocc_equiv,
+                     cons(s1, cons(s2, cons(s, cons(a, nil))))))
+        /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+        /\ rel(embed_tree, cons(s3, cons(s4, cons(s, cons(a, nil)))))
+        /\ not rel(subocc_equiv,
+                   cons(s3, cons(s4, cons(s, cons(a, nil)))))
+                                                        %(Ax_293)%
+
+forall s : individual
+. rel(unplan, cons(s, nil))
+  <=> forall s1, a : individual
+      . rel(root, cons(s, cons(a, nil)))
+        => exists s2 : individual
+           . rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(subocc_equiv,
+                        cons(s1, cons(s2, cons(s, cons(a, nil)))))
+                                                        %(Ax_294)%
+
+forall s1, s2 : individual
+. rel(legal_equiv, cons(s1, cons(s2, nil)))
+  <=> (rel(legal, cons(s1, nil)) <=> rel(legal, cons(s2, nil)))
+                                                        %(Ax_295)%
+
+%{forall a, s1, s2 : individual
+. rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+  <=> rel(occurrence_of, cons(s1, cons(a, nil)))
+      /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+      => rel(legal_equiv, cons(s1, cons(s2, nil)))    %(Ax_296)%
+}%
+
+forall a : individual
+. rel(unconstrained, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(activity_occurrence, cons(s1, nil))
+        /\ rel(activity_occurrence, cons(s2, nil))
+        => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_297)%
+
+forall a : individual
+. rel(partial_constrained, cons(a, nil))
+  <=> (exists a1 : individual
+       . forall s1, s2 : individual
+         . rel(occurrence_of, cons(s1, cons(a1, nil)))
+           /\ rel(occurrence_of, cons(s2, cons(a1, nil)))
+           => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(occurrence_of, cons(s3, cons(a2, nil)))
+           /\ rel(occurrence_of, cons(s4, cons(a2, nil)))
+           /\ not rel(poss_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_298)%
+
+forall a : individual
+. rel(constrained, cons(a, nil))
+  <=> forall a1 : individual
+      . exists s1, s2 : individual
+        . rel(occurrence_of, cons(s1, cons(a1, nil)))
+          /\ rel(occurrence_of, cons(s2, cons(a1, nil)))
+          /\ not rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_299)%
+
+forall a : individual
+. rel(preventable, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(legal_equiv, cons(s1, cons(s2, nil)))  %(Ax_300)%
+
+forall a : individual
+. rel(possibly_preventable, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_301)%
+
+forall a : individual
+. rel(unpreventable, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_302)%
+
+forall a : individual
+. rel(quantum, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_303)%
+
+forall a : individual
+. rel(semiclassical, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_304)%
+
+forall a : individual
+. rel(classical, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_305)%
+
+forall a : individual
+. rel(relativistic, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_306)%
+
+forall a : individual
+. rel(seminewton, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_307)%
+
+forall a : individual
+. rel(newtonian, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_308)%
+
+forall occ : individual
+. rel(spread, cons(occ, nil))
+  <=> forall a, s1, s2, s3 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s3 = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        /\ rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+        /\ rel(embed_tree, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(subocc_equiv,
+               cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+                                                        %(Ax_309)%
+
+forall occ : individual
+. rel(partial_spread, cons(occ, nil))
+  <=> exists a, s, s1, s3, s4 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        /\ (forall s2 : individual
+            . rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+              /\ rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+              /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+              => rel(subocc_equiv,
+                     cons(s1, cons(s2, cons(s, cons(a, nil))))))
+        /\ rel(subactivity_occurrence, cons(s3, cons(occ, nil)))
+        /\ rel(iso_occ, cons(s3, cons(s4, cons(a, nil))))
+        /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+        /\ rel(embed_tree, cons(s3, cons(s4, cons(s, cons(a, nil)))))
+        /\ not rel(subocc_equiv,
+                   cons(s3, cons(s4, cons(s, cons(a, nil)))))
+                                                        %(Ax_310)%
+
+forall occ : individual
+. rel(tight, cons(occ, nil))
+  <=> forall s, s1, a : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        => exists s2 : individual
+           . rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+             /\ rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+             /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(subocc_equiv,
+                        cons(s1, cons(s2, cons(s, cons(a, nil)))))
+                                                        %(Ax_311)%
+
+forall a : individual
+. rel(trigger, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        /\ rel(profile, cons(occ2, cons(a, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_312)%
+
+forall a : individual
+. rel(partial_trigger, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(profile, cons(occ1, cons(a, nil)))
+           /\ rel(profile, cons(occ2, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(profile, cons(occ3, cons(a, nil)))
+           /\ rel(profile, cons(occ4, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(root_equiv, cons(a, cons(occ3, cons(occ4, nil))))
+                                                        %(Ax_313)%
+
+forall a : individual
+. rel(nontrigger, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(profile, cons(occ2, cons(a, nil)))
+             /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_314)%
+
+forall a : individual
+. rel(markov_effects, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_315)%
+
+forall a : individual
+. rel(partial_state_effects, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(effects_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_316)%
+
+forall a : individual
+. rel(rigid_state_effects, cons(a, nil))
+  <=> forall s1 : individual
+      . exists s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_317)%
+
+forall s1, s2 : individual
+. rel(state_equiv, cons(s1, cons(s2, nil)))
+  <=> forall f : individual
+      . rel(prior, cons(f, cons(s1, nil)))
+        <=> rel(prior, cons(f, cons(s2, nil)))        %(Ax_318)%
+
+forall a : individual
+. rel(markov_precond, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_319)%
+
+forall a : individual
+. rel(partial_state, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_320)%
+
+forall a : individual
+. rel(rigid_state, cons(a, nil))
+  <=> forall s1 : individual
+      . exists s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_321)%
+
+forall a : individual
+. rel(conditional, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(root, cons(occ1, cons(a, nil)))
+        /\ rel(root, cons(occ2, cons(a, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_322)%
+
+forall a : individual
+. rel(partial_conditional, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(root, cons(occ1, cons(a, nil)))
+           /\ rel(root, cons(occ2, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(root, cons(occ3, cons(a, nil)))
+           /\ rel(root, cons(occ4, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(min_equiv, cons(occ3, cons(occ4, cons(a, nil))))
+                                                        %(Ax_323)%
+
+forall a : individual
+. rel(rigid_conditional, cons(a, nil))
+  <=> forall occ1 : individual
+      . exists occ2 : individual
+        . rel(root, cons(occ1, cons(a, nil)))
+          /\ rel(root, cons(occ2, cons(a, nil)))
+          /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+          /\ not rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_324)%
+
+forall a : individual
+. rel(launch, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        /\ rel(profile, cons(occ2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_325)%
+
+forall a : individual
+. rel(partial_launch, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(profile, cons(occ1, cons(a, nil)))
+           /\ rel(profile, cons(occ2, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(profile, cons(occ3, cons(a, nil)))
+           /\ rel(profile, cons(occ4, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(root_equiv, cons(a, cons(occ3, cons(occ4, nil))))
+                                                        %(Ax_326)%
+
+forall a : individual
+. rel(rigid_launch, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(profile, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(root_equiv, cons(a, cons(occ1, cons(occ2, nil))))
+                                                        %(Ax_327)%
+
+forall a : individual
+. rel(temporal_effects, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_328)%
+
+forall a : individual
+. rel(partial_temporal, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(effects_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_329)%
+
+forall a : individual
+. rel(nontemporal, cons(a, nil))
+  <=> forall s1 : individual
+      . exists s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_330)%
+
+forall s1, s2 : individual
+. rel(begin_equiv, cons(s1, cons(s2, nil))) <=> beginof = beginof
+                                                        %(Ax_331)%
+
+forall a : individual
+. rel(time_precond, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_332)%
+
+forall a : individual
+. rel(partial_time, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_333)%
+
+forall a : individual
+. rel(rigid_time, cons(a, nil))
+  <=> forall s1 : individual
+      . exists s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_334)%
+
+forall a : individual
+. rel(time_conditional, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(root, cons(occ1, cons(a, nil)))
+        /\ rel(root, cons(occ2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_335)%
+
+forall a : individual
+. rel(partial_time_conditional, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(root, cons(occ1, cons(a, nil)))
+           /\ rel(root, cons(occ2, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil)))))
+      /\ exists occ3, occ4 : individual
+         . rel(root, cons(occ3, cons(a, nil)))
+           /\ rel(root, cons(occ4, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(min_equiv, cons(occ3, cons(occ4, cons(a, nil))))
+                                                        %(Ax_336)%
+
+forall a : individual
+. rel(rigid_time_conditional, cons(a, nil))
+  <=> forall occ1 : individual
+      . exists occ2 : individual
+        . rel(root, cons(occ1, cons(a, nil)))
+          /\ rel(root, cons(occ2, cons(a, nil)))
+          /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+          /\ not rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_337)%
+
+forall a : individual
+. rel(state_filter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_338)%
+
+forall a : individual
+. rel(partial_state_filter, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall a1, s2 : individual
+         . rel(subactivity, cons(a1, cons(a, nil)))
+           /\ rel(poss, cons(a, cons(s1, nil)))
+           /\ rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a2, cons(a, nil)))
+           /\ rel(poss, cons(a, cons(s3, nil)))
+           /\ rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_339)%
+
+forall a : individual
+. rel(rigid_state_filter, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(poss, cons(a, cons(s1, nil)))
+          /\ rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_340)%
+
+forall a : individual
+. rel(time_filter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(poss, cons(a, cons(s1, nil)))
+        /\ rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_341)%
+
+forall a : individual
+. rel(partial_time_filter, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a1, cons(a, nil)))
+           /\ rel(poss, cons(a, cons(s1, nil)))
+           /\ rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a2, cons(a, nil)))
+           /\ rel(poss, cons(a, cons(s3, nil)))
+           /\ rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_342)%
+
+forall a : individual
+. rel(rigid_time_filter, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ rel(poss, cons(a, cons(s1, nil)))
+          /\ rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_343)%
+
+forall a : individual
+. rel(state_nonfilter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_344)%
+
+forall a : individual
+. rel(partial_state_nonfilter, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a1, cons(a, nil)))
+           /\ not rel(poss, cons(a, cons(s1, nil)))
+           /\ not rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a2, cons(a, nil)))
+           /\ not rel(poss, cons(a, cons(s3, nil)))
+           /\ not rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_345)%
+
+forall a : individual
+. rel(rigid_state_nonfilter, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss, cons(a, cons(s1, nil)))
+          /\ not rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_346)%
+
+forall a : individual
+. rel(time_nonfilter, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(subactivity, cons(a1, cons(a, nil)))
+        /\ not rel(poss, cons(a, cons(s1, nil)))
+        /\ not rel(poss, cons(a, cons(s2, nil)))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_347)%
+
+forall a : individual
+. rel(partial_time_nonfilter, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2, a1 : individual
+         . rel(subactivity, cons(a1, cons(a, nil)))
+           /\ not rel(poss, cons(a, cons(s1, nil)))
+           /\ not rel(poss, cons(a, cons(s2, nil)))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil)))))
+      /\ exists a2, s3, s4 : individual
+         . rel(subactivity, cons(a2, cons(a, nil)))
+           /\ not rel(poss, cons(a, cons(s3, nil)))
+           /\ not rel(poss, cons(a, cons(s4, nil)))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(poss_equiv, cons(a2, cons(s3, cons(s4, nil))))
+                                                        %(Ax_348)%
+
+forall a : individual
+. rel(rigid_time_nonfilter, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ not rel(poss, cons(a, cons(s1, nil)))
+          /\ not rel(poss, cons(a, cons(s2, nil)))
+          /\ not rel(poss_equiv, cons(a1, cons(s1, cons(s2, nil))))
+                                                        %(Ax_349)%
+
+forall a : individual
+. rel(state_clobber, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+            <=> rel(preserved_effects, cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_350)%
+
+forall a : individual
+. rel(partial_clobber, cons(a, nil))
+  <=> (exists s1, a1 : individual
+       . forall s2 : individual
+         . rel(atomic, cons(a1, nil))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+               <=> rel(preserved_effects, cons(a1, cons(a, cons(s2, nil))))))
+      /\ exists a2, s3, s4 : individual
+         . rel(atomic, cons(a2, nil))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(preserved_effects, cons(a2, cons(a, cons(s3, nil))))
+           /\ not rel(preserved_effects, cons(a2, cons(a, cons(s4, nil))))
+                                                        %(Ax_351)%
+
+forall a : individual
+. rel(unconditional_clobber, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(atomic, cons(a1, nil))
+          /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+              <=> not rel(preserved_effects,
+                          cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_352)%
+
+forall a : individual
+. rel(time_clobber, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+            <=> rel(preserved_effects, cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_353)%
+
+forall a : individual
+. rel(sometime_clobber, cons(a, nil))
+  <=> (exists s1, a1 : individual
+       . forall s2 : individual
+         . rel(atomic, cons(a1, nil))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+               <=> rel(preserved_effects, cons(a1, cons(a, cons(s2, nil))))))
+      /\ exists a2, s3, s4 : individual
+         . rel(atomic, cons(a2, nil))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(preserved_effects, cons(a2, cons(a, cons(s3, nil))))
+           /\ not rel(preserved_effects, cons(a2, cons(a, cons(s4, nil))))
+                                                        %(Ax_354)%
+
+forall a : individual
+. rel(rigid_clobber, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(atomic, cons(a1, nil))
+          /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ (rel(preserved_effects, cons(a1, cons(a, cons(s1, nil))))
+              <=> not rel(preserved_effects,
+                          cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_355)%
+
+forall a : individual
+. rel(state_interfere, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        => (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+            <=> rel(preserved_filter, cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_356)%
+
+forall a : individual
+. rel(partial_interfere, cons(a, nil))
+  <=> (exists s1, a1 : individual
+       . forall s2 : individual
+         . rel(atomic, cons(a1, nil))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           => (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+               <=> rel(preserved_filter, cons(a1, cons(a, cons(s2, nil))))))
+      /\ exists a2, s3, s4 : individual
+         . rel(atomic, cons(a2, nil))
+           /\ rel(state_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(preserved_filter, cons(a2, cons(a, cons(s3, nil))))
+           /\ not rel(preserved_filter, cons(a2, cons(a, cons(s4, nil))))
+                                                        %(Ax_357)%
+
+forall a : individual
+. rel(unconditional_interfere, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(atomic, cons(a1, nil))
+          /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+          /\ (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+              <=> not rel(preserved_filter,
+                          cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_358)%
+
+forall a : individual
+. rel(time_interfere, cons(a, nil))
+  <=> forall a1, s1, s2 : individual
+      . rel(atomic, cons(a1, nil))
+        /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+        => (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+            <=> rel(preserved_filter, cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_359)%
+
+forall a : individual
+. rel(sometime_interfere, cons(a, nil))
+  <=> (exists s1, a1 : individual
+       . forall s2 : individual
+         . rel(atomic, cons(a1, nil))
+           /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+           => (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+               <=> rel(preserved_filter, cons(a1, cons(a, cons(s2, nil))))))
+      /\ exists a2, s3, s4 : individual
+         . rel(atomic, cons(a2, nil))
+           /\ rel(begin_equiv, cons(s3, cons(s4, nil)))
+           /\ rel(preserved_filter, cons(a2, cons(a, cons(s3, nil))))
+           /\ not rel(preserved_filter, cons(a2, cons(a, cons(s4, nil))))
+                                                        %(Ax_360)%
+
+forall a : individual
+. rel(rigid_interfere, cons(a, nil))
+  <=> forall s1 : individual
+      . exists a1, s2 : individual
+        . rel(atomic, cons(a1, nil))
+          /\ rel(begin_equiv, cons(s1, cons(s2, nil)))
+          /\ (rel(preserved_filter, cons(a1, cons(a, cons(s1, nil))))
+              <=> not rel(preserved_filter,
+                          cons(a1, cons(a, cons(s2, nil)))))
+                                                        %(Ax_361)%
+
+forall occ1, occ2, a : individual
+. rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+  <=> rel(subtree_embed, cons(occ1, cons(occ2, cons(a, nil))))
+      /\ rel(subtree_embed, cons(occ2, cons(occ1, cons(a, nil))))
+                                                        %(Ax_362)%
+
+forall a : individual
+. rel(uniform, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(root, cons(occ1, cons(a, nil)))
+        /\ rel(root, cons(occ2, cons(a, nil)))
+        => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_363)%
+
+forall a : individual
+. rel(variegated, cons(a, nil))
+  <=> (exists a1 : individual
+       . forall occ1, occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a1, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+           /\ rel(root, cons(occ1, cons(a, nil)))
+           /\ rel(root, cons(occ2, cons(a, nil)))
+           => rel(min_equiv, cons(occ1, cons(occ2, cons(a, nil)))))
+      /\ exists a2, occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a2, nil)))
+           /\ rel(occurrence_of, cons(occ4, cons(a2, nil)))
+           /\ rel(root, cons(occ3, cons(a, nil)))
+           /\ rel(root, cons(occ4, cons(a, nil)))
+           /\ not rel(min_equiv, cons(occ3, cons(occ4, cons(a, nil))))
+                                                        %(Ax_364)%
+
+forall a : individual
+. rel(multiform, cons(a, nil))
+  <=> forall a1, occ1 : individual
+      . rel(root, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ1, cons(a1, nil)))
+        => exists occ2, occ3 : individual
+           . rel(occurrence_of, cons(occ2, cons(a1, nil)))
+             /\ rel(occurrence_of, cons(occ3, cons(a1, nil)))
+             /\ rel(root, cons(occ2, cons(a, nil)))
+             /\ rel(root, cons(occ3, cons(a, nil)))
+             /\ not rel(min_equiv, cons(occ2, cons(occ3, cons(a, nil))))
+                                                        %(Ax_365)%
+
+forall occ : individual . dur = duration %(Ax_366)%
+
+forall occ1, occ2 : individual . delay = duration %(Ax_367)%
+
+forall occ1, occ2 : individual
+. rel(dur_equiv, cons(occ1, cons(occ2, nil))) <=> dur = dur
+                                                        %(Ax_368)%
+
+forall occ1, occ2 : individual
+. rel(delay_equiv, cons(occ1, cons(occ2, nil)))
+  <=> exists occ : individual . delay = delay          %(Ax_369)%
+
+forall a : individual
+. rel(constant, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        => rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_370)%
+
+forall a : individual
+. rel(interval_duration, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_371)%
+
+forall a : individual
+. rel(variable, cons(a, nil))
+  <=> not exists occ1, occ2 : individual
+          . rel(occurrence_of, cons(occ1, cons(a, nil)))
+            /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+            /\ rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_372)%
+
+forall occ1, occ2, a : individual
+. rel(coo_precedes, cons(occ1, cons(occ2, cons(a, nil))))
+  <=> forall s1, s2 : individual
+      . rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+        /\ rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+        /\ rel(atomocc, cons(s1, nil)) /\ rel(atomocc, cons(s2, nil))
+        => rel(soo_precedes, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_373)%
+
+forall occ1, occ2, a : individual
+. rel(strong_parallel, cons(occ1, cons(occ2, cons(a, nil))))
+  <=> forall s1, s2 : individual
+      . rel(subactivity_occurrence, cons(s1, cons(occ1, nil)))
+        /\ rel(subactivity_occurrence, cons(s2, cons(occ2, nil)))
+        /\ rel(atomocc, cons(s1, nil)) /\ rel(atomocc, cons(s2, nil))
+        => rel(same_bag, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_374)%
+
+forall s : individual
+. rel(atomocc, cons(s, nil))
+  <=> exists a : individual
+      . rel(atomic, cons(a, nil))
+        /\ rel(occurrence_of, cons(s, cons(a, nil)))  %(Ax_375)%
+
+forall a : individual
+. rel(duration_effects, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_376)%
+
+forall a : individual
+. rel(partial_duration_effects, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(occurrence_of, cons(s1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+           /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+           => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(occurrence_of, cons(s3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(s4, cons(a, nil)))
+           /\ rel(dur_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(effects_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_377)%
+
+forall a : individual
+. rel(nonduration_effects, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_378)%
+
+forall a : individual
+. rel(embed_duration, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        => rel(duration_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_379)%
+
+forall a : individual
+. rel(partial_embed_duration, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+           /\ rel(same_grove, cons(occ1, cons(occ2, nil)))
+           /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+           => rel(dur_equiv, cons(occ1, cons(occ2, nil))))
+      /\ exists occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ4, cons(a, nil)))
+           /\ rel(same_grove, cons(occ3, cons(occ4, nil)))
+           /\ rel(branch_automorphic, cons(occ3, cons(occ4, nil)))
+           /\ not rel(dur_equiv, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_380)%
+
+forall a : individual
+. rel(nonembed_duration, cons(a, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(same_grove, cons(occ1, cons(occ2, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ not rel(duration_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_381)%
+
+forall a : individual
+. rel(maintain_effects, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+        => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_382)%
+
+forall a : individual
+. rel(partial_maintain, cons(a, nil))
+  <=> (exists s1 : individual
+       . forall s2 : individual
+         . rel(occurrence_of, cons(s1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+           /\ rel(state_equiv, cons(s1, cons(s2, nil)))
+           /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+           => rel(effects_equiv, cons(a, cons(s1, cons(s2, nil)))))
+      /\ exists s3, s4 : individual
+         . rel(occurrence_of, cons(s3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(s4, cons(a, nil)))
+           /\ rel(dur_equiv, cons(s3, cons(s4, nil)))
+           /\ not rel(effects_equiv, cons(a, cons(s3, cons(s4, nil))))
+                                                        %(Ax_383)%
+
+forall a : individual
+. rel(nonmaintain, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(dur_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(effects_equiv, cons(a, cons(s1, cons(s2, nil))))
+                                                        %(Ax_384)%
+
+forall a : individual
+. rel(mixed_duration, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_385)%
+
+forall a : individual
+. rel(nondet_mixed_duration, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(dur_equiv, cons(occ1, cons(occ2, nil))))
+      /\ exists occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ4, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(dur_equiv, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_386)%
+
+forall a : individual
+. rel(rigid_mixed_duration, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+             /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_387)%
+
+forall a : individual
+. rel(ordered_duration, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        => rel(duration_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_388)%
+
+forall a : individual
+. rel(partial_ordered_duration, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+           /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+           => rel(dur_equiv, cons(occ1, cons(occ2, nil))))
+      /\ exists occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ4, cons(a, nil)))
+           /\ rel(branch_automorphic, cons(occ3, cons(occ4, nil)))
+           /\ not rel(dur_equiv, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_389)%
+
+forall a : individual
+. rel(unordered_duration, cons(a, nil))
+  <=> exists occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(branch_automorphic, cons(occ1, cons(occ2, nil)))
+        /\ not rel(duration_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_390)%
+
+forall occ : individual
+. rel(scheduled, cons(occ, nil))
+  <=> forall a, s1, s2, s3 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s3 = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        /\ rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+        /\ rel(embed_tree, cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+        /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+        => rel(subocc_equiv,
+               cons(s1, cons(s2, cons(s3, cons(a, nil)))))
+                                                        %(Ax_391)%
+
+forall occ : individual
+. rel(partial_scheduled, cons(occ, nil))
+  <=> exists a, s, s1, s3, s4 : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        /\ (forall s2 : individual
+            . rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+              /\ rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+              /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+              => rel(subocc_equiv,
+                     cons(s1, cons(s2, cons(s, cons(a, nil))))))
+        /\ rel(subactivity_occurrence, cons(s3, cons(occ, nil)))
+        /\ rel(iso_occ, cons(s3, cons(s4, cons(a, nil))))
+        /\ rel(delay_equiv, cons(s3, cons(s4, nil)))
+        /\ rel(embed_tree, cons(s3, cons(s4, cons(s, cons(a, nil)))))
+        /\ not rel(subocc_equiv,
+                   cons(s3, cons(s4, cons(s, cons(a, nil)))))
+                                                        %(Ax_392)%
+
+forall occ : individual
+. rel(unscheduled, cons(occ, nil))
+  <=> forall s, s1, a : individual
+      . rel(occurrence_of, cons(occ, cons(a, nil))) /\ s = root_occ
+        /\ rel(subactivity_occurrence, cons(s1, cons(occ, nil)))
+        => exists s2 : individual
+           . rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+             /\ rel(embed_tree, cons(s1, cons(s2, cons(s, cons(a, nil)))))
+             /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(subocc_equiv,
+                        cons(s1, cons(s2, cons(s, cons(a, nil)))))
+                                                        %(Ax_393)%
+
+forall a : individual
+. rel(spoilage, cons(a, nil))
+  <=> forall s1, s2 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(s2, cons(a, nil)))
+        /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+        /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+        => rel(legal_equiv, cons(s1, cons(s2, nil)))  %(Ax_394)%
+
+forall a : individual
+. rel(possible_spoilage, cons(a, nil))
+  <=> exists s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        /\ forall s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             => rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_395)%
+
+forall a : individual
+. rel(nonspoilage, cons(a, nil))
+  <=> forall s1 : individual
+      . rel(occurrence_of, cons(s1, cons(a, nil)))
+        => exists s2 : individual
+           . rel(occurrence_of, cons(s2, cons(a, nil)))
+             /\ rel(delay_equiv, cons(s1, cons(s2, nil)))
+             /\ rel(tree_equiv, cons(s1, cons(s2, nil)))
+             /\ not rel(legal_equiv, cons(s1, cons(s2, nil)))
+                                                        %(Ax_396)%
+
+forall a : individual
+. rel(conditional_duration, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_397)%
+
+forall a : individual
+. rel(context_duration, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(dur_equiv, cons(occ1, cons(occ2, nil))))
+      /\ exists occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(state_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(dur_equiv, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_398)%
+
+forall a : individual
+. rel(unconditional_duration, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ rel(state_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_399)%
+
+forall s1, s2, a : individual
+. rel(same_bag, cons(s1, cons(s2, cons(a, nil))))
+  <=> exists s3, s4 : individual
+      . rel(next_subocc, cons(s1, cons(s3, cons(a, nil))))
+        /\ rel(iso_occ, cons(s3, cons(s2, cons(a, nil))))
+        /\ rel(next_subocc, cons(s2, cons(s4, cons(a, nil))))
+        /\ rel(iso_occ, cons(s4, cons(s1, cons(a, nil))))
+                                                        %(Ax_400)%
+
+forall s, a : individual
+. rel(rotate, cons(s, cons(a, nil)))
+  <=> (forall s1 : individual
+       . rel(next_subocc, cons(s, cons(s1, cons(a, nil))))
+         => exists s2 : individual
+            . rel(sibling, cons(s, cons(s2, cons(a, nil))))
+              /\ rel(iso_occ, cons(s1, cons(s2, cons(a, nil)))))
+      /\ forall s3 : individual
+         . rel(sibling, cons(s, cons(s3, cons(a, nil))))
+           => rel(same_bag, cons(s, cons(s3, cons(a, nil))))
+                                                        %(Ax_401)%
+
+forall s, a : individual
+. rel(reflect, cons(s, cons(a, nil)))
+  <=> forall s1 : individual
+      . rel(next_subocc, cons(s, cons(s1, cons(a, nil))))
+        <=> rel(next_soo, cons(soomap, cons(soomap, cons(a, nil))))
+                                                        %(Ax_402)%
+
+forall s, a : individual
+. rel(flip, cons(s, cons(a, nil)))
+  <=> forall s1 : individual
+      . rel(next_subocc, cons(s, cons(s1, cons(a, nil))))
+        <=> rel(next_soo, cons(soomap, cons(soomap, cons(a, nil))))
+            \/ exists s2 : individual
+               . rel(sibling, cons(s, cons(s2, cons(a, nil))))
+                 /\ rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_403)%
+
+forall s, a : individual
+. rel(turn, cons(s, cons(a, nil)))
+  <=> (exists s5 : individual
+       . rel(sibling, cons(s, cons(s5, cons(a, nil))))
+         /\ rel(same_bag, cons(s, cons(s5, cons(a, nil)))))
+      /\ forall s1 : individual
+         . rel(next_subocc, cons(s, cons(s1, cons(a, nil))))
+           => rel(next_soo, cons(soomap, cons(soomap, cons(a, nil))))
+              \/ exists s2 : individual
+                 . rel(sibling, cons(s, cons(s2, cons(a, nil))))
+                   /\ rel(iso_occ, cons(s1, cons(s2, cons(a, nil))))
+                                                        %(Ax_404)%
+
+forall occ : individual
+. rel(bag, cons(occ, nil))
+  <=> forall a, s, occ1 : individual
+      . rel(same_grove, cons(occ, cons(occ1, nil)))
+        /\ rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ1, nil)))
+        => rel(rotate, cons(s, cons(a, nil)))         %(Ax_405)%
+
+forall occ : individual
+. rel(choice_poset, cons(occ, nil))
+  <=> forall a, s, occ1 : individual
+      . rel(same_grove, cons(occ, cons(occ1, nil)))
+        /\ rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ1, nil)))
+        => rel(reflect, cons(s, cons(a, nil)))        %(Ax_406)%
+
+forall occ : individual
+. rel(strong_poset, cons(occ, nil))
+  <=> forall a, s, occ1 : individual
+      . rel(same_grove, cons(occ, cons(occ1, nil)))
+        /\ rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ1, nil)))
+        => rel(flip, cons(s, cons(a, nil)))           %(Ax_407)%
+
+forall occ : individual
+. rel(complex_poset, cons(occ, nil))
+  <=> forall a, s, occ1 : individual
+      . rel(same_grove, cons(occ, cons(occ1, nil)))
+        /\ rel(occurrence_of, cons(occ, cons(a, nil)))
+        /\ rel(subactivity_occurrence, cons(s, cons(occ1, nil)))
+        => rel(turn, cons(s, cons(a, nil)))           %(Ax_408)%
+
+forall a : individual
+. rel(rushhour, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+        /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+        => rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_409)%
+
+forall a : individual
+. rel(weekend, cons(a, nil))
+  <=> (exists occ1 : individual
+       . forall occ2 : individual
+         . rel(occurrence_of, cons(occ1, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+           => rel(dur_equiv, cons(occ1, cons(occ2, nil))))
+      /\ exists occ3, occ4 : individual
+         . rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(occurrence_of, cons(occ3, cons(a, nil)))
+           /\ rel(begin_equiv, cons(occ3, cons(occ4, nil)))
+           /\ not rel(dur_equiv, cons(occ3, cons(occ4, nil)))
+                                                        %(Ax_410)%
+
+forall a : individual
+. rel(gridlock, cons(a, nil))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        => exists occ2 : individual
+           . rel(occurrence_of, cons(occ2, cons(a, nil)))
+             /\ rel(begin_equiv, cons(occ1, cons(occ2, nil)))
+             /\ not rel(dur_equiv, cons(occ1, cons(occ2, nil)))
+                                                        %(Ax_411)%
+
+forall a, r : individual
+. rel(exclusive_use, cons(a, cons(r, nil)))
+  <=> forall q1, q2, occ, occp : individual
+      . rel(do, cons(a, cons(occ, cons(occp, nil))))
+        /\ rel(holds, cons(demand, cons(occ, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ, nil)))
+        => q1 = q2                                    %(Ax_412)%
+
+forall a, r : individual
+. rel(capacity_based, cons(a, cons(r, nil)))
+  <=> forall q1, q2, occ, occp : individual
+      . rel(do, cons(a, cons(occ, cons(occp, nil))))
+        /\ rel(holds, cons(demand, cons(occ, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ, nil)))
+        => rel(lesser, cons(q1, cons(q2, nil)))       %(Ax_413)%
+
+forall r : individual
+. rel(unary_resource, cons(r, nil))
+  <=> forall a : individual
+      . rel(requires, cons(a, cons(r, nil)))
+        => rel(exclusive_use, cons(a, cons(r, nil)))  %(Ax_414)%
+
+forall r : individual
+. rel(capacitated_resource, cons(r, nil))
+  <=> forall a : individual
+      . rel(requires, cons(a, cons(r, nil)))
+        => rel(capacity_based, cons(a, cons(r, nil))) %(Ax_415)%
+
+forall a, r, q : individual
+. rel(uniform_demand, cons(a, cons(r, cons(q, nil))))
+  <=> forall occ : individual
+      . rel(holds, cons(demand, cons(occ, nil)))       %(Ax_416)%
+
+forall r, a : individual
+. rel(layout, cons(r, cons(a, nil)))
+  <=> forall q, occ1, occ2, ap : individual
+      . occ2 = successor
+        => not (rel(holds, cons(demand, cons(occ2, nil)))
+                <=> rel(holds, cons(demand, cons(occ1, nil))))
+                                                        %(Ax_417)%
+
+forall a, r, q : individual
+. rel(consumes_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> forall q1, occ1, occ2 : individual
+      . rel(do, cons(a, cons(occ1, cons(occ2, nil))))
+        /\ rel(holds, cons(demand, cons(occ1, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ1, nil)))
+        => rel(holds, cons(resource_point, cons(occ2, nil)))
+                                                        %(Ax_418)%
+
+forall a, r, q : individual
+. rel(strict_consumes_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> rel(consumes_quantity, cons(a, cons(r, cons(q, nil))))
+      /\ rel(nonreplenishable, cons(r, nil))           %(Ax_419)%
+
+forall a, r, q : individual
+. rel(produces_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> forall q1, q2, occ1, occ2 : individual
+      . rel(do, cons(a, cons(occ1, cons(occ2, nil))))
+        /\ rel(holds, cons(resource_point, cons(occ1, nil))) /\ q2 = plus
+        => rel(holds, cons(resource_point, cons(occ2, nil)))
+                                                        %(Ax_420)%
+
+forall a, r, q : individual
+. rel(strict_produces_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> rel(produces_quantity, cons(a, cons(r, cons(q, nil))))
+      /\ not exists a2, q2 : individual
+             . rel(subactivity, cons(a2, cons(a, nil)))
+               /\ rel(consumes_quantity, cons(a2, cons(r, cons(q2, nil))))
+                                                        %(Ax_421)%
+
+forall a, r, q : individual
+. rel(uses_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> forall q1, q2, occ1, occ2 : individual
+      . rel(do, cons(a, cons(occ1, cons(occ2, nil))))
+        /\ rel(holds, cons(demand, cons(occ1, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ1, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ2, nil)))
+        => q2 = q1                                    %(Ax_422)%
+
+forall a, r : individual
+. rel(creates, cons(a, cons(r, nil)))
+  <=> exists q1 : individual
+      . rel(produces_quantity, cons(a, cons(r, cons(q1, nil))))
+        /\ forall q2, occ : individual
+           . rel(occurrence_of, cons(occ, cons(a, nil)))
+             /\ rel(prior, cons(resource_point, cons(occ, nil)))
+             => q2 = 0                                 %(Ax_423)%
+
+forall a, r : individual
+. rel(destroys, cons(a, cons(r, nil)))
+  <=> exists q1 : individual
+      . rel(consumes_quantity, cons(a, cons(r, cons(q1, nil))))
+        /\ forall q2, occ : individual
+           . rel(occurrence_of, cons(occ, cons(a, nil)))
+             /\ rel(prior, cons(resource_point, cons(occ, nil)))
+             => q2 = 0                                 %(Ax_424)%
+
+forall r, q : individual
+. rel(fixed_quantity, cons(r, cons(q, nil)))
+  <=> forall occ : individual
+      . rel(holds, cons(resource_point, cons(occ, nil)))
+                                                        %(Ax_425)%
+
+forall r : individual
+. rel(nonreplenishable, cons(r, nil))
+  <=> forall a, q1, q2, occ1, occ2, occ3 : individual
+      . (rel(do, cons(a, cons(occ1, cons(occ2, nil))))
+         => rel(holds, cons(resource_point, cons(occ2, nil))))
+        /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+        /\ rel(holds, cons(resource_point, cons(occ3, nil)))
+        => rel(lesserEq, cons(q2, cons(q1, nil)))     %(Ax_426)%
+
+forall a, r : individual
+. rel(uses, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(uses_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_427)%
+
+forall a, r : individual
+. rel(consumes, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(consumes_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_428)%
+
+forall a, r : individual
+. rel(strict_consumes, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(strict_consumes_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_429)%
+
+forall a, r : individual
+. rel(produces, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(produces_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_430)%
+
+forall a, r : individual
+. rel(strict_produces, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(strict_produces_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_431)%
+
+forall a, r, q : individual
+. rel(provides_quantity, cons(a, cons(r, cons(q, nil))))
+  <=> (exists a1 : individual
+       . rel(subactivity, cons(a1, cons(a, nil)))
+         /\ rel(produces_quantity, cons(a1, cons(r, cons(q, nil)))))
+      /\ exists a2 : individual
+         . rel(subactivity, cons(a2, cons(a, nil)))
+           /\ rel(consumes_quantity, cons(a2, cons(r, cons(q, nil))))
+                                                        %(Ax_432)%
+
+forall a, r : individual
+. rel(provides, cons(a, cons(r, nil)))
+  <=> exists q : individual
+      . rel(provides_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_433)%
+%{
+forall r, a1, a2, a, occ2 : individual
+. rel(reusable, cons(r, cons(a1, nil)))
+  <=> rel(common, cons(a1, cons(a2, cons(r, nil))))
+      /\ rel(subactivity, cons(a1, cons(a, nil)))
+      /\ rel(subactivity, cons(a2, cons(a, nil)))
+      /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+      => forall b, occ3 : individual
+         . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+           /\ rel(occurrence_of, cons(b, cons(a, nil)))
+           /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+           => rel(poss, cons(a2, cons(occ3, nil)))    %(Ax_434)%
+}%
+forall r, a1 : individual
+. rel(possibly_reusable, cons(r, cons(a1, nil)))
+  <=> forall a2, occ2, a : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => exists b, occ3 : individual
+           . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+             /\ rel(occurrence_of, cons(b, cons(a, nil)))
+             /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+             /\ rel(poss, cons(a2, cons(occ3, nil)))  %(Ax_435)%
+
+forall r, a1 : individual
+. rel(renewable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => forall b : individual
+           . rel(occurrence_of, cons(b, cons(a, nil)))
+             => exists occ3 : individual
+                . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+                  /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+                  /\ rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_436)%
+
+forall r, a1 : individual
+. rel(weakly_reusable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => exists b : individual
+           . forall occ3 : individual
+             . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+               /\ rel(occurrence_of, cons(b, cons(a, nil)))
+               /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+               => rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_437)%
+
+forall r, a1 : individual
+. rel(consumable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => forall b, occ3 : individual
+           . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+             /\ rel(occurrence_of, cons(b, cons(a, nil)))
+             /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+             => not rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_438)%
+
+forall r, a1 : individual
+. rel(possibly_consumable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => exists b, occ3 : individual
+           . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+             /\ rel(occurrence_of, cons(b, cons(a, nil)))
+             /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+             /\ not rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_439)%
+
+forall r, a1 : individual
+. rel(weakly_consumable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => exists b : individual
+           . rel(occurrence_of, cons(b, cons(a, nil)))
+             /\ forall occ3 : individual
+                . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+                  /\ rel(occurrence_of, cons(b, cons(a, nil)))
+                  /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+                  => not rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_440)%
+
+forall r, a1 : individual
+. rel(wearable, cons(r, cons(a1, nil)))
+  <=> forall a, a2, occ2 : individual
+      . rel(common, cons(a1, cons(a2, cons(r, nil))))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(subactivity, cons(a2, cons(a, nil)))
+        /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+        => forall b : individual
+           . rel(occurrence_of, cons(b, cons(a, nil)))
+             => exists occ3 : individual
+                . rel(subactivity_occurrence, cons(occ3, cons(b, nil)))
+                  /\ rel(precedes, cons(occ2, cons(occ3, nil)))
+                  /\ not rel(poss, cons(a2, cons(occ3, nil)))
+                                                        %(Ax_441)%
+
+forall a, r : individual
+. rel(pile, cons(r, cons(a, nil)))
+  <=> rel(homogeneous_set, cons(r, cons(a, nil)))
+      /\ forall q, occ : individual
+         . rel(holds, cons(resource_point, cons(occ, nil)))
+           <=> exists i : individual
+               . rel(holds, cons(resource_set, cons(occ, nil)))
+                 /\ q = cardinality                    %(Ax_442)%
+
+forall r, a : individual
+. rel(stock, cons(r, cons(a, nil)))
+  <=> rel(homogeneous_set, cons(r, cons(a, nil)))
+      /\ forall q, occ : individual
+         . rel(holds, cons(demand, cons(occ, nil)))
+           => exists i1, r1 : individual
+              . q = cardinality
+                /\ rel(holds, cons(resource_set, cons(occ, nil)))
+                /\ rel(requires_set, cons(a, cons(r1, nil)))
+                /\ forall q3 : individual
+                   . rel(holds, cons(agg_demand, cons(occ, nil)))
+                     => q3 = cardinality               %(Ax_443)%
+
+forall r, a : individual
+. rel(pool, cons(r, cons(a, nil)))
+  <=> rel(homogeneous_set, cons(r, cons(a, nil)))
+      /\ forall q, occ : individual
+         . rel(holds, cons(demand, cons(occ, nil)))
+           => exists i, i1, r1 : individual
+              . rel(holds, cons(resource_set, cons(occ, nil)))
+                /\ rel(subset, cons(i1, cons(i, nil))) /\ q = cardinality
+                /\ rel(holds, cons(resource_set, cons(occ, nil)))
+                /\ rel(requires_set, cons(a, cons(r1, nil)))
+                                                        %(Ax_444)%
+
+forall a, r, q : individual
+. rel(pool_demand, cons(a, cons(r, cons(q, nil))))
+  <=> rel(pool, cons(r, cons(a, nil)))
+      /\ forall q1, occ : individual
+         . rel(holds, cons(demand, cons(occ, nil))) => q = q1
+                                                        %(Ax_445)%
+
+forall a, r, q : individual
+. rel(uses_pile, cons(a, cons(r, cons(q, nil))))
+  => rel(pile, cons(r, cons(a, nil)))
+     /\ rel(uses_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_446)%
+
+forall a, r, q : individual
+. rel(consumes_pile, cons(a, cons(r, cons(q, nil))))
+  <=> rel(pile, cons(r, cons(a, nil)))
+      /\ rel(consumes_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_447)%
+
+forall a, r, q : individual
+. rel(produces_pile, cons(a, cons(r, cons(q, nil))))
+  <=> rel(pile, cons(r, cons(a, nil)))
+      /\ rel(produces_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_448)%
+
+forall r : individual
+. rel(inventory_resource, cons(r, nil))
+  <=> exists a : individual
+      . rel(input_material, cons(r, cons(a, nil)))
+        \/ rel(output_material, cons(r, cons(a, nil)))
+                                                        %(Ax_449)%
+
+forall r, a : individual
+. rel(inventory_pool, cons(r, cons(a, nil)))
+  <=> forall i, occ : individual
+      . rel(holds, cons(resource_set, cons(occ, nil)))
+        => rel(inventory_resource, cons(r, nil))
+           /\ rel(homogeneous_set, cons(r, cons(a, nil)))
+           /\ (forall q1 : individual
+               . rel(holds, cons(resource_point, cons(occ, nil)))
+                 => rel(greaterEq, cons(q1, cons(cardinality, nil))))
+           /\ rel(stock, cons(r, cons(a, nil)))
+           /\ forall a1, q4 : individual
+              . rel(holds, cons(min_capacity, cons(occ, nil)))
+                => rel(lesserEq, cons(q4, cons(cardinality, nil)))
+                                                        %(Ax_450)%
+
+forall r1, r2, occ : individual
+. rel(holds, cons(inventory_contains, cons(occ, nil)))
+  <=> exists a, i : individual
+      . rel(inventory_pool, cons(r2, cons(a, nil)))
+        /\ rel(holds, cons(resource_set, cons(occ, nil)))
+        /\ rel(holds, cons(in', cons(occ, nil)))        %(Ax_451)%
+
+forall r, a : individual
+. rel(resource_pool, cons(r, cons(a, nil)))
+  <=> forall i, occ : individual
+      . rel(holds, cons(resource_set, cons(occ, nil)))
+        => rel(pile, cons(r, cons(a, nil)))
+           /\ rel(pool, cons(r, cons(a, nil)))
+           /\ forall q3 : individual
+              . rel(holds, cons(min_capacity, cons(occ, nil)))
+                => rel(lesser, cons(q3, cons(cardinality, nil)))
+                                                        %(Ax_452)%
+
+forall a, r : individual
+. rel(conservative_pool, cons(a, cons(r, nil)))
+  <=> rel(resource_pool, cons(r, cons(a, nil)))
+      /\ forall q : individual
+         . rel(pool_demand, cons(a, cons(r, cons(q, nil))))
+           <=> rel(uses_pile, cons(a, cons(r, cons(q, nil))))
+               \/ rel(consumes_pile, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_453)%
+
+forall r, a : individual
+. rel(material_pool, cons(r, cons(a, nil)))
+  <=> rel(resource_pool, cons(r, cons(a, nil)))
+      /\ exists q : individual
+         . rel(provides_quantity, cons(a, cons(r, cons(q, nil))))
+                                                        %(Ax_454)%
+
+forall a1, r1 : individual
+. rel(nondet_select, cons(a1, cons(r1, nil)))
+  <=> forall occ : individual
+      . rel(occurrence_of, cons(occ, cons(a1, nil)))
+        <=> exists r2, i, a2, occ2 : individual
+            . rel(subactivity, cons(a2, cons(a1, nil)))
+              /\ rel(holds, cons(resource_set, cons(root_occ, nil)))
+              /\ rel(holds, cons(in', cons(root_occ, nil)))
+              /\ rel(requires, cons(a2, cons(r2, nil)))
+              /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+              /\ rel(subactivity_occurrence, cons(occ2, cons(occ, nil)))
+                                                        %(Ax_455)%
+
+forall a1, r1 : individual
+. rel(nondet_set_select, cons(a1, cons(r1, nil)))
+  <=> forall occ : individual
+      . rel(occurrence_of, cons(occ, cons(a1, nil)))
+        <=> exists r2, a2, occ2 : individual
+            . rel(subactivity, cons(a2, cons(a1, nil)))
+              /\ rel(holds, cons(resource_subset, cons(root_occ, nil)))
+              /\ rel(requires, cons(a2, cons(r2, nil)))
+              /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+              /\ rel(subactivity_occurrence, cons(occ2, cons(occ, nil)))
+                                                        %(Ax_456)%
+
+forall a, r, q : individual
+. rel(nondet_quantity_select, cons(a, cons(r, cons(q, nil))))
+  <=> rel(nondet_set_select, cons(a, cons(r, nil)))
+      /\ q = cardinality                               %(Ax_457)%
+
+forall a, r : individual
+. rel(requires_set, cons(a, cons(r, nil)))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        <=> forall a1, i : individual
+            . rel(holds, cons(resource_set, cons(root_occ, nil)))
+              /\ rel(subactivity, cons(a1, cons(a, nil)))
+              => exists r1, occ2 : individual
+                 . rel(occurrence_of, cons(occ2, cons(a1, nil)))
+                   /\ rel(holds, cons(in', cons(root_occ, nil)))
+                   /\ rel(requires, cons(a1, cons(r1, nil)))
+                   /\ rel(subactivity_occurrence, cons(occ1, cons(occ1, nil)))
+                                                        %(Ax_458)%
+
+forall a, r : individual
+. rel(requires_full_set, cons(a, cons(r, nil)))
+  <=> forall occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        <=> forall r1 : individual
+            . rel(holds, cons(in_resource_set, cons(root_occ, nil)))
+              => exists a1, occ2 : individual
+                 . rel(subactivity, cons(a1, cons(a, nil)))
+                   /\ rel(requires, cons(a1, cons(r1, nil)))
+                   /\ rel(occurrence_of, cons(occ2, cons(a1, nil)))
+                   /\ rel(subactivity_occurrence, cons(occ2, cons(occ1, nil)))
+                                                        %(Ax_459)%
+%{
+forall a : individual
+. rel(nondet_res_activity, cons(a, nil))
+  <=> rel(nondet_choice, cons(a, nil))
+      => exists r1 : individual
+         . rel(nondet_select, cons(a, cons(r1, nil))) %(Ax_460)%
+}%
+forall a, r : individual
+. rel(superpose_select, cons(a, cons(r, nil)))
+  <=> forall a1, occ1 : individual
+      . rel(occurrence_of, cons(occ1, cons(a, nil)))
+        /\ rel(subactivity, cons(a1, cons(a, nil)))
+        /\ rel(primitive, cons(a1, nil))
+        => exists a2, r1, occ2 : individual
+           . rel(subactivity, cons(a1, cons(a2, nil)))
+             /\ rel(subactivity, cons(a2, cons(a, nil)))
+             /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+             /\ rel(holds, cons(resource_subset, cons(root_occ, nil)))
+             /\ rel(nondet_select, cons(a2, cons(r1, nil)))
+                                                        %(Ax_461)%
+
+forall a, r : individual
+. rel(homogeneous_set, cons(r, cons(a, nil)))
+  <=> exists a2 : individual
+      . rel(superpose_select, cons(a2, cons(r, nil)))
+        /\ rel(subactivity, cons(a, cons(a2, nil)))   %(Ax_462)%
+%{
+forall a1, a2, r, occ : individual
+. rel(occurs_over, cons(set_contention, cons(occ, nil)))
+  <=> rel(subactivity, cons(a1, cons(set_contention, nil)))
+      /\ rel(subactivity, cons(a2, cons(set_contention, nil)))
+      => rel(requires_set, cons(a1, cons(r, nil)))
+         /\ rel(requires_set, cons(a2, cons(r, nil)))
+         /\ rel(concurrent_superpose, cons(set_contention, nil))
+                                                        %(Ax_463)%
+}%
+forall r, s : individual
+. rel(poss, cons(set_contention, cons(s, nil)))
+  => (forall a : individual
+      . rel(subactivity, cons(a, cons(set_contention, nil)))
+        => rel(homogeneous_set, cons(r, cons(a, nil))))
+     /\ rel(holds, cons(available, cons(s, nil)))      %(Ax_464)%
+
+forall a, r : individual
+. rel(modifies, cons(a, cons(r, nil)))
+  <=> exists f : individual
+      . rel(resource_fluent, cons(f, cons(r, nil)))
+        /\ rel(changes, cons(a, cons(f, nil)))        %(Ax_465)%
+
+forall a : individual
+. rel(processor_activity, cons(a, nil))
+  <=> exists r1, r2, r3 : individual
+      . (rel(reusable, cons(r1, cons(a, nil)))
+         \/ rel(possibly_reusable, cons(r1, cons(a, nil))))
+        /\ (rel(consumable, cons(r2, cons(a, nil)))
+            \/ rel(possibly_consumable, cons(r2, cons(a, nil)))
+            \/ rel(modifies, cons(a, cons(r2, nil))))
+        /\ (rel(creates, cons(a, cons(r3, nil)))
+            \/ rel(modifies, cons(a, cons(r3, nil)))) %(Ax_466)%
+
+forall r, a : individual
+. rel(processor_resource, cons(r, cons(a, nil)))
+  <=> rel(processor_activity, cons(a, nil))
+      /\ rel(reusable, cons(r, cons(a, nil)))
+      /\ rel(possibly_reusable, cons(r, cons(a, nil)))
+                                                        %(Ax_467)%
+
+forall r, a : individual
+. rel(input_material, cons(r, cons(a, nil)))
+  <=> rel(processor_activity, cons(a, nil))
+      /\ (rel(consumable, cons(r, cons(a, nil)))
+          \/ rel(possibly_consumable, cons(r, cons(a, nil)))
+          \/ rel(modifies, cons(a, cons(r, nil))))    %(Ax_468)%
+
+forall r, a : individual
+. rel(output_material, cons(r, cons(a, nil)))
+  <=> rel(processor_activity, cons(a, nil))
+      /\ (rel(creates, cons(a, cons(r, nil)))
+          \/ rel(modifies, cons(a, cons(r, nil))))    %(Ax_469)%
+
+forall occ1, occ2, a : individual
+. rel(next_processor_path, cons(occ1, cons(occ2, cons(a, nil))))
+  <=> rel(next_subactivity, cons(occ1, cons(occ2, cons(a, nil))))
+      /\ exists a1, a2, r : individual
+         . rel(occurrence_of, cons(occ1, cons(a1, nil)))
+           /\ rel(occurrence_of, cons(occ2, cons(a2, nil)))
+           /\ rel(processor_activity, cons(a1, nil))
+           /\ rel(processor_activity, cons(a2, nil))
+           /\ rel(output_material, cons(r, cons(a1, nil)))
+           /\ rel(input_material, cons(r, cons(a2, nil)))
+                                                        %(Ax_470)%
+
+forall occ1, occ2, a : individual
+. rel(pro_precedes, cons(occ1, cons(occ2, cons(a, nil))))
+  <=> rel(soo_precedes, cons(occ1, cons(occ2, cons(a, nil))))
+      /\ forall occ3 : individual
+         . rel(soo_precedes, cons(occ1, cons(occ3, cons(a, nil))))
+           /\ rel(soo_precedes, cons(occ3, cons(occ2, cons(a, nil))))
+           => exists occ4, occ5 : individual
+              . rel(next_processor_path,
+                    cons(occ4, cons(occ3, cons(a, nil))))
+                /\ rel(next_processor_path,
+                       cons(occ3, cons(occ5, cons(a, nil))))
+                                                        %(Ax_471)%
+
+forall a : individual
+. rel(resource_path, cons(a, nil))
+  <=> forall occ1, occ2 : individual
+      . rel(soo_precedes, cons(occ1, cons(occ2, cons(a, nil))))
+        <=> rel(pro_precedes, cons(occ1, cons(occ2, cons(a, nil))))
+                                                        %(Ax_472)%
+
+forall occ, a : individual
+. rel(initial_processor_path, cons(occ, cons(a, nil)))
+  <=> rel(resource_path, cons(a, nil))
+      /\ rel(root_soo, cons(occ, cons(a, nil)))       %(Ax_473)%
+
+forall occ, a : individual
+. rel(final_processor_path, cons(occ, cons(a, nil)))
+  <=> rel(resource_path, cons(a, nil))
+      /\ rel(leaf_soo, cons(occ, cons(a, nil)))       %(Ax_474)%
