@@ -31,7 +31,7 @@ from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
 
 %[
 
-* Indizes
+@Indizes
 
 A - Zusatz (FA, MA)
 B - Schraube
@@ -76,9 +76,19 @@ t - theoretisch, Drehmoment, Gewinde
 %%         This is not realizable by types, so we have to type-annotate the terms
 %%         and leave the job to be done in the prover.
 
-%% 3. Parameters for calculation
+%% !Section Parameters for calculation
 
-%% 4. Derived parameters
+%% !Section Derived parameters
+
+%[
+@predecessors
+
+DIN 2505:1927-01, 1964-10
+DIN V 2505: 1986-01
+DIN 2506: 1927-01
+DIN 2507: 1927-07
+
+]%
 
 spec DerivedParameter = AffineRealSpace3DWithSets then
 
@@ -120,6 +130,7 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      . beta = e_2/e_1                        %(eq9.1)%
      . e_E = e_E %(eq9.2)% %% dummy for fast type checking
 %%     . e_E = e_1 * (1 + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H)) %(eq9.2)%
+%%     . e_E = e_1 * (1 + ((beta-1)*(l_H/(((beta/3) * sqrt(d_1*e_1)) + l_H)))) %(eq9.2)%
 %%     . e_E = e_1 * ((1:RealPos) + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H)) %(eq9.2)%
 %% second variant nearly four times faster
      %% REMARK: we interpret that - binds stronger than +
@@ -130,6 +141,13 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
 
      ops d_Ge:RealPos;
 	 h_P, e_P:Real;
+
+%[
+@comment
+ ANMERKUNG Im Falle einer Flachdichtung können die unten angegebenen
+ Parameter $h_P und h_G nur errechnet werden nach Auswertung von $d_Ge,
+ d. h. nachdem die Berechnungen in 4.3.2 durchgeführt wurden.
+]%
 
      . h_P = h_P %(eq13)% %% dummy for fast type checking
 %%     . h_P = ((d_Ge - d_E)^2 * (2*d_Ge + d_E)/6 + 2*e_P^2*d_F)/d_Ge^2 %(eq13)%
