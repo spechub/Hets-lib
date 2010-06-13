@@ -184,7 +184,21 @@ proof-
       by (rule ileq_plusE)
   from A and B show ?thesis
     by (rule ileq_assoc)
-qed 
+qed
+
+consts
+  test :: "bool \<Rightarrow> unit T"   ("_?")
+
+axioms
+  fTest:    "false?   = \<delta>"
+  tTest:    "true?    = ret()"
+  conjTest: "(a & b)? = do{a?;b?}"
+  disjTest: "(a | b)? = (a? \<oplus> b?)"
+
+constdefs
+  kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"
+  "kIf \<phi> p q == (do{\<phi>?;p} \<oplus> do{(\<not>\<phi>)?;q})"
+  kWhile :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T"
+  "kWhile \<phi> p == (do{x\<leftarrow>star{x\<leftarrow>p;do{\<phi>?;p}};do{(\<not>\<phi>)?;ret(x)}})"
+
 end
-
-

@@ -495,7 +495,7 @@ next
              ret(w,u)} = 
      do{u\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>ret();ret(x,y,z,v)};
              w\<leftarrow>ret(\<top>);
-             ret(w,u)}"
+                ret(w,u)}"
     by (simp add: gdj_def)
   from this have 
     "do{u\<leftarrow>do{x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r x y;v\<leftarrow>ret();ret(x,y,z,v)};
@@ -1051,5 +1051,26 @@ proof -
   ultimately show ?thesis
     by (rule rp_cut)
 qed (* }}} *)
+
+lemma \<top>:
+  assumes "\<xi> = \<top>"
+  shows "[x\<leftarrow>p]\<xi>"
+proof -
+  from prems show ?thesis
+    by (simp add: gdj_def)
+qed
+
+lemma \<epsilon>:
+  assumes a: "t=s" and b: "[x\<leftarrow>p;z\<leftarrow>ret (t);y\<leftarrow>q x] (\<phi> x y z)"
+  shows "[x\<leftarrow>p;z\<leftarrow>ret (s);y\<leftarrow>q x] (\<phi> x y z)"
+proof -
+  from prems show ?thesis
+    by (rule subst)
+qed
+
+lemma cong:
+  assumes a: "[x\<leftarrow>p](\<xi> x = \<chi> x)" and b: "[x\<leftarrow>p;z\<leftarrow>r x (\<xi> x)](\<phi> x z)"
+  shows "[x\<leftarrow>p;z\<leftarrow>r x (\<chi> x)](\<phi> x z)"
+sorry
 
 end
