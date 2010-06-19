@@ -57,6 +57,116 @@ proof -
 qed (* }}} *)
 
 
+
+(* Lemmata from Fig.1 *)
+lemma \<top>:
+  assumes "\<xi> = \<top>"
+  shows "[x\<leftarrow>p]\<xi>"
+proof -
+  from prems show ?thesis
+    by (simp add: gdj_def)
+qed
+
+lemma \<epsilon>:
+  assumes a: "t=s" and b: "[x\<leftarrow>p;z\<leftarrow>ret (t);y\<leftarrow>q x] (\<phi> x y z)"
+  shows "[x\<leftarrow>p;z\<leftarrow>ret (s);y\<leftarrow>q x] (\<phi> x y z)"
+proof -
+  from prems show ?thesis
+    by (rule subst)
+qed
+
+lemma ctr: 
+  assumes a: "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)" 
+  shows "[v\<leftarrow>t;y\<leftarrow>(do {x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
+(* {{{ Proof }}} *)
+proof -
+  from prems 
+  have "[u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}] 
+        (\<Phi> (fst u) (fst (snd (snd u))) (snd (snd (snd u))))"
+    by (simp add: gdj_def)
+  from this have
+    "do{u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}; 
+           ret (\<Phi> (fst u) (fst (snd (snd u))) (snd (snd (snd u))), 
+               (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}=
+     do{u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}; 
+           ret (True, 
+               (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}"
+    by (rule gdj2doSeq) 
+  from this show ?thesis
+    by (simp add: gdj_def)
+qed (* }}} *)
+
+lemma pre: 
+  assumes "\<forall>x. ([y\<leftarrow>q x] \<Phi> x y)"
+  shows "[x\<leftarrow>p;y\<leftarrow>q x] \<Phi> x y"
+(* {{{ Proof }}} *)
+proof -
+  have 
+    "\<forall>x. ([y\<leftarrow>q x] \<Phi> x y) \<Longrightarrow> 
+     \<forall>x. (do {y\<leftarrow>q x;ret (\<Phi> x y,x,y)} = do {y\<leftarrow>q x;ret (\<top>,x,y)})"
+    apply (rule allI)
+    apply (rule gdj2doSeq)
+    by simp
+  from this prems have 
+    "(\<lambda>x. do {y\<leftarrow>q x;ret (\<Phi> x y,x,y)}) = 
+     (\<lambda>x. do {y\<leftarrow>q x;ret (\<top>,x,y)})"
+    by simp
+  from this show ?thesis
+    by (simp add: gdj_def)
+qed (* }}} *)
+
+lemma \<eta>: 
+  "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z) = 
+   [x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
+(* {{{ Proof }}} *)
+proof 
+  assume "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z)"
+  from this have 
+    "[u\<leftarrow>(do{x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y);ret(x,y,z)})] 
+                       (\<Phi> (fst u) (a (fst u))) (snd (snd u))"
+    by (simp add: gdj_def)    
+  from this 
+  have 
+    "do{u\<leftarrow>do {x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>q x y; ret (x,y,z)};
+                ret(\<Phi> (fst u) (a (fst u)) (snd (snd u)),fst u,
+                    snd (snd u))} = 
+       do{u\<leftarrow>do {x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>q x y; ret (x,y,z)};
+                ret(\<top>,fst u,snd(snd u))}"
+    by (rule gdj2doSeq)
+  from this show "[x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
+    by (simp add: gdj_def)
+next
+  assume "[x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
+  from prems have 
+    "[u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)}]
+                                     \<Phi> (fst u) (a (fst u)) (snd u)"
+    by (simp add: gdj_def)
+  from this 
+  have 
+    "do{u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)};
+        ret(\<Phi> (fst u) (a (fst u)) (snd u),fst u,a (fst u),snd u)} =
+     do{u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)};
+        ret(\<top>,fst u,a (fst u),snd u)}"
+    by (rule gdj2doSeq)
+  from this show "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z)"
+    by (simp add: gdj_def)
+qed (* }}} *)
+
+lemma cong:
+  assumes a: "[x\<leftarrow>p](iff (\<xi> x) (\<chi> x))" and b: "[x\<leftarrow>p;z\<leftarrow>r x (\<xi> x)](\<phi> x (\<xi> x) z)"
+  shows "[x\<leftarrow>p;z\<leftarrow>r x (\<chi> x)](\<phi> x (\<chi> x) z)"
+proof -
+  from prems have "[x\<leftarrow>p;v\<leftarrow>ret(x,\<xi> x);z\<leftarrow>r (fst v) (snd v)]\<phi> (fst v) (snd v) z"
+    apply (subst \<eta>)
+    by simp
+sorry
+
+
+
+
+
+
+
 lemma doSeq2gdjEq:
   assumes "do{x\<leftarrow>p;ret(x,(a\<^isub>1 x)::'a)} = do{x\<leftarrow>p;ret(x,(a\<^isub>2 x)::'a)}"
   shows "[x\<leftarrow>p](a\<^isub>1 x=a\<^isub>2 x)"
@@ -521,25 +631,6 @@ next
     by (simp add: gdj_def)
 qed (* }}} *)(*>*)
 
-lemma pre: 
-  assumes "\<forall>x. ([y\<leftarrow>q x] \<Phi> x y)"
-  shows "[x\<leftarrow>p;y\<leftarrow>q x] \<Phi> x y"
-(* {{{ Proof }}} *)
-proof -
-  have 
-    "\<forall>x. ([y\<leftarrow>q x] \<Phi> x y) \<Longrightarrow> 
-     \<forall>x. (do {y\<leftarrow>q x;ret (\<Phi> x y,x,y)} = do {y\<leftarrow>q x;ret (\<top>,x,y)})"
-    apply (rule allI)
-    apply (rule gdj2doSeq)
-    by simp
-  from this prems have 
-    "(\<lambda>x. do {y\<leftarrow>q x;ret (\<Phi> x y,x,y)}) = 
-     (\<lambda>x. do {y\<leftarrow>q x;ret (\<top>,x,y)})"
-    by simp
-  from this show ?thesis
-    by (simp add: gdj_def)
-qed (* }}} *)
-
 lemma "pre_exp": 
   assumes "\<forall>u v. ([x\<leftarrow>p u v] \<Phi> u v x)"
   shows "[u\<leftarrow>r;v\<leftarrow>s u;x\<leftarrow>p u v] \<Phi> u v x"
@@ -891,43 +982,6 @@ proof -
     by (simp add: gdj_def)
 qed (* }}} *)
 
-lemma \<eta>: 
-  "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z) = 
-   [x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
-(* {{{ Proof }}} *)
-proof 
-  assume "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z)"
-  from this have 
-    "[u\<leftarrow>(do{x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y);ret(x,y,z)})] 
-                       (\<Phi> (fst u) (a (fst u))) (snd (snd u))"
-    by (simp add: gdj_def)    
-  from this 
-  have 
-    "do{u\<leftarrow>do {x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>q x y; ret (x,y,z)};
-                ret(\<Phi> (fst u) (a (fst u)) (snd (snd u)),fst u,
-                    snd (snd u))} = 
-       do{u\<leftarrow>do {x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>q x y; ret (x,y,z)};
-                ret(\<top>,fst u,snd(snd u))}"
-    by (rule gdj2doSeq)
-  from this show "[x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
-    by (simp add: gdj_def)
-next
-  assume "[x\<leftarrow>p; z\<leftarrow>(q x (a x))] (\<Phi> x (a x) z)"
-  from prems have 
-    "[u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)}]
-                                     \<Phi> (fst u) (a (fst u)) (snd u)"
-    by (simp add: gdj_def)
-  from this 
-  have 
-    "do{u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)};
-        ret(\<Phi> (fst u) (a (fst u)) (snd u),fst u,a (fst u),snd u)} =
-     do{u\<leftarrow>do {x\<leftarrow>p; z\<leftarrow>q x (a x); ret (x, z)};
-        ret(\<top>,fst u,a (fst u),snd u)}"
-    by (rule gdj2doSeq)
-  from this show "[x\<leftarrow>p; y\<leftarrow>ret (a x); z\<leftarrow>(q x y)] (\<Phi> x y z)"
-    by (simp add: gdj_def)
-qed (* }}} *)
-
 lemma \<eta>_cut: "[y\<leftarrow>ret a; z\<leftarrow>(q y)] (\<Phi> y) = [z\<leftarrow>(q a)] (\<Phi> a)"
 (* {{{ Proof }}} *)
 proof -
@@ -945,26 +999,6 @@ proof -
     by simp
 qed (* }}} *)
 
-lemma ctr: 
-  assumes a: "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)" 
-  shows "[v\<leftarrow>t;y\<leftarrow>(do {x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
-(* {{{ Proof }}} *)
-proof -
-  from prems 
-  have "[u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}] 
-        (\<Phi> (fst u) (fst (snd (snd u))) (snd (snd (snd u))))"
-    by (simp add: gdj_def)
-  from this have
-    "do{u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}; 
-           ret (\<Phi> (fst u) (fst (snd (snd u))) (snd (snd (snd u))), 
-               (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}=
-     do{u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}; 
-           ret (True, 
-               (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}"
-    by (rule gdj2doSeq) 
-  from this show ?thesis
-    by (simp add: gdj_def)
-qed (* }}} *)
 
 lemma ctr_cut: 
   assumes a: "[x\<leftarrow>p;y\<leftarrow>q x;z\<leftarrow>r y] (\<Phi> y z)"
@@ -1052,25 +1086,6 @@ proof -
     by (rule rp_cut)
 qed (* }}} *)
 
-lemma \<top>:
-  assumes "\<xi> = \<top>"
-  shows "[x\<leftarrow>p]\<xi>"
-proof -
-  from prems show ?thesis
-    by (simp add: gdj_def)
-qed
 
-lemma \<epsilon>:
-  assumes a: "t=s" and b: "[x\<leftarrow>p;z\<leftarrow>ret (t);y\<leftarrow>q x] (\<phi> x y z)"
-  shows "[x\<leftarrow>p;z\<leftarrow>ret (s);y\<leftarrow>q x] (\<phi> x y z)"
-proof -
-  from prems show ?thesis
-    by (rule subst)
-qed
-
-lemma cong:
-  assumes a: "[x\<leftarrow>p](\<xi> x = \<chi> x)" and b: "[x\<leftarrow>p;z\<leftarrow>r x (\<xi> x)](\<phi> x z)"
-  shows "[x\<leftarrow>p;z\<leftarrow>r x (\<chi> x)](\<phi> x z)"
-sorry
 
 end

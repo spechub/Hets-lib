@@ -197,8 +197,9 @@ axioms
 
 constdefs
   kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"
-  "kIf \<phi> p q == (do{\<phi>?;p} \<oplus> do{(\<not>\<phi>)?;q})"
-  kWhile :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T"
-  "kWhile \<phi> p == (do{x\<leftarrow>star{x\<leftarrow>p;do{\<phi>?;p}};do{(\<not>\<phi>)?;ret(x)}})"
+  "kIf b p q == (do{b?;p} \<oplus> do{(\<not>b)?;q})"
+  kWhile :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a \<Rightarrow> 'a T"
+  "kWhile b p x == (star{x\<leftarrow>do{b?;p};ret(x)} \<oplus> do{(\<not>b)?;ret(x)})"
+  
 
 end
