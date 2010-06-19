@@ -199,7 +199,7 @@ constdefs
   kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"
   "kIf b p q == (do{b?;p} \<oplus> do{(\<not>b)?;q})"
   kWhile :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a \<Rightarrow> 'a T"
-  "kWhile b p x == (star{x\<leftarrow>do{b?;p};ret(x)} \<oplus> do{(\<not>b)?;ret(x)})"
+  (*"kWhile b p x == (star{x\<leftarrow>do{b?;p};ret(x)} \<oplus> do{(\<not>b)?;ret(x)})"*)
+  "kWhile b p x == (do{b?;star{x\<leftarrow>p;ret(x)}} \<oplus> do{(\<not>b)?;ret(x)})"
   
-
 end
