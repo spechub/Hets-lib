@@ -196,10 +196,9 @@ axioms
   disjTest: "(a | b)? = (a? \<oplus> b?)"
 
 constdefs
-  kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"
+  kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"        ("if _ then _ else _")
   "kIf b p q == (do{b?;p} \<oplus> do{(\<not>b)?;q})"
-  kWhile :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a \<Rightarrow> 'a T"
-  (*"kWhile b p x == (star{x\<leftarrow>do{b?;p};ret(x)} \<oplus> do{(\<not>b)?;ret(x)})"*)
-  "kWhile b p x == (do{b?;star{x\<leftarrow>p;ret(x)}} \<oplus> do{(\<not>b)?;ret(x)})"
-  
+  kWhile :: "bool \<Rightarrow> 'a \<Rightarrow> 'a T \<Rightarrow> 'a T"       ("while{_, _ \<leftarrow> _}")
+  "kWhile b x p == (do{x\<leftarrow>star{x\<leftarrow>ret(x);do{b?;p}};do{(\<not>b)?;ret(x)}})"
+
 end
