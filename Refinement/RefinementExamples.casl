@@ -89,23 +89,23 @@ Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
 result M
 
 
-arch spec asp1 =
+%[arch spec asp1 =]%
 
-unit K : SP' -> SP refined to USP result K
+%[unit K : SP' -> SP refined to USP result K]%
 
-refinement R5 =SP refined to
+%[refinement R5 =SP refined to]%
 
-arch spec { units
+%[arch spec { units]%
 
-K : SP' -> SP refined to USP;
-A' : SP'
+%[K : SP' -> SP refined to USP;]%
+%[A' : SP']%
 
-refined to arch spec { units
+%[refined to arch spec { units]%
 
-K' : SP'' -> SP' refined to USP';
-A'' : SP'' result K'[A''] }
-result K [A']
-}
+%[K' : SP'' -> SP' refined to USP';]%
+%[A'' : SP'' result K'[A''] }]%
+%[result K [A']]%
+%[}]%
 
 arch spec Addition_First_With_Bin' =
 
@@ -119,22 +119,22 @@ refinement R =arch spec
 
 Addition_First_Generic then {N to R2}
 
-refinement R5' =SP
+%[refinement R5' =SP]%
 
-refined to arch spec { units K : SP' -> SP;
+%[refined to arch spec { units K : SP' -> SP;]%
 
-A' : SP' result K [A']} then  {K to USP ,A' to arch spec { units K' : SP'' -> SP';
+%[A' : SP' result K [A']} then  {K to USP ,A' to arch spec { units K' : SP'' -> SP';]%
 
-A'' : SP'' result K'[A'']} then  {K' to USP'}}
-
-
-refinement R5'' =SP
+%[A'' : SP'' result K'[A'']} then  {K' to USP'}}]%
 
 
-refined to arch spec {units K : SP' -> SP; A' : SP' result K [A']} 
-    then  {K to USP ,A' to arch spec 
-    {units K' : SP'' -> SP'; A'' : SP'' result K'[A'']}}
-    then  {A' to {K' to USP'}}
+%[refinement R5'' =SP]%
+
+
+%[refined to arch spec {units K : SP' -> SP; A' : SP' result K [A']} ]%
+%[    then  {K to USP ,A' to arch spec ]%
+%[    {units K' : SP'' -> SP'; A'' : SP'' result K'[A'']}}]%
+%[    then  {A' to {K' to USP'}}]%
 
 arch spec Arch_Sbcs =
 
@@ -143,38 +143,3 @@ S : Preliminary -> Sbcs_State;
 A : Sbcs_State -> Sbcs_Analysis;
 C : Sbcs_Analysis -> Steam_Boiler_Control_System result lambda V : Value  .  C [A [S [P [V ]]]]
 
-%% We may record this initial refinement now:
-
-refinement Ref_Sbcs =
-
-Steam_Boiler_Control_System refined to Arch_Sbcs
-
-refinement Ref_Sbcs' =
-
-Ref_Sbcs then {P to arch spec Arch_Preliminary,S to
-
-Unit_Sbcs_State,A to arch spec Arch_Analysis,C
-
-to Unit_Sbcs_System }
-
-unit spec Unit_Sbcs_State =
-
-Preliminary -> Sbcs_State_Impl
-
-arch spec Arch_Analysis =
-
-units FD : Sbcs_State -> Failure_Detection;
-PR : Failure_Detection -> PU_Prediction;
-ME : PU_Prediction -> Mode_Evolution [ PU_Prediction ];
-MTS : Mode_Evolution [ PU_Prediction ] -> Sbcs_Analysis 
-result lambda S : Sbcs_State . MTS [ME [PR [FD [S ]]]]
-
-refinement Ref_Arch_Analysis ={FD
-
-to arch spec Arch_Failure_Detection,PR to arch spec
-
-Arch_Prediction} 
-
-refinement Ref_Sbcs'' =
-
-Ref_Sbcs' then {A to Ref_Arch_Analysis} 
