@@ -226,8 +226,8 @@ spec Sbcs_State_3 =
 then
     free type ExtendedPumpState ::= sort PumpState | Unknown_PS
     op PS_predicted : State * PumpNumber -> ExtendedPumpState
-       %{ 
-	 status(s,Pump(pn)) = OK   <=>  
+       %{
+	 status(s,Pump(pn)) = OK   <=>
 	     not  (PS_predicted(s,pn) = Unknown_PS) }%
 end
 
@@ -250,8 +250,8 @@ then
 				      | Unknown_PCS
     op PCS_predicted
 	   : State * PumpNumber -> ExtendedPumpControllerState
-       %{ 
-	 status(s,PumpController(pn)) = OK   =>  
+       %{
+	 status(s,PumpController(pn)) = OK   =>
 	     not  (PCS_predicted(s,pn) = Unknown_PCS) }%
 end
 
@@ -273,7 +273,7 @@ spec Sbcs_State_5 =
 then
     free type Valpair ::= pair(low:Value; high:Value)
     ops steam_predicted, level_predicted : State -> Valpair
-	%{ 
+	%{
 	  low(steam_predicted(s)) is the minimal steam output predicted,
 	  high(steam_predicted(s)) is the maximal steam output predicted,
 	  and similarly for level_predicted. }%
@@ -319,7 +319,7 @@ end
 
 spec Steam_And_Level_Prediction =
     Failure_Detection
-and Set [sort PumpNumber fit  Elem |-> PumpNumber 
+and Set [sort PumpNumber fit  Elem |-> PumpNumber
          %[The fitting will be omitted in future version,
            once Hets has implemented implicit fittings
            with imports]%
@@ -531,7 +531,8 @@ end
 arch spec Arch_Preliminary =
     units
 	SET: {sort Elem} *  Nat -> Set [sort Elem]; B: Basics;
-	MS: Messages_Sent given B; MR: Value -> Messages_Received given B;
+	MS: Messages_Sent given B; 
+        MR: Value -> Messages_Received given B;
 	CST: Value -> Sbcs_Constants
     result lambda
 	       V : Value
@@ -592,8 +593,8 @@ arch spec Arch_Failure_Detection =
 	PF: Sbcs_State -> Pump_Failure;
 	PCF: Sbcs_State -> Pump_Controller_Failure;
 	SF: Sbcs_State -> Steam_Failure; LF: Sbcs_State -> Level_Failure;
-	PU: Message_Transmission_System_Failure *  Pump_Failure * 
-	Pump_Controller_Failure *  Steam_Failure * 
+	PU: Message_Transmission_System_Failure *  Pump_Failure *
+	Pump_Controller_Failure *  Steam_Failure *
     Level_Failure -> Failure_Detection
     result lambda S : Sbcs_State
 	     . PU [MTSF [S]] [PF [S]] [PCF [S]] [SF [S]] [LF [S]]
@@ -604,12 +605,46 @@ arch spec Arch_Prediction =
     units
 	SE: Failure_Detection -> Status_Evolution [Failure_Detection];
 	SLP: Failure_Detection -> Steam_And_Level_Prediction;
-	PP: Status_Evolution [Failure_Detection] * 
+	PP: Status_Evolution [Failure_Detection] *
 	    Steam_And_Level_Prediction -> Pump_State_Prediction;
-	PCP: Status_Evolution [Failure_Detection] * 
+	PCP: Status_Evolution [Failure_Detection] *
 	     Steam_And_Level_Prediction -> Pump_Controller_State_Prediction
     result lambda FD : Failure_Detection
 	     . local SEFD = SE [FD]; SLPFD = SLP [FD]
                within {PP [SEFD] [SLPFD]
                        and PCP [SEFD] [SLPFD]}
 end
+
+%% We may record this initial refinement now:
+
+spec Sbcs_System_Impl =
+  Steam_Boiler_Control_System
+end
+
+unit spec Unit_Sbcs_System =
+
+Sbcs_Analysis -> Sbcs_System_Impl
+
+refinement Ref_Sbcs =
+
+Steam_Boiler_Control_System refined to arch spec Arch_Sbcs
+
+unit spec StateAbstr =
+Preliminary -> Sbcs_State
+
+refinement StateRef =
+ StateAbstr refined to Unit_Sbcs_State
+
+refinement Ref_Sbcs' =
+
+Ref_Sbcs then {
+ P to arch spec Arch_Preliminary,
+ S to StateRef,
+ A to arch spec Arch_Analysis}
+
+refinement Ref_Sbcs'' =
+
+Ref_Sbcs' then {A to {
+  FD to arch spec Arch_Failure_Detection,
+  PR to arch spec Arch_Prediction
+} }
