@@ -1,25 +1,30 @@
-library Ontology/Alignment/W_Alignment
+library Ontology/Alignment/W_Alignment_owl
+
+logic OWL
 
 spec Ontology1 =
-  sorts Woman < Female
-  sorts Bank
+  Class: Woman subclassOf: Female
+  Class: Female
+  Class: Bank
 end
 
 spec Ontology2 =
-  sorts Person, Parent
-  sorts Bank
+  Class: Person
+  Class: Parent
+  Class: Bank
 end
 
 spec Interface1 =
-  sorts Woman
+  Class: Woman
 end
 
 spec Interface2 =
-  sorts Person
+  Class: Person
 end
 
 spec Bridge =
-  sorts Woman < Person
+  Class: Woman subclassOf: Person
+  Class: Person
 end
 
 view v1 : Interface1 to Ontology1 
@@ -32,9 +37,5 @@ view v3 : Interface2 to Ontology2
 end
 
 view v4 : Interface2 to Bridge 
-end
-
-
-spec Colimit = Interface1 and Interface2 and Ontology1 and Ontology2 and Bridge
 end
 

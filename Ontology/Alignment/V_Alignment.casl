@@ -3,26 +3,39 @@ library Ontology/Algnment/V_Alignment
 spec Ontology1 =
   sorts Woman, Child < Person
   sorts Bank
-  op me : Person
 end
 
 spec Ontology2 =
   sorts Woman, Parent < HumanBeing
   sorts Bank
-  op me' : HumanBeing
 end
 
 spec Interface =
   sorts Woman, Person
-  op me : Person
 end
 
 view v1 : Interface to Ontology1
 end
 
+<<<<<<< .mine
+view v2 : Interface to Ontology2 = Person |-> HumanBeing 
+=======
 view v2 : Interface to Ontology2 =
   Person |-> HumanBeing, me |-> me'
+>>>>>>> .r1286
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 %[
