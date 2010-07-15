@@ -1,0 +1,48 @@
+library CSL/Examples
+
+logic CSL
+
+%% newton method
+spec E1 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+     . repeat
+       . x := x + y/z %(D)%
+     until abs(y) < 0.001
+end
+
+%% newton method with 2 functions
+spec E2 =
+     . y[I=0] := x^2 - o %(A1)%
+     . z[I=0] := 2*x %(B1)%
+     . y[I=1] := cos(x) %(A2)%
+     . z[I=1] := sin(x) %(B2)%
+     . x[I=1] := 10 %(C2)%
+     . x[I-|] := 10 %(C2)%
+     . x := 100 %(C1)%
+     . o := 3 %(offset)%  %% consider also o[I=0] := 3
+     . repeat
+       . x := x + y/z %(D)%
+     until abs(y) < 0.001
+
+    %% query for x alone is ambiguous, it makes only sense if we ask x[I=0] or x[I=1]
+end
+
+%% default value example
+spec E3 =
+     . y := x^2 - o %(A1)%
+     . y[I=1] := cos(x) %(A2)%
+     . x[I=1] := 10 %(B2)%
+     . x := 100 %(B1)%
+
+     %% Propagation stop symbol: "-|"
+     . z[I-|] := y + y[I=1] %(C)%
+
+     . t := x + z %(C)%
+
+    %% query for t alone means default value selection, t[I=0] is undefined and t[I=1] depends on values for I=1
+
+end
+
+

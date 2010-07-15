@@ -33,6 +33,7 @@ spec Syntax[SyntaxParam] given DecimalFraction =
      free type F ::= Not F
 		   | And F F
 		   | Or F F
+		   | True | False
 		   | Prd0 Pred0
 		   | Prd1 Pred1 T
 		   | Prd2 Pred2 T T
@@ -41,7 +42,6 @@ spec Syntax[SyntaxParam] given DecimalFraction =
      free type P ::= Assign EPS Consts T  %% Consts[EPS] := T
 		   | Seq P P  %% P; P
 		   | Rep P F  %% repeat P until F
-		   | True | False
 		   | Prd0 Pred0
 		   | Prd1 Pred1 T
 		   | Prd2 Pred2 T T
@@ -51,8 +51,10 @@ end
 spec CSLSyntaxParams = DecimalFraction then
      types  EPS, EPI; Nums < Rat; Rat < Nums
      free types Fun0 ::= PI;
-                Fun1 ::= SQRT | COS | SIN | TAN
-     types Fun2, Fun3, Pred0, Pred1, Pred2, Pred3
+                Fun1 ::= SQRT | COS | SIN | TAN | NEG;
+                Fun2 ::= PLUS | MULT | POW | MINUS | DIVIDE;
+                Pred2 ::= EQ | LT | LE
+     types Fun3, Pred0, Pred1, Pred3
 end
 
 spec CSLSyntax = Syntax[CSLSyntaxParams]
