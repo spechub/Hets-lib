@@ -1,0 +1,30 @@
+library Ontology/Alignment/Simple_V_Alignment_Test
+
+logic OWL
+
+spec Ontology1 =
+  Class: A
+  Class: B
+  Class: C
+end
+
+spec Ontology2 =
+  Class: A
+  Class: C
+  Class: D
+end
+
+spec Interface =
+  Class: A
+  Class: BC
+  Class: CC
+end
+
+view v1 : Interface to Ontology1 = 
+    BC |-> B, CC |-> C
+end
+
+view v2 : Interface to Ontology2 = 
+    BC |-> C, CC |-> C
+end
+
