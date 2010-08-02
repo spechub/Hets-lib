@@ -1,8 +1,6 @@
-%% from Basic/SimpleDatatypes get Boolean
-
 logic CASL
 
-%%Export Specification
+%%Requirement Specification
 %%====================
 spec nats_sig =
  sort nats
@@ -26,9 +24,11 @@ end
 logic VSE
 
 spec simpnats_goals =
- {simpnats with logic CASL2SubCFOL} with logic CASL2VSERefine
+ 
+  simpnats
+   with logic CASL2VSERefine
 
-%%Import Specification
+%% Data part for implementation
 %%====================
 
 logic CASL
@@ -45,28 +45,12 @@ spec bin =
 
  op top : bin -> bin
 
- pred __<<__ : bin * bin
-
  vars x, y, z : bin
 
  . top(b_zero) = b_zero;
  . top(b_one) = b_one;
  . top(s0(x)) = b_zero;
  . top(s1(x)) = b_one;
- . not x << x;
- . (x << y) /\ (y << z) => x << z;
- . not b_zero << b_one;
- . not b_one << b_zero;
- . x << s0(x);
- . x << s1(x);
- . b_zero << s0(x);
- . b_zero << s1(x);
- . b_one << s0(x);
- . b_one << s1(x);
- . s0(x) << s0(y) <=> x << y;
- . s0(x) << s1(y) <=> x << y;
- . s1(x) << s0(y) <=> x << y;
- . s1(x) << s1(y) <=> x << y
 
 end
 
@@ -74,7 +58,7 @@ end
 %%===============
 logic VSE
 spec nats_impl =
- {bin with logic CASL2SubCFOL} with logic CASL2VSEImport
+ bin with logic CASL2VSEImport
  then
  PROCEDURES
  hnlz: IN bin;
@@ -200,51 +184,6 @@ spec nats_impl =
    RETURN res
   END
  DEFPROCSEND %(congruence)%
-
-%% Proof obligations introduced by the view:
-%% i- Termination 
-%% for i_zero
-. forall gn_x : bin . <:i_zero(gn_x : bin):> <:nlz(gn_x):> true
-                                            %(Ax11_1)% %implied
-%% ii- Congruence
-%% termination
-. forall gn_x, gn_y : bin; gn_b : Boolean
-  . ((<:nlz(gn_x):> true) /\ <:nlz(gn_y):> true)
-    => <:eq(gn_x : bin, gn_y : bin, (var gn_b : Boolean)):> true
-                          %(ga_termination_eq_nats)% %implied
-%% reflexivity
-. forall gn_x : bin; gn_b : Boolean
-  . (<:nlz(gn_x):> true)
-    => <:eq(gn_x : bin, gn_x : bin, gn_b : Boolean):>
-       gn_b = (op True : Boolean)  %(ga_refl_eq_nats)% %implied
-%% compatibility with i_add
-. forall gn_x, gn_y : bin; gn_b, gn_b1, gn_b2 : Boolean;
-  gn_x1, gn_y1 : bin; gn_x2, gn_y2 : bin
-  . ((<:nlz(gn_x1):> true) /\ (<:nlz(gn_y1):> true)
-     /\ (<:eq(gn_x1 : bin, gn_y1 : bin, gn_b1 : Boolean):>
-         gn_b1 = (op True : Boolean))
-     /\ (<:nlz(gn_x2):> true) /\ (<:nlz(gn_y2):> true)
-     /\ <:eq(gn_x2 : bin, gn_y2 : bin, gn_b2 : Boolean):>
-        gn_b2 = (op True : Boolean))
-    => <:i_add(gn_x1 : bin, gn_x2 : bin, gn_x : bin):>
-       <:i_add(gn_y1 : bin, gn_y2 : bin, gn_y : bin):>
-       <:eq(gn_x : bin, gn_y : bin, gn_b : Boolean):>
-       gn_b = (op True : Boolean)           %(Ax5_1)% %implied
-%% iii - export axioms
-%% translation of
-%%    forall m : nats . add_n(m, zero_n) = m %(Ax6)%
-. forall gn_x0 : bin; gn_x1 : bin; gn_x2 : bin; gn_x3 : bin;
-  gn_x4 : Boolean
-  . forall m : bin
-    . (<:nlz(m):> true)
-      => <:gn_x1 := m;
-           gn_x2 := i_zero;
-           gn_x0 := i_add(gn_x1, gn_x2);
-           gn_x3 := m;
-           gn_x4 := eq(gn_x0, gn_x3):>
-         gn_x4 = (op True : Boolean)          %(Ax6_1_1)% %implied
-end
-
 
 %% The theorem link
 %%=================
