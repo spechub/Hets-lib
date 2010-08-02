@@ -15,11 +15,10 @@ end
 %% newton method with 2 functions
 spec E2 =
      . y[I=0] := x^2 - o %(A1)%
-     . z[I=0] := 2*x %(B1)%
+     . z[I=0] := -2*x %(B1)%
      . y[I=1] := cos(x) %(A2)%
      . z[I=1] := sin(x) %(B2)%
      . x[I=1] := 10 %(C2)%
-     . x[I-|] := 10 %(C2)%
      . x := 100 %(C1)%
      . o := 3 %(offset)%  %% consider also o[I=0] := 3
      . repeat
@@ -45,4 +44,13 @@ spec E3 =
 
 end
 
+%% simplest repeat
+spec E4 =
+     . y := x/2 %(A)%
+     . x := 10 %(B)%
+     . x[I=0] := 12 %(C)%
+     . repeat
+       . x := y %(D)%
+     until abs(y) < 0.001
+end
 
