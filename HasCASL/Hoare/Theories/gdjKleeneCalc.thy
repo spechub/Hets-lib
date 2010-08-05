@@ -1,5 +1,8 @@
 theory gdjKleeneCalc imports gdjKleeneSyntax Lemmabase begin
 
+axioms
+  simplicity: "((do{x\<leftarrow>p;ret(\<Phi> x)}) = (do{x\<leftarrow>p;ret(\<top>)})) \<Longrightarrow> ([x\<leftarrow>p] (\<Phi> y))"
+
 lemma gdj2doSeq: 
   assumes "[x\<leftarrow>p] \<Phi> x" 
   shows "do {x\<leftarrow>p;q x (\<Phi> x)} = do {x\<leftarrow>p;q x \<top>}" 
@@ -156,20 +159,11 @@ next
     by (simp add: gdj_def)
 qed (* }}} *)
 
-lemma cong:
-  assumes a: "[x\<leftarrow>p](iff (\<xi> x) (\<chi> x))" and b: "[x\<leftarrow>p;z\<leftarrow>r x (\<xi> x)](\<phi> x (\<xi> x) z)"
-  shows "[x\<leftarrow>p;z\<leftarrow>r x (\<chi> x)](\<phi> x (\<chi> x) z)"
-proof -
-  from prems have "[x\<leftarrow>p;y\<leftarrow>ret(\<xi> x);z\<leftarrow>r x y] \<phi> x y z"
-    by (subst \<eta>)
-  from this have 
-sorry
-
 lemma ctr: 
   "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z) =
   [v\<leftarrow>t;y\<leftarrow>(do {x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
 (* {{{ Proof }}} *)
-proof -
+proof
   assume "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)"
   from prems 
   have "[u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}] 
@@ -180,36 +174,44 @@ proof -
            ret (\<Phi> (fst u) (fst (snd (snd u))) (snd (snd (snd u))), 
                (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}=
      do{u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,x,y,z)}; 
-           ret (True, 
+           ret (\<top>, 
                (fst u), (fst (snd (snd u))), (snd (snd (snd u))))}"
     by (rule gdj2doSeq) 
-  from this have "[v\<leftarrow>t;y\<leftarrow>(do {x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
+  from this show "[v\<leftarrow>t;y\<leftarrow>(do {x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
     by (simp add: gdj_def)
 next
   assume "[v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y] (\<Phi> v y z)"
-  from prems
-  have "[u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y;ret(v,y,z)}] (\<Phi> (fst u) (fst(snd u)) (snd(snd u)))"
+  from this have 
+    "[u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y; ret(v,y,z)}] (\<Phi> (fst u) (fst(snd u)) (snd(snd u)))"
     by (simp add: gdj_def)
   from this
-  have "do{u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y;ret(v,y,z)};ret(\<Phi> (fst u) (fst(snd u)) (snd(snd u)), fst u, fst(snd u), snd(snd u))} =
-        do{u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y;ret(v,y,z)};ret(\<top>, fst u, fst(snd u), snd(snd u))}"
-    by (simp add: gdj_def)
-  from this
-  have "[(v,y,z)\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,y,z)}] (\<Phi> v y z)"
-    by (simp add: gdj_def)
-  from this
-  have "[u\<leftarrow>do{v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y;ret(v,y,z)}] (\<Phi> (fst u) (fst(snd u)) (snd(snd u)))"
-    by (simp add: gdj_def)
-  from this
-  have "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)"
-    apply (simp add: gdj_def)
+  have
+    "do{u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y; ret(v,y,z)};
+        ret(\<Phi> (fst u) (fst(snd u)) (snd(snd u)),fst u, fst(snd u),snd(snd u))} =
+     do{u\<leftarrow>do{v\<leftarrow>t;y\<leftarrow>(do{x\<leftarrow>p v;q v x});z\<leftarrow>r v y; ret(v,y,z)};
+        ret(\<top>,fst u, fst(snd u),snd(snd u))}"
+    by (rule gdj2doSeq)
+  from this show "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)"
     
 qed (* }}} *)
 
+lemma cong:
+  assumes a: "[x\<leftarrow>p](iff (\<xi> x) (\<chi> x))" and b: "[x\<leftarrow>p;z\<leftarrow>r x (\<xi> x)](\<Phi> x (\<xi> x) z)"
+  shows "[x\<leftarrow>p;z\<leftarrow>r x (\<chi> x)](\<Phi> x (\<chi> x) z)"
+proof -
+  from b have "[x\<leftarrow>p;v\<leftarrow>ret(x,\<xi> x);z\<leftarrow>r (fst v) (snd v)] (\<Phi> (fst v) (snd v) z) "
+    apply (subst \<eta>)
+    by (simp)
+  from this have "[x\<leftarrow>p;u\<leftarrow>ret(x,\<top>);v\<leftarrow>ret(fst(u),snd(u) \<and> (\<xi> x));z\<leftarrow>r (fst v) (snd v)] (\<Phi> (fst v) (snd v) z)"
+    
+qed
 
 
 
 
+
+
+(* Other lemmata *)
 
 lemma sef2cp:
   assumes "sef p"
