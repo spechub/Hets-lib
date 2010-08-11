@@ -1,0 +1,17 @@
+logic OWL
+
+spec Pizza =
+Class: Pizza
+Class: VegetableToppping
+Class: CheeseTopping
+Class: VegetarianPizza EquivalentTo: hasTopping only (VegetableToppping or CheeseTopping)
+Class: MargerithaPizza SubclassOf: hasTopping some MozzarellaTopping and hasTopping some TomatoTopping
+Class: MozzarellaTopping SubclassOf: CheeseTopping
+Class: TomatoTopping  SubclassOf: VegetableToppping
+Class: MargerithaPizza SubclassOf: hasTopping only (MozzarellaTopping or TomatoTopping)
+
+then %implies
+Class: MargerithaPizza  SubclassOf: VegetarianPizza 
+
+
+end
