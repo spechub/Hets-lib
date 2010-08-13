@@ -1,7 +1,10 @@
 theory gdjKleeneCalc imports gdjKleeneSyntax Lemmabase begin
 
 axioms
-  simplicity: "((do{x\<leftarrow>p;ret(\<Phi> x)}) = (do{x\<leftarrow>p;ret(\<top>)})) \<Longrightarrow> ([x\<leftarrow>p] (\<Phi> y))"
+  simplicity: "((do{x\<leftarrow>p;ret(\<Phi> x)}) = (do{x\<leftarrow>p;ret(\<top>)})) \<Longrightarrow> ([x\<leftarrow>p] (\<Phi> x))"
+
+lemma simpl_2: "((do{x\<leftarrow>p;ret(\<Phi> x,x)}) = (do{x\<leftarrow>p;ret(\<top>,x)})) = ((do{x\<leftarrow>p;ret(\<Phi> x)}) = (do{x\<leftarrow>p;ret(\<top>)}))"
+sorry
 
 lemma gdj2doSeq: 
   assumes "[x\<leftarrow>p] \<Phi> x" 
@@ -192,7 +195,9 @@ next
         ret(\<top>,fst u, fst(snd u),snd(snd u))}"
     by (rule gdj2doSeq)
   from this show "[v\<leftarrow>t;x\<leftarrow>p v;y\<leftarrow>q v x;z\<leftarrow>r v y] (\<Phi> v y z)"
-    
+    apply simp
+    apply (rule simplicity)
+    apply simp
 qed (* }}} *)
 
 lemma cong:
@@ -203,8 +208,9 @@ proof -
     apply (subst \<eta>)
     by (simp)
   from this have "[x\<leftarrow>p;u\<leftarrow>ret(x,\<top>);v\<leftarrow>ret(fst(u),snd(u) \<and> (\<xi> x));z\<leftarrow>r (fst v) (snd v)] (\<Phi> (fst v) (snd v) z)"
-    
+(* \<eta>, simp *)
 qed
+
 
 
 

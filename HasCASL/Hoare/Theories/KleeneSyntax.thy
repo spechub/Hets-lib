@@ -186,6 +186,8 @@ proof-
     by (rule ileq_assoc)
 qed
 
+(* Test-function *)
+
 consts
   test :: "bool \<Rightarrow> unit T"   ("_?")
 
@@ -195,15 +197,21 @@ axioms
   conjTest: "(a & b)? = do{a?;b?}"
   disjTest: "(a | b)? = (a? \<oplus> b?)"
 
+(* If and while using (Kleene) monads *)
+
 constdefs
   kIf :: "bool \<Rightarrow> 'a T \<Rightarrow> 'a T \<Rightarrow> 'a T"        ("kIf(_)then(_)else(_)")
   "kIf b then p else q == (do{b?;p} \<oplus> do{(\<not>b)?;q})"
-  kWhile :: "bool \<Rightarrow> 'a \<Rightarrow> 'a T \<Rightarrow> 'a T"       (*("kWhile((_),(_)\<leftarrow>(_))")*)
+  kWhile :: "bool \<Rightarrow> 'a \<Rightarrow> 'a T \<Rightarrow> 'a T"
   "kWhile b x p == (do{x\<leftarrow>star{x\<leftarrow>ret(x);do{b?;p}};do{(\<not>b)?;ret(x)}})"
 
 syntax
-  "_kWhile" :: "[bool, pttrn, 'a T] \<Rightarrow> 'a T"  ("kWhile((_),(_)\<leftarrow>(_))")
+  "_monwhile" :: "[bool, pttrn, 'a T] \<Rightarrow> 'a T"  ("kWhile{(_),(_)\<leftarrow>(_)}")
 
-
+translations
+  (* input macros; replace do-notation by bind/seq *)
+  "_monwhile b x p"          => "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> p))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))"
+  (* Retranslation of bind/seq into do-notation 
+  "_monwhile b x p"          <= "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> p))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))" *)
 
 end
