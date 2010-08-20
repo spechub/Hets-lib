@@ -2,12 +2,15 @@ library CSL/Tests
 
 logic CSL
 
-%% newton method
 spec Test1 =
-     . cos1 := 10 %(C)%
+     . x := 10 %(C)%
      . y := cos(x) %(A)%
      . z := sin(x) %(B)%
-     . repeat
-       . x := x + y/z %(D)%
-     until abs(y) < 0.001
+end
+
+spec Test2 =
+     . x := 10 %(C)%
+     . x = 10.0 %(D)%
+     . x > 100 %(A)%
+     . x <= 100 %(B)%
 end
