@@ -14,3 +14,54 @@ spec Test2 =
      . x > 100 %(A)%
      . x <= 100 %(B)%
 end
+
+%% newton method
+spec Test3 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+     . repeat
+       . x := x + y/z %(D)%
+     until abs(y) < 0.00001
+end
+
+
+%[
+This reduce script gives a correct evaluation of newtons method:
+
+on rounded;
+z:=sin(u);
+y:=cos(u);
+t := x/2;
+u := 2*t;
+x:=10;
+x:=(x+(y/z));
+x:=(x+(y/z));
+x:=(x+(y/z));
+
+
+This one is not correctly evaluated, since t and u aren't stored
+dependent on x, but just as values!
+
+on rounded;
+z:=sin(u);
+y:=cos(u);
+x:=10;
+t := x/2;
+u := 2*t;
+x:=(x+(y/z));
+x:=(x+(y/z));
+x:=(x+(y/z));
+
+
+--> Try to exploit this behviour in the CAS-interface:
+- Formulate requirements for the CAS system in order to support this behaviour.
+
+]%
+
+spec Test4 =
+     . y := 10 %(A)%
+     . repeat
+       . y := 0.9 * y %(D)%
+     until y < 0.7
+end

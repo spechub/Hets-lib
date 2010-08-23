@@ -2,16 +2,6 @@ library CSL/ExtParamExamples
 
 logic CSL
 
-%% newton method
-spec E1 =
-     . y := cos(x) %(A)%
-     . z := sin(x) %(B)%
-     . x := 10 %(C)%
-     . repeat
-       . x := x + y/z %(D)%
-     until abs(y) < 0.001
-end
-
 %% newton method with 2 functions
 spec E2 =
      . y[I=0] := x^2 - o %(A1)%
