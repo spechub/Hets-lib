@@ -206,12 +206,14 @@ constdefs
   "kWhile b x p == (do{x\<leftarrow>star{x\<leftarrow>ret(x);do{b?;p}};do{(\<not>b)?;ret(x)}})"
 
 syntax
-  "_monwhile" :: "[bool, pttrn, 'a T] \<Rightarrow> 'a T"  ("kWhile{(_),(_)\<leftarrow>(_)}")
+  "_monwhile" :: "[bool, pttrn, monseq] \<Rightarrow> 'a T"  ("kWhile{(_),(_)\<leftarrow>(_)}")
 
 translations
   (* input macros; replace do-notation by bind/seq *)
-  "_monwhile b x p"          => "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> p))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))"
+  "_monwhile b x (_mongen y q r)" => "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> (q \<guillemotright>= (%y. (_monseq r))))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret x))))"
+  "_monwhile b x (_monexp p q)"   => "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> (p \<guillemotright> (_monseq q)))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret x))))"
+  "_monwhile b x (_monexp0 p)"    => "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> p))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))" 
   (* Retranslation of bind/seq into do-notation 
-  "_monwhile b x p"          <= "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> p))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))" *)
+  "_monwhile b x (_mongen y q r)" <= "(((ret x) \<guillemotright>= (%x. ((b?) \<guillemotright> (q \<guillemotright>= (%y. r))))^[*])) \<guillemotright>= (%x. (((Not b)?) \<guillemotright> (ret(x))))"*)
 
 end
