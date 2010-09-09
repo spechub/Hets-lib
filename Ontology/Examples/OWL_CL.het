@@ -1,0 +1,44 @@
+logic OWL
+
+spec Family_OWL =
+  Class: Person
+  Class: Female
+  Class: Woman   EquivalentTo: Person and Female
+  Class: Man     EquivalentTo: Person and not Woman
+
+  ObjectProperty: hasChild
+  ObjectProperty: hasHusband
+
+  Class: Mother  EquivalentTo: Woman and hasChild some Person
+  Class: Father  EquivalentTo: Man and hasChild some Person
+  Class: Parent  EquivalentTo: Father or Mother
+end
+
+logic CommonLogic
+
+spec Family_CL =
+. (forall (a) (not (Nothing a))) %(nothing in Nothing)%
+
+. (forall (a) (Thing a)) %(thing in Thing)%
+
+. (forall (a) (iff (Parent a) (or (Father a) (Mother a)))) %(Ax9)%
+
+. (forall (a) (iff (Father a) (and (Man a)
+                                   (exists (b) (and (hasChild a b)
+                                                    (Person b))))))
+                                                           %(Ax8)%
+
+. (forall (a) (iff (Mother a) (and (Woman a)
+                                   (exists (b) (and (hasChild a b)
+                                                    (Person b))))))
+                                                           %(Ax7)%
+
+. (forall (a) (iff (Man a) (and (Person a) (not (Woman a)))))
+                                                           %(Ax4)%
+
+. (forall (a) (iff (Woman a) (and (Person a) (Female a)))) %(Ax3)%
+
+end
+
+view v : Family_OWL to Family_CL
+end
