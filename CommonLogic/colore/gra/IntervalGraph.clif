@@ -1,15 +1,16 @@
-(cl-module (interval_graph)
+(cl-module interval_graph
 
-(cl-import (comparability_graph))
+(cl-imports comparability_graph)
 
-(cl-comment 'Interval Graph end comment')
+(cl-comment "Interval Graph end comment")
 
-(forall (?w ?x ?y ?z)
-	(if 	(and (e ?x ?y) (e ?y ?w) (e ?w ?z) (e ?z ?x))
-		(or (e ?w ?x) (e ?y ?z))
-	)
-	(if 	(and (not (e ?x ?y)) (not (e ?y ?z)))
-		(not (e ?x ?z))
+(forall (w x y z)
+	(if 	(and (e x y) (e y w) (e w z) (e z x))
+		(or (e w x) (e y z))
+	))
+(forall (w x y z)
+	(if 	(and (not (e x y)) (not (e y z)))
+		(not (e x z))
 	)
 )
 )

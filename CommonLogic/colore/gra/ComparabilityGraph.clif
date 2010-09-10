@@ -1,12 +1,12 @@
-(cl-module (comparability_graph)
+(cl-module comparability_graph
 
-(cl-comment 'Comparability Graphs For any directed graph, if transitivity holds, then we have a partially ordered set. end comment')
+(cl-comment "Comparability Graphs For any directed graph, if transitivity holds, then we have a partially ordered set. end comment")
 
-(cl-import (edge-leq))
+(cl-imports edge-leq)
 
-	(forall (?x ?y ?z)
-		(if 	(and (e ?x ?y) (e ?y ?z))
-			(e ?x ?z)
+	(forall (x y z)
+		(if 	(and (e x y) (e y z))
+			(e x z)
 		)
 	)
 )

@@ -1,12 +1,12 @@
-(cl-module (cograph)
+(cl-module cograph
 
-(cl-import (comparability_graph))
+(cl-imports comparability_graph)
 
-(cl-comment 'Cograph or Series-Parallel Graphs end comment')
+(cl-comment "Cograph or Series-Parallel Graphs end comment")
 
-(forall (?w ?x ?y ?z)
-	(iff 	(and (e ?w ?x) (e ?x ?y) (e ?y ?z) )
-		(or (e ?w ?y) (e ?w ?z) (e ?x ?z) )
+(forall (w x y z)
+	(iff 	(and (e w x) (e x y) (e y z) )
+		(or (e w y) (e w z) (e x z) )
 	)
 )
 )

@@ -1,14 +1,14 @@
-(cl-module (bipartite_graph)
+(cl-module bipartite_graph
 
-(cl-import (comparability_graph))
-(cl-comment (Bipartite Graph: Let A be the set of elements which the relation ranges over. Let B and C be disjoint subsets of A. The relation R, holds only for (R x y), where x in B and y in C or vice versa.')
+(cl-imports comparability_graph)
+(cl-comment "Bipartite Graph: Let A be the set of elements which the relation ranges over. Let B and C be disjoint subsets of A. The relation R, holds only for (R x y), where x in B and y in C or vice versa.")
 
-(forall (?x) 	(iff 	(p ?x)
-			(not (q ?x))
-		)
-(forall (?x ?y) (if 	(e ?x ?y)
-			(or 	(and (p ?x) (q ?y))
-				(and (p ?y) (q ?x))
+(forall (x) 	(iff 	(p x)
+			(not (q x))
+		))
+(forall (x y) (if 	(e x y)
+			(or 	(and (p x) (q y))
+				(and (p y) (q x))
 			)
 		))
 )
