@@ -1,0 +1,27 @@
+logic OWL
+
+spec Family_OWL =
+  Class: Female
+  Class: Person
+  ObjectProperty: hasChild
+  Class: Mother  EquivalentTo: Female and hasChild some Person
+end
+
+logic CommonLogic
+
+spec Family_CL =
+
+. (forall (a) (if (Mother a)  (Female a)))  %(Mother1)%
+
+. (forall (a) (if (Mother a) (exists (b) (and (hasChild a b)
+                                                    (Person b)))))
+                                                           %(Mother2)%
+. (forall (a b) (if  (and (Female a) (hasChild a b) (Person b))
+                     (Mother a) ))
+                                                           %(Mother3)%
+
+
+end
+
+view v : Family_OWL to Family_CL
+end
