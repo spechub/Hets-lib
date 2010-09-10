@@ -7,7 +7,6 @@ spec Family_OWL =
   Class: Man     EquivalentTo: Person and not Woman
 
   ObjectProperty: hasChild
-  ObjectProperty: hasHusband
 
   Class: Mother  EquivalentTo: Woman and hasChild some Person
   Class: Father  EquivalentTo: Man and hasChild some Person
@@ -16,12 +15,9 @@ end
 
 logic CommonLogic
 
-spec Family_CL =
-. (forall (a) (not (Nothing a))) %(nothing in Nothing)%
+. (forall (a) (if (Parent a) (or (Father a) (Mother a)))) %(Ax9)%
 
-. (forall (a) (Thing a)) %(thing in Thing)%
-
-. (forall (a) (iff (Parent a) (or (Father a) (Mother a)))) %(Ax9)%
+. (forall (a) (if  (or (Father a) (Mother a)) (Parent a))) %(Ax9)%
 
 . (forall (a) (iff (Father a) (and (Man a)
                                    (exists (b) (and (hasChild a b)
