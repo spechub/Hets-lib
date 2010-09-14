@@ -108,90 +108,92 @@ spec EN1591[FlangeParameter] =
    %% Erste Naeherung
  . b_Gi := b_Gt %(tbl1.1)%
 
-%% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
-%% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
-%% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
- . repeat
-    . repeat
-
-      . b_Ge := min(b_Gi, b_Gt) %(eq38)%
+ . b_Ge := min(b_Gi, b_Gt) %(eq38)%
  
-      . X_G := (e_G/A_Gt) * (b_Gt + e_G/2)/(b_Ge + e_G/2) %(eq42)%
+ . X_G := (e_G/A_Gt) * (b_Gt + e_G/2)/(b_Ge + e_G/2) %(eq42)%
 
-      . d_Ge := d_G2 - b_Ge %(tbl1.4)%
+ . d_Ge := d_G2 - b_Ge %(tbl1.4)%
 
-      . h_G0 := (d_3e - d_Ge)/2 %(eq40)%
+ . h_G0 := (d_3e - d_Ge)/2 %(eq40)%
 
-      . A_Ge := Pi * d_Ge * b_Ge %(eq39)%
-
-
-     %% Genauer
-     %% Z_F, Z_F~ nach Gleichung (27)
-
-      . E_Gm := E_0 + 0.5 * K_1 * F_G[I=0]/A_Ge %(tbl1.3)%
+ . A_Ge := Pi * d_Ge * b_Ge %(eq39)%
 
 
-     %% * 5 Interne Kraefte (in der Verbindung)
+%% Genauer
+%% Z_F, Z_F~ nach Gleichung (27)
 
-     %% * 5.1 Belastungen
-       . F_Q := (Pi/4) * d_Ge^2 * P %(eq43)%
+ . E_Gm := E_0 + 0.5 * K_1 * F_G[I=0]/A_Ge %(tbl1.3)%
 
 
-       . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2])
-                    + (F_G[I=0] / (Pi * d_Ge * Q_maxy))^2) %(test)%
+%% * 5 Interne Kraefte (in der Verbindung)
 
-     until convergence(0.001, b_Ge)
+%% * 5.1 Belastungen
+  . F_Q := (Pi/4) * d_Ge^2 * P %(eq43)%
 
-     %% CONTROL: Minmax
-     %% SIMP: ignore forces
-        . F_R := 0 %(eq44)%
-     %% In Gleichung (44) ist das Vorzeichen fuer die unguenstigere Bedingung zu waehlen.
-%%      . F_RI := F_AI + (4/d_3e) * M_AI %(eq44.1)%
-%%      . F_RI := F_AI - (4/d_3e) * M_AI %(eq44.2)%
+
+%% CONTROL: Minmax
+%% SIMP: ignore forces
+   . F_R := 0 %(eq44)%
+%% In Gleichung (44) ist das Vorzeichen fuer die unguenstigere Bedingung zu waehlen.
+%% . F_RI := F_AI + (4/d_3e) * M_AI %(eq44.1)%
+%% . F_RI := F_AI - (4/d_3e) * M_AI %(eq44.2)%
 %% Es wird empfohlen, in jedem Fall 2 Belastungszustaende
 %% mit unterschiedlichen Kennzahlen I (einen fuer jedes
 %% Vorzeichen in Gleichung (44)) zu beruecksichtigen, sobald ein Aeusseres
 %% Moment aufgebracht wird.
 
 
-     %% 
-      . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0)
-           - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0)
-           - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0)
-           - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
+%% 
+ . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0)
+ - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0)
+ - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0)
+ - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
 
-     %% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
-      . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G = e_B %(eq45.2)%
+%% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
+ . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G = e_B %(eq45.2)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
-      . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2]
-             + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
+ . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2]
+   + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
 
-      . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
-             - h_P[F=2] + h_Q[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2]
-             + X_B/E_B %(eq47)%
+ . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
+   - h_P[F=2] + h_Q[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2]
+   + X_B/E_B %(eq47)%
 
  %% Gleichung (48) wird nur fuer Belastungszustaende mit F_RI != 0 ausgewertet.
   %% eventually work with [I>0] here
-      . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
-             + h_R[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B %(eq48)%
+ . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
+   + h_R[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B %(eq48)%
 
-     %% * 5.3 Mindestkraefte fuer die Dichtung
+%% * 5.3 Mindestkraefte fuer die Dichtung
 
-      . F_Gmin[I=0] := A_Ge * Q_min %(eq49)%
+ . F_Gmin[I=0] := A_Ge * Q_min %(eq49)%
   %% eventually work with [I>0] here
-      . F_Gmin := max(A_Ge * Q, -(F_Q + F_R)) %(eq50)%
+ . F_Gmin := max(A_Ge * Q, -(F_Q + F_R)) %(eq50)%
 
-     %% * 5.4 Interne Kraefte im Montagezustand
-      . F_GDeltaTemp := F_Gmin * Y_G + F_Q * Y_Q  + (F_R * Y_R - F_R[I=0] * Y_R[I=0]) + DeltaU  %(eq51.prelim1)%
+%% * 5.4 Interne Kraefte im Montagezustand
+ . F_GDeltaTemp := F_Gmin * Y_G + F_Q * Y_Q  + (F_R * Y_R - F_R[I=0] * Y_R[I=0]) + DeltaU  %(eq51.prelim1)%
 
   %% SIMP: We have only I=0,1,2
-      . F_GDelta := max(F_GDeltaTemp[I=1], F_GDeltaTemp[I=2])/Y_G[I=0]  %(eq51)%
+ . F_GDelta := max(F_GDeltaTemp[I=1], F_GDeltaTemp[I=2])/Y_G[I=0]  %(eq51)%
 
-      . F_G0req := max(F_Gmin[I=0], F_GDelta) %(eq52)%
-      . F_B0req := F_G0req + F_R[I=0] %(eq53)%
+ . F_G0req := max(F_Gmin[I=0], F_GDelta) %(eq52)%
+ . F_B0req := F_G0req + F_R[I=0] %(eq53)%
 
-      . F_G[I=0] := F_G0req
+ . F_G[I=0] := F_G0req
+
+
+%% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
+%% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
+%% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
+ . repeat
+    . repeat
+
+       . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2])
+                    + (F_G[I=0] / (Pi * d_Ge * Q_maxy))^2) %(test)%
+
+     until convergence(0.001, b_Ge)
+
    until convergence(0.001, F_G[I=0]) and F_G0req <= F_G[I=0] %(eq54)%
 
   %% CONTROL: Iteration
