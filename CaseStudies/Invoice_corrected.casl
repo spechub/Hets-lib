@@ -265,10 +265,10 @@ arch spec Warehouse_simplified =
 units
   NatAlg : Nat;
   ProductAlg : PRODUCT;
-  OrderFun : { Nat and PRODUCT } -> ORDER';
-  OrderAlg = OrderFun[NatAlg and ProductAlg];
-  StockFun : { Nat and PRODUCT } -> STOCK;
-  StockAlg = StockFun[NatAlg and ProductAlg];
+  OrderFun : PRODUCT  -> ORDER' given NatAlg;
+  OrderAlg = OrderFun[ProductAlg];
+  StockFun : PRODUCT  -> STOCK given NatAlg;
+  StockAlg = StockFun[ProductAlg];
   InvoiceFun : { ORDER' and STOCK } -> INVOICE';
   QueuesFun : ORDER -> QUEUES;
   WhsFun : { QUEUES and INVOICE' } -> WHS';
