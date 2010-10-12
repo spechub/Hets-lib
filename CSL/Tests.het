@@ -10,8 +10,28 @@ spec Test0 =
 end
 
 spec Test101 =
-     . y := factor(x^2 + 4*x + 3) %(A)%
-     . z := factor(x^5-15*x^4+85*x^3-225*x^2+274*x-120) %(B)%
+     . z0 := z4+z3+20 %(coeff0)%
+     . z1 := z2 + 3*z4 + 4 %(coeff1)%
+     . z2 := 3 * z3 - 30 %(coeff2)%
+     . z3 := 5 * z4 + 10 %(coeff3)%
+     . z4 := 15 %(coeff4)%
+     . sequence
+       . z := factor(x^5-z4*x^4+z3*x^3-z2*x^2+z1*x-z0) %(B)%
+       end %(program)%
+end
+
+spec Test1011 =
+     . z0 := z4+z3+20 %(coeff0)%
+     . z1 := z2 + 3*z4 + 4 %(coeff1)%
+     . z2 := 3 * z3 - 30 %(coeff2)%
+     . z3 := 5 * z4 + 10 %(coeff3)%
+     . z4 := 15 %(coeff4)%
+end
+
+spec Test1012 =
+     . sequence
+       . z := factor(x^5-z4*x^4+z3*x^3-z2*x^2+z1*x-z0) %(B)%
+       end %(program)%
 end
 
 spec Test1 =
