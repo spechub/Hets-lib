@@ -21,6 +21,17 @@ spec Buffer =
           EmptyBuffer = Buf(nil)
 end
 
+spec Buffer2 =
+  data List
+  channel read, write : Elem
+  process Buf(List): read, write, List;
+          EmptyBuffer : read,write, List;
+          Buf(l)= Buf(l)
+          EmptyBuffer = Buf(nil)
+end
+
+view v : Buffer to Buffer2
+end
 
 
 %[
