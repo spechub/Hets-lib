@@ -38,131 +38,156 @@ program-property to prove: "y >= 0"
 
 *)
 
+subsection {* Preliminaries: Functions for term-interpretation  *}
 
-(**********************  Toy development 1  **********************)
+(* datatype T1 = C | T1 "T1 list" *)
+
+
+-- "power is only defined for natural number exponents"
+definition
+  realpow :: "real => real => real" where
+ "realpow x y == x^natfloor(y)"
+
+-- "list variants of binary min and max. Works only on non-empty argument lists."
+definition
+  nMin :: "real list => real" where
+ "nMin l == foldl min (hd l) l"
+definition
+  nMax :: "real list => real" where
+ "nMax l == foldl max (hd l) l"
+
+
+subsection {* State, Terms, Programs *}
 
 types State = "int => real"
 
-datatype Term = Const int | Num real | Mult Term Term | Add Term Term
+datatype CSLnullary = Cpi
+datatype CSLunary = Cuminus | Csign | Cabs | Csqrt | Cfthrt | Ccos | Csin | Ctan
+datatype CSLbinary = Cplus | Cminus | Ctimes | Cdivide | Cpower
+datatype CSLnary = Cmin | Cmax
+
+datatype CSLbinaryP = Cle | Clt | Cge | Cgt | Cneq | Ceq
+
+datatype Term = Const int | Num real | Fun0 CSLnullary
+  | Fun1 CSLunary Term | Fun2 CSLbinary Term Term | FunN CSLnary "Term list"
+
+datatype Boolterm = Ctrue | Cfalse | Pred2 CSLbinaryP Term Term
+  | Conj Boolterm Boolterm | Disj Boolterm Boolterm | Neg Boolterm
+
+
+datatype Command = Assign int Term | Seq Command Command | Skip | IfCond Boolterm Command Command
+
+
+fun iFun0 :: "CSLnullary => real" where
+"iFun0 Cpi = pi"
+
+fun iFun1 :: "CSLunary => (real => real)" where
+"iFun1 Cuminus = uminus" |
+"iFun1 Csign = sgn" |
+"iFun1 Cabs = abs" |
+"iFun1 Csqrt = sqrt" |
+"iFun1 Cfthrt = sqrt o sqrt" |
+"iFun1 Ccos = cos" |
+"iFun1 Csin = sin" |
+"iFun1 Ctan = tan"
+
+fun iFun2 :: "CSLbinary => (real => real => real)" where
+"iFun2 Cplus = plus" |
+"iFun2 Cminus = minus" |
+"iFun2 Ctimes = times" |
+"iFun2 Cdivide = divide" |
+"iFun2 Cpower = realpow"
+
+fun iFunN :: "CSLnary => (real list => real)" where
+"iFunN Cmin = nMin" |
+"iFunN Cmax = nMax" 
+
+fun iPred2 :: "CSLbinaryP => (real => real => bool)" where
+"iPred2 Cle = less_eq" |
+"iPred2  Clt =  less" |
+"iPred2  Cge =  op >=" |
+"iPred2  Cgt =  op >" |
+"iPred2  Cneq =  op ~=" |
+"iPred2  Ceq = op ="
+
 
 fun iTerm :: "State => Term => real" where
+"iTerm s (Const i) = s i" |
 "iTerm _ (Num r) = r" |
-"iTerm s (Mult t u) = (iTerm s t) * (iTerm s u)" |
-"iTerm s (Add t u) = (iTerm s t) + (iTerm s u)" |
-"iTerm s (Const i) = s i"
+"iTerm s (Fun0 c) = iFun0 c" |
+"iTerm s (Fun1 c t) = iFun1 c (iTerm s t)" |
+"iTerm s (Fun2 c t u) = iFun2 c (iTerm s t) (iTerm s u)" |
+"iTerm s (FunN c l) = iFunN c (map (iTerm s) l)"
 
-datatype Command = Assign int Term | Seq Command Command
+ML {* @{term "~ p & q | c"} *}
+
+fun iBoolterm :: "State => Boolterm => bool" where
+"iBoolterm s Ctrue = True" |
+"iBoolterm s Cfalse = False" |
+"iBoolterm s (Pred2 c t u) =  iPred2 c (iTerm s t) (iTerm s u)" |
+"iBoolterm s (Conj p q) = (iBoolterm s p & iBoolterm s q)" |
+"iBoolterm s (Disj p q) = (iBoolterm s p | iBoolterm s q)" |
+"iBoolterm s (Neg p) = Not (iBoolterm s p)"
+
+
 
 fun iCommand :: "State => Command => State" where
+"iCommand s Skip = s" |
+"iCommand s (IfCond p c1 c2) = (if iBoolterm s p then iCommand s c1 else iCommand s c2)" |
 "iCommand s (Assign i t) = (%x . if x = i then iTerm s t else s x)" |
 "iCommand s (Seq c1 c2) = (let s' = iCommand s c1 in iCommand s' c2)"
 
-datatype ProgCond = Ge Term Term | Gt Term Term
+
+definition P1 :: "Boolterm => Command => State => State" where
+  "P1 p c s = iCommand s (IfCond p (Seq c c) Skip)"
+
+term "lfp (P1 p c)"
+definition P2 :: "Boolterm => Command => State => State" where
+  "P2 p c = lfp (P1 p c)"
 
 
-fun iProgCond :: "State => ProgCond => bool" where
-"iProgCond s (Ge t u) = (iTerm s t >= iTerm s u)" |
-"iProgCond s (Gt t u) = (iTerm s t > iTerm s u)"
 
-constdefs c1 :: Command -- "The command for  y := x * x"
-         "c1 == Assign 2 (Mult (Const 1) (Const 1))"
+subsection {* The Assignment Store *}
 
-constdefs p1 :: ProgCond -- "The property for  y >= 0"
-         "p1 == Ge (Const 2) (Num 0)"
-
-
-lemma soundProg:
-  "!! s :: State . 
-   let s' = iCommand s c1
-   in iProgCond s' p1"
-
-apply (subst Let_def, subst c1_def, subst p1_def)
-apply (simp only: iCommand.simps)
-apply (simp only: iProgCond.simps)
-apply (simp only: iTerm.simps)
-apply (simp only: if_P)
-by simp
-(*
-
-by (simp add: c1_def p1_def iCommand.simps iProgCond.simps)
-*)
-
-constdefs c2 :: Command -- "The command for  x := x * x"
-         "c2 == Assign 1 (Mult (Const 1) (Const 1))"
-
-constdefs p2 :: ProgCond -- "The property for  x >= 0"
-         "p2 == Ge (Const 1) (Num 0)"
-
-lemma soundProg2:
-  "!! s :: State . 
-   let s' = iCommand s c2
-   in iProgCond s' p2"
-by (simp add: c2_def p2_def iCommand.simps iProgCond.simps)
-
-constdefs c3 :: Command -- "The command for  x := 0; x := x + 1"
-         "c3 == Seq (Assign 1 (Num 0)) (Assign 1 (Add (Const 1) (Num 1)))"
-
-constdefs p3 :: ProgCond -- "The property for  x > 0"
-         "p3 == Gt (Const 1) (Num 0)"
-
-lemma soundProg3:
-  "!! s :: State . 
-   let s' = iCommand s c3
-   in iProgCond s' p3"
-
-apply (subst Let_def, subst c3_def, subst p3_def)
-apply (simp only: iCommand.simps)
-apply (subst Let_def)
-apply (simp only: iProgCond.simps)
-apply (simp only: iTerm.simps)
-by (simp only: if_P)
-
-
-lemma soundProgExplicit:
-  "!! (s :: State) (x :: real) (y :: real). 
-   let s' = (%z . if z = 1 then x else if z = 2 then y else s z);
-       s'' = iCommand s' c1
-   in iProgCond s'' p1"
-
-apply (simp only: Let_def c1_def p1_def iCommand.simps iProgCond.simps iTerm.simps if_P)
-by simp
-
-(**********************  Toy development with Assignment store  **********************)
-
-fun dependsOn :: "Term => int set" where
-"dependsOn (Num n) = {}" |
-"dependsOn (Mult t u) = dependsOn t Un dependsOn u" |
-"dependsOn (Add t u) = dependsOn t Un dependsOn u" |
-"dependsOn (Const i) = {i}"
+fun constsOf :: "Term => int set" where
+"constsOf (Num n) = {}" |
+"constsOf (Const i) = {i}" |
+"constsOf (Fun0 c) = {}" |
+"constsOf (Fun1 c t) = constsOf t" |
+"constsOf (Fun2 c t u) = constsOf t Un constsOf u" |
+"constsOf (FunN c l) = Union (set (map constsOf l))"
 
 
 types ConstantTermAssignments = "int ~=> Term"
 
-constdefs
+definition
   -- "flat dependency for the given constant when lookuped in the CTA"
-  dependsOnWithCTALookup :: "ConstantTermAssignments => int => int set"
- "dependsOnWithCTALookup f i == (case f i of
-                            Some t => dependsOn t |
+  constsOfLookuped :: "ConstantTermAssignments => int => int set" where
+ "constsOfLookuped f i == (case f i of
+                            Some t => constsOf t |
                             _ => {})"
 
+definition
   -- "flat dependency relation, not transitive by construction"
-  depOrder1 :: "ConstantTermAssignments => (int*int) set"
- "depOrder1 f == {(x, y) | x y . y: dependsOnWithCTALookup f x}"
+  depOrder1 :: "ConstantTermAssignments => (int*int) set" where
+ "depOrder1 f == {(x, y) | x y . y: constsOfLookuped f x}"
 
+definition
   -- "transitive closure of depOrder1"
-  depOrder :: "ConstantTermAssignments => (int*int) set"
+  depOrder :: "ConstantTermAssignments => (int*int) set" where
  "depOrder f == (depOrder1 f)^+"
 
+definition
   -- "set of constants the current term (recursively) depends on"
-  dependsOnWithCTA :: "ConstantTermAssignments => Term => int set"
- "dependsOnWithCTA f t == Image (depOrder f) (dependsOn t)"
+  dependsOn :: "ConstantTermAssignments => Term => int set" where
+ "dependsOn f t == Image (depOrder f) (constsOf t)"
 
 -- "An AssignmentStore is a finite ConstantTermAssignments without cycles"
-constdefs AS_set :: "ConstantTermAssignments set"
-         "AS_set == {f. let ord = depOrder f in wf ord & finite ord}"
+definition AS_set :: "ConstantTermAssignments set" where
+          "AS_set == {f. let ord = depOrder f in wf ord & finite ord}"
 
 lemma emptyAS_has_empty_dep_order : "depOrder empty == {}"
-  by (simp add: depOrder1_def depOrder_def dependsOnWithCTALookup_def)
+  by (simp add: depOrder1_def depOrder_def constsOfLookuped_def)
 
 lemma emptyAS_in_AS': "empty : AS_set"
   by (simp add: emptyAS_has_empty_dep_order AS_set_def)
@@ -177,11 +202,13 @@ lemma emptyAS_in_AS: "empty : AS"
 
 function fullexpand :: "AssignmentStore => Term => Term" where
 "fullexpand _ (Num r) = Num r" |
-"fullexpand as (Mult t u) = Mult (fullexpand as t) (fullexpand as u)" |
-"fullexpand as (Add t u) = Add (fullexpand as t) (fullexpand as u)" |
 "fullexpand as (Const i) = (case (asCTA as) i of
                               Some y => fullexpand as y
-                            | None => Const i)"
+                            | None => Const i)" |
+"fullexpand _ (Fun0 c) = Fun0 c" |
+"fullexpand as (Fun1 c t) = Fun1 c (fullexpand as t)" |
+"fullexpand as (Fun2 c t u) = Fun2 c (fullexpand as t) (fullexpand as u)" |
+"fullexpand as (FunN c l) = FunN c (map (fullexpand as) l)"
   by (auto, case_tac "b", auto)
 
 (* 
@@ -200,32 +227,24 @@ by (rule arg_cong, simp add: H0)
 by (rule fun_cong, simp add: H0)
 *)
 
+lemma fullexpand_disjoint_as_identity':
+  "(!x. x : constsOf t --> (asCTA as) x = None) --> fullexpand as t = t"
+(* TODO: after extension of Term structure to list containing structures we need a better induction principle!
+
+apply  (rule fullexpand.pinduct, simp add: fullexpand_is_total, auto, simp add: fullexpand_is_total)
+  apply (induct_tac "t")
+  apply auto
+*)
+  apply (rule fullexpand.pinduct[OF fullexpand_is_total], auto simp add: fullexpand_is_total)
+  sorry
+
+lemma fullexpand_disjoint_as_identity:
+  "(!!x. x : constsOf t ==> (asCTA as) x = None) ==> fullexpand as t = t"
+  using fullexpand_disjoint_as_identity' by simp
+
 lemma "!!t . fullexpand (toAS empty) t = t"
-proof (induct_tac "t", auto)
-  fix i
-  have H0: "asCTA (toAS empty) = empty" 
-    by (simp only: emptyAS_in_AS toAS_inverse)
-  have H1: "asCTA (toAS empty) i = empty i"
-    by (rule arg_cong, simp add: H0)
-  have H2: "asCTA (toAS empty) i = None" by (simp only: H1)
-  hence "(case (asCTA (toAS empty) i) of Some y => fullexpand (toAS empty) y | None => Const i) = Const i" by simp
-  thus "fullexpand (toAS empty) (Const i) = Const i"
-    by(simp add: fullexpand_is_total fullexpand.psimps)
-next
-  fix r
-  show "fullexpand (toAS empty) (Num r) = Num r"
-    by (simp add: fullexpand_is_total fullexpand.psimps)
-next
-  fix t1 t2
-  assume "fullexpand (toAS empty) t1 = t1" and "fullexpand (toAS empty) t2 = t2"
-  thus "fullexpand (toAS empty) (Mult t1 t2) = (Mult t1 t2)"
-    by (simp add: fullexpand_is_total fullexpand.psimps)
-next
-  fix t1 t2
-  assume "fullexpand (toAS empty) t1 = t1" and "fullexpand (toAS empty) t2 = t2"
-  thus "fullexpand (toAS empty) (Add t1 t2) = (Add t1 t2)"
-    by (simp add: fullexpand_is_total fullexpand.psimps)
-qed
+  using fullexpand_disjoint_as_identity toAS_inverse emptyAS_in_AS by simp
+
 
 nonterminals
   updbinds2 updbind2
@@ -243,14 +262,14 @@ translations
 -- "If we encounter a cycle in an assignment we return None"
 fun iProg :: "AssignmentStore => Command ~=> AssignmentStore" where
    "iProg as (Assign i t) = (let t' = fullexpand as t
-                             in if i : dependsOn t then None else Some (as(i ::= t')))" |
+                             in if i : constsOf t' then None else Some (as(i ::= t')))" |
    "iProg as (Seq c c') = (case iProg as c of
                              Some as' => iProg as' c'
                            | None => None)"
 
-(**********************  Respectful States  **********************)
+subsection {* Respectful States *}
 
-constdefs respectsAS :: "State => AssignmentStore => bool" (infixl "resp" 50)
+definition respectsAS :: "State => AssignmentStore => bool" (infixl "resp" 50) where
          "s resp as == !x t . (asCTA as) x = Some t --> s x = iTerm s t"
 
 theorem State_AssertionStore_interpretation_respect_preserving:
@@ -279,73 +298,4 @@ proof-
       -- "TODO: show macht probleme!"
       finally show "s i = iTerm s ?cc"
 	
-
-(*
-      show " s i =
-           iTerm s
-            (option_case (Const i)
-              (fullexpand as) (asCTA as i))"
-
-*)
-
-
-
-
-(**********************  Test stuff  **********************)
-
--- "just for testing"
-
-lemma "!!v x y z. (empty(v |-> x)) y = Some z ==> y = v & z = x"
-  by (case_tac "y=v", simp+)
-
-
-(**********************  Main development  **********************)
-term "(1, Num 2) :ts"
-
-types CSLid = int
-
-datatype CSLpredefined = Cplus | Cminus | Ctimes | Cdivide | Cpower
-  | Csign | Cmin | Cmax | Cabs | Csqrt | Cfthrt | Cpi | Ccos | Csin | Ctan
-
-datatype CSLconst = CSLpredef CSLpredefined | CSLuserdef CSLid
-
-datatype CSLvar = CSLvar CSLid
-
-datatype CSLexpr = Op CSLconst "CSLexpr list" | Num real | Var CSLid
-
-datatype CSLass = Ass CSLid "CSLvar list" CSLexpr
-
-datatype CSLcmd = AssCmd CSLass
-                | Repeat CSLexpr "CSLcmd list"
-
-datatype AssignmentStore = ASempty | ASinsert CSLass AssignmentStore
-
-types CSLprog = "CSLcmd list"
-
-fun foosel :: "nat list => nat" where
- "foosel [a, b, _] = a + b" |
- "foosel [a, b] = a * b" |
- "foosel (x#z) = x + foosel z"
-thm foosel.simps
-
-primrec lookupDefinition :: "AssignmentStore => CSLid => CSLass option" where
-"lookupDefinition ASempty _ = None" |
-"lookupDefinition (ASinsert ass as) y = None" -- "TODO: further pattern matching on ass = (Ass x vl e)"
-
-(* Full evaluation of expressions   *)
-function evalF :: "AssignmentStore => CSLexpr => CSLexpr" where
-"evalF as (Op x l) =
-  (let l' = map (evalF as) l
-  in case x of
-       CSLuserdef cid => (case lookupDefinition as cid of
-                           Some (Ass _ _ e) => evalF as e
-                         | None => Op x l)
-     | CSLpredef _ => Op x l)
-" |
-"evalF _ (Var _) = Num 1" |
-"evalF _ (Num x) = Num 2"
-
-by pat_completeness auto
-
-(* thm "evalF.simps" *)
 
