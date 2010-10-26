@@ -66,7 +66,7 @@ datatype CSLunary = Cuminus | Csign | Cabs | Csqrt | Cfthrt | Ccos | Csin | Ctan
 datatype CSLbinary = Cplus | Cminus | Ctimes | Cdivide | Cpower
 datatype CSLnary = Cmin | Cmax
 
-datatype CSLbinaryP = Cle | Clt | Cge | Cgt | Cneq | Ceq
+datatype CSLbinaryP = Cle | Clt | Cge | Cgt | Cneq | Ceq | Cconvergence
 
 datatype Term = Const int | Num real | Fun0 CSLnullary
   | Fun1 CSLunary Term | Fun2 CSLbinary Term Term | FunN CSLnary "Term list"
@@ -74,8 +74,9 @@ datatype Term = Const int | Num real | Fun0 CSLnullary
 datatype Boolterm = Ctrue | Cfalse | Pred2 CSLbinaryP Term Term
   | Conj Boolterm Boolterm | Disj Boolterm Boolterm | Neg Boolterm
 
+datatype Command = Assign int Term | Seq Command Command
+  | IfCond Boolterm Command Command | Repeat Boolterm Command
 
-datatype Command = Assign int Term | Seq Command Command | Skip | IfCond Boolterm Command Command
 
 
 fun iFun0 :: "CSLnullary => real" where
@@ -119,32 +120,29 @@ fun iTerm :: "State => Term => real" where
 "iTerm s (Fun2 c t u) = iFun2 c (iTerm s t) (iTerm s u)" |
 "iTerm s (FunN c l) = iFunN c (map (iTerm s) l)"
 
-ML {* @{term "~ p & q | c"} *}
+-- "Because the convergence predicate depends on a before- and after-state we need to pass two states to this function"
+fun iBoolterm :: "State => State => Boolterm => bool" where
+"iBoolterm _ _ Ctrue = True" |
+"iBoolterm _ _ Cfalse = False" |
+"iBoolterm s s' (Pred2 Cconvergence t u) = 
+  (let tBefore = iTerm s t;
+       tAfter = iTerm s' t;
+       uVal = iTerm s' u
+   in abs(tBefore - tAfter) <= uVal)" |
+"iBoolterm _ s' (Pred2 c t u) =  iPred2 c (iTerm s' t) (iTerm s' u)" |
+"iBoolterm s s' (Conj p q) = (iBoolterm s s' p & iBoolterm s s' q)" |
+"iBoolterm s s' (Disj p q) = (iBoolterm s s' p | iBoolterm s s' q)" |
+"iBoolterm s s' (Neg p) = Not (iBoolterm s s' p)"
 
-fun iBoolterm :: "State => Boolterm => bool" where
-"iBoolterm s Ctrue = True" |
-"iBoolterm s Cfalse = False" |
-"iBoolterm s (Pred2 c t u) =  iPred2 c (iTerm s t) (iTerm s u)" |
-"iBoolterm s (Conj p q) = (iBoolterm s p & iBoolterm s q)" |
-"iBoolterm s (Disj p q) = (iBoolterm s p | iBoolterm s q)" |
-"iBoolterm s (Neg p) = Not (iBoolterm s p)"
-
-
-
-fun iCommand :: "State => Command => State" where
-"iCommand s Skip = s" |
-"iCommand s (IfCond p c1 c2) = (if iBoolterm s p then iCommand s c1 else iCommand s c2)" |
+function iCommand :: "State => Command => State" where
+"iCommand s (IfCond p c1 c2) = (if iBoolterm s s p then iCommand s c1 else iCommand s c2)" |
 "iCommand s (Assign i t) = (%x . if x = i then iTerm s t else s x)" |
-"iCommand s (Seq c1 c2) = (let s' = iCommand s c1 in iCommand s' c2)"
-
-
-definition P1 :: "Boolterm => Command => State => State" where
-  "P1 p c s = iCommand s (IfCond p (Seq c c) Skip)"
-
-term "lfp (P1 p c)"
-definition P2 :: "Boolterm => Command => State => State" where
-  "P2 p c = lfp (P1 p c)"
-
+"iCommand s (Seq c1 c2) = (let s' = iCommand s c1 in iCommand s' c2)" |
+"iCommand s (Repeat p c) = (let s' = iCommand s c in (if iBoolterm s s' p then s' else iCommand s' (Repeat p c)))"
+  by pat_completeness auto
+(* alternatively
+  by (auto, case_tac "b", auto)
+*)
 
 
 subsection {* The Assignment Store *}
@@ -209,7 +207,7 @@ function fullexpand :: "AssignmentStore => Term => Term" where
 "fullexpand as (Fun1 c t) = Fun1 c (fullexpand as t)" |
 "fullexpand as (Fun2 c t u) = Fun2 c (fullexpand as t) (fullexpand as u)" |
 "fullexpand as (FunN c l) = FunN c (map (fullexpand as) l)"
-  by (auto, case_tac "b", auto)
+  by pat_completeness auto
 
 (* 
  fullexpand is total essentially because the lookup in the
@@ -229,14 +227,7 @@ by (rule fun_cong, simp add: H0)
 
 lemma fullexpand_disjoint_as_identity':
   "(!x. x : constsOf t --> (asCTA as) x = None) --> fullexpand as t = t"
-(* TODO: after extension of Term structure to list containing structures we need a better induction principle!
-
-apply  (rule fullexpand.pinduct, simp add: fullexpand_is_total, auto, simp add: fullexpand_is_total)
-  apply (induct_tac "t")
-  apply auto
-*)
-  apply (rule fullexpand.pinduct[OF fullexpand_is_total], auto simp add: fullexpand_is_total)
-  sorry
+  by (rule fullexpand.pinduct[OF fullexpand_is_total], auto simp add: fullexpand_is_total, rule map_idI, auto)
 
 lemma fullexpand_disjoint_as_identity:
   "(!!x. x : constsOf t ==> (asCTA as) x = None) ==> fullexpand as t = t"
@@ -282,6 +273,9 @@ proof-
   fix s as
   assume H0: "s resp as"
   show ?thesis
+    sorry
+(* continue work here:
+
     apply (rule allI, induct_tac "t")
     apply(simp add: fullexpand_is_total fullexpand.psimps)
     apply (case_tac "asCTA as int")
@@ -297,5 +291,16 @@ proof-
 
       -- "TODO: show macht probleme!"
       finally show "s i = iTerm s ?cc"
-	
+*)
 
+
+constdefs c3 :: Command -- "The command for  x := 0; x := x + 1"
+         "c3 == Seq (Assign 1 (Num 0)) (Assign 1 (Add (Const 1) (Num 1)))"
+
+constdefs p3 :: ProgCond -- "The property for  x > 0"
+         "p3 == Gt (Const 1) (Num 0)"
+
+lemma soundProg3:
+  "!! s :: State . 
+   let s' = iCommand s c3
+   in iProgCond s' p3"
