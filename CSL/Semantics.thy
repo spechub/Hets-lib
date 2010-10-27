@@ -40,9 +40,6 @@ program-property to prove: "y >= 0"
 
 subsection {* Preliminaries: Functions for term-interpretation  *}
 
-(* datatype T1 = C | T1 "T1 list" *)
-
-
 -- "power is only defined for natural number exponents"
 definition
   realpow :: "real => real => real" where
@@ -68,15 +65,34 @@ datatype CSLnary = Cmin | Cmax
 
 datatype CSLbinaryP = Cle | Clt | Cge | Cgt | Cneq | Ceq | Cconvergence
 
-datatype Term = Const int | Num real | Fun0 CSLnullary
+datatype Term = Const int | Num real | Fun0 CSLnullary ("$(_)" 999)
   | Fun1 CSLunary Term | Fun2 CSLbinary Term Term | FunN CSLnary "Term list"
 
-datatype Boolterm = Ctrue | Cfalse | Pred2 CSLbinaryP Term Term
-  | Conj Boolterm Boolterm | Disj Boolterm Boolterm | Neg Boolterm
+datatype Boolterm = Ctrue ("TT") | Cfalse ("FF") | Pred2 CSLbinaryP Term Term ("(PP _ _ _)" 50)
+  | Conj Boolterm Boolterm (infixl "&&" 35) | Disj Boolterm Boolterm (infixl "||" 30) | Neg Boolterm
 
 datatype Command = Assign int Term | Seq Command Command
   | IfCond Boolterm Command Command | Repeat Boolterm Command
+term "op &"
+ML {* Display.print_syntax (the_context()) *}
 
+term "F && (T && (F || PP Ceq $Pi $Pi))"
+
+(*
+syntax
+  "_cslplus" :: "['a, 'a] => 'a"             (infixl "+" 75)
+*)
+
+syntax
+  "_cslpi" :: "'a"             ("Pi" 999)
+
+translations
+  "x+y"                     == "Fun2 Cplus x y"
+  "Pi"                      == "Fun0 Cpi"
+
+-- "TODO: add rules for comparison ops"
+
+term "F && (T && (F || PP Ceq Pi (Pi + Pi)))"
 
 
 fun iFun0 :: "CSLnullary => real" where
@@ -121,6 +137,7 @@ fun iTerm :: "State => Term => real" where
 "iTerm s (FunN c l) = iFunN c (map (iTerm s) l)"
 
 -- "Because the convergence predicate depends on a before- and after-state we need to pass two states to this function"
+-- "The second state is always the current state"
 fun iBoolterm :: "State => State => Boolterm => bool" where
 "iBoolterm _ _ Ctrue = True" |
 "iBoolterm _ _ Cfalse = False" |
@@ -236,6 +253,8 @@ lemma fullexpand_disjoint_as_identity:
 lemma "!!t . fullexpand (toAS empty) t = t"
   using fullexpand_disjoint_as_identity toAS_inverse emptyAS_in_AS by simp
 
+ML {* print_mode *}
+
 
 nonterminals
   updbinds2 updbind2
@@ -274,6 +293,7 @@ proof-
   assume H0: "s resp as"
   show ?thesis
     sorry
+qed
 (* continue work here:
 
     apply (rule allI, induct_tac "t")
@@ -293,6 +313,10 @@ proof-
       finally show "s i = iTerm s ?cc"
 *)
 
+ML {* @{term "is (x == f y)"} *}
+ML {* Display.print_syntax (the_context()) *}
+ML {* ProofDisplay.print_theory (the_context()) *}
+ML {* ProofDisplay.print_theory (theory "Main") *}
 
 constdefs c3 :: Command -- "The command for  x := 0; x := x + 1"
          "c3 == Seq (Assign 1 (Num 0)) (Assign 1 (Add (Const 1) (Num 1)))"

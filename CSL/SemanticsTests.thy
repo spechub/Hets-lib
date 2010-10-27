@@ -316,3 +316,6 @@ term The
 term Some
 term "THE x. False"
 ML {* @{term "THE x. False"} *}
+ML {* the_context() *}
+-- "old command print_syntax, what is the new one?"
+ML {* print_syntax (theory "Main") *}
