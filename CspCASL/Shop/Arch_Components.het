@@ -1,0 +1,154 @@
+%[**********************************************************]%
+%[*                                                        *]%
+%[*            Architectural Level - Components            *]%
+%[*                                                        *]%
+%[**********************************************************]%
+
+logic CASL
+
+%[Architectural communication data that is common to all components]%
+spec Arch_Common_Data =
+   {}
+end
+
+%[Architectural communication data between the Coordinator and the]%
+%[Customer]%
+spec Arch_Comm_Coordinator_Customer_Data =
+   Arch_Common_Data
+then
+   sorts LoginReq, Logout < D_C
+end
+
+%[Architectural communication data between the Coordinator and the]%
+%[Warehouse]%
+spec Arch_Comm_Coordinator_Warehouse_Data =
+   Arch_Common_Data
+then
+   sorts D_W
+end
+
+%[Architectural communication data between the Coordinator and the]%
+%[Payment System]%
+spec Arch_Comm_Coordinator_PaymentSystem_Data =
+   Arch_Common_Data
+then
+   sorts D_PS
+end
+
+%[Architectural communication data for the Customer]%
+spec Arch_Customer_Data =
+   Arch_Comm_Coordinator_Customer_Data
+end
+
+%[Architectural communication data for the Warehouse]%
+spec Arch_Warehouse_Data =
+   Arch_Comm_Coordinator_Warehouse_Data
+end
+
+%[Architectural communication data for the Payment System]%
+spec Arch_PaymentSystem_Data =
+   Arch_Comm_Coordinator_PaymentSystem_Data
+end
+
+%[Architectural communication data for the Coordinator]%
+spec Arch_Coordinator_Data =
+   Arch_Comm_Coordinator_Customer_Data and
+   Arch_Comm_Coordinator_Warehouse_Data and
+   Arch_Comm_Coordinator_PaymentSystem_Data
+end
+
+logic CspCASL
+
+%[Architectural Customer]%
+spec Arch_Customer =
+   data
+      Arch_Customer_Data
+   channel
+      C_C: D_C
+   process
+      Customer: C_C;
+      Customer_GoodLogin: C_C;
+      Customer_BadLogin: C_C;
+      Customer_Body: C_C;
+      Customer_ViewCatalogue: C_C;
+      Customer_ViewBasket: C_C;
+      Customer_AddItem: C_C;
+      Customer_RemoveItem: C_C;
+      Customer_Checkout: C_C;
+      Customer_Quit: C_C;
+
+      Customer =
+        C_C ! x::LoginReq -> (  Customer_GoodLogin; Customer_Body
+                             [] Customer_BadLogin; Customer)
+
+      Customer_Quit =
+        C_C ! x::Logout -> SKIP
+
+      Customer_Body =
+            Customer_ViewCatalogue
+        |~| Customer_ViewBasket
+        |~| Customer_AddItem
+        |~| Customer_RemoveItem
+        |~| Customer_Checkout
+        |~| Customer_Quit
+end
+
+%[Architectural Warehouse]%
+spec Arch_Warehouse =
+   data
+      Arch_Warehouse_Data
+   channel
+      C_W: D_W
+   process
+      Warehouse: C_W;
+      Warehouse_ReserveItem: C_W;
+      Warehouse_ReleaseItem: C_W;
+      Warehouse_Dispatch: C_W;
+      Warehouse =  Warehouse_ReserveItem
+                [] Warehouse_ReleaseItem
+                [] Warehouse_Dispatch
+end
+
+%[Architectural Payment System]%
+spec Arch_PaymentSystem =
+   data
+      Arch_PaymentSystem_Data
+   channel
+      C_PS: D_PS
+   process
+      PaymentSystem: C_PS;
+end
+
+%[Architectural Coordinator]%
+spec Arch_Coordinator =
+   data
+      Arch_Coordinator_Data
+   channel
+      C_C:  D_C;
+      C_W:  D_W;
+      C_PS: D_PS
+   process
+      Coordinator: C_C, C_W, C_PS;
+      Coordinator_GoodLogin: C_C, C_W, C_PS;
+      Coordinator_BadLogin: C_C, C_W, C_PS;
+      Coordinator_Body: C_C, C_W, C_PS;
+      Coordinator_ViewCatalogue: C_C, C_W, C_PS;
+      Coordinator_ViewBasket: C_C, C_W, C_PS;
+      Coordinator_AddItem: C_C, C_W, C_PS;
+      Coordinator_RemoveItem: C_C, C_W, C_PS;
+      Coordinator_Checkout: C_C, C_W, C_PS;
+      Coordinator_Quit: C_C, C_W, C_PS;
+
+      Coordinator =
+        C_C ? x::LoginReq -> (   Coordinator_GoodLogin; Coordinator_Body
+                             |~| Coordinator_BadLogin; Coordinator)
+
+      Coordinator_Quit = C_C ? x::Logout -> SKIP
+      Coordinator_Body =
+           Coordinator_ViewCatalogue
+        [] Coordinator_ViewBasket
+        [] Coordinator_AddItem
+        [] Coordinator_RemoveItem
+        [] Coordinator_Checkout
+        [] Coordinator_Quit
+end

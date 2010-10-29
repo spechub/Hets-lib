@@ -1,0 +1,20 @@
+%[**********************************************************]%
+%[*                                                        *]%
+%[*                        The Shop                        *]%
+%[*                                                        *]%
+%[**********************************************************]%
+
+from Arch_Components get Arch_Customer_Data, Arch_Warehouse_Data, Arch_PaymentSystem_Data, Arch_Coordinator_Data,
+                         Arch_Customer, Arch_Warehouse, Arch_PaymentSystem, Arch_Coordinator
+
+logic CspCASL
+
+spec Arch_Shop[Arch_Customer][Arch_Warehouse][Arch_PaymentSystem][Arch_Coordinator] =
+   process
+      System: C_C, C_W, C_PS;
+      System = Coordinator [ C_C, C_W, C_PS || C_C, C_W, C_PS ] (
+                  Customer [C_C || C_W, C_PS ] (
+                     Warehouse [ C_W || C_PS ] PaymentSystem
+                  )
+               )
+end
