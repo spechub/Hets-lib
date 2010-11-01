@@ -65,35 +65,176 @@ datatype CSLnary = Cmin | Cmax
 
 datatype CSLbinaryP = Cle | Clt | Cge | Cgt | Cneq | Ceq | Cconvergence
 
-datatype Term = Const int | Num real | Fun0 CSLnullary ("$(_)" 999)
+datatype Term = Const int | Num real | Fun0 CSLnullary
   | Fun1 CSLunary Term | Fun2 CSLbinary Term Term | FunN CSLnary "Term list"
 
-datatype Boolterm = Ctrue ("TT") | Cfalse ("FF") | Pred2 CSLbinaryP Term Term ("(PP _ _ _)" 50)
+datatype Boolterm = Ctrue | Cfalse | Pred2 CSLbinaryP Term Term
   | Conj Boolterm Boolterm (infixl "&&" 35) | Disj Boolterm Boolterm (infixl "||" 30) | Neg Boolterm
 
-datatype Command = Assign int Term | Seq Command Command
+datatype Command = Assign int Term (infix ":=" 30) | Seq Command Command
   | IfCond Boolterm Command Command | Repeat Boolterm Command
-term "op &"
-ML {* Display.print_syntax (the_context()) *}
-
-term "F && (T && (F || PP Ceq $Pi $Pi))"
 
 (*
-syntax
-  "_cslplus" :: "['a, 'a] => 'a"             (infixl "+" 75)
+ML {* Display.print_syntax (the_context()) *}
+
 *)
 
+constdefs true :: bool
+  "true == True"
+  false :: bool
+  "false == False"
+
+nonterminals
+  semiargs glyx
+
+
+
 syntax
+  "_semiargs2" :: "['a, 'a] => semiargs"             ("_;/ _" [10, 10] 9)
+  "_semiargs" :: "['a, semiargs] => semiargs"        ("_;/ _" [10, 9] 9)
+
+  "_cslle" :: "[glyx, glyx]\<Rightarrow>glyx" (infix "<=" 50)
+  "_csllt" :: "[glyx, glyx]\<Rightarrow>glyx" (infix "<" 50)
+  "_cslge" :: "[glyx, glyx]\<Rightarrow>glyx" (infix ">=" 50)
+  "_cslgt" :: "[glyx, glyx]\<Rightarrow>glyx" (infix ">" 50)
+  "_csleq" :: "[glyx, glyx]\<Rightarrow>glyx" (infix "=" 50)
+  "_cslneq" :: "[glyx, glyx]\<Rightarrow>glyx" (infix "~=" 50)
+
+  "_cslplus" :: "[glyx, glyx]\<Rightarrow>glyx" (infixl "+" 65)
+  "_cslminus" :: "[glyx, glyx]\<Rightarrow>glyx" (infixl "-" 65)
+  "_csltimes" :: "[glyx, glyx]\<Rightarrow>glyx" (infixl "*" 70)
+  "_csldivide" :: "[glyx, glyx]\<Rightarrow>glyx" (infixl "'/" 70)
+  "_cslpower" :: "[glyx, glyx]\<Rightarrow>glyx" (infixl "^" 75)
+
+  "_csluminus" :: "glyx\<Rightarrow>glyx"     ("(- _)" [81] 80)
+
+  "_isatrue" :: "'a"             ("True" 1000)
+  "_isafalse" :: "'a"            ("False" 1000)
+  "_csltrue" :: "glyx"             ("True" 1000)
+  "_cslfalse" :: "glyx"            ("False" 1000)
+  "_cslneg" :: "glyx\<Rightarrow>glyx"        ("(~_)" [40] 40)
+
+  "" :: "glyx \<Rightarrow> 'a" ("_") -- "We need this for glyx to be valid terms"
+  "" :: "'a \<Rightarrow> glyx" ("_")
+(*
+  "_cslle" :: "['a, 'a]\<Rightarrow>'a" (infix "<<=" 50)
+  "_csllt" :: "['a, 'a]\<Rightarrow>'a" (infix "<<" 50)
+  "_cslge" :: "['a, 'a]\<Rightarrow>'a" (infix ">>=" 50)
+  "_cslgt" :: "['a, 'a]\<Rightarrow>'a" (infix ">>" 50)
+  "_csleq" :: "['a, 'a]\<Rightarrow>'a" (infix "===" 50)
+  "_cslneq" :: "['a, 'a]\<Rightarrow>'a" (infix "~==" 50)
+
+  "_cslplus" :: "['a, 'a]\<Rightarrow>'a" (infixl "+++" 65)
+  "_cslminus" :: "['a, 'a]\<Rightarrow>'a" (infixl "--" 65)
+  "_csltimes" :: "['a, 'a]\<Rightarrow>'a" (infixl "**" 70)
+  "_csldivide" :: "['a, 'a]\<Rightarrow>'a" (infixl "'/'/'/" 70)
+  "_cslpower" :: "['a, 'a]\<Rightarrow>'a" (infixl "^^" 75)
+
+  "_csluminus" :: "'a\<Rightarrow>'a"     ("(-- _)" [81] 80)
+*)
+
+
   "_cslpi" :: "'a"             ("Pi" 999)
+  "_cslsign" :: "'a\<Rightarrow>'a"       ("(sign'(_'))" 999)
+  "_cslabs" :: "'a\<Rightarrow>'a"        ("(abs'(_'))" 999)
+  "_cslsqrt" :: "'a\<Rightarrow>'a"       ("(sqrt'(_'))" 999)
+  "_cslfthrt" :: "'a\<Rightarrow>'a"      ("(fthrt'(_'))" 999)
+  "_cslsin" :: "'a\<Rightarrow>'a"        ("(sin'(_'))" 999)
+  "_cslcos" :: "'a\<Rightarrow>'a"        ("(cos'(_'))" 999)
+  "_csltan" :: "'a\<Rightarrow>'a"        ("(tan'(_'))" 999)
+
+  "_cslconv" :: "['a, 'a]\<Rightarrow>'a" ("(convergence'(_, _'))" 999)
+
+  "_cslmin" :: "args\<Rightarrow>'a"      ("(min'(_'))" 999)
+  "_cslmax" :: "args\<Rightarrow>'a"      ("(max'(_'))" 999)
+
+  "" :: "semiargs \<Rightarrow> 'a" ("_") -- "We need this for a sequence to be a logical"
+
+  -- "We need to write the rule for repeat here because the arguments are switched"
+  "_cslrepeat" :: "['a, 'a]\<Rightarrow>'a"              ("(repeat _ until _)" [9, 20] 10)
 
 translations
-  "x+y"                     == "Fun2 Cplus x y"
+
+(*
+  "_cslle x y"              == "Pred2 Cle x y"
+  "_csllt x y"              == "Pred2 Clt x y"
+  "_cslge x y"              == "Pred2 Cge x y"
+  "_cslgt x y"              == "Pred2 Cgt x y"
+  "_csleq x y"              == "Pred2 Ceq x y"
+  "_cslneq x y"             == "Pred2 Cneq x y"
+
+  "_cslplus x y"            == "Fun2 Cplus x y"
+  "_cslminus x y"           == "Fun2 Cminus x y"
+  "_csltimes x y"           == "Fun2 Ctimes x y"
+  "_csldivide x y"          == "Fun2 Cdivide x y"
+  "_cslpower x y"           == "Fun2 Cpower x y"
+
+  "_csluminus x"            == "Fun1 Cuminus x"
+*)
+  "_cslle x y"              == "Pred2 Cle x y"
+  "_csllt x y"              == "Pred2 Clt x y"
+  "_cslge x y"              == "Pred2 Cge x y"
+  "_cslgt x y"              == "Pred2 Cgt x y"
+  "_csleq x y"              == "Pred2 Ceq x y"
+  "_cslneq x y"             == "Pred2 Cneq x y"
+
+  "_cslplus x y"            == "Fun2 Cplus x y"
+  "_cslminus x y"           == "Fun2 Cminus x y"
+  "_csltimes x y"           == "Fun2 Ctimes x y"
+  "_csldivide x y"          == "Fun2 Cdivide x y"
+  "_cslpower x y"           == "Fun2 Cpower x y"
+
+  "_csluminus x"            == "Fun1 Cuminus x"
+
+  "sign(x)"                 == "Fun1 Csign x"
+  "abs(x)"                  == "Fun1 Cabs x"
+  "sqrt(x)"                 == "Fun1 Csqrt x"
+  "fthrt(x)"                == "Fun1 Cfthrt x"
+  "sin(x)"                  == "Fun1 Csin x"
+  "cos(x)"                  == "Fun1 Ccos x"
+  "tan(x)"                  == "Fun1 Ctan x"
+
+  "min(x)"                  == "FunN Cmin [x]"
+  "min(x,xs)"               == "FunN Cmin (concat x xs)"
+  "max(x)"                  == "FunN Cmax [x]"
+  "max(x,xs)"               == "FunN Cmax (concat x xs)"
+
   "Pi"                      == "Fun0 Cpi"
+  "_isatrue"                == "true"
+  "_isafalse"               == "false"
+  "_csltrue"                == "Ctrue"
+  "_cslfalse"               == "Cfalse"
+  "_cslneg x"               == "Neg x"
+  "_Numeral x"              == "Num x"
 
--- "TODO: add rules for comparison ops"
+  "_cslrepeat b u" == "Repeat u b"
+  "_semiargs2 x y" == "Seq x y"
+  "_semiargs x y" == "Seq x y"
 
-term "F && (T && (F || PP Ceq Pi (Pi + Pi)))"
 
+term "!x. f(FF && (TT && (FF || - abs(x + x / Pi) <= (Pi+ Pi + max(Pi)))))"
+
+(*
+term "!x. f(FF && (TT && (FF || -- abs(x+++ x /// Pi) <<= (Pi+++ Pi +++ max(Pi)))))"
+*)
+
+term "x:=a;x:=a"
+term "x:=a;x:=a;x:=a"
+term "x:=a;x:=a;x:=a;x:=a"
+(*
+term "x:=a; repeat y:=c;z:=c until Const x >> Pi; x:=a"
+term "x:=a; repeat y:=c;z:=c until Const x >> Pi; repeat y:=c;repeat y:=c;z:=c until Const x >> Pi until Const x >> Pi"
+
+ML {* Display.print_syntax (the_context()) *}
+*)
+term "(x::Term)<u"
+term "(x::real) < b"
+
+term "x:=a;x:=a"
+term "x:=a;x:=a;x:=a"
+term "x:=a;x:=a;x:=a;x:=a"
+term "x:=a; repeat y:=c;z:=c until Const x > Pi; x:=a"
+term "x:=a; repeat y:=c;z:=c until Const x > Pi; repeat y:=c;repeat y:=c;z:=c until Const x > Pi until Const x > Pi"
 
 fun iFun0 :: "CSLnullary => real" where
 "iFun0 Cpi = pi"
@@ -127,10 +268,14 @@ fun iPred2 :: "CSLbinaryP => (real => real => bool)" where
 "iPred2  Cneq =  op ~=" |
 "iPred2  Ceq = op ="
 
+(*
+ML {* Display.print_syntax (the_context()) *}
+*)
 
+ML {* @{term "!y::real. x <= y"} *}
 fun iTerm :: "State => Term => real" where
 "iTerm s (Const i) = s i" |
-"iTerm _ (Num r) = r" |
+"iTerm s (Num r) = r" |
 "iTerm s (Fun0 c) = iFun0 c" |
 "iTerm s (Fun1 c t) = iFun1 c (iTerm s t)" |
 "iTerm s (Fun2 c t u) = iFun2 c (iTerm s t) (iTerm s u)" |
@@ -139,14 +284,14 @@ fun iTerm :: "State => Term => real" where
 -- "Because the convergence predicate depends on a before- and after-state we need to pass two states to this function"
 -- "The second state is always the current state"
 fun iBoolterm :: "State => State => Boolterm => bool" where
-"iBoolterm _ _ Ctrue = True" |
-"iBoolterm _ _ Cfalse = False" |
+"iBoolterm s s' Ctrue = True" |
+"iBoolterm s s' Cfalse = False" |
 "iBoolterm s s' (Pred2 Cconvergence t u) = 
   (let tBefore = iTerm s t;
        tAfter = iTerm s' t;
        uVal = iTerm s' u
-   in abs(tBefore - tAfter) <= uVal)" |
-"iBoolterm _ s' (Pred2 c t u) =  iPred2 c (iTerm s' t) (iTerm s' u)" |
+   in abs (tBefore - tAfter) <= uVal)" |
+"iBoolterm s s' (Pred2 c t u) =  iPred2 c (iTerm s' t) (iTerm s' u)" |
 "iBoolterm s s' (Conj p q) = (iBoolterm s s' p & iBoolterm s s' q)" |
 "iBoolterm s s' (Disj p q) = (iBoolterm s s' p | iBoolterm s s' q)" |
 "iBoolterm s s' (Neg p) = Not (iBoolterm s s' p)"
@@ -216,11 +361,11 @@ lemma emptyAS_in_AS: "empty : AS"
 
 
 function fullexpand :: "AssignmentStore => Term => Term" where
-"fullexpand _ (Num r) = Num r" |
+"fullexpand as (Num r) = Num r" |
 "fullexpand as (Const i) = (case (asCTA as) i of
                               Some y => fullexpand as y
                             | None => Const i)" |
-"fullexpand _ (Fun0 c) = Fun0 c" |
+"fullexpand as (Fun0 c) = Fun0 c" |
 "fullexpand as (Fun1 c t) = Fun1 c (fullexpand as t)" |
 "fullexpand as (Fun2 c t u) = Fun2 c (fullexpand as t) (fullexpand as u)" |
 "fullexpand as (FunN c l) = FunN c (map (fullexpand as) l)"
@@ -286,6 +431,7 @@ theorem State_AssertionStore_interpretation_respect_preserving:
   "[|s resp as; iProg as p = Some as'|] ==> (iCommand s p) resp as'"
   sorry
 
+
 theorem iTerm_invariant_under_full_expansion:
   "s resp as ==> !t. iTerm s t = iTerm s (fullexpand as t)"
 proof-
@@ -313,18 +459,18 @@ qed
       finally show "s i = iTerm s ?cc"
 *)
 
-ML {* @{term "is (x == f y)"} *}
+
 ML {* Display.print_syntax (the_context()) *}
 ML {* ProofDisplay.print_theory (the_context()) *}
 ML {* ProofDisplay.print_theory (theory "Main") *}
 
 constdefs c3 :: Command -- "The command for  x := 0; x := x + 1"
-         "c3 == Seq (Assign 1 (Num 0)) (Assign 1 (Add (Const 1) (Num 1)))"
+         "c3 == 1 := Num 0; 1 := Const 1 + Num 1" --"Seq (Assign 1 (Num 0)) (Assign 1 (Add (Const 1) (Num 1)))"
 
-constdefs p3 :: ProgCond -- "The property for  x > 0"
-         "p3 == Gt (Const 1) (Num 0)"
+constdefs p3 :: Boolterm -- "The property for  x > 0"
+         "p3 == Const 1 > Num 0"
 
 lemma soundProg3:
   "!! s :: State . 
    let s' = iCommand s c3
-   in iProgCond s' p3"
+   in iBoolterm s s' p3"
