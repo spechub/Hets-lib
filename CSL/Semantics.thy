@@ -470,7 +470,20 @@ constdefs c3 :: Command -- "The command for  x := 0; x := x + 1"
 constdefs p3 :: Boolterm -- "The property for  x > 0"
          "p3 == Const 1 > Num 0"
 
+
+
 lemma soundProg3:
   "!! s :: State . 
    let s' = iCommand s c3
    in iBoolterm s s' p3"
+  sorry
+
+subsection {* Extended Parameters *}
+
+datatype EPC =  EP CSLbinaryP nat nat | EPStar nat | EPBot nat
+
+datatype RS = RS "EPC list"
+
+
+
+
