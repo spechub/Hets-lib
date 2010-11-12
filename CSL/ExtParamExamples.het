@@ -91,6 +91,18 @@ spec E80 =
      . x := y[I=1] + y[I=0] %(D)%
 end
 
+%% partitioning example
+spec E81 =
+     . c[I>0] := a[I=0] + b %(A)%
+     . b[I=1,J=0] := 20 %(B)%
+     . b[I>1,J=1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0,J>0] := 201 %(E)%
+     . a := 1 %(F)%
+end
+
+
+
 %% Good Example (fixing both dimensions)
 spec E9 =
      . y[I=1,J=0] := 20 %(A)%
