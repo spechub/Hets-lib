@@ -278,3 +278,33 @@ result
 end
 
 %% End of the example ------------------------------------------------
+
+refinement R = 
+  WHS refined to WHS' refined to arch spec Warehouse_simplified
+
+spec ORDER'' = ORDER and Boolean and RichTotalOrder with Elem |-> Nat
+then
+  ops init_label : Nat; 
+  type Order ::= 
+    gen_order(reference: Product; ordered_qty : Pos; gen_pending : Boolean;
+              label : Nat)
+
+  . init_label = 0
+  forall l:Nat; o:Order
+  . is_pending(o) <=> gen_pending(o)=True
+  forall p1,p2:Product; q1,q2:Pos; b1,b2:Boolean; l1,l2:Nat
+  . gen_order(p1,q1,b1,l1)=gen_order(p2,q2,b2,l2) =>
+      p1=p2 /\ q1=q2 /\ b1=b2 /\ l1=l2       %(gen_order_injective)%
+
+end
+
+unit spec NATORDER' = 
+  Nat * PRODUCT -> ORDER'
+
+unit spec NATORDER'' = 
+  Nat * PRODUCT -> ORDER''
+
+refinement R' = NATORDER' refined via Label |-> Nat to NATORDER''
+
+refinement R'' = 
+  R then {OrderFun to R'}
