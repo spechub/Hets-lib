@@ -101,6 +101,55 @@ spec E81 =
      . a := 1 %(F)%
 end
 
+%% partitioning example
+spec E82 =
+     . c[I>0] := a + b %(A)%
+     . c := a * b %(A1)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+%[ Expected ep-elimination outcome:
+     a1 = 201 , I>=0
+     a2 = 1   , C(I>=0)
+
+     b1 = 20  , I=1
+     b2 = 23  , I>1
+     b3 = 231 , C(Un (I=1, I>1))
+
+     c1 = a1 * b3, I=0
+     c2 = a1 + b1, I=1
+     c3 = a1 + b2, I>1
+     c4 = a2 * b3, C(I>=0)
+
+]%
+end
+
+%% partitioning example
+spec E83 =
+     . c[I>0] := a[I=0] + b %(A)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+
+%[ Expected ep-elimination outcome:
+     a1 = 201 , I>=0
+     a2 = 1   , C(I>=0)
+
+     b1 = 20  , I=1
+     b2 = 23  , I>1
+     b3 = 231 , C(Un (I=1, I>1))
+
+     c1 = a1 * b3, C(I>0)
+     c2 = a1 + b1, I=1
+     c3 = a1 + b2, I>1
+
+]%
+end
+
 
 
 %% Good Example (fixing both dimensions)
