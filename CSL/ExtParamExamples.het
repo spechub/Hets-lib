@@ -91,7 +91,7 @@ spec E80 =
      . x := y[I=1] + y[I=0] %(D)%
 end
 
-%% partitioning example
+%% partitioning examples
 spec E81 =
      . c[I>0] := a[I=0] + b %(A)%
      . b[I=1,J=0] := 20 %(B)%
@@ -101,7 +101,22 @@ spec E81 =
      . a := 1 %(F)%
 end
 
-%% partitioning example
+spec E821 =
+     . b[I>3] := 25 %(C)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+end
+
+spec E822 =
+     . b[I>3] := 25 %(C)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+end
+
 spec E82 =
      . c[I>0] := a + b %(A)%
      . c := a * b %(A1)%
@@ -126,7 +141,6 @@ spec E82 =
 ]%
 end
 
-%% partitioning example
 spec E83 =
      . c[I>0] := a[I=0] + b %(A)%
      . b[I=1] := 20 %(B)%
@@ -147,6 +161,56 @@ spec E83 =
      c2 = a1 + b1, I=1
      c3 = a1 + b2, I>1
 
+]%
+end
+
+%% propagation break
+spec E84 =
+     . x := y + y[I=1]
+
+     . y[I=1] := 20
+     . y := 23
+
+     . z := x * y
+
+     . a := z + z[I=1]
+
+%[ Expected ep-elimination outcome:
+     y1 = 20 , I=1
+     y2 = 23 , C(I=1)
+
+     x1 = y1 + y1 , I=1
+     x2 = y2 + y1 , C(I=1)
+
+     z1 = x1 * y1  , I=1
+     z2 = x2 * y2  , C(I=1)
+
+     a1 = z1 + z1  , I=1
+     a2 = z2 + z1  , C(I=1)
+]%
+end
+
+spec E85 =
+     . x[I-|] := y + y[I=1]
+
+     . y[I=1] := 20
+     . y := 23
+
+     . z := x * y
+
+     . a := z + z[I=1]
+
+%[ Expected ep-elimination outcome:
+     y1 = 20 , I=1
+     y2 = 23 , C(I=1)
+
+     x1 = y2 + y1
+
+     z1 = x1 * y1  , I=1
+     z2 = x1 * y2  , C(I=1)
+
+     a1 = z1 + z1  , I=1
+     a2 = z2 + z1  , C(I=1)
 ]%
 end
 
