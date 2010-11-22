@@ -65,27 +65,27 @@ spec E6 =
      . x := z[I=1] + z[I=2] + z %(D)%
 end
 
-%% Good Example (Split on J=0)
+%% Good Example (Split on F=0)
 spec E7 =
-     . y[I=1,J=0] := 20 %(A)%
+     . y[I=1,F=0] := 20 %(A)%
      . y[I=0] := 30 %(B)%
      . y[I=1] := 10 %(C)%
      . x := y[I=1] + y[I=0] %(D)%
 end
 
-%% Good Example 2 (Double Split, J=0, J=2)
+%% Good Example 2 (Double Split, F=0, F=2)
 spec E8 =
-     . y[I=1,J=0] := 20 %(A)%
-     . y[I=0,J=2] := 35 %(B.1)%
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0,F=2] := 35 %(B.1)%
      . y[I=0] := 30 %(B)%
      . y[I=1] := 10 %(C)%
      . x := y[I=1] + y[I=0] %(D)%
 end
 
-%% Good Example 3 (Symmetric Double Split, J=0)
+%% Good Example 3 (Symmetric Double Split, F=0)
 spec E80 =
-     . y[I=1,J=0] := 20 %(A)%
-     . y[I=0,J=0] := 35 %(B.1)%
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0,F=0] := 35 %(B.1)%
      . y[I=0] := 30 %(B)%
      . y[I=1] := 10 %(C)%
      . x := y[I=1] + y[I=0] %(D)%
@@ -94,10 +94,10 @@ end
 %% partitioning examples
 spec E81 =
      . c[I>0] := a[I=0] + b %(A)%
-     . b[I=1,J=0] := 20 %(B)%
-     . b[I>1,J=1] := 23 %(C)%
+     . b[I=1,F=0] := 20 %(B)%
+     . b[I>1,F=1] := 23 %(C)%
      . b := 231 %(D)%
-     . a[I>=0,J>0] := 201 %(E)%
+     . a[I>=0,F>0] := 201 %(E)%
      . a := 1 %(F)%
 end
 
@@ -142,7 +142,8 @@ spec E82 =
 end
 
 spec E83 =
-     . c[I>0] := a[I=0] + b %(A)%
+     . c[I>0] := a + b %(A)%
+     . c := a[I=0] * b %(A1)%
      . b[I=1] := 20 %(B)%
      . b[I>1] := 23 %(C)%
      . b := 231 %(D)%
@@ -218,15 +219,15 @@ end
 
 %% Good Example (fixing both dimensions)
 spec E9 =
-     . y[I=1,J=0] := 20 %(A)%
+     . y[I=1,F=0] := 20 %(A)%
      . y[I=0] := 30 %(B)%
      . y[I=1] := 10 %(C)%
-     . x := y[I=1] + y[J=0] %(D)%
+     . x := y[I=1] + y[F=0] %(D)%
 end
 
 %% allowed overlapping illustration
 spec E10 =
-     . y[I=1,J=0] := 20 %(A)%
+     . y[I=1,F=0] := 20 %(A)%
      . y[I>0] := 30 %(B)%
      . y[I>2] := 30 %(C)%
      . y[I=1] := 10 %(D)%
@@ -234,8 +235,8 @@ end
 
 %% forbidden overlapping illustration (A,B,C intersect nonempty without being inclusions)
 spec E11 =
-     . y[I=1,J=0] := 20 %(A)%
-     . y[I>0,J>2] := 30 %(B)%
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I>0,F>2] := 30 %(B)%
      . y[I>2] := 30 %(C)%
      . y[I=1] := 10 %(D)%
 end
