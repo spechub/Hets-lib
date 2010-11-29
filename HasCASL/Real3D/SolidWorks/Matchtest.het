@@ -1,0 +1,138 @@
+library HasCASL/Real3D/SolidWorks/Matchtest
+
+%right_assoc __ :: __
+%list [__], [], __::__
+
+logic HasCASL
+
+spec Matching1 = 
+
+     var a:Type
+     free type List a ::=  [] |  __ :: __ (a; List a)
+
+     types Point, Vector, VectorStar, Real
+     types VectorStar < Vector
+
+     free type
+     SWPlane ::= SWPlane(SpacePoint:Point;NormalVector:VectorStar;InnerCS:Vector); %(SWPlane datatype)%
+
+     free type
+     SWArc ::= SWArc(Center:Point;Start:Point;End:Point);  %(SWArc datatype)%
+
+     free type
+     SWLine ::= SWLine(From:Point;To:Point);  %(SWLine datatype)%
+
+     free type
+     SWSpline ::= SWSpline(Points:List Point);  %(SWSpline datatype)%
+
+     free type
+     SWSketchObject ::= type SWArc | type SWLine | type SWSpline ;  %(SWSketchObject datatype)%
+
+     free type
+     SWSketch ::= SWSketch(Objects:List SWSketchObject;Plane: SWPlane);  %(SWSketch datatype)%
+
+     free type
+     SWExtrusion ::= SWExtrusion(Sketch:SWSketch;
+				 Depth:Real);
+
+     free type
+     %% These Features are missing: Revolution, Sweep, Loft, Chamfer
+     SWFeature ::= type SWExtrusion;  %(SWFeature datatype)%
+
+
+     ops r,s,t,d,0: Real; p,q,p0,p1,0:Point; v,w,v0,v1,0:Vector; v':VectorStar;
+	 || __ || : Vector -> Real
+
+
+
+     %% concrete cylinder
+     ops
+     Front_Plane:SWPlane = SWPlane(q, v as VectorStar, v0); %(cdef1)%
+     Arc_0_Sketch1:SWArc = SWArc(q, p, p); %(cdef2)%
+     Arc_1_Sketch2:SWArc = SWArc(p, q, q); %(cdef2bis)%
+     Sketch1:SWSketch = SWSketch([Arc_0_Sketch1, Arc_1_Sketch2], Front_Plane); %(cdef3)%
+     Extrude_1:SWExtrusion = SWExtrusion(Sketch1, d); %(concr)%
+
+
+
+     ops center, boundarypoint:Point; axis:VectorStar; so1:SWSketchObject;
+
+         %% Abstract pattern
+	 SWCylinder_Const:SWFeature
+	  = let plane = SWPlane(center, axis, 0);
+		arc = SWArc(center,boundarypoint,boundarypoint);
+		height = ||axis||
+	    in
+	    SWExtrusion
+	       (SWSketch([arc, so1],plane),height); %(def of SWCylinder)%
+
+
+
+end
+
+spec S1 = 
+
+ types S,T
+ var G,A: Type
+ ops __ * __: G * G -> G;
+     e: G;
+     inv: G -> G;
+     f: T->T;
+     f1: T->S;
+     g(x: T):T = x; %(defOfG)%
+     c':T;
+     c: T = f(c'); %(defOfC)%
+
+     p: T*T -> Logical; %(defOfC)%
+
+ var x,y,z:G; a,b:T
+ . (x * y) * z = x * (y * z)  %(group_assoc)%
+%% . let y:T = f(a) in f(f(y)) = f(y) %(let1)%
+%% . let x:T = f(a); a:T = f(x) in f(f(x)) = f(a) %(let2)%
+%% . let h (x:T) = f(f(x)) in f(h(a)) = f(a) %(let3)%
+ . f(f(f(c))) = f(c) %(constexpr)%
+ . f = \ d:T .! d %(defOfF)%
+ . f(a) = a %(QdefOfF)%
+ . p( (\ x,z,y:T . (x,y)) c c c) %(beta-red)%
+
+
+  . p(let y:T = c in y, c) %(prob-net0)%
+
+%% . forall x:A. let y:A = x in exists x:A. x = x %(prob1)% %implied
+
+ . forall x:A. ( \y:A . exists x:A. x = y ) x %(prob2)% %implied
+end
+
+%[
+ops:
+
+__*__
+
+c
+
+e
+
+f
+
+g: [lam (x) . x]
+
+inv
+
+
+
+sens:
+
+defOfG: [! (x) . (__=__ <(g x), x>)]
+
+group_assoc: [! (G, x, y, z) . (__=__ <(__*__ <(__*__ <x, y>), z>), (__*__ <x, (__*__ <y, z>)>)>)]
+
+let1: [! (a) . [let (y=(f a)) . (__=__ <(f (f y)), (f y)>)]]
+
+constexpr: (__=__ <(f (f (f c))), (f c)>)
+
+defOfF: (__=__ <f, [lam (d) . d]>)
+
+QdefOfF: [! (a) . (__=__ <(f a), a>)]
+
+
+]%
