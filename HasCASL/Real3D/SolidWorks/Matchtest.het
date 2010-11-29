@@ -1,4 +1,13 @@
 library HasCASL/Real3D/SolidWorks/Matchtest
+version 0.1
+
+
+%author: E. Schulz
+%date: 29-11-2010
+
+%[ A testfile for testing the matching algorithm from
+HasCASL.MatchingWithDefinitions
+]%
 
 %right_assoc __ :: __
 %list [__], [], __::__
@@ -50,7 +59,7 @@ spec Matching1 =
      Front_Plane:SWPlane = SWPlane(q, v as VectorStar, v0); %(cdef1)%
      Arc_0_Sketch1:SWArc = SWArc(q, p, p); %(cdef2)%
      Arc_1_Sketch2:SWArc = SWArc(p, q, q); %(cdef2bis)%
-     Sketch1:SWSketch = SWSketch([Arc_0_Sketch1, Arc_1_Sketch2], Front_Plane); %(cdef3)%
+     Sketch1:SWSketch = SWSketch([ Arc_0_Sketch1 %[, Arc_1_Sketch2]% ], Front_Plane); %(cdef3)%
      Extrude_1:SWExtrusion = SWExtrusion(Sketch1, d); %(concr)%
 
 
@@ -64,7 +73,7 @@ spec Matching1 =
 		height = ||axis||
 	    in
 	    SWExtrusion
-	       (SWSketch([arc, so1],plane),height); %(def of SWCylinder)%
+	       (SWSketch([ arc %[, so1]% ],plane),height); %(def of SWCylinder)%
 
 
 
