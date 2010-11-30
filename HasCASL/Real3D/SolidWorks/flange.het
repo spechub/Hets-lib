@@ -1,0 +1,76 @@
+logic HasCASL
+from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorks
+spec Blindflansch = SolidWorks then
+
+
+ops
+%Tag:Oben
+	Oben:SWPlane =			SWPlane(P( 0, 0, 0), V( 1000, 0, 0) as VectorStar, V( 0, 1000, 0));
+
+%Tag:Arc_0@Skizze3
+	Arc_0_Skizze3:SWArc =			SWArc(P(54.9875234678745,16.8113730215574,0), P(54.9875234678745,16.8113730215574,0), P(0,0,0));
+
+%Tag:Skizze3@Oben
+	Skizze3:SWSketch =			SWSketch([
+							 Arc_0_Skizze3
+							],Oben);
+%Tag:Zentralloch@Sketch3
+	Extrude_3:SWExtrusion =			SWExtrusion(Skizze3,0);
+
+%Tag:Vorne
+	Vorne:SWPlane =			SWPlane(P( 0, 0, 0), V( 1000, 0, 0) as VectorStar, V( 0, 0, 1000));
+
+%Tag:Line_0@Skizze4
+	Line_0_Skizze4:SWLine =			SWLine(P(0,0,0), P(0,114.629288840746,0));
+
+%Tag:Line_1@Skizze4
+	Line_1_Skizze4:SWLine =			SWLine(P(57.5,-80.5,0), P(47.5,-80.5,0));
+
+%Tag:Line_2@Skizze4
+	Line_2_Skizze4:SWLine =			SWLine(P(57.5,-80.5,0), P(57.5,16.5,0));
+
+%Tag:Line_3@Skizze4
+	Line_3_Skizze4:SWLine =			SWLine(P(54.5,19.5,0), P(47.5,19.5,0));
+
+%Tag:Line_4@Skizze4
+	Line_4_Skizze4:SWLine =			SWLine(P(47.5,-80.5,0), P(47.5,19.5,0));
+
+%Tag:Line_5@Skizze4
+	Line_5_Skizze4:SWLine =			SWLine(P(57.5,16.5,0), P(54.5,19.5,0));
+
+%Tag:Skizze4@Vorne
+	Skizze4:SWSketch =			SWSketch([
+							 Line_0_Skizze4
+							,Line_1_Skizze4
+							,Line_2_Skizze4
+							,Line_3_Skizze4
+							,Line_4_Skizze4
+							,Line_5_Skizze4
+							],Vorne);
+%Tag:Arc_0@Skizze1
+	Arc_0_Skizze1:SWArc =			SWArc(P(105.193523155934,32.1608875195011,0), P(105.193523155934,32.1608875195011,0), P(0,0,0));
+
+%Tag:Skizze1@Oben
+	Skizze1:SWSketch =			SWSketch([
+							 Arc_0_Skizze1
+							],Oben);
+%Tag:Ring@Sketch1
+	Extrude_1:SWExtrusion =			SWExtrusion(Skizze1,0.02);
+
+%Tag:Arc_0@Skizze2
+	Arc_0_Skizze2:SWArc =			SWArc(P(86.0674280366732,26.3134534250464,0), P(86.0674280366732,26.3134534250464,0), P(0,0,0));
+
+%Tag:Arc_1@Skizze2
+	Arc_1_Skizze2:SWArc =			SWArc(P(8.60674280366732,92.6313453425046,0), P(8.60674280366732,92.6313453425046,0), P(0,90,0));
+
+%Tag:Skizze2@Oben
+	Skizze2:SWSketch =			SWSketch([
+							 Arc_0_Skizze2
+							,Arc_1_Skizze2
+							],Oben);
+%Tag:Duchgangsloch@Sketch2
+	Extrude_2:SWExtrusion =			SWExtrusion(Skizze2,0);
+
+
+
+end
