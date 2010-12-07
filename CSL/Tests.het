@@ -4,6 +4,13 @@ from CSL/EN1591 get FlangeParameter, EN1591
 
 logic CSL
 
+spec Test71 =
+     vars a in [0, 1]
+     . f(a) := a^2 %(A)%
+     . g(x,y) := x-y %(B)%
+     . b := maximize(g(x,f(x)), x) %(C)%
+end
+
 spec Test0 =
      . y := cos(x) %(A)%
      . z := sin(x) %(B)%
@@ -59,8 +66,8 @@ spec Test3 =
      . z := sin(x) %(B)%
      . x := 10 %(C)%
      . repeat
-       . x := x + y/z %(D)%
-     until abs(y) < 0.0001 %(E)%
+       . x := x + y/z
+     until abs(y) < 1.0e-4 %(D)%
 end
 
 %% newton method assertions
