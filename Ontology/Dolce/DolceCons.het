@@ -36,6 +36,12 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1) (T new)
+
+%% from DolceModel.het
+%% arch spec Parthood_Model =
+%%  units
+%%	TM                 : Time_Mereology;
+
 %%One Point Model Found
 spec TM_Cons=
      Time_Mereology
@@ -60,6 +66,30 @@ end
 view Time_Mereology_Cons_to_Model : TM_Cons to TM_Model
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5) (SC new)
+
+%% from DolceModel.het
+%%	TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
+
+spec TempParthoodSC_Cons =
+     TM_Cons
+     then %cons
+     Temporary_Parthood_No_PRE with s |-> SC
+end
+
+  
+spec TempParthoodSC_Cons_Model =
+     TM_Cons
+then %def
+     OnePointTempParthoodNoModel with sort s |-> SC
+end
+
+view v_TempParthoodSC_Cons_Model : 
+     TempParthoodSC_Cons to TempParthoodSC_Cons_Model
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4) (TL new, TR new, TQ new)
 spec ImmediateQuale_Cons=
      TM_Cons
@@ -83,7 +113,7 @@ view v_ImmediateQuale_Cons_Model :
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
+
 
 
 
@@ -126,27 +156,6 @@ view v_Temporary_Parthood_No_PRE_2 :
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5) (SC new)
-spec TempParthoodSC_Cons =
-     TM_Cons
-     then %cons
-     Temporary_Parthood_No_PRE with s |-> SC
-end
-
-  
-spec TempParthoodSC_Cons_Model =
-     TM_Cons
-then %def
-     OnePointTempParthoodNoModel with sort s |-> SC
-end
-
-view v_TempParthoodSC_Cons_Model : 
-     TempParthoodSC_Cons to TempParthoodSC_Cons_Model
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%
-%% view works, conservativity not shown. 
-%% Green after Proof Automatic
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6) (SAG new)
@@ -167,8 +176,7 @@ view v_TempParthoodSAG_Cons_Model :
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
-%% Green after Proof Automatic
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7) (NASO new)
@@ -191,9 +199,6 @@ view v_TempParthoodNASO_Cons_Model :
      TempParthoodNASO_Cons to TempParthoodNASO_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8) (APO new)
 spec TempParthoodAPO_Cons=
@@ -216,10 +221,6 @@ view v_TempParthoodAPO_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9) (F new)
 spec TempParthoodF_Cons=
      TempParthoodSAG_Cons
@@ -238,11 +239,6 @@ view v_TempParthoodF_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
-%% Green after proof automatic
-
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10) (NAPO new)
 spec TempParthoodNAPO_Cons=
@@ -265,9 +261,6 @@ view v_TempParthoodNAPO_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works, conservativity not shown.
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11) (ASO new)
 spec TempParthoodASO_Cons=
@@ -301,7 +294,6 @@ view v_TempParthoodASO_Cons_Model :
      TempParthoodASO_Cons to TempParthoodASO_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %%
-%% view works
 
 
 
@@ -326,16 +318,12 @@ then %cons
 	} 
 	}  
 %%  
-%% need to define predicate SD to imply def + existence of an SD instance for every MOB: forall x:MOB .exists y:APO.SD(x,y); 
-%% as definition for SD, "true" works as well
 end
 
 
 view v_TempParthoodMOB_Cons_Model : 
      TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-%% view works; 
-%%  OneSide_Specific_Dependence has 'experimental' changes in it.
 
 
 
@@ -371,8 +359,6 @@ view v_TempParthoodSOB_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %%
-%% view works
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) (POB new)   
@@ -406,7 +392,6 @@ view v_TempParthoodPOB_Cons_Model :
      TempParthoodPOB_Cons to TempParthoodPOB_Cons_Model
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %%
-%% view works
 
 
 
@@ -442,9 +427,6 @@ view v_TempParthoodNPOB_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view works
-
-
 
      
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (16) (M new)   
@@ -465,9 +447,6 @@ view v_TempParthoodM_Cons_Model :
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% green after automatic
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (17) (NPED new)   
 	spec TempParthoodNPED_Cons=
@@ -480,7 +459,6 @@ view v_TempParthoodM_Cons_Model :
       }
      }
 end
-%% need full temporary parthood on NPED
 
 spec TempParthoodNPED_Cons_Model=
      TempParthoodNPOB_Cons
@@ -503,24 +481,6 @@ end
 
 view v_TempParthoodNPED_Cons_Model : 
      TempParthoodNPED_Cons to TempParthoodNPED_Cons_Model
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% buggy
-%% view:
-
-%[	
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (18) (PED new)   
-spec TempParthoodPED_Cons=
-     TempParthoodM_Cons
-     then %cons
-     {Temporary_Parthood with s |-> PED
-      and
-      {
-       free type PED ::= sort POB | sort M | sort F
-      }
-     }
-end
-%% need full temporary parthood on PED
 
 spec TempParthoodPED_Cons_Model=
      TempParthoodM_Cons
@@ -536,13 +496,12 @@ spec TempParthoodPED_Cons_Model=
 		pred tDif(z:PED; x:PED; y:PED) <=> forall w:PED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))
 end
 
-view v_TempParthoodPED_Cons_Model : 
-     TempParthoodPED_Cons to TempParthoodPED_Cons_Model
+spec      TempParthoodPED_Cons =
+       TempParthoodNPED_Cons with NPED |-> PED
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
-%% view 
-
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (19) (ED new) (AS new)   
@@ -560,38 +519,8 @@ spec TempParthoodED_Cons=
      } 
 end
 
-spec TempParthoodED_Cons_Model=
-     TempParthoodPED_Cons
-     and 
-     TempParthoodNPED_Cons
-     then %cons
-	   {OnePointTempParthoodNoModel with sort s |-> AS and
-	  { free type AS ::= TheMonster	  
-	   free type ED ::= sort PED | sort NPED | sort AS 
-	   pred PRE: ED*T
-       pred tPP: ED*ED*T	
-%%	   pred tOv: ED*ED*T
-	   pred tOv (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tOv(x,y,t) ) \/ ( x in M /\ y in M /\ tOv(x,y,t) ) \/ ( x in F /\ y in F /\ tOv(x,y,t) ) 
-
-	   pred  tP: ED*ED*T
-%% Temporary Binary Sum: DEF
-	   pred tSum(z:ED; x:ED; y:ED) <=> forall w:ED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
-%% Temporary Binary Difference: DEF
-	   pred tDif(z:ED; x:ED; y:ED) <=> forall w:ED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))}
-	and
-	   {. forall x,y:ED; t:T . tSum(TheMonster,x,y)} 
-	}
-end
-
-
-view v_TempParthoodED_Cons_Model : 
-     TempParthoodED_Cons to TempParthoodED_Cons_Model
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% sum of PED and NPED go into AS: AS singleton swallows all sums and diffs?
-%%
-
-
 
 
 
@@ -925,4 +854,3 @@ end
 %%
 
 
-]%
