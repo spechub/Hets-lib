@@ -1,0 +1,57 @@
+library HasCASL/Real3D/SolidWorks/SW
+version 0.1
+
+
+%author: E. Schulz
+%date: 21-12-2010
+
+logic HasCASL
+
+from Basic/Numbers get
+     DecimalFraction
+
+from HasCASL/StructuredDatatypes get List
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       The SolidWorks base objects                %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec Base = DecimalFraction
+then
+     type Rat < Real
+     ops 1,2,3,4,5,6,7,8,9: Real;
+
+     free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
+     free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
+end
+
+spec SolidWorks[type Real, Vector, Point] = List then
+
+     free type
+     SWPlane ::= SWPlane(SpacePoint:Point;NormalVector:Vector); %(SWPlane datatype)%
+
+     free type
+     SWCircle ::= SWCircle(Center:Point;Boundary:Point);  %(SWCircle datatype)%
+
+     free type
+     SWArc ::= SWArc(Center:Point;Start:Point;End:Point);  %(SWArc datatype)%
+
+     free type
+     SWLine ::= SWLine(From:Point;To:Point);  %(SWLine datatype)%
+
+     free type
+     SWSketchSegment ::= type SWArc | type SWCircle | type SWLine ;  %(SWSketchSegment datatype)%
+
+     free type
+     SWSketch ::= SWSketch(Objects:List SWSketchSegment;Plane: SWPlane);  %(SWSketch datatype)%
+
+     free type
+     SWExtrusion ::= SWExtrusion(Sketch:SWSketch; Depth:Real);  %(SWExtrusion datatype)%
+
+end
+
+
+spec SWDefault = SolidWorks[Base]
+
