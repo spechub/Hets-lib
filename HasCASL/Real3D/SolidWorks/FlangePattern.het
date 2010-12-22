@@ -1,0 +1,65 @@
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/SW get SWDefault
+
+spec Component = SWDefault
+then
+     ops
+
+     Bottom:SWPlane;
+
+     Offset:Point;
+     BoundaryRing:Point;
+     BoundaryTube:Point;
+     ScrewOffset:Point;
+     ScrewBoundary:Point;
+
+     RingHeight:Real;
+     TubeHeight:Real;
+     ScrewHeight:Real;
+
+     RingCircle:SWCircle = SWCircle(Offset, BoundaryRing);
+     RingSketch:SWSketch = SWSketch([RingCircle], Bottom);
+
+     Ring:SWExtrusion = SWExtrusion(RingSketch, RingHeight);
+
+     ScrewCircle:SWCircle = SWCircle(ScrewOffset, ScrewBoundary);
+     ScrewSketch:SWSketch = SWSketch([ScrewCircle], Bottom);
+
+     ScrewHole:SWExtrusion = SWExtrusion(ScrewSketch, ScrewHeight);
+
+     TubeCircle:SWCircle = SWCircle(Offset, BoundaryTube);
+     TubeSketch:SWSketch = SWSketch([TubeCircle],Bottom);
+
+     Hole:SWExtrusion = SWExtrusion(TubeSketch, TubeHeight);
+
+%[ Geometric constraints missing (for that we need to enrich the SWDefault spec with ExtAffineSpace)
+
+1. Offset != BoundaryRing
+2. Offset, BoundaryRing are on Bottom
+3. RingHeight != 0
+
+Same for Screw
+
+Same for Tube
+
+
+Let d1 = d(Offset, ScrewBoundary)
+    d2 = d(Offset, BoundaryRing)
+    d3 = d(ScrewOffset, ScrewBoundary)
+
+10. d1 + d3 < d2
+
+
+The Matching Algorithm:
+
+a. Find a match (substitution)
+b. For all constraints check whether they are satisfiable
+c. in case of unsat backtrack (find next match)
+
+
+]%
+
+
+
+end
