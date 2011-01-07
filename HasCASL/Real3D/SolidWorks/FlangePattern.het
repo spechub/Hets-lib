@@ -1,8 +1,17 @@
 logic HasCASL
 
-from HasCASL/Real3D/SolidWorks/SW get SWDefault
+%%from HasCASL/Real3D/SolidWorks/SW get SWDefault
 
-spec Component = SWDefault
+from HasCASL/Real3D/SolidWorks/SWExt get SWExt
+
+spec Prelim = SWExt
+then
+     pred OnPlane(plane:SWPlane; pt:Point) <=> NormalVector(plane) * vec(SpacePoint(plane),pt) = 0;
+     op   d(p1,p2:Point):Real = ||vec(p1,p2)||;
+end
+
+spec Component = Prelim
+%%spec Component = SWDefault
 then
      ops
 
@@ -33,15 +42,38 @@ then
 
      Hole:SWExtrusion = SWExtrusion(TubeSketch, TubeHeight);
 
-%[ Geometric constraints missing (for that we need to enrich the SWDefault spec with ExtAffineSpace)
+     %% Constraints:
+
+     . not Offset = BoundaryRing %(constr1)%
+     . not RingHeight = 0 %(constr2)%
+     . OnPlane(Bottom, Offset) %(constr3a)%
+     . OnPlane(Bottom, BoundaryRing) %(constr3b)%
+
+     . not ScrewOffset = ScrewBoundary %(constr4)%
+     . not ScrewHeight = 0 %(constr5)%
+     . OnPlane(Bottom, ScrewOffset) %(constr6a)%
+     . OnPlane(Bottom, ScrewBoundary) %(constr6b)%
+
+     . not Offset = BoundaryTube %(constr7)%
+     . not RingHeight = 0 %(constr8)%
+     %% . OnPlane(Bottom, Offset) %(constr9a)%
+     . OnPlane(Bottom, BoundaryTube) %(constr9b)%
+
+     . let d1 = d(Offset, ScrewBoundary);
+           d2 = d(Offset, BoundaryRing);
+           d3 = d(ScrewOffset, ScrewBoundary)
+       in d1 + d3 < d2 %(constr10)%
+
+
+%[ Geometric constraints
 
 1. Offset != BoundaryRing
-2. Offset, BoundaryRing are on Bottom
-3. RingHeight != 0
+2. RingHeight != 0
+3. Offset, BoundaryRing are on Bottom
 
-Same for Screw
+Same for Screw (4-6)
 
-Same for Tube
+Same for Tube (7-9)
 
 
 Let d1 = d(Offset, ScrewBoundary)
