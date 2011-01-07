@@ -1,6 +1,7 @@
-logic HasCASL
+library HasCASL/Real3D/SolidWorks/FlangePattern
+version 0.1
 
-%%from HasCASL/Real3D/SolidWorks/SW get SWDefault
+logic HasCASL
 
 from HasCASL/Real3D/SolidWorks/SWExt get SWExt
 
@@ -10,8 +11,7 @@ then
      op   d(p1,p2:Point):Real = ||vec(p1,p2)||;
 end
 
-spec Component = Prelim
-%%spec Component = SWDefault
+spec FlangePattern = Prelim
 then
      ops
 
@@ -24,23 +24,23 @@ then
      ScrewBoundary:Point;
 
      RingHeight:Real;
-     TubeHeight:Real;
-     ScrewHeight:Real;
 
      RingCircle:SWCircle = SWCircle(Offset, BoundaryRing);
      RingSketch:SWSketch = SWSketch([RingCircle], Bottom);
 
-     Ring:SWExtrusion = SWExtrusion(RingSketch, RingHeight);
+     FlangeRing:SWExtrusion = SWExtrusion(RingSketch, RingHeight);
 
      ScrewCircle:SWCircle = SWCircle(ScrewOffset, ScrewBoundary);
      ScrewSketch:SWSketch = SWSketch([ScrewCircle], Bottom);
 
-     ScrewHole:SWExtrusion = SWExtrusion(ScrewSketch, ScrewHeight);
+     %% We need full expanded patterns
+     ScrewHole:SWCut = SWCut(SWSketch([SWCircle(ScrewOffset, ScrewBoundary)], Bottom));
+     ScrewHole2:SWCut = SWCut(ScrewSketch);
 
      TubeCircle:SWCircle = SWCircle(Offset, BoundaryTube);
      TubeSketch:SWSketch = SWSketch([TubeCircle],Bottom);
 
-     Hole:SWExtrusion = SWExtrusion(TubeSketch, TubeHeight);
+     Hole:SWCut = SWCut(TubeSketch);
 
      %% Constraints:
 
@@ -50,19 +50,19 @@ then
      . OnPlane(Bottom, BoundaryRing) %(constr3b)%
 
      . not ScrewOffset = ScrewBoundary %(constr4)%
-     . not ScrewHeight = 0 %(constr5)%
      . OnPlane(Bottom, ScrewOffset) %(constr6a)%
      . OnPlane(Bottom, ScrewBoundary) %(constr6b)%
 
      . not Offset = BoundaryTube %(constr7)%
-     . not RingHeight = 0 %(constr8)%
      %% . OnPlane(Bottom, Offset) %(constr9a)%
      . OnPlane(Bottom, BoundaryTube) %(constr9b)%
 
-     . let d1 = d(Offset, ScrewBoundary);
-           d2 = d(Offset, BoundaryRing);
-           d3 = d(ScrewOffset, ScrewBoundary)
-       in d1 + d3 < d2 %(constr10)%
+     ops
+     d1:Real = d(Offset, ScrewBoundary);
+     d2:Real = d(Offset, BoundaryRing);
+     d3:Real = d(ScrewOffset, ScrewBoundary);
+
+     . d1 + d3 < d2 %(constr10)%
 
 
 %[ Geometric constraints

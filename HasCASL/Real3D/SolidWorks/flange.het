@@ -1,76 +1,41 @@
 logic HasCASL
-from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorks
-spec Blindflansch = SolidWorks then
 
+from HasCASL/Real3D/SolidWorks/SWExt get SWExt
 
-ops
-%Tag:Oben
-	Oben:SWPlane =			SWPlane(P( 0, 0, 0), V( 1000, 0, 0) as VectorStar, V( 0, 1000, 0));
+%% this import is only for the reason to have the pattern and the
+%% actual design in one development graph!
+from HasCASL/Real3D/SolidWorks/FlangePattern get FlangePattern
 
-%Tag:Arc_0@Skizze3
-	Arc_0_Skizze3:SWArc =			SWArc(P(54.9875234678745,16.8113730215574,0), P(54.9875234678745,16.8113730215574,0), P(0,0,0));
+spec Component = SWExt
+then
+     ops
 
-%Tag:Skizze3@Oben
-	Skizze3:SWSketch =			SWSketch([
-							 Arc_0_Skizze3
-							],Oben);
-%Tag:Zentralloch@Sketch3
-	Extrude_3:SWExtrusion =			SWExtrusion(Skizze3,0);
+     Vorne:SWPlane = SWPlane(P(0,0,0),V(0,0,1));
+     Oben:SWPlane = SWPlane(P(0,0,0),V(0,1,0));
+     Rechts:SWPlane = SWPlane(P(0,0,0),V(1,0,0));
 
-%Tag:Vorne
-	Vorne:SWPlane =			SWPlane(P( 0, 0, 0), V( 1000, 0, 0) as VectorStar, V( 0, 0, 1000));
+     Skizze1_0_1:SWCircle = SWCircle(P(0,0,0),P(0.105193523155934,0.0321608875195011,0));
+     Skizze1:SWSketch = SWSketch([Skizze1_0_1],Oben);
+     Ring:SWExtrusion = SWExtrusion(Skizze1,0.02);
 
-%Tag:Line_0@Skizze4
-	Line_0_Skizze4:SWLine =			SWLine(P(0,0,0), P(0,114.629288840746,0));
+     Skizze2_1_2:SWCircle = SWCircle(P(0,0.09,0),P(0.00860674280366732,0.0926313453425046,0));
+     Skizze2:SWSketch = SWSketch([Skizze2_1_2],Oben);
+     Durchgangsloch:SWCut = SWCut(Skizze2);
 
-%Tag:Line_1@Skizze4
-	Line_1_Skizze4:SWLine =			SWLine(P(57.5,-80.5,0), P(47.5,-80.5,0));
+     Skizze3_0_1:SWCircle = SWCircle(P(0,0,0),P(0.0549875234678745,0.0168113730215574,0));
+     Skizze3:SWSketch = SWSketch([Skizze3_0_1],Oben);
+     Zentralloch:SWCut = SWCut(Skizze3);
 
-%Tag:Line_2@Skizze4
-	Line_2_Skizze4:SWLine =			SWLine(P(57.5,-80.5,0), P(57.5,16.5,0));
-
-%Tag:Line_3@Skizze4
-	Line_3_Skizze4:SWLine =			SWLine(P(54.5,19.5,0), P(47.5,19.5,0));
-
-%Tag:Line_4@Skizze4
-	Line_4_Skizze4:SWLine =			SWLine(P(47.5,-80.5,0), P(47.5,19.5,0));
-
-%Tag:Line_5@Skizze4
-	Line_5_Skizze4:SWLine =			SWLine(P(57.5,16.5,0), P(54.5,19.5,0));
-
-%Tag:Skizze4@Vorne
-	Skizze4:SWSketch =			SWSketch([
-							 Line_0_Skizze4
-							,Line_1_Skizze4
-							,Line_2_Skizze4
-							,Line_3_Skizze4
-							,Line_4_Skizze4
-							,Line_5_Skizze4
-							],Vorne);
-%Tag:Arc_0@Skizze1
-	Arc_0_Skizze1:SWArc =			SWArc(P(105.193523155934,32.1608875195011,0), P(105.193523155934,32.1608875195011,0), P(0,0,0));
-
-%Tag:Skizze1@Oben
-	Skizze1:SWSketch =			SWSketch([
-							 Arc_0_Skizze1
-							],Oben);
-%Tag:Ring@Sketch1
-	Extrude_1:SWExtrusion =			SWExtrusion(Skizze1,0.02);
-
-%Tag:Arc_0@Skizze2
-	Arc_0_Skizze2:SWArc =			SWArc(P(86.0674280366732,26.3134534250464,0), P(86.0674280366732,26.3134534250464,0), P(0,0,0));
-
-%Tag:Arc_1@Skizze2
-	Arc_1_Skizze2:SWArc =			SWArc(P(8.60674280366732,92.6313453425046,0), P(8.60674280366732,92.6313453425046,0), P(0,90,0));
-
-%Tag:Skizze2@Oben
-	Skizze2:SWSketch =			SWSketch([
-							 Arc_0_Skizze2
-							,Arc_1_Skizze2
-							],Oben);
-%Tag:Duchgangsloch@Sketch2
-	Extrude_2:SWExtrusion =			SWExtrusion(Skizze2,0);
-
-
-
+%[ only relevant for the revolution. not handled yet.
+     
+     Skizze4_1_1:SWLine = SWLine(P(0.0575,-0.0805,0),P(0.0475,-0.0805,0));
+     Skizze4_2_2:SWLine = SWLine(P(0.0575,-0.0805,0),P(0.0575,0.0165,0));
+     Skizze4_3_3:SWLine = SWLine(P(0.0545,0.0195,0),P(0.0475,0.0195,0));
+     Skizze4_4_4:SWLine = SWLine(P(0.0475,-0.0805,0),P(0.0475,0.0195,0));
+     Skizze4_5_6:SWLine = SWLine(P(0.0575,0.0165,0),P(0.0545,0.0195,0));
+     Skizze4:SWSketch = SWSketch([Skizze4_1_1,Skizze4_2_2,Skizze4_3_3,Skizze4_4_4,Skizze4_5_6],Vorne);
+]%
 end
+
+spec Match = Component and FlangePattern
+
