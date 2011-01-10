@@ -1,0 +1,413 @@
+Log 1a1: good same function
+
+t1:
+cut(sketch(cons(circle(ScrewOffset, ScrewBoundary), Nil), Bottom))
+
+(op SWCut : SWSketch -> SWCut)
+((op SWSketch : List SWSketchSegment * SWPlane -> SWSketch)
+ ((op __::__ : forall a : Type . a * List a -> List a)
+  ((op SWCircle : Point * Point -> SWCircle)
+   ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+   (op [] : forall a : Type . List a)),
+  (op Bottom : SWPlane)))
+
+t2:
+cut(Skizze2)
+
+(op SWCut : SWSketch -> SWCut) (op Skizze2 : SWSketch)
+
+===============
+Log 2b: term constant
+
+t1:
+sketch(cons(circle(ScrewOffset, ScrewBoundary), Nil), Bottom)
+
+(op SWSketch : List SWSketchSegment * SWPlane -> SWSketch)
+((op __::__ : forall a : Type . a * List a -> List a)
+ ((op SWCircle : Point * Point -> SWCircle)
+  ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+  (op [] : forall a : Type . List a)),
+ (op Bottom : SWPlane))
+
+t2:
+Skizze2
+
+(op Skizze2 : SWSketch)
+
+===============
+Log 1a1: good same function
+
+t1:
+sketch(cons(circle(ScrewOffset, ScrewBoundary), Nil), Bottom)
+
+(op SWSketch : List SWSketchSegment * SWPlane -> SWSketch)
+((op __::__ : forall a : Type . a * List a -> List a)
+ ((op SWCircle : Point * Point -> SWCircle)
+  ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+  (op [] : forall a : Type . List a)),
+ (op Bottom : SWPlane))
+
+t2:
+sketch(cons(Skizze2_1_2, Nil), Oben)
+
+(op SWSketch : List SWSketchSegment * SWPlane -> SWSketch)
+((op __::__ : forall a : Type . a * List a -> List a)
+ ((op Skizze2_1_2 : SWCircle), (op [] : forall a : Type . List a)),
+ (op Oben : SWPlane))
+
+===============
+Log 1aT: tuple: same tuple
+
+t1:
+(cons(circle(ScrewOffset, ScrewBoundary), Nil), Bottom)
+
+((op __::__ : forall a : Type . a * List a -> List a)
+ ((op SWCircle : Point * Point -> SWCircle)
+  ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+  (op [] : forall a : Type . List a)),
+ (op Bottom : SWPlane))
+
+t2:
+(cons(Skizze2_1_2, Nil), Oben)
+
+((op __::__ : forall a : Type . a * List a -> List a)
+ ((op Skizze2_1_2 : SWCircle), (op [] : forall a : Type . List a)),
+ (op Oben : SWPlane))
+
+===============
+Log 1a1: good same function
+
+t1:
+cons(circle(ScrewOffset, ScrewBoundary), Nil)
+
+(op __::__ : forall a : Type . a * List a -> List a)
+((op SWCircle : Point * Point -> SWCircle)
+ ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+ (op [] : forall a : Type . List a))
+
+t2:
+cons(Skizze2_1_2, Nil)
+
+(op __::__ : forall a : Type . a * List a -> List a)
+((op Skizze2_1_2 : SWCircle), (op [] : forall a : Type . List a))
+
+===============
+Log 1aT: tuple: same tuple
+
+t1:
+(circle(ScrewOffset, ScrewBoundary), Nil)
+
+((op SWCircle : Point * Point -> SWCircle)
+ ((op ScrewOffset : Point), (op ScrewBoundary : Point)),
+ (op [] : forall a : Type . List a))
+
+t2:
+(Skizze2_1_2, Nil)
+
+((op Skizze2_1_2 : SWCircle), (op [] : forall a : Type . List a))
+
+===============
+Log 2b: term constant
+
+t1:
+circle(ScrewOffset, ScrewBoundary)
+
+(op SWCircle : Point * Point -> SWCircle)
+((op ScrewOffset : Point), (op ScrewBoundary : Point))
+
+t2:
+Skizze2_1_2
+
+(op Skizze2_1_2 : SWCircle)
+
+===============
+Log 1a1: good same function
+
+t1:
+circle(ScrewOffset, ScrewBoundary)
+
+(op SWCircle : Point * Point -> SWCircle)
+((op ScrewOffset : Point), (op ScrewBoundary : Point))
+
+t2:
+circle(P(...), P(...))
+
+(op SWCircle : Point * Point -> SWCircle)
+((op P : Real * Real * Real -> Point)
+ ((op 0 : Nat),
+  (op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat) ((op 0 : Nat), (op 9 : Nat))),
+  (op 0 : Nat)),
+ (op P : Real * Real * Real -> Point)
+ ((op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 0 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 0 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 8 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 6 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 0 : Nat),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 6 : Nat),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 7 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 4 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 2 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 8 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 0 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 3 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 6 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 6 : Nat),
+                 (op __@@__ : Nat * Nat -> Nat)
+                 ((op 7 : Nat),
+                  (op __@@__ : Nat * Nat -> Nat)
+                  ((op 3 : Nat), (op 2 : Nat)))))))))))))))))),
+  (op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 0 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 9 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 2 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 6 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 3 : Nat),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 1 : Pos),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 3 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 4 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 5 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 3 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 4 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 2 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 5 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 0 : Nat),
+                 (op __@@__ : Nat * Nat -> Nat)
+                 ((op 4 : Nat), (op 6 : Nat))))))))))))))))),
+  (op 0 : Nat)))
+
+===============
+Log 1aT: tuple: same tuple
+
+t1:
+(ScrewOffset, ScrewBoundary)
+
+((op ScrewOffset : Point), (op ScrewBoundary : Point))
+
+t2:
+(P(...), P(...))
+
+((op P : Real * Real * Real -> Point)
+ ((op 0 : Nat),
+  (op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat) ((op 0 : Nat), (op 9 : Nat))),
+  (op 0 : Nat)),
+ (op P : Real * Real * Real -> Point)
+ ((op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 0 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 0 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 8 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 6 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 0 : Nat),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 6 : Nat),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 7 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 4 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 2 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 8 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 0 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 3 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 6 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 6 : Nat),
+                 (op __@@__ : Nat * Nat -> Nat)
+                 ((op 7 : Nat),
+                  (op __@@__ : Nat * Nat -> Nat)
+                  ((op 3 : Nat), (op 2 : Nat)))))))))))))))))),
+  (op __:::__ : Nat * Nat -> Rat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 0 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 9 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 2 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 6 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 3 : Nat),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 1 : Pos),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 3 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 4 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 5 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 3 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 4 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 2 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 5 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 0 : Nat),
+                 (op __@@__ : Nat * Nat -> Nat)
+                 ((op 4 : Nat), (op 6 : Nat))))))))))))))))),
+  (op 0 : Nat)))
+
+===============
+Log 2a: pattern constant
+
+Hier sollte ein Mapping in der Substitution stattfinden!
+
+t1:
+(op ScrewOffset : Point)
+
+t2:
+(op P : Real * Real * Real -> Point)
+((op 0 : Nat),
+ (op __:::__ : Nat * Nat -> Rat)
+ ((op 0 : Nat),
+  (op __@@__ : Nat * Nat -> Nat) ((op 0 : Nat), (op 9 : Nat))),
+ (op 0 : Nat))
+
+===============
+Log 2a: pattern constant
+
+Hier sollte ein Mapping in der Substitution stattfinden!
+
+t1:
+(op ScrewBoundary : Point)
+
+t2:
+(op P : Real * Real * Real -> Point)
+((op __:::__ : Nat * Nat -> Rat)
+ ((op 0 : Nat),
+  (op __@@__ : Nat * Nat -> Nat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 0 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 8 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 6 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 0 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 6 : Nat),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 7 : Nat),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 4 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 2 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 8 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 0 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 3 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 6 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 6 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 7 : Nat),
+                 (op __@@__ : Nat * Nat -> Nat)
+                 ((op 3 : Nat), (op 2 : Nat)))))))))))))))))),
+ (op __:::__ : Nat * Nat -> Rat)
+ ((op 0 : Nat),
+  (op __@@__ : Nat * Nat -> Nat)
+  ((op 0 : Nat),
+   (op __@@__ : Nat * Nat -> Nat)
+   ((op 9 : Nat),
+    (op __@@__ : Nat * Nat -> Nat)
+    ((op 2 : Nat),
+     (op __@@__ : Nat * Nat -> Nat)
+     ((op 6 : Nat),
+      (op __@@__ : Nat * Nat -> Nat)
+      ((op 3 : Nat),
+       (op __@@__ : Nat * Nat -> Nat)
+       ((op 1 : Pos),
+        (op __@@__ : Nat * Nat -> Nat)
+        ((op 3 : Nat),
+         (op __@@__ : Nat * Nat -> Nat)
+         ((op 4 : Nat),
+          (op __@@__ : Nat * Nat -> Nat)
+          ((op 5 : Nat),
+           (op __@@__ : Nat * Nat -> Nat)
+           ((op 3 : Nat),
+            (op __@@__ : Nat * Nat -> Nat)
+            ((op 4 : Nat),
+             (op __@@__ : Nat * Nat -> Nat)
+             ((op 2 : Nat),
+              (op __@@__ : Nat * Nat -> Nat)
+              ((op 5 : Nat),
+               (op __@@__ : Nat * Nat -> Nat)
+               ((op 0 : Nat),
+                (op __@@__ : Nat * Nat -> Nat)
+                ((op 4 : Nat), (op 6 : Nat))))))))))))))))),
+ (op 0 : Nat))
+
+===============
+Log 2a: pattern constant
+
+Hier sollte KEIN Mapping in der Substitution stattfinden!
+
+t1:
+(op [] : forall a : Type . List a)
+
+t2:
+(op [] : forall a : Type . List a)
+
+===============
+Log 2a: pattern constant
+
+Hier sollte ein Mapping in der Substitution stattfinden!
+
+t1:
+(op Bottom : SWPlane)
+
+t2:
+(op Oben : SWPlane)
+
+===============
