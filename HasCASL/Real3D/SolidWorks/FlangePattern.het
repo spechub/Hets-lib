@@ -3,6 +3,7 @@ version 0.1
 
 logic HasCASL
 
+from HasCASL/Real3D/SolidWorks/SW get SWDefault
 from HasCASL/Real3D/SolidWorks/SWExt get SWExt
 
 spec Prelim = SWExt
@@ -11,7 +12,7 @@ then
      op   d(p1,p2:Point):Real = ||vec(p1,p2)||;
 end
 
-spec FlangePattern = Prelim
+spec FlangeParams = SWDefault
 then
      ops
 
@@ -20,27 +21,31 @@ then
      Offset:Point;
      BoundaryRing:Point;
      BoundaryTube:Point;
-     ScrewOffset:Point;
-     ScrewBoundary:Point;
+     BoltOffset:Point;
+     BoltBoundary:Point;
 
      RingHeight:Real;
+end
+
+spec FlangePattern[FlangeParams] given Prelim =
+     ops
 
      RingCircle:SWCircle = SWCircle(Offset, BoundaryRing);
      RingSketch:SWSketch = SWSketch([RingCircle], Bottom);
 
      FlangeRing:SWExtrusion = SWExtrusion(RingSketch, RingHeight);
 
-     ScrewCircle:SWCircle = SWCircle(ScrewOffset, ScrewBoundary);
-     ScrewSketch:SWSketch = SWSketch([ScrewCircle], Bottom);
+     BoltCircle:SWCircle = SWCircle(BoltOffset, BoltBoundary);
+     BoltSketch:SWSketch = SWSketch([BoltCircle], Bottom);
 
      %% We need full expanded patterns
-     ScrewHole:SWCut = SWCut(SWSketch([SWCircle(ScrewOffset, ScrewBoundary)], Bottom));
-     ScrewHole2:SWCut = SWCut(ScrewSketch);
+     BoltHole2:SWCut = SWCut(SWSketch([SWCircle(BoltOffset, BoltBoundary)], Bottom));
+     BoltHole:SWCut = SWCut(BoltSketch);
 
      TubeCircle:SWCircle = SWCircle(Offset, BoundaryTube);
      TubeSketch:SWSketch = SWSketch([TubeCircle],Bottom);
 
-     Hole:SWCut = SWCut(TubeSketch);
+     BoreHole:SWCut = SWCut(TubeSketch);
 
      %% Constraints:
 
@@ -49,18 +54,18 @@ then
      . OnPlane(Bottom, Offset) %(constr3a)%
      . OnPlane(Bottom, BoundaryRing) %(constr3b)%
 
-     . not ScrewOffset = ScrewBoundary %(constr4)%
-     . OnPlane(Bottom, ScrewOffset) %(constr6a)%
-     . OnPlane(Bottom, ScrewBoundary) %(constr6b)%
+     . not BoltOffset = BoltBoundary %(constr4)%
+     . OnPlane(Bottom, BoltOffset) %(constr6a)%
+     . OnPlane(Bottom, BoltBoundary) %(constr6b)%
 
      . not Offset = BoundaryTube %(constr7)%
      %% . OnPlane(Bottom, Offset) %(constr9a)%
      . OnPlane(Bottom, BoundaryTube) %(constr9b)%
 
      ops
-     d1:Real = d(Offset, ScrewBoundary);
+     d1:Real = d(Offset, BoltBoundary);
      d2:Real = d(Offset, BoundaryRing);
-     d3:Real = d(ScrewOffset, ScrewBoundary);
+     d3:Real = d(BoltOffset, BoltBoundary);
 
      . d1 + d3 < d2 %(constr10)%
 
@@ -71,14 +76,14 @@ then
 2. RingHeight != 0
 3. Offset, BoundaryRing are on Bottom
 
-Same for Screw (4-6)
+Same for Bolt (4-6)
 
 Same for Tube (7-9)
 
 
-Let d1 = d(Offset, ScrewBoundary)
+Let d1 = d(Offset, BoltBoundary)
     d2 = d(Offset, BoundaryRing)
-    d3 = d(ScrewOffset, ScrewBoundary)
+    d3 = d(BoltOffset, BoltBoundary)
 
 10. d1 + d3 < d2
 

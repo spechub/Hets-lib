@@ -4,7 +4,7 @@ from HasCASL/Real3D/SolidWorks/SWExt get SWExt
 
 %% this import is only for the reason to have the pattern and the
 %% actual design in one development graph!
-from HasCASL/Real3D/SolidWorks/FlangePattern get FlangePattern
+from HasCASL/Real3D/SolidWorks/FlangePattern get FlangePattern, FlangeParams
 
 spec Component = SWExt
 then
@@ -37,5 +37,5 @@ then
 ]%
 end
 
-spec Match = Component and FlangePattern
+spec Match = Component and FlangePattern[FlangeParams]
 
