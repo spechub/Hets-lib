@@ -117,6 +117,11 @@ gn_proj :: "'a => 'b partial"
 
 axioms
 
+-- "general injection projection property"
+gn_inj_proj_def [rule_format] :
+"subt (x\<Colon>'a) (y\<Colon>'b)  ==>
+  makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+
 -- "SUBTYPE RULES"
 
 -- "necessary when omitting the quantifiers in the axioms below"
@@ -149,10 +154,35 @@ gn_inj_proj [rule_format] :
 "subt (x:: 'a) (y:: 'b) ==> (!!(z:: 'b). defOp(gn_proj(z):: 'a partial) ==>
   gn_inj(makeTotal(gn_proj(z):: 'a partial)) = z)"
 
+<<<<<<< .mine
+subt_inj_diagram [rule_format] :
+"!!(x::'a) (y::'b) (z::'c). (subt y z) & (subt x y)
+  ==> (!!(x'::'a). (gn_inj(x')\<Colon>'c) = gn_inj(gn_inj(x')\<Colon>'b))"
+=======
 gn_inj_diagram [rule_format] :
 "[| subt (x:: 'a) (y:: 'b); subt (t:: 'b) (z:: 'c) |]
   ==> (!!(x':: 'a). (gn_inj(x'):: 'c) = gn_inj(gn_inj(x'):: 'b))"
+>>>>>>> .r1306
 
+<<<<<<< .mine
+lemma gn_inj_proj_def_alt [rule_format] :
+"defOp(gn_proj(gn_inj(x\<Colon>'a)\<Colon>'b)\<Colon>'a partial) ==>
+  makeTotal(gn_proj(gn_inj(x)\<Colon>'b)) = x"
+
+lemma gn_proj_fact:
+"!!(x::'a) (y::'b). (subt x y) ==> (defOp(gn_proj(y)\<Colon>'a partial)
+  ==> gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y)"
+  proof-
+    fix x::'a
+    fix y::'b
+    assume hyp1: "subt x y" and hyp2: "defOp(gn_proj y\<Colon>'a partial)"
+    have "\<exists>z::'a. y = gn_inj(z)" (is "\<exists>z. ?P z")
+      by (rule gn_proj_def [of x y], (simp only: hyp1 hyp2)+)
+    then obtain z where y_def: "?P z" ..
+    from hyp2 have fact: "defOp(gn_proj(gn_inj(z)\<Colon>'b)\<Colon>'a partial)" by (simp only: y_def)
+    show "gn_inj(makeTotal(gn_proj(y)\<Colon>'a partial)) = y"
+      by ((subst y_def)+, subst gn_inj_proj_def, simp_all only: fact)
+=======
 --   "subt (u:: 'a) (v:: 'b) ==> inj (gn_inj:: 'a => 'b)"
 
 lemma gn_inj_injective :
@@ -171,6 +201,7 @@ lemma gn_inj_injective :
     also from hyp2 have "... = makeTotal(gn_proj(gn_inj(y):: 'b))" by simp
     also from fact have "... = y" by simp
     finally show "x = y" by simp
+>>>>>>> .r1306
   qed
 
 lemma gn_inj_identity :

@@ -1,5 +1,19 @@
 logic Propositional
 
+spec Liar0 = 
+    prop mary
+    props harry, john
+    . harry => john             %(whenjohn)%
+    . mary /\ john => not harry %(whenharry)%
+then %implies
+  . harry %(harry)%
+  . john  %(john)%
+  . mary  %(mary)%
+  . not harry %(notharry)%
+  . not john  %(notjohn)%
+  . not mary  %(notmary)%
+
+
 spec Liar1 =
   free {
     prop mary

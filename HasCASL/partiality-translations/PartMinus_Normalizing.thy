@@ -19,6 +19,11 @@ ga_select_pre [rule_format] :
 
 Ax3 [rule_format] : "0 -? 0 = makePartial 0"
 
+(* Might be easier with a recursive definition *)
+
+Ax3 [rule_format] :
+"ALL (a :: X_Nat). ALL (b :: X_Nat). a +' b = b +' a"
+
 Ax4 [rule_format] :
 "ALL (x :: nat). Suc(x) -? 0 = makePartial (Suc(x))"
 
@@ -54,7 +59,6 @@ theorem Ax2 :
   (defOp (b -? makeTotal (c -? a)) & defOp (c -? a))) -->
  defOp (restrictOp (b -? makeTotal (c -? a)) (defOp (c -? a)))"
 by (auto)
-
 ML "Header.record \"Ax2\""
 
 theorem Ax3_10 :
