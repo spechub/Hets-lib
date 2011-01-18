@@ -1,0 +1,37 @@
+spec S =
+  sort s
+
+spec S1 = 
+  sort s1
+
+spec S2 = 
+ sort s2
+
+arch spec ASP = 
+ units 
+   M : S;
+   A1 : S1;
+   A2 : S2; 
+   L1 = lambda X1 : S1 . M and X1;
+   L2 = lambda X2 : S2 . M and X2;
+ result L1[A1] and L2[A2]
+
+spec T = 
+ sort t
+ 
+spec U = 
+ sort u
+
+spec V = 
+ sort v
+ 
+arch spec ASP2 = 
+  units 
+    F : arch spec {
+          units M : S;
+          result lambda X : T . M and X
+         };
+    M1 : U;
+    M2 : V;
+  result F[M1 fit t |-> u] and F[M2 fit t |-> v]
+   
