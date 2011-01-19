@@ -350,15 +350,17 @@ h_R_X: eq48
 
      %% CONTROL: Cases
      %% SIMP: we use 57,58
-%% . epsilon_plus := K_s + (epsilon_1plus - K_s)/sqrt(n_b) %(eq56a)%
-%% . epsilon_minus := K_s + (epsilon_1minus - K_s)/sqrt(n_b) %(eq56b)%
+%% . epsilon_plus := K_s + (epsilon_1plus - K_s)/sqrt(n_B) %(eq56a)%
+%% . epsilon_minus := K_s + (epsilon_1minus - K_s)/sqrt(n_B) %(eq56b)%
 
  . K_s := 0.25 * epsilon_1plus    %(eq57)%
      %% SIMP: we use the equation above
  %% . K_s := 0.25 * epsilon_1minus %(eq57b)%
 
- . epsilon_plus := epsilon_1plus * (1 + 3/sqrt(n_b))/4 %(eq58a)%
- . epsilon_minus := epsilon_1minus * (1 + 3/sqrt(n_b))/4 %(eq58b)%
+  %% Error in the standard for equations 56ff : n_b means n_B.
+
+ . epsilon_plus := epsilon_1plus * (1 + 3/sqrt(n_B))/4 %(eq58a)%
+ . epsilon_minus := epsilon_1minus * (1 + 3/sqrt(n_B))/4 %(eq58b)%
 
  %% Apendix D: screw tightening with torque measuring
 
