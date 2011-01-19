@@ -252,24 +252,24 @@ tbl1.4:d_Ge
 %% 
  . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0)
  - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0)
- - e_Ft[F=2] * alpha_F[F=2] * (T_F[F=2] - T_0)
- - e_L[F=2] * alpha_L[F=2] * (T_L[F=2] - T_0) %(eq45.1)%
+ - e_Ft_X * alpha_F_X * (T_F_X - T_0)
+ - e_L_X * alpha_L_X * (T_L_X - T_0) %(eq45.1)%
 
 %% Kriechfaktor der Dichtung, Temperaturabhaengig, 
  . g_C = 1 %(eq46.prelim1)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
- . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2]
-   + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
+ . Y_G := Z_F * h_G^2/E_F + Z_F_X * h_G_X^2/E_F_X
+   + Z_L * h_L^2/E_L + Z_L_X * h_L_X^2/E_L_X + X_B/E_B + X_G/(E_G * g_C) %(eq46)%
 
- . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
-   - h_P[F=2] + h_Q[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2]
+ . Y_Q := Z_F * h_G * (h_H - h_P + h_Q)/E_F +  Z_F_X * h_G_X * (h_H_X
+   - h_P_X + h_Q_X)/E_F_X + Z_L * h_L^2/E_L + Z_L_X * h_L_X^2/E_L_X
    + X_B/E_B %(eq47)%
 
  %% Gleichung (48) wird nur fuer Belastungszustaende mit F_RI != 0 ausgewertet.
   %% eventually work with [I>0] here
- . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F[F=2] * h_G[F=2] * (h_H[F=2]
-   + h_R[F=2])/E_F[F=2] + Z_L * h_L^2/E_L + Z_L[F=2] * h_L[F=2]^2/E_L[F=2] + X_B/E_B %(eq48)%
+ . Y_R := Z_F * h_G * (h_H + h_R)/E_F +  Z_F_X * h_G_X * (h_H_X
+   + h_R_X)/E_F_X + Z_L * h_L^2/E_L + Z_L_X * h_L_X^2/E_L_X + X_B/E_B %(eq48)%
 
 %% * 5.3 Mindestkraefte fuer die Dichtung
 
@@ -295,7 +295,7 @@ tbl1.4:d_Ge
  . repeat
     . repeat
 
-       . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0[F=2] * Z_F[F=2]/E_F0[F=2])
+       . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0_X * Z_F_X/E_F0_X)
                     + (F_G / (Pi * d_Ge * Q_maxy))^2) %(test)%
 
      until convergence(0.001, b_Ge)
