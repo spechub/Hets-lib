@@ -44,6 +44,8 @@ dataE.1, dataE.2, dataE.3:E_F
 %% from Bild 4 and Constraint eqGl2 (aus den Formelzeichen)
  . e_Q_X := 0 %(data11.3_X)%
 
+ . e_Ft_X := 20 %(data11.5_X)%
+
  . d_G1_X := 158 %(data16_X)%
  . d_G2_X := 162 %(data17_X)%
 
@@ -52,6 +54,37 @@ dataE.1, dataE.2, dataE.3:E_F
 
  . E_F_X := 200000 %(dataE.1_X)%
 
+
+
+   %% ****************** UNDEFINED CONSTS ******************
+%[
+E_B: eq46, eq47, eq48
+E_G: eq46
+E_L: eq46, eq47, eq48
+I_B: eq71.1
+K_1: tbl1.3
+N_R: eq67
+Psi_Z: eq73
+Q_max: eq72
+Q_min: eq49
+T_0: eq45.1
+T_L: eq45.1
+alpha_B: eq45.1
+alpha_F: eq45.1
+alpha_G: eq45.1
+alpha_L: eq45.1
+beta: eq75
+dBs: eq33
+d_1: eq75
+e_B: eq45.1
+e_Ft: eq45.1
+f_F: eq82, eq74, eq76
+f_S: eq76
+g_C: eq46
+k_M: eq73
+l_e: eq34
+n_b: eq58b, eq58a
+]%
 
    %% ****************** ORIGINAL SPEC ******************
 
@@ -76,6 +109,9 @@ dataE.1, dataE.2, dataE.3:E_F
  . e_Q := 0 %(data11.3)%
  . e_Fb := 20 %(data11.4)%
 
+%% from Bild 1 and Formelzeichen (REVIEW)
+ . e_Ft := 20 %(data11.5)%
+
 %% not in EN
  . d_11 := 162 %(data12)%
 
@@ -96,9 +132,6 @@ dataE.1, dataE.2, dataE.3:E_F
  . F_A := 0 %(dataF.1)%
  . M_A := 0 %(dataM.1)%
 
-%% temperature
-
- . T_F := 20 %(dataT.1)%
 
 %% Schraube
  . d_B0 := 16 %(data19)%
@@ -111,10 +144,6 @@ dataE.1, dataE.2, dataE.3:E_F
  . mu := 0.2 %(data25)%
  . n_B := 8 %(data26)%
 
-
-%% temperature
-
- . T_B := 20 %(dataT.4)%
 
 %% not in EN (Sicherheitsbeiwerte, Sicherheitsfaktoren)
  . S := 1.05 %(data26.1)%
@@ -129,20 +158,64 @@ dataE.1, dataE.2, dataE.3:E_F
  . epsilon_1minus := 0.1 + 0.5 * mu  %(tblC.1.1)%
  . epsilon_1plus := 0.1 + 0.5 * mu  %(tblC.1.2)%
 
- . M_tnom := 100 %(data100.1)% %% TODO: select a correct value
+ . M_tnom := 100 %(data100.1)% %% (REVIEW)
 
 %% Dichtungswerte
  . Q_maxy := 546.9 %(data27)%
  . E_0 := 200000 %(data28)%
 
+%% Dichtungswerte (REVIEW)
+ . Q_max := 549 %(data27.1)%
+ . Q_min := 540 %(data27.2)%
 
-%% temperature
+%% Kriechfaktor der Dichtung, Temperaturabhaengig (REVIEW)
+ . g_C := 1 %(data29)%
 
- . T_G := 20 %(dataT.7)%
+
+%% temperature (REVIEW)
+
+ . T_0 := 20 %(dataT.0)%
+
+ . T_B := 20 %(dataT.1)%
+ . T_F := 20 %(dataT.2)%
+ . T_F_X := 20 %(dataT.2b)%
+ . T_G := 20 %(dataT.3)%
+ . T_L := 20 %(dataT.4)%
+ . T_L_X := 20 %(dataT.4b)%
 
 
 %% Schraubenwerkstoffen mit Mindestbruchdehnung A >= 10%
 
  . C := 1
+
+%% Temperaturausdehnungskoeffizienten (REVIEW)
+ . alpha_B := 1 %(data31.1)%
+ . alpha_F := 1 %(data31.2)%
+ . alpha_F_X := 1 %(data31.2b)%
+ . alpha_G := 1 %(data31.3)%
+ . alpha_L := 1 %(data31.4)%
+ . alpha_L_X := 1 %(data31.4b)%
+
+
+%% Elastizitaetsmoduln (REVIEW)
+ . E_B := 200000 %(data32.1)%
+ . E_G := 1500 %(data32.3)%
+ . E_L := 200000 %(data32.4)%
+ . E_L_X := 200000 %(data32.4b)%
+
+
+%% Montage (REVIEW)
+
+%% Anzahl der Montage- und Nachziehvorgänge innerhalb der Lebensdauer einer Verbindung
+ . N_R := 3 %(data33)%
+
+%% (REVIEW)
+%% Nenn-Berechnungsspannung [MPa] des durch den Indexbuchstaben bezeichneten Teils bei
+%% Berechnungstemperatur [°C] oder [K], wie in den Druckbehaeltercodes definiert und verwendet
+
+ . f_F := 100 %(data34.2)%
+ . f_S := f_F %(data34.5)%
+
+end
 
 spec Flange2Complete = Flange2 then EN1591

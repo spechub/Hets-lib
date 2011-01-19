@@ -3,7 +3,7 @@ library EnCL/EN1591
 logic EnCL
 
 spec FlangeParameter =
- operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, dBs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
+ operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, d_Bs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
 end
 
 spec EN1591 =
@@ -86,7 +86,7 @@ spec EN1591 =
 
      %% * 4.2 Schrauben-Parameter
 
- . A_B := min(d_Be,dBs)^2 * n_B * Pi/4 %(eq33)%
+ . A_B := min(d_Be,d_Bs)^2 * n_B * Pi/4 %(eq33)%
  . X_B := (l_s/d_Bs^2 + l_e/d_Be^2 + 0.8/d_B0) * 4/(n_B * Pi) %(eq34)%
 
      %% * 4.3 Dichtungs-Parameter
@@ -157,9 +157,6 @@ spec EN1591 =
 
 %% Diese Gleichung ist eigentlich ein constraint (kein Symbol auf der linken Seite!):
  . e_Ft + e_Ft[F=2] + e_L + e_L[F=2] + e_G = e_B %(eq45.2)%
-
-%% Kriechfaktor der Dichtung, Temperaturabhaengig, 
- . g_C[I=0] = 1 %(eq46.prelim1)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
  . Y_G := Z_F * h_G^2/E_F + Z_F[F=2] * h_G[F=2]^2/E_F[F=2]

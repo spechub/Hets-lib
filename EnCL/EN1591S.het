@@ -5,7 +5,7 @@ logic EnCL
 
 
 spec FlangeParameter =
- operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, dBs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
+ operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, d_Bs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
 end
 
 spec EN1591 =
@@ -55,10 +55,16 @@ tbl1.4:d_Ge
  . b_F_X := (d_4_X - d_0_X)/2 - d_5e %(eq5.1_X)%
  . d_F_X := (d_4_X + d_0_X)/2 %(eq5.2_X)%
 
+ . e_L_X := 0 %(eq6.3)%
+
  . e_E_X := e_S_X %(eq11.1_X)%
  . d_E_X := d_S_X %(eq11.2_X)%
 
+ . h_P_X := ((d_Ge_X - d_E_X)^2 * (2*d_Ge_X + d_E_X)/6 + 2*e_P_X^2*d_F_X)/d_Ge_X^2 %(eq13_X)%
+ . h_G_X := (d_3e_X - d_Ge_X)/2 %(eq14.1_X)%
  . h_H_X := (d_3e_X - d_E_X)/2 %(eq14.2_X)%
+ . h_L_X := 0 %(eq14.3_X)%
+
 
  . gamma_X := e_E_X * d_F_X/(b_F_X * d_E_X * cos(phi_S_X)) %(eq17_X)%
 
@@ -76,6 +82,9 @@ tbl1.4:d_Ge
  . h_T_X := e_F_X * (1 - 2 * lambda1_X - gamma_X * theta_X^2)/(1 + gamma_X * theta_X) %(eq22_X)%
 
  . h_Q_X := (h_S_X * k_Q_X + h_T_X * (2 * d_F_X * e_P_X/d_E_X^2 - 0.5 * tan(phi_S_X))) * (d_E_X/d_Ge_X)^2 %(eq23_X)%
+
+ . h_R_X := h_S_X * k_R_X - h_T_X * 0.5 * tan(phi_S_X) %(eq24_X)%
+
 
      %% fuer Kegel- und Zylinderschale
  . k_Q_X := 0.85/cos(phi_S_X) %(eq25_X)%
@@ -98,7 +107,23 @@ tbl1.4:d_Ge
 
 
 
+   %% ****************** UNDEFINED CONSTS ******************
+%[ 
 
+E_L_X: eq46, eq47, eq48
+T_F_X: eq45.1
+T_L_X: eq45.1
+alpha_F_X: eq45.1
+alpha_L_X: eq45.1
+e_Ft_X: eq45.1
+e_L_X: eq45.1
+h_G_X: eq46, eq47, eq48
+h_L_X: eq46, eq47, eq48
+h_P_X: eq47
+h_R_X: eq48
+
+
+]%
 
 
 
@@ -135,7 +160,10 @@ tbl1.4:d_Ge
 
      %% * Spheric shell
 
-%%     eq9.1: beta := e_2/e_1
+ %% We need this in eq75
+ . beta := e_2/e_1 %(eq9.1)%
+
+
 %%     eq9.2: e_E := e_1 * (1 + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H))
 %%     eq10: d_E := (min(d_1-e_1+e_E, d_2+e_2-e_E) + max(d_1+e_1-e_E, d_2-e_2+e_E))/2
 
@@ -186,7 +214,10 @@ tbl1.4:d_Ge
 
      %% * 4.2 Schrauben-Parameter
 
- . A_B := min(d_Be,dBs)^2 * n_B * Pi/4 %(eq33)%
+ %% (REVIEW) taken from Terminology
+ . l_e := l_B - l_s %(eq.34.prelim)%
+
+ . A_B := min(d_Be,d_Bs)^2 * n_B * Pi/4 %(eq33)%
  . X_B := (l_s/d_Bs^2 + l_e/d_Be^2 + 0.8/d_B0) * 4/(n_B * Pi) %(eq34)%
 
      %% * 4.3 Dichtungs-Parameter
@@ -249,14 +280,15 @@ tbl1.4:d_Ge
 %% Moment aufgebracht wird.
 
 
+%% from constraint (REVIEW)
+ . e_B := e_Ft + e_Ft_X + e_L + e_L_X + e_G %(eq45.prelim)%
+
+
 %% 
  . DeltaU := e_B * alpha_B * (T_B - T_0) - e_Ft * alpha_F * (T_F - T_0)
  - e_L * alpha_L * (T_L - T_0) - e_G * alpha_G * (T_G - T_0)
  - e_Ft_X * alpha_F_X * (T_F_X - T_0)
  - e_L_X * alpha_L_X * (T_L_X - T_0) %(eq45.1)%
-
-%% Kriechfaktor der Dichtung, Temperaturabhaengig, 
- . g_C = 1 %(eq46.prelim1)%
 
 %% CHECK: Anmerkung zu Gleichungen (46) bis (48)
  . Y_G := Z_F * h_G^2/E_F + Z_F_X * h_G_X^2/E_F_X
@@ -348,16 +380,12 @@ tbl1.4:d_Ge
  . F_B0min := F_B0nom * (1 - epsilon_minus) %(eq60)%
  . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq61)%
 
- . F_B0min >= F_B0req %(eq62)%
-
  %% a) Nenn-Schraubenkraft im Montagezustand, zur Festlegung der Schrauben-Anziehparameter
 
   %% mit Messung: F_B0nom so waehlen, dass eq63 erfuellt ist
   %% CASFEATURE: minimalWith
  %% . M_tnom := minimalWith(x, F_B0nom'(x) >= F_B0req/(1 - epsilon_minus)) %(eq63.Bis)%
 
-
- . F_B0nom >= F_B0req/(1 - epsilon_minus) %(eq63)%
 
      %% ohne Messung, F_B0nom auf F_B0av setzen, und epsilon_minus auf 0.5, dann kommt eq63 zum Tragen
 %% . F_B0nom := F_B0av >= F_B0req/(1 - epsilon_minus)  %(eq64)%
@@ -386,9 +414,12 @@ tbl1.4:d_Ge
 
      %% * 6.2 Schrauben
 
+
+%% from Formelzeichen (REVIEW)
+ . I_B := Pi/12 * min(d_Be, d_Bs)^3 %(eq71.prelim)%
+
  . Phi_B := 1/f_B * sqrt( (F_B/A_B)^2 + 3*(C* M_tB/I_B)^2) %(eq71.1)%
 
- . Phi_B <= 1 %(eq71.1)%
 
      %% CONTROL: Cases (C)
      %% C haengt vom Zustand I und vom Schraubenwerkstoff ab, und ist fuer I > 0 Null.
@@ -410,16 +441,17 @@ tbl1.4:d_Ge
 
      %% * 6.3 Dichtung
  . Phi_G := F_G/(A_Gt * Q_max) %(eq72)%
- . Phi_G <= 1 %(eq72.1)%
 
      %% * 6.4 Integrierter Flansch
  . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M, Psi_Z) %(eq73)%
- . Phi_F <= Phi_max %(eq73.1)%
 
      %% EFFECT: shadowing auf Psi_Z, da Psi_Z nicht als veraenderliche declariert
  . W_F(k_M', Psi_Z') :=
      (Pi/4) * (f_F * 2 * b_F * e_F^2 * (1 + 2 * Psi_opt * Psi_Z' - Psi_Z'^2)
                + f_E * d_E * e_D^2 * c_M * j_M * k_M') %(eq74)%
+
+ %% from Bild 4 (REVIEW)
+ . d_1 := d_0 + e_2 - e_1/2 %(eq75.prelim)%
 
  . e_D := e_1 * (1 + (beta - 1) * l_H/fthrt((beta/3)^4 * (d_1*e_1)^2 + l_H^4)) %(eq75)%
  . f_E := min(f_F, f_S) %(eq76)%
@@ -440,7 +472,6 @@ tbl1.4:d_Ge
  . Psi(j_S, k_M', k_S) := f_E * d_E * e_D * cos(phi_S)/(f_F * 2 * b_F * e_F) * ((0.5*delta_Q+delta_R) * tan(phi_S) - delta_Q * 2 * e_P/d_E + j_S * k_S * sqrt(e_D*c_M*c_S(j_S)*(1+j_S*k_M')/(d_E*cos(phi_S)^3))) %(eq82)%
 
  . Psi_opt := j_M * (2*e_P/e_F-1) %(eq83.1)%
- . -1 <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
 
      %% CONTROL: Setval=function application
  . Psi_0 := Psi(0, 0, 0) %(eq84.1)%
