@@ -1,0 +1,225 @@
+spec source_56 =
+esorts F, T
+pred At : T
+pred AtP : T * T
+pred Dif : T * T * T
+pred Ov : T * T
+pred P : T * T
+pred PP : T * T
+pred PRE : F * T
+pred Sum : T * T * T
+pred tDif : F * F * F
+pred tOv : F * F * T
+pred tP : F * F * T
+pred tPP : F * F * T
+pred tSum : F * F * F
+
+forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
+
+forall x : T; y : T
+. Ov(x, y) <=> exists z : T . P(z, x) /\ P(z, y)          %(Dd15)%
+
+forall x : T . At(x) <=> not exists y : T . PP(y, x) %(Dd16)%
+
+forall x : T; y : T . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : T; x : T; y : T
+. Sum(z, x, y) <=> forall w : T . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                           %(Ax5)%
+
+forall z : T; x : T; y : T
+. Dif(z, x, y)
+  <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
+
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
+forall x, y, z : T . P(x, x) %(reflexivity)%
+
+forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
+
+forall z : F; x : F; y : F
+. tSum(z, x, y)
+  <=> forall w : F; t : T
+      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)      %(Ax1)%
+
+forall z : F; x : F; y : F
+. tDif(z, x, y)
+  <=> forall w : F; t : T
+      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)    %(Ax2)%
+
+forall x, y : F; t : T
+. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
+  => exists z : F . tP(z, x, t) /\ not tOv(z, y, t)        %(Ax3)%
+
+forall x, y : F; t : T . exists z : F . tSum(z, x, y)
+                                    %(Existence of the sum_18_19)%
+
+forall x : F; y : F; t : T
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)        %(Ax1_5)%
+
+forall x : F; y : F; t : T
+. tOv(x, y, t) <=> exists z : F . tP(z, x, t) /\ tP(z, y, t)
+                                                         %(Ax2_6)%
+
+forall x1 : F; x2 : F; t : T
+. tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)              %(Ax1_3)%
+
+forall x : F . exists t : T . PRE(x, t) %(Ax1_14)%
+
+forall x1 : F; x2 : F; t1, t2 : T
+. tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)         %(Ax1_15)%
+
+forall x, y, z : F; t : T . PRE(x, t) => tP(x, x, t) %(Ax1_27)%
+
+forall x, y, z : F; t : T
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)              %(Ax2_4)%
+
+forall x : F; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                         %(Ax1_2)%
+end
+spec target_56 = source_56
+then %cons
+esorts F, NAPO, T
+pred At : T
+pred AtP : T * T
+pred Dif : T * T * T
+pred Ov : T * T
+pred P : T * T
+pred PP : T * T
+pred PRE : F * T
+pred PRE : NAPO * T
+pred Sum : T * T * T
+pred tDif : F * F * F
+pred tDif : NAPO * NAPO * NAPO
+pred tOv : F * F * T
+pred tOv : NAPO * NAPO * T
+pred tP : F * F * T
+pred tP : NAPO * NAPO * T
+pred tPP : F * F * T
+pred tPP : NAPO * NAPO * T
+pred tSum : F * F * F
+pred tSum : NAPO * NAPO * NAPO
+
+forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
+
+forall x : T; y : T
+. Ov(x, y) <=> exists z : T . P(z, x) /\ P(z, y)          %(Dd15)%
+
+forall x : T . At(x) <=> not exists y : T . PP(y, x) %(Dd16)%
+
+forall x : T; y : T . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : T; x : T; y : T
+. Sum(z, x, y) <=> forall w : T . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                           %(Ax5)%
+
+forall z : T; x : T; y : T
+. Dif(z, x, y)
+  <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
+
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
+forall x, y, z : T . P(x, x) %(reflexivity)%
+
+forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
+
+forall z : F; x : F; y : F
+. tSum(z, x, y)
+  <=> forall w : F; t : T
+      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)      %(Ax1)%
+
+forall z : F; x : F; y : F
+. tDif(z, x, y)
+  <=> forall w : F; t : T
+      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)    %(Ax2)%
+
+forall x, y : F; t : T
+. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
+  => exists z : F . tP(z, x, t) /\ not tOv(z, y, t)        %(Ax3)%
+
+forall x, y : F; t : T . exists z : F . tSum(z, x, y)
+                                    %(Existence of the sum_18_19)%
+
+forall x : F; y : F; t : T
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)        %(Ax1_5)%
+
+forall x : F; y : F; t : T
+. tOv(x, y, t) <=> exists z : F . tP(z, x, t) /\ tP(z, y, t)
+                                                         %(Ax2_6)%
+
+forall x1 : F; x2 : F; t : T
+. tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)              %(Ax1_3)%
+
+forall x : F . exists t : T . PRE(x, t) %(Ax1_14)%
+
+forall x1 : F; x2 : F; t1, t2 : T
+. tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)         %(Ax1_15)%
+
+forall x, y, z : F; t : T . PRE(x, t) => tP(x, x, t) %(Ax1_27)%
+
+forall x, y, z : F; t : T
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)              %(Ax2_4)%
+
+forall x : F; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                         %(Ax1_2)%
+
+forall y : NAPO; t : T . not PRE(y, t) \/ exists x : F . PRE(x, t)
+                                                     %(Ax1_24_29)%
+
+forall x : F; t : T
+. At(t) /\ PRE(x, t) => exists y : NAPO . PRE(y, t)     %(Ax2_27)%
+
+forall x : NAPO . exists t : T . PRE(x, t) %(Ax1_14_25_26)%
+
+forall x : NAPO; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                      %(Ax1_2_15)%
+
+forall z : NAPO; x : NAPO; y : NAPO
+. tSum(z, x, y)
+  <=> forall w : NAPO; t : T
+      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
+                                                     %(Ax1_24_33)%
+
+forall z : NAPO; x : NAPO; y : NAPO
+. tDif(z, x, y)
+  <=> forall w : NAPO; t : T
+      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t) %(Ax2_31)%
+
+forall x, y : NAPO; t : T
+. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
+  => exists z : NAPO . tP(z, x, t) /\ not tOv(z, y, t)  %(Ax3_34)%
+
+forall x, y : NAPO; t : T . exists z : NAPO . tSum(z, x, y)
+                                       %(Existence of the sum_41)%
+
+forall x : NAPO; y : NAPO; t : T
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)     %(Ax1_5_30)%
+
+forall x : NAPO; y : NAPO; t : T
+. tOv(x, y, t) <=> exists z : NAPO . tP(z, x, t) /\ tP(z, y, t)
+                                                      %(Ax2_6_33)%
+
+forall x1 : NAPO; x2 : NAPO; t : T
+. tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)           %(Ax1_3_29)%
+
+forall x1 : NAPO; x2 : NAPO; t1, t2 : T
+. tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)      %(Ax1_15_26)%
+
+forall x, y, z : NAPO; t : T . PRE(x, t) => tP(x, x, t)
+                                                     %(Ax1_27_28)%
+
+forall x, y, z : NAPO; t : T
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_32)%
+end

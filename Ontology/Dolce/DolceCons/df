@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+inf = ARGV[0]
+outf = inf[0,inf.size-4]+"_new.het"
+f = File.open(inf)
+src = IO.popen("mktemp",&:read).chomp
+tar = IO.popen("mktemp",&:read).chomp
+fsrc = File.open(src,"w")
+ftar = File.open(tar,"w")
+line = f.gets
+fsrc.puts line
+line = f.gets
+while !f.eof? and line[0,4]!="spec" do
+  fsrc.puts line
+  line = f.gets
+end
+while !f.eof? do
+  ftar.puts line
+  line = f.gets
+end
+ftar.puts line
+fsrc.close
+ftar.close
+system "cp #{src} #{outf}"
+system "echo >> #{outf}"
+system "echo >> #{outf}"
+system "diff -u #{src} #{tar} |grep ^+ |tail -n +2| sed 's/^+//' >> #{outf}"
+system "echo 'end' >> #{outf}"
+system "rm #{src}"
+system "rm #{tar}"
+
+

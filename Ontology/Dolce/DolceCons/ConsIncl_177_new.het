@@ -1,0 +1,86 @@
+spec source_177 =
+sorts ED, NPED, PED, POB
+esorts AS, F, M, T
+sorts AS, NPED, PED < ED; F, M, POB < PED
+pred At : T
+pred AtP : T * T
+pred Dif : T * T * T
+pred Ov : T * T
+pred P : T * T
+pred PP : T * T
+pred PRE : ED * T
+pred PRE : NPED * T
+pred Sum : T * T * T
+pred tDif : ED * ED * ED
+pred tDif : NPED * NPED * NPED
+pred tOv : ED * ED * T
+pred tOv : NPED * NPED * T
+pred tP : ED * ED * T
+pred tP : NPED * NPED * T
+pred tPP : ED * ED * T
+pred tPP : NPED * NPED * T
+pred tSum : ED * ED * ED
+pred tSum : NPED * NPED * NPED
+end
+
+
+spec target_177 = source_177
+then %cons
+esorts AQ, AS, F, M, T
+pred PRE : AQ * T
+pred SD : AQ * NPED
+pred SD : NPED * AQ
+
+forall x : NPED; y : AQ
+. SD(x, y)
+  <=> (exists t : T . PRE(x, t))
+      /\ forall t : T . PRE(x, t) => PRE(y, t)             %(Ax1)%
+
+forall x : NPED . exists y : AQ . SD(x, y) %(Ax2)%
+
+forall x : NPED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                         %(Ax1_2)%
+
+forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
+
+forall x : T; y : T
+. Ov(x, y) <=> exists z : T . P(z, x) /\ P(z, y)          %(Dd15)%
+
+forall x : T . At(x) <=> not exists y : T . PP(y, x) %(Dd16)%
+
+forall x : T; y : T . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : T; x : T; y : T
+. Sum(z, x, y) <=> forall w : T . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                           %(Ax5)%
+
+forall z : T; x : T; y : T
+. Dif(z, x, y)
+  <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
+
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
+forall x, y, z : T . P(x, x) %(reflexivity)%
+
+forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
+
+forall x : AQ . exists t : T . PRE(x, t) %(Ax1_14)%
+
+forall x : AQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                      %(Ax1_2_15)%
+
+forall x : AQ; y : NPED
+. SD(x, y)
+  <=> (exists t : T . PRE(x, t))
+      /\ forall t : T . PRE(x, t) => PRE(y, t)          %(Ax1_18)%
+
+forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
+
+forall x : NPED . exists t : T . PRE(x, t) %(Ax1_14_19)%
+end

@@ -1,0 +1,125 @@
+spec source_13 =
+esorts T
+pred At : T
+pred AtP : T * T
+pred Dif : T * T * T
+pred Ov : T * T
+pred P : T * T
+pred PP : T * T
+pred Sum : T * T * T
+
+forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
+
+forall x : T; y : T
+. Ov(x, y) <=> exists z : T . P(z, x) /\ P(z, y)          %(Dd15)%
+
+forall x : T . At(x) <=> not exists y : T . PP(y, x) %(Dd16)%
+
+forall x : T; y : T . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : T; x : T; y : T
+. Sum(z, x, y) <=> forall w : T . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                           %(Ax5)%
+
+forall z : T; x : T; y : T
+. Dif(z, x, y)
+  <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
+
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
+forall x, y, z : T . P(x, x) %(reflexivity)%
+
+forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
+end
+spec target_13 = source_13
+then %cons
+esorts SAG, T
+pred At : T
+pred AtP : T * T
+pred Dif : T * T * T
+pred Ov : T * T
+pred P : T * T
+pred PP : T * T
+pred PRE : SAG * T
+pred Sum : T * T * T
+pred tDif : SAG * SAG * SAG
+pred tOv : SAG * SAG * T
+pred tP : SAG * SAG * T
+pred tPP : SAG * SAG * T
+pred tSum : SAG * SAG * SAG
+
+forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
+
+forall x : T; y : T
+. Ov(x, y) <=> exists z : T . P(z, x) /\ P(z, y)          %(Dd15)%
+
+forall x : T . At(x) <=> not exists y : T . PP(y, x) %(Dd16)%
+
+forall x : T; y : T . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : T; x : T; y : T
+. Sum(z, x, y) <=> forall w : T . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                           %(Ax5)%
+
+forall z : T; x : T; y : T
+. Dif(z, x, y)
+  <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
+
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
+forall x, y, z : T . P(x, x) %(reflexivity)%
+
+forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
+
+forall z : SAG; x : SAG; y : SAG
+. tSum(z, x, y)
+  <=> forall w : SAG; t : T
+      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)      %(Ax1)%
+
+forall z : SAG; x : SAG; y : SAG
+. tDif(z, x, y)
+  <=> forall w : SAG; t : T
+      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)    %(Ax2)%
+
+forall x, y : SAG; t : T
+. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
+  => exists z : SAG . tP(z, x, t) /\ not tOv(z, y, t)      %(Ax3)%
+
+forall x, y : SAG; t : T . exists z : SAG . tSum(z, x, y)
+                                    %(Existence of the sum_18_19)%
+
+forall x : SAG; y : SAG; t : T
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)        %(Ax1_5)%
+
+forall x : SAG; y : SAG; t : T
+. tOv(x, y, t) <=> exists z : SAG . tP(z, x, t) /\ tP(z, y, t)
+                                                         %(Ax2_6)%
+
+forall x1 : SAG; x2 : SAG; t : T
+. tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)              %(Ax1_3)%
+
+forall x : SAG . exists t : T . PRE(x, t) %(Ax1_14)%
+
+forall x1 : SAG; x2 : SAG; t1, t2 : T
+. tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)         %(Ax1_15)%
+
+forall x, y, z : SAG; t : T . PRE(x, t) => tP(x, x, t) %(Ax1_27)%
+
+forall x, y, z : SAG; t : T
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)              %(Ax2_4)%
+
+forall x : SAG; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                         %(Ax1_2)%
+end
