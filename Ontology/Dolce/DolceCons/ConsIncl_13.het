@@ -86,3 +86,16 @@ forall x, y, z : SAG; t : T
 
 forall x : SAG; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)          %(Ax1_2)%
+end
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_13
+then %cons
+  OnePointTempParthoodModel with s |-> SAG
+end
+
+view v : target_13 to sp
+end
+

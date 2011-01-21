@@ -404,6 +404,7 @@ forall x, y, z : NPOB; t : T
 forall x : NPOB; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                      %(Ax1_2_102)%
 end
+
 spec target_129 = source_129
 then %cons
 sorts NPED
@@ -437,3 +438,16 @@ forall x, y, z : NPED; t : T
 
 forall x : NPED; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_112)%
+end
+
+from Ontology/Dolce/DolceCons/DolceConsParts get ZeroPointTempParthoodExtNoModel
+
+spec sp=
+  source_129
+then %cons
+   ZeroPointTempParthoodExtNoModel with sub |-> NPOB, super |-> NPED
+   %% should we also try models that introduce new points into NPED?
+end
+
+view v : target_129 to sp
+end

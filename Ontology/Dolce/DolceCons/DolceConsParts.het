@@ -36,6 +36,16 @@ then
    pred tPP (x,y:s;t:T) <=> false
  end
 
+spec ZeroPointTempParthoodExtNoModel =
+  TM_Cons
+then
+  sort sub
+  free type super ::= sort sub
+   pred PRE:super*T;
+   pred tOv:super*super*T;
+   pred tP:super*super*T;
+   pred tPP:super*super*T;
+end
 
 spec OnePointTempParthoodModel =
   sort T
