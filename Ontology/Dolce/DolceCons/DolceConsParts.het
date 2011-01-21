@@ -1,0 +1,60 @@
+library Ontology/Dolce/DolceCons/DolceConsParts
+
+from Ontology/Dolce/DolceSimpl_Esort get Time_Mereology
+
+%%One Point Model Found
+spec TM_Cons=
+     Time_Mereology
+then
+     . exists t:T . true  %% we need at least one time point
+end
+
+%%%%%%%%%%%%%%%% 1 and 2 point models for temp parthood no existence %%%%%%%%%%%%%%%%
+
+spec OnePointTempParthoodNoModel =
+  TM_Cons
+then
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+%%  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+%%  pred tSum  (x,y,z:s) <=> true
+end
+
+
+%%%%%%%%%%%%%%%%%
+
+spec TwoPointTempParthoodNoModel =
+  TM_Cons
+then
+   free type s ::= PointOne | PointTwo
+   pred PRE (x:s;t:T) <=> true
+   pred tOv (x,y:s;t:T) <=> x=y
+   pred tP (x,y:s;t:T) <=> x=y
+   pred tPP (x,y:s;t:T) <=> false
+ end
+
+
+spec OnePointTempParthoodModel =
+  TM_Cons
+then
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+  pred tSum  (x,y,z:s) <=> true
+end
+		
+spec TempParthoodBinarySum [sorts left,right,sum] =
+  sort T
+  free type sum ::= sort left | sort right
+  pred PRE: sum*T
+  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) ) 
+  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 		
+end
+

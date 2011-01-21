@@ -134,11 +134,9 @@ then %cons
 sorts ASO
 sorts SAG, SC < ASO
 pred PRE : ASO * T
-pred tDif : ASO * ASO * ASO
 pred tOv : ASO * ASO * T
 pred tP : ASO * ASO * T
 pred tPP : ASO * ASO * T
-pred tSum : ASO * ASO * ASO
 
 forall x : ASO . not (x in SC /\ x in SAG)
                                       %(ga_disjoint_sorts_SC_SAG)%
@@ -146,30 +144,12 @@ forall x : ASO . not (x in SC /\ x in SAG)
 %% free
 generated type ASO ::= sort SAG | sort SC     %(ga_generated_ASO)%
 
-forall z : ASO; x : ASO; y : ASO
-. tSum(z, x, y)
-  <=> forall w : ASO; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                     %(Ax1_36_48)%
-
-forall z : ASO; x : ASO; y : ASO
-. tDif(z, x, y)
-  <=> forall w : ASO; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t) %(Ax2_43)%
-
-forall x, y : ASO; t : T
-. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
-  => exists z : ASO . tP(z, x, t) /\ not tOv(z, y, t)   %(Ax3_46)%
-
-forall x, y : ASO; t : T . exists z : ASO . tSum(z, x, y)
-                                       %(Existence of the sum_53)%
-
 forall x : ASO; y : ASO; t : T
-. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)     %(Ax1_5_42)%
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)    %(Ax1_36_48)%
 
 forall x : ASO; y : ASO; t : T
 . tOv(x, y, t) <=> exists z : ASO . tP(z, x, t) /\ tP(z, y, t)
-                                                      %(Ax2_6_45)%
+                                                        %(Ax2_42)%
 
 forall x1 : ASO; x2 : ASO; t : T
 . tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)           %(Ax1_3_41)%
@@ -184,7 +164,7 @@ forall x, y, z : ASO; t : T . PRE(x, t) => tP(x, x, t)
                                                      %(Ax1_27_40)%
 
 forall x, y, z : ASO; t : T
-. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_44)%
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_43)%
 
 forall x : ASO; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)       %(Ax1_2_39)%

@@ -304,11 +304,9 @@ then %cons
 sorts POB
 sorts APO, NAPO < POB
 pred PRE : POB * T
-pred tDif : POB * POB * POB
 pred tOv : POB * POB * T
 pred tP : POB * POB * T
 pred tPP : POB * POB * T
-pred tSum : POB * POB * POB
 
 forall x : POB . not (x in APO /\ x in NAPO)
                                     %(ga_disjoint_sorts_APO_NAPO)%
@@ -316,30 +314,12 @@ forall x : POB . not (x in APO /\ x in NAPO)
 %% free
 generated type POB ::= sort APO | sort NAPO   %(ga_generated_POB)%
 
-forall z : POB; x : POB; y : POB
-. tSum(z, x, y)
-  <=> forall w : POB; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                    %(Ax1_79_119)%
-
-forall z : POB; x : POB; y : POB
-. tDif(z, x, y)
-  <=> forall w : POB; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t) %(Ax2_86)%
-
-forall x, y : POB; t : T
-. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
-  => exists z : POB . tP(z, x, t) /\ not tOv(z, y, t)   %(Ax3_89)%
-
-forall x, y : POB; t : T . exists z : POB . tSum(z, x, y)
-                                       %(Existence of the sum_96)%
-
 forall x : POB; y : POB; t : T
-. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)     %(Ax1_5_85)%
+. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)   %(Ax1_79_119)%
 
 forall x : POB; y : POB; t : T
 . tOv(x, y, t) <=> exists z : POB . tP(z, x, t) /\ tP(z, y, t)
-                                                      %(Ax2_6_88)%
+                                                        %(Ax2_85)%
 
 forall x1 : POB; x2 : POB; t : T
 . tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)           %(Ax1_3_84)%
@@ -354,25 +334,19 @@ forall x, y, z : POB; t : T . PRE(x, t) => tP(x, x, t)
                                                      %(Ax1_27_83)%
 
 forall x, y, z : POB; t : T
-. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_87)%
+. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_86)%
 
 forall x : POB; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)       %(Ax1_2_82)%
+end
 
+from Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodBinarySum
 
 spec TempParthoodPED_Cons_Model=
-    %% TempParthoodM_Cons
-    source_101
-     then %cons
-	    free type POB ::= sort APO | sort NAPO
-		pred PRE: POB*T
-   		pred tOv (x,y:POB;t:T) <=> ( x in APO /\ y in APO /\ tOv(x,y,t) ) \/ ( x in NAPO /\ y in NAPO /\ tOv(x,y,t) ) 
-   		pred tP (x,y:POB;t:T)  <=> ( x in APO /\ y in APO /\ tP(x,y,t) )  \/ ( x in NAPO /\ y in NAPO /\ tP(x,y,t) )  
-   		pred tPP (x,y:POB;t:T) <=> ( x in APO /\ y in APO /\ tPP(x,y,t) ) \/ ( x in NAPO /\ y in NAPO /\ tPP(x,y,t) ) 			
- 		%% Temporary Binary Sum: DEF
-		pred tSum(z:POB; x:POB; y:POB) <=> forall w:POB;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
- 		%% Temporary Binary Difference: DEF
-		pred tDif(z:POB; x:POB; y:POB) <=> forall w:POB;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))
+  %% TempParthoodM_Cons
+  source_101
+then %cons
+   TempParthoodBinarySum [sorts POB,APO,NAPO fit left |-> APO, right |-> NAPO, sum |-> POB]
 end
 
 view v : target_101 to TempParthoodPED_Cons_Model
