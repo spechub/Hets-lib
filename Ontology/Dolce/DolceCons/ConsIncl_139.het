@@ -427,3 +427,16 @@ forall x, y, z : PED; t : T
 
 forall x : PED; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_104)%
+end
+
+from Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodTernarySum
+
+spec TempParthoodPED_Cons_Model=
+  %% TempParthoodM_Cons
+  source_139
+then %cons
+   TempParthoodTernarySum [sorts PED,POB,M,F fit part1 |-> POB, part2 |-> M, part3 |-> F, sum |-> PED]
+end
+
+view v : target_139 to TempParthoodPED_Cons_Model
+end

@@ -67,3 +67,12 @@ spec TempParthoodBinarySum [sorts left,right,sum] =
   pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 		
 end
 
+spec TempParthoodTernarySum [sorts part1,part2,part3,sum] =
+  sort T
+  free type sum ::= sort part1 | sort part2 | sort part3
+  pred PRE: sum*T
+  pred tOv (x,y:sum;t:T) <=> ( x in part1 /\ y in part1 /\ tOv(x,y,t) ) \/ ( x in part2 /\ y in part2 /\ tOv(x,y,t) )  \/ ( x in part3 /\ y in part3 /\ tOv(x,y,t) )
+  pred tP (x,y:sum;t:T)  <=> ( x in part1 /\ y in part1 /\ tP(x,y,t) )  \/ ( x in part2 /\ y in part2 /\ tP(x,y,t) )  \/ ( x in part3 /\ y in part3 /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in part1 /\ y in part1 /\ tPP(x,y,t) ) \/ ( x in part2 /\ y in part2 /\ tPP(x,y,t) ) 	\/ ( x in part3 /\ y in part3 /\ tPP(x,y,t) )	
+end
+
