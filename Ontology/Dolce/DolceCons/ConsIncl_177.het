@@ -94,3 +94,20 @@ forall x : AQ; y : NPED
 forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
 
 forall x : NPED . exists t : T . PRE(x : NPED, t : T) %(Ax1_14_19)%
+end
+
+spec sp =
+  source_177
+then %cons
+  free type AQ ::= aq(NPED)
+  pred PRE(x:AQ; t:T) <=> true;
+  pred SD(x : AQ; y : NPED)
+    <=> (exists t : T . PRE(x, t))
+        /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T);
+  pred SD(x : NPED; y : AQ)
+    <=> (exists t : T . PRE(x : NPED, t : T))
+        /\ forall t : T . PRE(x : NPED, t : T) => PRE(y, t)
+end
+
+view v : target_177 to sp
+end

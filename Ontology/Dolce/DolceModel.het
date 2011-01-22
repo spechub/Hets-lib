@@ -37,7 +37,7 @@ arch spec Parthood_Model =
 	TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
 							s2 |-> NAPO} given TempParthoodF;
-	TempParthoodASO    : {Temporary_Parthood with s |-> ASO
+	TempParthoodASO    : {Temporary_Parthood_No with s |-> ASO
 				and 
 				{
 				 free type ASO ::= sort SC | sort SAG
@@ -48,18 +48,18 @@ arch spec Parthood_Model =
                                OneSide_Specific_Dependence with s1 |-> MOB, 
 				s2 |-> APO} 
 				given TempParthoodAPO;
-	TempParthoodSOB    : {Temporary_Parthood with s |-> SOB 
+	TempParthoodSOB    : {Temporary_Parthood_No with s |-> SOB 
 				and
 				{
 				 free type SOB ::= sort ASO | sort NASO}
 			       } given TempParthoodNASO, TempParthoodASO;
-        TempParthoodPOB    : {Temporary_Parthood with s |-> POB
+        TempParthoodPOB    : {Temporary_Parthood_No with s |-> POB
 				and
 				{
 				 free type POB ::= sort APO | sort NAPO
 				}
 			       } given TempParthoodMOB, TempParthoodNAPO;
-        TempParthoodNPOB   : {Temporary_Parthood with s |-> NPOB
+        TempParthoodNPOB   : {Temporary_Parthood_No with s |-> NPOB
 				and
 				{
 				 free type NPOB ::= sort SOB | sort MOB
@@ -67,13 +67,13 @@ arch spec Parthood_Model =
 			       } given TempParthoodSOB, TempParthoodMOB;
         TempParthoodM      : {Temporary_Parthood with s |-> M} given
                                TempParthoodPOB;
-        TempParthoodNPED   : {Temporary_Parthood with s |-> NPED
+        TempParthoodNPED   : {Temporary_Parthood_No with s |-> NPED
 				and
 				{
 				 sort NPOB < NPED
 				}
 			       } given TempParthoodNPOB;
-        TempParthoodPED    : {Temporary_Parthood with s |-> PED
+        TempParthoodPED    : {Temporary_Parthood_No with s |-> PED
 				and
 				{
 				 free type PED ::= sort POB | sort M | sort F
@@ -126,11 +126,11 @@ arch spec Constitution_Model =
                        pred Sum : T * T * T,
                        %%pred tAt : NPED * T, 
                        %%pred tAtP : NPED * NPED * T,
-                       pred tDif : NPED * NPED * NPED,
+                       %%pred tDif : NPED * NPED * NPED,
                        pred tOv : NPED * NPED * T,
                        pred tP : NPED * NPED * T,
-                       pred tPP : NPED * NPED * T,
-                       pred tSum : NPED * NPED * NPED;
+                       pred tPP : NPED * NPED * T;
+                       %%pred tSum : NPED * NPED * NPED;
 
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
 				s2 |-> NPED} given TempParthoodED, TempParthoodNPED;
