@@ -397,10 +397,12 @@ spec Constitution_Spec =
      Binary_Temporal_Dissective with s1 |-> s, s2 |-> s, Rel |-> K
 and  Binary_Present with s1 |-> s, s2 |-> s, Rel |-> K
 and  Temporary_Strict_Partial_Order with  Rel |-> K
+end
+
+spec Constitution_Spec_and_Temporary_Parthood =
+     Constitution_Spec
 and  Temporary_Parthood 
-
 then
-
 forall x,y,y1:s; t:T
 .K(x,y,t) /\ tP(y1,y,t) => exists x1:s.(tP(x1,x,t) /\ K(x1,y1,t))
 then %implies
@@ -433,9 +435,8 @@ end
 %%--------------
 
 spec Constitution =
-     Constitution_Spec with s |-> PED
-and  Constitution_Spec with s |-> NPED
-and  Constitution_Spec with s |-> PD
+     Constitution_Spec with s |-> PD
+and  Constitution_Spec_and_Temporary_Parthood with s |-> ED
 and  Constantly_Generically_Constituted with s |-> PED, s1 |-> NAPO, s2 |-> M
 and  Constantly_Generically_Constituted with s |-> PED, s1 |-> APO, s2 |-> NAPO
 and  Constantly_Generically_Constituted with s |-> NPED, s1 |-> SC, s2 |-> SAG
