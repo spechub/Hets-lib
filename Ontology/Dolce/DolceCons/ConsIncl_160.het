@@ -769,31 +769,13 @@ end
 
 %% this just needs a CEP model
 
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodNoModel
+
 spec sp =
   source_160
 then %cons
-free type PD ::= a
- pred P:PD*PD
- . P(a,a)
-  preds
-  %% Proper Part
-  PP(x:PD; y:PD) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
-
-  %% Overlap
-  Ov(x:PD; y:PD) <=> exists z:PD.(P(z, x) /\  P(z, y)); %(Dd15)%
-
-  %% Atom
-  At(x:PD) <=> not exists y:PD.(PP(y, x)); %(Dd16)%
-
-  %%  Atomic Part
-  AtP(x:PD; y:PD) <=> P(x, y) /\  At(x); %(Dd17)%
-
-  %%  Binary Sum
-  Sum(z:PD; x:PD; y:PD) <=> forall w:PD.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-
-  %%  Binary Difference
-  Dif(z:PD; x:PD; y:PD) <=> forall w:PD.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
-
+	OnePointTempParthoodNoModel [sorts PD]
 end
 
 view v : target_160 to sp

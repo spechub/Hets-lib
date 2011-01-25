@@ -1142,6 +1142,8 @@ forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_299_383)%
 forall x : EDorPDorQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_300)%
 end
+
+
 spec target_252 = source_252
 then %cons
 esorts PR
@@ -1162,11 +1164,12 @@ spec sp =
   source_252
 then %cons
   free type PR ::= pr(PQ)
-  pred tql(x:PR; y:PQ; t:T)  <=> true
+  pred tql(x:PR; y:PQ; t:T)  <=> PRE(y:PQ,t:T)
 end
 
 view v : target_252 to sp
 end
 
-%% ax2_313 does not go through... probably, tql needs to be restricted appropriately
+%% ax2_313 does not go through... probably, tql needs to be restricted appropriately: 
+%% O: restricted tql to present PQs, goes through, is mono
 
