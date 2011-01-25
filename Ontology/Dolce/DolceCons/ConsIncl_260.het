@@ -1142,6 +1142,8 @@ forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_299_383)%
 forall x : EDorPDorQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_300)%
 end
+
+
 spec target_260 = source_260
 then %cons
 pred tql : AR * AQ * T
@@ -1161,12 +1163,16 @@ end
 spec sp =
   source_260
 then %cons
-  pred tql(x:AR; y:AQ; t:T)  <=> true
+  free type AR ::= pr(AQ)
+  pred tql(x:AR; y:AQ; t:T)  <=> PRE(y:AQ,t:T)
 end
 
 view v : target_260 to sp
 end
 
 %% Ax1_310_419 and Ax2_313 do not go through. Cf. also 252
+%% contrary to 252, AR is not new.
+%% goes through, link is def, buy why is it def? "projection does not generate new elements" weil partial? aber warum cons...
+%% wieso sind in der source manche sorten, zb AQ, als sort UND als esort deklariert?
 
 
