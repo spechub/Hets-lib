@@ -95,7 +95,7 @@ end
 spec OnePointCEPModel =
 free type s ::= ThePoint
  pred P:s*s
- . P(a,a)
+ . P(ThePoint,ThePoint)
   preds
   %% Proper Part
   PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
@@ -114,5 +114,4 @@ free type s ::= ThePoint
 
   %%  Binary Difference
   Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
-
 end
