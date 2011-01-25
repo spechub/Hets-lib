@@ -78,13 +78,13 @@ end
 
 %% here as needs to ge generated in some useful way
 %% probably we need to employ some powerset construction here...
-spec TempParthoodTernaryFullSum [sorts left,right,as,sum] =
+spec TempParthoodTernaryFullSum [sorts left,right,xas,sum] =
   sort T
-  free type sum ::= sort left | sort right | sort as
+  free type sum ::= sort left | sort right | sort xas
   pred PRE: sum*T
-  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in as /\ y in as /\ tOv(x,y,t) )
-  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in as /\ y in as /\ tP(x,y,t) )  
-  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in as /\ y in as /\ tPP(x,y,t) )	
+  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in xas /\ y in xas /\ tOv(x,y,t) )
+  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in xas /\ y in xas /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in xas /\ y in xas /\ tPP(x,y,t) )	
   pred tDif (x,y,z:sum) <=> false
   pred tSum  (x,y,z:sum) <=> true
 end
