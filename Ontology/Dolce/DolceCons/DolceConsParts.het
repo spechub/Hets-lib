@@ -89,3 +89,30 @@ spec TempParthoodTernaryFullSum [sorts left,right,as,sum] =
   pred tSum  (x,y,z:sum) <=> true
 end
 
+%%%%%%%%%%%%%%%%%% 1 point model for CEP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+spec OnePointCEPModel =
+free type s ::= ThePoint
+ pred P:s*s
+ . P(a,a)
+  preds
+  %% Proper Part
+  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
+
+  %% Overlap
+  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
+
+  %% Atom
+  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+
+  %%  Atomic Part
+  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+
+  %%  Binary Sum
+  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+
+  %%  Binary Difference
+  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+
+end
