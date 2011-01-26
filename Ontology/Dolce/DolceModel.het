@@ -108,8 +108,9 @@ arch spec Constitution_Model =
                                given ParthoodM;
           ConstitutionNPED   : {Constantly_Generically_Constituted with 
 				s |-> NPED, s1 |-> SC, s2 |-> SAG} given ParthoodM, DependenceAQNPED;
-          Constitution       = ConstitutionPD and ConstitutionPED and 
-						  ConstitutionNPED;
+          ConstitutionED     : {Constitution_Spec with s |-> ED} given TempParthoodED;
+          Constitution       = ConstitutionPD and ConstitutionPED and
+                               ConstitutionNPED and ConstitutionED;
    result Constitution           
 end
 
@@ -131,10 +132,12 @@ units     Constitution: arch spec Constitution_Model;
 
           MereologyAR = Constitution;
 
-          ImmediateQuale     : Immediate_Quale given TM;
+          ImmediateQuale     : {Immediate_Quale then sort TL < TQ} given TM;
 
+	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
+				s2 |-> SL} given TempParthoodEDSAR;
 	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED} given TempParthoodPED;
+				s2 |-> PED then sort SL < PQ} given TempParthoodPED, BinTempDisS;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} given 
                                Particip, ImmediateQuale;
@@ -148,10 +151,8 @@ units     Constitution: arch spec Constitution_Model;
 			       } given DependenceTQPD, DependencePQPED, 
 			       DependenceAQNPED;
           %% Temporary_Quale and binary temporal dissective
-	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
-				s2 |-> SL} given DependencePQPED, TempParthoodEDSAR;
 	  TempQualePR        : {Temporary_Quale_Spec with s1 |-> PR, 
-				s2 |-> PQ} given BeingPresentEDorDP, 
+				s2 |-> PQ then sort S < PR} given BeingPresentEDorDP, 
 			        BinTempDisS;
           TempQualeAR        : {Temporary_Quale_Spec with s1 |-> AR, 
 				s2 |-> AQ} given BeingPresentEDorDP, 
@@ -160,12 +161,12 @@ units     Constitution: arch spec Constitution_Model;
                                 given BeingPresentEDorDP, BinTempDisS;
           TempQuale          = TempQualePR and TempQualeAR and TempQualeS;
           BinTempDisPR       : {Binary_Temporal_Dissective with s1 |-> PR, 
-				s2 |-> PQ
-				and 
+				s2 |-> PQ }
+				%{ and 
 				{
 				 esort S < PR
-				}
-                               } given TempQualePR;
+				}% 
+                                given TempQualePR;
           ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} 
                                 given BinTempDisS;
 
@@ -179,7 +180,7 @@ units     Constitution: arch spec Constitution_Model;
                                                  MereologyAR;
 %%			        ClassExtParthoodAR;
           %% Direct Quality
-          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS, Constitution;
+          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS, Constitution, TempQuale, BinTempDisPR, BinTempDisAR, ClassExtParthoodS
      result Constitution and DirectQuality and TempQuale 
             and BinTempDisPR and BinTempDisAR and ClassExtParthoodS
 end
@@ -187,7 +188,7 @@ end
 arch spec Dolce_Model =
      units
 	  PreDolce : arch spec PreDolce_Model;
-	  Tax      : Taxonomy given PreDolce
+	  Tax      : {Taxonomy and pred K: ED * ED * T} given PreDolce
      result Tax and PreDolce
 end
 
