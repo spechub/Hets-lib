@@ -384,8 +384,11 @@ end
 %%---------------------
 
 spec Temporary_Mereology =
-     Temporary_Parthood with s |-> PED
-and  Temporary_Parthood with s |-> NPED
+     Temporary_Parthood with s |-> ED
+then
+     sorts PED, NPED < ED
+     forall x,y:ED; t:T . tP(x,y,t) => (x in PED <=> y in PED)
+     forall x,y:ED; t:T . tP(x,y,t) => (x in NPED <=> y in NPED)
 end
 
 
