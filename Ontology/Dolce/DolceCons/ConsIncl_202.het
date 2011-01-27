@@ -896,8 +896,6 @@ end
 spec target_202 = source_202
 then %cons
 pred K : NPED * NPED * T
-pred tDif : NPED * NPED * NPED
-pred tSum : NPED * NPED * NPED
 
 forall x : SC . exists t : T . PRE((var x : SC), t : T)
                                                    %(Ax1_241_285)%
@@ -905,53 +903,18 @@ forall x : SC . exists t : T . PRE((var x : SC), t : T)
 forall x : SC; t : T
 . At(t : T) /\ PRE((var x : SC), t : T)
   => exists y : SAG . K((var y : SAG), (var x : SC), t : T)
-                                                       %(Ax2_250)%
-
-forall x : NPED; t : T . not K(x, x, t) %(Td1)%
-
-forall x, y, y1 : NPED; t : T
-. K(x, y, t) /\ tP(y1 : NPED, y : NPED, t : T)
-  => exists x1 : NPED
-     . tP(x1 : NPED, x : NPED, t : T) /\ K(x1, y1, t)
-                                                     %(Ax1_3_248)%
-
-forall z : NPED; x : NPED; y : NPED
-. tSum(z, x, y)
-  <=> forall w : NPED; t : T
-      . tOv(w : NPED, z : NPED, t : T)
-        <=> tOv(w : NPED, x : NPED, t : T)
-            \/ tOv(w : NPED, y : NPED, t : T)        %(Ax1_2_244)%
-
-forall z : NPED; x : NPED; y : NPED
-. tDif(z, x, y)
-  <=> forall w : NPED; t : T
-      . tP(w : NPED, z : NPED, t : T)
-        <=> tP(w : NPED, x : NPED, t : T)
-            /\ not tOv(w : NPED, y : NPED, t : T)        %(Ax2_5)%
-
-forall x, y : NPED; t : T
-. PRE(x : NPED, t : T) /\ PRE(y : NPED, t : T)
-  /\ not tP(x : NPED, y : NPED, t : T)
-  => exists z : NPED
-     . tP(z : NPED, x : NPED, t : T)
-       /\ not tOv(z : NPED, y : NPED, t : T)           %(Ax3_253)%
-
-forall x, y : NPED; t : T . exists z : NPED . tSum(z, x, y)
-                                      %(Existence of the sum_260)%
+                                                       %(Ax2_246)%
 
 forall x, y, z : NPED; t : T . K(x, y, t) => not K(y, x, t)
-                                                    %(Ax1_24_245)%
+                                                     %(Ax1_3_245)%
 
 forall x, y, z : NPED; t : T
-. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                %(Ax2_25)%
+. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                 %(Ax2_5)%
 
 forall x1 : NPED; x2 : NPED; t : T
 . K(x1, x2, t) => PRE(x1 : NPED, t : T) /\ PRE(x2 : NPED, t : T)
-                                                        %(Ax1_26)%
+                                                       %(Ax1_3_4)%
 
 forall x1 : NPED; x2 : NPED; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)   %(Ax1_40)%
-end
-
-%% this does not work. The mereology on NPED needs to be introduced in
-%% one step. Moreover, we do not need sums and differences on NPED
+. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
+                                                    %(Ax1_17_243)%

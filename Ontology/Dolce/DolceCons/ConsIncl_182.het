@@ -874,71 +874,17 @@ end
 spec target_182 = source_182
 then %cons
 pred K : PD * PD * T
-pred tDif : PD * PD * PD
-pred tOv : PD * PD * T
-pred tP : PD * PD * T
-pred tPP : PD * PD * T
-pred tSum : PD * PD * PD
-
-forall x : PD; t : T . not K(x, x, t) %(Td1)%
-
-forall x, y, y1 : PD; t : T
-. K(x, y, t) /\ tP(y1, y, t)
-  => exists x1 : PD . tP(x1, x, t) /\ K(x1, y1, t) %(Ax1_235_275)%
-
-forall z : PD; x : PD; y : PD
-. tSum(z, x, y)
-  <=> forall w : PD; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                     %(Ax1_2_238)%
-
-forall z : PD; x : PD; y : PD
-. tDif(z, x, y)
-  <=> forall w : PD; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)
-                                                       %(Ax2_244)%
-
-forall x, y : PD; t : T
-. PRE(x : PD, t : T) /\ PRE(y : PD, t : T) /\ not tP(x, y, t)
-  => exists z : PD . tP(z, x, t) /\ not tOv(z, y, t)   %(Ax3_247)%
-
-forall x, y : PD; t : T . exists z : PD . tSum(z, x, y)
-                                      %(Existence of the sum_254)%
-
-forall x : PD; y : PD; t : T
-. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)    %(Ax1_5_243)%
-
-forall x : PD; y : PD; t : T
-. tOv(x, y, t) <=> exists z : PD . tP(z, x, t) /\ tP(z, y, t)
-                                                     %(Ax2_6_246)%
-
-forall x1 : PD; x2 : PD; t : T
-. tP(x1, x2, t) => PRE(x1 : PD, t : T) /\ PRE(x2 : PD, t : T)
-                                                     %(Ax1_3_242)%
-
-forall x1 : PD; x2 : PD; t1, t2 : T
-. tP(x1, x2, t1) /\ P(t2 : T, t1 : T) => tP(x1, x2, t2)
-                                                    %(Ax1_15_237)%
-
-forall x, y, z : PD; t : T . PRE(x : PD, t : T) => tP(x, x, t)
-                                                    %(Ax1_27_240)%
-
-forall x, y, z : PD; t : T
-. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)          %(Ax2_4_245)%
 
 forall x, y, z : PD; t : T . K(x, y, t) => not K(y, x, t)
-                                                    %(Ax1_24_239)%
+                                                   %(Ax1_235_275)%
 
 forall x, y, z : PD; t : T . K(x, y, t) /\ K(y, z, t) => K(x, z, t)
-                                                        %(Ax2_25)%
+                                                       %(Ax2_240)%
 
 forall x1 : PD; x2 : PD; t : T
 . K(x1, x2, t) => PRE(x1 : PD, t : T) /\ PRE(x2 : PD, t : T)
-                                                        %(Ax1_26)%
+                                                     %(Ax1_3_239)%
 
 forall x1 : PD; x2 : PD; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)   %(Ax1_40)%
-end
-
-%% this does not work: in order to have a mereology structure on the 
-%% existing sort PD, we must know somehow that PD already has sums 
+. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
+                                                    %(Ax1_17_237)%

@@ -874,8 +874,6 @@ end
 spec target_194 = source_194
 then %cons
 pred K : PED * PED * T
-pred tDif : PED * PED * PED
-pred tSum : PED * PED * PED
 
 forall x : APO . exists t : T . PRE((var x : APO), t : T)
                                                    %(Ax1_235_275)%
@@ -883,60 +881,26 @@ forall x : APO . exists t : T . PRE((var x : APO), t : T)
 forall x : APO; t : T
 . At(t : T) /\ PRE((var x : APO), t : T)
   => exists y : NAPO . K((var y : NAPO), (var x : APO), t : T)
-                                                       %(Ax2_244)%
-
-forall x : PED; t : T . not K(x, x, t) %(Td1)%
-
-forall x, y, y1 : PED; t : T
-. K(x, y, t) /\ tP(y1 : PED, y : PED, t : T)
-  => exists x1 : PED . tP(x1 : PED, x : PED, t : T) /\ K(x1, y1, t)
-                                                     %(Ax1_3_242)%
-
-forall z : PED; x : PED; y : PED
-. tSum(z, x, y)
-  <=> forall w : PED; t : T
-      . tOv(w : PED, z : PED, t : T)
-        <=> tOv(w : PED, x : PED, t : T) \/ tOv(w : PED, y : PED, t : T)
-                                                     %(Ax1_2_238)%
-
-forall z : PED; x : PED; y : PED
-. tDif(z, x, y)
-  <=> forall w : PED; t : T
-      . tP(w : PED, z : PED, t : T)
-        <=> tP(w : PED, x : PED, t : T) /\ not tOv(w : PED, y : PED, t : T)
-                                                         %(Ax2_5)%
-
-forall x, y : PED; t : T
-. PRE(x : PED, t : T) /\ PRE(y : PED, t : T)
-  /\ not tP(x : PED, y : PED, t : T)
-  => exists z : PED
-     . tP(z : PED, x : PED, t : T) /\ not tOv(z : PED, y : PED, t : T)
-                                                       %(Ax3_247)%
-
-forall x, y : PED; t : T . exists z : PED . tSum(z, x, y)
-                                      %(Existence of the sum_254)%
+                                                       %(Ax2_240)%
 
 forall x, y, z : PED; t : T . K(x, y, t) => not K(y, x, t)
-                                                    %(Ax1_24_239)%
+                                                     %(Ax1_3_239)%
 
 forall x, y, z : PED; t : T
-. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                %(Ax2_25)%
+. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                 %(Ax2_5)%
 
 forall x1 : PED; x2 : PED; t : T
 . K(x1, x2, t) => PRE(x1 : PED, t : T) /\ PRE(x2 : PED, t : T)
-                                                        %(Ax1_26)%
+                                                       %(Ax1_3_4)%
 
 forall x1 : PED; x2 : PED; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)   %(Ax1_40)%
+. K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
+                                                    %(Ax1_17_237)%
 
 forall x : NAPO . exists t : T . PRE((var x : NAPO), t : T)
-                                                   %(Ax1_235_287)%
+                                                   %(Ax1_235_282)%
 
 forall x : NAPO; t : T
 . At(t : T) /\ PRE((var x : NAPO), t : T)
   => exists y : M . K((var y : M), (var x : NAPO), t : T)
-                                                   %(Ax2_244_370)%
-end
-
-%% this does not work. The mereology on PED needs to be introduced in
-%% one step. Moreover, we do not need sums and differences on PED
+                                                   %(Ax2_240_362)%

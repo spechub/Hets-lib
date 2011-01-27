@@ -1,10 +1,9 @@
-spec source_311 =
-sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, Q, SOB
-esorts APO, AQ, AR, AS, EDorPDorQ, F, M, MOB, NAPO, NASO, PQ, PR,
-       S, SAG, SC, SL, T, TL, TQ, TR
-sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
-      NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
-      SL < PQ; S < PR; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ
+spec source_293 =
+sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
+esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, PQ, S, SAG, SC, SL,
+       T
+sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
+      MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
 pred At : PD
 pred At : S
@@ -17,6 +16,7 @@ pred Dif : AR * AR * AR
 pred Dif : PD * PD * PD
 pred Dif : S * S * S
 pred Dif : T * T * T
+pred K : ED * ED * T
 pred K : NPED * NPED * T
 pred K : PD * PD * T
 pred K : PED * PED * T
@@ -37,7 +37,6 @@ pred PRE : APO * T
 pred PRE : AQ * T
 pred PRE : ASO * T
 pred PRE : ED * T
-pred PRE : EDorPDorQ * T
 pred PRE : F * T
 pred PRE : M * T
 pred PRE : MOB * T
@@ -51,29 +50,18 @@ pred PRE : POB * T
 pred PRE : PQ * T
 pred PRE : SAG * T
 pred PRE : SC * T
-pred PRE : SL * T
 pred PRE : SOB * T
-pred PRE : TQ * T
 pred P_T : PD * PD
-pred Rel : AR * AQ * T
-pred Rel : PR * PQ * T
 pred Rel : S * SL * T
 pred SD : AQ * NPED
 pred SD : MOB * APO
 pred SD : NPED * AQ
-pred SD : PD * TQ
 pred SD : PED * PQ
 pred SD : PQ * PED
-pred SD : TQ * PD
 pred Sum : AR * AR * AR
 pred Sum : PD * PD * PD
 pred Sum : S * S * S
 pred Sum : T * T * T
-pred dqt : AQ * NPED
-pred dqt : PQ * PED
-pred dqt : TQ * PD
-pred ql : T * TL
-pred ql : TR * TQ
 pred tDif : APO * APO * APO
 pred tDif : ED * ED * ED
 pred tDif : F * F * F
@@ -81,9 +69,6 @@ pred tDif : M * M * M
 pred tDif : MOB * MOB * MOB
 pred tDif : NAPO * NAPO * NAPO
 pred tDif : NASO * NASO * NASO
-pred tDif : NPED * NPED * NPED
-pred tDif : PD * PD * PD
-pred tDif : PED * PED * PED
 pred tDif : SAG * SAG * SAG
 pred tDif : SC * SC * SC
 pred tOv : APO * APO * T
@@ -96,7 +81,6 @@ pred tOv : NAPO * NAPO * T
 pred tOv : NASO * NASO * T
 pred tOv : NPED * NPED * T
 pred tOv : NPOB * NPOB * T
-pred tOv : PD * PD * T
 pred tOv : PED * PED * T
 pred tOv : POB * POB * T
 pred tOv : SAG * SAG * T
@@ -112,7 +96,6 @@ pred tP : NAPO * NAPO * T
 pred tP : NASO * NASO * T
 pred tP : NPED * NPED * T
 pred tP : NPOB * NPOB * T
-pred tP : PD * PD * T
 pred tP : PED * PED * T
 pred tP : POB * POB * T
 pred tP : SAG * SAG * T
@@ -128,7 +111,6 @@ pred tPP : NAPO * NAPO * T
 pred tPP : NASO * NASO * T
 pred tPP : NPED * NPED * T
 pred tPP : NPOB * NPOB * T
-pred tPP : PD * PD * T
 pred tPP : PED * PED * T
 pred tPP : POB * POB * T
 pred tPP : SAG * SAG * T
@@ -141,14 +123,8 @@ pred tSum : M * M * M
 pred tSum : MOB * MOB * MOB
 pred tSum : NAPO * NAPO * NAPO
 pred tSum : NASO * NASO * NASO
-pred tSum : NPED * NPED * NPED
-pred tSum : PD * PD * PD
-pred tSum : PED * PED * PED
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
-pred tql : AR * AQ * T
-pred tql : PR * PQ * T
-pred tql : S * SL * T
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -776,9 +752,6 @@ forall x, y, z : ED; t : T . PRE(x, t) => tP(x, x, t)
 forall x, y, z : ED; t : T
 . tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)          %(Ax2_4_185)%
 
-forall x : ED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                     %(Ax1_2_180)%
-
 forall x : PD; y : PD . PP(x, y) <=> P(x, y) /\ not P(y, x)
                                                       %(Dd14_195)%
 
@@ -823,6 +796,8 @@ forall x : ED . exists y : PD; t : T . PC(x, y, t) %(Ax2_210)%
 
 forall x1 : ED; x2 : PD; t : T
 . PC(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)          %(Ax1_3_209)%
+
+forall x : PD . exists t : T . PRE(x, t) %(Ax1_14_205)%
 
 forall x : PD; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                   %(Ax1_2_15_207)%
@@ -905,15 +880,32 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 
+forall x, y, z : ED; t : T . K(x, y, t) => not K(y, x, t)
+                                                   %(Ax1_235_275)%
+
+forall x, y, z : ED; t : T . K(x, y, t) /\ K(y, z, t) => K(x, z, t)
+                                                       %(Ax2_240)%
+
+forall x1 : ED; x2 : ED; t : T
+. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)           %(Ax1_3_239)%
+
+forall x : ED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
+                                                  %(Ax1_2_15_238)%
+
+forall x1 : ED; x2 : ED; t1, t2 : T
+. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)       %(Ax1_17_237)%
+
 forall x : NPED; y : AQ
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_235_275)%
+      /\ forall t : T . PRE(x, t) => PRE(y, t) %(Ax1_235_275_279)%
 
 forall x : NPED . exists y : AQ . SD(x, y) %(Ax2_239)%
 
+forall x : AQ . exists t : T . PRE(x, t) %(Ax1_14_236)%
+
 forall x : AQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_238)%
+                                              %(Ax1_2_15_238_309)%
 
 forall x : AQ; y : NPED
 . SD(x, y)
@@ -925,308 +917,77 @@ forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
 forall x : SC . exists t : T . PRE(x, t) %(Ax1_241_285)%
 
 forall x : SC; t : T
-. At(t) /\ PRE(x, t) => exists y : SAG . K(y, x, t)    %(Ax2_250)%
-
-forall x : NPED; t : T . not K(x, x, t) %(Td1)%
-
-forall x, y, y1 : NPED; t : T
-. K(x, y, t) /\ tP(y1, y, t)
-  => exists x1 : NPED . tP(x1, x, t) /\ K(x1, y1, t) %(Ax1_3_248)%
-
-forall z : NPED; x : NPED; y : NPED
-. tSum(z, x, y)
-  <=> forall w : NPED; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                     %(Ax1_2_244)%
-
-forall z : NPED; x : NPED; y : NPED
-. tDif(z, x, y)
-  <=> forall w : NPED; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)  %(Ax2_5)%
-
-forall x, y : NPED; t : T
-. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
-  => exists z : NPED . tP(z, x, t) /\ not tOv(z, y, t) %(Ax3_253)%
-
-forall x, y : NPED; t : T . exists z : NPED . tSum(z, x, y)
-                                      %(Existence of the sum_260)%
+. At(t) /\ PRE(x, t) => exists y : SAG . K(y, x, t)    %(Ax2_246)%
 
 forall x, y, z : NPED; t : T . K(x, y, t) => not K(y, x, t)
-                                                    %(Ax1_24_245)%
+                                                     %(Ax1_3_245)%
 
 forall x, y, z : NPED; t : T
-. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                %(Ax2_25)%
+. K(x, y, t) /\ K(y, z, t) => K(x, z, t)                 %(Ax2_5)%
 
 forall x1 : NPED; x2 : NPED; t : T
-. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)              %(Ax1_26)%
+. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)             %(Ax1_3_4)%
 
 forall x1 : NPED; x2 : NPED; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)           %(Ax1_40)%
+. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)       %(Ax1_17_243)%
 
-forall x : APO . exists t : T . PRE(x, t) %(Ax1_235_275_293)%
+forall x : APO . exists t : T . PRE(x, t) %(Ax1_235_275_526)%
 
 forall x : APO; t : T
-. At(t) /\ PRE(x, t) => exists y : NAPO . K(y, x, t)   %(Ax2_244)%
-
-forall x : PED; t : T . not K(x, x, t) %(Td1_463)%
-
-forall x, y, y1 : PED; t : T
-. K(x, y, t) /\ tP(y1, y, t)
-  => exists x1 : PED . tP(x1, x, t) /\ K(x1, y1, t)  %(Ax1_3_242)%
-
-forall z : PED; x : PED; y : PED
-. tSum(z, x, y)
-  <=> forall w : PED; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                     %(Ax1_2_238)%
-
-forall z : PED; x : PED; y : PED
-. tDif(z, x, y)
-  <=> forall w : PED; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)
-                                                     %(Ax2_5_399)%
-
-forall x, y : PED; t : T
-. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
-  => exists z : PED . tP(z, x, t) /\ not tOv(z, y, t)  %(Ax3_247)%
-
-forall x, y : PED; t : T . exists z : PED . tSum(z, x, y)
-                                      %(Existence of the sum_254)%
+. At(t) /\ PRE(x, t) => exists y : NAPO . K(y, x, t)
+                                                   %(Ax2_240_606)%
 
 forall x, y, z : PED; t : T . K(x, y, t) => not K(y, x, t)
-                                                    %(Ax1_24_239)%
+                                                 %(Ax1_3_239_575)%
 
 forall x, y, z : PED; t : T
-. K(x, y, t) /\ K(y, z, t) => K(x, z, t)            %(Ax2_25_373)%
+. K(x, y, t) /\ K(y, z, t) => K(x, z, t)             %(Ax2_5_632)%
 
 forall x1 : PED; x2 : PED; t : T
-. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)          %(Ax1_26_301)%
+. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)         %(Ax1_3_4_580)%
 
 forall x1 : PED; x2 : PED; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)       %(Ax1_40_352)%
+. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_522)%
 
-forall x : NAPO . exists t : T . PRE(x, t) %(Ax1_235_287)%
+forall x : NAPO . exists t : T . PRE(x, t) %(Ax1_235_282)%
 
 forall x : NAPO; t : T
-. At(t) /\ PRE(x, t) => exists y : M . K(y, x, t)  %(Ax2_244_370)%
-
-forall x : PD; t : T . not K(x, x, t) %(Td1_716)%
-
-forall x, y, y1 : PD; t : T
-. K(x, y, t) /\ tP(y1, y, t)
-  => exists x1 : PD . tP(x1, x, t) /\ K(x1, y1, t)
-                                               %(Ax1_235_275_541)%
-
-forall z : PD; x : PD; y : PD
-. tSum(z, x, y)
-  <=> forall w : PD; t : T
-      . tOv(w, z, t) <=> tOv(w, x, t) \/ tOv(w, y, t)
-                                                 %(Ax1_2_238_574)%
-
-forall z : PD; x : PD; y : PD
-. tDif(z, x, y)
-  <=> forall w : PD; t : T
-      . tP(w, z, t) <=> tP(w, x, t) /\ not tOv(w, y, t)
-                                                   %(Ax2_244_624)%
-
-forall x, y : PD; t : T
-. PRE(x, t) /\ PRE(y, t) /\ not tP(x, y, t)
-  => exists z : PD . tP(z, x, t) /\ not tOv(z, y, t)
-                                                   %(Ax3_247_666)%
-
-forall x, y : PD; t : T . exists z : PD . tSum(z, x, y)
-                                  %(Existence of the sum_254_706)%
-
-forall x : PD; y : PD; t : T
-. tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)    %(Ax1_5_243)%
-
-forall x : PD; y : PD; t : T
-. tOv(x, y, t) <=> exists z : PD . tP(z, x, t) /\ tP(z, y, t)
-                                                     %(Ax2_6_246)%
-
-forall x1 : PD; x2 : PD; t : T
-. tP(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)      %(Ax1_3_242_593)%
-
-forall x1 : PD; x2 : PD; t1, t2 : T
-. tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)     %(Ax1_15_237)%
-
-forall x, y, z : PD; t : T . PRE(x, t) => tP(x, x, t)
-                                                    %(Ax1_27_240)%
-
-forall x, y, z : PD; t : T
-. tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)          %(Ax2_4_245)%
+. At(t) /\ PRE(x, t) => exists y : M . K(y, x, t)  %(Ax2_240_362)%
 
 forall x, y, z : PD; t : T . K(x, y, t) => not K(y, x, t)
-                                                %(Ax1_24_239_543)%
+                                               %(Ax1_235_275_768)%
 
 forall x, y, z : PD; t : T . K(x, y, t) /\ K(y, z, t) => K(x, z, t)
-                                                    %(Ax2_25_625)%
+                                                   %(Ax2_240_847)%
 
 forall x1 : PD; x2 : PD; t : T
-. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)          %(Ax1_26_550)%
+. K(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)       %(Ax1_3_239_817)%
 
 forall x1 : PD; x2 : PD; t1, t2 : T
-. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)       %(Ax1_40_603)%
+. K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 
 forall x : PED; y : PQ
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_283_360)%
+      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_263_322)%
 
-forall x : PED . exists y : PQ . SD(x, y) %(Ax2_288)%
+forall x : PED . exists y : PQ . SD(x, y) %(Ax2_268)%
+
+forall x : PQ . exists t : T . PRE(x, t) %(Ax1_14_264)%
 
 forall x : PQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_287)%
+                                                  %(Ax1_2_15_267)%
 
 forall x : PQ; y : PED
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_285)%
+      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_265)%
 
-forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_289)%
-
-forall x1 : S; x2 : SL; t1, t2 : T
-. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_289_369)%
-
-forall x1 : AR; x2 : AQ; t1, t2 : T
-. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)
-                                               %(Ax1_283_360_367)%
-
-forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                   %(Ax1_283_647)%
-
-forall y : TQ . exists x : TR . ql(x, y) %(Ax2_285)%
-
-forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                     %(Ax1_3_284)%
-
-forall y : TL . exists x : T . ql(x, y) %(Ax2_4_286)%
-
-forall x : PD; y : TQ
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_287_364)%
-
-forall x : PD . exists y : TQ . SD(x, y) %(Ax2_292)%
-
-forall x : TQ . exists t : T . PRE(x, t) %(Ax1_14_288)%
-
-forall x : TQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_291)%
-
-forall x : TQ; y : PD
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_289)%
-
-forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_293)%
-
-forall x : PD . exists t : T . PRE(x, t) %(Ax1_14_19)%
-
-forall x : Q . not (x in TQ /\ x in PQ) %(ga_disjoint_sorts_TQ_PQ)%
-
-forall x : Q . not (x in TQ /\ x in AQ) %(ga_disjoint_sorts_TQ_AQ)%
-
-forall x : Q . not (x in PQ /\ x in AQ) %(ga_disjoint_sorts_PQ_AQ)%
-
-%% free
-generated type Q ::= sort AQ | sort PQ | sort TQ
-                                                %(ga_generated_Q)%
-
-forall x : EDorPDorQ . not (x in Q /\ x in PD)
-                                        %(ga_disjoint_sorts_Q_PD)%
-
-forall x : EDorPDorQ . not (x in Q /\ x in ED)
-                                        %(ga_disjoint_sorts_Q_ED)%
-
-forall x : EDorPDorQ . not (x in PD /\ x in ED)
-                                       %(ga_disjoint_sorts_PD_ED)%
-
-%% free
-generated type EDorPDorQ ::= sort ED | sort PD | sort Q
-                                        %(ga_generated_EDorPDorQ)%
-
-forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_299_383)%
-
-forall x : EDorPDorQ; t1, t2 : T
-. PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_300)%
-
-forall y : PQ; t : T . PRE(y, t) => exists x : PR . tql(x, y, t)
-                                                   %(Ax1_310_419)%
-
-forall x : PR; y : PQ; t : T . tql(x, y, t) => PRE(y, t)
-                                                       %(Ax2_313)%
-
-forall x1 : PR; x2 : PQ; t1, t2 : T
-. tql(x1, x2, t1) /\ P(t2, t1) => tql(x1, x2, t2)    %(Ax1_3_312)%
-
-forall x : PQ . exists t : T . PRE(x, t) %(Ax1_13)%
-
-forall x1 : PR; x2 : PQ; t1, t2 : T
-. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_313_424)%
-
-forall y : SL; t : T . PRE(y, t) => exists x : S . tql(x, y, t)
-                                                   %(Ax1_310_420)%
-
-forall x : S; y : SL; t : T . tql(x, y, t) => PRE(y, t)
-                                                  %(Ax2_313_1061)%
+forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_269)%
 
 forall x1 : S; x2 : SL; t1, t2 : T
-. tql(x1, x2, t1) /\ P(t2, t1) => tql(x1, x2, t2)
-                                                %(Ax1_3_312_1013)%
-
-forall x : SL . exists t : T . PRE(x, t) %(Ax1_13_890)%
-
-forall x : SL; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                     %(Ax1_2_311)%
-
-forall y : AQ; t : T . PRE(y, t) => exists x : AR . tql(x, y, t)
-                                               %(Ax1_310_419_995)%
-
-forall x : AR; y : AQ; t : T . tql(x, y, t) => PRE(y, t)
-                                                   %(Ax2_313_490)%
-
-forall x1 : AR; x2 : AQ; t1, t2 : T
-. tql(x1, x2, t1) /\ P(t2, t1) => tql(x1, x2, t2)
-                                                 %(Ax1_3_312_442)%
-
-forall x : AQ . exists t : T . PRE(x, t) %(Ax1_13_319)%
-
-forall y : PD . exists x : TL . dqt(x, y) %(Ax1_310)%
-
-forall y : PED . exists x : SL . dqt(x, y) %(Ax2_312)%
-
-forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
-                                                     %(Ax1_3_311)%
-
-forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
-                                                     %(Ax2_4_313)%
-
-forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_315)%
-
-forall x : PQ; y1, y2 : PED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
-                                                         %(Ax1_4)%
-
-forall x1, x2 : PQ; y : PED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
-                                                     %(Ax2_5_314)%
-
-forall x : PQ . exists! y : PED . dqt(x, y) %(Ax3_6)%
-
-forall x : TQ; y1, y2 : PD . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
-                                                         %(Ax1_7)%
-
-forall x1, x2 : TQ; y : PD . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
-                                                         %(Ax2_8)%
-
-forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_9)%
+. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_269_331)%
 end
-spec target_311 = source_311
+spec target_293 = source_293
 then %cons
-sorts AB, ACC, ACH, EV, PRO, PT, R, ST, STV
-sorts R < AB; EV, STV < EDorPDorQ; ACC, ACH < EV; EV, STV < PD;
-      AB, APO, AQ, AS, ASO, ED, EDorPDorQ, F, M, MOB, NAPO, NASO, NPED,
-      NPOB, PD, PED, POB, PQ, Q, SAG, SC, SL, SOB, TL, TQ < PT;
-      AR, PR, S, TR < R; PRO, ST < STV; T < TR
-end
-
-%% not possible! we cannot require new subsort relations for old sorts!
+{}
