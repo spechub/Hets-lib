@@ -1,7 +1,6 @@
-spec source_232 =
+spec source_305 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T, TL,
-       TQ, TR
+esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -58,8 +57,6 @@ pred Sum : AR * AR * AR
 pred Sum : PD * PD * PD
 pred Sum : S * S * S
 pred Sum : T * T * T
-pred ql : T * TL
-pred ql : TR * TQ
 pred tDif : APO * APO * APO
 pred tDif : ED * ED * ED
 pred tDif : F * F * F
@@ -963,42 +960,25 @@ forall x1 : PD; x2 : PD; t : T
 
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
-
-forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                       %(Ax1_263)%
-
-forall y : TQ . exists x : TR . ql(x, y) %(Ax2_265)%
-
-forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                     %(Ax1_3_264)%
-
-forall y : TL . exists x : T . ql(x, y) %(Ax2_4_266)%
 end
-spec target_232 = source_232
+spec target_305 = source_305
 then %cons
-pred PRE : TQ * T
-pred SD : PD * TQ
-pred SD : TQ * PD
+pred Rel : AR * AQ * T
 
-forall x : PD; y : TQ
-. SD(x, y)
-  <=> (exists t : T . PRE(x : PD, t : T))
-      /\ forall t : T . PRE(x : PD, t : T) => PRE(y, t)
-                                                   %(Ax1_267_326)%
+forall x1 : AR; x2 : AQ; t1, t2 : T
+. Rel(x1, x2, t1) /\ P(t2 : T, t1 : T) => Rel(x1, x2, t2)
+                                                   %(Ax1_263_322)%
+end
 
-forall x : PD . exists y : TQ . SD(x, y) %(Ax2_272)%
+spec sp =
+  source_305
+then %cons
+  pred Rel(x:AR;y:AQ;t:T) <=> true
+end
 
-forall x : TQ . exists t : T . PRE(x, t) %(Ax1_14_268)%
+view v : target_305 to sp
+end
 
-forall x : TQ; t1, t2 : T
-. PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)   %(Ax1_2_15_271)%
+%% goes through
+%% re-check (changes!) I did: goes through, link is cons
 
-forall x : TQ; y : PD
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y : PD, t : T)
-                                                    %(Ax1_18_269)%
-
-forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_273)%
-
-%% similar to 175, but no new sort here...

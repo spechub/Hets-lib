@@ -1,10 +1,10 @@
-spec source_268 =
-sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, Q, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, PQ, S, SAG, SC, SL,
-       T, TL, TQ, TR
+spec source_273 =
+sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, PQ, Q, SL, SOB,
+      TL, TQ
+esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T, TR
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
-      AQ, PQ, TQ < Q; ASO, NASO < SOB
+      SL < PQ; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ
 pred At : AR
 pred At : PD
 pred At : S
@@ -971,30 +971,30 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 
+forall x1 : S; x2 : SL; t1, t2 : T
+. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_263_322)%
+
 forall x : PED; y : PQ
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_263_322)%
+      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_264_324)%
 
-forall x : PED . exists y : PQ . SD(x, y) %(Ax2_268)%
+forall x : PED . exists y : PQ . SD(x, y) %(Ax2_269)%
 
-forall x : PQ . exists t : T . PRE(x, t) %(Ax1_14_264)%
+forall x : PQ . exists t : T . PRE(x, t) %(Ax1_14_265)%
 
 forall x : PQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_267)%
+                                                  %(Ax1_2_15_268)%
 
 forall x : PQ; y : PED
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_265)%
+      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_266)%
 
-forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_269)%
-
-forall x1 : S; x2 : SL; t1, t2 : T
-. Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_269_331)%
+forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_270)%
 
 forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                   %(Ax1_263_589)%
+                                               %(Ax1_263_322_590)%
 
 forall y : TQ . exists x : TR . ql(x, y) %(Ax2_265)%
 
@@ -1010,7 +1010,7 @@ forall x : PD; y : TQ
 
 forall x : PD . exists y : TQ . SD(x, y) %(Ax2_272)%
 
-forall x : TQ . exists t : T . PRE(x, t) %(Ax1_14_268)%
+forall x : TQ . exists t : T . PRE(x, t) %(Ax1_14_268_279)%
 
 forall x : TQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                   %(Ax1_2_15_271)%
@@ -1047,12 +1047,12 @@ forall x : EDorPDorQ . not (x in PD /\ x in ED)
 generated type EDorPDorQ ::= sort ED | sort PD | sort Q
                                         %(ga_generated_EDorPDorQ)%
 
-forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_279_346)%
+forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_280_362)%
 
 forall x : EDorPDorQ; t1, t2 : T
-. PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_280)%
+. PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_281)%
 end
-spec target_268 = source_268
+spec target_273 = source_273
 then %cons
 pred tql : AR * AQ * T
 
@@ -1068,19 +1068,20 @@ forall x1 : AR; x2 : AQ; t1, t2 : T
                                                      %(Ax1_3_292)%
 end
 
+
 spec sp =
-  source_268
+  source_273
 then %cons
   free type AR ::= pr(AQ)
   pred tql(x:AR; y:AQ; t:T)  <=> PRE(y:AQ,t:T)
 end
 
-view v : target_268 to sp
+view v : target_273 to sp
 end
 
 
 
-%% Ax1_310_419 and Ax2_313 do not go through. Cf. also 260
-%% contrary to 260, AR is not new.
+%% Ax1_310_419 and Ax2_313 do not go through. Cf. also 265
+%% contrary to 265, AR is not new.
 %% goes through, link is def, buy why is it def? (bug in Hets!)
 

@@ -1,9 +1,9 @@
 spec source_244 =
-sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, PQ, S, SAG, SC, T,
-       TL, TQ, TR
+sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB, TL, TQ
+esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T, TR
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
-      MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
+      MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB;
+      TL < TQ
 pred At : AR
 pred At : PD
 pred At : S
@@ -47,19 +47,13 @@ pred PRE : NPOB * T
 pred PRE : PD * T
 pred PRE : PED * T
 pred PRE : POB * T
-pred PRE : PQ * T
 pred PRE : SAG * T
 pred PRE : SC * T
 pred PRE : SOB * T
-pred PRE : TQ * T
 pred P_T : PD * PD
 pred SD : AQ * NPED
 pred SD : MOB * APO
 pred SD : NPED * AQ
-pred SD : PD * TQ
-pred SD : PED * PQ
-pred SD : PQ * PED
-pred SD : TQ * PD
 pred Sum : AR * AR * AR
 pred Sum : PD * PD * PD
 pred Sum : S * S * S
@@ -801,6 +795,8 @@ forall x : ED . exists y : PD; t : T . PC(x, y, t) %(Ax2_210)%
 forall x1 : ED; x2 : PD; t : T
 . PC(x1, x2, t) => PRE(x1, t) /\ PRE(x2, t)          %(Ax1_3_209)%
 
+forall x : PD . exists t : T . PRE(x, t) %(Ax1_14_205)%
+
 forall x : PD; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                   %(Ax1_2_15_207)%
 
@@ -968,27 +964,8 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 
-forall x : PED; y : PQ
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_263_322)%
-
-forall x : PED . exists y : PQ . SD(x, y) %(Ax2_268)%
-
-forall x : PQ . exists t : T . PRE(x, t) %(Ax1_14_264)%
-
-forall x : PQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_267)%
-
-forall x : PQ; y : PED
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_265)%
-
-forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_269)%
-
 forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                   %(Ax1_263_589)%
+                                                   %(Ax1_263_322)%
 
 forall y : TQ . exists x : TR . ql(x, y) %(Ax2_265)%
 
@@ -996,74 +973,33 @@ forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
                                                      %(Ax1_3_264)%
 
 forall y : TL . exists x : T . ql(x, y) %(Ax2_4_266)%
+end
+spec target_244 = source_244
+then %cons
+pred PRE : TQ * T
+pred SD : PD * TQ
+pred SD : TQ * PD
 
 forall x : PD; y : TQ
 . SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)     %(Ax1_267_326)%
+  <=> (exists t : T . PRE(x : PD, t : T))
+      /\ forall t : T . PRE(x : PD, t : T) => PRE(y, t)
+                                                   %(Ax1_267_326)%
 
 forall x : PD . exists y : TQ . SD(x, y) %(Ax2_272)%
 
 forall x : TQ . exists t : T . PRE(x, t) %(Ax1_14_268)%
 
-forall x : TQ; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
-                                                  %(Ax1_2_15_271)%
+forall x : TQ; t1, t2 : T
+. PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)   %(Ax1_2_15_271)%
 
 forall x : TQ; y : PD
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_269)%
+      /\ forall t : T . PRE(x, t) => PRE(y : PD, t : T)
+                                                    %(Ax1_18_269)%
 
 forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_273)%
-
-forall x : PD . exists t : T . PRE(x, t) %(Ax1_14_19)%
-end
-spec target_244 = source_244
-then %cons
-sorts EDorPDorQ, Q
-sorts APO, AS, ASO, ED, F, M, MOB, NAPO, NASO, NPED, NPOB, PD, PED,
-      POB, Q, SAG, SC, SOB < EDorPDorQ;
-      AQ, PQ, TQ < Q
-pred PRE : EDorPDorQ * T
-
-forall x : Q . not (x in TQ /\ x in PQ) %(ga_disjoint_sorts_TQ_PQ)%
-
-forall x : Q . not (x in TQ /\ x in AQ) %(ga_disjoint_sorts_TQ_AQ)%
-
-forall x : Q . not (x in PQ /\ x in AQ) %(ga_disjoint_sorts_PQ_AQ)%
-
-%% free
-generated type Q ::= sort AQ | sort PQ | sort TQ
-                                                %(ga_generated_Q)%
-
-forall x : EDorPDorQ . not (x in Q /\ x in PD)
-                                        %(ga_disjoint_sorts_Q_PD)%
-
-forall x : EDorPDorQ . not (x in Q /\ x in ED)
-                                        %(ga_disjoint_sorts_Q_ED)%
-
-forall x : EDorPDorQ . not (x in PD /\ x in ED)
-                                       %(ga_disjoint_sorts_PD_ED)%
-
-%% free
-generated type EDorPDorQ ::= sort ED | sort PD | sort Q
-                                        %(ga_generated_EDorPDorQ)%
-
-forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_279_346)%
-
-forall x : EDorPDorQ; t1, t2 : T
-. PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_280)%
-
-spec sp =
-  source_244
-then %cons
-  free type Q ::= sort AQ | sort PQ | sort TQ
-  free type EDorPDorQ ::= sort ED | sort PD | sort Q 
-  pred PRE : EDorPDorQ * T  %% determined by overloading
 end
 
-view v : target_244 to sp
-end
-
-%% re-check (changes!)
-
+%% similar to 175, but no new sort here...

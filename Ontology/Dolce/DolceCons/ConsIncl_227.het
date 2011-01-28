@@ -1,4 +1,4 @@
-spec source_217 =
+spec source_227 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
 esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
@@ -961,36 +961,24 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 end
-spec target_217 = source_217
+spec target_227 = source_227
 then %cons
-esorts TL, TQ, TR
-pred ql : T * TL
-pred ql : TR * TQ
+esorts SL
+pred Rel : S * SL * T
 
-forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                       %(Ax1_263)%
-
-forall y : TQ . exists x : TR . ql(x, y) %(Ax2_265)%
-
-forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
-                                                     %(Ax1_3_264)%
-
-forall y : TL . exists x : T . ql(x, y) %(Ax2_4_266)%
+forall x1 : S; x2 : SL; t1, t2 : T
+. Rel(x1, x2, t1) /\ P(t2 : T, t1 : T) => Rel(x1, x2, t2)
+                                                   %(Ax1_263_322)%
+end
 
 spec sp =
-  source_217
+  source_227
 then %cons
-  free types TQ ::= tq;
-             TR ::= tr(TQ);
-             TL ::= tl(T)
-  pred ql : TR * TQ
-  forall x:TR; y:TQ . ql(x,y) <=> tr(y)=x
-  pred ql : T * TL
-  forall t:T;x:TL . ql(t,x) <=> x=tl(t)
-  op tl_inv : TL -> T
-  forall t:T . tl_inv(tl(t)) = t
+  free type SL ::= sl(S)
+  pred Rel(x:S;y:SL;t:T) <=> true
 end
 
-view v : target_217 to sp
+view v : target_227 to sp
 end
 
+%% re-check (changes!)
