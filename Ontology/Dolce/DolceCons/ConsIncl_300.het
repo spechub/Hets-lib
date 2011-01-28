@@ -961,14 +961,7 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 end
-spec target_300 = source_300
-then %cons
-pred Rel : AR * AQ * T
 
-forall x1 : AR; x2 : AQ; t1, t2 : T
-. Rel(x1, x2, t1) /\ P(t2 : T, t1 : T) => Rel(x1, x2, t2)
-                                                   %(Ax1_263_322)%
-end
 
 spec target_300 = source_300
 then %cons
@@ -976,7 +969,6 @@ pred Rel : AR * AQ * T
 
 forall x1 : AR; x2 : AQ; t1, t2 : T
 . Rel(x1, x2, t1) /\ P(t2 : T, t1 : T) => Rel(x1, x2, t2)
-                                                   %(Ax1_283_360)%
 end
 
 spec sp =
@@ -989,5 +981,5 @@ view v : target_300 to sp
 end
 
 %% goes through
-%% re-check (changes!)
+%% re-check (changes!) I did: goes through, link is cons
 
