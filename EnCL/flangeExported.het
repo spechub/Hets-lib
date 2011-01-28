@@ -1,0 +1,30 @@
+library EnCL/flangeExported
+
+from EnCL/flangeDefault get FlangeDefault
+from EnCL/EN1591S get EN1591
+
+logic EnCL
+
+spec Flange = FlangeDefault then
+
+ %% diameters
+
+ %% inner hole
+ . d_0 := 95 %(data4)%
+
+ %% ring to bolt hole
+ . d_3 := 180 %(data3)%
+
+ %% ring
+ . d_4 := 220 %(data1)%
+
+ %% bolt hole
+ . d_5 := 18 %(data5)%
+
+ %% ring thickness
+ . e_F := 20 %(data11)%
+
+
+end
+
+spec FlangeComplete = Flange and EN1591

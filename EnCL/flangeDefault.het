@@ -1,0 +1,169 @@
+library EnCL/flangeDefault
+
+from EnCL/EN1591S get FlangeParameter
+
+logic EnCL
+
+spec FlangeDefault = FlangeParameter then
+
+
+
+
+ . d_4_X := d_4 %(data1_X)%
+ . d_S_X := d_S %(data2_X)%
+ . d_3_X := d_3 %(data3_X)%
+ . d_0_X := d_0 %(data4_X)%
+ . d_5_X := d_5 %(data5_X)%
+ . e_S_X := e_S %(data6_X)%
+
+ . e_F_X := e_F %(data11_X)%
+ . e_P_X := e_F_X %(data11.2_X)%
+
+%% from Bild 4 and Constraint eqGl2 (aus den Formelzeichen)
+ . e_Q_X := e_Q %(data11.3_X)%
+
+ . e_Ft_X := e_Ft %(data11.5_X)%
+
+ . d_G1_X := d_G1 %(data16_X)%
+ . d_G2_X := d_G2 %(data17_X)%
+
+
+  %% from revolution (tube thickness)
+ . e_1 := 10 %(data7)%
+ . e_2 := 10 %(data8)%
+
+  %% (tube diameter)
+ . d_S := 115 %(data2)%
+
+ . e_S := e_1 %(data6)%
+
+ . l_S := 0 %(data9)%
+%% not in EN
+ . l_H := 0 %(data10)%
+
+
+%% To move into standard spec
+ . e_P := e_F %(data11.2)%
+
+%% from Bild 4 and Constraint eqGl2 (aus den Formelzeichen)
+ . e_Q := 0 %(data11.3)%
+ . e_Fb := e_F %(data11.4)%
+
+%% from Bild 1 and Formelzeichen (REVIEW)
+ . e_Ft := e_F %(data11.5)%
+
+%% not in EN
+ . d_11 := 162 %(data12)%
+
+%% not in EN
+ . f := 0.001 %(data13)%
+
+ . e_Gt := 2 %(data15)%
+ . e_G := e_Gt %(data15.1)%
+ . d_G1 := 158 %(data16)%
+ . d_G2 := 162 %(data17)%
+ . h := 0 %(data18)%
+
+%% zylinder-schale, phi_S := 0
+ . phi_S := 0 %(data18.2)%
+ . phi_S_X := 0 %(data18.2_X)%
+ %% depends on temperature T_F
+ . E_F := 200000 %(dataE.1)%
+ . E_F_X := 200000 %(dataE.1_X)%
+
+ . E_F0 := E_F %(dataE.2)%
+ . E_F0_X := E_F_X %(dataE.2_X)%
+
+ . P := 1 %(dataP.0)%
+ . F_A := 0 %(dataF.1)%
+ . M_A := 0 %(dataM.1)%
+
+
+%% Schraube
+ . d_B0 := 16 %(data19)%
+ . p_t := 2 %(data19.1)%
+ . U := 3 %(data20)%
+ . l_B := 42 %(data21)%
+ . l_s := 0 %(data22)%
+ . d_Bs := 16 %(data23)%
+ . d_Be := 14.12 %(data24)%
+ . mu := 0.2 %(data25)%
+ . n_B := 8 %(data26)%
+ . n_B_X := 8 %(data26_X)%
+
+
+%% not in EN (Sicherheitsbeiwerte, Sicherheitsfaktoren)
+ . S := 1.05 %(data26.1)%
+
+%% Nenn-Berechnungsspannung
+ . f_Bd := 250 %(data26.4)%
+ . f_B := f_Bd / S %(data26.5)%
+
+
+%% Anziehverfahren: Drehmomentschluessel
+%% = Schraubenschluessel mit (ausschliesslich) Drehmoment-Messung
+ . epsilon_1minus := 0.1 + 0.5 * mu  %(tblC.1.1)%
+ . epsilon_1plus := 0.1 + 0.5 * mu  %(tblC.1.2)%
+
+ . M_tnom := 100 %(data100.1)% %% (REVIEW)
+
+%% Dichtungswerte
+ . Q_maxy := 546.9 %(data27)%
+ . E_0 := 200000 %(data28)%
+
+%% Dichtungswerte (REVIEW)
+ . Q_max := 549 %(data27.1)%
+ . Q_min := 540 %(data27.2)%
+
+%% Aenderungsrate des Elastizitaetsmoduls der Dichtung bei Druckspannung (REVIEW)
+ . K_1 := 1 %(data27.3)%
+
+%% Kriechfaktor der Dichtung, Temperaturabhaengig (REVIEW)
+ . g_C := 1 %(data29)%
+
+
+%% temperature (REVIEW)
+
+ . T_0 := 20 %(dataT.0)%
+
+ . T_B := 20 %(dataT.1)%
+ . T_F := 20 %(dataT.2)%
+ . T_F_X := 20 %(dataT.2b)%
+ . T_G := 20 %(dataT.3)%
+ . T_L := 20 %(dataT.4)%
+ . T_L_X := 20 %(dataT.4b)%
+
+
+%% Schraubenwerkstoffen mit Mindestbruchdehnung A >= 10%
+
+ . C := 1
+
+%% Temperaturausdehnungskoeffizienten (REVIEW)
+ . alpha_B := 1 %(data31.1)%
+ . alpha_F := 1 %(data31.2)%
+ . alpha_F_X := 1 %(data31.2b)%
+ . alpha_G := 1 %(data31.3)%
+ . alpha_L := 1 %(data31.4)%
+ . alpha_L_X := 1 %(data31.4b)%
+
+
+%% Elastizitaetsmoduln (REVIEW)
+ . E_B := 200000 %(data32.1)%
+ . E_G := 1500 %(data32.3)%
+ . E_L := 200000 %(data32.4)%
+ . E_L_X := 200000 %(data32.4b)%
+
+
+%% Montage (REVIEW)
+
+%% Anzahl der Montage- und Nachziehvorgänge innerhalb der Lebensdauer einer Verbindung
+ . N_R := 3 %(data33)%
+
+%% (REVIEW)
+%% Nenn-Berechnungsspannung [MPa] des durch den Indexbuchstaben bezeichneten Teils bei
+%% Berechnungstemperatur [°C] oder [K], wie in den Druckbehaeltercodes definiert und verwendet
+
+ . f_F := 100 %(data34.2)%
+ . f_S := f_F %(data34.5)%
+
+end
