@@ -28,6 +28,11 @@ spec Test102 =
      . z8 := 8 %(coeff4)%
      . z9 := 9 %(coeff4)%
      . z10 := 10 %(coeff4)%
+
+     . sequence
+        . z3 := z0 + z3
+        . z11 := maxloc(z7(v+z4), v, 0, 1)
+       end
 end
 
 spec Test101 =
@@ -82,6 +87,17 @@ spec Test3 =
      . repeat
        . x := x + y/z
      until abs(y) < 1.0e-4 %(D)%
+end
+
+%% newton method with convergence
+spec Test303 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+     . repeat
+       . x := x + y/z
+       . c := x
+     until convergence(c, 1.0e-4) %(D)%
 end
 
 %% newton method assertions

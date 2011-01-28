@@ -324,6 +324,7 @@ h_R_X: eq48
 %% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
 %% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
 %% wobei der hoehere Wert von F_G0 benutzt wird, bis gilt
+
  . repeat
     . repeat
 
@@ -490,7 +491,7 @@ h_R_X: eq48
            . k_M := 1
            . Psi_Z := Psi_opt
       case Psi_opt < Psi_0:
-           . k_M := maximize(W_F(x, Psi(-1, x, 1)), x)
+           . k_M := maxloc(W_F(x, Psi(-1, x, 1)), x, -1, 1)
            . Psi_Z := Psi(-1, k_M, 1)
       end
    case j_M = -1:
@@ -499,11 +500,10 @@ h_R_X: eq48
       case Psi_min < Psi_opt and Psi_opt <= Psi_0:
            . k_M := -1  . Psi_Z := Psi_opt
       case Psi_0 < Psi_opt:
-           . k_M := maximize(W_F(x, Psi(1, x, 1)), x)
+           . k_M := maxloc(W_F(x, Psi(1, x, 1)), x, -1, 1)
            . Psi_Z := Psi(1, k_M, 1)
       end
    end
-
 
 end
 
