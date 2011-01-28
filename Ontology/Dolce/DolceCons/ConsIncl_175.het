@@ -1,6 +1,6 @@
 spec source_175 =
-sorts ASO, ED, NPED, NPOB, PED, POB, SOB
-esorts APO, AR, AS, F, M, MOB, NAPO, NASO, PD, S, SAG, SC, T
+sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
+esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -871,8 +871,6 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 end
-
-
 spec target_175 = source_175
 then %cons
 esorts AQ
@@ -896,7 +894,7 @@ forall x : AQ; t1, t2 : T
 forall x : AQ; y : NPED
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T)	
+      /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T)
                                                         %(Ax1_18)%
 
 forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
