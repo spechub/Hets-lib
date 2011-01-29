@@ -21,6 +21,11 @@ pred tSum : APO * APO * APO
 pred tSum : SAG * SAG * SAG
 
 
+%%
+. exists x : APO . (x=x) %force APO non-empty%
+. exists t: T; x : APO . PRE(x,t) %force an APO to be present%
+%%
+
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
 forall x : T; y : T
@@ -218,8 +223,9 @@ then %cons
 {
 OnePointTempParthoodModel with s |-> MOB
 and
-free type MOB ::= pr(APO)
-%%free type MOB ::= TheMentalObject
+%%free type MOB ::= pr(APO)
+free type MOB ::= TheMentalObject
+pred apo : APO
 pred PRE : MOB * T
 pred SD : MOB * APO
 pred tDif : MOB * MOB * MOB
@@ -238,16 +244,16 @@ forall x : MOB; y : APO
 forall t : T; x : MOB; y : APO. PRE(x,t) <=> PRE(y,t)
 %%forall x:MOB; y:APO . SD(x, y) <=> true
 %%forall x : MOB;  t : T
-%%. PRE(x,t) <=> true
+. PRE(TheMentalObject,t : T) <=> true
 }
 end
 
 view v : target_79 to sp
 end
 
-%% don't see how this could work...
-%% APO = agentive physical object (we don't know whether or not this is empty)
-%% MOB = mental object
+%% have to leave PRE on APO alone
+%% APO = agentive physical object - instantiated sort
+%% MOB = mental object - isomorphic to MOB
 %% goes through ??
 %% link is cons
 %% (Ax1_2_40) and %(Ax1_2_3)% and %(Ax2_43)% involve SD
