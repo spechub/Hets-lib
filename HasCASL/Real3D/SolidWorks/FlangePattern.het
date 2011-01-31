@@ -4,10 +4,13 @@ version 0.1
 logic HasCASL
 
 from HasCASL/Real3D/SolidWorks/SW get SWDefault
+
+%[
 %% We do not exploit the constraints now so we keep simple in the imported libraries
 %% from HasCASL/Real3D/SolidWorks/SWExt get SWExt
 
-%[ this spec is needed for the real arith constraint in the pattern
+%% this spec is needed for the real arith constraint in the pattern
+
 spec Prelim = SWExt
 then
      pred OnPlane(plane:SWPlane; pt:Point) <=> NormalVector(plane) * vec(SpacePoint(plane),pt) = 0;
