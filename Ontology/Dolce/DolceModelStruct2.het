@@ -44,40 +44,40 @@ spec TempParthoodNAPO = {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
 							s2 |-> NAPO} and TempParthoodF
 
-spec TempParthoodASO  = {Temporary_Parthood_No with s |-> ASO
-				and 
+spec TempParthoodASO  = {Temporary_Parthood_No with s |-> ASO}
+				and TempParthoodSC and TempParthoodSAG then
 				{
 				 free type ASO ::= sort SC | sort SAG
 				}
-                               } 
-                         and TempParthoodSC and TempParthoodSAG
+                               
+                       
 
 spec TempParthoodMOB  = {Temporary_Parthood with s |-> MOB and
                                OneSide_Specific_Dependence with s1 |-> MOB, 
 				s2 |-> APO} 
 			 and TempParthoodAPO
 
-spec TempParthoodSOB  = {Temporary_Parthood_No with s |-> SOB 
-				and
+spec TempParthoodSOB  = {Temporary_Parthood_No with s |-> SOB} 
+				and TempParthoodNASO and TempParthoodASO then 
 				{
 				 free type SOB ::= sort ASO | sort NASO}
-			       } and TempParthoodNASO and TempParthoodASO
+			      
 
 
-spec TempParthoodPOB = {Temporary_Parthood_No with s |-> POB
-				and
+spec TempParthoodPOB = {Temporary_Parthood_No with s |-> POB} and TempParthoodMOB and TempParthoodNAPO
+				then
 				{
 				 free type POB ::= sort APO | sort NAPO
 				}
-			       } and TempParthoodMOB and TempParthoodNAPO
+			       
 
-spec TempParthoodNPOB  = {Temporary_Parthood_No with s |-> NPOB
-				and
+spec TempParthoodNPOB  = {Temporary_Parthood_No with s |-> NPOB} and TempParthoodSOB and TempParthoodMOB
+
+				then
 				{
 				 free type NPOB ::= sort SOB | sort MOB
 				}
-			       } and TempParthoodSOB and TempParthoodMOB
-
+			       
 spec TempParthoodM  = {Temporary_Parthood with s |-> M} and
                                TempParthoodPOB
 
@@ -88,21 +88,21 @@ spec TempParthoodNPED  = {Temporary_Parthood_No with s |-> NPED
 				}
 			       } and TempParthoodNPOB
 
-spec TempParthoodPED  = {Temporary_Parthood_No with s |-> PED
-				and
+spec TempParthoodPED  = {Temporary_Parthood_No with s |-> PED} and TempParthoodM
+				then
 				{
 				 free type PED ::= sort POB | sort M | sort F
 				}
-			       } and TempParthoodM
+			       
 
 
-spec  TempParthoodED  = {Temporary_Parthood with s |-> ED
-				and
+spec  TempParthoodED  = {Temporary_Parthood with s |-> ED} and TempParthoodPED and TempParthoodNPED
+				then
 				{
 				 esort AS;
 				 free type ED ::= sort PED | sort NPED | sort AS
 				}
-			       } and TempParthoodPED and TempParthoodNPED
+			       
 
 spec ClassExtParthoodPD = {{Classical_Extensional_Parthood and sort s} with s |-> PD}
                           and TempParthoodED
@@ -117,12 +117,12 @@ spec Parthood_Model =  Mereology_and_TemporalPartPD
 
 spec ParthoodM = Parthood_Model
 
-spec          TempParthoodED = ParthoodM
+spec          TempParthoodED2 = ParthoodM
 
-spec          TempParthoodNPED = ParthoodM
+spec          TempParthoodNPED2 = ParthoodM
 
 spec DependenceAQNPED = {Mutual_Specific_Dependence with s1 |-> AQ, s2 |-> NPED} 
-                        and TempParthoodED and TempParthoodNPED
+                        and TempParthoodED2 and TempParthoodNPED2
 
 spec ConstitutionPD = {Constitution_Spec with s |-> PD} and ParthoodM
           
@@ -139,53 +139,50 @@ spec ConstitutionNPED = {Constantly_Generically_Constituted with
                         and ParthoodM and DependenceAQNPED
 
 
-spec ConstitutionED = {Constitution_Spec with s |-> ED} and TempParthoodED
+spec ConstitutionED = {Constitution_Spec with s |-> ED} and TempParthoodED2
 
-spec ConstitutionModel = ConstitutionPD and ConstitutionPED and
+spec Constitution_Model = ConstitutionPD and ConstitutionPED and
                                ConstitutionNPED and ConstitutionED
 
 %%arch spec PreDolce_Model = 
   
 %% why don't you just use Constitution and introduce all these units?
 
-spec Constitution = Constitution_Model
+spec Constitution2 = Constitution_Model
       
-spec TM = Constitution
+spec TM2 = Constitution2
 
-spec TempParthoodEDSAR = Constitution
+spec TempParthoodEDSAR = Constitution2
 
-spec TempParthoodED =  TempParthoodEDSAR
+spec TempParthoodPED2 = Constitution2
 
-spec TempParthoodPED = Constitution
+spec Particip2 = Constitution2
 
-spec Particip = Constitution
+spec DependenceAQNPED2 = Constitution2
 
-spec DependenceAQNPED = Constitution
+spec MereologyAR = Constitution2         
 
-spec MereologyAR = Constitution          
-
-spec ImmediateQuale  = {Immediate_Quale then sorts TL < TQ; T < TR} and TM
+spec ImmediateQuale  = {Immediate_Quale then sorts TL < TQ; T < TR} and TM2
 
 spec BinTempDisS = {Binary_Temporal_Dissective with s1 |-> S, 
 				s2 |-> SL} and TempParthoodEDSAR
 
 spec DependencePQPED = {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED then sort SL < PQ} and TempParthoodPED and BinTempDisS
+				s2 |-> PED then sort SL < PQ} and TempParthoodPED2 and BinTempDisS
          
 spec DependenceTQPD  = {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} and
-                               Particip and ImmediateQuale
+                               Particip2 and ImmediateQuale
 
-spec BeingPresentEDorDP = {Being_Present with s |-> EDorPDorQ
-				and
+spec BeingPresentEDorDP = {Being_Present with s |-> EDorPDorQ} and DependenceTQPD and DependencePQPED and
+			       DependenceAQNPED2
+				then
 				{
 				 free type Q ::= sort TQ | sort PQ | sort AQ;
 				 free type EDorPDorQ ::= sort Q | sort PD | sort
 				 ED
 				}
-			       } and DependenceTQPD and DependencePQPED and
-			       DependenceAQNPED
-
+			       
 %% Temporary_Quale and binary temporal dissective
 spec TempQualePR  = {Temporary_Quale_Spec with s1 |-> PR, s2 |-> PQ then sort S < PR} 
                     and BeingPresentEDorDP and BinTempDisS
@@ -203,17 +200,22 @@ spec BinTempDisPR  = {Binary_Temporal_Dissective with s1 |-> PR, s2 |-> PQ }
 
 spec  ClassExtParthoodS  = {Classical_Extensional_Parthood with s |-> S} and BinTempDisS
 
+spec BinTempDisAR = {Binary_Temporal_Dissective with s1 |-> AR, 
+				s2 |-> AQ} and DependenceAQNPED and
+                                                 MereologyAR
+
 spec DirectQualityS = Direct_Quality and BeingPresentEDorDP and BinTempDisS and 
-                      Constitution and TempQuale and BinTempDisPR and 
+                      Constitution2 and TempQuale and BinTempDisPR and 
                       BinTempDisAR and ClassExtParthoodS
 
-spec PreDolce_Model = Constitution and DirectQualityS and TempQuale 
+spec PreDolce_Model = Constitution2 and DirectQualityS and TempQuale 
             and BinTempDisPR and BinTempDisAR and ClassExtParthoodS
 
 %% arch spec Dolce_Model
 %% why do you need as result Tax and PreDolce when Tax imports PreDolce?
 
-spec Dolce_Model = Taxonomy and {pred K : ED * ED * T} and PreDolce_Model
+spec Dolce_Model = Taxonomy  and PreDolce_Model
+                   then {pred K : ED * ED * T}
 
 refinement Dolce_Ref = Dolce refined to Dolce_Model
  
