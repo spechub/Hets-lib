@@ -4,12 +4,11 @@ version 0.1
 %author: E. Schulz
 %date: 17-09-2008
 
-logic HasCASL
-
+%logic HasCASL
 
 spec Commutative =
      sort Elem
-     op  __ * __: Elem * Elem -> Elem, comm
+     op  __ * __, f: Elem * Elem -> Elem, comm
 
      %% workaround for Ticket #692
      forall x : Elem; y : Elem . x * y = y * x %(ga_comm___*__)%
@@ -88,6 +87,8 @@ then
      . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
      . not (1 = 0)                              %(zeroNeqOne)%
 end
+
+logic HasCASL
 
 spec RingWithNonZeros = IntegralDomain
 then 
