@@ -12,8 +12,11 @@ spec Test71 =
 end
 
 spec Test0 =
-     . y := cos(x) %(A)%
-     . z := sin(x) %(B)%
+     . sequence
+       . y := cos(x) %(A)%
+       . z := sin(cos(tan(x))) %(B)%
+       . b := sin(cos(tan(4*x + sqrt(x)))) %(B)%
+     end
 end
 
 spec Test102 =
@@ -33,6 +36,16 @@ spec Test102 =
         . z3 := z0 + z3
         . z11 := maxloc(z7(v+z4), v, 0, 1)
        end
+end
+
+spec Test103 =
+     . z7(x) := 7* z9 * x^2 %(coeff4)%
+     . z9 := 9 %(coeff5)%
+
+     . repeat
+        . z11 := maxloc(z7(v+z9), v, 0, 1)
+	. z9 := z9 - 2
+       until z9 < 0
 end
 
 spec Test101 =

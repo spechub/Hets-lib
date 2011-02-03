@@ -9,38 +9,6 @@ spec FlangeParameter =
 end
 
 spec EN1591 =
-%[
-    copies of definitions for second flange (with underscore X):
-    affected constants: [ "alpha_F", "alpha_L", "E_F", "E_F0", "E_L", "h_G0", "h_H", "h_Q", "Z_F", "Z_L" ]
-
-    on this constants dependent constants:
-
-eq1:p_B
-eq2:d_5e
-eq4:d_3e
-eq5.1:b_F
-eq5.2:d_F
-eq11.1:e_E
-eq11.2:d_E
-eq14.2:h_H
-eq17:gamma
-eq18:theta
-eq19:lambda1
-eq20:c_F
-eq21:h_S
-eq22:h_T
-eq23:h_Q
-eq25:k_Q
-eq27.1:Z_F
-eq27.2:Z_L
-eq35.1:b_Gt
-eq38:b_Ge
-eq40:h_G0
-
-tbl1.1:b_Gi
-tbl1.4:d_Ge
-
-]%
 
  . p_B_X := Pi * d_3_X/n_B_X %(eq1_X)%
 
@@ -70,7 +38,6 @@ tbl1.4:d_Ge
 
  . theta_X := 0.55 * cos(phi_S_X) * sqrt(d_E_X * e_E_X)/e_F_X %(eq18_X)%
 
- %% SIMP: only one assignment
  . lambda1_X := e_Q_X/e_F_X %(eq19_X)%
 
  . c_F_X := (1 + gamma_X * theta_X) / (1 + gamma_X * theta_X
@@ -88,7 +55,6 @@ tbl1.4:d_Ge
 
      %% fuer Kegel- und Zylinderschale
  . k_Q_X := 0.85/cos(phi_S_X) %(eq25_X)%
-%% SYNTAX: unaeres minus
  . k_R_X := -(0.15/cos(phi_S_X)) %(eq26_X)%
 
  . Z_F_X := 3 * d_F_X * c_F_X/(Pi * b_F_X * e_F_X^3) %(eq27.1_X)%
@@ -102,34 +68,10 @@ tbl1.4:d_Ge
  . h_G0_X := (d_3e_X - d_Ge_X)/2 %(eq40_X)%
 
 
- . b_Gi_X := b_Gt_X %(tbl1.1_X)%
+%% . b_Gi_X := b_Gt_X %(tbl1.1_X)%
+%% use the recursion variable
+ . b_Gi_X := b_Gi %(tbl1.1_X)%
  . d_Ge_X := d_G2_X - b_Ge_X %(tbl1.4_X)%
-
-
-
-   %% ****************** UNDEFINED CONSTS ******************
-%[ 
-
-E_L_X: eq46, eq47, eq48
-T_F_X: eq45.1
-T_L_X: eq45.1
-alpha_F_X: eq45.1
-alpha_L_X: eq45.1
-e_Ft_X: eq45.1
-e_L_X: eq45.1
-h_G_X: eq46, eq47, eq48
-h_L_X: eq46, eq47, eq48
-h_P_X: eq47
-h_R_X: eq48
-
-
-]%
-
-
-
-
-
-   %% ****************** ORIGINAL SPEC ******************
 
 
      %% distance between screws
@@ -164,8 +106,6 @@ h_R_X: eq48
  . beta := e_2/e_1 %(eq9.1)%
 
 
-%%     eq9.2: e_E := e_1 * (1 + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H))
-%%     eq10: d_E := (min(d_1-e_1+e_E, d_2+e_2-e_E) + max(d_1+e_1-e_E, d_2-e_2+e_E))/2
 
 %% we have: 4.1.2.2 Flansch ohne Ansatz
  . e_E := e_S %(eq11.1)%
@@ -190,8 +130,6 @@ h_R_X: eq48
 
  . theta := 0.55 * cos(phi_S) * sqrt(d_E * e_E)/e_F %(eq18)%
 
- %% SIMP: only one assignment
- %% . lambda1 := 1 - e_P/e_F := e_Q/e_F %(eq19)%
  . lambda1 := e_Q/e_F %(eq19)%
 
  . c_F := (1 + gamma * theta) / (1 + gamma * theta * (4 * (1 - 3 * lambda1 + 3 * lambda1^2) + 6 * (1 - 2 * lambda1) * theta + 6 * theta^2) + 3 * gamma^2 * theta^4)%(eq20)%
@@ -206,7 +144,6 @@ h_R_X: eq48
 
      %% fuer Kegel- und Zylinderschale
  . k_Q := 0.85/cos(phi_S) %(eq25)%
-%% SYNTAX: unaeres minus
  . k_R := -(0.15/cos(phi_S)) %(eq26)%
 
  . Z_F := 3 * d_F * c_F/(Pi * b_F * e_F^3) %(eq27.1)%
@@ -214,7 +151,6 @@ h_R_X: eq48
 
      %% * 4.2 Schrauben-Parameter
 
- %% (REVIEW) taken from Terminology
  . l_e := l_B - l_s %(eq.34.prelim)%
 
  . A_B := min(d_Be,d_Bs)^2 * n_B * Pi/4 %(eq33)%
@@ -268,8 +204,6 @@ h_R_X: eq48
   . F_Q := (Pi/4) * d_Ge^2 * P %(eq43)%
 
 
-%% CONTROL: Minmax
-%% SIMP: ignore forces
    . F_R := 0 %(eq44)%
 %% In Gleichung (44) ist das Vorzeichen fuer die unguenstigere Bedingung zu waehlen.
 %% . F_RI := F_AI + (4/d_3e) * M_AI %(eq44.1)%
@@ -280,7 +214,6 @@ h_R_X: eq48
 %% Moment aufgebracht wird.
 
 
-%% from constraint (REVIEW)
  . e_B := e_Ft + e_Ft_X + e_L + e_L_X + e_G %(eq45.prelim)%
 
 
@@ -317,9 +250,6 @@ h_R_X: eq48
  . F_G0req := max(F_Gmin, F_GDelta) %(eq52)%
  . F_B0req := F_G0req + F_R %(eq53)%
 
- %% DOUBLE
- %% . F_G := F_G0req
-
 
 %% Falls F_G0req nach Gleichung (52) groesser als der bisher angenommene Wert
 %% fuer F_G0 ist, wird die Berechnung ab Gleichung (38) wiederholt,
@@ -331,11 +261,10 @@ h_R_X: eq48
        . b_Gi := sqrt(e_G/(Pi * d_Ge * E_Gm)/(h_G0 * Z_F/E_F0 + h_G0_X * Z_F_X/E_F0_X)
                     + (F_G / (Pi * d_Ge * Q_maxy))^2) %(test)%
 
-     until convergence(0.001, b_Ge)
+     until convergence(0.05, b_Ge)
 
-   until convergence(0.001, F_G) and F_G0req <= F_G %(eq54)%
+   until convergence(0.05, F_G) and F_G0req <= F_G %(eq54)%
 
-  %% CONTROL: Iteration
 
 %% Der tatsaechliche Wert F_G0req kann durch Iteration gefunden werden derart, dass
 %% F_G0 ungefaehr gleich F_G0req (55)
@@ -349,8 +278,6 @@ h_R_X: eq48
      %% ob der systematische Fehler K_s durch die Ungenauigkeit des Schrauben-Anziehens
      %% bekannt ist oder nicht.
 
-     %% CONTROL: Cases
-     %% SIMP: we use 57,58
 %% . epsilon_plus := K_s + (epsilon_1plus - K_s)/sqrt(n_B) %(eq56a)%
 %% . epsilon_minus := K_s + (epsilon_1minus - K_s)/sqrt(n_B) %(eq56b)%
 
@@ -367,36 +294,19 @@ h_R_X: eq48
 
  . F_B0nom := n_B * M_tnom / k_B  %(eqD.2)%
 
- %% SIMP: we use this approximation:
  . k_B := 0.16 * p_t + 1.17 * mu * d_B0  %(eqD.5)%
 
- %% CHECK: We remove F_B0av by using the equality: F_B0av = F_B0nom
- %% see also eq61 and eq65!
-
- %% CHECK: I suppose we need to calculate Phi for F_B0 := F_B0min and F_B0 := F_B0max
- %% . F_B0min <= F_B[I=0] and F_B[I=0] <= F_B0max %(eq59)%
- %% We set the force to the arithmetic mean
-
- %% DOUBLE
- %%. F_B := (F_B0max + F_B0min)/2 %(eq59)%
 
  . F_B0min := F_B0nom * (1 - epsilon_minus) %(eq60)%
  . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq61)%
 
  %% a) Nenn-Schraubenkraft im Montagezustand, zur Festlegung der Schrauben-Anziehparameter
 
-  %% mit Messung: F_B0nom so waehlen, dass eq63 erfuellt ist
-  %% CASFEATURE: minimalWith
- %% . M_tnom := minimalWith(x, F_B0nom'(x) >= F_B0req/(1 - epsilon_minus)) %(eq63.Bis)%
-
-
      %% ohne Messung, F_B0nom auf F_B0av setzen, und epsilon_minus auf 0.5, dann kommt eq63 zum Tragen
 %% . F_B0nom := F_B0av >= F_B0req/(1 - epsilon_minus)  %(eq64)%
 
      %% b) Maximale Schraubenkraft im Montagezustand, zur Berechnung der Belastungsgrenze (Abschnitt 5):
 
- %% CHECK: subsumed by eq61
- %% . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq65)%
 
  . F_G0max := F_B0max - F_R %(eq66)%
      %% Die effektive Dichtungsbreite bGe muss in diesem Stadium der Berechnung nicht neu berechnet werden.
@@ -430,8 +340,6 @@ h_R_X: eq48
 
  . M_tBnom := (0.16 * p_t + 0.52 * mu * d_B0) * F_B0nom / n_B   %(eqD.9)%
 
-     %% CONTROL: Cases (Zustand, Schrauben, Anziehverfahren)
-     %% SIMP: 
    %% Bei hydraulischen Drehmomentschrauben
    %% . M_t.B := 0 %(eq71_unnamed.1)%
 
@@ -452,7 +360,6 @@ h_R_X: eq48
      (Pi/4) * (f_F * 2 * b_F * e_F^2 * (1 + 2 * Psi_opt * Psi_Z' - Psi_Z'^2)
                + f_E * d_E * e_D^2 * c_M * j_M * k_M') %(eq74)%
 
- %% from Bild 4 (REVIEW)
  . d_1 := d_0 + e_2 - e_1/2 %(eq75.prelim)%
 
  . e_D := e_1 * (1 + (beta - 1) * l_H/fthrt((beta/3)^4 * (d_1*e_1)^2 + l_H^4)) %(eq75)%
@@ -463,7 +370,6 @@ h_R_X: eq48
      %% EXCEPTION: Wird der Wert unter der Wurzel negativ, ist der Hals Ueberlastet.
  . c_M := sqrt(1.33 * (1 - 0.75*(0.5*delta_Q + delta_R)^2) * (1 - (0.75*delta_Q^2 + delta_R^2))) %(eq78)%
 
-     %% CONTROL: Interval
  vars j_S in {-1, 1}; k_M' in [-1, 1]; k_S in [0, 1]
 
  . c_S(j_S) := Pi/4*(sqrt(1 - 0.75*(0.5*delta_Q + delta_R)^2) + j_S * (0.5*delta_R - 0.75*delta_Q)) %(eq79)%
@@ -475,12 +381,10 @@ h_R_X: eq48
 
  . Psi_opt := j_M * (2*e_P/e_F-1) %(eq83.1)%
 
-     %% CONTROL: Setval=function application
  . Psi_0 := Psi(0, 0, 0) %(eq84.1)%
  . Psi_max := Psi(1, 1, 1) %(eq84.2)%
  . Psi_min := Psi(-1, -1, 1) %(eq84.3)%
 
-  %% CASFEATURE: maximize
 
  . case j_M = 1:
     . case Psi_max <= Psi_opt:
@@ -506,9 +410,6 @@ h_R_X: eq48
 
 end
 
-
-%%spec EN1591Correctness = operator Phi_F
-
-spec EN1591Correctness =
-  . Phi_F <= Phi_max and True
+spec EN1591Correctness = EN1591 then
+  . Phi_F <= Phi_max
 end
