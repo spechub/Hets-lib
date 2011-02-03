@@ -115,3 +115,16 @@ free type s ::= ThePoint
   %%  Binary Difference
   Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
 end
+
+%%%%%%%%%%%%%%%%  1 point temp parthood model without universal PRE %%%%%
+
+spec OnePointTempParthoodNoPREModel =
+  sort T
+  free type s ::= ThePoint
+%%  pred PRE (x:s;t:T) <=> true
+  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+  pred tSum  (x,y,z:s) <=> true
+end
