@@ -216,49 +216,19 @@ from  Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodNoPREModel
 spec sp =
   source_79
 then %cons
-%%OnePointTempParthoodNoPREModel with s |-> MOB
-%%sorts MOB
-free type MOB ::= TheMentalObject
-op apo : APO
-pred PRE : MOB * T
-pred SD : MOB * APO
-%%pred tDif : MOB * MOB * MOB
-pred tOv : MOB * MOB * T
-pred tP : MOB * MOB * T
-%%pred tPP : MOB * MOB * T
-%%pred tSum : MOB * MOB * MOB
-  forall t : T; x : MOB; y :APO . PRE(x,t) <=> PRE(y,t)
-								%MOBs are present at t iff APOs are%	
-  pred tDif (x,y,z:MOB) <=> false
-%%  pred tOv (x,y:MOB;t:T) <=> exists y:APO . PRE(y,t) 
-forall x,y : MOB; t : T
-. tOv(x, y, t) <=> exists z : APO . PRE(z,t)                                         
-forall x,y : MOB; t : T 
-. tP (x, y, t) <=> exists z : APO . PRE(z,t)
-  pred tPP (x,y:MOB;t:T) <=> false
-  pred tSum  (x,y,z:MOB) <=> true
-forall x : MOB; y : APO
- . SD(x, y)
-   <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y : APO, t : T)
-                                                      	%(Ax1_2_40)%					      	
+  OnePointTempParthoodModel with s |-> MOB
+then
+  free type MOB ::= TheMentalObject
+  pred PRE : MOB * T
+  pred SD : MOB * APO
+  pred tDif : MOB * MOB * MOB
+  pred tOv : MOB * MOB * T
+  pred tP : MOB * MOB * T
+  pred tPP : MOB * MOB * T
+  pred tSum : MOB * MOB * MOB
+  forall x:MOB; y:APO . SD(x, y) <=> forall t:T . PRE(y,t)
+  forall x : MOB; t : T . PRE(x,t) <=> true
 end
 
 view v : target_79 to sp
 end
-
-%% have to leave PRE on APO alone
-%% APO = agentive physical object - instantiated sort
-%% MOB = mental object 
-%% goes through ??
-%% link is cons
-%% (Ax1_2_40) and %(Ax1_2_3)% and %(Ax2_43)% involve SD
-%% forall x : MOB . exists y : APO . SD(x, y) %(Ax2_43)%
-%% forall x : MOB; t1, t2 : T
-%% . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)        %(Ax1_2_3)%svn 
-%% forall x : MOB; y : APO
-%% . SD(x, y)
-%%   <=> (exists t : T . PRE(x, t))
-%%      /\ forall t : T . PRE(x, t) => PRE(y : APO, t : T)
-%%                                                      %(Ax1_2_40)%
-
