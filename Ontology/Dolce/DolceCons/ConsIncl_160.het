@@ -1,6 +1,6 @@
 spec source_160 =
 sorts ASO, ED, NPED, NPOB, PED, POB, SOB
-esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T
+sorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : T
@@ -721,6 +721,8 @@ forall x : ED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
 end
 
 
+
+
 spec target_160 = source_160
 then %cons
 sorts PD
@@ -768,18 +770,19 @@ forall x, y, z : PD . P(x, y) /\ P(y, z) => P(x, z)
 end
 
 %% this just needs a CEP model
+%% source: esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
 
-
-from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodNoModel
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointCEPModel
 
 spec sp =
   source_160
 then %cons
-	OnePointTempParthoodNoModel [sorts PD]
+	OnePointCEPModel with s |-> PD
 end
 
 view v : target_160 to sp
 end
 
-%% goes through?? Proof obligations discharged, but link not confirmed definitional
+%% goes through
+%% link is cons
 

@@ -1,6 +1,6 @@
 spec source_150 =
 sorts ASO, NPED, NPOB, PED, POB, SOB
-esorts APO, F, M, MOB, NAPO, NASO, SAG, SC, T
+sorts APO, F, M, MOB, NAPO, NASO, SAG, SC, T
 sorts SAG, SC < ASO; NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED;
       APO, NAPO < POB; ASO, NASO < SOB
 pred At : T
@@ -657,10 +657,18 @@ forall x, y, z : PED; t : T
 forall x : PED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                      %(Ax1_2_104)%
 end
+
+
+
+
+
+
+
+
 spec target_150 = source_150
 then %cons
 sorts ED
-esorts AS
+sorts AS
 sorts APO, AS, ASO, F, M, MOB, NAPO, NASO, NPED, NPOB, PED, POB,
       SAG, SC, SOB < ED
 pred PRE : ED * T
@@ -728,14 +736,16 @@ forall x : ED; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_180)%
 end
 
+%% source esorts APO, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
+%% target esorts AS -> sort
+
 from Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodTernaryFullSum
 
-spec TempParthoodPED_Cons_Model=
-  %% TempParthoodM_Cons
+spec sp =
   source_150
 then %cons
-   TempParthoodTernaryFullSum [sorts ED,PED,NPED,AS fit left |-> PED, right |-> NPED, as |-> AS, sum |-> ED]
+   TempParthoodTernaryFullSum [sorts ED,PED,NPED,AS fit left |-> PED, right |-> NPED, trash |-> AS, sum |-> ED]
 end
 
-view v : target_150 to TempParthoodPED_Cons_Model
+view v : target_150 to sp
 end

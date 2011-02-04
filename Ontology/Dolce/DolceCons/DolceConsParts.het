@@ -78,13 +78,13 @@ end
 
 %% here as needs to ge generated in some useful way
 %% probably we need to employ some powerset construction here...
-spec TempParthoodTernaryFullSum [sorts left,right,xas,sum] =
+spec TempParthoodTernaryFullSum [sorts left,right,trash,sum] =
   sort T
-  free type sum ::= sort left | sort right | sort xas
+  free type sum ::= sort left | sort right | sort trash
   pred PRE: sum*T
-  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in xas /\ y in xas /\ tOv(x,y,t) )
-  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in xas /\ y in xas /\ tP(x,y,t) )  
-  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in xas /\ y in xas /\ tPP(x,y,t) )	
+  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in trash /\ y in trash /\ tOv(x,y,t) )
+  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in trash /\ y in trash /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in trash /\ y in trash /\ tPP(x,y,t) )	
   pred tDif (x,y,z:sum) <=> false
   pred tSum  (x,y,z:sum) <=> true
 end
@@ -96,24 +96,18 @@ spec OnePointCEPModel =
 free type s ::= ThePoint
  pred P:s*s
  . P(ThePoint,ThePoint)
-  preds
-  %% Proper Part
-  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
-
-  %% Overlap
-  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
-
-  %% Atom
-  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
-
-  %%  Atomic Part
-  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
-
-  %%  Binary Sum
-  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
-
-  %%  Binary Difference
-  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+  %% Proper Part  
+pred  PP(x:s; y:s) <=> false
+%% Overlap
+pred  Ov(x:s; y:s) <=> true
+%% Atom
+pred  At(x:s) <=> true
+%%  Atomic Part
+pred AtP(x:s; y:s) <=> true
+%%  Binary Sum
+pred  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+%%  Binary Difference
+pred  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
 end
 
 %%%%%%%%%%%%%%%%  1 point temp parthood model without universal PRE %%%%%

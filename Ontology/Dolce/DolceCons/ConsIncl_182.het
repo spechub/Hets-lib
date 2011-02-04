@@ -871,6 +871,10 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 end
+
+
+
+
 spec target_182 = source_182
 then %cons
 pred K : PD * PD * T
@@ -888,3 +892,21 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
                                                     %(Ax1_17_237)%
+
+%% source:esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T -> sorts
+%% target:
+
+from Ontology/Dolce/DolceCons/DolceConsParts get Konstitution
+
+spec sp =
+  source_182
+then %cons
+   TempParthoodTernaryFullSum [sorts ED,PED,NPED,AS fit left |-> PED, right |-> NPED, trash |-> AS, sum |-> ED]
+end
+
+view v : target_182 to sp
+end
+
+
+%%
+%%
