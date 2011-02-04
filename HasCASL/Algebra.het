@@ -4,11 +4,9 @@ version 0.1
 %author: E. Schulz
 %date: 17-09-2008
 
-%logic HasCASL
-
 spec Commutative =
      sort Elem
-     op  __ * __, f: Elem * Elem -> Elem, comm
+     op  __ * __: Elem * Elem -> Elem, comm
 
      %% workaround for Ticket #692
      forall x : Elem; y : Elem . x * y = y * x %(ga_comm___*__)%
@@ -45,7 +43,7 @@ then %implies
      . x * inv(x) = e   %(rinv_Group)%
 end
 
-spec InverseSig = 
+spec InverseSig =
      sort Elem
      ops  __ * __: Elem * Elem -> Elem;
 	  inv: Elem->Elem
@@ -83,7 +81,7 @@ spec CommutativeRing = Ring and Commutative
 spec IntegralDomain =
      CommutativeRing
 then
-     forall x,y: Elem 
+     forall x,y: Elem
      . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
      . not (1 = 0)                              %(zeroNeqOne)%
 end
@@ -91,7 +89,7 @@ end
 logic HasCASL
 
 spec RingWithNonZeros = IntegralDomain
-then 
+then
      type NonZero = {x:Elem. not (x=0)} %(NonZero type)%
 
      ops 1:NonZero;
