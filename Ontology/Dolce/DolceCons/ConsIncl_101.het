@@ -1,5 +1,5 @@
 spec source_101 =
-esorts APO, F, MOB, NAPO, SAG, T
+sort APO, F, MOB, NAPO, SAG, T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -299,6 +299,8 @@ forall x, y, z : MOB; t : T . PRE(x, t) => tP(x, x, t)
 forall x, y, z : MOB; t : T
 . tP(x, y, t) /\ tP(y, z, t) => tP(x, z, t)           %(Ax2_4_46)%
 end
+
+
 spec target_101 = source_101
 then %cons
 sorts POB
@@ -340,16 +342,19 @@ forall x : POB; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)       %(Ax1_2_82)%
 end
 
+%% use binary sum of temp parthoods
+%% source esort APO, F, MOB, NAPO, SAG, T -> sorts APO, F, MOB, NAPO, SAG, T
+%% target 
+
 from  Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodBinarySum
 
-spec TempParthoodPED_Cons_Model=
-  %% TempParthoodM_Cons
+spec sp =
   source_101
 then %cons
    TempParthoodBinarySum [sorts POB,APO,NAPO fit left |-> APO, right |-> NAPO, sum |-> POB]
 end
 
-view v : target_101 to TempParthoodPED_Cons_Model
+view v : target_101 to sp
 end
 
 %% goes through

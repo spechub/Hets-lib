@@ -1,6 +1,6 @@
 spec source_129 =
 sorts ASO, NPOB, SOB
-esorts APO, MOB, NASO, SAG, SC, T
+sorts APO, MOB, NASO, SAG, SC, T
 sorts SAG, SC < ASO; MOB, SOB < NPOB; ASO, NASO < SOB
 pred At : T
 pred AtP : T * T
@@ -440,14 +440,22 @@ forall x : NPED; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_112)%
 end
 
+
+%% source esorts APO, MOB, NASO, SAG, SC, T -> sorts APO, MOB, NASO, SAG, SC, T
+%% target 
+
 from Ontology/Dolce/DolceCons/DolceConsParts get ZeroPointTempParthoodExtNoModel
 
 spec sp=
   source_129
 then %cons
    ZeroPointTempParthoodExtNoModel with sub |-> NPOB, super |-> NPED
-   %% should we also try models that introduce new points into NPED?
+   %% should we also try models that introduce new points into NPED? 
+   %% 
 end
 
 view v : target_129 to sp
 end
+
+%%
+%%

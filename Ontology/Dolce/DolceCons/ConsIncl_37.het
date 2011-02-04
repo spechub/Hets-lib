@@ -1,5 +1,5 @@
 spec source_37 =
-esorts SAG, T
+sort SAG, T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -13,6 +13,11 @@ pred tOv : SAG * SAG * T
 pred tP : SAG * SAG * T
 pred tPP : SAG * SAG * T
 pred tSum : SAG * SAG * SAG
+
+%% eternal Social Agent
+. exists x:SAG . forall t:T . PRE(x,t)
+%%
+
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -83,9 +88,11 @@ forall x, y, z : SAG; t : T
 forall x : SAG; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                          %(Ax1_2)%
 end
+
+
 spec target_37 = source_37
 then %cons
-esorts APO
+sort APO
 pred PRE : APO * T
 pred tDif : APO * APO * APO
 pred tOv : APO * APO * T
@@ -146,3 +153,20 @@ forall x, y, z : APO; t : T
 end
 
 %% use temp parthood model
+%% source esort SAG,T -> sort SC,T; eternal social agent SAG
+%% target esort APO -> sort APO
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_37
+then %cons
+  OnePointTempParthoodModel with s |-> APO
+end
+
+view v : target_37 to sp
+end
+
+%% goes through
+%% link is cons (no termination)
+%% 

@@ -1,5 +1,5 @@
 spec source_44 =
-esorts T
+sort T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -42,7 +42,7 @@ end
 
 spec target_44 = source_44
 then %cons
-esorts F
+sort F
 pred PRE : F * T
 pred tDif : F * F * F
 pred tOv : F * F * T
@@ -92,4 +92,21 @@ forall x : F; t1, t2 : T
 end
 
 %% use temp parthood model
+%% source esort T -> sort T;  
+%% target esort F -> sort F
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_44
+then %cons
+  OnePointTempParthoodModel with s |-> F
+end
+
+view v : target_44 to sp
+end
+
+%% goes through
+%% link is cons (no termination)
+%% 
 

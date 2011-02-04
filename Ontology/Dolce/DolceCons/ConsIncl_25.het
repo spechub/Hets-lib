@@ -1,5 +1,5 @@
 spec source_25 =
-esorts SC, T
+sort SC, T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -13,6 +13,10 @@ pred tOv : SC * SC * T
 pred tP : SC * SC * T
 pred tPP : SC * SC * T
 pred tSum : SC * SC * SC
+
+%% eternal society
+. exists x:SC . forall t:T . PRE(x,t)
+%%
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -85,7 +89,7 @@ forall x : SC; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
 end
 spec target_25 = source_25
 then %cons
-esorts NASO
+sort NASO
 pred PRE : NASO * T
 pred tDif : NASO * NASO * NASO
 pred tOv : NASO * NASO * T
@@ -146,3 +150,20 @@ forall x : NASO; t1, t2 : T
 end
 
 %% use a temp parthood model
+%% source esort SC,T -> sort SC,T ; eternal society SC
+%% target esort NASO -> sort NASO
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_25
+then %cons
+  OnePointTempParthoodModel with s |-> NASO
+end
+
+view v : target_25 to sp
+end
+
+%% goes through
+%% link is cons (no termination)
+%% 

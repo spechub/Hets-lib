@@ -1,5 +1,5 @@
 spec source_56 =
-esorts F, T
+sort F, T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -13,6 +13,10 @@ pred tOv : F * F * T
 pred tP : F * F * T
 pred tPP : F * F * T
 pred tSum : F * F * F
+
+%% eternal Feature F
+. exists x:F . forall t:T . PRE(x,t)
+%%
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -85,7 +89,7 @@ forall x : F; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
 end
 spec target_56 = source_56
 then %cons
-esorts NAPO
+sort NAPO
 pred PRE : NAPO * T
 pred tDif : NAPO * NAPO * NAPO
 pred tOv : NAPO * NAPO * T
@@ -145,3 +149,21 @@ forall x, y, z : NAPO; t : T
 end
 
 %% use temp parthood model
+%% source esort F,T -> sort F,T; eternal Feature F
+%% target esort NAPO -> sort NAPO
+
+from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_56
+then %cons
+  OnePointTempParthoodModel with s |-> NAPO
+end
+
+view v : target_56 to sp
+end
+
+%% goes through
+%% link is cons (no termination)
+%% 
+

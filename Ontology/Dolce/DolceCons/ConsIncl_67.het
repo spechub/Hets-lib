@@ -1,5 +1,5 @@
 spec source_67 =
-esorts SAG, SC, T
+sort SAG, SC, T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -129,6 +129,8 @@ forall x, y, z : SC; t : T
 forall x : SC; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                       %(Ax1_2_27)%
 end
+
+
 spec target_67 = source_67
 then %cons
 sorts ASO
@@ -171,3 +173,22 @@ forall x : ASO; t1, t2 : T
 end
 
 %% use binary sum of temp parthoods
+%% source esort SAG, SC, T -> sort SAG, SC, T
+%% target 
+
+from Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodBinarySum
+
+spec sp =
+  source_67
+then %cons
+  TempParthoodBinarySum [sorts ASO,SAG,SC fit left |-> SAG, right |-> SC, sum |-> ASO]
+end
+
+view v : target_67 to sp
+end
+
+%% goes through
+%% link is mono 
+%% 
+
+

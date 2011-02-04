@@ -1,5 +1,5 @@
 spec source_6 =
-esorts T
+sort T
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -7,6 +7,7 @@ pred Ov : T * T
 pred P : T * T
 pred PP : T * T
 pred Sum : T * T * T
+
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -37,9 +38,11 @@ forall x, y, z : T . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
 
 forall x, y, z : T . P(x, y) /\ P(y, z) => P(x, z) %(transitivity)%
 end
+
+
 spec target_6 = source_6
 then %cons
-esorts SC
+sort SC
 pred PRE : SC * T
 pred tDif : SC * SC * SC
 pred tOv : SC * SC * T
@@ -89,3 +92,20 @@ forall x : SC; t1, t2 : T
 end
 
 %% use temp parthood model
+%% changed SC to non-empty sort in target
+%% changed T to non-empty sort. Forcing it to be empty makes the source actually inconsistent
+
+from  Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
+
+spec sp =
+  source_6
+then %cons
+OnePointTempParthoodModel with s |-> SC
+end
+
+view v : target_6 to sp
+end
+
+%% goes through
+%% link is cons (no termination)
+%% 

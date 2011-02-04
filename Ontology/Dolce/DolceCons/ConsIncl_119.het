@@ -1,6 +1,6 @@
 spec source_119 =
 sorts POB
-esorts APO, F, MOB, NAPO, SAG, T
+sorts APO, F, MOB, NAPO, SAG, T
 sorts APO, NAPO < POB
 pred At : T
 pred AtP : T * T
@@ -335,9 +335,12 @@ forall x, y, z : POB; t : T
 forall x : POB; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                       %(Ax1_2_82)%
 end
+
+
+
 spec target_119 = source_119
 then %cons
-esorts M
+sort M
 pred PRE : M * T
 pred tDif : M * M * M
 pred tOv : M * M * T
@@ -388,6 +391,9 @@ forall x : M; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)       %(Ax1_2_92)%
 end
 
+%% source esorts APO, F, MOB, NAPO, SAG, T -> sorts APO, F, MOB, NAPO, SAG, T 
+%% target esort M -> sort M
+
 from Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
 
 spec sp =
@@ -398,3 +404,6 @@ end
 
 view v : target_119 to sp
 end
+
+%% goes through
+%% link is cons (no termination)
