@@ -895,18 +895,24 @@ forall x1 : PD; x2 : PD; t1, t2 : T
 
 %% source:esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T -> sorts
 %% target:
+%% Konstitution: asymmetric (irreflexive); transitive; implies presence; closed under temporal parthood
+%% trivial model = Konstitution always false
 
-from Ontology/Dolce/DolceCons/DolceConsParts get Konstitution
+%%from Ontology/Dolce/DolceCons/DolceConsParts get KonstitutionModel
 
 spec sp =
   source_182
 then %cons
-   TempParthoodTernaryFullSum [sorts ED,PED,NPED,AS fit left |-> PED, right |-> NPED, trash |-> AS, sum |-> ED]
+%%KonstitutionModel with s |-> PD
+pred K : PD * PD * T
+%%forall x,y: PD; t:T . K(x,y,t) <=> false % works too%
+forall x,y: PD; t:T . K(x,y,t) <=> At(t) /\ PP(x,y) /\ PRE(x,t) /\ PRE(y,t)
 end
 
 view v : target_182 to sp
 end
 
 
-%%
-%%
+%% goes through
+%% link is cons
+
