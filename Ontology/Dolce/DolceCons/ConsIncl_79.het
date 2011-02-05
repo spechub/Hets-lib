@@ -20,6 +20,11 @@ pred tPP : SAG * SAG * T
 pred tSum : APO * APO * APO
 pred tSum : SAG * SAG * SAG
 
+%% eternal APO
+
+. exists x:APO . forall t: T . PRE(x,t)
+
+%%
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -211,7 +216,9 @@ end
 %% use temp parthood model for MOB = Mental Objects; leaf sort; new esort
 
 from  Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodModel
-from  Ontology/Dolce/DolceCons/DolceConsParts get OnePointTempParthoodNoPREModel
+
+%% source: eternal APO
+
 
 spec sp =
   source_79
@@ -232,3 +239,6 @@ end
 
 view v : target_79 to sp
 end
+
+%% goes through
+%% link is cons
