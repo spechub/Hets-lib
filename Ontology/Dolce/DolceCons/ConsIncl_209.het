@@ -1,6 +1,6 @@
 spec source_209 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
+sorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -871,6 +871,8 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 end
+
+
 spec target_209 = source_209
 then %cons
 pred K : ED * ED * T
@@ -888,3 +890,28 @@ forall x1 : ED; x2 : ED; t : T
 forall x1 : ED; x2 : ED; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
                                                     %(Ax1_17_237)%
+
+%% source: esorts -> sorts
+%% target:
+%% Konstitution: asymmetric (irreflexive); transitive; implies presence; closed under temporal parthood
+%% trivial model = Konstitution always false 
+%% like 182, but tPP
+
+%%from Ontology/Dolce/DolceCons/DolceConsParts get KonstitutionModel
+
+spec sp =
+  source_209
+then %cons
+%%KonstitutionModel with s |-> PD
+pred K : ED * ED * T
+%%forall x,y: PD; t:T . K(x,y,t) <=> false % works too%
+forall x,y: ED; t:T . K(x,y,t) <=> At(t) /\ tPP(x,y,t) /\ PRE(x,t) /\ PRE(y,t)
+end
+
+view v : target_209 to sp
+end
+
+
+%% goes through
+%% link is cons
+
