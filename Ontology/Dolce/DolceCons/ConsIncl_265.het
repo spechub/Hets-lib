@@ -1,7 +1,7 @@
 spec source_265 =
 sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, PQ, Q, SL, SOB,
       T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
       SL < PQ; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ; T < TR
@@ -1052,6 +1052,10 @@ forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_280_362)%
 forall x : EDorPDorQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_281)%
 end
+
+
+
+
 spec target_265 = source_265
 then %cons
 sorts PR
@@ -1071,18 +1075,25 @@ forall x1 : PR; x2 : PQ; t1, t2 : T
 end
 
 
+%% source: esorts -> sorts
+
 spec sp =
   source_265
 then %cons
-  free type PR ::= pr(PQ)
-  pred tql(x:PR; y:PQ; t:T)  <=> PRE(y:PQ,t:T)
+	sorts S < PR
+ 	free type PR ::= pr(PQ)
+  	pred tql(x:PR; y:PQ; t:T)  <=> PRE(y:PQ,t:T)
 end
  
 view v : target_265 to sp
 end
 
+%% declaration of subsort correct?
 %% ax2_313 does not go through... probably, tql needs to be restricted appropriately: 
 %% O: restricted tql to present PQs, goes through, is mono
 
 %% re-check (changes!) probably PR should use S now!
+
+%% goes through
+%% link is mono
 
