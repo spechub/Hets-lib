@@ -1,6 +1,6 @@
 spec source_220 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -961,6 +961,9 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_237_764)%
 end
+
+
+
 spec target_220 = source_220
 then %cons
 sorts TL, TQ, TR
@@ -979,9 +982,13 @@ forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
 forall y : TL . exists x : T . ql(x, y) %(Ax2_4_266)%
 end
 
+
+%% source: esorts -> sorts
+
 spec sp =
   source_220
 then %cons
+sorts TL < TQ; T < TR
   free types TQ ::= tq;
              TR ::= tr(TQ);
              TL ::= tl(T)
@@ -996,3 +1003,5 @@ end
 view v : target_220 to sp
 end
 
+%% goes through
+%% link is cons
