@@ -1,7 +1,7 @@
 spec source_330 =
 sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, PQ, PR, Q, S,
       SL, SOB, T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
       SL < PQ; S < PR; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ; T < TR
@@ -1130,6 +1130,9 @@ forall x1, x2 : TQ; y : PD . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
 
 forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_9)%
 end
+
+
+
 spec target_330 = source_330
 then %cons
 sorts AB, ACC, ACH, EV, PRO, PT, R, ST, STV
@@ -1137,3 +1140,7 @@ sorts R < AB; EV, STV < EDorPDorQ; ACC, ACH < EV; EV, STV < PD;
       AB, APO, AQ, AS, ASO, ED, EDorPDorQ, F, M, MOB, NAPO, NASO, NPED,
       NPOB, PD, PED, POB, PQ, Q, SAG, SC, SL, SOB, TL, TQ < PT;
       AR, PR, S, T, TR < R; PRO, ST < STV
+
+%% source: esorts -> sorts
+
+%% Hets says link is cons: is that enough?

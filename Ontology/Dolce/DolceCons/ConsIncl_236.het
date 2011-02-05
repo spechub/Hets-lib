@@ -1,6 +1,6 @@
 spec source_236 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, SL, T
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, SL, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -965,6 +965,10 @@ forall x1 : PD; x2 : PD; t1, t2 : T
 forall x1 : S; x2 : SL; t1, t2 : T
 . Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_263_322)%
 end
+
+
+
+
 spec target_236 = source_236
 then %cons
 sorts PQ
@@ -996,3 +1000,4 @@ forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_270)%
 end
 
 %% use the same solution as for 175
+%% source: esorts -> sorts
