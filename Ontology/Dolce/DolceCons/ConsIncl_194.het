@@ -1,6 +1,6 @@
 spec source_194 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
+sorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -871,6 +871,8 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 end
+
+
 spec target_194 = source_194
 then %cons
 pred K : PED * PED * T
@@ -904,3 +906,27 @@ forall x : NAPO; t : T
 . At(t : T) /\ PRE((var x : NAPO), t : T)
   => exists y : M . K((var y : M), (var x : NAPO), t : T)
                                                    %(Ax2_240_362)%
+
+%% source: esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T -> sorts
+%% target:
+%% Konstitution: asymmetric (irreflexive); transitive; implies presence; closed under temporal parthood
+%% trivial model = Konstitution always false: not enough here
+
+%%from Ontology/Dolce/DolceCons/DolceConsParts get KonstitutionModel
+
+spec sp =
+  source_194
+then %cons
+%%KonstitutionModel with s |-> PED
+pred K : PED * PED * T
+%%forall x,y: PED; t:T . K(x,y,t) <=> false % works too%
+forall x,y: PED; t:T . K(x,y,t) <=> At(t) /\ tPP(x,y,t) /\ PRE(x,t) /\ PRE(y,t)
+end
+
+view v : target_194 to sp
+end
+
+
+%% tarket spec does not look cons to me...
+%% 
+
