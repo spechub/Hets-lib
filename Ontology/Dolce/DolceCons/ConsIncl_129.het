@@ -405,6 +405,8 @@ forall x : NPOB; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                      %(Ax1_2_102)%
 end
 
+
+
 spec target_129 = source_129
 then %cons
 sorts NPED
@@ -442,20 +444,30 @@ end
 
 
 %% source esorts APO, MOB, NASO, SAG, SC, T -> sorts APO, MOB, NASO, SAG, SC, T
-%% target 
+%% target: NPED new super sort 
 
 from Ontology/Dolce/DolceCons/DolceConsParts get ZeroPointTempParthoodExtNoModel
 
 spec sp=
   source_129
 then %cons
-   ZeroPointTempParthoodExtNoModel with sub |-> NPOB, super |-> NPED
-   %% should we also try models that introduce new points into NPED? 
+%%   ZeroPointTempParthoodExtNoModel with sub |-> NPOB, super |-> NPED
+   %% should we also try models that introduce new points into NPED? yes, for the journal ;-)
    %% 
+free type NPED ::= sort NPOB
+sorts ASO, MOB, NASO, NPOB, SAG, SC, SOB < NPED
+pred PRE : NPED * T
+pred tOv : NPED * NPED * T
+pred tP : NPED * NPED * T
+pred tPP : NPED * NPED * T
+forall x: NPED; z: NPOB; t:T . PRE(x,t) <=> PRE(z,t) /\ x = z
+forall x,y: NPED; z,w: NPOB; t:T . tOv(x,y,t) <=> tOv(z,w,t) /\ x=z /\ y=w
+forall x,y: NPED; z,w: NPOB; t:T . tP(x,y,t) <=> tP(z,w,t) /\ x=z /\ y=w
+forall x,y: NPED; z,w: NPOB; t:T . tPP(x,y,t) <=> tPP(z,w,t) /\ x=z /\ y=w
 end
 
 view v : target_129 to sp
 end
 
-%%
-%%
+%% goes through
+%% link is cons
