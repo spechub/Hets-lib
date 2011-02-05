@@ -1076,12 +1076,13 @@ end
 
 
 %% source: esorts -> sorts
+%% target: PR new
 
 spec sp =
   source_265
 then %cons
 	sorts S < PR
- 	free type PR ::= pr(PQ)
+ 	free type PR ::= pr(PQ) | S
   	pred tql(x:PR; y:PQ; t:T)  <=> PRE(y:PQ,t:T)
 end
  
@@ -1095,5 +1096,5 @@ end
 %% re-check (changes!) probably PR should use S now!
 
 %% goes through
-%% link is mono
+%% link is cons (bug?)
 

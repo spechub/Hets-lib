@@ -1,7 +1,7 @@
 spec source_273 =
 sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, PQ, Q, SL, SOB,
       T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
       SL < PQ; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ; T < TR
@@ -1052,6 +1052,9 @@ forall x : EDorPDorQ . exists t : T . PRE(x, t) %(Ax1_280_362)%
 forall x : EDorPDorQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)              %(Ax1_2_281)%
 end
+
+
+
 spec target_273 = source_273
 then %cons
 pred tql : AR * AQ * T
@@ -1068,12 +1071,15 @@ forall x1 : AR; x2 : AQ; t1, t2 : T
                                                      %(Ax1_3_292)%
 end
 
+%% source: esorts -> sorts
+
 
 spec sp =
   source_273
 then %cons
-  free type AR ::= pr(AQ)
-  pred tql(x:AR; y:AQ; t:T)  <=> PRE(y:AQ,t:T)
+%%  free type AR ::= pr(AQ)
+ pred tql(x:AR; y:AQ; t:T)  <=> PRE(y:AQ,t:T)
+
 end
 
 view v : target_273 to sp
@@ -1084,4 +1090,5 @@ end
 %% Ax1_310_419 and Ax2_313 do not go through. Cf. also 265
 %% contrary to 265, AR is not new.
 %% goes through, link is def, buy why is it def? (bug in Hets!)
+%% looks OK to me, since AR is non-empty
 
