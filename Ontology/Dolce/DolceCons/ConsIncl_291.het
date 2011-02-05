@@ -1,7 +1,7 @@
 spec source_291 =
 sorts ASO, ED, EDorPDorQ, NPED, NPOB, PD, PED, POB, PQ, PR, Q, S,
       SL, SOB, T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ED, PD, Q < EDorPDorQ;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
       SL < PQ; S < PR; AQ, PQ, TQ < Q; ASO, NASO < SOB; TL < TQ; T < TR
@@ -1062,6 +1062,10 @@ forall x1 : PR; x2 : PQ; t1, t2 : T
 
 forall x : PQ . exists t : T . PRE(x, t) %(Ax1_13)%
 end
+
+
+
+
 spec target_291 = source_291
 then %cons
 pred Rel : PR * PQ * T
@@ -1069,3 +1073,20 @@ pred Rel : PR * PQ * T
 forall x1 : PR; x2 : PQ; t1, t2 : T
 . Rel(x1, x2, t1) /\ P(t2 : T, t1 : T) => Rel(x1, x2, t2)
                                                    %(Ax1_293_377)%
+
+
+%% source: esorts -> sorts
+
+spec sp =
+  source_291
+then %cons
+	pred Rel(x:PR; y:PQ; t:T) <=> true 
+end
+
+view v : target_291 to sp
+end
+
+%% goes through
+%% link is cons
+
+
