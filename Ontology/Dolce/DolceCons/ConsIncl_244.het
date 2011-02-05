@@ -1,6 +1,6 @@
 spec source_244 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB, T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB;
       TL < TQ; T < TR
@@ -974,6 +974,9 @@ forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
 
 forall y : TL . exists x : T . ql(x, y) %(Ax2_4_266)%
 end
+
+
+
 spec target_244 = source_244
 then %cons
 pred PRE : TQ * T
@@ -1001,5 +1004,6 @@ forall x : TQ; y : PD
 
 forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_273)%
 end
-
+  
+%% source: esorts -> sorts
 %% similar to 175, but no new sort here...

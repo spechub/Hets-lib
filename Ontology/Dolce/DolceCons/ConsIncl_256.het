@@ -1,6 +1,6 @@
 spec source_256 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, PQ, SL, SOB, T, TL, TQ, TR
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; SL < PQ;
       ASO, NASO < SOB; TL < TQ; T < TR
@@ -1022,6 +1022,9 @@ forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_273)%
 
 forall x : PD . exists t : T . PRE(x, t) %(Ax1_14_19)%
 end
+
+
+
 spec target_256 = source_256
 then %cons
 sorts EDorPDorQ, Q
@@ -1059,6 +1062,10 @@ forall x : EDorPDorQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)      %(Ax1_2_281)%
 end
 
+
+
+%% source: esorts -> sorts
+
 spec sp =
   source_256
 then %cons
@@ -1070,4 +1077,6 @@ end
 view v : target_256 to sp
 end
 
-%% re-check (changes!)
+%% goes through
+%% link is mono
+
