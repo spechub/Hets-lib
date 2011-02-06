@@ -129,9 +129,9 @@ spec KonstitutionModel =
 	sort T
 	sort s
 	pred K : s * s * T
-%%	pred At : s
-%%	pred PP : s * s
-%%	pred PRE  s * T
+	pred At : T
+	pred PP : s * s
+	pred PRE:  s * T
 %%forall x,y: PD; t:T . K(x,y,t) <=> false % works too%
 forall x,y: s; t:T . K(x,y,t) <=> At(t) /\ PP(x,y) /\ PRE(x,t) /\ PRE(y,t)
 end
