@@ -793,18 +793,22 @@ forall x1 : ED; x2 : PD; t1, t2 : T
 . PC(x1, x2, t1) /\ P(t2 : T, t1 : T) => PC(x1, x2, t2) %(Ax1_17)%
 end
 
-%% esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
+%% source: esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
+%% target: two new predicates, no new sorts: PRE defined on ED; PC not defined at all
 
 spec PC_Model =
   source_164
 then %cons
-  op ed:ED %% exists sind ED is nonempty
-  op pd:PD %% exists sind PD is nonempty
-  pred PC (x:ED;y:PD;t:T) <=> PRE(x,t)
-  pred PRE(y:PD;t:T) <=> true  
+pred PC : ED * PD * T
+pred PRE : PD * T
+forall x:ED;  y:PD; t:T . PC (x,y,t) <=> PRE(x,t)
+forall  x:ED;  y:PD; t:T . PRE(y,t) <=> PRE(x,t)   
 end
 
 view v : target_164 to PC_Model
 end
 
 %% Ax1_204 is difficult...
+%% goes through
+%% link is cons
+
