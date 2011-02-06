@@ -784,6 +784,8 @@ end
 
 
 
+
+
 spec target_168 = source_168
 then %cons
 sorts AR, S
@@ -881,7 +883,7 @@ forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
 end
 
 %% source esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
-%% target esorts AR, S -> sorts
+%% target esorts AR, S -> sorts; AR (abstract region) and S (space region) are new; new predicate P_T on PD
 %% easy: just two CEP models
 
 from Ontology/Dolce/DolceCons/DolceConsParts get OnePointCEPModel
@@ -905,6 +907,6 @@ end
 view v : target_168 to sp
 end
 
-%% 
+%% goes through 
 %% link is cons
 
