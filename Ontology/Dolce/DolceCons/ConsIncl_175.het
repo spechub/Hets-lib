@@ -1,6 +1,6 @@
 spec source_175 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
+sorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -113,6 +113,16 @@ pred tSum : NAPO * NAPO * NAPO
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+%% eternal NPEDs, all of them
+
+%%forall x:NPED . forall t:T . PRE(x,t)
+
+%% eternal NPED, one of them
+op  nped : NPED
+forall t:T . PRE(nped,t)
+
+
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -871,9 +881,14 @@ forall x, y, z : S . P(x, y) /\ P(y, x) => x = y
 forall x, y, z : S . P(x, y) /\ P(y, z) => P(x, z)
                                                %(transitivity_22)%
 end
+
+
+
+
+
 spec target_175 = source_175
 then %cons
-esorts AQ
+sorts AQ
 pred PRE : AQ * T
 pred SD : AQ * NPED
 pred SD : NPED * AQ
@@ -882,40 +897,55 @@ forall x : NPED; y : AQ
 . SD(x, y)
   <=> (exists t : T . PRE(x : NPED, t : T))
       /\ forall t : T . PRE(x : NPED, t : T) => PRE(y, t)
-                                                   %(Ax1_235_275)%
+                                                   %(Ax1_235_275)% 
+forall x : AQ; y : NPED
+. SD(x, y)
+  <=> (exists t : T . PRE(x, t))
+      /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T)
+ 
 
-forall x : NPED . exists y : AQ . SD(x, y) %(Ax2_239)%
+forall x : NPED . exists y : AQ . SD(x, y) %(Ax2_239)%  
+forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
 
 forall x : AQ . exists t : T . PRE(x, t) %(Ax1_14_236)%
 
 forall x : AQ; t1, t2 : T
 . PRE(x, t1) /\ P(t2 : T, t1 : T) => PRE(x, t2)   %(Ax1_2_15_238)%
 
-forall x : AQ; y : NPED
-. SD(x, y)
-  <=> (exists t : T . PRE(x, t))
-      /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T)
                                                         %(Ax1_18)%
 
-forall x : AQ . exists y : NPED . SD(x, y) %(Ax2_23)%
+
 end
+
+
+
+%% source: esorts -> sorts; eternal object introduced in source
+%% target: esorts -> sorts; AQ new (leaf); three new predicates involving NPED and T
+%% PRE and tP defined on NPED
+%% try: one point only in AQ; map this on eternal object?
 
 spec sp =
   source_175
 then %cons
-  free type AQ ::= aq(NPED)
-  pred PRE : AQ*T;
-  forall x:NPED; t:T . PRE(aq(x),t) <=> PRE(x,t);
-  pred SD(x : AQ; y : NPED)
-    <=> (exists t : T . PRE(x, t))
-        /\ forall t : T . PRE(x, t) => PRE(y : NPED, t : T);
-  pred SD(x : NPED; y : AQ)
-    <=> (exists t : T . PRE(x : NPED, t : T))
-        /\ forall t : T . PRE(x : NPED, t : T) => PRE(y, t)
+%%	free type AQ ::= aq(NPED)
+	free type AQ ::= nped
+
+	pred PRE : AQ*T
+	pred SD : AQ * NPED
+	pred SD : NPED * AQ
+
+%%	forall x:NPED; t:T . PRE(aq(x),t) <=> PRE(x,t);
+%%	forall x:NPED . SD(x, aq(x)) 
+%%	<=> exists t: T . PRE(x,t)
+%%	forall x:NPED; y : AQ . SD(y,x)	<=> SD(x,y)
+forall x:AQ; t:T . PRE(x,t)
+forall x:NPED; y:AQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+forall x:AQ; y:NPED . SD(x,y) <=> forall t:T . PRE(y,t) %% SD(y,x)
 end
 
 view v : target_175 to sp
 end
 
-%% link is cons, cannot proof c, 
-%% calculated for 1h each axiom then died.
+%% goes through
+%% link is cons
+
