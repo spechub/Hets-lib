@@ -796,7 +796,7 @@ end
 %% source: esorts APO, AS, F, M, MOB, NAPO, NASO, SAG, SC, T -> sorts
 %% target: two new predicates, no new sorts: PRE defined on ED; PC not defined at all
 
-spec PC_Model =
+spec sp =
   source_164
 then %cons
 pred PC : ED * PD * T
@@ -805,7 +805,7 @@ forall x:ED;  y:PD; t:T . PC (x,y,t) <=> PRE(x,t)
 forall  x:ED;  y:PD; t:T . PRE(y,t) <=> PRE(x,t)   
 end
 
-view v : target_164 to PC_Model
+view v : target_164 to sp
 end
 
 %% Ax1_204 is difficult...
