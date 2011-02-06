@@ -1013,7 +1013,7 @@ end
 spec sp =
   source_236
 then %cons
-	free type PQ ::= SL | ped
+	free type PQ ::= SL %%| ped
 	sorts SL < PQ
 	pred PRE : PQ * T
 	pred SD : PED * PQ
@@ -1031,6 +1031,8 @@ view v : target_236 to sp
 end
 
 %% goes through
+%% is cons
 %% however: The link is cons, provided that the following proof obligations can be discharged:
 %% forall x : PED; y : PQ . SD(x, y) <=> exists t : T . PRE(x, t)
 %%                                                  %(Ax1)% %implied
+%% problem was the addition of new ped element
