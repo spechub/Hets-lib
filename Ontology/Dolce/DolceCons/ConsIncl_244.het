@@ -124,6 +124,11 @@ pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
 
+
+%% eternal PD, one of them
+op  pd : PD
+forall t:T . PRE(pd,t)
+
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
 forall x : T; y : T
@@ -977,6 +982,7 @@ end
 
 
 
+
 spec target_244 = source_244
 then %cons
 pred PRE : TQ * T
@@ -1005,5 +1011,28 @@ forall x : TQ; y : PD
 forall x : TQ . exists y : PD . SD(x, y) %(Ax2_23_273)%
 end
   
-%% source: esorts -> sorts
+%% source: esorts -> sorts; TQ extends TL; no PRE on TL defined; PRE defined on PD
 %% similar to 175, but no new sort here...
+
+spec sp =
+  source_244
+then %cons
+	pred PRE : TQ * T
+	pred SD : PD * TQ
+	pred SD : TQ * PD
+	
+forall x:TQ; t:T . PRE(x,t) <=> exists y:PD . PRE(y,t)
+
+forall x:PD; y:TQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+
+forall x:TQ; y:PD . SD(x,y) <=> forall t:T . PRE(y,t) %% SD(y,x)
+
+end
+
+view v : target_244 to sp
+end
+
+%% goes through
+%% link is cons
+
+

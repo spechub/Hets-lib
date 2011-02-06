@@ -122,6 +122,12 @@ pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
 
+
+%% eternal PED, one of them
+op  ped : PED
+forall t:T . PRE(ped,t)
+
+
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
 forall x : T; y : T
@@ -969,6 +975,7 @@ end
 
 
 
+
 spec target_236 = source_236
 then %cons
 sorts PQ
@@ -1000,4 +1007,30 @@ forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_270)%
 end
 
 %% use the same solution as for 175
-%% source: esorts -> sorts
+%% source: esorts -> sorts; PRE not defined on subsort SL (spatial location)
+%% PRE already defined on PED
+
+spec sp =
+  source_236
+then %cons
+	free type PQ ::= SL | ped
+	sorts SL < PQ
+	pred PRE : PQ * T
+	pred SD : PED * PQ
+	pred SD : PQ * PED
+
+forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
+
+forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+
+forall x:PQ; y:PED . SD(x,y) <=> forall t:T . PRE(y,t) %% SD(y,x)
+
+end
+
+view v : target_236 to sp
+end
+
+%% goes through
+%% however: The link is cons, provided that the following proof obligations can be discharged:
+%% forall x : PED; y : PQ . SD(x, y) <=> exists t : T . PRE(x, t)
+%%                                                  %(Ax1)% %implied
