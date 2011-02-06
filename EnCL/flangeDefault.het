@@ -1,10 +1,8 @@
 library EnCL/flangeDefault
 
-from EnCL/EN1591S get FlangeParameter
-
 logic EnCL
 
-spec FlangeDefault = FlangeParameter then
+spec FlangeDefault =
 
 
 
@@ -33,7 +31,9 @@ spec FlangeDefault = FlangeParameter then
  . e_2 := 10 %(data8)%
 
   %% (tube diameter)
- . d_S := 115 %(data2)%
+%% . d_S := 115 %(data2)%
+%% due to problematic param extraction for tube hole
+ . d_S := 125 %(data2)%
 
  . e_S := e_1 %(data6)%
 
@@ -105,19 +105,21 @@ spec FlangeDefault = FlangeParameter then
  . epsilon_1minus := 0.1 + 0.5 * mu  %(tblC.1.1)%
  . epsilon_1plus := 0.1 + 0.5 * mu  %(tblC.1.2)%
 
- . M_tnom := 100 %(data100.1)% %% (REVIEW)
+ %% in sheet minimal 53.7
+ . M_tnom := 60 %(data100.1)% %% (REVIEW)
 
 %% Dichtungswerte
- . Q_maxy := 546.9 %(data27)%
+ . Q_maxy := 500 %(data27)%
  . E_0 := 200000 %(data28)%
 
 %% Dichtungswerte (REVIEW)
- . Q_max := 549 %(data27.1)%
- . Q_min := 540 %(data27.2)%
+ . Q_max := 500 %(data27.1)%
+ . Q_min := 15 %(data27.2)%
 
 %% Aenderungsrate des Elastizitaetsmoduls der Dichtung bei Druckspannung (REVIEW)
- . K_1 := 1 %(data27.3)%
+ . K_1 := 0 %(data27.3)%
 
+%% g_C=1 for I=0 (see eq46)
 %% Kriechfaktor der Dichtung, Temperaturabhaengig (REVIEW)
  . g_C := 1 %(data29)%
 
@@ -135,21 +137,23 @@ spec FlangeDefault = FlangeParameter then
 
 
 %% Schraubenwerkstoffen mit Mindestbruchdehnung A >= 10%
-
+ %% see eq71
  . C := 1
 
 %% Temperaturausdehnungskoeffizienten (REVIEW)
- . alpha_B := 1 %(data31.1)%
- . alpha_F := 1 %(data31.2)%
- . alpha_F_X := 1 %(data31.2b)%
- . alpha_G := 1 %(data31.3)%
- . alpha_L := 1 %(data31.4)%
- . alpha_L_X := 1 %(data31.4b)%
+ . alpha_B := 1.1536e-05 %(data31.1)%
+ . alpha_F := 1.5437e-05 %(data31.2)%
+ . alpha_F_X := alpha_F %(data31.2b)%
+ . alpha_G := alpha_F %(data31.3)%
+
+ %% not needed for our flange type
+ . alpha_L := alpha_F %(data31.4)%
+ . alpha_L_X := alpha_F %(data31.4b)%
 
 
 %% Elastizitaetsmoduln (REVIEW)
  . E_B := 200000 %(data32.1)%
- . E_G := 1500 %(data32.3)%
+ . E_G := 16000 %(data32.3)%
  . E_L := 200000 %(data32.4)%
  . E_L_X := 200000 %(data32.4b)%
 

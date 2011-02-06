@@ -4,10 +4,6 @@ logic EnCL
 
 
 
-spec FlangeParameter =
- operator d_G1, d_G2, d_4, d_0, d_3, d_2, d_1, d_Be, d_5, A_F, e_G, E_F0, e_1, e_2, e_P, d_Bs, n_B, f_B0, F_A0, M_A0, l_H, Q_maxy, phi_S
-end
-
 spec EN1591 =
 
  . p_B_X := Pi * d_3_X/n_B_X %(eq1_X)%
@@ -263,7 +259,7 @@ spec EN1591 =
 
      until convergence(0.05, b_Ge)
 
-   until convergence(0.05, F_G) and F_G0req <= F_G %(eq54)%
+   until convergence(0.05, F_G) and abs(F_G0req) <= abs(F_G) %(eq54)%
 
 
 %% Der tatsaechliche Wert F_G0req kann durch Iteration gefunden werden derart, dass
@@ -349,8 +345,8 @@ spec EN1591 =
 
 
 
-     %% * 6.3 Dichtung
- . Phi_G := F_G/(A_Gt * Q_max) %(eq72)%
+     %% * 6.3 Dichtung, REVIEW (abs introduced for negative force values)
+ . Phi_G := abs(F_G/(A_Gt * Q_max)) %(eq72)%
 
      %% * 6.4 Integrierter Flansch
  . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M, Psi_Z) %(eq73)%
@@ -407,6 +403,11 @@ spec EN1591 =
            . Psi_Z := Psi(1, k_M, 1)
       end
    end
+
+   . print(Phi_max)
+   . print(Phi_B)
+   . print(Phi_F)
+   . print(Phi_G)
 
 end
 
