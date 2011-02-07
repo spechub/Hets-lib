@@ -114,6 +114,14 @@ pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
 
+%% eternal NAPO, one of them
+op  napo : NAPO
+forall t:T . PRE(napo,t)
+
+%% eternal M, one of them
+op  m : M
+forall t:T . PRE(m,t)
+
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
 forall x : T; y : T
@@ -879,33 +887,41 @@ pred K : PED * PED * T
 
 forall x : APO . exists t : T . PRE((var x : APO), t : T)
                                                    %(Ax1_235_275)%
+%% is already in the source
 
 forall x : APO; t : T
 . At(t : T) /\ PRE((var x : APO), t : T)
   => exists y : NAPO . K((var y : NAPO), (var x : APO), t : T)
                                                        %(Ax2_240)%
+%% for each APO, there is a NAPO
 
 forall x, y, z : PED; t : T . K(x, y, t) => not K(y, x, t)
                                                      %(Ax1_3_239)%
+%% K is a strict partial order
 
 forall x, y, z : PED; t : T
 . K(x, y, t) /\ K(y, z, t) => K(x, z, t)                 %(Ax2_5)%
+%% K is a strict partial order
 
 forall x1 : PED; x2 : PED; t : T
 . K(x1, x2, t) => PRE(x1 : PED, t : T) /\ PRE(x2 : PED, t : T)
                                                        %(Ax1_3_4)%
+%% implies presence
 
 forall x1 : PED; x2 : PED; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
                                                     %(Ax1_17_237)%
+%% closed under temporal parthood
 
 forall x : NAPO . exists t : T . PRE((var x : NAPO), t : T)
                                                    %(Ax1_235_282)%
+%% is already in the source
 
 forall x : NAPO; t : T
 . At(t : T) /\ PRE((var x : NAPO), t : T)
   => exists y : M . K((var y : M), (var x : NAPO), t : T)
                                                    %(Ax2_240_362)%
+%% for each NAPO, there is an M
 
 %% source: esorts APO, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T -> sorts
 %% target:
@@ -920,7 +936,8 @@ then %cons
 %%KonstitutionModel with s |-> PED
 pred K : PED * PED * T
 %%forall x,y: PED; t:T . K(x,y,t) <=> false % works too%
-forall x,y: PED; t:T . K(x,y,t) <=> At(t) /\ tPP(x,y,t) /\ PRE(x,t) /\ PRE(y,t)
+%%forall x,y: PED; t:T . K(x,y,t) <=> At(t) /\ PRE(x,t) /\ PRE(y,t) /\ ((x in APO /\ y in NAPO) \/ ((x in APO \/ x in NAPO) /\ y in M))
+forall x,y: PED; t:T . K(x,y,t) <=> At(t) /\ PRE(x,t) /\ PRE(y,t) /\ ((y in APO /\ x in NAPO) \/ ((y in APO \/ y in NAPO) /\ x in M))
 end
 
 view v : target_194 to sp
