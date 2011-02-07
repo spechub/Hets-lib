@@ -989,9 +989,10 @@ end
 spec sp =
   source_220
 then %cons
-  free types TQ ::= sort TL;
+  free types TL ::= tl(T);
+             TQ ::= sort TL;
              TR ::= sort T;
-             TL ::= tl(T)
+            
   pred ql : TR * TQ
   forall t,u:T . (pred ql : TR * TQ)(t,tl(u)) <=> t=u
   pred ql : T * TL
