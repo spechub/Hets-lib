@@ -989,16 +989,13 @@ end
 spec sp =
   source_220
 then %cons
-sorts TL < TQ; T < TR
-  free types TQ ::= tq;
-             TR ::= tr(TQ);
+  free types TQ ::= sort TL;
+             TR ::= sort T;
              TL ::= tl(T)
   pred ql : TR * TQ
-  forall x:TR; y:TQ . ql(x,y) <=> tr(y)=x
+  forall t,u:T . (pred ql : TR * TQ)(t,tl(u)) <=> t=u
   pred ql : T * TL
-  forall t:T;x:TL . ql(t,x) <=> x=tl(t)
-  op tl_inv : TL -> T
-  forall t:T . tl_inv(tl(t)) = t
+  forall t,u:T . (pred ql : T * TL)(t,tl(u)) <=> t=u
 end
 
 view v : target_220 to sp
