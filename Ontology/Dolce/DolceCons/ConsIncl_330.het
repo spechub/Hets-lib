@@ -1140,7 +1140,26 @@ sorts R < AB; EV, STV < EDorPDorQ; ACC, ACH < EV; EV, STV < PD;
       AB, APO, AQ, AS, ASO, ED, EDorPDorQ, F, M, MOB, NAPO, NASO, NPED,
       NPOB, PD, PED, POB, PQ, Q, SAG, SC, SL, SOB, TL, TQ < PT;
       AR, PR, S, T, TR < R; PRO, ST < STV
+end
 
 %% source: esorts -> sorts
 
 %% Hets says link is cons: is that enough?
+
+
+spec sp =
+  source_330
+then %cons
+  free type R ::= sort PR | sort AR | sort TR
+  free type AB ::= sort R
+  free type PT ::= sort EDorPDorQ | sort AB
+
+%% hmm, this stuff should be introduced earlier...
+  sorts ST, PRO, ACH, ACC
+  free type STV ::= sort ST | sort PRO
+  free type EV ::= sort ACH | sort ACC
+  free type PD ::= sort STV | sort EV
+end
+
+view v :  target_330 to sp
+end
