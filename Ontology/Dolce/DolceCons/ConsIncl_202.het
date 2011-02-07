@@ -1,6 +1,6 @@
 spec source_202 =
 sorts ASO, ED, NPED, NPOB, PD, PED, POB, SOB
-esorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
+sorts APO, AQ, AR, AS, F, M, MOB, NAPO, NASO, S, SAG, SC, T
 sorts SAG, SC < ASO; AS, NPED, PED < ED; NPOB < NPED;
       MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB; ASO, NASO < SOB
 pred At : AR
@@ -116,6 +116,10 @@ pred tSum : NAPO * NAPO * NAPO
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+%% eternal SAG, one of them
+op  sag : SAG
+forall t:T . PRE(sag,t)
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -903,25 +907,57 @@ pred K : NPED * NPED * T
 
 forall x : SC . exists t : T . PRE((var x : SC), t : T)
                                                    %(Ax1_241_285)%
+%% in source already
 
 forall x : SC; t : T
 . At(t : T) /\ PRE((var x : SC), t : T)
   => exists y : SAG . K((var y : SAG), (var x : SC), t : T)
                                                        %(Ax2_246)%
+%% for each atomically present SC, there is SAG 
 
 forall x, y, z : NPED; t : T . K(x, y, t) => not K(y, x, t)
                                                      %(Ax1_3_245)%
+%% asymmetric
 
 forall x, y, z : NPED; t : T
 . K(x, y, t) /\ K(y, z, t) => K(x, z, t)                 %(Ax2_5)%
+%% K is transivitve
 
 forall x1 : NPED; x2 : NPED; t : T
 . K(x1, x2, t) => PRE(x1 : NPED, t : T) /\ PRE(x2 : NPED, t : T)
                                                        %(Ax1_3_4)%
+%% K implies presence
 
 forall x1 : NPED; x2 : NPED; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2 : T, t1 : T) => K(x1, x2, t2)
                                                     %(Ax1_17_243)%
-
+%%closed under temporal parthood: use atoms
 
 %% similar to 194
+%% source: esorts -> sorts
+
+%% eternal SAG in source
+%% target:
+%% Konstitution: asymmetric (irreflexive); transitive; implies presence; closed under temporal parthood
+%% trivial model = Konstitution always false: not enough here
+
+
+spec sp =
+  source_202
+then %cons
+
+pred K : NPED * NPED * T
+
+forall x,y: NPED; t:T . 
+K(x,y,t) <=> 
+At(t) /\ PRE(x,t) /\ PRE(y,t) /\ (x in SAG /\ y in SC)
+end
+
+view v : target_202 to sp
+end
+
+
+%% goes through
+%% link is cons
+
+
