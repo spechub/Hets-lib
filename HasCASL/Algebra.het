@@ -7,28 +7,17 @@ version 0.1
 spec Commutative =
      sort Elem
      op  __ * __: Elem * Elem -> Elem, comm
-
-     %% workaround for Ticket #692
-     forall x : Elem; y : Elem . x * y = y * x %(ga_comm___*__)%
 end
 
 spec Semigroup =
      sort Elem
      op  __ * __: Elem * Elem -> Elem, assoc
-
-     %% workaround for Ticket #692
-     forall x : Elem; y : Elem; z : Elem . (x * y) * z = x * (y * z)
-     %(ga_assoc___*__)%
 end
 
 spec Monoid = Semigroup
 then
      ops  e:Elem;
 	  __ * __: Elem * Elem -> Elem, unit e;
-
-     %% workaround for Ticket #692
-     forall x : Elem . x * e = x; %(ga_right_unit___*__)%
-     forall x : Elem . e * x = x; %(ga_left_unit___*__)%
 end
 
 spec Group =
