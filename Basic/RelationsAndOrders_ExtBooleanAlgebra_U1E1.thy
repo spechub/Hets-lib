@@ -1,6 +1,6 @@
 theory RelationsAndOrders_ExtBooleanAlgebra_U1E1
 imports Main
-uses "$HETS_LIB/Isabelle/prelude"
+uses "$HETS_ISABELLE_LIB/prelude.ML"
 begin
 
 ML "Header.initialize [\"de_Morgan1\",\"de_Morgan2\",\"compl_def_ExtBooleanAlgebra\",\"involution_compl_ExtBooleanAlgebra\",\"ga_idem___cup__\",\"ga_idem___cap__\",\"uniqueComplement_BooleanAlgebra\",\"ga_assoc___cap__\",\"ga_comm___cap__\",\"ga_right_unit___cap__\",\"ga_left_unit___cap__\",\"ga_assoc___cup__\",\"ga_comm___cup__\",\"ga_right_unit___cup__\",\"ga_left_unit___cup__\",\"absorption_def1\",\"absorption_def2\",\"zeroAndCap\",\"oneAndCup\",\"distr1_BooleanAlgebra\",\"distr2_BooleanAlgebra\",\"inverse_BooleanAlgebra\"]"
@@ -13,9 +13,6 @@ X1 :: "Elem" ("1''")
 XXcapXX :: "Elem => Elem => Elem" ("(_ cap/ _)" [57,57] 56)
 XXcupXX :: "Elem => Elem => Elem" ("(_ cup/ _)" [55,55] 54)
 complXX :: "Elem => Elem" ("(compl/ _)" [62] 62)
-
-instance Elem::type
-by intro_classes
 
 axioms
 compl_def_ExtBooleanAlgebra  : "ALL x. ALL y. compl x = y = (x cup y = 1' & x cap y = 0')"
