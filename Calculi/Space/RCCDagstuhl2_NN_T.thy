@@ -1,6 +1,6 @@
 theory RCCDagstuhl2_NN_T
-imports "$HETS_LIB/Isabelle/MainHC"
-uses "$HETS_LIB/Isabelle/prelude"
+imports "$HETS_ISABELLE_LIB/MainHC"
+uses "$HETS_ISABELLE_LIB/prelude.ML"
 begin
 
 ML "Header.initialize
@@ -67,15 +67,6 @@ sqr__X :: "Real => Real" ("(sqr/ _)" [56] 56)
 sqrt__X :: "Real => Real option" ("(sqrt/ _)" [56] 56)
 supX1 :: "(Real => bool) => Real option" ("sup/'(_')" [10] 999)
 supX2 :: "Real => Real => Real option" ("sup''/'(_,/ _')" [10,10] 999)
-
-instance ClosedBall:: type
-by intro_classes
-instance Nat:: type
-by intro_classes
-instance Real:: type
-by intro_classes
-instance S:: type
-by intro_classes
 
 axioms
 refl [simp] : "ALL x. x <=_3 x"
