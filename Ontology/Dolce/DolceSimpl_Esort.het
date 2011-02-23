@@ -351,6 +351,16 @@ tOv(x:s; y:s; t:T) <=> exists z:s.(tP(z,x,t) /\ tP(z,y,t));
 end  
 
 
+%%-----------------------
+%% Temporary_Parthood No Temporal Sums and Diffs, plus an eternal object
+%%-----------------------
+
+spec TP_NoSum_Eternal =
+  Temporary_Parthood_No
+then
+  op eternal_object : s
+  forall t:T . PRE(eternal_object,t) %(eternal_object)%
+end
 
 %%-----------------------
 %% Temporary_Parthood (tp)

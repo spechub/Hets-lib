@@ -7,7 +7,7 @@ from Ontology/Dolce/DolceSimpl_Esort
          Time_Mereology, Unary_Temporal_Dissective, Being_Present,
          Mereology, Mereology_and_TemporalPart, Binary_Present,
          Binary_Temporal_Dissective, Temporary_Partial_Order,
-         Temporary_Strict_Partial_Order, Temporary_Parthood_No, Temporary_Parthood,
+         Temporary_Strict_Partial_Order, Temporary_Parthood_No, Temporary_Parthood, TP_NoSum_Eternal,
          Temporary_Mereology, Constitution_Spec,
          Constantly_Generically_Constituted, Constitution, Participation,
          Direct_Quality_Spec, Direct_Quality, Immediate_Quale_Spec,
@@ -26,80 +26,80 @@ from Ontology/Dolce/DolceSimpl_Esort
 arch spec Parthood_Model =
   units
 	TM                 : Time_Mereology;
-	TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
-	TempParthoodSAG    : {Temporary_Parthood with s |-> SAG} given TM;
-	TempParthoodNASO   : {Temporary_Parthood with s |-> NASO and OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} 
-							given  TempParthoodSC;
-	TempParthoodAPO    : {Temporary_Parthood with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
-							s2 |-> APO} given TempParthoodSAG;
-	TempParthoodF      : {Temporary_Parthood with s |-> F} given TM;
+	TP_SC     : {Temporary_Parthood with s |-> SC} given TM;
+	TP_SAG    : {Temporary_Parthood with s |-> SAG} given TM;
+	TP_NASO   : {Temporary_Parthood with s |-> NASO and OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} 
+							given  TP_SC;
+	TP_APO    : {Temporary_Parthood with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
+							s2 |-> APO} given TP_SAG;
+	TP_F      : {Temporary_Parthood with s |-> F} given TM;
       
-	TempParthoodNAPO   : {Temporary_Parthood with s |-> NAPO and
+	TP_NAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
-							s2 |-> NAPO} given TempParthoodF;
-	TempParthoodASO    : {Temporary_Parthood_No with s |-> ASO
+							s2 |-> NAPO} given TP_F;
+	TP_ASO    : {Temporary_Parthood_No with s |-> ASO
 				and 
 				{
 				 free type ASO ::= sort SC | sort SAG
 				}
                                } 
-                                given TempParthoodSC, TempParthoodSAG;
-	TempParthoodMOB    : {Temporary_Parthood with s |-> MOB and
+                                given TP_SC, TP_SAG;
+	TP_MOB    : {Temporary_Parthood with s |-> MOB and
                                OneSide_Specific_Dependence with s1 |-> MOB, 
 				s2 |-> APO} 
-				given TempParthoodAPO;
-	TempParthoodSOB    : {Temporary_Parthood_No with s |-> SOB 
+				given TP_APO;
+	TP_SOB    : {TP_NoSum_Eternal with s |-> SOB 
 				and
 				{
 				 free type SOB ::= sort ASO | sort NASO}
-			       } given TempParthoodNASO, TempParthoodASO;
-        TempParthoodPOB    : {Temporary_Parthood_No with s |-> POB
+			       } given TP_NASO, TP_ASO;
+        TP_POB    : {TP_NoSum_Eternal with s |-> POB
 				and
 				{
 				 free type POB ::= sort APO | sort NAPO
 				}
-			       } given TempParthoodMOB, TempParthoodNAPO;
-        TempParthoodNPOB   : {Temporary_Parthood_No with s |-> NPOB
+			       } given TP_MOB, TP_NAPO;
+        TP_NPOB   : {TP_NoSum_Eternal with s |-> NPOB
 				and
 				{
 				 free type NPOB ::= sort SOB | sort MOB
 				}
-			       } given TempParthoodSOB, TempParthoodMOB;
-        TempParthoodM      : {Temporary_Parthood with s |-> M} given
-                               TempParthoodPOB;
-        TempParthoodNPED   : {Temporary_Parthood_No with s |-> NPED
+			       } given TP_SOB, TP_MOB;
+        TP_M      : {Temporary_Parthood with s |-> M} given
+                               TP_POB;
+        TP_NPED   : {TP_NoSum_Eternal with s |-> NPED
 				and
 				{
 				 sort NPOB < NPED
 				}
-			       } given TempParthoodNPOB;
-        TempParthoodPED    : {Temporary_Parthood_No with s |-> PED
+			       } given TP_NPOB;
+        TP_PED    : {TP_NoSum_Eternal with s |-> PED
 				and
 				{
 				 free type PED ::= sort POB | sort M | sort F
 				}
-			       } given TempParthoodM;
-        TempParthoodED     : {Temporary_Parthood with s |-> ED
+			       } given TP_M;
+        TP_ED     : {Temporary_Parthood with s |-> ED
 				and
 				{
 				 esort AS;
 				 free type ED ::= sort PED | sort NPED | sort AS
 				}
-			       } given TempParthoodPED, TempParthoodNPED;
-	ClassExtParthoodPD : {{Classical_Extensional_Parthood and sort s} with s |-> PD}
-                                given TempParthoodED;
-        Particip           : Participation given ClassExtParthoodPD;
+			       } given TP_PED, TP_NPED;
+	CEP_PD : {{Classical_Extensional_Parthood and sort s} with s |-> PD}
+                                given TP_ED;
+        Particip           : Participation given CEP_PD;
         Mereology_and_TemporalPartPD : Mereology_and_TemporalPart given Particip;
   result  Mereology_and_TemporalPartPD
 end
 
 arch spec Constitution_Model =
    units  ParthoodM : arch spec Parthood_Model;
-          TempParthoodED = ParthoodM;
-          TempParthoodNPED = ParthoodM;
+          TP_ED = ParthoodM;
+          TP_NPED = ParthoodM;
 
           DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given TempParthoodED, TempParthoodNPED;
+				s2 |-> NPED} given TP_ED, TP_NPED;
           ConstitutionPD     : {Constitution_Spec with s |-> PD} given ParthoodM;
           ConstitutionPED    : {Constantly_Generically_Constituted with 
 				s |-> PED, s1 |-> NAPO, s2 |-> M 	
@@ -108,7 +108,7 @@ arch spec Constitution_Model =
                                given ParthoodM;
           ConstitutionNPED   : {Constantly_Generically_Constituted with 
 				s |-> NPED, s1 |-> SC, s2 |-> SAG} given ParthoodM, DependenceAQNPED;
-          ConstitutionED     : {Constitution_Spec with s |-> ED} given TempParthoodED;
+          ConstitutionED     : {Constitution_Spec with s |-> ED} given TP_ED;
           Constitution       = ConstitutionPD and ConstitutionPED and
                                ConstitutionNPED and ConstitutionED;
    result Constitution           
@@ -119,11 +119,11 @@ arch spec PreDolce_Model =
 units     Constitution: arch spec Constitution_Model;
       
           TM = Constitution;
-          TempParthoodEDSAR = Constitution;
+          TP_EDSAR = Constitution;
 
-          TempParthoodED =  TempParthoodEDSAR;
+          TP_ED =  TP_EDSAR;
 
-          TempParthoodPED = Constitution;
+          TP_PED = Constitution;
 
 
           Particip = Constitution;
@@ -135,9 +135,9 @@ units     Constitution: arch spec Constitution_Model;
           ImmediateQuale     : {Immediate_Quale then sorts TL < TQ; T < TR} given TM;
 
 	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
-				s2 |-> SL} given TempParthoodEDSAR;
+				s2 |-> SL} given TP_EDSAR;
 	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED then sort SL < PQ} given TempParthoodPED, BinTempDisS;
+				s2 |-> PED then sort SL < PQ} given TP_PED, BinTempDisS;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} given 
                                Particip, ImmediateQuale;
@@ -167,29 +167,29 @@ units     Constitution: arch spec Constitution_Model;
 				 esort S < PR
 				}% 
                                 given TempQualePR;
-          ClassExtParthoodS  : {Classical_Extensional_Parthood with s |-> S} 
+          CEP_S  : {Classical_Extensional_Parthood with s |-> S} 
                                 given BinTempDisS;
 
           %% AR
-%%          ClassExtParthoodAR : {Classical_Extensional_Parthood with s |-> AR
+%%          CEP_AR : {Classical_Extensional_Parthood with s |-> AR
 %%				then
 %%				. exists x:AR. x in AR
 %%			       } given DependenceAQNPED, TempQualeAR, MereologyAR;
 	  BinTempDisAR	     : {Binary_Temporal_Dissective with s1 |-> AR, 
 				s2 |-> AQ} given DependenceAQNPED, 
                                                  MereologyAR;
-%%			        ClassExtParthoodAR;
+%%			        CEP_AR;
           %% Direct Quality
-          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS, Constitution, TempQuale, BinTempDisPR, BinTempDisAR, ClassExtParthoodS
+          DirectQuality      : Direct_Quality given BeingPresentEDorDP, BinTempDisS, Constitution, TempQuale, BinTempDisPR, BinTempDisAR, CEP_S
      result Constitution and DirectQuality and TempQuale 
-            and BinTempDisPR and BinTempDisAR and ClassExtParthoodS
+            and BinTempDisPR and BinTempDisAR and CEP_S
 end
 
 arch spec Dolce_Model =
      units
 	  PreDolce : arch spec PreDolce_Model;
 	  Tax      : {Taxonomy and pred K: ED * ED * T} given PreDolce
-     result Tax and PreDolce
+     result Tax
 end
 
 refinement Dolce_Ref = Dolce refined to arch spec Dolce_Model
