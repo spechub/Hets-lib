@@ -181,6 +181,7 @@ spec EN1591 =
  . F_GDeltaTemp := F_Gmin * Y_G + F_Q * Y_Q  + (F_R * Y_R - F_R[I=0] * Y_R[I=0]) + DeltaU  %(eq51.prelim1)%
 
   %% SIMP: We have only I=0,1,2
+%% . F_GDelta := max(I>0, F_GDeltaTemp)/Y_G[I=0]  %(eq51)%
  . F_GDelta := max(F_GDeltaTemp[I=1], F_GDeltaTemp[I=2])/Y_G[I=0]  %(eq51)%
 
  . F_G0req := max(F_Gmin[I=0], F_GDelta) %(eq52)%
@@ -338,7 +339,7 @@ spec EN1591 =
  . Psi(j_S, k_M', k_S) := f_E * d_E * e_D * cos(phi_S)/(f_F * 2 * b_F * e_F) * ((0.5*delta_Q+delta_R) * tan(phi_S) - delta_Q * 2 * e_P/d_E + j_S * k_S * sqrt(e_D*c_M*c_S(j_S)*(1+j_S*k_M')/(d_E*cos(phi_S)^3))) %(eq82)%
 
  . Psi_opt := j_M * (2*e_P/e_F-1) %(eq83.1)%
- . -1 <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
+ . (-1) <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
 
      %% CONTROL: Setval=function application
  . Psi_0 := Psi(0, 0, 0) %(eq84.1)%
