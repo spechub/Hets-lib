@@ -12,21 +12,21 @@ library TestBasic
 
 %display __+__ %LATEX __+__
 %[ This Annotation contains a malformed Id,
-   because "to" is a keyword... 
+   because "to" is a keyword...
 %display( sum__to__
           %HTML sum<sub>__<sup>__
-          %LATEX \sum_{__}^{__} 
+          %LATEX \sum_{__}^{__}
           %RTF sum
         )%
 ]%
 %display( sum__To__
           %HTML sum<sub>__<sup>__
-          %LATEX \sum_{__}^{__} 
+          %LATEX \sum_{__}^{__}
         )%
 
 %prec {__+__,__-__} < {__*__}
-%prec( {__+__,__-__} 
-          < 
+%prec( {__+__,__-__}
+          <
        {__/__, __quot__}
      )%
 %prec {__a__} <> {__b__}
@@ -38,7 +38,7 @@ library TestBasic
 
 %left_assoc __+__, __-__
 %left_assoc( __*__,
-             __/__ 
+             __/__
            )%
 %right_assoc __apply__, __blah__
 %right_assoc( __c__,
@@ -55,8 +55,8 @@ spec sp =
   . true %(The true formula)%
   . true %(and this
            also goes
-           along several lines! 
-           and with special stuff: -*/\&=<>ÓÔÕÖØÙÚÛÜİßàáâBCDEFGHIJKLM!% )% 
+           along several lines!
+           and with special stuff: -*/\&=<>ÓÔÕÖØÙÚÛÜİßàáâBCDEFGHIJKLM!% )%
 end
 
 %% Comments
@@ -64,13 +64,13 @@ end
 %{ This
    is a
    multiline comment } %
-   ending here 
+   ending here
 }%
 
 %[ This
    is a
    comment out ] %
-   ending here 
+   ending here
 ]%
 
 %% Lexical syntax
@@ -80,10 +80,10 @@ spec Lex =
         abcdefghijlklmnopqrstuvwxyz,
         ABCDEFGHIJKLMONOPQRSTUVWXYZ,
         x0123456789,
-        ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİßàáâãäåæçèéêëìíîïñòóôõöøùúûüıÿ, 
+        ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİßàáâãäåæçèéêëìíîïñòóôõöøùúûüıÿ,
         abc, a_b_c, ab2, ab_2_3_a, a', a'b''2        %[WORDS]%
         %[.abc, .a_b_c, .ab2, .ab_2_3_a, .a', .a'b''2,  DOT-WORDS]%
-  op    __+-*/\&=<>!?:.$@#^~¡¿×÷£©±¶§¹²³·¢¬°µ|__ : s*s->s          %% NO-BRACKET-SIGNs
+  op    __+-*/\&=<>!?:.$@#^~¡¿×÷£©±¶§¹²³·¢¬°|__ : s*s->s          %% NO-BRACKET-SIGNs
   ops 'a','"','\\','\n','\000','\255',
       '\x00','\xFF','\o000','\o377',
       '^','1','2','3','4','5','6','7','8','9','0',
@@ -97,8 +97,8 @@ spec Lex =
   . def 12.34E34 . def 12.34E-34 %%fractions
 end
 
-spec Keyword' = 
-     sort s; 
+spec Keyword' =
+     sort s;
 %%     op __and'__:s
 end
 
@@ -118,18 +118,18 @@ spec Ops =
      op a:s;
      op b:s->s;
      ops c:s*s->s, assoc, comm, idem, unit a;
-         c:s*s*s->s; 
+         c:s*s*s->s;
      op a: ?s;    %[ Should be:  op a:?s ]%
      op a:?s;    %[ Should be:  op a:?s ]%
      op b:s->?s;
      op c:s*s->?s, assoc, comm, idem, unit a;
-     op c:s*s*s->?s; 
+     op c:s*s*s->?s;
      op a:s=a;
      op c(x,y:s;z:t):s = a;
      op a:?s=a;
      op c(x,y:s;z:t):?s = a;
-     op a: ?s=a; 
-     op c(x,y:s;z:t): ?s = a; 
+     op a: ?s=a;
+     op c(x,y:s;z:t): ?s = a;
 end
 
 spec Preds =
@@ -137,7 +137,7 @@ spec Preds =
      pred a:();
      pred b:s;
      preds c:s*s;
-           c:s*s*s; 
+           c:s*s*s;
      %[pred a:()<=> true;
      pred c(x,y:s;z:t)<=>false;
      pred a: () <=> true; ]%
@@ -186,11 +186,10 @@ spec Formulas =
   . def g(x):t
   . def g(x) as s
   . def (op f:s->?s)(x)  %[ (var x:s)  ]%
-  . def (op g:s->t)(x) 
-  . (pred p:()) 
-  . (pred q:s)(x) 
-  . def x*y*z+z*y*x   
-  . def {} 
-  . def {x}  
+  . def (op g:s->t)(x)
+  . (pred p:())
+  . (pred q:s)(x)
+  . def x*y*z+z*y*x
+  . def {}
+  . def {x}
 end
-
