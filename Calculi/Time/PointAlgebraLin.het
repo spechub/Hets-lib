@@ -1,7 +1,7 @@
 library Calculi/Time/PointAlgebraLin
 version 0.4
-%% author: S. Wölfl
-%% date: 22-06-2005
+%author: S. Woelfl
+%date: 22-06-2005
 %%
 
 %left_assoc __cup__,__cap__
@@ -9,35 +9,35 @@ version 0.4
 %prec {__cmps__} < {__cmpl__}
 
 from Calculi/Algebra/BooleanAlgebra get
-	BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra
+        BooleanAlgebraWithCompl,
+        ExtBooleanAlgebraByOrderRelations,
+        AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get
-	AtomicRelationAlgebra,
-	IntegralRelationAlgebra,
-	SymmetricRelationAlgebra
+        AtomicRelationAlgebra,
+        IntegralRelationAlgebra,
+        SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get
-	CompositionTable,
-	GroundingCompositionTable,
-	SetRepresentationOfRelations,
-	ConstructPseudoRelationAlgebra,
-	ConstructExtPseudoRelationAlgebra
+        CompositionTable,
+        GroundingCompositionTable,
+        SetRepresentationOfRelations,
+        ConstructPseudoRelationAlgebra,
+        ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get
-	AlgebraOfBinaryRelations,
-	JEPDBaseRelationModel,
-	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel,
-	ConstructModelFromBaseRelationModel,
-	CompositionClosedBaseRelationModel,
-	CheckCompositionClosedBaseRelationModel
+        AlgebraOfBinaryRelations,
+        JEPDBaseRelationModel,
+        BaseRelationModel,
+        ConstructPseudoModelFromBaseRelationModel,
+        ConstructModelFromBaseRelationModel,
+        CompositionClosedBaseRelationModel,
+        CheckCompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get
-	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime,
-	NTLinFlowOfTime
+        DnsLinFlowOfTimeSEnd,
+        LinFlowOfTime,
+        NTLinFlowOfTime
 
 %%from Calculi/Time/FlowOfTime get
-%%	ExtFlowOfTimeByConvexity,
-%%	ExtFlowOfTimeBySetRelations
+%%      ExtFlowOfTimeByConvexity,
+%%      ExtFlowOfTimeBySetRelations
 
 
 %(  Part I: Symbolic Level
@@ -75,18 +75,18 @@ spec PAlinCompositionTable =
 and
      CompositionTable with op id |-> e
 then
-     . inv(p) = pi					%(inv_p)%
-     . inv(pi) = p					%(inv_pi)%
-     . inv(e) = e					%(sym_e)%
-     . p cmps p  = p 					%(cmps_pp)%
-     . p cmps pi = 1					%(cmps_ppi)%
-     . p cmps e  = p					%(cmps_pe)%
-     . pi cmps p  = 1 					%(cmps_pip)%
-     . pi cmps pi = pi					%(cmps_pipi)%
-     . pi cmps e  = pi					%(cmps_pie)%
-     . e cmps p  = p 					%(cmps_ep)%
-     . e cmps pi = pi					%(cmps_epi)%
-     . e cmps e  = e					%(cmps_ee)%
+     . inv(p) = pi                                      %(inv_p)%
+     . inv(pi) = p                                      %(inv_pi)%
+     . inv(e) = e                                       %(sym_e)%
+     . p cmps p  = p                                    %(cmps_pp)%
+     . p cmps pi = 1                                    %(cmps_ppi)%
+     . p cmps e  = p                                    %(cmps_pe)%
+     . pi cmps p  = 1                                   %(cmps_pip)%
+     . pi cmps pi = pi                                  %(cmps_pipi)%
+     . pi cmps e  = pi                                  %(cmps_pie)%
+     . e cmps p  = p                                    %(cmps_ep)%
+     . e cmps pi = pi                                   %(cmps_epi)%
+     . e cmps e  = e                                    %(cmps_ee)%
 end
 
 
@@ -111,13 +111,13 @@ end
 
 spec PAlin =
      ConstructPseudoRelationAlgebra[PAlinBaseRelations]
-	[PAlinCompositionTable fit op id:BaseRel |-> e]
+        [PAlinCompositionTable fit op id:BaseRel |-> e]
 end
 
 
 spec RichPAlin =
      ConstructExtPseudoRelationAlgebra[PAlinBaseRelations]
-	[PAlinCompositionTable fit op id:BaseRel |-> e]
+        [PAlinCompositionTable fit op id:BaseRel |-> e]
 end
 
 
@@ -184,12 +184,12 @@ end
 view CompositionClosedBaseRelationModel_From_PAlinBaseRelationModel[DnsLinFlowOfTimeSEnd]:
      CheckCompositionClosedBaseRelationModel to
      {  ConstructPseudoModelFromBaseRelationModel[
-		PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
-	then %def
-	ops id:Rel;
-	    inv__:BaseRel -> Rel;
-	     __cmps__:BaseRel * BaseRel -> Rel
-	}
+                PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
+        then %def
+        ops id:Rel;
+            inv__:BaseRel -> Rel;
+             __cmps__:BaseRel * BaseRel -> Rel
+        }
 =    Elem |-> Instant
 end
 
@@ -197,10 +197,10 @@ end
 
 spec PAlinModel_DnsSEnd[DnsLinFlowOfTimeSEnd] = %def
      ConstructModelFromBaseRelationModel[
-	PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
+        PAlinBaseRelationModel[LinFlowOfTime] fit Elem |-> Instant]
 then %def
       ops  inv__ : BaseRel -> BaseRel;
-	 __cmps__: BaseRel * BaseRel -> Rel
+         __cmps__: BaseRel * BaseRel -> Rel
 end
 
 
@@ -233,7 +233,3 @@ to
 =
     ops p |-> pRel, pi |-> piRel, e |-> eRel
 end
-
-
-
-

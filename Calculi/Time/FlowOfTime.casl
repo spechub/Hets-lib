@@ -1,6 +1,6 @@
 library Calculi/Time/FlowOfTime
 version 0.2
-%author: S. Wölfl
+%author: S. Woelfl
 %date: 08-02-05
 
 
@@ -8,27 +8,27 @@ version 0.2
    Here we focus on arbitrary flows of time and on further conditions.
    Linear flows of time are considered in
 
-	Calculi/Time/LinearFlowOfTime
+        Calculi/Time/LinearFlowOfTime
 
    while treelike flows are the topic of
 
-	Calculi/Time/Tree
+        Calculi/Time/Tree
 
    We will use the following abbreviations:
 
-	Dns:	  dense
-	Lin: 	  linear
-	CMax:     with ("cum") Maxima
-	SMax: 	  without ("sine") Maxima
-	CMin:     with Minima
-	SMin: 	  without Minima
-	CEnd: 	  with Endpoints (abbr. of CMaxCMin)
-	SEnd:     without Endpoints (abbr. of SMaxSMin)
-	Cnn:	  connected
-	FDis:     discrete w.r.t. the future
-	PDis:     discrete w.r.t. the past
-	Dis:	  discrete w.r.t. future and past
-	...
+        Dns:      dense
+        Lin:      linear
+        CMax:     with ("cum") Maxima
+        SMax:     without ("sine") Maxima
+        CMin:     with Minima
+        SMin:     without Minima
+        CEnd:     with Endpoints (abbr. of CMaxCMin)
+        SEnd:     without Endpoints (abbr. of SMaxSMin)
+        Cnn:      connected
+        FDis:     discrete w.r.t. the future
+        PDis:     discrete w.r.t. the past
+        Dis:      discrete w.r.t. future and past
+        ...
 
    Some of the implications presented in the specifications are used for
    constraint based reasonig. Here "PA" is used as an abbreviation of
@@ -50,10 +50,10 @@ version 0.2
 
 
 from Calculi/Algebra/RelationsAndOrders get
-	StrictPartialOrder,
-	ExtStrictPartialOrderByOrderRelations,
-	ExtStrictPartialOrderBySetRelations,
-	ExtStrictPartialOrderByConvexity
+        StrictPartialOrder,
+        ExtStrictPartialOrderByOrderRelations,
+        ExtStrictPartialOrderBySetRelations,
+        ExtStrictPartialOrderByConvexity
 
 
 spec FlowOfTime =
@@ -62,8 +62,8 @@ spec FlowOfTime =
 %%     pred __ pre __: Instant * Instant
 %%
 %%     forall x,y,z:Instant
-%%     . not x pre x			                %(irreflexive)%
-%%     . x pre y /\ y pre z => x pre z			%(transitive)%
+%%     . not x pre x                                    %(irreflexive)%
+%%     . x pre y /\ y pre z => x pre z                  %(transitive)%
 end
 
 
@@ -73,44 +73,44 @@ spec Ext_FlowOfTime [FlowOfTime] = %def
            __cmp__, __uncmp__: Instant * Instant
 
      forall x,y:Instant
-     . x suc y <=> y pre x				%(def_suc)%
-     . x preE y <=> x pre y \/ x = y			%(def_preE)%
-     . x sucE y <=> x suc y \/ x = y			%(def_sucE)%
-     . x cmp  y <=> x pre y \/ x = y \/ y pre x		%(def_cmp)%
-     . x uncmp y <=> not x cmp y			%(def_uncmp)%
+     . x suc y <=> y pre x                              %(def_suc)%
+     . x preE y <=> x pre y \/ x = y                    %(def_preE)%
+     . x sucE y <=> x suc y \/ x = y                    %(def_sucE)%
+     . x cmp  y <=> x pre y \/ x = y \/ y pre x         %(def_cmp)%
+     . x uncmp y <=> not x cmp y                        %(def_uncmp)%
 
 then %implies
      forall x,y:Instant
-     . x preE y <=> y sucE x				%(equi_preE_sucE)%
-     . x cmp y => y cmp x				%(cmp_sym)%
-     . x uncmp y => y uncmp x				%(uncmp_sym)%
+     . x preE y <=> y sucE x                            %(equi_preE_sucE)%
+     . x cmp y => y cmp x                               %(cmp_sym)%
+     . x uncmp y => y uncmp x                           %(uncmp_sym)%
 
      forall x,z:Instant
      . (exists y:Instant . x pre y /\ y pre z) =>
-		  x pre z				%(PA_comp_prepre_elim)%
+                  x pre z                               %(PA_comp_prepre_elim)%
      . (exists y:Instant . x pre y /\ y = z) =>
-		  x pre z				%(PA_comp_preeq_elim)%
+                  x pre z                               %(PA_comp_preeq_elim)%
      . (exists y:Instant . x suc y /\ y suc z) =>
-		  x suc z				%(PA_comp_sucsuc_elim)%
+                  x suc z                               %(PA_comp_sucsuc_elim)%
      . (exists y:Instant . x suc y /\ y = z) =>
-		  x suc z				%(PA_comp_suceq_elim)%
+                  x suc z                               %(PA_comp_suceq_elim)%
      . (exists y:Instant . x = y /\ y pre z) =>
-		  x pre z				%(PA_comp_eqpre_elim)%
+                  x pre z                               %(PA_comp_eqpre_elim)%
      . (exists y:Instant . x = y /\ y suc z) =>
-		  x suc z				%(PA_comp_eqsuc_elim)%
+                  x suc z                               %(PA_comp_eqsuc_elim)%
      . (exists y:Instant . x = y /\ y = z) =>
-		  x = z					%(PA_comp_eqeq_elim)%
+                  x = z                                 %(PA_comp_eqeq_elim)%
 
      . x pre z => (exists y:Instant . x pre y /\ y = z)
-							%(PA_comp_preeq_intro)%
+                                                        %(PA_comp_preeq_intro)%
      . x suc z => (exists y:Instant . x suc y /\ y = z)
-							%(PA_comp_suceq_intro)%
+                                                        %(PA_comp_suceq_intro)%
      . x pre z => (exists y:Instant . x = y /\ y pre z)
-							%(PA_comp_eqpre_intro)%
+                                                        %(PA_comp_eqpre_intro)%
      . x suc z => (exists y:Instant . x = y /\ y suc z)
-							%(PA_comp_eqsuc_intro)%
+                                                        %(PA_comp_eqsuc_intro)%
      . x = z => (exists y:Instant . x = y /\ y = z)
-							%(PA_comp_eqeq_intro)%
+                                                        %(PA_comp_eqeq_intro)%
 
 end
 
@@ -126,18 +126,18 @@ spec DnsFlowOfTime =
 then
      forall x,y:Instant
      . x pre y => (exists z:Instant . x pre z  /\ z pre y)
-		  				        %(dense)%
+                                                        %(dense)%
 end
 
 spec Ext_DnsFlowOfTime [DnsFlowOfTime] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 then %implies
      forall x,z:Instant
      . x pre z => (exists y:Instant . x pre y /\ y pre z)
-							%(PA_comp_prepre_intro)%
+                                                        %(PA_comp_prepre_intro)%
     . x suc z => (exists y:Instant . x suc y /\ y suc z)
-							%(PA_comp_sucsuc_intro)%
+                                                        %(PA_comp_sucsuc_intro)%
 end
 
 
@@ -154,28 +154,28 @@ then
 end
 
 spec Ext_FlowOfTimeSMax [FlowOfTimeSMax] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 then %implies
      forall x,z:Instant
      . x pre z => (exists y:Instant . x pre y /\ y suc z)
-	  	  					%(PA_comp_presuc_intro1)%
+                                                        %(PA_comp_presuc_intro1)%
      . x = z => (exists y:Instant . x pre y /\ y suc z)
-	  	  					%(PA_comp_presuc_intro2)%
+                                                        %(PA_comp_presuc_intro2)%
      . x suc z => (exists y:Instant . x pre y /\ y suc z)
-	  	  					%(PA_comp_presuc_intro3)%
+                                                        %(PA_comp_presuc_intro3)%
 end
 
 spec Rich_FlowOfTimeSMax =
-	Ext_FlowOfTimeSMax [FlowOfTimeSMax]
+        Ext_FlowOfTimeSMax [FlowOfTimeSMax]
 
 spec DnsFlowOfTimeSMax =
      DnsFlowOfTime and FlowOfTimeSMax
 
 spec Ext_DnsFlowOfTimeSMax [DnsFlowOfTimeSMax] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_DnsFlowOfTimeSMax =
-	Ext_DnsFlowOfTimeSMax [DnsFlowOfTimeSMax]
+        Ext_DnsFlowOfTimeSMax [DnsFlowOfTimeSMax]
 
 %{ No Minima }%
 
@@ -183,7 +183,7 @@ spec FlowOfTimeSMin =
      FlowOfTime
 then
      forall x:Instant
-     . (exists y:Instant . y pre x)			%(no_minima)%
+     . (exists y:Instant . y pre x)                     %(no_minima)%
 end
 
 spec Ext_FlowOfTimeSMin [FlowOfTimeSMin] =
@@ -191,25 +191,25 @@ spec Ext_FlowOfTimeSMin [FlowOfTimeSMin] =
 then %implies
      forall x,z:Instant
      . x pre z => (exists y:Instant . x suc y /\ y pre z)
-		  					%(PA_comp_sucpre_intro1)%
+                                                        %(PA_comp_sucpre_intro1)%
      . x = z => (exists y:Instant . x suc y /\ y pre z)
-		  					%(PA_comp_sucpre_intro2)%
+                                                        %(PA_comp_sucpre_intro2)%
      . x suc z => (exists y:Instant . x suc y /\ y pre z)
-		  					%(PA_comp_sucpre_intro3)%
+                                                        %(PA_comp_sucpre_intro3)%
 end
 
 spec Rich_FlowOfTimeSMin =
-	Ext_FlowOfTimeSMin [FlowOfTimeSMin]
+        Ext_FlowOfTimeSMin [FlowOfTimeSMin]
 
 
 spec DnsFlowOfTimeSMin =
      DnsFlowOfTime and FlowOfTimeSMin
 
 spec Ext_DnsFlowOfTimeSMin [DnsFlowOfTimeSMin] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_DnsFlowOfTimeSMin =
-	Ext_DnsFlowOfTimeSMin [DnsFlowOfTimeSMin]
+        Ext_DnsFlowOfTimeSMin [DnsFlowOfTimeSMin]
 
 
 %{ No Endpoints}%
@@ -218,19 +218,19 @@ spec FlowOfTimeSEnd =
      FlowOfTimeSMax and FlowOfTimeSMin
 
 spec Ext_FlowOfTimeSEnd [FlowOfTimeSEnd] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_FlowOfTimeSEnd =
-	Ext_FlowOfTimeSEnd [FlowOfTimeSEnd]
+        Ext_FlowOfTimeSEnd [FlowOfTimeSEnd]
 
 spec DnsFlowOfTimeSEnd =
      DnsFlowOfTime and FlowOfTimeSEnd
 
 spec Ext_DnsFlowOfTimeSEnd [DnsFlowOfTimeSEnd] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_DnsFlowOfTimeSEnd =
-	Ext_DnsFlowOfTimeSEnd [DnsFlowOfTimeSEnd]
+        Ext_DnsFlowOfTimeSEnd [DnsFlowOfTimeSEnd]
 
 
 
@@ -242,9 +242,9 @@ spec FDisFlowOfTime =
 then
     forall x,y:Instant
     . x pre y => (exists z:Instant . x pre z /\
-	 		(z pre y \/ z = y) /\
-			not(exists u:Instant . x pre u /\ u pre z))
-							%(discreteF)%
+                        (z pre y \/ z = y) /\
+                        not(exists u:Instant . x pre u /\ u pre z))
+                                                        %(discreteF)%
 end
 
 spec PDisFlowOfTime =
@@ -252,20 +252,20 @@ spec PDisFlowOfTime =
 then
     forall x,y:Instant
     . x pre y => (exists z:Instant . z pre y /\
-	 		(x pre z \/ x = z) /\
-			not(exists u:Instant . z pre u /\ u pre y))
-							%(discreteP)%
+                        (x pre z \/ x = z) /\
+                        not(exists u:Instant . z pre u /\ u pre y))
+                                                        %(discreteP)%
 end
 
 spec DisFlowOfTime =
-	{ FDisFlowOfTime and PDisFlowOfTime }
+        { FDisFlowOfTime and PDisFlowOfTime }
 
 
 
 %( uberarbeiten: )%
 
 spec Ext_FDisFlowOfTime [FDisFlowOfTime] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 %[
 then
@@ -273,16 +273,16 @@ then
 
      forall x,y,z:Instant
      . suc(x,y) = y <=>  z pre y /\
-	 		(x pre z \/ x = z) /\
-			not(exists u:Instant . z pre u /\ u pre y)
+                        (x pre z \/ x = z) /\
+                        not(exists u:Instant . z pre u /\ u pre y)
 ]%
 end
 
 spec Ext_PDisFlowOfTime [PDisFlowOfTime] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Ext_DisFlowOfTime [DisFlowOfTime] =
-	Ext_FlowOfTime [FlowOfTime]
+        Ext_FlowOfTime [FlowOfTime]
 
 spec Rich_FDisFlowOfTime = Ext_FDisFlowOfTime [FDisFlowOfTime]
 spec Rich_PDisFlowOfTime = Ext_PDisFlowOfTime [PDisFlowOfTime]
@@ -291,19 +291,19 @@ spec Rich_DisFlowOfTime  = Ext_DisFlowOfTime [DisFlowOfTime]
 
 
 %(
- 	Following we describe different interval concepts for arbitrary flows of time.
+        Following we describe different interval concepts for arbitrary flows of time.
 )%
 
 logic HasCASL
 
 spec ExtFlowOfTimeByConvexity[FlowOfTime] =
      ExtStrictPartialOrderByConvexity[StrictPartialOrder]
-	with sort Elem |-> Instant, pred __<__ |-> __pre__
+        with sort Elem |-> Instant, pred __<__ |-> __pre__
 end
 
 spec ExtFlowOfTimeBySetRelations[FlowOfTime] =
      ExtStrictPartialOrderBySetRelations[StrictPartialOrder]
-	with sort Elem |-> Instant,
-	preds __<__|->__pre__, __>__|->__suc__,
-		__<=__ |-> __preE__, __>=__ |-> __sucE__
+        with sort Elem |-> Instant,
+        preds __<__|->__pre__, __>__|->__suc__,
+                __<=__ |-> __preE__, __>=__ |-> __sucE__
 end

@@ -1,244 +1,244 @@
 library Calculi/Time/AllenHayesLadkin_TACAS
-version 0.1 
+version 0.1
 
-%author: S. Wölfl
+%author: S. Woelfl
 %date: 22-10-04
 
 from Basic/RelationsAndOrders get StrictOrder
 from HasCASL/Set get Set
 
 %{
-	 Allen Hayes First-Order Theory on Intervals -- First order theory
-	 Based on Peter B. ladkin's PhD thesis (1987): 
-	       The Logic of Time Represenation 
+         Allen Hayes First-Order Theory on Intervals -- First order theory
+         Based on Peter B. ladkin's PhD thesis (1987):
+               The Logic of Time Represenation
 
-	 Further readings:
+         Further readings:
 
-	 All83 : Allen, J.F., Maintaining Knowledge about Temporal Intervals,
-	 Comm. A.C.M.  26 (11), November 1983, 832-843.
+         All83 : Allen, J.F., Maintaining Knowledge about Temporal Intervals,
+         Comm. A.C.M.  26 (11), November 1983, 832-843.
 
-	 All84 : Allen, J.F., Towards a General Theory of Action and Time,
-	 Artificial Intelligence 23 (2), July 1984, 123-154.
+         All84 : Allen, J.F., Towards a General Theory of Action and Time,
+         Artificial Intelligence 23 (2), July 1984, 123-154.
 
-	 AllKau85 : Allen, J.F. and Kautz, H., A Model of Naive Temporal
-	 Reasoning, in Hobbs, J.R. and Moore, R.C., editors, Formal Theories
-	 of the Commonsense World, Ablex 1985.
+         AllKau85 : Allen, J.F. and Kautz, H., A Model of Naive Temporal
+         Reasoning, in Hobbs, J.R. and Moore, R.C., editors, Formal Theories
+         of the Commonsense World, Ablex 1985.
 
-	 AllHay85 : Allen J.F. and Hayes, P. J., A Commonsense Theory of Time,
-	 Proceedings of the 9th International Joint Conference on Artificial
-	 Intelligence, Los Angeles, California, Morgan Kaufmann 1985, 528-531.
+         AllHay85 : Allen J.F. and Hayes, P. J., A Commonsense Theory of Time,
+         Proceedings of the 9th International Joint Conference on Artificial
+         Intelligence, Los Angeles, California, Morgan Kaufmann 1985, 528-531.
 
-	 AllHay87.1 : Allen J.F. and Hayes, P. J., Short Time Periods,
-	 Proceedings of the 10th International Joint Conference on Artificial
-	 Intelligence, Milano, Italy, Morgan Kaufmann 1987, 981-983.
+         AllHay87.1 : Allen J.F. and Hayes, P. J., Short Time Periods,
+         Proceedings of the 10th International Joint Conference on Artificial
+         Intelligence, Milano, Italy, Morgan Kaufmann 1987, 981-983.
 
-	 AllHay87.2 : Allen J.F. and Hayes, P. J., A Commonsense Theory of
-	 Time: The Longer Paper, Technical Report, Dept. of Computer Science,
-	 University of Rochester.
+         AllHay87.2 : Allen J.F. and Hayes, P. J., A Commonsense Theory of
+         Time: The Longer Paper, Technical Report, Dept. of Computer Science,
+         University of Rochester.
 
-	 Ham71 : Hamblin, C.L., Instants and Intervals, Studium Generale (27),
-	 1971, 127-134. 
+         Ham71 : Hamblin, C.L., Instants and Intervals, Studium Generale (27),
+         1971, 127-134.
 
-	 Hum79 : Humberstone, I.L., Interval Semantics for Tense Logic: Some
-	 Remarks, J. Philosophical Logic 8, 1979, 171-196.
+         Hum79 : Humberstone, I.L., Interval Semantics for Tense Logic: Some
+         Remarks, J. Philosophical Logic 8, 1979, 171-196.
 
-	 Lad86.1 : Ladkin, P.B., Time Representation: A Taxonomy of Interval
-	 Relations, Proceedings of AAAI-86, 360-366, Morgan Kaufmann, 1986.
+         Lad86.1 : Ladkin, P.B., Time Representation: A Taxonomy of Interval
+         Relations, Proceedings of AAAI-86, 360-366, Morgan Kaufmann, 1986.
 
-	 Lad86.2 : Ladkin, P.B., Primitives and Units for Time Specification,
-	 Proceedings of AAAI-86, 354-359, Morgan Kaufmann, 1986.
+         Lad86.2 : Ladkin, P.B., Primitives and Units for Time Specification,
+         Proceedings of AAAI-86, 354-359, Morgan Kaufmann, 1986.
 
-	 Lad86.3 : Ladkin, P.B., Two Papers on Time Representation, Kestrel
-	 Institute Research Report KES.U.86.5, 1986.
+         Lad86.3 : Ladkin, P.B., Two Papers on Time Representation, Kestrel
+         Institute Research Report KES.U.86.5, 1986.
 
-	 Lad87a : Ladkin, P.B., Specification of Time Dependencies and
-	 Synthesis of Concurrent Processes, Proceedings of the 9th
-	 International Conference on Software Engineering, Monterey, Ca, IEEE
-	 1987, also available as Kestrel Institute Technical Report
-	 KES.U.87.1.
+         Lad87a : Ladkin, P.B., Specification of Time Dependencies and
+         Synthesis of Concurrent Processes, Proceedings of the 9th
+         International Conference on Software Engineering, Monterey, Ca, IEEE
+         1987, also available as Kestrel Institute Technical Report
+         KES.U.87.1.
 
-	 Lad87b : Ladkin, P.B., The Completeness of a Natural System for
-	 Reasoning with Time Intervals, Proceedings of the 10th International
-	 Joint Conference on Artificial Intelligence, Milano, Italy, Morgan
-	 Kaufmann 1987, 462-467, also available as Kestrel Institute Technical
-	 Report KES.U.87.5.
+         Lad87b : Ladkin, P.B., The Completeness of a Natural System for
+         Reasoning with Time Intervals, Proceedings of the 10th International
+         Joint Conference on Artificial Intelligence, Milano, Italy, Morgan
+         Kaufmann 1987, 462-467, also available as Kestrel Institute Technical
+         Report KES.U.87.5.
 
-	 Lad87c : Ladkin, P.B., Models of Axioms for Time Intervals,
-	 Proceedings of AAAI87, Morgan Kaufmann 1987, also available in a
-	 longer version as Kestrel Institute Technical Report KES.U.87.4.
+         Lad87c : Ladkin, P.B., Models of Axioms for Time Intervals,
+         Proceedings of AAAI87, Morgan Kaufmann 1987, also available in a
+         longer version as Kestrel Institute Technical Report KES.U.87.4.
 
-	 Lad87d : Ladkin, P.B., Deciding First-Order Statements About Time
-	 Intervals: Preliminary Report, Kestrel Institute Technical Report
-	 KES.U.87.7.
+         Lad87d : Ladkin, P.B., Deciding First-Order Statements About Time
+         Intervals: Preliminary Report, Kestrel Institute Technical Report
+         KES.U.87.7.
 
-	 Lad87e : Ladkin, P.B., Constraint Satisfaction in Time Interval
-	 Structures I: Convex Intervals, forthcoming Kestrel Institute
-	 Technical Report, 1987.
+         Lad87e : Ladkin, P.B., Constraint Satisfaction in Time Interval
+         Structures I: Convex Intervals, forthcoming Kestrel Institute
+         Technical Report, 1987.
 
-	 LadMad87 : Ladkin, P.B. and Maddux, R.D., The Algebra of Convex
-	 Time Intervals, Kestrel Institute Technical Report KES.U.87.2.
+         LadMad87 : Ladkin, P.B. and Maddux, R.D., The Algebra of Convex
+         Time Intervals, Kestrel Institute Technical Report KES.U.87.2.
 
-	 New80 : Newton-Smith, W.H., The Structure of Time, Routledge Kegan
-	 Paul, 1980. PelAll86 : Pelavin, R., and Allen, J.F., A Formal Logic
-	 of Plans in Temporally Rich Domains, Proceedings of the IEEE 74 (10),
-	 Oct 1986, 1364-1382.
+         New80 : Newton-Smith, W.H., The Structure of Time, Routledge Kegan
+         Paul, 1980. PelAll86 : Pelavin, R., and Allen, J.F., A Formal Logic
+         of Plans in Temporally Rich Domains, Proceedings of the IEEE 74 (10),
+         Oct 1986, 1364-1382.
 
-	 Rop79 : Roper, P., Intervals and Tenses, Journal of Philosophical
-	 Logic 9, 1980. 
+         Rop79 : Roper, P., Intervals and Tenses, Journal of Philosophical
+         Logic 9, 1980.
 
-	 vBen83 : van Benthem, J.F.A.K., The Logic of Time, Reidel 1983. 
+         vBen83 : van Benthem, J.F.A.K., The Logic of Time, Reidel 1983.
 
-	 VilKau86 : Vilain, M., and Kautz, H., Constraint Propagation
-	 Algorithms for Temporal Reasoning, Proceedings of AAAI-86, 377-382,
-	 Morgan Kaufmann, 1986.
+         VilKau86 : Vilain, M., and Kautz, H., Constraint Propagation
+         Algorithms for Temporal Reasoning, Proceedings of AAAI-86, 377-382,
+         Morgan Kaufmann, 1986.
 }%
 
 
 
 
 
-spec AllenHayes = 
+spec AllenHayes =
      sort Elem
      preds __M__: Elem * Elem
      forall x,y,z,u:Elem
      %% meeting places are unique:
-     . x M y /\ x M u /\ z M y => z M u			%(M1)%
-     %% meeting places are linearily ordered     
-     . x M y /\ z M u =>  x M u 
-		      \/ (exists v:Elem. x M v /\ v M u) 
-		      \/ (exists v:Elem. z M v /\ v M y) 
-							%(M2a)%
-     . x M y /\ z M u /\ x M u => 
-			not (exists v:Elem. x M v /\ v M u) 
-							%(M2b)%
-     . x M y /\ z M u /\ (exists v:Elem. x M v /\ v M u) => 
-			not (x M u) 
-		     /\ not (exists v:Elem. z M v /\ v M y) 
-							%(M2c)%
-     %% time is infinite, both to the past and to the future:		
-     . exists y,z:Elem . y M x /\ x M z		%(M3)%
-					
+     . x M y /\ x M u /\ z M y => z M u                 %(M1)%
+     %% meeting places are linearily ordered
+     . x M y /\ z M u =>  x M u
+                      \/ (exists v:Elem. x M v /\ v M u)
+                      \/ (exists v:Elem. z M v /\ v M y)
+                                                        %(M2a)%
+     . x M y /\ z M u /\ x M u =>
+                        not (exists v:Elem. x M v /\ v M u)
+                                                        %(M2b)%
+     . x M y /\ z M u /\ (exists v:Elem. x M v /\ v M u) =>
+                        not (x M u)
+                     /\ not (exists v:Elem. z M v /\ v M y)
+                                                        %(M2c)%
+     %% time is infinite, both to the past and to the future:
+     . exists y,z:Elem . y M x /\ x M z         %(M3)%
+
      %% we do not care about endpoints of intervals:
-     . x M y /\ y M u /\ x M z /\ z M u => y = z	%(M4)%
-     %% 
-     . x M y => exists z:Elem . forall v:Elem 
-	. (v M z <=> v M x)  /\ (z M v <=> y M v)       %(M5exist)%
+     . x M y /\ y M u /\ x M z /\ z M u => y = z        %(M4)%
+     %%
+     . x M y => exists z:Elem . forall v:Elem
+        . (v M z <=> v M x)  /\ (z M v <=> y M v)       %(M5exist)%
      %% time is dense
-     . x M y /\ y M z => exists u,v:Elem . x M u 
-	/\ u M v /\ v M z 				%(M6)%
+     . x M y /\ y M z => exists u,v:Elem . x M u
+        /\ u M v /\ v M z                               %(M6)%
 
 then %implies
    forall x,y,z,u,v:Elem
-   . not (x M x)					%(M_irrefl)%
-   . x M y /\ z M u /\ x M u => 
+   . not (x M x)                                        %(M_irrefl)%
+   . x M y /\ z M u /\ x M u =>
        not (exists v:Elem. z M v /\ v M y)              %(M2aV)%
-   . x M y /\ z M u /\ (exists v:Elem. z M v /\ v M y) => 
-   			not (x M u) 
-		     /\ not (exists v:Elem. x M v /\ v M u) 
-							%(M2d)%
-   . x M y => not (y M x)				%(M_asym)%
-   . x M y /\ y M z => not (x M z)			%(M_atrans)%
-   . x M y /\ y M z /\ z M v => not (x M v)		%(M_atranss)%
-   . x M y /\ y M z /\ z M v /\ v M u => not (x M u)	%(M_atransss)%
-   . x M y => exists z,u,v:Elem . 
-	  u M x /\ u M z /\ y M v /\ z M v              %(M5exist1)%
+   . x M y /\ z M u /\ (exists v:Elem. z M v /\ v M y) =>
+                        not (x M u)
+                     /\ not (exists v:Elem. x M v /\ v M u)
+                                                        %(M2d)%
+   . x M y => not (y M x)                               %(M_asym)%
+   . x M y /\ y M z => not (x M z)                      %(M_atrans)%
+   . x M y /\ y M z /\ z M v => not (x M v)             %(M_atranss)%
+   . x M y /\ y M z /\ z M v /\ v M u => not (x M u)    %(M_atransss)%
+   . x M y => exists z,u,v:Elem .
+          u M x /\ u M z /\ y M v /\ z M v              %(M5exist1)%
    . x M y /\ y M z /\ z M v =>
-           exists w:Elem . x M w /\ w M v		%(M5exist2)%    
+           exists w:Elem . x M w /\ w M v               %(M5exist2)%
    . x M y /\ y M z /\ z M v /\ v M u =>
-           exists w:Elem . x M w /\ w M u		%(M5exist3)% 
+           exists w:Elem . x M w /\ w M u               %(M5exist3)%
 end
 
 
 
-%[ nicht nötig
+%[ unnecessary
 spec ExtAllenHayesByRelations [AllenHayes] = %def
      preds  __B__, __O__,  __S__, __F__,  __D__: Elem * Elem
-      
+
      forall x,y:Elem
-     . x B y <=> exists z:Elem . x M z /\ z M y     	%(B_def)%
-     . x S y <=> exists z:Elem . x M z /\ 
-			(forall u:Elem . y M u <=> z M u)
-							%(S_def)%
-     . x F y <=> exists z:Elem . z M x /\ 
-			(forall u:Elem . u M y <=> u M z)
-							%(F_def)%
-     . x O y <=> exists z,u:Elem . z S x /\ z M y /\ 
-			x M u /\ u F y			
-					                %(O_def)%
-     . x D y <=> exists z,u:Elem . z S y /\ z M x /\ 
-			x M u /\ u F y	
-					                %(D_def)%
+     . x B y <=> exists z:Elem . x M z /\ z M y         %(B_def)%
+     . x S y <=> exists z:Elem . x M z /\
+                        (forall u:Elem . y M u <=> z M u)
+                                                        %(S_def)%
+     . x F y <=> exists z:Elem . z M x /\
+                        (forall u:Elem . u M y <=> u M z)
+                                                        %(F_def)%
+     . x O y <=> exists z,u:Elem . z S x /\ z M y /\
+                        x M u /\ u F y
+                                                        %(O_def)%
+     . x D y <=> exists z,u:Elem . z S y /\ z M x /\
+                        x M u /\ u F y
+                                                        %(D_def)%
 then %implies
      forall x,y,z,u,v:Elem
      . x M y /\ y M z => x B z
-     . x M y /\ y M z /\ z M u => x B u 
+     . x M y /\ y M z /\ z M u => x B u
      . x M y /\ y B z => x B z
      . x B y /\ y M z => x B z
      . x B y /\ y B z => x B z
      . x = y <=> forall z:Elem . (z M x <=> z M y) /\ (x M z <=> y M z)
      . x B y \/ x M y \/ x O y \/ x D y \/ x S y \/ x F y \/ x = y \/
-	 y B x \/ y M x \/ y O x \/ y D x \/ y S x \/ y F x 
-	 						%(All13_JE)%
+         y B x \/ y M x \/ y O x \/ y D x \/ y S x \/ y F x
+                                                        %(All13_JE)%
 end
 
-spec ExtAllenHayesByCup [AllenHayes] = 
+spec ExtAllenHayesByCup [AllenHayes] =
      ExtAllenHayesByRelations [AllenHayes]
 then %def
      op __rcup__: Elem * Elem ->? Elem
      forall x,y,z:Elem
-     . def(x rcup y) <=> x M y 
-     . x M y => (x rcup y = z  <=> 
- 	  		(forall v:Elem . v M z <=> v M x) /\ 
-			(forall v:Elem . z M v <=> y M v))
-%%     . y cup x = x cup y if def(x cup y)     
+     . def(x rcup y) <=> x M y
+     . x M y => (x rcup y = z  <=>
+                        (forall v:Elem . v M z <=> v M x) /\
+                        (forall v:Elem . z M v <=> y M v))
+%%     . y cup x = x cup y if def(x cup y)
 then %implies
      forall x,y,z,u,v:Elem
-     . x M y => (x rcup y = z <=> 
-		exists u,v:Elem . u M x /\ u M z /\ y M v /\ z M v)   
+     . x M y => (x rcup y = z <=>
+                exists u,v:Elem . u M x /\ u M z /\ y M v /\ z M v)
      . x M y /\ u M x => u M (x rcup y)
      . x M y /\ y M v => (x rcup y) M v
 end
-	
-spec RichAllenHayes = 
+
+spec RichAllenHayes =
      ExtAllenHayesByRelations [AllenHayes]
 and
      ExtAllenHayesByCup [AllenHayes]
 then %implies
      forall x,y:Elem
      . x B y <=> exists z:Elem . x M z /\ (x rcup z) M y
-     . x S y <=> exists z:Elem . x M z /\ (x rcup z) = y 
+     . x S y <=> exists z:Elem . x M z /\ (x rcup z) = y
      . x F y <=> exists z:Elem . z M x /\ (z rcup x) = y
-	%%% ... 
+        %%% ...
 end
 ]%
 
 spec ConstructPointsFO[AllenHayes] = %def
      %% ExtAllenHayesByRelations[AllenHayes] then %def
      preds  __ __ Equi __ __: Elem * Elem * Elem * Elem;
-	    __ __ Less __ __: Elem * Elem * Elem * Elem
+            __ __ Less __ __: Elem * Elem * Elem * Elem
 
 
      forall x,y,z,u:Elem
-     . x y Equi z u <=> x M y /\ z M u /\ x M u		%(Equi_def)%
+     . x y Equi z u <=> x M y /\ z M u /\ x M u         %(Equi_def)%
      . x y Less z u <=> x M y /\ z M u /\
                 (exists v:Elem  . x M v /\ v M u)       %(Less_def)%
 
 then %implies
-     forall x,x',y,y',z,u,u',v,v',w:Elem 
-     . x M y => x y Equi x y				%(Equi_refl)%
-     . x y Equi z u => z u Equi x y			%(Equi_sym)%
+     forall x,x',y,y',z,u,u',v,v',w:Elem
+     . x M y => x y Equi x y                            %(Equi_refl)%
+     . x y Equi z u => z u Equi x y                     %(Equi_sym)%
      . x y Equi z u /\ z u Equi v w => x y Equi v w     %(Equi_trans)%
-     . x y Less z u <=>	x M y /\ z M u /\ 
-	(exists v:Elem  . x y Equi x v /\ z u Equi v u) %(Equi_defV)%
+     . x y Less z u <=> x M y /\ z M u /\
+        (exists v:Elem  . x y Equi x v /\ z u Equi v u) %(Equi_defV)%
      . x y Equi x' y' /\ u v Equi u' v' => (x y Less u v <=> x' y' Less u' v') %(Less_well_def)%
-     . x M y => not(x y Less x y)			%(Less_irrefl)%
-     . x y Equi z u => not(x y Less z u) 		%(Less_irreflV)%
-     . x y Less z u /\ z u Less v w => x y Less v w 
-	   						%(Less_trans)%    
-     . x M y /\ z M u => x y Less z u 
-		\/ x y Equi z u  \/  z u Less x y 	%(Less_linear)%
+     . x M y => not(x y Less x y)                       %(Less_irrefl)%
+     . x y Equi z u => not(x y Less z u)                %(Less_irreflV)%
+     . x y Less z u /\ z u Less v w => x y Less v w
+                                                        %(Less_trans)%
+     . x M y /\ z M u => x y Less z u
+                \/ x y Equi z u  \/  z u Less x y       %(Less_linear)%
      . x y Less u v => exists r,s:Elem . x y Less r s /\ r s Less u v
-							%(Less_dense)%
+                                                        %(Less_dense)%
 
 end
 
@@ -249,11 +249,11 @@ logic CASL
 
 
 spec FlowOfTime =
-     StrictOrder 
-then      
+     StrictOrder
+then
      forall x,y:Elem
      . x < y \/ x = y \/ y < x
-     . x < y => (exists z:Elem . x < z  /\ z < y) 
+     . x < y => (exists z:Elem . x < z  /\ z < y)
      . exists u,v:Elem . u < x /\ x < v
 end
 
@@ -273,18 +273,18 @@ spec AllenIntervals[FlowOfTime] = %def
 
     ops beg,fin : Int -> Elem
 
-    forall p:Int; x,y:Elem 
+    forall p:Int; x,y:Elem
      . fromInt p = (x,y) => beg(p) = x /\ fin(p) = y
 end
 
 
 view AllenHayes_in_AllenIntervals[FlowOfTime] :
-     AllenHayes to 
-	{ AllenIntervals[FlowOfTime] then %def
-	  pred __M__: Int * Int
+     AllenHayes to
+        { AllenIntervals[FlowOfTime] then %def
+          pred __M__: Int * Int
           forall x,y:Int
-	  . x M y <=> fin(x) = beg(y)		
-	}
+          . x M y <=> fin(x) = beg(y)
+        }
 =    sort Elem |-> Int
 end
 
@@ -293,14 +293,14 @@ end
 logic HasCASL
 
 spec ConstructPointsFromIntervals[AllenHayes] =
-     ConstructPointsFO[AllenHayes] 
+     ConstructPointsFO[AllenHayes]
 and  Set
 then %mono
-     op eqcl(x:Elem;y:Elem) :? Set(Elem * Elem) = 
-	\ p: Elem * Elem . exists u,v:Elem .
-		(u,v) = p /\ u M v /\ x y Equi u v
-     %%type Inst = {X:Set(Elem * Elem) .  
-     %%  		exists x,y:Elem . x M y /\ X = eqcl(x,y)}
+     op eqcl(x:Elem;y:Elem) :? Set(Elem * Elem) =
+        \ p: Elem * Elem . exists u,v:Elem .
+                (u,v) = p /\ u M v /\ x y Equi u v
+     %%type Inst = {X:Set(Elem * Elem) .
+     %%                 exists x,y:Elem . x M y /\ X = eqcl(x,y)}
      sort Inst
      ops toInst : Set(Elem*Elem) ->? Inst;
          fromInst : Inst -> Set(Elem*Elem)
@@ -312,27 +312,20 @@ then %mono
      forall x,y:Elem
      . def(eqcl(x,y)) <=> x M y
 
-%%   op eqcl: Elem * Elem ->? Set(Elem * Elem) 
-%%   . x M y => 
+%%   op eqcl: Elem * Elem ->? Set(Elem * Elem)
+%%   . x M y =>
 %%           eqcl(x,y) = \ p: Elem * Elem . exists u,v:Elem .
-%%		(u,v) = p /\ u M v /\ x y Equi u v  
+%%              (u,v) = p /\ u M v /\ x y Equi u v
 end
 
 
-view FlowOfTime_in_ConstructPointsFromIntervals[AllenHayes] : 
-     FlowOfTime to 
+view FlowOfTime_in_ConstructPointsFromIntervals[AllenHayes] :
+     FlowOfTime to
      { ConstructPointsFromIntervals[AllenHayes] then %def
        pred __<__: Inst * Inst
        forall X,Y:Inst
-       . X < Y <=> exists x,y,u,v:Elem . x M y /\ u M v /\ 
-		fromInst(X) = eqcl(x,y) /\ fromInst(Y) = eqcl(u,v) /\ (x y Less u v)	
-	}
+       . X < Y <=> exists x,y,u,v:Elem . x M y /\ u M v /\
+                fromInst(X) = eqcl(x,y) /\ fromInst(Y) = eqcl(u,v) /\ (x y Less u v)
+        }
 = sort Elem |-> Inst
 end
-
-
-
-
-
-
-

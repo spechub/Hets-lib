@@ -1,43 +1,43 @@
 library Calculi/Time/LinearFlowOfTime
 version 0.2
-%author: S. Wölfl
+%author: S. Woelfl
 %date: 22-06-05
 
 
-%{ This library provides basic specifications for temporal reasoning. 
+%{ This library provides basic specifications for temporal reasoning.
    Here we focus on arbitrary flows of time and on further conditions.
-   Linear flows of time are considered in 
+   Linear flows of time are considered in
 
-	Calculi/TemporalCalculi/LinearFlowOfTime
+        Calculi/TemporalCalculi/LinearFlowOfTime
 
    while treelike flows are the topic of
 
-	Calculi/TemporalCalculi/Tree
-	
+        Calculi/TemporalCalculi/Tree
+
    We will use the following abbreviations:
-	
-	Dns:	  dense
-	Lin: 	  linear
-	CMax:     with ("cum") Maxima
-	SMax: 	  without ("sine") Maxima
-	CMin:     with Minima
-	SMin: 	  without Minima
-	CEnd: 	  with Endpoints (abbr. of CMaxCMin)
-	SEnd:     without Endpoints (abbr. of SMaxSMin)
-	Cnn:	  connected
-	FDis:     discrete w.r.t. the future
-	PDis:     discrete w.r.t. the past
-	Dis:	  discrete w.r.t. future and past
-	NT:	  non-trivial (at least two elements)
-	...
 
-   Some of the implications presented in the specifications are used for 
-   constraint based reasonig. "PA" is an abbreviation of Point Algebra. 
+        Dns:      dense
+        Lin:      linear
+        CMax:     with ("cum") Maxima
+        SMax:     without ("sine") Maxima
+        CMin:     with Minima
+        SMin:     without Minima
+        CEnd:     with Endpoints (abbr. of CMaxCMin)
+        SEnd:     without Endpoints (abbr. of SMaxSMin)
+        Cnn:      connected
+        FDis:     discrete w.r.t. the future
+        PDis:     discrete w.r.t. the past
+        Dis:      discrete w.r.t. future and past
+        NT:       non-trivial (at least two elements)
+        ...
 
-   We provide parameterized versions Ext_Spec of basic specifications Spec 
+   Some of the implications presented in the specifications are used for
+   constraint based reasonig. "PA" is an abbreviation of Point Algebra.
+
+   We provide parameterized versions Ext_Spec of basic specifications Spec
    as well as unparameterized versions Rich_Spec. Hope that's helpful.
- 
-   Some of the concepts introduced here can also be found in 
+
+   Some of the concepts introduced here can also be found in
    Basic/RelationsAndOrdrs.casl
 }%
 
@@ -50,28 +50,28 @@ version 0.2
 
 
 from Calculi/Time/FlowOfTime get
-	FlowOfTime, Ext_FlowOfTime, DnsFlowOfTime, 
-	FlowOfTimeSMax, FlowOfTimeSMin, FlowOfTimeSEnd,
-	DnsFlowOfTimeSMax, DnsFlowOfTimeSMin, DnsFlowOfTimeSEnd 
+        FlowOfTime, Ext_FlowOfTime, DnsFlowOfTime,
+        FlowOfTimeSMax, FlowOfTimeSMin, FlowOfTimeSEnd,
+        DnsFlowOfTimeSMax, DnsFlowOfTimeSMin, DnsFlowOfTimeSEnd
 
 
-spec LinFlowOfTime = 
+spec LinFlowOfTime =
      FlowOfTime
-then 
+then
      forall x,y: Instant
-     . x pre y \/ x = y \/ y pre x			%(linear)%
+     . x pre y \/ x = y \/ y pre x                      %(linear)%
 end
 
 
-spec Ext_LinFlowOfTime [LinFlowOfTime] = %def 
-	Ext_FlowOfTime [FlowOfTime]
+spec Ext_LinFlowOfTime [LinFlowOfTime] = %def
+        Ext_FlowOfTime [FlowOfTime]
      hide preds __cmp__,__uncmp__
 then %implies
      forall x,z: Instant
-     . (exists y: Instant . x pre y /\ y suc z) => 
-	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc_elim)%
+     . (exists y: Instant . x pre y /\ y suc z) =>
+                  (x pre z \/ x = z \/ x suc z)         %(PA_comp_presuc_elim)%
      . (exists y: Instant . x suc y /\ y pre z) =>
-	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_sucpre_elim)%
+                  (x pre z \/ x = z \/ x suc z)         %(PA_comp_sucpre_elim)%
 end
 
 
@@ -79,27 +79,27 @@ spec Rich_LinFlowOfTime = Ext_LinFlowOfTime [LinFlowOfTime]
 
 
 spec DnsLinFlowOfTime =
-     LinFlowOfTime and DnsFlowOfTime 
+     LinFlowOfTime and DnsFlowOfTime
 
 
-spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = %def 
-	Ext_LinFlowOfTime [LinFlowOfTime]
+spec Ext_DnsLinFlowOfTime [DnsLinFlowOfTime] = %def
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
 
-spec Rich_DnsLinFlowOfTime = 
-	Ext_DnsLinFlowOfTime [DnsLinFlowOfTime]
-	
+spec Rich_DnsLinFlowOfTime =
+        Ext_DnsLinFlowOfTime [DnsLinFlowOfTime]
+
 
 spec LinFlowOfTimeSMax =
      LinFlowOfTime and FlowOfTimeSMax
 
 
 spec Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax] = %def
-	Ext_LinFlowOfTime [LinFlowOfTime]
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
 
-spec Rich_LinFlowOfTimeSMax = 
-	Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax]
+spec Rich_LinFlowOfTimeSMax =
+        Ext_LinFlowOfTimeSMax [LinFlowOfTimeSMax]
 
 
 spec DnsLinFlowOfTimeSMax =
@@ -109,22 +109,22 @@ then %implies
 end
 
 
-spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = %def 
-	Ext_LinFlowOfTime [LinFlowOfTime]
+spec Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax] = %def
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
 
-spec Rich_DnsLinFlowOfTimeSMax = 
-	Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax]
+spec Rich_DnsLinFlowOfTimeSMax =
+        Ext_DnsLinFlowOfTimeSMax [DnsLinFlowOfTimeSMax]
 
 
 spec LinFlowOfTimeSMin =
      LinFlowOfTime and FlowOfTimeSMin
 
-spec Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin] = 
-	Ext_LinFlowOfTime [LinFlowOfTime]
+spec Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin] =
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
-spec Rich_LinFlowOfTimeSMin = 
-	Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin]
+spec Rich_LinFlowOfTimeSMin =
+        Ext_LinFlowOfTimeSMin [LinFlowOfTimeSMin]
 
 
 spec DnsLinFlowOfTimeSMin = %def
@@ -134,68 +134,68 @@ then %implies
 end
 
 spec Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin] = %def
-	Ext_LinFlowOfTime [LinFlowOfTime]
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
-spec Rich_DnsLinFlowOfTimeSMin = 
-	Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin]
+spec Rich_DnsLinFlowOfTimeSMin =
+        Ext_DnsLinFlowOfTimeSMin [DnsLinFlowOfTimeSMin]
 
 
 spec LinFlowOfTimeSEnd =
      LinFlowOfTime and FlowOfTimeSEnd
 
 spec Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd] = %def
-	Ext_LinFlowOfTime [LinFlowOfTime]
+        Ext_LinFlowOfTime [LinFlowOfTime]
 
-spec Rich_LinFlowOfTimeSEnd = 
-	Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd]
+spec Rich_LinFlowOfTimeSEnd =
+        Ext_LinFlowOfTimeSEnd [LinFlowOfTimeSEnd]
 
 
 spec DnsLinFlowOfTimeSEnd =
      DnsLinFlowOfTime and FlowOfTimeSEnd
 then %implies
       { DnsLinFlowOfTime and DnsFlowOfTimeSEnd
-	and LinFlowOfTimeSEnd }
+        and LinFlowOfTimeSEnd }
 end
 
 
-spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = %def 
-	Ext_LinFlowOfTime [LinFlowOfTime]
+spec Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd] = %def
+        Ext_LinFlowOfTime [LinFlowOfTime]
 then %implies
      forall x,z: Instant
-     . (exists y: Instant . x pre y /\ y pre z) <=> 
-		  x pre z				%(PA_comp_prepre)%
-     . (exists y: Instant . x pre y /\ y suc z) <=> 
-	  	  (x pre z \/ x = z \/ x suc z)		%(PA_comp_presuc)%
-     . (exists y: Instant . x pre y /\ y = z) <=> 
-		  x pre z				%(PA_comp_preeq)%
+     . (exists y: Instant . x pre y /\ y pre z) <=>
+                  x pre z                               %(PA_comp_prepre)%
+     . (exists y: Instant . x pre y /\ y suc z) <=>
+                  (x pre z \/ x = z \/ x suc z)         %(PA_comp_presuc)%
+     . (exists y: Instant . x pre y /\ y = z) <=>
+                  x pre z                               %(PA_comp_preeq)%
      . (exists y: Instant . x suc y /\ y pre z) <=>
-		  (x pre z \/ x = z \/ x suc z)		%(PA_comp_sucpre)%
-     . (exists y: Instant . x suc y /\ y suc z) <=> 
-		  x suc z				%(PA_comp_sucsuc)%
-     . (exists y: Instant . x suc y /\ y = z) <=> 
-		  x suc z				%(PA_comp_suceq)%
-     . (exists y: Instant . x = y /\ y pre z) <=> 
-		  x pre z				%(PA_comp_eqpre)%
-     . (exists y: Instant . x = y /\ y suc z) <=> 
-		  x suc z				%(PA_comp_eqsuc)%
-     . (exists y: Instant . x = y /\ y = z) <=> 
-		  x = z					%(PA_comp_eqeq)%
+                  (x pre z \/ x = z \/ x suc z)         %(PA_comp_sucpre)%
+     . (exists y: Instant . x suc y /\ y suc z) <=>
+                  x suc z                               %(PA_comp_sucsuc)%
+     . (exists y: Instant . x suc y /\ y = z) <=>
+                  x suc z                               %(PA_comp_suceq)%
+     . (exists y: Instant . x = y /\ y pre z) <=>
+                  x pre z                               %(PA_comp_eqpre)%
+     . (exists y: Instant . x = y /\ y suc z) <=>
+                  x suc z                               %(PA_comp_eqsuc)%
+     . (exists y: Instant . x = y /\ y = z) <=>
+                  x = z                                 %(PA_comp_eqeq)%
 end
 
-spec Rich_DnsLinFlowOfTimeSEnd = 
-	Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd]
+spec Rich_DnsLinFlowOfTimeSEnd =
+        Ext_DnsLinFlowOfTimeSEnd [DnsLinFlowOfTimeSEnd]
 
 
 
-spec NTLinFlowOfTime = 
+spec NTLinFlowOfTime =
      LinFlowOfTime
-then 
+then
      . exists x,y:Instant . not x = y
 end
-   
+
 
 view LinFlowOfTimeSEnd_Is_NonTrivial:
-     NTLinFlowOfTime to LinFlowOfTimeSEnd     
+     NTLinFlowOfTime to LinFlowOfTimeSEnd
 end
 
 
@@ -226,9 +226,9 @@ logic HasCASL
 
 %%from HasCASL/Set get Set
 
-spec DedekindComplLinFlowOfTime = 
-      Rich_DnsLinFlowOfTime 
-then %def 
+spec DedekindComplLinFlowOfTime =
+      Rich_DnsLinFlowOfTime
+then %def
     preds __preE__ : Instant * Pred(Instant);
           __preE__ : Pred(Instant) * Instant;
          isUpperBounded : Pred(Instant);
@@ -252,20 +252,20 @@ then
    . isUpperBounded(X) => def sup(X)        %(completeness)%
  then %implies
    forall X:Pred(Instant)
-   . isLowerBounded(X) => def inf(X)  
+   . isLowerBounded(X) => def inf(X)
 end
 
 
-from HasCASL/Real get Real 
+from HasCASL/Real get Real
 
 %[Comment: This specification of the reals is incorrect ]%
 
-view FlowOfTime_in_Real : 
+view FlowOfTime_in_Real :
      { DedekindComplLinFlowOfTime hide preds isUpperBounded,isLowerBounded,
-	  __isIn__, __preE__ : Instant * Pred(Instant),
-          __preE__ : Pred(Instant) * Instant}  
-	to Real 
+          __isIn__, __preE__ : Instant * Pred(Instant),
+          __preE__ : Pred(Instant) * Instant}
+        to Real
 =
      sort Instant |-> Real, preds __pre__ |-> __<__, __preE__ |-> __<__,
-	__suc__ |-> __>__, __sucE__ |-> __>=__
+        __suc__ |-> __>__, __sucE__ |-> __>=__
 end

@@ -1,7 +1,7 @@
 library Calculi/Time/IntervalAlgebraLin
 version 0.4
-%% author: S. Wölfl
-%% date: 22-06-2005
+%author: S. Woelfl
+%date: 22-06-2005
 %%
 
 %left_assoc __cup__,__cap__
@@ -9,37 +9,37 @@ version 0.4
 %prec {__cmps__} < {__cmpl__}
 
 from Calculi/Algebra/BooleanAlgebra get
-	BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra
+        BooleanAlgebraWithCompl,
+        ExtBooleanAlgebraByOrderRelations,
+        AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get
-	AtomicRelationAlgebra,
-	IntegralRelationAlgebra,
-	SymmetricRelationAlgebra
+        AtomicRelationAlgebra,
+        IntegralRelationAlgebra,
+        SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get
-	CompositionTable,
-	GroundingCompositionTable,
-	SetRepresentationOfRelations,
-	ConstructPseudoRelationAlgebra,
-	ConstructExtPseudoRelationAlgebra
+        CompositionTable,
+        GroundingCompositionTable,
+        SetRepresentationOfRelations,
+        ConstructPseudoRelationAlgebra,
+        ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get
-	BinaryRelations,
-	AlgebraOfBinaryRelations,
-	JEPDBaseRelationModel,
-	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel,
-	ConstructModelFromBaseRelationModel,
-	CompositionClosedBaseRelationModel,
-	CheckCompositionClosedBaseRelationModel
+        BinaryRelations,
+        AlgebraOfBinaryRelations,
+        JEPDBaseRelationModel,
+        BaseRelationModel,
+        ConstructPseudoModelFromBaseRelationModel,
+        ConstructModelFromBaseRelationModel,
+        CompositionClosedBaseRelationModel,
+        CheckCompositionClosedBaseRelationModel
 from Calculi/Time/LinearFlowOfTime get
-	DnsLinFlowOfTimeSEnd,
-	LinFlowOfTime,
-	NTLinFlowOfTime
+        DnsLinFlowOfTimeSEnd,
+        LinFlowOfTime,
+        NTLinFlowOfTime
 
 
 from Calculi/Time/FlowOfTime get
-	ExtFlowOfTimeByConvexity,
-	ExtFlowOfTimeBySetRelations
+        ExtFlowOfTimeByConvexity,
+        ExtFlowOfTimeBySetRelations
 
 
 %(  Part I: Symbolic Level
@@ -67,7 +67,7 @@ from Calculi/Time/FlowOfTime get
 
 spec IAlinBaseRelations = %mono
         free type BaseRel ::= b | m | o | d | s | f | e |
-			bi | mi | oi | di | si | fi
+                        bi | mi | oi | di | si | fi
 end
 
 
@@ -82,201 +82,201 @@ spec IAlinCompositionTable =
 and
      CompositionTable with op id |-> e
 then
-     . inv(b) = bi					%(inv_b)%
-     . inv(bi) = b					%(inv_bi)%
-     . inv(m) = mi					%(inv_m)%
-     . inv(mi) = m					%(inv_mi)%
-     . inv(o) = oi					%(inv_o)%
-     . inv(oi) = o					%(inv_oi)%
-     . inv(d) = di					%(inv_d)%
-     . inv(di) = d					%(inv_di)%
-     . inv(s) = si					%(inv_s)%
-     . inv(si) = s					%(inv_si)%
-     . inv(f) = fi					%(inv_f)%
-     . inv(fi) = f					%(inv_fi)%
-     . inv(e) = e					%(sym_e)%
+     . inv(b) = bi                                      %(inv_b)%
+     . inv(bi) = b                                      %(inv_bi)%
+     . inv(m) = mi                                      %(inv_m)%
+     . inv(mi) = m                                      %(inv_mi)%
+     . inv(o) = oi                                      %(inv_o)%
+     . inv(oi) = o                                      %(inv_oi)%
+     . inv(d) = di                                      %(inv_d)%
+     . inv(di) = d                                      %(inv_di)%
+     . inv(s) = si                                      %(inv_s)%
+     . inv(si) = s                                      %(inv_si)%
+     . inv(f) = fi                                      %(inv_f)%
+     . inv(fi) = f                                      %(inv_fi)%
+     . inv(e) = e                                       %(sym_e)%
 
-     . b cmps b  = b 					%(cmps_bb)%
-     . b cmps bi = 1					%(cmps_bbi)%
-     . b cmps d  = b cup o cup m cup d cup s		%(cmps_bd)%
-     . b cmps di = b					%(cmps_bdi)%
-     . b cmps o  = b					%(cmps_bo)%
-     . b cmps oi = b cup o cup m cup d cup s		%(cmps_boi)%
-     . b cmps m  = b					%(cmps_bm)%
-     . b cmps mi = b cup o cup m cup d cup s		%(cmps_bmi)%
-     . b cmps s  = b					%(cmps_bs)%
-     . b cmps si = b 					%(cmps_bsi)%
-     . b cmps f  = b cup o cup m cup d cup s		%(cmps_bf)%
-     . b cmps fi = b					%(cmps_bfi)%
-     . b cmps e  = b 				 	%(cmps_be)%
+     . b cmps b  = b                                    %(cmps_bb)%
+     . b cmps bi = 1                                    %(cmps_bbi)%
+     . b cmps d  = b cup o cup m cup d cup s            %(cmps_bd)%
+     . b cmps di = b                                    %(cmps_bdi)%
+     . b cmps o  = b                                    %(cmps_bo)%
+     . b cmps oi = b cup o cup m cup d cup s            %(cmps_boi)%
+     . b cmps m  = b                                    %(cmps_bm)%
+     . b cmps mi = b cup o cup m cup d cup s            %(cmps_bmi)%
+     . b cmps s  = b                                    %(cmps_bs)%
+     . b cmps si = b                                    %(cmps_bsi)%
+     . b cmps f  = b cup o cup m cup d cup s            %(cmps_bf)%
+     . b cmps fi = b                                    %(cmps_bfi)%
+     . b cmps e  = b                                    %(cmps_be)%
 
-     . bi cmps b  = 1 					%(cmps_bib)%
-     . bi cmps bi = bi					%(cmps_bibi)%
-     . bi cmps d  = bi cup oi cup mi cup d cup f	%(cmps_bid)%
-     . bi cmps di = bi 					%(cmps_bidi)%
-     . bi cmps o  = bi cup oi cup mi cup d cup f       	%(cmps_bio)%
-     . bi cmps oi = bi 					%(cmps_bioi)%
-     . bi cmps m  = bi cup oi cup mi cup d cup f  	%(cmps_bim)%
-     . bi cmps mi = bi 					%(cmps_bimi)%
-     . bi cmps s  = bi cup oi cup mi cup d cup f	%(cmps_bis)%
-     . bi cmps si = bi 					%(cmps_bisi)%
-     . bi cmps f  = bi					%(cmps_bif)%
-     . bi cmps fi = bi					%(cmps_bifi)%
-     . bi cmps e = bi 					%(cmps_bie)%
+     . bi cmps b  = 1                                   %(cmps_bib)%
+     . bi cmps bi = bi                                  %(cmps_bibi)%
+     . bi cmps d  = bi cup oi cup mi cup d cup f        %(cmps_bid)%
+     . bi cmps di = bi                                  %(cmps_bidi)%
+     . bi cmps o  = bi cup oi cup mi cup d cup f        %(cmps_bio)%
+     . bi cmps oi = bi                                  %(cmps_bioi)%
+     . bi cmps m  = bi cup oi cup mi cup d cup f        %(cmps_bim)%
+     . bi cmps mi = bi                                  %(cmps_bimi)%
+     . bi cmps s  = bi cup oi cup mi cup d cup f        %(cmps_bis)%
+     . bi cmps si = bi                                  %(cmps_bisi)%
+     . bi cmps f  = bi                                  %(cmps_bif)%
+     . bi cmps fi = bi                                  %(cmps_bifi)%
+     . bi cmps e = bi                                   %(cmps_bie)%
 
-     . d cmps b  = b 					%(cmps_db)%
-     . d cmps bi = bi					%(cmps_dbi)%
-     . d cmps d  = d					%(cmps_dd)%
-     . d cmps di = 1 					%(cmps_ddi)%
-     . d cmps o  = b cup o cup m cup d cup s       	%(cmps_do)%
-     . d cmps oi = bi cup oi cup mi cup d cup f		%(cmps_doi)%
-     . d cmps m  = b				  	%(cmps_dm)%
-     . d cmps mi = bi 					%(cmps_dmi)%
-     . d cmps s  = d					%(cmps_ds)%
-     . d cmps si = bi cup oi cup mi cup d cup f 	%(cmps_dsi)%
-     . d cmps f  = d					%(cmps_df)%
-     . d cmps fi = b cup o cup m cup d cup s 		%(cmps_dfi)%
-     . d cmps e  = d					%(cmps_de)%
+     . d cmps b  = b                                    %(cmps_db)%
+     . d cmps bi = bi                                   %(cmps_dbi)%
+     . d cmps d  = d                                    %(cmps_dd)%
+     . d cmps di = 1                                    %(cmps_ddi)%
+     . d cmps o  = b cup o cup m cup d cup s            %(cmps_do)%
+     . d cmps oi = bi cup oi cup mi cup d cup f         %(cmps_doi)%
+     . d cmps m  = b                                    %(cmps_dm)%
+     . d cmps mi = bi                                   %(cmps_dmi)%
+     . d cmps s  = d                                    %(cmps_ds)%
+     . d cmps si = bi cup oi cup mi cup d cup f         %(cmps_dsi)%
+     . d cmps f  = d                                    %(cmps_df)%
+     . d cmps fi = b cup o cup m cup d cup s            %(cmps_dfi)%
+     . d cmps e  = d                                    %(cmps_de)%
 
-     . di cmps b  = b cup o cup m cup di cup fi 	%(cmps_dib)%
-     . di cmps bi = bi cup oi cup mi cup di cup si	%(cmps_dibi)%
-     . di cmps d  = compl(b cup bi cup m cup mi)	%(cmps_did)%
-     . di cmps di = di					%(cmps_didi)%
-     . di cmps o  = o cup di cup fi 		       	%(cmps_dio)%
-     . di cmps oi = oi cup di cup si			%(cmps_dioi)%
-     . di cmps m  = o cup di cup fi 		  	%(cmps_dim)%
-     . di cmps mi = oi cup di cup si			%(cmps_dimi)%
-     . di cmps s  = o cup di cup fi			%(cmps_dis)%
-     . di cmps si = di				 	%(cmps_disi)%
-     . di cmps f  = oi cup di cup si			%(cmps_dif)%
-     . di cmps fi = di			 		%(cmps_difi)%
-     . di cmps e = di 					%(cmps_die)%
+     . di cmps b  = b cup o cup m cup di cup fi         %(cmps_dib)%
+     . di cmps bi = bi cup oi cup mi cup di cup si      %(cmps_dibi)%
+     . di cmps d  = compl(b cup bi cup m cup mi)        %(cmps_did)%
+     . di cmps di = di                                  %(cmps_didi)%
+     . di cmps o  = o cup di cup fi                     %(cmps_dio)%
+     . di cmps oi = oi cup di cup si                    %(cmps_dioi)%
+     . di cmps m  = o cup di cup fi                     %(cmps_dim)%
+     . di cmps mi = oi cup di cup si                    %(cmps_dimi)%
+     . di cmps s  = o cup di cup fi                     %(cmps_dis)%
+     . di cmps si = di                                  %(cmps_disi)%
+     . di cmps f  = oi cup di cup si                    %(cmps_dif)%
+     . di cmps fi = di                                  %(cmps_difi)%
+     . di cmps e = di                                   %(cmps_die)%
 
-     . o cmps b  = b 					%(cmps_ob)%
-     . o cmps bi = bi cup oi cup mi cup di cup si	%(cmps_obi)%
-     . o cmps d  = o cup d cup s			%(cmps_od)%
-     . o cmps di = b cup o cup m cup di cup fi		%(cmps_odi)%
-     . o cmps o  = b cup o cup m  		     	%(cmps_oo)%
-     . o cmps oi = compl(b cup bi cup m cup mi)		%(cmps_ooi)%
-     . o cmps m  = b				  	%(cmps_om)%
-     . o cmps mi = oi cup di cup si			%(cmps_omi)%
-     . o cmps s  = o					%(cmps_os)%
-     . o cmps si = di cup fi cup o		 	%(cmps_osi)%
-     . o cmps f  = d cup s cup o			%(cmps_of)%
-     . o cmps fi = b cup o cup m	 		%(cmps_ofi)%
-     . o cmps e  = o 				      	%(cmps_oe)%
+     . o cmps b  = b                                    %(cmps_ob)%
+     . o cmps bi = bi cup oi cup mi cup di cup si       %(cmps_obi)%
+     . o cmps d  = o cup d cup s                        %(cmps_od)%
+     . o cmps di = b cup o cup m cup di cup fi          %(cmps_odi)%
+     . o cmps o  = b cup o cup m                        %(cmps_oo)%
+     . o cmps oi = compl(b cup bi cup m cup mi)         %(cmps_ooi)%
+     . o cmps m  = b                                    %(cmps_om)%
+     . o cmps mi = oi cup di cup si                     %(cmps_omi)%
+     . o cmps s  = o                                    %(cmps_os)%
+     . o cmps si = di cup fi cup o                      %(cmps_osi)%
+     . o cmps f  = d cup s cup o                        %(cmps_of)%
+     . o cmps fi = b cup o cup m                        %(cmps_ofi)%
+     . o cmps e  = o                                    %(cmps_oe)%
 
-     . oi cmps b  = b cup o cup m cup di cup fi 	%(cmps_oib)%
-     . oi cmps bi = bi					%(cmps_oibi)%
-     . oi cmps d  = oi cup d cup f			%(cmps_oid)%
-     . oi cmps di = bi cup oi cup mi cup di cup si	%(cmps_oidi)%
-     . oi cmps o  = compl(b cup bi cup m cup mi)      	%(cmps_oio)%
-     . oi cmps oi = bi cup oi cup mi			%(cmps_oioi)%
-     . oi cmps m  = o cup di cup fi 		  	%(cmps_oim)%
-     . oi cmps mi = bi					%(cmps_oimi)%
-     . oi cmps s  = oi cup d cup f			%(cmps_ois)%
-     . oi cmps si = bi cup oi cup mi		 	%(cmps_oisi)%
-     . oi cmps f  = oi 					%(cmps_oif)%
-     . oi cmps fi = oi cup di cup si	 		%(cmps_oifi)%
-     . oi cmps e = oi 					%(cmps_oie)%
+     . oi cmps b  = b cup o cup m cup di cup fi         %(cmps_oib)%
+     . oi cmps bi = bi                                  %(cmps_oibi)%
+     . oi cmps d  = oi cup d cup f                      %(cmps_oid)%
+     . oi cmps di = bi cup oi cup mi cup di cup si      %(cmps_oidi)%
+     . oi cmps o  = compl(b cup bi cup m cup mi)        %(cmps_oio)%
+     . oi cmps oi = bi cup oi cup mi                    %(cmps_oioi)%
+     . oi cmps m  = o cup di cup fi                     %(cmps_oim)%
+     . oi cmps mi = bi                                  %(cmps_oimi)%
+     . oi cmps s  = oi cup d cup f                      %(cmps_ois)%
+     . oi cmps si = bi cup oi cup mi                    %(cmps_oisi)%
+     . oi cmps f  = oi                                  %(cmps_oif)%
+     . oi cmps fi = oi cup di cup si                    %(cmps_oifi)%
+     . oi cmps e = oi                                   %(cmps_oie)%
 
-     . m cmps b  = b 					%(cmps_mb)%
-     . m cmps bi = bi cup oi cup mi cup di cup si	%(cmps_mbi)%
-     . m cmps d  = o cup d cup s			%(cmps_md)%
-     . m cmps di = b 					%(cmps_mdi)%
-     . m cmps o  = b 		  		     	%(cmps_mo)%
-     . m cmps oi = o cup d cup s			%(cmps_moi)%
-     . m cmps m  = b				  	%(cmps_mm)%
-     . m cmps mi = f cup fi cup e			%(cmps_mmi)%
-     . m cmps s  = m					%(cmps_ms)%
-     . m cmps si = m				 	%(cmps_msi)%
-     . m cmps f  = d cup s cup o			%(cmps_mf)%
-     . m cmps fi = b			 		%(cmps_mfi)%
-     . m cmps e  = m		 		  	%(cmps_me)%
+     . m cmps b  = b                                    %(cmps_mb)%
+     . m cmps bi = bi cup oi cup mi cup di cup si       %(cmps_mbi)%
+     . m cmps d  = o cup d cup s                        %(cmps_md)%
+     . m cmps di = b                                    %(cmps_mdi)%
+     . m cmps o  = b                                    %(cmps_mo)%
+     . m cmps oi = o cup d cup s                        %(cmps_moi)%
+     . m cmps m  = b                                    %(cmps_mm)%
+     . m cmps mi = f cup fi cup e                       %(cmps_mmi)%
+     . m cmps s  = m                                    %(cmps_ms)%
+     . m cmps si = m                                    %(cmps_msi)%
+     . m cmps f  = d cup s cup o                        %(cmps_mf)%
+     . m cmps fi = b                                    %(cmps_mfi)%
+     . m cmps e  = m                                    %(cmps_me)%
 
-     . mi cmps b  = b cup o cup m cup di cup fi 	%(cmps_mib)%
-     . mi cmps bi = bi					%(cmps_mibi)%
-     . mi cmps d  = oi cup d cup f			%(cmps_mid)%
-     . mi cmps di = bi 					%(cmps_midi)%
-     . mi cmps o  = oi cup d cup f		      	%(cmps_mio)%
-     . mi cmps oi = bi 					%(cmps_mioi)%
-     . mi cmps m  = s cup si cup e 		  	%(cmps_mim)%
-     . mi cmps mi = bi					%(cmps_mimi)%
-     . mi cmps s  = d cup f cup oi			%(cmps_mis)%
-     . mi cmps si = bi				 	%(cmps_misi)%
-     . mi cmps f  = mi 					%(cmps_mif)%
-     . mi cmps fi = mi 			 		%(cmps_mifi)%
-     . mi cmps e = mi					%(cmps_mie)%
+     . mi cmps b  = b cup o cup m cup di cup fi         %(cmps_mib)%
+     . mi cmps bi = bi                                  %(cmps_mibi)%
+     . mi cmps d  = oi cup d cup f                      %(cmps_mid)%
+     . mi cmps di = bi                                  %(cmps_midi)%
+     . mi cmps o  = oi cup d cup f                      %(cmps_mio)%
+     . mi cmps oi = bi                                  %(cmps_mioi)%
+     . mi cmps m  = s cup si cup e                      %(cmps_mim)%
+     . mi cmps mi = bi                                  %(cmps_mimi)%
+     . mi cmps s  = d cup f cup oi                      %(cmps_mis)%
+     . mi cmps si = bi                                  %(cmps_misi)%
+     . mi cmps f  = mi                                  %(cmps_mif)%
+     . mi cmps fi = mi                                  %(cmps_mifi)%
+     . mi cmps e = mi                                   %(cmps_mie)%
 
-     . s cmps b  = b 					%(cmps_sb)%
-     . s cmps bi = bi 					%(cmps_sbi)%
-     . s cmps d  = d					%(cmps_sd)%
-     . s cmps di = b cup o cup m cup di cup fi		%(cmps_sdi)%
-     . s cmps o  = b cup o cup m  		     	%(cmps_so)%
-     . s cmps oi = oi cup d cup f			%(cmps_soi)%
-     . s cmps m  = b				  	%(cmps_sm)%
-     . s cmps mi = mi					%(cmps_smi)%
-     . s cmps s  = s					%(cmps_ss)%
-     . s cmps si = s cup si cup e		 	%(cmps_ssi)%
-     . s cmps f  = d 					%(cmps_sf)%
-     . s cmps fi = b cup m cup o	 		%(cmps_sfi)%
-     . s cmps e  = s					%(cmps_se)%
+     . s cmps b  = b                                    %(cmps_sb)%
+     . s cmps bi = bi                                   %(cmps_sbi)%
+     . s cmps d  = d                                    %(cmps_sd)%
+     . s cmps di = b cup o cup m cup di cup fi          %(cmps_sdi)%
+     . s cmps o  = b cup o cup m                        %(cmps_so)%
+     . s cmps oi = oi cup d cup f                       %(cmps_soi)%
+     . s cmps m  = b                                    %(cmps_sm)%
+     . s cmps mi = mi                                   %(cmps_smi)%
+     . s cmps s  = s                                    %(cmps_ss)%
+     . s cmps si = s cup si cup e                       %(cmps_ssi)%
+     . s cmps f  = d                                    %(cmps_sf)%
+     . s cmps fi = b cup m cup o                        %(cmps_sfi)%
+     . s cmps e  = s                                    %(cmps_se)%
 
-     . si cmps b  = b cup o cup m cup di cup fi 	%(cmps_sib)%
-     . si cmps bi = bi					%(cmps_sibi)%
-     . si cmps d  = oi cup d cup f			%(cmps_sid)%
-     . si cmps di = di 					%(cmps_sidi)%
-     . si cmps o  = o cup di cup fi		      	%(cmps_sio)%
-     . si cmps oi = oi 					%(cmps_sioi)%
-     . si cmps m  = o cup di cup fi 		  	%(cmps_sim)%
-     . si cmps mi = mi					%(cmps_simi)%
-     . si cmps s  = s cup si cup e			%(cmps_sis)%
-     . si cmps si = si				 	%(cmps_sisi)%
-     . si cmps f  = oi 					%(cmps_sif)%
-     . si cmps fi = di 			 		%(cmps_sifi)%
-     . si cmps e = si				 	%(cmps_sie)%
+     . si cmps b  = b cup o cup m cup di cup fi         %(cmps_sib)%
+     . si cmps bi = bi                                  %(cmps_sibi)%
+     . si cmps d  = oi cup d cup f                      %(cmps_sid)%
+     . si cmps di = di                                  %(cmps_sidi)%
+     . si cmps o  = o cup di cup fi                     %(cmps_sio)%
+     . si cmps oi = oi                                  %(cmps_sioi)%
+     . si cmps m  = o cup di cup fi                     %(cmps_sim)%
+     . si cmps mi = mi                                  %(cmps_simi)%
+     . si cmps s  = s cup si cup e                      %(cmps_sis)%
+     . si cmps si = si                                  %(cmps_sisi)%
+     . si cmps f  = oi                                  %(cmps_sif)%
+     . si cmps fi = di                                  %(cmps_sifi)%
+     . si cmps e = si                                   %(cmps_sie)%
 
-     . f cmps b  = b 					%(cmps_fb)%
-     . f cmps bi = bi 					%(cmps_fbi)%
-     . f cmps d  = d					%(cmps_fd)%
-     . f cmps di = bi cup oi cup mi cup di cup si	%(cmps_fdi)%
-     . f cmps o  = o cup d cup s  		     	%(cmps_fo)%
-     . f cmps oi = bi cup oi cup mi			%(cmps_foi)%
-     . f cmps m  = m				  	%(cmps_fm)%
-     . f cmps mi = bi					%(cmps_fmi)%
-     . f cmps s  = d					%(cmps_fs)%
-     . f cmps si = bi cup oi cup mi		 	%(cmps_fsi)%
-     . f cmps f  = f 					%(cmps_ff)%
-     . f cmps fi = f cup fi cup e	 		%(cmps_ffi)%
-     . f cmps e  = f				 	%(cmps_fe)%
+     . f cmps b  = b                                    %(cmps_fb)%
+     . f cmps bi = bi                                   %(cmps_fbi)%
+     . f cmps d  = d                                    %(cmps_fd)%
+     . f cmps di = bi cup oi cup mi cup di cup si       %(cmps_fdi)%
+     . f cmps o  = o cup d cup s                        %(cmps_fo)%
+     . f cmps oi = bi cup oi cup mi                     %(cmps_foi)%
+     . f cmps m  = m                                    %(cmps_fm)%
+     . f cmps mi = bi                                   %(cmps_fmi)%
+     . f cmps s  = d                                    %(cmps_fs)%
+     . f cmps si = bi cup oi cup mi                     %(cmps_fsi)%
+     . f cmps f  = f                                    %(cmps_ff)%
+     . f cmps fi = f cup fi cup e                       %(cmps_ffi)%
+     . f cmps e  = f                                    %(cmps_fe)%
 
-     . fi cmps b  = b 				 	%(cmps_fib)%
-     . fi cmps bi = bi cup oi cup mi cup di cup si	%(cmps_fibi)%
-     . fi cmps d  = o cup d cup s			%(cmps_fid)%
-     . fi cmps di = di 					%(cmps_fidi)%
-     . fi cmps o  = o 				      	%(cmps_fio)%
-     . fi cmps oi = oi cup di cup si			%(cmps_fioi)%
-     . fi cmps m  = m		 		  	%(cmps_fim)%
-     . fi cmps mi = si cup oi cup di			%(cmps_fimi)%
-     . fi cmps s  = o					%(cmps_fis)%
-     . fi cmps si = di				 	%(cmps_fisi)%
-     . fi cmps f  = f cup fi cup e			%(cmps_fif)%
-     . fi cmps fi = fi 			 		%(cmps_fifi)%
-     . fi cmps e  = fi 					%(cmps_fie)%
+     . fi cmps b  = b                                   %(cmps_fib)%
+     . fi cmps bi = bi cup oi cup mi cup di cup si      %(cmps_fibi)%
+     . fi cmps d  = o cup d cup s                       %(cmps_fid)%
+     . fi cmps di = di                                  %(cmps_fidi)%
+     . fi cmps o  = o                                   %(cmps_fio)%
+     . fi cmps oi = oi cup di cup si                    %(cmps_fioi)%
+     . fi cmps m  = m                                   %(cmps_fim)%
+     . fi cmps mi = si cup oi cup di                    %(cmps_fimi)%
+     . fi cmps s  = o                                   %(cmps_fis)%
+     . fi cmps si = di                                  %(cmps_fisi)%
+     . fi cmps f  = f cup fi cup e                      %(cmps_fif)%
+     . fi cmps fi = fi                                  %(cmps_fifi)%
+     . fi cmps e  = fi                                  %(cmps_fie)%
 
-     . e cmps b  = b 				 	%(cmps_eb)%
-     . e cmps bi = bi 					%(cmps_ebi)%
-     . e cmps d  = d					%(cmps_ed)%
-     . e cmps di = di 					%(cmps_edi)%
-     . e cmps o  = o 				      	%(cmps_eo)%
-     . e cmps oi = oi 					%(cmps_eoi)%
-     . e cmps m  = m		 		  	%(cmps_em)%
-     . e cmps mi = mi					%(cmps_emi)%
-     . e cmps s  = s					%(cmps_es)%
-     . e cmps si = si				 	%(cmps_esi)%
-     . e cmps f  = f 					%(cmps_ef)%
-     . e cmps fi = fi 			 		%(cmps_efi)%
-     . e cmps e  = e 			 		%(cmps_ee)%
+     . e cmps b  = b                                    %(cmps_eb)%
+     . e cmps bi = bi                                   %(cmps_ebi)%
+     . e cmps d  = d                                    %(cmps_ed)%
+     . e cmps di = di                                   %(cmps_edi)%
+     . e cmps o  = o                                    %(cmps_eo)%
+     . e cmps oi = oi                                   %(cmps_eoi)%
+     . e cmps m  = m                                    %(cmps_em)%
+     . e cmps mi = mi                                   %(cmps_emi)%
+     . e cmps s  = s                                    %(cmps_es)%
+     . e cmps si = si                                   %(cmps_esi)%
+     . e cmps f  = f                                    %(cmps_ef)%
+     . e cmps fi = fi                                   %(cmps_efi)%
+     . e cmps e  = e                                    %(cmps_ee)%
 end
 
 
@@ -302,13 +302,13 @@ end
 
 spec IAlin =
      ConstructPseudoRelationAlgebra[IAlinBaseRelations]
-	[IAlinCompositionTable fit op id:BaseRel |-> e]
+        [IAlinCompositionTable fit op id:BaseRel |-> e]
 end
 
 
 spec RichIAlin =
      ConstructExtPseudoRelationAlgebra[IAlinBaseRelations]
-	[IAlinCompositionTable fit op id:BaseRel |-> e]
+        [IAlinCompositionTable fit op id:BaseRel |-> e]
 end
 
 
@@ -356,7 +356,7 @@ spec IAlinBaseRelationModel_Allen[LinFlowOfTime] = %def
 then %def
      ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation
      free type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel |
-			biRel | miRel | oiRel | diRel | siRel | fiRel
+                        biRel | miRel | oiRel | diRel | siRel | fiRel
 
      forall x,y:Interval
      . (x,y) isIn rep(bRel) <=> fin(x) pre start(y)
@@ -391,22 +391,22 @@ end
 view CompositionClosedBaseRelationModel_From_IAlinBaseRelationModel_Allen[DnsLinFlowOfTimeSEnd]:
      CheckCompositionClosedBaseRelationModel to
      {  ConstructPseudoModelFromBaseRelationModel[
-		IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
-	then %def
-	ops id:Rel;
-	    inv__:BaseRel -> Rel;
-	     __cmps__:BaseRel * BaseRel -> Rel
-	}
+                IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
+        then %def
+        ops id:Rel;
+            inv__:BaseRel -> Rel;
+             __cmps__:BaseRel * BaseRel -> Rel
+        }
 =    Elem |-> Interval
 end
 
 
 spec IAlinModel_Allen[DnsLinFlowOfTimeSEnd] = %def
      ConstructModelFromBaseRelationModel[
-	IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
+        IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
 then %def
       ops  inv__ : BaseRel -> BaseRel;
-	 __cmps__: BaseRel * BaseRel -> Rel
+         __cmps__: BaseRel * BaseRel -> Rel
 end
 
 
@@ -416,7 +416,7 @@ to
      IAlinModel_Allen[DnsLinFlowOfTimeSEnd]
 =
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel,
-	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
+        bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
 end
 
 
@@ -437,7 +437,7 @@ to
      IAlinModel_Allen[DnsLinFlowOfTimeSEnd]
 =
      ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel,
-	 bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
+         bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
 end
 
 
@@ -447,22 +447,22 @@ end
 
 spec ConvexSetIntervals[LinFlowOfTime] = %def
 { local
-      	ExtFlowOfTimeByConvexity[LinFlowOfTime]
+        ExtFlowOfTimeByConvexity[LinFlowOfTime]
    within
        type Interval =
-	   {X:Set(Instant) . Convex(X) /\ not X = emptySet
-		/\ (exists t,t':Instant . not t = t'/\ t isIn X /\ t' isIn X)}
+           {X:Set(Instant) . Convex(X) /\ not X = emptySet
+                /\ (exists t,t':Instant . not t = t'/\ t isIn X /\ t' isIn X)}
 }
 and
 {
   local
- 	ExtFlowOfTimeBySetRelations[LinFlowOfTime]
+        ExtFlowOfTimeBySetRelations[LinFlowOfTime]
   within
        sorts Instant, Interval
-    	op __union__: Interval * Interval -> Interval
-    	preds
-	  __preE__: Interval * Interval;
-	  __pre__ : Interval * Interval
+        op __union__: Interval * Interval -> Interval
+        preds
+          __preE__: Interval * Interval;
+          __pre__ : Interval * Interval
 }
 end
 
@@ -472,30 +472,30 @@ spec IAlinBaseRelationModel_Conv[LinFlowOfTime] = %def
 then %def
      ops bRel,mRel,oRel,dRel,sRel,fRel,eRel,biRel,miRel,oiRel,diRel,siRel,fiRel:Relation
      free type BaseRel ::= bRel | mRel | oRel | dRel | sRel | fRel | eRel |
-			biRel | miRel | oiRel | diRel | siRel | fiRel
+                        biRel | miRel | oiRel | diRel | siRel | fiRel
 
       forall x,y:Interval
      . (x,y) isIn rep(bRel) <=> exists z:Interval . x preE z /\ z preE y
      . (x,y) isIn rep(mRel) <=> x preE y /\ not(exists z:Interval . x preE z /\ z preE y)
      . (x,y) isIn rep(oRel) <=> exists z,z':Interval . z preE y /\ x preE z'
-					/\ x union z' = x union y /\ y union z = x union y
+                                        /\ x union z' = x union y /\ y union z = x union y
      . (x,y) isIn rep(dRel) <=> exists z,z':Interval . z preE x /\ x pre z'
-					/\ x union z union z' = y
+                                        /\ x union z union z' = y
      . (x,y) isIn rep(sRel) <=> exists z:Interval . x preE z /\
-					x union z = y
+                                        x union z = y
      . (x,y) isIn rep(fRel) <=> exists z:Interval . z preE x /\
-					x union z = y
+                                        x union z = y
      . (x,y) isIn rep(eRel) <=> x = y
      . (x,y) isIn rep(biRel) <=> exists z:Interval . y preE z /\ z preE x
      . (x,y) isIn rep(miRel) <=> y preE x /\ not(exists z:Interval . y preE z /\ z preE x)
      . (x,y) isIn rep(oiRel) <=> exists z,z':Interval . z preE x /\ y preE z'
-					/\ y union z' = x union y /\ x union z = x union y
+                                        /\ y union z' = x union y /\ x union z = x union y
      . (x,y) isIn rep(diRel) <=> exists z,z':Interval . z preE y /\ y pre z'
-					/\ y union z union z' = z
+                                        /\ y union z union z' = z
      . (x,y) isIn rep(siRel) <=> exists z:Interval . y preE z /\
-					y union z = x
+                                        y union z = x
      . (x,y) isIn rep(fiRel) <=> exists z:Interval . z preE y /\
-					y union z = x
+                                        y union z = x
 end
 
 
@@ -517,12 +517,12 @@ end
 view CompositionClosedBaseRelationModel_From_IAlinBaseRelationModel_Conv[DnsLinFlowOfTimeSEnd]:
      CheckCompositionClosedBaseRelationModel to
      {  ConstructPseudoModelFromBaseRelationModel[
-		IAlinBaseRelationModel_Conv[LinFlowOfTime] fit Elem |-> Interval]
-	then %def
-	ops id:Rel;
-	    inv__:BaseRel -> Rel;
-	     __cmps__:BaseRel * BaseRel -> Rel
-	}
+                IAlinBaseRelationModel_Conv[LinFlowOfTime] fit Elem |-> Interval]
+        then %def
+        ops id:Rel;
+            inv__:BaseRel -> Rel;
+             __cmps__:BaseRel * BaseRel -> Rel
+        }
 =    Elem |-> Interval
 end
 
@@ -530,10 +530,10 @@ end
 
 spec IAlinModel_Conv[DnsLinFlowOfTimeSEnd] = %def
      ConstructModelFromBaseRelationModel[
-	IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
+        IAlinBaseRelationModel_Allen[LinFlowOfTime] fit Elem |-> Interval]
 then %def
       ops  inv__ : BaseRel -> BaseRel;
-	 __cmps__: BaseRel * BaseRel -> Rel
+         __cmps__: BaseRel * BaseRel -> Rel
 end
 
 
@@ -543,7 +543,7 @@ to
      IAlinModel_Conv[DnsLinFlowOfTimeSEnd]
 =
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel,
-	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
+        bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
 end
 
 
@@ -564,12 +564,5 @@ to
     IAlinModel_Conv[DnsLinFlowOfTimeSEnd]
 =
     ops b |-> bRel, m |-> mRel, o |-> oRel, d |-> dRel, s |-> sRel, f |-> fRel, e |-> eRel,
-	bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
+        bi |-> biRel, mi |-> miRel, oi |-> oiRel, di |-> diRel, si |-> siRel, fi |-> fiRel
 end
-
-
-
-
-
-
-
