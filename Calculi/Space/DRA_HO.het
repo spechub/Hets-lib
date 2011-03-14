@@ -4,61 +4,61 @@ version 0.1
 %date: 22-05-05
 %% Dipol Calculi DRAx(y)
 
-%{ Hier werden die Schnittstellen der Spezifikationen von Till Mossakowski und
-Stefan Wörfl verwendet - siehe deren Paper: CASL Specifications of Qualitative
-Calculi}%
+%{ Here the interfaces of specifications from Till Mossakowski and
+Stefan Woelfl are used - see their paper: CASL Specifications of Qualitative
+Calculi. }%
 
 %left_assoc __cup__
 %prec {__cup__} < {__cmps__}
 
 from Calculi/Algebra/BooleanAlgebra get
-	BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra
+        BooleanAlgebraWithCompl,
+        ExtBooleanAlgebraByOrderRelations,
+        AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get
-	AtomicRelationAlgebra,
-	IntegralRelationAlgebra,
-	SymmetricRelationAlgebra
+        AtomicRelationAlgebra,
+        IntegralRelationAlgebra,
+        SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get
-	CompositionTable,
-	GroundingCompositionTable,
-	SetRepresentationOfRelations,
-	ConstructPseudoRelationAlgebra,
-	ConstructExtPseudoRelationAlgebra
+        CompositionTable,
+        GroundingCompositionTable,
+        SetRepresentationOfRelations,
+        ConstructPseudoRelationAlgebra,
+        ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get
-	BinaryRelations,
-	AlgebraOfBinaryRelations,
-	JEPDBaseRelationModel,
-	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel,
-	ConstructModelFromBaseRelationModel,
-	CompositionClosedBaseRelationModel,
-	CheckCompositionClosedBaseRelationModel
+        BinaryRelations,
+        AlgebraOfBinaryRelations,
+        JEPDBaseRelationModel,
+        BaseRelationModel,
+        ConstructPseudoModelFromBaseRelationModel,
+        ConstructModelFromBaseRelationModel,
+        CompositionClosedBaseRelationModel,
+        CheckCompositionClosedBaseRelationModel
 from Calculi/Space/EuclideanSpace get
-	EuclideanSpace2D,
-	EuclideanSpace3D
+        EuclideanSpace2D,
+        EuclideanSpace3D
 from HasCASL/TopologicalSpaces get
-	RichTopologicalSpace
+        RichTopologicalSpace
 from HasCASL/MetricSpaces get
-	MetricSpace
+        MetricSpace
 from HasCASL/Set get
-	Set
+        Set
 
 
 spec BaseRelationsOfDRAc = %mono
      free type BaseRel ::= rrrr | rrrl | rrlr | rrll | rlrr | rllr | rlll |
-			   lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
-			   ells | errs | lere | rele | slsr | srsl | lsel |
-			   rser | sese | eses
+                           lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
+                           ells | errs | lere | rele | slsr | srsl | lsel |
+                           rser | sese | eses
 end
 
 spec CompositionTableOfDRAc =
      sort BaseRel
      ops rrrr,rrrl,rrlr,rrll,rlrr,rllr,rlll,lrrr,lrrl,lrll,llrr,llrl,lllr,
-	 llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses : BaseRel
+         llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses : BaseRel
 and
     CompositionTable
-    %(sjw: unvollständig?)%
+    %(sjw: incomplete?)%
 end
 
 
@@ -69,32 +69,32 @@ end
 
 spec DRAc =
      ConstructPseudoRelationAlgebra[BaseRelationsOfDRAc]
-	[CompositionTableOfDRAc fit op id:BaseRel |-> sese:BaseRel]
+        [CompositionTableOfDRAc fit op id:BaseRel |-> sese:BaseRel]
 end
 
 
 spec BaseRelationsOfDRAf = %mono
      free type BaseRel ::= rrrr | rrrl | rrlr | rrll | rlrr | rllr | rlll |
-			   lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
-			   ells | errs | lere | rele | slsr | srsl | lsel |
-			   rser | sese | eses |
-			   ffbb | efbs | ifbi | bfii | sfsi | beie | bbff |
-			   bsef | biif | iibf | sisf | iebe | ffff | fefe |
-			   fifi | fbii | fsei | ebis | iifb | eifs | iseb |
-			   bbbb | sbsb | ibib | lllb | llfl | llbr | llrf |
-			   lirl | lfrr | lril | lrri | blrr | irrl | frrr |
-			   rbrr | lbll | flll | brll | rfll | rlli | rrlf |
-			   illr | rilr | rrbl | rlir | rrfr | rrrb
+                           lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
+                           ells | errs | lere | rele | slsr | srsl | lsel |
+                           rser | sese | eses |
+                           ffbb | efbs | ifbi | bfii | sfsi | beie | bbff |
+                           bsef | biif | iibf | sisf | iebe | ffff | fefe |
+                           fifi | fbii | fsei | ebis | iifb | eifs | iseb |
+                           bbbb | sbsb | ibib | lllb | llfl | llbr | llrf |
+                           lirl | lfrr | lril | lrri | blrr | irrl | frrr |
+                           rbrr | lbll | flll | brll | rfll | rlli | rrlf |
+                           illr | rilr | rrbl | rlir | rrfr | rrrb
 end
 
 spec CompositionTableOfDRAf =
      sort BaseRel
      ops rrrr,rrrl,rrlr,rrll,rlrr,rllr,rlll,lrrr,lrrl,lrll,llrr,llrl,lllr,
-	 llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses,ffbb,efbs,
-	 ifbi,bfii,sfsi,beie,bbff,bsef,biif,iibf,sisf,iebe,ffff,fefe,fifi,
-	 fbii,fsei,ebis,iifb,eifs,iseb,bbbb,sbsb,ibib,lllb,llfl,llbr,llrf,
-	 lirl,lfrr,lril,lrri,blrr,irrl,frrr,rbrr,lbll,flll,brll,rfll,rlli,
-	 rrlf,illr,rilr,rrbl,rlir,rrfr,rrrb : BaseRel
+         llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses,ffbb,efbs,
+         ifbi,bfii,sfsi,beie,bbff,bsef,biif,iibf,sisf,iebe,ffff,fefe,fifi,
+         fbii,fsei,ebis,iifb,eifs,iseb,bbbb,sbsb,ibib,lllb,llfl,llbr,llrf,
+         lirl,lfrr,lril,lrri,blrr,irrl,frrr,rbrr,lbll,flll,brll,rfll,rlli,
+         rrlf,illr,rilr,rrbl,rlir,rrfr,rrrb : BaseRel
 and
     CompositionTable
 then
@@ -187,9 +187,9 @@ then
 
 %% compostion table - external from semantics!
 
-%% komplette kompositionstabelle wird später hier noch eingefügt
+%% complete compositions tables will be inserted here later
 
-    %(sjw: unvollständig)%
+    %(sjw: incomplete)%
 end
 
 
@@ -199,39 +199,39 @@ end
 
 
 spec DRAf =
-	ConstructPseudoRelationAlgebra[BaseRelationsOfDRAf]
-	[CompositionTableOfDRAf fit op id:BaseRel |-> sese:BaseRel]
+        ConstructPseudoRelationAlgebra[BaseRelationsOfDRAf]
+        [CompositionTableOfDRAf fit op id:BaseRel |-> sese:BaseRel]
 end
 
 
 spec BaseRelationsOfDRAfp = %mono
      free type BaseRel ::= rrrrp | rrrrA | rrrrn | rrllp | rrllP | rrlln |
-			   llrrp | llrrP | llrrn | llllp | llllA | lllln |
-			   rrrln | rrlrp | rlrrp | rllrp | rlllp | lrrrn |
-			   lrrln | lrlln | llrln | lllrp | ellsp | errsn |
-			   leren | relep | slsrp | srsln | lseln | rserp |
-			   seseP | esesA |
-			   ffbbP | efbsP | ifbiP | bfiiP | sfsiP | beieP |
-			   bbffP | bsefP | biifP | iibfP | sisfP | iebeP |
-			   ffffA | fefeA | fifiA | fbiiA | fseiA | ebisA |
-			   iifbA | eifsA | isebA | bbbbA | sbsbA | ibibA |
-			   lllbp | llfln | llbrp | llrfn | lirln | lfrrn |
-			   lriln | lrrin | blrrp | irrln | frrrn | rbrrp |
-			   lblln | flllp | brlln | rfllp | rllip | rrlfp |
-			   illrp | rilrp | rrbln | rlirp | rrfrp | rrrbn
+                           llrrp | llrrP | llrrn | llllp | llllA | lllln |
+                           rrrln | rrlrp | rlrrp | rllrp | rlllp | lrrrn |
+                           lrrln | lrlln | llrln | lllrp | ellsp | errsn |
+                           leren | relep | slsrp | srsln | lseln | rserp |
+                           seseP | esesA |
+                           ffbbP | efbsP | ifbiP | bfiiP | sfsiP | beieP |
+                           bbffP | bsefP | biifP | iibfP | sisfP | iebeP |
+                           ffffA | fefeA | fifiA | fbiiA | fseiA | ebisA |
+                           iifbA | eifsA | isebA | bbbbA | sbsbA | ibibA |
+                           lllbp | llfln | llbrp | llrfn | lirln | lfrrn |
+                           lriln | lrrin | blrrp | irrln | frrrn | rbrrp |
+                           lblln | flllp | brlln | rfllp | rllip | rrlfp |
+                           illrp | rilrp | rrbln | rlirp | rrfrp | rrrbn
 end
 
 
 spec CompositionTableOfDRAfp =
      sort BaseRel
      ops rrrrp,rrrrA,rrrrn,rrllp,rrllP,rrlln,llrrp,llrrP,llrrn,llllp,llllA,
-	 lllln,rrrln,rrlrp,rlrrp,rllrp,rlllp,lrrrn,lrrln,lrlln,llrln,lllrp,
-	 ellsp,errsn,leren,relep,slsrp,srsln,lseln,rserp,seseP,esesA,
-	 ffbbP,efbsP,ifbiP,bfiiP,sfsiP,beieP,bbffP,bsefP,biifP,iibfP,sisfP,
-	 iebeP,ffffA,fefeA,fifiA,fbiiA,fseiA,ebisA,iifbA,eifsA,isebA,bbbbA,
-	 sbsbA,ibibA,lllbp,llfln,llbrp,llrfn,lirln,lfrrn,lriln,lrrin,blrrp,
-	 irrln,frrrn,rbrrp,lblln,flllp,brlln,rfllp,rllip,rrlfp,illrp,rilrp,
-	 rrbln,rlirp,rrfrp,rrrbn : BaseRel
+         lllln,rrrln,rrlrp,rlrrp,rllrp,rlllp,lrrrn,lrrln,lrlln,llrln,lllrp,
+         ellsp,errsn,leren,relep,slsrp,srsln,lseln,rserp,seseP,esesA,
+         ffbbP,efbsP,ifbiP,bfiiP,sfsiP,beieP,bbffP,bsefP,biifP,iibfP,sisfP,
+         iebeP,ffffA,fefeA,fifiA,fbiiA,fseiA,ebisA,iifbA,eifsA,isebA,bbbbA,
+         sbsbA,ibibA,lllbp,llfln,llbrp,llrfn,lirln,lfrrn,lriln,lrrin,blrrp,
+         irrln,frrrn,rbrrp,lblln,flllp,brlln,rfllp,rllip,rrlfp,illrp,rilrp,
+         rrbln,rlirp,rrfrp,rrrbn : BaseRel
 
 and
     CompositionTable
@@ -352,46 +352,46 @@ end
 
 spec DRAfp =
      ConstructPseudoRelationAlgebra[BaseRelationsOfDRAfp]
-	[CompositionTableOfDRAfp fit op id:BaseRel |-> seseP:BaseRel]
+        [CompositionTableOfDRAfp fit op id:BaseRel |-> seseP:BaseRel]
 end
 
 %( Error DRA.het: Ambiguous symbol map (sjw: keine Ahnung)
 
 view DRAf2fp_Refinement:
      {DRAf with rrrl|->rrrln, rrlr|->rrlrp,
-		rlrr|->rlrrp, rllr|->rllrp,
-		rlll|->rlllp, lrrr|->lrrrn,
-		lrrl|->lrrln, lrll|->lrlln,
-		llrl|->llrln, lllr|->lllrp,
-		ells|->ellsp, errs|->errsn,
-		lere|->leren, rele|->relep,
-		slsr|->slsrp, srsl|->srsln,
-		lsel|->lseln, rser|->rserp,
-		sese|->seseP, eses|->esesA,
-		ffbb|->ffbbP, efbs|->efbsP,
-		ifbi|->ifbiP, bfii|->bfiiP,
-		sfsi|->sfsiP, beie|->beieP,
-		bbff|->bbffP, bsef|->bsefP,
-		biif|->biifP, iibf|->iibfP,
-		sisf|->sisfP, iebe|->iebeP,
-		ffff|->ffffA, fefe|->fefeA,
-		fifi|->fifiA, fbii|->fbiiA,
-		fsei|->fseiA, ebis|->ebisA,
-		iifb|->iifbA, eifs|->eifsA,
-		iseb|->isebA, bbbb|->bbbbA,
-		sbsb|->sbsbA, ibib|->ibibA,
-		lllb|->lllbp, llfl|->llfln,
-		llbr|->llbrp, llrf|->llrfn,
-		lirl|->lirln, lfrr|->lfrrn,
-		lril|->lriln, lrri|->lrrin,
-		blrr|->blrrp, irrl|->irrln,
-		frrr|->frrrn, rbrr|->rbrrp,
-		lbll|->lblln, flll|->flllp,
-		brll|->brlln, rfll|->rfllp,
-		rlli|->rllip, rrlf|->rrlfp,
-		illr|->illrp, rilr|->rilrp,
-		rrbl|->rrbln, rlir|->rlirp,
-		rrfr|->rrfrp, rrrb|->rrrbn }
+                rlrr|->rlrrp, rllr|->rllrp,
+                rlll|->rlllp, lrrr|->lrrrn,
+                lrrl|->lrrln, lrll|->lrlln,
+                llrl|->llrln, lllr|->lllrp,
+                ells|->ellsp, errs|->errsn,
+                lere|->leren, rele|->relep,
+                slsr|->slsrp, srsl|->srsln,
+                lsel|->lseln, rser|->rserp,
+                sese|->seseP, eses|->esesA,
+                ffbb|->ffbbP, efbs|->efbsP,
+                ifbi|->ifbiP, bfii|->bfiiP,
+                sfsi|->sfsiP, beie|->beieP,
+                bbff|->bbffP, bsef|->bsefP,
+                biif|->biifP, iibf|->iibfP,
+                sisf|->sisfP, iebe|->iebeP,
+                ffff|->ffffA, fefe|->fefeA,
+                fifi|->fifiA, fbii|->fbiiA,
+                fsei|->fseiA, ebis|->ebisA,
+                iifb|->iifbA, eifs|->eifsA,
+                iseb|->isebA, bbbb|->bbbbA,
+                sbsb|->sbsbA, ibib|->ibibA,
+                lllb|->lllbp, llfl|->llfln,
+                llbr|->llbrp, llrf|->llrfn,
+                lirl|->lirln, lfrr|->lfrrn,
+                lril|->lriln, lrri|->lrrin,
+                blrr|->blrrp, irrl|->irrln,
+                frrr|->frrrn, rbrr|->rbrrp,
+                lbll|->lblln, flll|->flllp,
+                brll|->brlln, rfll|->rfllp,
+                rlli|->rllip, rrlf|->rrlfp,
+                illr|->illrp, rilr|->rilrp,
+                rrbl|->rrbln, rlir|->rlirp,
+                rrfr|->rrfrp, rrrb|->rrrbn }
 
 to   { DRAfp then %def
 
@@ -467,10 +467,10 @@ to   DRAc
 end
 )%
 
-
-%{ Die relationale Algebra der DRA-Kalküle wird im folgenden als eine
-Mengenalgebra binärer Relationen von Dipolen und JEPD-System der
-Basisrelationen vor-interpretiert, das über eine Identitätsrelation verfügt
+%% to be translated!
+%{ Die relationale Algebra der DRA-Kalkuele wird im folgenden als eine
+Mengenalgebra binaerer Relationen von Dipolen und JEPD-System der
+Basisrelationen vor-interpretiert, das ueber eine Identitaetsrelation verfuegt
 und abgeschlossen unter Komposition und Konversion ist -- also auch eine
 relationale Algebra}%
 
@@ -486,43 +486,43 @@ then
 
 then
      ops rrrr,rrrl,rrlr,rrll,rlrr,rllr,rlll,lrrr,lrrl,lrll,llrr,llrl,lllr,
-	 llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses,ffbb,efbs,
-	 ifbi,bfii,sfsi,beie,bbff,bsef,biif,iibf,sisf,iebe,ffff,fefe,fifi,
-	 fbii,fsei,ebis,iifb,eifs,iseb,bbbb,sbsb,ibib,lllb,llfl,llbr,llrf,
-	 lirl,lfrr,lril,lrri,blrr,irrl,frrr,rbrr,lbll,flll,brll,rfll,rlli,
-	 rrlf,illr,rilr,rrbl,rlir,rrfr,rrrb : Relation
+         llll,ells,errs,lere,rele,slsr,srsl,lsel,rser,sese,eses,ffbb,efbs,
+         ifbi,bfii,sfsi,beie,bbff,bsef,biif,iibf,sisf,iebe,ffff,fefe,fifi,
+         fbii,fsei,ebis,iifb,eifs,iseb,bbbb,sbsb,ibib,lllb,llfl,llbr,llrf,
+         lirl,lfrr,lril,lrri,blrr,irrl,frrr,rbrr,lbll,flll,brll,rfll,rlli,
+         rrlf,illr,rilr,rrbl,rlir,rrfr,rrrb : Relation
 
      type BaseRel ::= rrrr | rrrl | rrlr | rrll | rlrr | rllr | rlll |
-			   lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
-			   ells | errs | lere | rele | slsr | srsl | lsel |
-			   rser | sese | eses |
-			   ffbb | efbs | ifbi | bfii | sfsi | beie | bbff |
-			   bsef | biif | iibf | sisf | iebe | ffff | fefe |
-			   fifi | fbii | fsei | ebis | iifb | eifs | iseb |
-			   bbbb | sbsb | ibib | lllb | llfl | llbr | llrf |
-			   lirl | lfrr | lril | lrri | blrr | irrl | frrr |
-			   rbrr | lbll | flll | brll | rfll | rlli | rrlf |
-			   illr | rilr | rrbl | rlir | rrfr | rrrb
+                           lrrr | lrrl | lrll | llrr | llrl | lllr | llll |
+                           ells | errs | lere | rele | slsr | srsl | lsel |
+                           rser | sese | eses |
+                           ffbb | efbs | ifbi | bfii | sfsi | beie | bbff |
+                           bsef | biif | iibf | sisf | iebe | ffff | fefe |
+                           fifi | fbii | fsei | ebis | iifb | eifs | iseb |
+                           bbbb | sbsb | ibib | lllb | llfl | llbr | llrf |
+                           lirl | lfrr | lril | lrri | blrr | irrl | frrr |
+                           rbrr | lbll | flll | brll | rfll | rlli | rrlf |
+                           illr | rilr | rrbl | rlir | rrfr | rrrb
 
 end
 
 
 spec DRAfPreModel  =
      ConstructModelFromBaseRelationModel[DRAfBaseRelationPreModel
-					fit sort Elem |-> Dipol]
+                                        fit sort Elem |-> Dipol]
 then
      ops sese: Rel;
-	 inv: Rel -> Rel;
-	 inv: BaseRel -> BaseRel
+         inv: Rel -> Rel;
+         inv: BaseRel -> BaseRel
 then
      ops __cmps__ : Rel * Rel -> Rel;
-	 __cmps__ : BaseRel * BaseRel -> Rel
+         __cmps__ : BaseRel * BaseRel -> Rel
 end
 
 
 %( Error DRA.het:523.1-531.1, No symbol mapping found for:
-	{ op id |-> op sese }
-	sjw: keine Ahnung
+        { op id |-> op sese }
+        sjw: keine Ahnung
 
 view DRAfPreModel_induces_DRAfRelationAlgebra :
      { DRAf hide ops __+__,__-__,{},{__}
@@ -535,9 +535,8 @@ to
 end
 )%
 
-%{ Der nächste Schritt wäre die geometrische Interpretation der
-Basisrelationen, um ein konkretes Modell zu erhalten:
+%{ The next step would be the geometric interpretation of the base relations
+to get a concrete model:
 forall A,B : Dipol
 . (A,B) isIn rep(rrrr) <=> ...
 ... }%
-

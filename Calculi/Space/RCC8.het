@@ -1,6 +1,6 @@
 library Calculi/Space/RCC8
 version 0.3
-%% author: S. Wölfl
+%% author: S. Woelfl
 %% date: 23-06-2005
 %%
 
@@ -8,44 +8,44 @@ version 0.3
 %prec {__cup__} < {__cmps__}
 
 %(
-	The RCC8 Calculus (resp. Containment Algebra)
+        The RCC8 Calculus (resp. Containment Algebra)
 
 Literature: TODO
 )%
 
 
 from Calculi/Algebra/BooleanAlgebra get
-	BooleanAlgebraWithCompl,
-	ExtBooleanAlgebraByOrderRelations,
-	AtomicBooleanAlgebra
+        BooleanAlgebraWithCompl,
+        ExtBooleanAlgebraByOrderRelations,
+        AtomicBooleanAlgebra
 from Calculi/Algebra/RelationAlgebra get
-	AtomicRelationAlgebra,
-	IntegralRelationAlgebra,
-	SymmetricRelationAlgebra
+        AtomicRelationAlgebra,
+        IntegralRelationAlgebra,
+        SymmetricRelationAlgebra
 from Calculi/Algebra/RelationAlgebraSymbolic get
-	CompositionTable,
-	GroundingCompositionTable,
-	SetRepresentationOfRelations,
-	ConstructPseudoRelationAlgebra,
-	ConstructExtPseudoRelationAlgebra
+        CompositionTable,
+        GroundingCompositionTable,
+        SetRepresentationOfRelations,
+        ConstructPseudoRelationAlgebra,
+        ConstructExtPseudoRelationAlgebra
 from Calculi/Algebra/RelationAlgebraModel get
-	BinaryRelations,
-	AlgebraOfBinaryRelations,
-	JEPDBaseRelationModel,
-	BaseRelationModel,
-	ConstructPseudoModelFromBaseRelationModel,
-	ConstructModelFromBaseRelationModel,
-	CompositionClosedBaseRelationModel,
-	CheckCompositionClosedBaseRelationModel
+        BinaryRelations,
+        AlgebraOfBinaryRelations,
+        JEPDBaseRelationModel,
+        BaseRelationModel,
+        ConstructPseudoModelFromBaseRelationModel,
+        ConstructModelFromBaseRelationModel,
+        CompositionClosedBaseRelationModel,
+        CheckCompositionClosedBaseRelationModel
 from Calculi/Space/EuclideanSpace get
-	EuclideanSpace2D,
-	EuclideanSpace3D
+        EuclideanSpace2D,
+        EuclideanSpace3D
 from HasCASL/TopologicalSpaces get
-	RichTopologicalSpace
+        RichTopologicalSpace
 from HasCASL/MetricSpaces get
-	MetricSpace
+        MetricSpace
 from HasCASL/Set get
-	Set
+        Set
 
 
 
@@ -72,8 +72,8 @@ from HasCASL/Set get
      namely, dc ("disconnected"), ec ("externally connected"),
      po ("partially overlaps"), tpp ("tangential proper part"),
      ntpp ("non-tangential proper part"),  tppi ("tangential
-	proper part inverse"), ntppi ("non-tangential proper
-	part inverse"), and  eq ("equals").
+        proper part inverse"), ntppi ("non-tangential proper
+        part inverse"), and  eq ("equals").
 )%
 
 
@@ -95,70 +95,70 @@ spec RCC8CompositionTable =
 and
      CompositionTable with op id |-> eq
 then
-     . inv(dc) = dc						%(sym_dc)%
-     . inv(ec) = ec						%(sym_dc)%
-     . inv(po) = po						%(sym_po)%
-     . inv(tpp) = tppi						%(inv_tpp)%
-     . inv(tppi) = tpp						%(inv_tppi)%
-     . inv(ntpp) = ntppi					%(inv_ntpp)%
-     . inv(ntppi) = ntpp					%(inv_ntppi)%
-     . inv(eq) = eq						%(sym_eq)%
+     . inv(dc) = dc                                             %(sym_dc)%
+     . inv(ec) = ec                                             %(sym_dc)%
+     . inv(po) = po                                             %(sym_po)%
+     . inv(tpp) = tppi                                          %(inv_tpp)%
+     . inv(tppi) = tpp                                          %(inv_tppi)%
+     . inv(ntpp) = ntppi                                        %(inv_ntpp)%
+     . inv(ntppi) = ntpp                                        %(inv_ntppi)%
+     . inv(eq) = eq                                             %(sym_eq)%
 
-     . dc cmps dc  = 1 						%(cmps_dcdc)%
-     . dc cmps ec  = dc cup ec cup po cup tpp cup ntpp  	%(cmps_dcec)%
-     . dc cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_dcpo)%
-     . dc cmps tpp = dc cup ec cup po cup tpp cup ntpp		%(cmps_dctpp)%
-     . dc cmps ntpp = dc cup ec cup po cup tpp cup ntpp		%(cmps_dcntpp)%
-     . dc cmps tppi = dc					%(cmps_dctppi)%
-     . dc cmps ntppi = dc					%(cmps_dcntppi)%
+     . dc cmps dc  = 1                                          %(cmps_dcdc)%
+     . dc cmps ec  = dc cup ec cup po cup tpp cup ntpp          %(cmps_dcec)%
+     . dc cmps po = dc cup ec cup po cup tpp cup ntpp           %(cmps_dcpo)%
+     . dc cmps tpp = dc cup ec cup po cup tpp cup ntpp          %(cmps_dctpp)%
+     . dc cmps ntpp = dc cup ec cup po cup tpp cup ntpp         %(cmps_dcntpp)%
+     . dc cmps tppi = dc                                        %(cmps_dctppi)%
+     . dc cmps ntppi = dc                                       %(cmps_dcntppi)%
 
-     . ec cmps dc = dc cup ec cup po cup tppi cup ntppi		%(cmps_ecdc)%
-     . ec cmps ec = dc cup ec cup po cup tpp cup tppi cup eq 	%(cmps_ecec)%
-     . ec cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_ecpo)%
-     . ec cmps tpp = ec cup po cup tpp cup ntpp			%(cmps_ectpp)%
-     . ec cmps ntpp = po cup tpp cup ntpp			%(cmps_ecntpp)%
-     . ec cmps tppi = dc cup ec					%(cmps_ectppi)%
-     . ec cmps ntppi = dc					%(cmps_ecntppi)%
+     . ec cmps dc = dc cup ec cup po cup tppi cup ntppi         %(cmps_ecdc)%
+     . ec cmps ec = dc cup ec cup po cup tpp cup tppi cup eq    %(cmps_ecec)%
+     . ec cmps po = dc cup ec cup po cup tpp cup ntpp           %(cmps_ecpo)%
+     . ec cmps tpp = ec cup po cup tpp cup ntpp                 %(cmps_ectpp)%
+     . ec cmps ntpp = po cup tpp cup ntpp                       %(cmps_ecntpp)%
+     . ec cmps tppi = dc cup ec                                 %(cmps_ectppi)%
+     . ec cmps ntppi = dc                                       %(cmps_ecntppi)%
 
-     . po cmps dc = dc cup ec cup po cup tppi cup ntppi		%(cmps_podc)%
-     . po cmps ec = dc cup ec cup po cup tppi cup ntppi		%(cmps_poec)%
-     . po cmps po = 1						%(cmps_popo)%
-     . po cmps tpp = po cup tpp cup ntpp			%(cmps_potpp)%
-     . po cmps ntpp = po cup tpp cup ntpp			%(cmps_pontpp)%
-     . po cmps tppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_potppi)%
-     . po cmps ntppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_pontppi)%
+     . po cmps dc = dc cup ec cup po cup tppi cup ntppi         %(cmps_podc)%
+     . po cmps ec = dc cup ec cup po cup tppi cup ntppi         %(cmps_poec)%
+     . po cmps po = 1                                           %(cmps_popo)%
+     . po cmps tpp = po cup tpp cup ntpp                        %(cmps_potpp)%
+     . po cmps ntpp = po cup tpp cup ntpp                       %(cmps_pontpp)%
+     . po cmps tppi = dc cup ec cup po cup tppi cup ntppi       %(cmps_potppi)%
+     . po cmps ntppi = dc cup ec cup po cup tppi cup ntppi      %(cmps_pontppi)%
 
-     . tpp cmps dc = dc						%(cmps_tppdc)%
-     . tpp cmps ec = dc cup ec					%(cmps_tppec)%
-     . tpp cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_tpppo)%
-     . tpp cmps tpp = tpp cup ntpp				%(cmps_tpptpp)%
-     . tpp cmps ntpp = ntpp					%(cmps_tppntpp)%
-     . tpp cmps tppi = dc cup ec cup po cup tpp cup tppi cup eq	%(cmps_tpptppi)%
-     . tpp cmps ntppi = dc cup ec cup po cup tppi cup ntppi	%(cmps_tppntppi)%
+     . tpp cmps dc = dc                                         %(cmps_tppdc)%
+     . tpp cmps ec = dc cup ec                                  %(cmps_tppec)%
+     . tpp cmps po = dc cup ec cup po cup tpp cup ntpp          %(cmps_tpppo)%
+     . tpp cmps tpp = tpp cup ntpp                              %(cmps_tpptpp)%
+     . tpp cmps ntpp = ntpp                                     %(cmps_tppntpp)%
+     . tpp cmps tppi = dc cup ec cup po cup tpp cup tppi cup eq %(cmps_tpptppi)%
+     . tpp cmps ntppi = dc cup ec cup po cup tppi cup ntppi     %(cmps_tppntppi)%
 
-     . ntpp cmps dc = dc					%(cmps_ntppdc)%
-     . ntpp cmps ec = dc					%(cmps_ntppec)%
-     . ntpp cmps po = dc cup ec cup po cup tpp cup ntpp		%(cmps_ntpppo)%
-     . ntpp cmps tpp = ntpp					%(cmps_ntpptpp)%
-     . ntpp cmps ntpp = ntpp					%(cmps_ntppntpp)%
-     . ntpp cmps tppi = dc cup ec cup po cup tpp cup ntpp	%(cmps_ntpptppi)%
-     . ntpp cmps ntppi = 1					%(cmps_ntppntppi)%
+     . ntpp cmps dc = dc                                        %(cmps_ntppdc)%
+     . ntpp cmps ec = dc                                        %(cmps_ntppec)%
+     . ntpp cmps po = dc cup ec cup po cup tpp cup ntpp         %(cmps_ntpppo)%
+     . ntpp cmps tpp = ntpp                                     %(cmps_ntpptpp)%
+     . ntpp cmps ntpp = ntpp                                    %(cmps_ntppntpp)%
+     . ntpp cmps tppi = dc cup ec cup po cup tpp cup ntpp       %(cmps_ntpptppi)%
+     . ntpp cmps ntppi = 1                                      %(cmps_ntppntppi)%
 
-     . tppi cmps dc = dc cup ec cup po cup tppi cup ntppi	%(cmps_tppidc)%
-     . tppi cmps ec = ec cup po cup tppi cup ntppi		%(cmps_tppiec)%
-     . tppi cmps po = po cup tppi cup ntppi			%(cmps_tppipo)%
-     . tppi cmps tpp = po cup eq cup tpp cup tppi		%(cmps_tppitpp)%
-     . tppi cmps ntpp = po cup tpp cup ntpp			%(cmps_tppintpp)%
-     . tppi cmps tppi = tppi cup ntppi				%(cmps_tppitppi)%
-     . tppi cmps ntppi = ntppi					%(cmps_tppintppi)%
+     . tppi cmps dc = dc cup ec cup po cup tppi cup ntppi       %(cmps_tppidc)%
+     . tppi cmps ec = ec cup po cup tppi cup ntppi              %(cmps_tppiec)%
+     . tppi cmps po = po cup tppi cup ntppi                     %(cmps_tppipo)%
+     . tppi cmps tpp = po cup eq cup tpp cup tppi               %(cmps_tppitpp)%
+     . tppi cmps ntpp = po cup tpp cup ntpp                     %(cmps_tppintpp)%
+     . tppi cmps tppi = tppi cup ntppi                          %(cmps_tppitppi)%
+     . tppi cmps ntppi = ntppi                                  %(cmps_tppintppi)%
 
-     . ntppi cmps dc = dc cup ec cup po cup tppi cup ntppi	%(cmps_ntppidc)%
-     . ntppi cmps ec = po cup tppi cup ntppi			%(cmps_ntppiec)%
-     . ntppi cmps po = po cup tppi cup ntppi			%(cmps_ntppipo)%
-     . ntppi cmps tpp = po cup tppi cup ntppi			%(cmps_ntppitpp)%
-     . ntppi cmps ntpp = po cup tpp cup tppi cup ntpp cup ntppi cup eq	%(cmps_ntppintpp)%
-     . ntppi cmps tppi = ntppi					%(cmps_ntppitppi)%
-     . ntppi cmps ntppi = ntppi					%(cmps_ntppintppi)%
+     . ntppi cmps dc = dc cup ec cup po cup tppi cup ntppi      %(cmps_ntppidc)%
+     . ntppi cmps ec = po cup tppi cup ntppi                    %(cmps_ntppiec)%
+     . ntppi cmps po = po cup tppi cup ntppi                    %(cmps_ntppipo)%
+     . ntppi cmps tpp = po cup tppi cup ntppi                   %(cmps_ntppitpp)%
+     . ntppi cmps ntpp = po cup tpp cup tppi cup ntpp cup ntppi cup eq  %(cmps_ntppintpp)%
+     . ntppi cmps tppi = ntppi                                  %(cmps_ntppitppi)%
+     . ntppi cmps ntppi = ntppi                                 %(cmps_ntppintppi)%
 
 end
 
@@ -183,13 +183,13 @@ end
 
 spec RCC8 =
      ConstructPseudoRelationAlgebra[RCC8BaseRelations]
-	[RCC8CompositionTable fit op id:BaseRel |-> eq]
+        [RCC8CompositionTable fit op id:BaseRel |-> eq]
 end
 
 
 spec RichRCC8 =
      ConstructExtPseudoRelationAlgebra[RCC8BaseRelations]
-	[RCC8CompositionTable fit op id:BaseRel |-> eq]
+        [RCC8CompositionTable fit op id:BaseRel |-> eq]
 end
 
 
@@ -235,7 +235,7 @@ within
      type ClosedDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=clDisc(r,x)}
      preds __disjoint__,__subset__: Set S * Set S
      ops  cen: OpenDisc -> S;
-	  rad: OpenDisc -> Real
+          rad: OpenDisc -> Real
      forall X:OpenDisc; r:Real; x:S
      . X = opDisc(r,x) <=> cen(X) = x /\ rad(X) = r
 end
@@ -246,24 +246,24 @@ spec RCC8BaseRelationModel_OpenDisc[MetricSpace] = %def
 then %def
      ops dcRel,ecRel,poRel,tppRel,ntppRel,tppiRel,ntppiRel,eqRel:Relation
      free type BaseRel ::= dcRel | ecRel | poRel | tppRel |
-			ntppRel | tppiRel | ntppiRel | eqRel
+                        ntppRel | tppiRel | ntppiRel | eqRel
 
      forall x,y:OpenDisc
      . (x,y) isIn rep(dcRel) <=>
-		  clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
+                  clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
      . (x,y) isIn rep(ecRel) <=>
-		x disjoint y /\
-  	     	not clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
+                x disjoint y /\
+                not clDisc(rad(x),cen(x)) disjoint clDisc(rad(y),cen(y))
      . (x,y) isIn rep(poRel) <=>
-		not x subset y /\ not y subset x /\ not  x disjoint y
+                not x subset y /\ not y subset x /\ not  x disjoint y
      . (x,y) isIn rep(tppRel) <=>
-		x subset y /\  not clDisc(rad(x),cen(x)) subset y
+                x subset y /\  not clDisc(rad(x),cen(x)) subset y
      . (x,y) isIn rep(ntppRel) <=>
-		clDisc(rad(x),cen(x)) subset y
+                clDisc(rad(x),cen(x)) subset y
      . (x,y) isIn rep(tppiRel) <=>
-		y subset x /\  not clDisc(rad(y),cen(y)) subset x
+                y subset x /\  not clDisc(rad(y),cen(y)) subset x
      . (x,y) isIn rep(ntppiRel) <=>
-		clDisc(rad(y),cen(y)) subset x
+                clDisc(rad(y),cen(y)) subset x
      . (x,y) isIn rep(eqRel) <=> x = y
 end
 
@@ -306,22 +306,22 @@ end
 view CompositionClosedBaseRelationModel_From_RCC8BaseRelationModel_OpenDisc[UnboundedMetricSpace]:
      CheckCompositionClosedBaseRelationModel to
      {  ConstructPseudoModelFromBaseRelationModel[
-		RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
-	then %def
-	ops id:Rel;
-	    inv__:BaseRel -> Rel;
-	     __cmps__:BaseRel * BaseRel -> Rel
-	}
+                RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+        then %def
+        ops id:Rel;
+            inv__:BaseRel -> Rel;
+             __cmps__:BaseRel * BaseRel -> Rel
+        }
 =    Elem |-> OpenDisc
 end
 
 
 spec RCC8Model_OpenDisc[UnboundedMetricSpace] = %def
      ConstructModelFromBaseRelationModel[
-	RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
+        RCC8BaseRelationModel_OpenDisc[MetricSpace] fit Elem |-> OpenDisc]
 then %def
       ops  inv__ : BaseRel -> BaseRel;
-	 __cmps__: BaseRel * BaseRel -> Rel
+         __cmps__: BaseRel * BaseRel -> Rel
 end
 
 
@@ -333,7 +333,7 @@ to
      RCC8Model_OpenDisc[UnboundedMetricSpace]
 =
     ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
+        tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
 
 
@@ -354,7 +354,7 @@ to
     RCC8Model_OpenDisc[UnboundedMetricSpace]
 =
     ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
+        tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
 
 
@@ -379,12 +379,5 @@ to
      RCC8EuclideanSpace2D_OpenDisc
 =
     ops  dc |-> dcRel, ec |-> ecRel, po |-> poRel, tpp |-> tppRel, ntpp |-> ntppRel,
-	tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
+        tppi |-> tppiRel, ntppi |-> ntppiRel, eq |-> eqRel
 end
-
-
-
-
-
-
-

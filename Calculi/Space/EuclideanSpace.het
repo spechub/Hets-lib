@@ -1,16 +1,16 @@
 library Calculi/Space/EuclideanSpace
 version 0.1
-%% author: S. Wölfl
+%% author: S. Woelfl
 %% date: 22-06-2005
-%% 
-from HasCASL/TopologicalSpaces get 
-	RichTopologicalSpace
-from HasCASL/MetricSpaces get 
-	MetricSpace
-from HasCASL/Set get 
-	Set
-from HasCASL/Real get 
-	Real
+%%
+from HasCASL/TopologicalSpaces get
+        RichTopologicalSpace
+from HasCASL/MetricSpaces get
+        MetricSpace
+from HasCASL/Set get
+        Set
+from HasCASL/Real get
+        Real
 
 
 logic HasCASL
@@ -31,7 +31,7 @@ end
 
 
 spec EuclideanSpace3D = %def
-     ExtRealByMetric[Real] 
+     ExtRealByMetric[Real]
 then %def
 local Set
 within
@@ -39,21 +39,21 @@ within
      op dist: Point * Point -> Real
      forall x,y:Point;r:Real
      . dist(x,y) = dist(pr1(x),pr1(y)) * dist(pr1(x),pr1(y))
-				+ dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
-				  + dist(pr3(x),pr3(y)) * dist(pr3(x),pr3(y))
-end    
+                                + dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
+                                  + dist(pr3(x),pr3(y)) * dist(pr3(x),pr3(y))
+end
 
 
 view MetricSpace_From_EuclideanSpace3D:
      MetricSpace to EuclideanSpace3D
 =  S |-> Point, d |-> dist
-end 
+end
 
 
 
 
 spec EuclideanSpace2D = %def
-     ExtRealByMetric[Real] 
+     ExtRealByMetric[Real]
 then %def
 local Set
 within
@@ -61,13 +61,13 @@ within
      op dist: Point * Point -> Real
      forall x,y:Point;r:Real
      . dist(x,y) = r * r <=> r = dist(pr1(x),pr1(y)) * dist(pr1(x),pr1(y))
-				+ dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
+                                + dist(pr2(x),pr2(y)) * dist(pr2(x),pr2(y))
 
-end    
+end
 
 
 
 view MetricSpace_From_EuclideanSpace2D:
      MetricSpace to EuclideanSpace2D
 =  S |-> Point, d |-> dist
-end 
+end

@@ -5,28 +5,28 @@ version 0.5
 %%Dipol Calculi DRAx(x) -- First order theory
 
 
-spec BasicDRAc_FO = 
+spec BasicDRAc_FO =
 
 sort Point
 type Dipol ::= [__ __](s : Point; e : Point)
 
 preds
-	__r__ : Dipol * Point; %{point right of dipol}%
-	__l__ : Dipol * Point; %{point left of dipol}%
-	__e__ : Dipol * Point; %{point endpoint of dipol}%
-	__s__ : Dipol * Point; %{point startpoint of dipol}%
+        __r__ : Dipol * Point; %{point right of dipol}%
+        __l__ : Dipol * Point; %{point left of dipol}%
+        __e__ : Dipol * Point; %{point endpoint of dipol}%
+        __s__ : Dipol * Point; %{point startpoint of dipol}%
 
-	%% 14 basic relations
-	__rrrr__, __rrrl__, __rrlr__, __rrll__, __rlrr__, __rllr__, __rlll__,
-	__lrrr__, __lrrl__, __lrll__, __llrr__, __llrl__, __lllr__, 
-	__llll__ : Dipol * Dipol;  
-	
-	%% 10 relations for algebra
-	__ells__, __errs__, __lere__, __rele__, __slsr__, __srsl__, __lsel__,
-	__rser__, __sese__, __eses__ : Dipol * Dipol;
+        %% 14 basic relations
+        __rrrr__, __rrrl__, __rrlr__, __rrll__, __rlrr__, __rllr__, __rlll__,
+        __lrrr__, __lrrl__, __lrll__, __llrr__, __llrl__, __lllr__,
+        __llll__ : Dipol * Dipol;
+
+        %% 10 relations for algebra
+        __ells__, __errs__, __lere__, __rele__, __slsr__, __srsl__, __lsel__,
+        __rser__, __sese__, __eses__ : Dipol * Dipol;
 
 then %def
-	
+
 forall A,B : Dipol
 
 . A rrrr B <=> (A r s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B r e(A))
@@ -34,7 +34,7 @@ forall A,B : Dipol
 . A rrlr B <=> (A r s(B)) /\ (A r e(B)) /\ (B l s(A)) /\ (B r e(A))
 . A rrll B <=> (A r s(B)) /\ (A r e(B)) /\ (B l s(A)) /\ (B l e(A))
 . A rlrr B <=> (A r s(B)) /\ (A l e(B)) /\ (B r s(A)) /\ (B r e(A))
-. A rllr B <=> (A r s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B r e(A)) 
+. A rllr B <=> (A r s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B r e(A))
 . A rlll B <=> (A r s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B l e(A))
 . A lrrr B <=> (A l s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B r e(A))
 . A lrrl B <=> (A l s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B l e(A))
@@ -43,7 +43,7 @@ forall A,B : Dipol
 . A llrl B <=> (A l s(B)) /\ (A l e(B)) /\ (B r s(A)) /\ (B l e(A))
 . A lllr B <=> (A l s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B r e(A))
 . A llll B <=> (A l s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B l e(A))
-	
+
 . A ells B <=> (A e s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B s e(A))
 . A errs B <=> (A e s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B s e(A))
 . A lere B <=> (A l s(B)) /\ (A e e(B)) /\ (B r s(A)) /\ (B e e(A))
@@ -72,7 +72,7 @@ forall A,B,C : Dipol
 %% converses
 . A rrll B <=> B llrr A
 . A rlrr B <=> B rrrl A
-. A lrrr B <=> B rrlr A 
+. A lrrr B <=> B rrlr A
 . A lrrl B <=> B rllr A
 . A llrl B <=> B rlll A
 . A lllr B <=> B lrll A
@@ -90,7 +90,7 @@ end
 
 
 spec DRAc_FO =
-     
+
      BasicDRAc_FO
 
 then
@@ -98,10 +98,10 @@ then
 forall A,B,C : Dipol
 
 %% jointly exhaustive -> restricts models!
-. A rrrr B \/ A rrll B \/ A llrr B \/ A llll B \/ A rrrl B \/ A rrlr B \/ 
-  A rlrr B \/ A rllr B \/ A rlll B \/ A lrrr B \/ A lrrl B \/ A lrll B \/ 
-  A llrl B \/ A lllr B \/ A ells B \/ A errs B \/ A lere B \/ A rele B \/ 
-  A slsr B \/ A srsl B \/ A lsel B \/ A rser B \/ A sese B \/ A eses B 
+. A rrrr B \/ A rrll B \/ A llrr B \/ A llll B \/ A rrrl B \/ A rrlr B \/
+  A rlrr B \/ A rllr B \/ A rlll B \/ A lrrr B \/ A lrrl B \/ A lrll B \/
+  A llrl B \/ A lllr B \/ A ells B \/ A errs B \/ A lere B \/ A rele B \/
+  A slsr B \/ A srsl B \/ A lsel B \/ A rser B \/ A sese B \/ A eses B
 
 end
 
@@ -114,30 +114,30 @@ spec BasicDRAf_FO =
 then
 
 preds
-	__b__ : Dipol * Point; %{point in line back of dipol}%
-	__i__ : Dipol * Point; %{point in line interior of dipol}%
-	__f__ : Dipol * Point; %{point in line front of dipol}%
+        __b__ : Dipol * Point; %{point in line back of dipol}%
+        __i__ : Dipol * Point; %{point in line interior of dipol}%
+        __f__ : Dipol * Point; %{point in line front of dipol}%
 
-	%% DRAf Relations: same line and same direction -> Allen's calculus
-	__ffbb__, __efbs__, __ifbi__, __bfii__, __sfsi__, __beie__, __bbff__,
-	__bsef__, __biif__, __iibf__, __sisf__, __iebe__ : Dipol * Dipol;
-	
-	%% Coverses
-	__ffff__, __fefe__, __fifi__, __fbii__, __fsei__, __ebis__, __iifb__,
-	__eifs__, __iseb__, __bbbb__, __sbsb__, __ibib__ : Dipol * Dipol;
-	
-	%% further relations DRAf
-	__lllb__, __llfl__, __llbr__, __llrf__, __lirl__, __lfrr__, __lril__,
-	__lrri__, __blrr__, __irrl__, __frrr__, __rbrr__ : Dipol * Dipol;
-	
-	%% Converses
-	__lbll__, __flll__, __brll__, __rfll__, __rlli__, __rrlf__, __illr__,
-	__rilr__, __rrbl__, __rlir__, __rrfr__, __rrrb__ : Dipol * Dipol
+        %% DRAf Relations: same line and same direction -> Allen's calculus
+        __ffbb__, __efbs__, __ifbi__, __bfii__, __sfsi__, __beie__, __bbff__,
+        __bsef__, __biif__, __iibf__, __sisf__, __iebe__ : Dipol * Dipol;
+
+        %% Coverses
+        __ffff__, __fefe__, __fifi__, __fbii__, __fsei__, __ebis__, __iifb__,
+        __eifs__, __iseb__, __bbbb__, __sbsb__, __ibib__ : Dipol * Dipol;
+
+        %% further relations DRAf
+        __lllb__, __llfl__, __llbr__, __llrf__, __lirl__, __lfrr__, __lril__,
+        __lrri__, __blrr__, __irrl__, __frrr__, __rbrr__ : Dipol * Dipol;
+
+        %% Converses
+        __lbll__, __flll__, __brll__, __rfll__, __rlli__, __rrlf__, __illr__,
+        __rilr__, __rrbl__, __rlir__, __rrfr__, __rrrb__ : Dipol * Dipol
 
 then %def
-	
+
 forall A,B : Dipol
-	
+
 . A ffbb B <=> (A f s(B)) /\ (A f e(B)) /\ (B b s(A)) /\ (B b e(A))
 . A efbs B <=> (A e s(B)) /\ (A f e(B)) /\ (B b s(A)) /\ (B s e(A))
 . A ifbi B <=> (A i s(B)) /\ (A f e(B)) /\ (B b s(A)) /\ (B i e(A))
@@ -150,7 +150,7 @@ forall A,B : Dipol
 . A iibf B <=> (A i s(B)) /\ (A i e(B)) /\ (B b s(A)) /\ (B f e(A))
 . A sisf B <=> (A s s(B)) /\ (A i e(B)) /\ (B s s(A)) /\ (B f e(A))
 . A iebe B <=> (A i s(B)) /\ (A e e(B)) /\ (B b s(A)) /\ (B e e(A))
-	
+
 . A ffff B <=> (A f s(B)) /\ (A f e(B)) /\ (B f s(A)) /\ (B f e(A))
 . A fefe B <=> (A f s(B)) /\ (A e e(B)) /\ (B f s(A)) /\ (B e e(A))
 . A fifi B <=> (A f s(B)) /\ (A i e(B)) /\ (B f s(A)) /\ (B i e(A))
@@ -163,7 +163,7 @@ forall A,B : Dipol
 . A bbbb B <=> (A b s(B)) /\ (A b e(B)) /\ (B b s(A)) /\ (B b e(A))
 . A sbsb B <=> (A s s(B)) /\ (A b e(B)) /\ (B s s(A)) /\ (B b e(A))
 . A ibib B <=> (A i s(B)) /\ (A b e(B)) /\ (B i s(A)) /\ (B b e(A))
-	
+
 . A lllb B <=> (A l s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B b e(A))
 . A llfl B <=> (A l s(B)) /\ (A l e(B)) /\ (B f s(A)) /\ (B l e(A))
 . A llbr B <=> (A l s(B)) /\ (A l e(B)) /\ (B b s(A)) /\ (B r e(A))
@@ -176,7 +176,7 @@ forall A,B : Dipol
 . A irrl B <=> (A i s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B l e(A))
 . A frrr B <=> (A f s(B)) /\ (A r e(B)) /\ (B r s(A)) /\ (B r e(A))
 . A rbrr B <=> (A r s(B)) /\ (A b e(B)) /\ (B r s(A)) /\ (B r e(A))
-	
+
 . A lbll B <=> (A l s(B)) /\ (A b e(B)) /\ (B l s(A)) /\ (B l e(A))
 . A flll B <=> (A f s(B)) /\ (A l e(B)) /\ (B l s(A)) /\ (B l e(A))
 . A brll B <=> (A b s(B)) /\ (A r e(B)) /\ (B l s(A)) /\ (B l e(A))
@@ -200,7 +200,7 @@ forall A,B,C : Dipol
 . A fifi B <=> B fifi A
 . A bbbb B <=> B bbbb A
 . A sbsb B <=> B sbsb A
-. A ibib B <=> B ibib A 
+. A ibib B <=> B ibib A
 
 %% coverses
 . A ffbb B <=> B bbff A
@@ -235,7 +235,7 @@ end
 
 
 spec DRAf_FO =
-     
+
      BasicDRAf_FO
 
 then
@@ -243,105 +243,105 @@ then
 forall A,B,C : Dipol
 
 %% jointly exhaustive
-. A rrrr B \/ A rrll B \/ A llrr B \/ A llll B \/ A rrrl B \/ A rrlr B \/ 
-  A rlrr B \/ A rllr B \/ A rlll B \/ A lrrr B \/ A lrrl B \/ A lrll B \/ 
-  A llrl B \/ A lllr B \/ A ells B \/ A errs B \/ A lere B \/ A rele B \/ 
-  A slsr B \/ A srsl B \/ A lsel B \/ A rser B \/ A sese B \/ A eses B \/ 
-  A ffbb B \/ A efbs B \/ A ifbi B \/ A bfii B \/ A sfsi B \/ A beie B \/ 
-  A bbff B \/ A bsef B \/ A biif B \/ A iibf B \/ A sisf B \/ A iebe B \/ 
-  A ffff B \/ A fefe B \/ A fifi B \/ A fbii B \/ A fsei B \/ A ebis B \/ 
-  A iifb B \/ A eifs B \/ A iseb B \/ A bbbb B \/ A sbsb B \/ A ibib B \/ 
-  A lllb B \/ A llfl B \/ A llbr B \/ A llrf B \/ A lirl B \/ A lfrr B \/ 
-  A lril B \/ A lrri B \/ A blrr B \/ A irrl B \/ A frrr B \/ A rbrr B \/ 
-  A lbll B \/ A flll B \/ A brll B \/ A rfll B \/ A rlli B \/ A rrlf B \/ 
+. A rrrr B \/ A rrll B \/ A llrr B \/ A llll B \/ A rrrl B \/ A rrlr B \/
+  A rlrr B \/ A rllr B \/ A rlll B \/ A lrrr B \/ A lrrl B \/ A lrll B \/
+  A llrl B \/ A lllr B \/ A ells B \/ A errs B \/ A lere B \/ A rele B \/
+  A slsr B \/ A srsl B \/ A lsel B \/ A rser B \/ A sese B \/ A eses B \/
+  A ffbb B \/ A efbs B \/ A ifbi B \/ A bfii B \/ A sfsi B \/ A beie B \/
+  A bbff B \/ A bsef B \/ A biif B \/ A iibf B \/ A sisf B \/ A iebe B \/
+  A ffff B \/ A fefe B \/ A fifi B \/ A fbii B \/ A fsei B \/ A ebis B \/
+  A iifb B \/ A eifs B \/ A iseb B \/ A bbbb B \/ A sbsb B \/ A ibib B \/
+  A lllb B \/ A llfl B \/ A llbr B \/ A llrf B \/ A lirl B \/ A lfrr B \/
+  A lril B \/ A lrri B \/ A blrr B \/ A irrl B \/ A frrr B \/ A rbrr B \/
+  A lbll B \/ A flll B \/ A brll B \/ A rfll B \/ A rlli B \/ A rrlf B \/
   A illr B \/ A rilr B \/ A rrbl B \/ A rlir B \/ A rrfr B \/ A rrrb B
 
 end
 
 
-	
+
 spec DRAfp_FO =
 
      DRAf_FO
-	with preds __rrrl__|->__rrrln__, __rrlr__|->__rrlrp__,
-		   __rlrr__|->__rlrrp__, __rllr__|->__rllrp__,
-		   __rlll__|->__rlllp__, __lrrr__|->__lrrrn__,
-		   __lrrl__|->__lrrln__, __lrll__|->__lrlln__,
-		   __llrl__|->__llrln__, __lllr__|->__lllrp__,
-		   __ells__|->__ellsp__, __errs__|->__errsn__,
-		   __lere__|->__leren__, __rele__|->__relep__,
-		   __slsr__|->__slsrp__, __srsl__|->__srsln__,
-		   __lsel__|->__lseln__, __rser__|->__rserp__,
-		   __sese__|->__seseP__, __eses__|->__esesA__,
-		   __ffbb__|->__ffbbP__, __efbs__|->__efbsP__,
-		   __ifbi__|->__ifbiP__, __bfii__|->__bfiiP__,
-		   __sfsi__|->__sfsiP__, __beie__|->__beieP__,
-		   __bbff__|->__bbffP__, __bsef__|->__bsefP__,
-		   __biif__|->__biifP__, __iibf__|->__iibfP__,
-		   __sisf__|->__sisfP__, __iebe__|->__iebeP__,
-		   __ffff__|->__ffffA__, __fefe__|->__fefeA__,
-		   __fifi__|->__fifiA__, __fbii__|->__fbiiA__,
-		   __fsei__|->__fseiA__, __ebis__|->__ebisA__,
-		   __iifb__|->__iifbA__, __eifs__|->__eifsA__,
-		   __iseb__|->__isebA__, __bbbb__|->__bbbbA__,
-		   __sbsb__|->__sbsbA__, __ibib__|->__ibibA__,
-		   __lllb__|->__lllbp__, __llfl__|->__llfln__,
-		   __llbr__|->__llbrp__, __llrf__|->__llrfn__,
-		   __lirl__|->__lirln__, __lfrr__|->__lfrrn__,
-		   __lril__|->__lriln__, __lrri__|->__lrrin__,
-		   __blrr__|->__blrrp__, __irrl__|->__irrln__,
-		   __frrr__|->__frrrn__, __rbrr__|->__rbrrp__,
-		   __lbll__|->__lblln__, __flll__|->__flllp__,
-		   __brll__|->__brlln__, __rfll__|->__rfllp__,
-		   __rlli__|->__rllip__, __rrlf__|->__rrlfp__,
-		   __illr__|->__illrp__, __rilr__|->__rilrp__,
-		   __rrbl__|->__rrbln__, __rlir__|->__rlirp__,
-		   __rrfr__|->__rrfrp__, __rrrb__|->__rrrbn__
-	hide preds __rrrr__, __rrll__, __llrr__, __llll__ : Dipol * Dipol
+        with preds __rrrl__|->__rrrln__, __rrlr__|->__rrlrp__,
+                   __rlrr__|->__rlrrp__, __rllr__|->__rllrp__,
+                   __rlll__|->__rlllp__, __lrrr__|->__lrrrn__,
+                   __lrrl__|->__lrrln__, __lrll__|->__lrlln__,
+                   __llrl__|->__llrln__, __lllr__|->__lllrp__,
+                   __ells__|->__ellsp__, __errs__|->__errsn__,
+                   __lere__|->__leren__, __rele__|->__relep__,
+                   __slsr__|->__slsrp__, __srsl__|->__srsln__,
+                   __lsel__|->__lseln__, __rser__|->__rserp__,
+                   __sese__|->__seseP__, __eses__|->__esesA__,
+                   __ffbb__|->__ffbbP__, __efbs__|->__efbsP__,
+                   __ifbi__|->__ifbiP__, __bfii__|->__bfiiP__,
+                   __sfsi__|->__sfsiP__, __beie__|->__beieP__,
+                   __bbff__|->__bbffP__, __bsef__|->__bsefP__,
+                   __biif__|->__biifP__, __iibf__|->__iibfP__,
+                   __sisf__|->__sisfP__, __iebe__|->__iebeP__,
+                   __ffff__|->__ffffA__, __fefe__|->__fefeA__,
+                   __fifi__|->__fifiA__, __fbii__|->__fbiiA__,
+                   __fsei__|->__fseiA__, __ebis__|->__ebisA__,
+                   __iifb__|->__iifbA__, __eifs__|->__eifsA__,
+                   __iseb__|->__isebA__, __bbbb__|->__bbbbA__,
+                   __sbsb__|->__sbsbA__, __ibib__|->__ibibA__,
+                   __lllb__|->__lllbp__, __llfl__|->__llfln__,
+                   __llbr__|->__llbrp__, __llrf__|->__llrfn__,
+                   __lirl__|->__lirln__, __lfrr__|->__lfrrn__,
+                   __lril__|->__lriln__, __lrri__|->__lrrin__,
+                   __blrr__|->__blrrp__, __irrl__|->__irrln__,
+                   __frrr__|->__frrrn__, __rbrr__|->__rbrrp__,
+                   __lbll__|->__lblln__, __flll__|->__flllp__,
+                   __brll__|->__brlln__, __rfll__|->__rfllp__,
+                   __rlli__|->__rllip__, __rrlf__|->__rrlfp__,
+                   __illr__|->__illrp__, __rilr__|->__rilrp__,
+                   __rrbl__|->__rrbln__, __rlir__|->__rlirp__,
+                   __rrfr__|->__rrfrp__, __rrrb__|->__rrrbn__
+        hide preds __rrrr__, __rrll__, __llrr__, __llll__ : Dipol * Dipol
 
 then
 
 preds
-	__angleA__ : Dipol * Dipol; %{anti-parallel}%
-	__angleP__ : Dipol * Dipol; %{parallel}%
-	__anglep__ : Dipol * Dipol; %{positive = counterclockwise}%
-	__anglen__ : Dipol * Dipol; %{negative = clockwise}%
+        __angleA__ : Dipol * Dipol; %{anti-parallel}%
+        __angleP__ : Dipol * Dipol; %{parallel}%
+        __anglep__ : Dipol * Dipol; %{positive = counterclockwise}%
+        __anglen__ : Dipol * Dipol; %{negative = clockwise}%
 
-	%% the 4 expanded relations
-	__rrrrp__, __rrrrA__, __rrrrn__, __rrllp__, __rrllP__, __rrlln__, 
-	__llrrp__, __llrrP__, __llrrn__, __llllp__, __llllA__, 
-	__lllln__ : Dipol * Dipol;
-	
+        %% the 4 expanded relations
+        __rrrrp__, __rrrrA__, __rrrrn__, __rrllp__, __rrllP__, __rrlln__,
+        __llrrp__, __llrrP__, __llrrn__, __llllp__, __llllA__,
+        __lllln__ : Dipol * Dipol;
+
 then %def
-	
+
 forall A,B : Dipol
 
 %% the definition of the expanded relations
 
-. A rrrrp B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A anglep B) 
-. A rrrrA B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A angleA B)
-. A rrrrn B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A anglen B)
-. A rrllp B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A anglep B)
-. A rrllP B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A angleP B)
-. A rrlln B <=> (A r s(B)) /\ (A r e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A anglen B)
-. A llrrp B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A anglep B)
-. A llrrP B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A angleP B)
-. A llrrn B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B r s(A)) /\ (B r e(A)) /\ (A anglen B)
-. A llllp B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A anglep B)
-. A llllA B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A angleA B)
-. A lllln B <=> (A l s(B)) /\ (A l e(B)) /\ 
-		(B l s(A)) /\ (B l e(A)) /\ (A anglen B)
+. A rrrrp B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A anglep B)
+. A rrrrA B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A angleA B)
+. A rrrrn B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A anglen B)
+. A rrllp B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A anglep B)
+. A rrllP B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A angleP B)
+. A rrlln B <=> (A r s(B)) /\ (A r e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A anglen B)
+. A llrrp B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A anglep B)
+. A llrrP B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A angleP B)
+. A llrrn B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B r s(A)) /\ (B r e(A)) /\ (A anglen B)
+. A llllp B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A anglep B)
+. A llllA B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A angleA B)
+. A lllln B <=> (A l s(B)) /\ (A l e(B)) /\
+                (B l s(A)) /\ (B l e(A)) /\ (A anglen B)
 
 then
 
@@ -349,23 +349,23 @@ forall A,B,C : Dipol
 
 %% jointly exhaustive
 . A rrrrp B \/ A rrrrA B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ A rrlln B
-	    \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ A llllp B \/ A llllA B
-	    \/ A lllln B \/ A rrrln B \/ A rrlrp B \/ A rlrrp B \/ A rllrp B
-	    \/ A rlllp B \/ A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B
-	    \/ A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ A relep B
-	    \/ A slsrp B \/ A srsln B \/ A lseln B \/ A rserp B \/ A seseP B
-	    \/ A esesA B \/ A ffbbP B \/ A efbsP B \/ A ifbiP B \/ A bfiiP B
-	    \/ A sfsiP B \/ A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B
-	    \/ A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ A fefeA B
-	    \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ A ebisA B \/ A iifbA B
-	    \/ A eifsA B \/ A isebA B \/ A bbbbA B \/ A sbsbA B \/ A ibibA B
-	    \/ A lllbp B \/ A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B
-	    \/ A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/ A irrln B
-	    \/ A frrrn B \/ A rbrrp B \/ A lblln B \/ A flllp B \/ A brlln B
-	    \/ A rfllp B \/ A rllip B \/ A rrlfp B \/ A illrp B \/ A rilrp B
-	    \/ A rrbln B \/ A rlirp B \/ A rrfrp B \/ A rrrbn B
+            \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ A llllp B \/ A llllA B
+            \/ A lllln B \/ A rrrln B \/ A rrlrp B \/ A rlrrp B \/ A rllrp B
+            \/ A rlllp B \/ A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B
+            \/ A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ A relep B
+            \/ A slsrp B \/ A srsln B \/ A lseln B \/ A rserp B \/ A seseP B
+            \/ A esesA B \/ A ffbbP B \/ A efbsP B \/ A ifbiP B \/ A bfiiP B
+            \/ A sfsiP B \/ A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B
+            \/ A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ A fefeA B
+            \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ A ebisA B \/ A iifbA B
+            \/ A eifsA B \/ A isebA B \/ A bbbbA B \/ A sbsbA B \/ A ibibA B
+            \/ A lllbp B \/ A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B
+            \/ A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/ A irrln B
+            \/ A frrrn B \/ A rbrrp B \/ A lblln B \/ A flllp B \/ A brlln B
+            \/ A rfllp B \/ A rllip B \/ A rrlfp B \/ A illrp B \/ A rilrp B
+            \/ A rrbln B \/ A rlirp B \/ A rrfrp B \/ A rrrbn B
 
-%% disjunct 
+%% disjunct
 %%. A rrrrp B => not (A rrrrA B)
 %%. A rrrrp B => not (A rrrrn B)
 %% ...
@@ -376,47 +376,47 @@ forall A,B,C : Dipol
 %% 79*80/2 lines: too hard to write in FOL ;-)
 
 %% disjunct alternative version
-. A rrrrp B => not (A rrrrA B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ 
-		    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ 
-		    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/ 
-		    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/
-		    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/ 
-		    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ 
-		    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/ 
-		    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/ 
-		    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/ 
-		    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/ 
-		    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ 
-		    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ 
-		    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/ 
-		    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/ 
-		    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B \/ 
-		    A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/ 
-		    A irrln B \/ A frrrn B \/ A rbrrp B \/ A lblln B \/ 
-		    A flllp B \/ A brlln B \/ A rfllp B \/ A rllip B \/ 
-		    A rrlfp B \/ A illrp B \/ A rilrp B \/ A rrbln B \/ 
-		    A rlirp B \/ A rrfrp B \/ A rrrbn B)
+. A rrrrp B => not (A rrrrA B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/
+                    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/
+                    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/
+                    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/
+                    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/
+                    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/
+                    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/
+                    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/
+                    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/
+                    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/
+                    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/
+                    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/
+                    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/
+                    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/
+                    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B \/
+                    A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/
+                    A irrln B \/ A frrrn B \/ A rbrrp B \/ A lblln B \/
+                    A flllp B \/ A brlln B \/ A rfllp B \/ A rllip B \/
+                    A rrlfp B \/ A illrp B \/ A rilrp B \/ A rrbln B \/
+                    A rlirp B \/ A rrfrp B \/ A rrrbn B)
 
-. A rrrrA B => not (A rrrrp B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/ 
-		    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/ 
-		    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/ 
-		    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/ 
-		    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/ 
-		    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/ 
-		    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/ 
-		    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/ 
-		    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/ 
-		    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/ 
-		    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/ 
-		    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/ 
-		    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/ 
-		    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/ 
-		    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B \/ 
-		    A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/ 
-		    A irrln B \/ A frrrn B \/ A rbrrp B \/ A lblln B \/ 
-		    A flllp B \/ A brlln B \/ A rfllp B \/ A rllip B \/ 
-		    A rrlfp B \/ A illrp B \/ A rilrp B \/ A rrbln B \/ 
-		    A rlirp B \/ A rrfrp B \/ A rrrbn B)
+. A rrrrA B => not (A rrrrp B \/ A rrrrn B \/ A rrllp B \/ A rrllP B \/
+                    A rrlln B \/ A llrrp B \/ A llrrP B \/ A llrrn B \/
+                    A llllp B \/ A llllA B \/ A lllln B \/ A rrrln B \/
+                    A rrlrp B \/ A rlrrp B \/ A rllrp B \/ A rlllp B \/
+                    A lrrrn B \/ A lrrln B \/ A lrlln B \/ A llrln B \/
+                    A lllrp B \/ A ellsp B \/ A errsn B \/ A leren B \/
+                    A relep B \/ A slsrp B \/ A srsln B \/ A lseln B \/
+                    A rserp B \/ A seseP B \/ A esesA B \/ A ffbbP B \/
+                    A efbsP B \/ A ifbiP B \/ A bfiiP B \/ A sfsiP B \/
+                    A beieP B \/ A bbffP B \/ A bsefP B \/ A biifP B \/
+                    A iibfP B \/ A sisfP B \/ A iebeP B \/ A ffffA B \/
+                    A fefeA B \/ A fifiA B \/ A fbiiA B \/ A fseiA B \/
+                    A ebisA B \/ A iifbA B \/ A eifsA B \/ A isebA B \/
+                    A bbbbA B \/ A sbsbA B \/ A ibibA B \/ A lllbp B \/
+                    A llfln B \/ A llbrp B \/ A llrfn B \/ A lirln B \/
+                    A lfrrn B \/ A lriln B \/ A lrrin B \/ A blrrp B \/
+                    A irrln B \/ A frrrn B \/ A rbrrp B \/ A lblln B \/
+                    A flllp B \/ A brlln B \/ A rfllp B \/ A rllip B \/
+                    A rrlfp B \/ A illrp B \/ A rilrp B \/ A rrbln B \/
+                    A rlirp B \/ A rrfrp B \/ A rrrbn B)
 %%...
 %% 80 times => 80 LONG lines (or 80*20 shorter ones): too hard to write in FOL ;-)
 
@@ -449,119 +449,119 @@ end
 
 from Calculi/Space/FlipFlop_FO get FlipFlopExt_FO
 
-
-%% Der View übersetzt die Dipol-Relationen als Basisrelationen 
-%% in Konjunktionen von ternären Punkte-Relationen in FlipFlop.
+%% to be translated!
+%% Der View uebersetzt die Dipol-Relationen als Basisrelationen
+%% in Konjunktionen von ternaeren Punkte-Relationen in FlipFlop.
 %% Die Relationen zwischen einem Dipol und einem Punkt werden
-%% hier nicht benötigt.
+%% hier nicht benoetigt.
 
 %% Da die Basisrelationen von DRA und FlipFlop verschiedene Signaturen
-%% haben, kann die Übersetzung nicht einfach auf der Ebene des Kalüls
-%% erfolgen. Alternativ könnte sie auch auf der Ebene einer 
-%% Interpretation der Kalküle durch Punkte-Relationen erfolgen.
-%% (siehe hierzu DRA.het) 
+%% haben, kann die Uebersetzung nicht einfach auf der Ebene des Kalkuels
+%% erfolgen. Alternativ koennte sie auch auf der Ebene einer
+%% Interpretation der Kalkuele durch Punkte-Relationen erfolgen.
+%% (siehe hierzu DRA.het)
 
 
 view DRAf_to_FlipFlop_Embedding :
 {
-  DRAf_FO hide preds __r__,__l__,__s__,__e__,__b__,__i__,__f__ 
+  DRAf_FO hide preds __r__,__l__,__s__,__e__,__b__,__i__,__f__
 }
   to
 { FlipFlopExt_FO then
     type Dipol ::= [__ __](s : Point; e : Point)
     preds __rrrr__,__rrrl__,__rrlr__,__rrll__,__rlrr__,__rllr__,__rlll__,
-	  __lrrr__,__lrrl__,__lrll__,__llrr__,__llrl__,__lllr__,__llll__,
-	  __ells__,__errs__,__lere__,__rele__,__slsr__,__srsl__,__lsel__,
-	  __rser__,__sese__,__eses__,
-	  __ffbb__,__efbs__,__ifbi__,__bfii__,__sfsi__,__beie__,__bbff__,
-	  __bsef__,__biif__,__iibf__,__sisf__,__iebe__,
-	  __ffff__,__fefe__,__fifi__,__fbii__,__fsei__,__ebis__,__iifb__,
-	  __eifs__,__iseb__,__bbbb__,__sbsb__,__ibib__,
-	  __lllb__,__llfl__,__llbr__,__llrf__,__lirl__,__lfrr__,__lril__,
-	  __lrri__,__blrr__,__irrl__,__frrr__,__rbrr__,
-	  __lbll__,__flll__,__brll__,__rfll__,__rlli__,__rrlf__,__illr__,
-	  __rilr__,__rrbl__,__rlir__,__rrfr__,__rrrb__ : Dipol * Dipol
+          __lrrr__,__lrrl__,__lrll__,__llrr__,__llrl__,__lllr__,__llll__,
+          __ells__,__errs__,__lere__,__rele__,__slsr__,__srsl__,__lsel__,
+          __rser__,__sese__,__eses__,
+          __ffbb__,__efbs__,__ifbi__,__bfii__,__sfsi__,__beie__,__bbff__,
+          __bsef__,__biif__,__iibf__,__sisf__,__iebe__,
+          __ffff__,__fefe__,__fifi__,__fbii__,__fsei__,__ebis__,__iifb__,
+          __eifs__,__iseb__,__bbbb__,__sbsb__,__ibib__,
+          __lllb__,__llfl__,__llbr__,__llrf__,__lirl__,__lfrr__,__lril__,
+          __lrri__,__blrr__,__irrl__,__frrr__,__rbrr__,
+          __lbll__,__flll__,__brll__,__rfll__,__rlli__,__rrlf__,__illr__,
+          __rilr__,__rrbl__,__rlir__,__rrfr__,__rrrb__ : Dipol * Dipol
 
   forall a,b,c,d : Point
 
   . [a b] rrrr [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ri a) /\ (c d ri b)
-  . [a b] rrrl [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b) 
-  . [a b] rrlr [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d le a) /\ (c d ri b) 
+  . [a b] rrrl [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b)
+  . [a b] rrlr [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d le a) /\ (c d ri b)
   . [a b] rrll [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d le a) /\ (c d le b)
-  . [a b] rlrr [c d] <=> (a b ri c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b) 
-  . [a b] rllr [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d ri b)  
-  . [a b] rlll [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d le b) 
-  . [a b] lrrr [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d ri b)  
-  . [a b] lrrl [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b) 
-  . [a b] lrll [c d] <=> (a b le c) /\ (a b ri d) /\ (c d le a) /\ (c d le b) 
-  . [a b] llrr [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b) 
-  . [a b] llrl [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d le b) 
-  . [a b] lllr [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d ri b) 
-  . [a b] llll [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d le b) 
-	
-  . [a b] ells [c d] <=> (a b sr c) /\ (a b le d) /\ (c d le a) /\ (c d so b) 
-  . [a b] errs [c d] <=> (a b sr c) /\ (a b ri d) /\ (c d ri a) /\ (c d so b) 
-  . [a b] lere [c d] <=> (a b le c) /\ (a b sr d) /\ (c d ri a) /\ (c d sr b) 
-  . [a b] rele [c d] <=> (a b ri c) /\ (a b sr d) /\ (c d le a) /\ (c d sr b) 
-  . [a b] slsr [c d] <=> (a b so c) /\ (a b le d) /\ (c d so a) /\ (c d ri b) 
-  . [a b] srsl [c d] <=> (a b so c) /\ (a b ri d) /\ (c d so a) /\ (c d le b) 
-  . [a b] lsel [c d] <=> (a b le c) /\ (a b so d) /\ (c d sr a) /\ (c d le b) 
-  . [a b] rser [c d] <=> (a b ri c) /\ (a b so d) /\ (c d sr a) /\ (c d ri b) 
-  . [a b] sese [c d] <=> (a b so c) /\ (a b sr d) /\ (c d so a) /\ (c d sr b) 
-  . [a b] eses [c d] <=> (a b sr c) /\ (a b so d) /\ (c d sr a) /\ (c d so b) 
+  . [a b] rlrr [c d] <=> (a b ri c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] rllr [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d ri b)
+  . [a b] rlll [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d le b)
+  . [a b] lrrr [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] lrrl [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b)
+  . [a b] lrll [c d] <=> (a b le c) /\ (a b ri d) /\ (c d le a) /\ (c d le b)
+  . [a b] llrr [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] llrl [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d le b)
+  . [a b] lllr [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d ri b)
+  . [a b] llll [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d le b)
 
-  . [a b] ffbb [c d] <=> (a b ba c) /\ (a b ba d) /\ (c d bo a) /\ (c d bo b) 
-  . [a b] efbs [c d] <=> (a b sr c) /\ (a b ba d) /\ (c d bo a) /\ (c d so b) 
-  . [a b] ifbi [c d] <=> (a b fr c) /\ (a b ba d) /\ (c d bo a) /\ (c d fr b) 
-  . [a b] bfii [c d] <=> (a b bo c) /\ (a b ba d) /\ (c d fr a) /\ (c d fr b) 
-  . [a b] sfsi [c d] <=> (a b so c) /\ (a b ba d) /\ (c d so a) /\ (c d fr b) 
-  . [a b] beie [c d] <=> (a b bo c) /\ (a b sr d) /\ (c d fr a) /\ (c d sr b) 
-  . [a b] bbff [c d] <=> (a b bo c) /\ (a b bo d) /\ (c d ba a) /\ (c d ba b) 
-  . [a b] bsef [c d] <=> (a b bo c) /\ (a b so d) /\ (c d sr a) /\ (c d ba b) 
-  . [a b] biif [c d] <=> (a b bo c) /\ (a b fr d) /\ (c d fr a) /\ (c d ba b) 
-  . [a b] iibf [c d] <=> (a b fr c) /\ (a b fr d) /\ (c d bo a) /\ (c d ba b) 
-  . [a b] sisf [c d] <=> (a b so c) /\ (a b fr d) /\ (c d so a) /\ (c d ba b) 
-  . [a b] iebe [c d] <=> (a b fr c) /\ (a b sr d) /\ (c d bo a) /\ (c d sr b) 
-	
-  . [a b] ffff [c d] <=> (a b ba c) /\ (a b ba d) /\ (c d ba a) /\ (c d ba b) 
-  . [a b] fefe [c d] <=> (a b ba c) /\ (a b sr d) /\ (c d ba a) /\ (c d sr b) 
-  . [a b] fifi [c d] <=> (a b ba c) /\ (a b fr d) /\ (c d ba a) /\ (c d fr b) 
-  . [a b] fbii [c d] <=> (a b ba c) /\ (a b bo d) /\ (c d fr a) /\ (c d fr b) 
-  . [a b] fsei [c d] <=> (a b ba c) /\ (a b so d) /\ (c d sr a) /\ (c d fr b) 
-  . [a b] ebis [c d] <=> (a b sr c) /\ (a b bo d) /\ (c d fr a) /\ (c d so b) 
-  . [a b] iifb [c d] <=> (a b fr c) /\ (a b fr d) /\ (c d ba a) /\ (c d bo b) 
-  . [a b] eifs [c d] <=> (a b sr c) /\ (a b fr d) /\ (c d ba a) /\ (c d so b) 
-  . [a b] iseb [c d] <=> (a b fr c) /\ (a b so d) /\ (c d sr a) /\ (c d bo b) 
-  . [a b] bbbb [c d] <=> (a b bo c) /\ (a b bo d) /\ (c d bo a) /\ (c d bo b) 
-  . [a b] sbsb [c d] <=> (a b so c) /\ (a b bo d) /\ (c d so a) /\ (c d bo b) 
-  . [a b] ibib [c d] <=> (a b fr c) /\ (a b bo d) /\ (c d fr a) /\ (c d bo b) 
-	
-  . [a b] lllb [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d bo b) 
-  . [a b] llfl [c d] <=> (a b le c) /\ (a b le d) /\ (c d ba a) /\ (c d le b) 
-  . [a b] llbr [c d] <=> (a b le c) /\ (a b le d) /\ (c d bo a) /\ (c d ri b) 
-  . [a b] llrf [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d ba b) 
-  . [a b] lirl [c d] <=> (a b le c) /\ (a b fr d) /\ (c d ri a) /\ (c d le b) 
-  . [a b] lfrr [c d] <=> (a b le c) /\ (a b ba d) /\ (c d ri a) /\ (c d ri b) 
-  . [a b] lril [c d] <=> (a b le c) /\ (a b ri d) /\ (c d fr a) /\ (c d le b) 
-  . [a b] lrri [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d fr b) 
-  . [a b] blrr [c d] <=> (a b bo c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b) 
-  . [a b] irrl [c d] <=> (a b fr c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b) 
-  . [a b] frrr [c d] <=> (a b ba c) /\ (a b ri d) /\ (c d ri a) /\ (c d ri b) 
-  . [a b] rbrr [c d] <=> (a b ri c) /\ (a b bo d) /\ (c d ri a) /\ (c d ri b) 
-	
-  . [a b] lbll [c d] <=> (a b le c) /\ (a b bo d) /\ (c d le a) /\ (c d le b) 
-  . [a b] flll [c d] <=> (a b ba c) /\ (a b le d) /\ (c d le a) /\ (c d le b) 
-  . [a b] brll [c d] <=> (a b bo c) /\ (a b ri d) /\ (c d le a) /\ (c d le b) 
-  . [a b] rfll [c d] <=> (a b ri c) /\ (a b ba d) /\ (c d le a) /\ (c d le b) 
-  . [a b] rlli [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d fr b) 
-  . [a b] rrlf [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d le a) /\ (c d ba b) 
-  . [a b] illr [c d] <=> (a b fr c) /\ (a b le d) /\ (c d le a) /\ (c d ri b) 
-  . [a b] rilr [c d] <=> (a b ri c) /\ (a b fr d) /\ (c d le a) /\ (c d ri b) 
-  . [a b] rrbl [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d bo a) /\ (c d le b) 
-  . [a b] rlir [c d] <=> (a b ri c) /\ (a b le d) /\ (c d fr a) /\ (c d ri b) 
-  . [a b] rrfr [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ba a) /\ (c d ri b) 
-  . [a b] rrrb [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ri a) /\ (c d bo b)  
+  . [a b] ells [c d] <=> (a b sr c) /\ (a b le d) /\ (c d le a) /\ (c d so b)
+  . [a b] errs [c d] <=> (a b sr c) /\ (a b ri d) /\ (c d ri a) /\ (c d so b)
+  . [a b] lere [c d] <=> (a b le c) /\ (a b sr d) /\ (c d ri a) /\ (c d sr b)
+  . [a b] rele [c d] <=> (a b ri c) /\ (a b sr d) /\ (c d le a) /\ (c d sr b)
+  . [a b] slsr [c d] <=> (a b so c) /\ (a b le d) /\ (c d so a) /\ (c d ri b)
+  . [a b] srsl [c d] <=> (a b so c) /\ (a b ri d) /\ (c d so a) /\ (c d le b)
+  . [a b] lsel [c d] <=> (a b le c) /\ (a b so d) /\ (c d sr a) /\ (c d le b)
+  . [a b] rser [c d] <=> (a b ri c) /\ (a b so d) /\ (c d sr a) /\ (c d ri b)
+  . [a b] sese [c d] <=> (a b so c) /\ (a b sr d) /\ (c d so a) /\ (c d sr b)
+  . [a b] eses [c d] <=> (a b sr c) /\ (a b so d) /\ (c d sr a) /\ (c d so b)
 
-}   
+  . [a b] ffbb [c d] <=> (a b ba c) /\ (a b ba d) /\ (c d bo a) /\ (c d bo b)
+  . [a b] efbs [c d] <=> (a b sr c) /\ (a b ba d) /\ (c d bo a) /\ (c d so b)
+  . [a b] ifbi [c d] <=> (a b fr c) /\ (a b ba d) /\ (c d bo a) /\ (c d fr b)
+  . [a b] bfii [c d] <=> (a b bo c) /\ (a b ba d) /\ (c d fr a) /\ (c d fr b)
+  . [a b] sfsi [c d] <=> (a b so c) /\ (a b ba d) /\ (c d so a) /\ (c d fr b)
+  . [a b] beie [c d] <=> (a b bo c) /\ (a b sr d) /\ (c d fr a) /\ (c d sr b)
+  . [a b] bbff [c d] <=> (a b bo c) /\ (a b bo d) /\ (c d ba a) /\ (c d ba b)
+  . [a b] bsef [c d] <=> (a b bo c) /\ (a b so d) /\ (c d sr a) /\ (c d ba b)
+  . [a b] biif [c d] <=> (a b bo c) /\ (a b fr d) /\ (c d fr a) /\ (c d ba b)
+  . [a b] iibf [c d] <=> (a b fr c) /\ (a b fr d) /\ (c d bo a) /\ (c d ba b)
+  . [a b] sisf [c d] <=> (a b so c) /\ (a b fr d) /\ (c d so a) /\ (c d ba b)
+  . [a b] iebe [c d] <=> (a b fr c) /\ (a b sr d) /\ (c d bo a) /\ (c d sr b)
+
+  . [a b] ffff [c d] <=> (a b ba c) /\ (a b ba d) /\ (c d ba a) /\ (c d ba b)
+  . [a b] fefe [c d] <=> (a b ba c) /\ (a b sr d) /\ (c d ba a) /\ (c d sr b)
+  . [a b] fifi [c d] <=> (a b ba c) /\ (a b fr d) /\ (c d ba a) /\ (c d fr b)
+  . [a b] fbii [c d] <=> (a b ba c) /\ (a b bo d) /\ (c d fr a) /\ (c d fr b)
+  . [a b] fsei [c d] <=> (a b ba c) /\ (a b so d) /\ (c d sr a) /\ (c d fr b)
+  . [a b] ebis [c d] <=> (a b sr c) /\ (a b bo d) /\ (c d fr a) /\ (c d so b)
+  . [a b] iifb [c d] <=> (a b fr c) /\ (a b fr d) /\ (c d ba a) /\ (c d bo b)
+  . [a b] eifs [c d] <=> (a b sr c) /\ (a b fr d) /\ (c d ba a) /\ (c d so b)
+  . [a b] iseb [c d] <=> (a b fr c) /\ (a b so d) /\ (c d sr a) /\ (c d bo b)
+  . [a b] bbbb [c d] <=> (a b bo c) /\ (a b bo d) /\ (c d bo a) /\ (c d bo b)
+  . [a b] sbsb [c d] <=> (a b so c) /\ (a b bo d) /\ (c d so a) /\ (c d bo b)
+  . [a b] ibib [c d] <=> (a b fr c) /\ (a b bo d) /\ (c d fr a) /\ (c d bo b)
+
+  . [a b] lllb [c d] <=> (a b le c) /\ (a b le d) /\ (c d le a) /\ (c d bo b)
+  . [a b] llfl [c d] <=> (a b le c) /\ (a b le d) /\ (c d ba a) /\ (c d le b)
+  . [a b] llbr [c d] <=> (a b le c) /\ (a b le d) /\ (c d bo a) /\ (c d ri b)
+  . [a b] llrf [c d] <=> (a b le c) /\ (a b le d) /\ (c d ri a) /\ (c d ba b)
+  . [a b] lirl [c d] <=> (a b le c) /\ (a b fr d) /\ (c d ri a) /\ (c d le b)
+  . [a b] lfrr [c d] <=> (a b le c) /\ (a b ba d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] lril [c d] <=> (a b le c) /\ (a b ri d) /\ (c d fr a) /\ (c d le b)
+  . [a b] lrri [c d] <=> (a b le c) /\ (a b ri d) /\ (c d ri a) /\ (c d fr b)
+  . [a b] blrr [c d] <=> (a b bo c) /\ (a b le d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] irrl [c d] <=> (a b fr c) /\ (a b ri d) /\ (c d ri a) /\ (c d le b)
+  . [a b] frrr [c d] <=> (a b ba c) /\ (a b ri d) /\ (c d ri a) /\ (c d ri b)
+  . [a b] rbrr [c d] <=> (a b ri c) /\ (a b bo d) /\ (c d ri a) /\ (c d ri b)
+
+  . [a b] lbll [c d] <=> (a b le c) /\ (a b bo d) /\ (c d le a) /\ (c d le b)
+  . [a b] flll [c d] <=> (a b ba c) /\ (a b le d) /\ (c d le a) /\ (c d le b)
+  . [a b] brll [c d] <=> (a b bo c) /\ (a b ri d) /\ (c d le a) /\ (c d le b)
+  . [a b] rfll [c d] <=> (a b ri c) /\ (a b ba d) /\ (c d le a) /\ (c d le b)
+  . [a b] rlli [c d] <=> (a b ri c) /\ (a b le d) /\ (c d le a) /\ (c d fr b)
+  . [a b] rrlf [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d le a) /\ (c d ba b)
+  . [a b] illr [c d] <=> (a b fr c) /\ (a b le d) /\ (c d le a) /\ (c d ri b)
+  . [a b] rilr [c d] <=> (a b ri c) /\ (a b fr d) /\ (c d le a) /\ (c d ri b)
+  . [a b] rrbl [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d bo a) /\ (c d le b)
+  . [a b] rlir [c d] <=> (a b ri c) /\ (a b le d) /\ (c d fr a) /\ (c d ri b)
+  . [a b] rrfr [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ba a) /\ (c d ri b)
+  . [a b] rrrb [c d] <=> (a b ri c) /\ (a b ri d) /\ (c d ri a) /\ (c d bo b)
+
+}
 
 end

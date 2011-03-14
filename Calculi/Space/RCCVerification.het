@@ -2,18 +2,18 @@ library Calculi/Space/RCCVerification
 version 0.1
 
 
-%author S. Wölfl, T. Mossakowski
+%author S. Woelfl, T. Mossakowski
 %date 25-11-2005
 
 
 %{ Proving correctness of composition table:
-	We start with Bennett's version of RCC_FirstOrder
-	from his PhD thesis (1997)
+        We start with Bennett's version of RCC_FirstOrder
+        from his PhD thesis (1997)
 }%
 
 from HasCASL/MetricSpaces2 get
-	MetricSpace,
-	ExtMetricSpaceByClosedBalls
+        MetricSpace,
+        ExtMetricSpaceByClosedBalls
 
 
 
@@ -22,10 +22,10 @@ spec RCC_FO =
      pred __C__: QReg * QReg;
 
      forall x,y: QReg
-     . x C y => x C x					        %(C_non_null)%
-     . x C y => y C x						%(C_sym)%
-     . (forall z:QReg . z C x <=> z C y) => x = y     		%(C_id)%
-     . exists x:QReg . x C x					%(C_non_triv)%
+     . x C y => x C x                                           %(C_non_null)%
+     . x C y => y C x                                           %(C_sym)%
+     . (forall z:QReg . z C x <=> z C y) => x = y               %(C_id)%
+     . exists x:QReg . x C x                                    %(C_non_triv)%
 end
 
 spec ExtRCC_FO =
@@ -33,89 +33,89 @@ spec ExtRCC_FO =
 then %def
      preds  __P__, __O__, __NTP__: QReg * QReg
      forall x,y: QReg
-     . x P y   <=> forall z:QReg .(z C x => z C y)		%(P_def)%
-     . x O y   <=> exists z:QReg .(z C z /\ z P x /\ z P y)	%(O_def)%
-     . x NTP y <=> forall z:QReg .(z C x => z O y)		%(NTP_def)%
+     . x P y   <=> forall z:QReg .(z C x => z C y)              %(P_def)%
+     . x O y   <=> exists z:QReg .(z C z /\ z P x /\ z P y)     %(O_def)%
+     . x NTP y <=> forall z:QReg .(z C x => z O y)              %(NTP_def)%
 
 then pred nonempty(x:QReg) <=> x C x
 
 then %implies
      forall x,y,z: QReg
-     . nonempty(x) /\ nonempty(y) => x O y => y O x		%(O_sym)%
+     . nonempty(x) /\ nonempty(y) => x O y => y O x             %(O_sym)%
      . nonempty(x) /\ nonempty(y) /\ nonempty(z) =>
-         x P y /\ y P z => x P z				%(cmps_PP)%
-     . nonempty(x) /\ nonempty(y) => x P y => x C y		%(P_impl_C)%
-     . nonempty(x) /\ nonempty(y) => x P y => x O y		%(P_impl_O)%
-     . nonempty(x) /\ nonempty(y) => x O y => x C y		%(O_impl_C)%
-     . nonempty(x) /\ nonempty(y) => x NTP y => x C y		%(NTP_impl_C)%
-     . nonempty(x) /\ nonempty(y) => x NTP y => x P y		%(NTP_impl_P)%
-     . nonempty(x) /\ nonempty(y) /\ nonempty(z) => x P y /\ x O z => y O z					%(P_inh_O)%
-     . nonempty(x) /\ nonempty(y) => x P y /\ y P x => x = y	%(extens)%
+         x P y /\ y P z => x P z                                %(cmps_PP)%
+     . nonempty(x) /\ nonempty(y) => x P y => x C y             %(P_impl_C)%
+     . nonempty(x) /\ nonempty(y) => x P y => x O y             %(P_impl_O)%
+     . nonempty(x) /\ nonempty(y) => x O y => x C y             %(O_impl_C)%
+     . nonempty(x) /\ nonempty(y) => x NTP y => x C y           %(NTP_impl_C)%
+     . nonempty(x) /\ nonempty(y) => x NTP y => x P y           %(NTP_impl_P)%
+     . nonempty(x) /\ nonempty(y) /\ nonempty(z) => x P y /\ x O z => y O z                                     %(P_inh_O)%
+     . nonempty(x) /\ nonempty(y) => x P y /\ y P x => x = y    %(extens)%
      . nonempty(x) /\ nonempty(y) /\ nonempty(z) =>
-         x NTP y /\ y NTP z => x NTP z				%(NTP_trans)%
+         x NTP y /\ y NTP z => x NTP z                          %(NTP_trans)%
      . nonempty(x) /\ nonempty(y) /\ nonempty(z) =>
-         x NTP y /\ y P z => x NTP z				%(cmps_NTP_P)%
+         x NTP y /\ y P z => x NTP z                            %(cmps_NTP_P)%
      . nonempty(x) /\ nonempty(y) /\ nonempty(z) =>
-         x P y /\ y NTP z => x NTP z				%(cmps_P_NTP)%
+         x P y /\ y NTP z => x NTP z                            %(cmps_P_NTP)%
 end
 
 spec ExtRCCByRCC5Rels[ExtRCC_FO] = %def
      sort Reg = {x:QReg . x C x}
      preds
-	  __PP__,  __PO__,  __EQ__,
-	  __DR__,  __PPi__, __?__: Reg * Reg
+          __PP__,  __PO__,  __EQ__,
+          __DR__,  __PPi__, __?__: Reg * Reg
 
      forall x,y:Reg
-     . x PP y   <=>  x P y /\ not y P x              		%(PP_def)%
-     . x PO y   <=>  x O y /\ not x P y /\ not y P x		%(PO_def)%
-     . x DR y   <=>  not x O y					%(DR_def)%
-     . x PPi y  <=> y PP x                                 	%(PPi_def)%
-     . x EQ y   <=> x = y	                		%(EQ_def)%
+     . x PP y   <=>  x P y /\ not y P x                         %(PP_def)%
+     . x PO y   <=>  x O y /\ not x P y /\ not y P x            %(PO_def)%
+     . x DR y   <=>  not x O y                                  %(DR_def)%
+     . x PPi y  <=> y PP x                                      %(PPi_def)%
+     . x EQ y   <=> x = y                                       %(EQ_def)%
      . x ? y    <=> x DR y \/ x PO y \/ x PP y \/ x PPi y \/ x EQ y
-								%(?_RCC5_def)%
+                                                                %(?_RCC5_def)%
 then %implies
      forall x,y,z:Reg
-     . x ? y							%(?_RCC5)%
+     . x ? y                                                    %(?_RCC5)%
 
-     . x DR y => y DR x						%(sym_DR)%
-     . x PO y => y PO x						%(sym_PO)%
-     . x EQ y => y EQ x						%(sym_EQ)%
+     . x DR y => y DR x                                         %(sym_DR)%
+     . x PO y => y PO x                                         %(sym_PO)%
+     . x EQ y => y EQ x                                         %(sym_EQ)%
 
      . x DR y => not x PO y /\ not x PP y /\ not x PPi y /\ not x EQ y  %(disj_DR)%
      . x PO y => not x DR y /\ not x PP y /\ not x PPi y /\ not x EQ y  %(disj_PO)%
-     . x PP y => not x DR y /\ not x PO y /\ not x PPi y /\ not x EQ y 	%(disj_PP)%
-     . x PPi y => not x DR y /\ not x PO y /\ not x PP y /\ not x EQ y	%(disj_PPi)%
-     . x EQ y => not x DR y /\ not x PO y /\ not x PP y /\ not x PPi y 	%(disj_EQ)%
+     . x PP y => not x DR y /\ not x PO y /\ not x PPi y /\ not x EQ y  %(disj_PP)%
+     . x PPi y => not x DR y /\ not x PO y /\ not x PP y /\ not x EQ y  %(disj_PPi)%
+     . x EQ y => not x DR y /\ not x PO y /\ not x PP y /\ not x PPi y  %(disj_EQ)%
 
-     . x PP y /\ y PP z => x PP	z				%(cmps_PPPP)%
-     . x PP y /\ y PPi z => x ? z  				%(cmps_PPPPi)%
-     . x PP y /\ y PO z => x PP z \/ x PO z \/ x DR z		%(cmps_PPPO)%
-     . x PP y /\ y DR z => x DR z				%(cmps_PPDR)%
-     . x PP y /\ y EQ z => x PP z				%(cmps_PPEQ)%
+     . x PP y /\ y PP z => x PP z                               %(cmps_PPPP)%
+     . x PP y /\ y PPi z => x ? z                               %(cmps_PPPPi)%
+     . x PP y /\ y PO z => x PP z \/ x PO z \/ x DR z           %(cmps_PPPO)%
+     . x PP y /\ y DR z => x DR z                               %(cmps_PPDR)%
+     . x PP y /\ y EQ z => x PP z                               %(cmps_PPEQ)%
 
-     . x PPi y /\ y PP z => not x DR z				%(cmps_PPiPP)%
-     . x PPi y /\ y PPi z => x ? z				%(cmps_PPiPPi)%
-     . x PPi y /\ y PO z => x PPi z \/ x PO z			%(cmps_PPiPO)%
-     . x PPi y /\ y DR z => x PPi z \/ x PO z \/ x DR z		%(cmps_PPiDR)%
-     . x PPi y /\ y EQ z => x PPi z				%(cmps_PPiEQ)%
+     . x PPi y /\ y PP z => not x DR z                          %(cmps_PPiPP)%
+     . x PPi y /\ y PPi z => x ? z                              %(cmps_PPiPPi)%
+     . x PPi y /\ y PO z => x PPi z \/ x PO z                   %(cmps_PPiPO)%
+     . x PPi y /\ y DR z => x PPi z \/ x PO z \/ x DR z         %(cmps_PPiDR)%
+     . x PPi y /\ y EQ z => x PPi z                             %(cmps_PPiEQ)%
 
-     . x PO y /\ y PP z => x PP z \/ x PO z			%(cmps_POPP)%
-     . x PO y /\ y PPi z => x PPi z \/ x PO z \/ x DR z		%(cmps_POPPi)%
-     . x PO y /\ y PO z => x ? z      				%(cmps_POPO)%
-     . x PO y /\ y DR z => x PPi z \/ x PO z \/ x DR z		%(cmps_PODR)%
-     . x PO y /\ y EQ z => x PO z				%(cmps_POEQ)%
+     . x PO y /\ y PP z => x PP z \/ x PO z                     %(cmps_POPP)%
+     . x PO y /\ y PPi z => x PPi z \/ x PO z \/ x DR z         %(cmps_POPPi)%
+     . x PO y /\ y PO z => x ? z                                %(cmps_POPO)%
+     . x PO y /\ y DR z => x PPi z \/ x PO z \/ x DR z          %(cmps_PODR)%
+     . x PO y /\ y EQ z => x PO z                               %(cmps_POEQ)%
 
-     . x DR y /\ y PP z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPP)%
-     . x DR y /\ y PPi z => x DR z				%(cmps_DRPPi)%
-     . x DR y /\ y PO z => x PP z \/ x PO z \/ x DR z		%(cmps_DRPO)%
-     . x DR y /\ y DR z => x ? z				%(cmps_DRDR)%
-     . x DR y /\ y EQ z => x DR	z 				%(cmps_DREQ)%
+     . x DR y /\ y PP z => x PP z \/ x PO z \/ x DR z           %(cmps_DRPP)%
+     . x DR y /\ y PPi z => x DR z                              %(cmps_DRPPi)%
+     . x DR y /\ y PO z => x PP z \/ x PO z \/ x DR z           %(cmps_DRPO)%
+     . x DR y /\ y DR z => x ? z                                %(cmps_DRDR)%
+     . x DR y /\ y EQ z => x DR z                               %(cmps_DREQ)%
 
-     . x EQ y /\ y PP z => x PP z   				%(cmps_EQPP)%
-     . x EQ y /\ y PPi z => x PPi z				%(cmps_EQPPi)%
-     . x EQ y /\ y PO z => x PO	z				%(cmps_EQPO)%
-     . x EQ y /\ y DR z => x DR	z 				%(cmps_EQDR)%
-     . x EQ y /\ y EQ z => x EQ z				%(cmps_EQEQ)%
+     . x EQ y /\ y PP z => x PP z                               %(cmps_EQPP)%
+     . x EQ y /\ y PPi z => x PPi z                             %(cmps_EQPPi)%
+     . x EQ y /\ y PO z => x PO z                               %(cmps_EQPO)%
+     . x EQ y /\ y DR z => x DR z                               %(cmps_EQDR)%
+     . x EQ y /\ y EQ z => x EQ z                               %(cmps_EQEQ)%
 
 end
 
@@ -124,106 +124,106 @@ spec ExtRCCByRCC8Rels[ExtRCC_FO] =
      ExtRCCByRCC5Rels[ExtRCC_FO] with __?__ |-> __??__
 then %def
      preds
-	  __EC__,  __DC__, __TPP__, __NTPP__, __TPPi__,
-		__NTPPi__, __?__: Reg * Reg
+          __EC__,  __DC__, __TPP__, __NTPP__, __TPPi__,
+                __NTPPi__, __?__: Reg * Reg
 
      forall x,y:Reg
-     .   x EC y   <=>  x C y /\ not x O y	          	%(EC_def)%
-     .   x DC y   <=>  not x C y				%(DC_def)%
+     .   x EC y   <=>  x C y /\ not x O y                       %(EC_def)%
+     .   x DC y   <=>  not x C y                                %(DC_def)%
      .  x TPP y   <=>  x PP y /\ exists z:Reg. z EC x /\ z EC y %(TPP_def)%
      . x NTPP y   <=>  x PP y /\ forall z:Reg. z EC x => not z EC y
-								%(NTPP_def)%
-     .  x TPPi y  <=> y TPP x                                	%(TPPi_def)%
-     . x NTPPi y  <=> y NTPP x	                		%(NTPPi_def)%
+                                                                %(NTPP_def)%
+     .  x TPPi y  <=> y TPP x                                   %(TPPi_def)%
+     . x NTPPi y  <=> y NTPP x                                  %(NTPPi_def)%
      . x ? y    <=> x DC y \/ x EC y \/ x PO y \/ x TPP y \/
-		 x NTPP y \/ x TPPi y \/ x NTPPi y \/ x EQ y    %(?_RCC8_def)%
+                 x NTPP y \/ x TPPi y \/ x NTPPi y \/ x EQ y    %(?_RCC8_def)%
 
 then %implies
      forall x,y,z:Reg
 
-     . x DR y <=> x DC y \/ x EC y				%(DR_eq_DC_or_EC)%
-     . x PP y <=> x TPP y \/ x NTPP y				%(PP_eq_TPP_or_NTPP)%
-     . x PPi y <=> x TPPi y \/ x NTPPi y			%(PPi_eq_TPPi_or_NTPPi)%
+     . x DR y <=> x DC y \/ x EC y                              %(DR_eq_DC_or_EC)%
+     . x PP y <=> x TPP y \/ x NTPP y                           %(PP_eq_TPP_or_NTPP)%
+     . x PPi y <=> x TPPi y \/ x NTPPi y                        %(PPi_eq_TPPi_or_NTPPi)%
 
-     . x ? y 							%(?_RCC8)%
-     . x ? y <=> x ?? y						%(?_RCC5_RCC8)%
+     . x ? y                                                    %(?_RCC8)%
+     . x ? y <=> x ?? y                                         %(?_RCC5_RCC8)%
 
-     . x DC y => y DC x						%(sym_DC)%
-     . x EC y => y EC x						%(sym_EC)%
+     . x DC y => y DC x                                         %(sym_DC)%
+     . x EC y => y EC x                                         %(sym_EC)%
 
      . x DC y => not x EC y /\ not x PO y /\ not x TPP y /\ not x NTPP y
-		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_DC)%
+                /\ not x TPPi y /\ not x NTPPi y /\ not x EQ y                          %(disj_DC)%
      . x EC y => not x DC y /\ not x PO y /\ not x TPP y /\ not x NTPP y
-		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_EC)%
+                /\ not x TPPi y /\ not x NTPPi y /\ not x EQ y                          %(disj_EC)%
      . x PO y => not x DC y /\ not x EC y /\ not x TPP y /\ not x NTPP y
-		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_PO)%
+                /\ not x TPPi y /\ not x NTPPi y /\ not x EQ y                          %(disj_PO)%
      . x TPP y => not x DC y /\ not x EC y /\ not x PO y /\ not x NTPP y
-		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_TPP)%
+                /\ not x TPPi y /\ not x NTPPi y /\ not x EQ y                          %(disj_TPP)%
      . x NTPP y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y
-		/\ not x TPPi y /\ not x NTPPi y /\ not x EQ y  			%(disj_NTPP)%
+                /\ not x TPPi y /\ not x NTPPi y /\ not x EQ y                          %(disj_NTPP)%
      . x TPPi y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y
-		/\ not x NTPP y /\ not x NTPPi y /\ not x EQ y  			%(disj_TPPi)%
+                /\ not x NTPP y /\ not x NTPPi y /\ not x EQ y                          %(disj_TPPi)%
      . x NTPPi y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y
-		/\ not x NTPP y /\ not x TPPi y /\ not x EQ y  				%(disj_NTPPi)%
+                /\ not x NTPP y /\ not x TPPi y /\ not x EQ y                           %(disj_NTPPi)%
      . x EQ y => not x DC y /\ not x EC y /\ not x PO y /\ not x TPP y
-		/\ not x NTPP y /\ not x TPPi y /\ not x NTPPi y  			%(disj_EQ)%
+                /\ not x NTPP y /\ not x TPPi y /\ not x NTPPi y                        %(disj_EQ)%
 
 
-     . x DC y /\ y DC  z => x ? z 							%(cmps_DCDC)%
-     . x DC y /\ y EC  z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z 		%(cmps_DCEC)%
-     . x DC y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z 		%(cmps_DCPO)%
-     . x DC y /\ y TPP z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z 		%(cmps_DCTPP)%
-     . x DC y /\ y NTPP z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z		%(cmps_DCNTPP)%
-     . x DC y /\ y TPPi z => x DC z 							%(cmps_DCTPPi)%
-     . x DC y /\ y NTPPi z => x DC z							%(cmps_DCNTPPi)%
+     . x DC y /\ y DC  z => x ? z                                                       %(cmps_DCDC)%
+     . x DC y /\ y EC  z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z           %(cmps_DCEC)%
+     . x DC y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z            %(cmps_DCPO)%
+     . x DC y /\ y TPP z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z           %(cmps_DCTPP)%
+     . x DC y /\ y NTPP z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z          %(cmps_DCNTPP)%
+     . x DC y /\ y TPPi z => x DC z                                                     %(cmps_DCTPPi)%
+     . x DC y /\ y NTPPi z => x DC z                                                    %(cmps_DCNTPPi)%
 
-     . x EC y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z 		%(cmps_ECDC)%
-     . x EC y /\ y EC z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x TPPi z \/ x EQ z 	%(cmps_ECEC)%
-     . x EC y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z		%(cmps_ECPO)%
-     . x EC y /\ y TPP z => x EC z \/ x PO z \/ x TPP z \/ x NTPP z			%(cmps_ECTPP)%
-     . x EC y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z				%(cmps_ECNTPP)%
-     . x EC y /\ y TPPi z => x DC z \/ x EC z 						%(cmps_ECTPPi)%
-     . x EC y /\ y NTPPi z => x DC z							%(cmps_ECNTPPi)%
+     . x EC y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z          %(cmps_ECDC)%
+     . x EC y /\ y EC z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x TPPi z \/ x EQ z  %(cmps_ECEC)%
+     . x EC y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z            %(cmps_ECPO)%
+     . x EC y /\ y TPP z => x EC z \/ x PO z \/ x TPP z \/ x NTPP z                     %(cmps_ECTPP)%
+     . x EC y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z                              %(cmps_ECNTPP)%
+     . x EC y /\ y TPPi z => x DC z \/ x EC z                                           %(cmps_ECTPPi)%
+     . x EC y /\ y NTPPi z => x DC z                                                    %(cmps_ECNTPPi)%
 
-     . x PO y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z		%(cmps_PODC)%
-     . x PO y /\ y EC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z		%(cmps_POEC)%
-     . x PO y /\ y PO z => x ? z 							%(cmps_POPO)%
-     . x PO y /\ y TPP z => x PO z \/ x TPP z \/ x NTPP z				%(cmps_POTPP)%
-     . x PO y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z				%(cmps_PONTPP)%
-     . x PO y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z	%(cmps_POTPPi)%
-     . x PO y /\ y NTPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi	z 	%(cmps_PONTPPi)%
+     . x PO y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z          %(cmps_PODC)%
+     . x PO y /\ y EC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z          %(cmps_POEC)%
+     . x PO y /\ y PO z => x ? z                                                        %(cmps_POPO)%
+     . x PO y /\ y TPP z => x PO z \/ x TPP z \/ x NTPP z                               %(cmps_POTPP)%
+     . x PO y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z                              %(cmps_PONTPP)%
+     . x PO y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z        %(cmps_POTPPi)%
+     . x PO y /\ y NTPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z       %(cmps_PONTPPi)%
 
-     . x TPP y /\ y DC z => x DC z							%(cmps_TPPDC)%
-     . x TPP y /\ y EC z => x DC z \/ x EC z						%(cmps_TPPEC)%
-     . x TPP y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z		%(cmps_TPPPO)%
-     . x TPP y /\ y TPP z => x TPP z \/ x NTPP z					%(cmps_TPPTPP)%
-     . x TPP y /\ y NTPP z => x NTPP z							%(cmps_TPPNTPP)%
-     . x TPP y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x TPPi z \/ x EQ	z %(cmps_TPPTPPi)%
-     . x TPP y /\ y NTPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z	%(cmps_TPPNTPPi)%
+     . x TPP y /\ y DC z => x DC z                                                      %(cmps_TPPDC)%
+     . x TPP y /\ y EC z => x DC z \/ x EC z                                            %(cmps_TPPEC)%
+     . x TPP y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z           %(cmps_TPPPO)%
+     . x TPP y /\ y TPP z => x TPP z \/ x NTPP z                                        %(cmps_TPPTPP)%
+     . x TPP y /\ y NTPP z => x NTPP z                                                  %(cmps_TPPNTPP)%
+     . x TPP y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x TPPi z \/ x EQ z %(cmps_TPPTPPi)%
+     . x TPP y /\ y NTPPi z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z      %(cmps_TPPNTPPi)%
 
-     . x NTPP y /\ y DC z => x DC z							%(cmps_NTPPDC)%
-     . x NTPP y /\ y EC z => x DC z							%(cmps_NTPPEC)%
-     . x NTPP y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z		%(cmps_NTPPPO)%
-     . x NTPP y /\ y TPP z => x NTPP z							%(cmps_NTPPTPP)%
-     . x NTPP y /\ y NTPP z => x NTPP z							%(cmps_NTPPNTPP)%
-     . x NTPP y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP	z	%(cmps_NTPPTPPi)%
-     . x NTPP y /\ y NTPPi z => x ? z							%(cmps_NTPPNTPPi)%
+     . x NTPP y /\ y DC z => x DC z                                                     %(cmps_NTPPDC)%
+     . x NTPP y /\ y EC z => x DC z                                                     %(cmps_NTPPEC)%
+     . x NTPP y /\ y PO z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP z          %(cmps_NTPPPO)%
+     . x NTPP y /\ y TPP z => x NTPP z                                                  %(cmps_NTPPTPP)%
+     . x NTPP y /\ y NTPP z => x NTPP z                                                 %(cmps_NTPPNTPP)%
+     . x NTPP y /\ y TPPi z => x DC z \/ x EC z \/ x PO z \/ x TPP z \/ x NTPP  z       %(cmps_NTPPTPPi)%
+     . x NTPP y /\ y NTPPi z => x ? z                                                   %(cmps_NTPPNTPPi)%
 
-     . x TPPi y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z	%(cmps_TPPiDC)%
-     . x TPPi y /\ y EC z => x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z			%(cmps_TPPiEC)%
-     . x TPPi y /\ y PO z => x PO z \/ x TPPi z \/ x NTPPi z				%(cmps_TPPiPO)%
-     . x TPPi y /\ y TPP z => x PO z \/ x EQ z \/ x TPP z \/ x TPPi z			%(cmps_TPPiTPP)%
-     . x TPPi y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z				%(cmps_TPPiNTPP)%
-     . x TPPi y /\ y TPPi z => x TPPi z \/ x NTPPi z					%(cmps_TPPiTPPi)%
-     . x TPPi y /\ y NTPPi z => x NTPPi	z						%(cmps_TPPiNTPPi)%
+     . x TPPi y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z        %(cmps_TPPiDC)%
+     . x TPPi y /\ y EC z => x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z                  %(cmps_TPPiEC)%
+     . x TPPi y /\ y PO z => x PO z \/ x TPPi z \/ x NTPPi z                            %(cmps_TPPiPO)%
+     . x TPPi y /\ y TPP z => x PO z \/ x EQ z \/ x TPP z \/ x TPPi z                   %(cmps_TPPiTPP)%
+     . x TPPi y /\ y NTPP z => x PO z \/ x TPP z \/ x NTPP z                            %(cmps_TPPiNTPP)%
+     . x TPPi y /\ y TPPi z => x TPPi z \/ x NTPPi z                                    %(cmps_TPPiTPPi)%
+     . x TPPi y /\ y NTPPi z => x NTPPi z                                               %(cmps_TPPiNTPPi)%
 
-     . x NTPPi y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi	z	%(cmps_NTPPiDC)%
-     . x NTPPi y /\ y EC z => x PO z \/ x TPPi z \/ x NTPPi z				%(cmps_NTPPiEC)%
-     . x NTPPi y /\ y PO z => x PO z \/ x TPPi z \/ x NTPPi z				%(cmps_NTPPiPO)%
-     . x NTPPi y /\ y TPP z => x PO z \/ x TPPi z \/ x NTPPi z				%(cmps_NTPPiTPP)%
-     . x NTPPi y /\ y NTPP z => x PO z \/ x TPP z \/ x TPPi z \/ x NTPP z \/ x NTPPi z \/ x EQ	z %(cmps_NTPPiNTPP)%
-     . x NTPPi y /\ y TPPi z => x NTPPi z						%(cmps_NTPPiTPPi)%
-     . x NTPPi y /\ y NTPPi z => x NTPPi z						%(cmps_NTPPiNTPPi)%
+     . x NTPPi y /\ y DC z => x DC z \/ x EC z \/ x PO z \/ x TPPi z \/ x NTPPi z       %(cmps_NTPPiDC)%
+     . x NTPPi y /\ y EC z => x PO z \/ x TPPi z \/ x NTPPi z                           %(cmps_NTPPiEC)%
+     . x NTPPi y /\ y PO z => x PO z \/ x TPPi z \/ x NTPPi z                           %(cmps_NTPPiPO)%
+     . x NTPPi y /\ y TPP z => x PO z \/ x TPPi z \/ x NTPPi z                          %(cmps_NTPPiTPP)%
+     . x NTPPi y /\ y NTPP z => x PO z \/ x TPP z \/ x TPPi z \/ x NTPP z \/ x NTPPi z \/ x EQ  z %(cmps_NTPPiNTPP)%
+     . x NTPPi y /\ y TPPi z => x NTPPi z                                               %(cmps_NTPPiTPPi)%
+     . x NTPPi y /\ y NTPPi z => x NTPPi z                                              %(cmps_NTPPiNTPPi)%
 
 end
 
@@ -234,11 +234,11 @@ logic HasCASL
 view RCC_FO_in_MetricSpace:
      RCC_FO to
      { ExtMetricSpaceByClosedBalls[MetricSpace]
-	then %def
-	pred __C__: ClosedBall * ClosedBall;
+        then %def
+        pred __C__: ClosedBall * ClosedBall;
         pred nonempty(x:ClosedBall) <=> x C x;
-	forall x,y:ClosedBall
-	. x C y <=> exists s:S . rep(x) s /\ rep(y) s           %(C_def)%
-	}
+        forall x,y:ClosedBall
+        . x C y <=> exists s:S . rep(x) s /\ rep(y) s           %(C_def)%
+        }
 =    QReg |-> ClosedBall
 
