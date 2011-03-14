@@ -1,18 +1,18 @@
 library Calculi/Algebra/Algebra
 
 version 0.2
-%author: S. Wölfl
+%author: S. Woelfl
 %date: 16-06-2005
 
-%( 
-    This library defines some basic concepts from the 
-    theory of relation algebras 
+%(
+    This library defines some basic concepts from the
+    theory of relation algebras
 )%
 
 
 %left_assoc __cup__,__cap__,__cmps__
-%prec {__cup__} < {__cmps__} 
-%prec {__cmps__} < {__cmpl__} 
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__}
 
 
 from Basic/Algebra_I get Monoid
@@ -30,10 +30,10 @@ end
 
 spec InvolutedSemiGroup =
      SemiGroup
-then 
+then
      op inv__:Elem -> Elem
      forall x,y:Elem
-     . inv(x * y) = inv(y) * inv(x) 
+     . inv(x * y) = inv(y) * inv(x)
      . inv(inv(x)) = x
 end
 
@@ -41,7 +41,7 @@ end
 spec InvolutedMonoid =
      Monoid
 and  InvolutedSemiGroup
-then 
+then
      forall x:Elem
      . inv(e) = e
 end

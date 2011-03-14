@@ -1,27 +1,27 @@
 library Calculi/Algebra/BooleanAlgebra
 
 version 0.2
-%author: S. Wölfl
+%author: S. Woelfl
 %date: 16-06-2005
 
-%( 
-    This library defines some basic concepts from the  theory of 
-	Boolean algebras. Some specs are just here to remove some 
-	"junk" from other libraries 
+%(
+    This library defines some basic concepts from the  theory of
+        Boolean algebras. Some specs are just here to remove some
+        "junk" from other libraries
 )%
 
 
 %left_assoc __cup__,__cap__,__cmps__
-%prec {__cup__} < {__cmps__} 
+%prec {__cup__} < {__cmps__}
 
 
 
-from Basic/RelationsAndOrders version 0.7 get  
-	BooleanAlgebra |-> WeakBooleanAlgebra, 
-	ExtBooleanAlgebra, 
-	RichBooleanAlgebra
-from Basic/RelationsAndOrders version 0.7 get  
-	StrictOrder |-> StrictPartialOrder
+from Basic/RelationsAndOrders version 0.7 get
+        BooleanAlgebra |-> WeakBooleanAlgebra,
+        ExtBooleanAlgebra,
+        RichBooleanAlgebra
+from Basic/RelationsAndOrders version 0.7 get
+        StrictOrder |-> StrictPartialOrder
 
 
 spec BooleanAlgebra =
@@ -33,7 +33,7 @@ end
 
 spec ExtBooleanAlgebraByCompl[BooleanAlgebra] = %def
      { ExtBooleanAlgebra[BooleanAlgebra]
-	hide preds __<=__, __<__, __>=__, __>__} 
+        hide preds __<=__, __<__, __>=__, __>__}
 then %implies
      forall x,y: Elem
      . compl(0) = 1
@@ -45,8 +45,8 @@ spec BooleanAlgebraWithCompl = ExtBooleanAlgebraByCompl[BooleanAlgebra]
 
 
 spec ExtBooleanAlgebraByOrderRelations[BooleanAlgebra] = %def
-     { ExtBooleanAlgebra[BooleanAlgebra] 
-	hide op compl__ } 
+     { ExtBooleanAlgebra[BooleanAlgebra]
+        hide op compl__ }
 then %def
      pred Atom: Elem
 
@@ -55,12 +55,12 @@ then %def
 end
 
 
-spec BooleanAlgebraWithOrderRelations = 
-	ExtBooleanAlgebraByOrderRelations[BooleanAlgebra]
+spec BooleanAlgebraWithOrderRelations =
+        ExtBooleanAlgebraByOrderRelations[BooleanAlgebra]
 end
 
 
-view BooleanAlgebraWithOrderRelations_as_StrictPartialOrder : 
+view BooleanAlgebraWithOrderRelations_as_StrictPartialOrder :
      StrictPartialOrder to BooleanAlgebraWithOrderRelations
 end
 
@@ -71,7 +71,5 @@ spec AtomicBooleanAlgebra =
 then
      sort AtomElem = {x: Elem . not x = 0 /\ (forall y:Elem . y < x => y = 0)}
      forall x:Elem
-     . not x = 0 => (exists y:AtomElem . y <= x) 	
+     . not x = 0 => (exists y:AtomElem . y <= x)
 end
-
-

@@ -1,6 +1,6 @@
 library Calculi/Algebra/RelationAlgebraSymbolic
 version 0.4
-%author: T. Mossakowski, K. Lüttich, S. Wölfl
+%author: T. Mossakowski, K. Luettich, S. Woelfl
 %date: 22-06-2005
 
 %(
@@ -19,12 +19,12 @@ from Basic/Numbers get Nat
 %% from Basic/StructuredDatatypes get Set
 from Calculi/Algebra/Set get Set
 from Calculi/Algebra/BooleanAlgebra get
-	BooleanAlgebra,
-	AtomicBooleanAlgebra,
-	ExtBooleanAlgebraByOrderRelations
+        BooleanAlgebra,
+        AtomicBooleanAlgebra,
+        ExtBooleanAlgebraByOrderRelations
 from Calculi/Algebra/RelationAlgebra get
-	AtomicRelationAlgebra,
-	AtomicNonAssocRelationAlgebra
+        AtomicRelationAlgebra,
+        AtomicNonAssocRelationAlgebra
 
 
 
@@ -43,18 +43,18 @@ from Calculi/Algebra/RelationAlgebra get
 
 spec SetRepresentationOfRelations[sort BaseRel] = %mono
 local  { Set[sort BaseRel fit Elem |-> BaseRel]
-	 with           __union__ |-> __cup__,
+         with           __union__ |-> __cup__,
              __intersection__ |-> __cap__,
-	     __isSubsetOf__ |-> __subset__ }
+             __isSubsetOf__ |-> __subset__ }
 within
      free type Rel ::= sort Set[BaseRel]
      sort BaseRel < Rel
      ops
-	   0,1 : Rel;
-	 compl__: Rel -> Rel;
+           0,1 : Rel;
+         compl__: Rel -> Rel;
         __cup__,__cap__: Rel * Rel -> Rel
      preds
-	   __eps__: BaseRel * Rel;
+           __eps__: BaseRel * Rel;
          __subset__: Rel * Rel
      forall x:BaseRel; r:Rel
      . x = {x}
@@ -64,18 +64,18 @@ within
 
 then %implies
      ops
-	  __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+          __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
           __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
 
      forall x,y:BaseRel; r:Rel
-	     . not x = y => x cap y = 0
+             . not x = y => x cap y = 0
      . exists z:BaseRel . z eps r
      . r subset 1
 end
 
 view AtomicBooleanAlgebra_from_SetRepresentationOfRelations[sort BaseRel] :
      {AtomicBooleanAlgebra hide preds __<__, __<=__, __>__, __>=__} to
-	SetRepresentationOfRelations[sort BaseRel]
+        SetRepresentationOfRelations[sort BaseRel]
 =
      Elem |-> Rel, AtomElem |-> BaseRel
 end
@@ -92,11 +92,11 @@ end
 spec CompositionTable =
      sorts BaseRel < Rel
      ops
-         id	 : BaseRel;
-	 0,1	 : Rel;
-   	   inv__ : BaseRel -> BaseRel;
+         id      : BaseRel;
+         0,1     : Rel;
+           inv__ : BaseRel -> BaseRel;
          __cmps__: BaseRel * BaseRel -> Rel;
-	  compl__: Rel -> Rel;
+          compl__: Rel -> Rel;
          __cup__ : Rel * Rel -> Rel, assoc, idem, comm, unit 0
 
      forall x:BaseRel
@@ -110,14 +110,14 @@ spec ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
      SetRepresentationOfRelations[sort BaseRel]
 then %def
      ops
-	  id	  : Rel;
+          id      : Rel;
           inv__   : Rel -> Rel;
-	  __cmps__: Rel * Rel -> Rel
+          __cmps__: Rel * Rel -> Rel
 
      forall x,y:BaseRel; r,s:Rel
      . x eps inv(r) <=> inv(x) eps r
      . x eps (r cmps s) <=>
-	  exists y,z:BaseRel .y eps r /\ z eps s /\ x eps (y cmps z)
+          exists y,z:BaseRel .y eps r /\ z eps s /\ x eps (y cmps z)
 
 then %implies
      op __cmps__: Rel * Rel -> Rel, unit id;
@@ -127,7 +127,7 @@ then %implies
      . inv(inv(r)) = r
      . r cmps 0 = 0 /\ 0 cmps r = 0
      . (r cup x) cmps (s cup y) =
-	  (r cmps s) cup (r cmps y) cup (x cmps s) cup (x cmps y)
+          (r cmps s) cup (r cmps y) cup (x cmps s) cup (x cmps y)
 end
 
 
@@ -184,9 +184,3 @@ to
 =
      Rel |-> Rel, AtomRel |-> BaseRel
 end
-
-
-
-
-
-
