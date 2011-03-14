@@ -1,13 +1,14 @@
 library CaseStudies/PuCache/PFS_Protocol
 
-from Basic/StructuredDatatypes get String, List
+from Basic/StructuredDatatypes get List
+from Basic/CharactersAndStrings get String
 from CaseStudies/Misc/Prerequisites get Prerequisites
 
-spec PFS_Protocol = 
+spec PFS_Protocol =
   String and Prerequisites
 and
-  List[sort ExtAttribute fit sort Elem |-> ExtAttribute] 
-	with List[ExtAttribute] |-> ExtAttributes
+  List[sort ExtAttribute fit sort Elem |-> ExtAttribute]
+        with List[ExtAttribute] |-> ExtAttributes
 then
 
 %% Simplified version of the PFS_Protocol for verification of PuCache
@@ -39,12 +40,12 @@ free type ExtAttribute ::= ExtAttr (name : String;
                              val  : String)
 
 
-free type PFS_Answer ::= GetMTime(time:?Time) 
+free type PFS_Answer ::= GetMTime(time:?Time)
                          | Read (attr:?Attributes; count:?Count; eof:?Boolean;
-			         data:?Data)
+                                 data:?Data)
 
 free type PFS_Return ::= Ret (err    : Errno;
-		       retval : PFS_Answer)
+                       retval : PFS_Answer)
 
 
 %% and lots more - originally
@@ -54,7 +55,7 @@ free type PFS_Command ::= GetMTimeArg (fh:Filehandle)
                           | ReadArg (fh:Filehandle; off:?Offset; cnt:?Count)
 
 free type PFS_Request ::= Req (user : Uid;
-			req  : PFS_Command)
+                        req  : PFS_Command)
 
 
 %% and lots more - originally
@@ -66,6 +67,6 @@ ops
  __>=__ : Time * Time -> Boolean;
 
 forall t1,t2:Time
-. t1 >= t2 <=> seconds(t1) > seconds(t2) 
-	\/ (seconds(t1) = seconds(t2) /\ nanoSeconds(t1) >= nanoSeconds(t2))
+. t1 >= t2 <=> seconds(t1) > seconds(t2)
+        \/ (seconds(t1) = seconds(t2) /\ nanoSeconds(t1) >= nanoSeconds(t2))
 . (t1>=t2) = True when (t1>=t2) else False
