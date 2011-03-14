@@ -1,22 +1,22 @@
 library ConstraintCASL/RCC8
 version 0.3
-%% author: S. Wölfl and T. Mossakowski
+%% author: S. Woelfl and T. Mossakowski
 %% date: 10-02-2006
-%% 
+%%
 
 logic ConstraintCASL
 
 %(  Part I: Symbolic Level
 
-    We start by describing the symbolic level of the region connection 
-    calculus RCC8, i.e., the set of base relations 
-    and the composition table. Arbitrary relations of RCC8 are 
-    represented as sets of base relations. In turn base relations are 
+    We start by describing the symbolic level of the region connection
+    calculus RCC8, i.e., the set of base relations
+    and the composition table. Arbitrary relations of RCC8 are
+    represented as sets of base relations. In turn base relations are
     represented by their respective singleton sets. The spec
-    RelationBaseOfRCC8 builds this set of all relations, 
-    which obviously forms an atomic boolean algebra. Via the composition 
-    table we then define a relation algebra on the set of all relations. 
-    This provides us with a specification of RCC8, namely spec 
+    RelationBaseOfRCC8 builds this set of all relations,
+    which obviously forms an atomic boolean algebra. Via the composition
+    table we then define a relation algebra on the set of all relations.
+    This provides us with a specification of RCC8, namely spec
     RCC8.
 )%
 
@@ -24,11 +24,11 @@ logic ConstraintCASL
 
 
 %(   RCC8 has 8 base relations,
-     namely, dc ("disconnected"), ec ("externally connected"), 
-     po ("partially overlaps"), tpp ("tangential proper part"), 
-     ntpp ("non-tangential proper part"),  tppi ("tangential 
-	proper part inverse"), ntppi ("non-tangential proper 
-	part inverse"), and  eq ("equals").
+     namely, dc ("disconnected"), ec ("externally connected"),
+     po ("partially overlaps"), tpp ("tangential proper part"),
+     ntpp ("non-tangential proper part"),  tppi ("tangential
+        proper part inverse"), ntppi ("non-tangential proper
+        part inverse"), and  eq ("equals").
 )%
 
 
@@ -36,17 +36,17 @@ logic ConstraintCASL
 spec RCC8Base =
      sort Elem
      preds __DC__,__EC__,__PO__,__NTPP__,__TPP__:Elem * Elem;
-	  __NTPPi__: Elem * Elem; %%, inv __NTPP__;
-          __TPPi__: Elem * Elem; %%, inv __TPP__;  
-	  %(inv besagt im Grunde das, was unten unter "Inverses" steht)%
+          __NTPPi__: Elem * Elem; %%, inv __NTPP__;
+          __TPPi__: Elem * Elem; %%, inv __TPP__;
+          %(inv besagt im Grunde das, was unten unter "Inverses" steht)%
 
-	  __EQ__: Elem*Elem; %%, id
-          %(eq besagt: phi(x) => phi(y) fuer alle Formeln der Sprache, d.h. 
-		Substituierbarkeit des Identischen; wird benötigt, da wir
-		nicht unbedingt davon ausgehen können,
-		dass die Identität zum Alphabet der Sprache gehört)% 
+          __EQ__: Elem*Elem; %%, id
+          %(eq besagt: phi(x) => phi(y) fuer alle Formeln der Sprache, d.h.
+                Substituierbarkeit des Identischen; wird benoetigt, da wir
+                nicht unbedingt davon ausgehen koennen,
+                dass die Identitaet zum Alphabet der Sprache gehoert)%
 
-	  __?__: Elem*Elem %%, universal
+          __?__: Elem*Elem %%, universal
      vars x,y,z:Elem
      %(Inverse)%
      . x NTPPi y -||- y NTPP x
@@ -67,66 +67,65 @@ spec RCC8Weak =
   RCC8Base
 then %%minimal
      %(Composition)%
-     . x DC y , y DC z |- x ? z 			%(cmps_DCDC)%
-     . x DC y , y EC  z |- x DC,EC,PO,TPP,NTPP z 	%(cmps_DCEC)%
-     . x DC y , y PO z |- x DC,EC,PO,TPP,NTPP z		%(cmps_DCPO)%
-     . x DC y , y TPP z |- x DC,EC,PO,TPP,NTPP z	%(cmps_DCTPP)%
-     . x DC y , y NTPP z |- x DC,EC,PO,TPP,NTPP z	%(cmps_DCNTPP)%
-     . x DC y , y TPPi z |- x DC z			%(cmps_DCTPPi)%
-     . x DC y , y NTPPi z |- x DC z			%(cmps_DCNTPPi)%
+     . x DC y , y DC z |- x ? z                         %(cmps_DCDC)%
+     . x DC y , y EC  z |- x DC,EC,PO,TPP,NTPP z        %(cmps_DCEC)%
+     . x DC y , y PO z |- x DC,EC,PO,TPP,NTPP z         %(cmps_DCPO)%
+     . x DC y , y TPP z |- x DC,EC,PO,TPP,NTPP z        %(cmps_DCTPP)%
+     . x DC y , y NTPP z |- x DC,EC,PO,TPP,NTPP z       %(cmps_DCNTPP)%
+     . x DC y , y TPPi z |- x DC z                      %(cmps_DCTPPi)%
+     . x DC y , y NTPPi z |- x DC z                     %(cmps_DCNTPPi)%
 
-     . x EC y , y DC z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_ECDC)%
-     . x EC y , y EC z |- x DC,EC,PO,TPP,TPPi,EQ Z	%(cmps_ECEC)%
-     . x EC y , y PO z |- x DC,EC,PO,TPP,NTPP z		%(cmps_ECPO)%
-     . x EC y , y TPP z |- x EC,PO,TPP,NTPP z		%(cmps_ECTPP)%
-     . x EC y , y NTPP z |- x PO,TPP,NTPP z		%(cmps_ECNTPP)%
-     . x EC y , y TPPi z |- x DC,EC z			%(cmps_ECTPPi)%
-     . x EC y , y NTPPi z |- x DC z			%(cmps_ECNTPPi)%
+     . x EC y , y DC z |- x DC,EC,PO,TPPi,NTPPi z       %(cmps_ECDC)%
+     . x EC y , y EC z |- x DC,EC,PO,TPP,TPPi,EQ Z      %(cmps_ECEC)%
+     . x EC y , y PO z |- x DC,EC,PO,TPP,NTPP z         %(cmps_ECPO)%
+     . x EC y , y TPP z |- x EC,PO,TPP,NTPP z           %(cmps_ECTPP)%
+     . x EC y , y NTPP z |- x PO,TPP,NTPP z             %(cmps_ECNTPP)%
+     . x EC y , y TPPi z |- x DC,EC z                   %(cmps_ECTPPi)%
+     . x EC y , y NTPPi z |- x DC z                     %(cmps_ECNTPPi)%
 
-     . x PO y , y DC z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_PODC)%
-     . x PO y , y EC z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_POEC)%
-     . x PO y , y PO z |- x ? z				%(cmps_POPO)%
-     . x PO y , y TPP z |- x PO,TPP,NTPP z		%(cmps_POTPP)%
-     . x PO y , y NTPP z |- x PO,TPP,NTPP z		%(cmps_PONTPP)%
-     . x PO y , y TPPi z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_POTPPi)%
-     . x PO y , y NTPPi z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_PONTPPi)%
+     . x PO y , y DC z |- x DC,EC,PO,TPPi,NTPPi z       %(cmps_PODC)%
+     . x PO y , y EC z |- x DC,EC,PO,TPPi,NTPPi z       %(cmps_POEC)%
+     . x PO y , y PO z |- x ? z                         %(cmps_POPO)%
+     . x PO y , y TPP z |- x PO,TPP,NTPP z              %(cmps_POTPP)%
+     . x PO y , y NTPP z |- x PO,TPP,NTPP z             %(cmps_PONTPP)%
+     . x PO y , y TPPi z |- x DC,EC,PO,TPPi,NTPPi z     %(cmps_POTPPi)%
+     . x PO y , y NTPPi z |- x DC,EC,PO,TPPi,NTPPi z    %(cmps_PONTPPi)%
 
-     . x TPP y , y DC z |- x DC z			%(cmps_TPPDC)%
-     . x TPP y , y EC z |- x DC,EC z			%(cmps_TPPEC)%
-     . x TPP y , y PO z |- x DC,EC,PO,TPP,NTPP z	%(cmps_TPPPO)%
-     . x TPP y , y TPP z |- x TPP,NTPP z		%(cmps_TPPTPP)%
-     . x TPP y , y NTPP z |- x NTPP z			%(cmps_TPPNTPP)%
-     . x TPP y , y TPPi z |- x DC,EC,PO,TPP,TPPi,EQ z	%(cmps_TPPTPPi)%
-     . x TPP y , y NTPPi z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_TPPNTPPi)%
+     . x TPP y , y DC z |- x DC z                       %(cmps_TPPDC)%
+     . x TPP y , y EC z |- x DC,EC z                    %(cmps_TPPEC)%
+     . x TPP y , y PO z |- x DC,EC,PO,TPP,NTPP z        %(cmps_TPPPO)%
+     . x TPP y , y TPP z |- x TPP,NTPP z                %(cmps_TPPTPP)%
+     . x TPP y , y NTPP z |- x NTPP z                   %(cmps_TPPNTPP)%
+     . x TPP y , y TPPi z |- x DC,EC,PO,TPP,TPPi,EQ z   %(cmps_TPPTPPi)%
+     . x TPP y , y NTPPi z |- x DC,EC,PO,TPPi,NTPPi z   %(cmps_TPPNTPPi)%
 
-     . x NTPP y , y DC z |- x DC z			%(cmps_NTPPDC)%
-     . x NTPP y , y EC z |- x DC z			%(cmps_NTPPEC)%
-     . x NTPP y , y PO z |- x DC,EC,PO,TPP,NTPP z	%(cmps_NTPPPO)%
-     . x NTPP y , y TPP z |- x NTPP z			%(cmps_NTPPTPP)%
-     . x NTPP y , y NTPP z |- x NTPP z			%(cmps_NTPPNTPP)%
-     . x NTPP y , y TPPi z |- x DC,EC,PO,TPP,NTPP z	%(cmps_NTPPTPPi)%
-     . x NTPP y , y NTPPi z |- x ? z			%(cmps_NTPPNTPPi)%
+     . x NTPP y , y DC z |- x DC z                      %(cmps_NTPPDC)%
+     . x NTPP y , y EC z |- x DC z                      %(cmps_NTPPEC)%
+     . x NTPP y , y PO z |- x DC,EC,PO,TPP,NTPP z       %(cmps_NTPPPO)%
+     . x NTPP y , y TPP z |- x NTPP z                   %(cmps_NTPPTPP)%
+     . x NTPP y , y NTPP z |- x NTPP z                  %(cmps_NTPPNTPP)%
+     . x NTPP y , y TPPi z |- x DC,EC,PO,TPP,NTPP z     %(cmps_NTPPTPPi)%
+     . x NTPP y , y NTPPi z |- x ? z                    %(cmps_NTPPNTPPi)%
 
-     . x TPPi y , y DC z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_TPPiDC)%
-     . x TPPi y , y EC z |- x EC,PO,TPPi,NTPPi z	%(cmps_TPPiEC)%
-     . x TPPi y , y PO z |- x PO,TPPi,NTPPi z		%(cmps_TPPiPO)%
-     . x TPPi y , y TPP z |- x PO,EQ,TPP,TPPi z		%(cmps_TPPiTPP)%
-     . x TPPi y , y NTPP z |- x PO,TPP,NTPP z		%(cmps_TPPiNTPP)%
-     . x TPPi y , y TPPi z |- x TPPi,NTPPi z		%(cmps_TPPiTPPi)%
-     . x TPPi y , y NTPPi z |- x NTPPi z		%(cmps_TPPiNTPPi)%
+     . x TPPi y , y DC z |- x DC,EC,PO,TPPi,NTPPi z     %(cmps_TPPiDC)%
+     . x TPPi y , y EC z |- x EC,PO,TPPi,NTPPi z        %(cmps_TPPiEC)%
+     . x TPPi y , y PO z |- x PO,TPPi,NTPPi z           %(cmps_TPPiPO)%
+     . x TPPi y , y TPP z |- x PO,EQ,TPP,TPPi z         %(cmps_TPPiTPP)%
+     . x TPPi y , y NTPP z |- x PO,TPP,NTPP z           %(cmps_TPPiNTPP)%
+     . x TPPi y , y TPPi z |- x TPPi,NTPPi z            %(cmps_TPPiTPPi)%
+     . x TPPi y , y NTPPi z |- x NTPPi z                %(cmps_TPPiNTPPi)%
 
-     . x NTPPi y , y DC z |- x DC,EC,PO,TPPi,NTPPi z	%(cmps_NTPPiDC)%
-     . x NTPPi y , y EC z |- x PO,TPPi,NTPPi z		%(cmps_NTPPiEC)%
-     . x NTPPi y , y PO z |- x PO,TPPi,NTPPi z		%(cmps_NTPPiPO)%
-     . x NTPPi y , y TPP z |- x PO,TPPi,NTPPi z		%(cmps_NTPPiTPP)%
-     . x NTPPi y , y NTPP z |- x PO,TPP,TPPi,NTPP,NTPPi,EQ z	%(cmps_NTPPiNTPP)%
-     . x NTPPi y , y TPPi z |- x NTPPi z		%(cmps_NTPPiTPPi)%
-     . x NTPPi y , y NTPPi z |- x NTPPi z		%(cmps_NTPPiNTPPi)%
+     . x NTPPi y , y DC z |- x DC,EC,PO,TPPi,NTPPi z    %(cmps_NTPPiDC)%
+     . x NTPPi y , y EC z |- x PO,TPPi,NTPPi z          %(cmps_NTPPiEC)%
+     . x NTPPi y , y PO z |- x PO,TPPi,NTPPi z          %(cmps_NTPPiPO)%
+     . x NTPPi y , y TPP z |- x PO,TPPi,NTPPi z         %(cmps_NTPPiTPP)%
+     . x NTPPi y , y NTPP z |- x PO,TPP,TPPi,NTPP,NTPPi,EQ z    %(cmps_NTPPiNTPP)%
+     . x NTPPi y , y TPPi z |- x NTPPi z                %(cmps_NTPPiTPPi)%
+     . x NTPPi y , y NTPPi z |- x NTPPi z               %(cmps_NTPPiNTPPi)%
 end
 
 spec RCC8Example =
   RCC8Weak then %implies
-  var x,y,z,v: Elem 
-  . |- x PO y, x NTPP z, v TPP y, v TPP z 
+  var x,y,z,v: Elem
+  . |- x PO y, x NTPP z, v TPP y, v TPP z
 end
-  
