@@ -1,6 +1,6 @@
 library HasCASL/TopologicalSpaces
 
-%author: T. Mossakowski, S. Wölfl
+%author: T. Mossakowski, S. Woelfl
 %date: 2005-10-11
 
 from HasCASL/Set get Set
@@ -10,20 +10,20 @@ logic HasCASL
 spec TopologicalSpace_Ngh =
   Set then
   sort S
-  op Ngh: S -> Set (Set S) 
+  op Ngh: S -> Set (Set S)
   forall x:S; U,V:Set S
   . allSet isIn Ngh(x)
   . U subset V /\ U isIn Ngh(x) => V isIn Ngh(x)
   . U isIn Ngh(x) => x isIn U
   . U isIn Ngh(x) /\ V isIn Ngh(x) => U intersection V isIn Ngh(x)
   . U isIn Ngh(x) =>
-               exists V:Set S . V isIn Ngh(x) 
+               exists V:Set S . V isIn Ngh(x)
                /\ forall y:S . y isIn V => U isIn Ngh(y)
 end
 
 spec ExtTopologicalSpace_Ngh [TopologicalSpace_Ngh] =
   ops int(X:Set S):Set S = \ x:S . X isIn Ngh(x);
-      cls(X:Set S):Set S = 
+      cls(X:Set S):Set S =
            \ x:S . forall Y:Set S . Y isIn Ngh(x) => not Y disjoint X;
       tau : Set(Set S) = \ X:Set S . X = int(X)
 end
@@ -73,7 +73,7 @@ spec RichTopologicalSpace_OpenSet =
 then %def
   ops int(X:Set S):Set S = bigunion (\ Y:Set S . Y isIn tau /\ Y subset X);
       cls(X:Set S):Set S = allSet \\ int(allSet \\ X);
-      Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X) 
+      Ngh(x:S) : Set (Set S) = \ X:Set S . x isIn int(X)
 end
 
 view KN : RichTopologicalSpace_Kuratowski to RichTopologicalSpace_Ngh
@@ -114,7 +114,7 @@ RichTopologicalSpace_Ngh
 then
   forall x:S; Y:Set S
   . not x isIn Y /\ Y=cls(Y) =>
-    exists U,V:Set S . U isIn Ngh(x) 
+    exists U,V:Set S . U isIn Ngh(x)
                        /\ (forall y:S . y isIn Y => V isIn Ngh(y))
                        /\ U disjoint V
 end
@@ -155,49 +155,49 @@ end
 
 from Basic/RelationsAndOrders get BooleanAlgebra
 
-view BooleanAlgebra_in_RegularClosedSets 
+view BooleanAlgebra_in_RegularClosedSets
      : BooleanAlgebra to { RichTopologicalSpace then
          ops 0:RegularClosed = emptySet;
              1:RegularClosed = allSet;
              __cup__(X,Y:RegularClosed):RegularClosed =
                   X union Y;
-             __cap__(X,Y:RegularClosed):RegularClosed = 
+             __cap__(X,Y:RegularClosed):RegularClosed =
                   cls(int(X intersection Y))
      }
       =
   Elem |-> RegularClosed, 0, 1, __cup__, __cap__
 end
 
-from HasCASL/MetricSpaces get 
-	MetricSpace,
-	ExtMetricSpaceByOpenSets
+from HasCASL/MetricSpaces get
+        MetricSpace,
+        ExtMetricSpaceByOpenSets
 
-view MetricInducesTopology : 
-     TopologicalSpace_Ngh 
-to 
+view MetricInducesTopology :
+     TopologicalSpace_Ngh
+to
      { MetricSpace and Set then
-       op Ngh(x:S):Set(Set S) = \X : Set S . 
-          exists epsilon:Real . epsilon > 0 
+       op Ngh(x:S):Set(Set S) = \X : Set S .
+          exists epsilon:Real . epsilon > 0
             /\ forall y:S . d(x,y)<epsilon => y isIn X
-     } 
+     }
 end
 
 
-view MetricInducesTopology2[MetricSpace]  : 
-     TopologicalSpace_Ngh 
+view MetricInducesTopology2[MetricSpace]  :
+     TopologicalSpace_Ngh
 to
-     { ExtMetricSpaceByOpenSets[MetricSpace] 
-      then 
-      op Ngh(x:S):Set(Set S) = \X : Set S . 
+     { ExtMetricSpaceByOpenSets[MetricSpace]
+      then
+      op Ngh(x:S):Set(Set S) = \X : Set S .
           exists U:OpenSets . x isIn U /\ U subset X
-	}
-end 	
+        }
+end
 
 %(
-view MetricInducesHausdorff[MetricSpace]  : 
+view MetricInducesHausdorff[MetricSpace]  :
      T2
-to   
+to
      ExtTopologicalSpace_Ngh[
-	view MetricInducesTopology2[MetricSpace]]
+        view MetricInducesTopology2[MetricSpace]]
 en
 )%

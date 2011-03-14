@@ -12,10 +12,10 @@ spec Interpreter = Sums then
        | if (s --> Bool) (Prog s) (Prog s)
        | while (s --> Bool) (Prog s)
      op  eval : Prog s --> s -->? s
-     var s : s
-     program
-     eval skip s = s;
-     eval (basic f) s = f s;
-     eval (seq p q) s = eval q (eval p s);
-     eval (if b p q) s = if b s then eval p s else eval q s;
-     eval (while b p) s = if b s then eval (while b p)(eval p s) else s
+     var s : s; b : s --> Bool; p, q : Prog s; f : s -->? s
+%%     program
+.     eval skip s = s;
+.     eval (basic f) s = f s;
+.     eval (seq p q) s = eval q (eval p s);
+.     eval (if b p q) s = if b s then eval p s else eval q s;
+.     eval (while b p) s = if b s then eval (while b p)(eval p s) else s

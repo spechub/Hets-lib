@@ -1,6 +1,6 @@
 library HasCASL/MetricSpaces
 
-%author: T. Mossakowski, S. Wölfl
+%author: T. Mossakowski, S. Woelfl
 %date: 2005-10-11
 
 from HasCASL/Set get Set
@@ -30,32 +30,29 @@ local Set
 within
      op openDisc(r:Real;x:S) : Set S = \y:S . d(x,y)<r
      type OpenDisc = {X:Set S . exists r:Real;x:S . r > 0 /\ X=openDisc(r,x)}
-     preds __disjoint__,__subset__: OpenDisc * OpenDisc 
+     preds __disjoint__,__subset__: OpenDisc * OpenDisc
 end
 )%
 
 
 spec ExtMetricSpaceByOpenSets[MetricSpace] given Set =
-     ExtMetricSpaceByOpenDiscs[MetricSpace] 
+     ExtMetricSpaceByOpenDiscs[MetricSpace]
 then %def
-     pred Open : Set S 
+     pred Open : Set S
      type OpenSets = {X:Set S . Open(X)}
      forall X:Set S
-     . Open(X) <=> forall x:S . x isIn X => 
-			exists r:Real . openDisc(x,r) subset X 
+     . Open(X) <=> forall x:S . x isIn X =>
+                        exists r:Real . openDisc(x,r) subset X
 end
 
-spec ExtMetricSpaceByClosedDiscs[MetricSpace] given Set = 
+spec ExtMetricSpaceByClosedDiscs[MetricSpace] given Set =
   op closedDisc(x:S;r:Real) : Set S = \y:S . d(x,y)<=r
-  type ClosedDiscs = 
+  type ClosedDiscs =
         {X:Set S . exists x:S;r:Real . not r=0 /\ X=closedDisc(x,r)}
 end
 
-spec RichMetricSpace = 
+spec RichMetricSpace =
     ExtMetricSpaceByOpenDiscs[MetricSpace]
 and
     ExtMetricSpaceByClosedDiscs[MetricSpace]
 end
-
-
-

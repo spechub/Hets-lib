@@ -2,7 +2,7 @@ library HasCASL/MetricSpaces2
 
 %% version without use of subsorts
 
-%author: T. Mossakowski, S. Wölfl
+%author: T. Mossakowski, S. Woelfl
 %date: 2005-10-11
 
 from HasCASL/Real get Real
@@ -15,9 +15,9 @@ then
      sort S
      op d:S*S->Real
      var x,y,z:S
-     . d(x,y) = 0 <=> x = y		%(MS_pos_definite)%
-     . d(x,y) = d(y,x)			%(MS_symm)%
-     . d(x,z) <= d(x,y) + d(y,z)	%(MS_triangle)%
+     . d(x,y) = 0 <=> x = y             %(MS_pos_definite)%
+     . d(x,y) = d(y,x)                  %(MS_symm)%
+     . d(x,z) <= d(x,y) + d(y,z)        %(MS_triangle)%
 then %implies
      var x,y:S
      . 0 <= d(x,y)                      %(MS_pos)%
@@ -31,46 +31,43 @@ spec ExtMetricSpaceByOpenBalls[MetricSpace] =
   forall X:Pred S; a,b: OpenBall
   . (exists d:OpenBall . inj(d)=X)
      <=> (exists x:S;r:Real . X=openBall(x,r)) %(EMSOD_inj_ran)%
-  . inj a = inj b => a = b		%(EMSOD_inj_inj)%
+  . inj a = inj b => a = b              %(EMSOD_inj_inj)%
 end
 
 spec ExtMetricSpaceByOpenSets[MetricSpace] =
-     ExtMetricSpaceByOpenBalls[MetricSpace] 
+     ExtMetricSpaceByOpenBalls[MetricSpace]
 then %def
-     pred Open : Pred S 
+     pred Open : Pred S
      type OpenSets
      op inj : OpenSets -> Pred S
      forall X:Pred S; a,b: OpenSets
      . (exists d:OpenSets . inj(d)=X) <=> Open(X) %(EMSOS_inj_ran)%
-     . Open(X) <=> forall x:S . X x => 
-			exists r:Real .
+     . Open(X) <=> forall x:S . X x =>
+                        exists r:Real .
                            forall s:S . openBall(x,r) s => X s
-						%(EMSOS_Open_def)%
-     . inj a = inj b => a = b			%(EMSOS_inj_inj)%
+                                                %(EMSOS_Open_def)%
+     . inj a = inj b => a = b                   %(EMSOS_inj_inj)%
 end
 
-spec ExtMetricSpaceByClosedBalls[MetricSpace] = 
-  sort ClosedBall 
+spec ExtMetricSpaceByClosedBalls[MetricSpace] =
+  sort ClosedBall
   ops closedBall: S*Real -> ClosedBall;
       rep : ClosedBall -> Pred S
   forall x,y:S; r:Real; a,b: ClosedBall
   . r > 0 => (rep (closedBall(x,r)) y <=> d(x,y)<=r) %(EMSCB_rep_pos)%
-  . not r > 0 => not (rep (closedBall(x,r)) y)		%(EMSCB_rep_0)%
-  . rep a = rep b => a = b			%(EMSCB_rep_inj)%
+  . not r > 0 => not (rep (closedBall(x,r)) y)          %(EMSCB_rep_0)%
+  . rep a = rep b => a = b                      %(EMSCB_rep_inj)%
   . exists z:S; t:Real. a = closedBall(z,t)
 then %implies
   forall x,y:S; r: Real; a: ClosedBall
-  . r > 0 => rep (closedBall (x,r)) x;		%(EMSCB_center)%
+  . r > 0 => rep (closedBall (x,r)) x;          %(EMSCB_center)%
   forall x:S; a: ClosedBall
-  . not rep a x => exists r:Real. forall y:S. 
-	not (rep (closedBall (x,r)) y /\ not rep a y)	%(EMSCB_closed)%
+  . not rep a x => exists r:Real. forall y:S.
+        not (rep (closedBall (x,r)) y /\ not rep a y)   %(EMSCB_closed)%
 end
 
-spec RichMetricSpace = 
+spec RichMetricSpace =
     ExtMetricSpaceByOpenBalls[MetricSpace]
 and
     ExtMetricSpaceByClosedBalls[MetricSpace]
 end
-
-
-

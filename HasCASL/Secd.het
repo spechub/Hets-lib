@@ -1,6 +1,6 @@
 library HasCASL/Secd
 version 0.1
-%authors: C.Maeder, T.Mossakowski, L.Schröder
+%authors: C.Maeder, T.Mossakowski, L.Schroeder
 %% corresponding author: Christian Maeder, Christian.Maeder@dfki.de
 %dates:  17.09.2002, 24.03.2004
 
@@ -122,7 +122,7 @@ then %implies
   op leftRed: Term ->? Term
   program leftRed (App (App f a) c) = App (leftRed (App f a))c;
      leftRed(App (Lam x b)(App f a)) =
-          App (Lam x b) (leftRed (App f a));		
+          App (Lam x b) (leftRed (App f a));
      leftRed(App (Lam x b)(Lam y t)) =
           (subst (Lam y t as ClosedTerm) x b)
   op leftRed: ClosedTerm ->? ClosedTerm

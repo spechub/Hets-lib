@@ -1,7 +1,7 @@
 library HasCASL/Reals
 version 0.2
 
-%author: T. Mossakowski, S. Wölfl, E. Schulz, D.Dietrich
+%author: T. Mossakowski, S. Woelfl, E. Schulz, D.Dietrich
 %date: 12-10-2005
 
 %prec { __-__, __+__ } < { __*__, __/__ }
@@ -75,7 +75,7 @@ then
 then %implies
 
   . forall S: Pred(Real). (exists x:Real. S(x)) /\ (exists B:Real . forall x:Real. S(x) => x <= B) => exists m:Real. m=inf(S) %(Real_completeness)%
-%%If A is a non-empty subset of R, and if A has an upper bound, then A has a least upper bound u, such that for every upper bound v of A, u ≤ v.
+%%If A is a non-empty subset of R, and if A has an upper bound, then A has a least upper bound u, such that for every upper bound v of A, u <= v.
 end
 
 
@@ -85,15 +85,15 @@ spec SimpleReals = Reals hide NonZero
 spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
 then %def
      preds RealNonNeg_pred(x:Real) <=> x >= 0; %(RealNonNeg_pred_def)%
-	   RealPos_pred(x:Real) <=> x > 0; %(RealPos_pred_def)%
+           RealPos_pred(x:Real) <=> x > 0; %(RealPos_pred_def)%
 
      types RealNonNeg = {x:Real. RealNonNeg_pred x}; %(RealNonNeg type)%
-	   RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
-	   RealPos < RealNonNeg;
-	   RealPos < NonZero;
+           RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
+           RealPos < RealNonNeg;
+           RealPos < NonZero;
 
      op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
-	%(abs def)%
+        %(abs def)%
 
 then %implies
      vars a,b,c:Real
@@ -125,15 +125,15 @@ spec RealFunctions = OrderedReals
 then %def
 
      ops sqr: Real -> RealNonNeg;
-	 sqr: NonZero -> RealPos;
-	 sqrt: RealNonNeg -> RealNonNeg;
-	 sqrt: RealPos -> RealPos;
-	 __+__: RealPos*RealPos -> RealPos;
-	 __*__: RealPos*RealPos -> RealPos;
-	 __/__: RealPos*RealPos -> RealPos;
-	 min: Real*Real -> Real;
-	 max: Real*Real -> Real;
-	 Pi: RealPos
+         sqr: NonZero -> RealPos;
+         sqrt: RealNonNeg -> RealNonNeg;
+         sqrt: RealPos -> RealPos;
+         __+__: RealPos*RealPos -> RealPos;
+         __*__: RealPos*RealPos -> RealPos;
+         __/__: RealPos*RealPos -> RealPos;
+         min: Real*Real -> Real;
+         max: Real*Real -> Real;
+         Pi: RealPos
 
      var r:Real;q:RealNonNeg
      . sqr(r) = r * r    %(sqr_def)%
@@ -142,4 +142,3 @@ then %def
 
      . sqr(sqrt(q)) = q  %(sqrt_def)%
 end
-
