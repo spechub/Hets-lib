@@ -97,7 +97,7 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      %% ** Screw holes
 
      ops p_B, n_B, d_3, d_5, d_5e, d_5t, l_5t, e_Fb:RealPos;
-	 d_3e:Real
+         d_3e:Real
 
      %% distance between screws
      . p_B = Pi * d_3/n_B                    %(eq1)%
@@ -111,7 +111,7 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      %% ** Ring
 
      ops d_0, d_4, d_o:RealPos;
-	 b_F, d_F, e_F, b_L, d_L, e_L, A_F:Real
+         b_F, d_F, e_F, b_L, d_L, e_L, A_F:Real
 
      . b_F = (d_4 - d_0)/2 - d_5e            %(eq5.1)%
      . d_F = (d_4 + d_0)/2                   %(eq5.2)%
@@ -125,7 +125,7 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      %% * Spheric shell
 
      ops beta, d_1, d_2, e_1, e_2, l_H:RealPos;
-	 e_E, d_E:Real
+         e_E, d_E:Real
 
      . beta = e_2/e_1                        %(eq9.1)%
      . e_E = e_E %(eq9.2)% %% dummy for fast type checking
@@ -140,13 +140,13 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      %% * Lever arm
 
      ops d_Ge:RealPos;
-	 h_P, e_P:Real;
+         h_P, e_P:Real;
 
 %[
 @comment
- ANMERKUNG Im Falle einer Flachdichtung können die unten angegebenen
+ ANMERKUNG Im Falle einer Flachdichtung koennen die unten angegebenen
  Parameter $h_P und h_G nur errechnet werden nach Auswertung von $d_Ge,
- d. h. nachdem die Berechnungen in 4.3.2 durchgeführt wurden.
+ d. h. nachdem die Berechnungen in 4.3.2 durchgefuehrt wurden.
 ]%
 
      . h_P = h_P %(eq13)% %% dummy for fast type checking
@@ -156,8 +156,8 @@ spec DerivedParameter = AffineRealSpace3DWithSets then
      %% * Elasticity related flange paramters
 
      ops gamma, phi_s:Real;
-	 %% TODO: outsource cos
-	 cos: Real->Real;
+         %% TODO: outsource cos
+         cos: Real->Real;
 
      . gamma = e_E * d_F/(b_F * d_E * cos(phi_s) as NonZero) %(eq17)%
 
@@ -166,6 +166,3 @@ end
 
 
 %% 5. Limit load equation
-
-
-
