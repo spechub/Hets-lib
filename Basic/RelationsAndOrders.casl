@@ -1,11 +1,11 @@
 library Basic/RelationsAndOrders
 version 1.0
-%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schroeder
 %date: 18 December 2003
 
-%{ This library provides 
+%{ This library provides
 
-- specifications of binary relations of different sort, 
+- specifications of binary relations of different sort,
 - views stating that the numbers specified in the
    Library Basic/Numbers are totally ordered, and
 - a specification of Boolean Algebras.
@@ -100,7 +100,7 @@ spec StrictOrder =
 end
 
 spec PartialOrder =
-     PreOrder 
+     PreOrder
 and  AntisymmetricRelation with pred __ ~ __ |-> __ <= __
 end
 
@@ -145,12 +145,12 @@ spec BooleanAlgebra =
      . x cap 0 = 0                      %(zeroAndCap)%
      . x cup 1 = 1                      %(oneAndCup)%
 
-     . x cap ( y cup z) = (x cap y) cup ( x cap z)             
+     . x cap ( y cup z) = (x cap y) cup ( x cap z)
                                         %(distr1_BooleanAlgebra)%
-     . x cup ( y cap z) = (x cup y) cap ( x cup z)             
+     . x cup ( y cap z) = (x cup y) cap ( x cup z)
                                         %(distr2_BooleanAlgebra)%
 
-     . exists x': Elem . x cup x' = 1 /\ x cap x' = 0             
+     . exists x': Elem . x cup x' = 1 /\ x cap x' = 0
                                         %(inverse_BooleanAlgebra)%
 
 then %implies
@@ -158,7 +158,7 @@ then %implies
      op __ cup __, __ cap __ : Elem * Elem -> Elem , idem
 
      forall x: Elem
-     . exists! x': Elem . 
+     . exists! x': Elem .
          x cup x' = 1 /\ x cap x' = 0   %(uniqueComplement_BooleanAlgebra)%
 end
 
@@ -180,7 +180,7 @@ and
       z <= x /\ z <= y /\ (forall t: Elem . t <= x /\ t <= y => t <= z)
                                       %(inf_def_ExtPartialOrder)%
     . sup(x,y) = z <=>
-      x <= z /\ y <= z /\ (forall t: Elem . x <= t /\ y <= t => z <= t)    
+      x <= z /\ y <= z /\ (forall t: Elem . x <= t /\ y <= t => z <= t)
                                       %(sup_def_ExtPartialOrder)%
   }
 end
@@ -212,9 +212,9 @@ spec ExtBooleanAlgebra [BooleanAlgebra] = %def
 and
      { op compl__: Elem -> Elem
        forall x,y:Elem
-       . compl(x)=y <=> x cup y = 1 /\ x cap y = 0    
+       . compl(x)=y <=> x cup y = 1 /\ x cap y = 0
                                             %(compl_def_ExtBooleanAlgebra)%
-     
+
      then %implies
        forall x,y: Elem
        . compl(x cap y) = compl(x) cup compl(y)             %(de_Morgan1)%
@@ -243,5 +243,5 @@ view TotalOrder_in_Rat: TotalOrder to Rat =
 end
 
 view PartialOrder_in_ExtBooleanAlgebra [BooleanAlgebra]:
-   PartialOrder to ExtBooleanAlgebra[BooleanAlgebra] 
+   PartialOrder to ExtBooleanAlgebra[BooleanAlgebra]
 end

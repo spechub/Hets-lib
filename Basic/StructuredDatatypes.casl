@@ -1,6 +1,6 @@
 library Basic/StructuredDatatypes
 version 1.0
-%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schroeder
 %date: 18 December 2003
 
 %left_assoc __ + __, __ - __, __ ++ __
@@ -15,7 +15,7 @@ version 1.0
 
 %display  __eps__ %LATEX __\epsilon__
 %% note: \epsilon looks different from \in,
-%% which is used as LaTeX display syntax 
+%% which is used as LaTeX display syntax
 %% for the CASL membership predicate
 
 %display  __isSubsetOf__   %LATEX __\subseteq__
@@ -55,7 +55,7 @@ then %def
          #__: Set[Elem] -> Nat;
          __ + __ : Elem * Set[Elem] -> Set[Elem];
          __ - __ : Set[Elem] * Elem -> Set[Elem];
-         __ intersection __, 
+         __ intersection __,
          __ union__,
          __ - __,
          __ symDiff __:  Set[Elem] * Set[Elem] ->   Set[Elem];
@@ -73,7 +73,7 @@ then %def
   %% axioms concerning predicates
 
   . isNonEmpty(M) <=> not M = {}             %(isNonEmpty_def)%
-  . M isSubsetOf N <=> 
+  . M isSubsetOf N <=>
     forall x: Elem. x eps M => x eps N       %(isSubsetOf_def)%
 
   %% axioms concerning operations
@@ -91,10 +91,10 @@ then %def
                    (M-y) + x                    %(remElem_NonEmptySet)%
 
   . M intersection {}    = {}                   %(intersection_Emptyset)%
-  . M intersection (N+x) = 
+  . M intersection (N+x) =
       (M intersection N) + x when x eps M else
        M intersection N                         %(intersection_NonEmptySet)%
-      
+
   . M union {}    =  M                          %(union_EmptySet)%
   . M union (N+x) =  M union N      when x eps M else
                     (M union N) + x             %(union_NonEmptySet)%
@@ -106,16 +106,16 @@ then %def
 
   %% important laws
 
-  . (M union N) intersection O = 
+  . (M union N) intersection O =
     (M intersection O) union (N intersection O)
                                                 %(distr1_Set)% %implied
-  . O intersection (M union N) = 
+  . O intersection (M union N) =
     (O intersection M) union (O intersection N)
                                                 %(distr2_Set)% %implied
 
 then %implies
   forall x,y: Elem; M,N:Set[Elem]
-  . # (M union N) = 
+  . # (M union N) =
     (#(M) + #(N)) -? #(M intersection N)        %(set_counting)%
   . # M <= # (M union N)                        %(union_counting)%
   . M isSubsetOf (M union N)                    %(union_isSubsetOf)%
@@ -139,7 +139,7 @@ spec PowerSet [Set[sort Elem] then op X: Set[Elem]] given Nat
            #__:              PowerSet[X] -> Nat;
            __ + __ : Elem[X] * PowerSet[X] -> PowerSet[X];
            __ - __ : PowerSet[X] * Elem[X] -> PowerSet[X];
-           __ intersection __, 
+           __ intersection __,
            __ union__,
            __ - __,
            __ symDiff __:  PowerSet[X] * PowerSet[X] ->   PowerSet[X];
@@ -151,11 +151,11 @@ spec PowerSet [Set[sort Elem] then op X: Set[Elem]] given Nat
           __ intersection __ : PowerSet[X] * PowerSet[X] -> PowerSet[X],
                               assoc, comm, idem;    %implied
      %% important laws
-     
+
      forall M,N,O: PowerSet[X]
-     . (M union N) intersection O = 
+     . (M union N) intersection O =
        (M intersection O) union (N intersection O) %(distr1_PowerSet)% %implied
-     . O intersection (M union N) = 
+     . O intersection (M union N) =
       (O intersection M) union (O intersection N) %(distr2_PowerSet)% %implied
 end
 
@@ -192,7 +192,7 @@ spec List [sort Elem] given Nat = %mono
            freq: List[Elem] * Elem -> Nat
 
      forall x,y: Elem; n: Nat; p: Pos; L,K: List[Elem]
-     
+
      %% axioms concerning predicates
 
      . isEmpty(L) <=> L=[]                      %(isEmpty_def)%
@@ -210,7 +210,7 @@ spec List [sort Elem] given Nat = %mono
 
      . def last(L) <=> not isEmpty(L)           %(last_dom)% %implied
      . not def last([])                         %(last_nil)%
-     . last (x :: L) = x when isEmpty(L) else           
+     . last (x :: L) = x when isEmpty(L) else
                        last(L)                  %(last_NeList)%
 
      . def front(L) <=> not isEmpty(L)       %(front_dom)% %implied
@@ -235,17 +235,17 @@ spec List [sort Elem] given Nat = %mono
      . (x :: L)!suc(p) = L!p                   %(index_suc)%
 
      . def take(n,L) <=> # L >= n              %(take_dom)% %implied
-     . take (n,L) = K <=> 
-       exists S: List[Elem] . 
+     . take (n,L) = K <=>
+       exists S: List[Elem] .
        K ++ S = L /\ # K = n                   %(take_def)%
 
      . def drop(n,L) <=> # L >= n              %(drop_dom)% %implied
-     . drop (n,L) = K <=> 
-       exists S: List[Elem] . 
+     . drop (n,L) = K <=>
+       exists S: List[Elem] .
        S ++ K = L /\ # S = n                   %(drop_def)%
 
      . freq ([],x) = 0                         %(freq_nil)%
-     . freq (x::L,y) = 
+     . freq (x::L,y) =
          suc(freq(L,y)) when x=y else
          freq(L,y)                             %(freq_NeList)%
 
@@ -268,12 +268,12 @@ view Monoid_in_List  [sort Elem] given Nat:
 end
 
 spec GenerateMap [sort S] [sort T] = %mono
-  generated type Map[S,T] ::= empty | __[__/__] (Map[S,T];T;S) 
+  generated type Map[S,T] ::= empty | __[__/__] (Map[S,T];T;S)
   op  lookup:  S * Map[S,T] ->? T;
   forall M,N:Map[S,T];s,s1,s2:S; t1,t2:T
      . not def lookup(s,empty)                          %(lookup_empty_Map)%
-     . lookup(s, M[t1/s1]) = t1 when s=s1	else	
-	                   lookup(s,M)                  %(lookup_nonEmpty_Map)%
+     . lookup(s, M[t1/s1]) = t1 when s=s1       else
+                           lookup(s,M)                  %(lookup_nonEmpty_Map)%
      . M=N <=> forall s:S . lookup(s,M)=lookup(s,N)       %(equality_Map)%
 end
 
@@ -281,8 +281,8 @@ end
 spec Map [sort S][sort T] given Nat= %mono
      GenerateMap [sort S][sort T]
    and
-     Set [sort S fit Elem |-> S] 
-   and 
+     Set [sort S fit Elem |-> S]
+   and
      Set [sort T fit Elem |-> T]
 then %def
      free type Entry[S,T]::=[__/__] (target:T;source:S)
@@ -313,18 +313,18 @@ then %def
 
      .  empty-[t/s] = empty                             %(minus_empty_Map)%
 
-     .  (M[t/s])-[t1/s1] = 
-             M-s when [t/s]=[t1/s1] else 
+     .  (M[t/s])-[t1/s1] =
+             M-s when [t/s]=[t1/s1] else
             (M-[t1/s1])+[t/s]                        %(minus_nonEmpty_Map)%
 
      . empty-s=empty                                %(minusSource_empty_Map)%
      . (M+e)-s=
-           M-s when exists t:T . e=[t/s] else 
+           M-s when exists t:T . e=[t/s] else
           (M-s)+e                                %(minusSource_nonEmpty_Map)%
 
      . empty-t=empty                             %(minusTarget_empty_Map)%
-     . (M+e)-t = 
-         (M-source(e))-t when target(e)=t else 
+     . (M+e)-t =
+         (M-source(e))-t when target(e)=t else
          (M-t)+e                                 %(minusTarget_nonEmpty_Map)%
 
      . s eps dom(M)   <=> def lookup(s,M)                     %(dom_def_Map)%
@@ -339,13 +339,13 @@ then %def
      . def lookup(s,M) <=> exists t:T . [t/s] eps M   %(lookup_dom)% %implied
 
      . M[t1/s][t2/s] = M[t2/s]                 %(overwrite_Map)% %implied
-     . M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2   
+     . M[t1/s1][t2/s2]= M[t2/s2][t1/s1] if not s1=s2
                                                %(comm_Map)% %implied
 end
 
 spec Finite[sort Elem] =
-  { Nat 
-  then 
+  { Nat
+  then
     op f: Nat ->? Elem
     . forall x:Elem . exists n:Nat . f(n)=x           %(f_surjective)%
     . exists n:Nat . forall m:Nat . def f(m) => m<n   %(f_bounded)%
@@ -372,7 +372,7 @@ spec GenerateBag [sort Elem] given Nat = %mono
   op freq: Bag[Elem] * Elem -> Nat
   forall x,y:Elem; M,N:Bag[Elem]
   . freq({} ,y) = 0                              %(freq_empty_Bag)%
-  . freq(M+x,y) = suc(freq(M,y)) when x=y else  
+  . freq(M+x,y) = suc(freq(M,y)) when x=y else
                   freq(M,y)                      %(freq_nonEmpty_Bag)%
   . M=N <=> forall x:Elem. freq(M,x)=freq(N,x)   %(equality_Bag)%
 end
@@ -388,8 +388,8 @@ then %def
            __ - __ ,
            __union__,
            __ intersection __: Bag[Elem] * Bag[Elem] -> Bag[Elem];
-           {__}(x:Elem): Bag[Elem] = {} + x	%(singleton_def_Bag)%
- 
+           {__}(x:Elem): Bag[Elem] = {} + x     %(singleton_def_Bag)%
+
   %% implied operation attributes
 
   ops      __ union __: Bag[Elem] * Bag[Elem] -> Bag[Elem],
@@ -403,29 +403,29 @@ then %def
 
   . isEmpty(M) <=> M={}                         %(isEmpty_def_Bag)%
   . x eps M   <=> freq(M,x) > 0                %(elemOf_def_Bag)%
-  . M isSubsetOf N <=> 
+  . M isSubsetOf N <=>
     forall x: Elem. freq(M,x) <= freq(N,x)     %(isSubsetOf_def_Bag)%
 
   %% axioms concerning operations
-  
+
   . x + M = M + x                              %(addElem_def_Bag)%
 
   . M - x = N <=>
      (forall y: Elem .
         (x=y     => freq(N,y)=freq(M,x) -! 1) /\
-        (not x=y => freq(N,y)=freq(M,y)))           %(removeElem_def_Bag)% 
+        (not x=y => freq(N,y)=freq(M,y)))           %(removeElem_def_Bag)%
 
   . M - N = O <=>
      (forall x: Elem .
-        freq(O,x) = freq(M,x) -! freq(N,x))       %(difference_def_Bag)% 
+        freq(O,x) = freq(M,x) -! freq(N,x))       %(difference_def_Bag)%
 
   . M union N = O <=>
      (forall x: Elem .
-        freq(O,x) = freq(M,x) + freq(N,x))        %(union_def_Bag)% 
+        freq(O,x) = freq(M,x) + freq(N,x))        %(union_def_Bag)%
 
   . M intersection N = O <=>
      (forall x: Elem .
-        freq(O,x) = min(freq(M,x),freq(N,x)) )    %(intersection_def_Bag)% 
+        freq(O,x) = min(freq(M,x),freq(N,x)) )    %(intersection_def_Bag)%
 
 end
 
@@ -472,15 +472,15 @@ then %implies
 end
 
 spec GenerateBinTree [sort Elem] = %mono
-  free type BinTree[Elem] 
-    ::= nil 
-      | binTree (entry:? Elem; left:?  BinTree[Elem]; 
+  free type BinTree[Elem]
+    ::= nil
+      | binTree (entry:? Elem; left:?  BinTree[Elem];
                                right:? BinTree[Elem])
 end
 
 spec BinTree [sort Elem] given Nat, Set[sort Elem] = %mono
-    GenerateBinTree[sort Elem]  
-  and 
+    GenerateBinTree[sort Elem]
+  and
     Set[sort Elem]
 then %def
   preds isEmpty,
@@ -498,11 +498,11 @@ then %def
   . isEmpty(T) <=> T = nil                 %(isEmpty_def_BinTree)%
 
   . not isLeaf(nil)                        %(isLeaf_nil_BinTree)%
-  . isLeaf(binTree(x,T1,T2)) <=>  
+  . isLeaf(binTree(x,T1,T2)) <=>
      T1=nil /\ T2=nil                      %(isLeaf_binTree)%
 
   . not isCompoundTree(nil)                   %(isCompoundTree_nil_BinTree)%
-  . isCompoundTree(binTree(x,T1,T2)) <=> 
+  . isCompoundTree(binTree(x,T1,T2)) <=>
       not isLeaf(binTree(x,T1,T2))         %(isCompoundTree_binTree)%
 
   . not (x eps nil)                        %(eps_nil_BinTree)%
@@ -511,29 +511,29 @@ then %def
 
   %% axioms concerning operations
 
-  . height(nil) = 0                        %(height_nil_BinTree)%   
-  . height(binTree(x,T1,T2)) = 
+  . height(nil) = 0                        %(height_nil_BinTree)%
+  . height(binTree(x,T1,T2)) =
       max(height(T1), height(T2)) + 1      %(height_BinTree)%
 
   . leaves(nil) = {}                        %(leaves_nil_BinTree)%
-  . leaves(binTree(x,T1,T2)) 
+  . leaves(binTree(x,T1,T2))
     = {x} when isLeaf(binTree(x,T1,T2)) else
       leaves(T1) union leaves(T2)            %(leaves_BinTree)%
-   
+
 end
 
 spec GenerateBinTree2 [sort Elem] = %mono
-  free types 
-    NonEmptyBinTree2[Elem] 
+  free types
+    NonEmptyBinTree2[Elem]
       ::= leaf (entry:? Elem)
-        | binTree (left :? NonEmptyBinTree2[Elem]; 
+        | binTree (left :? NonEmptyBinTree2[Elem];
                    right:? NonEmptyBinTree2[Elem]);
     BinTree2[Elem] ::= nil | sort NonEmptyBinTree2[Elem]
 end
 
 spec BinTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
-    GenerateBinTree2[sort Elem]  
-  and 
+    GenerateBinTree2[sort Elem]
+  and
     Set[sort Elem]
 then %def
   preds isEmpty,
@@ -569,23 +569,23 @@ then %def
   %% axioms concerning operations
 
   . height(leaf(x)) = 1                    %(height_leaf_binTree2)%
-  . height(binTree(N1,N2)) =  
+  . height(binTree(N1,N2)) =
       max(height(N1), height(N2)) + 1      %(height_binTree_BinTree2)%
-  . height(nil) = 0                        %(height_nil_BinTree2)%   
+  . height(nil) = 0                        %(height_nil_BinTree2)%
 
   . leaves(leaf(x)) = {x}                   %(leaves_leaf_BinTree2)%
-  . leaves(binTree(N1,N2)) = 
+  . leaves(binTree(N1,N2)) =
       leaves(N1) union leaves(N2)            %(leaves_binTree_BinTree2)%
   . leaves(nil) = {}                        %(leaves_nil_BinTree2)%
-   
+
 end
 
 spec GenerateNTree [sort Elem] = %mono
   free types
     List[NTree[Elem]]
-     ::= [] 
+     ::= []
        |  __ :: __ (first:? NTree[Elem]; rest:? List[NTree[Elem]]);
-    NTree[Elem] 
+    NTree[Elem]
      ::= nil
        | nTree(entry:? Elem; branches:? List[NTree[Elem]])
 end
@@ -601,14 +601,14 @@ then %def
         isLeaf:  NTree[Elem];
         isCompoundTree: NTree[Elem];
         __eps__ : Elem * NTree[Elem];
-        __ is __ branching: NTree[Elem] * Nat 
+        __ is __ branching: NTree[Elem] * Nat
 
   ops   height: NTree[Elem] -> Nat;
         maxHeight: List[NTree[Elem]] -> Nat;
         leaves: NTree[Elem] -> Set[Elem];
         allLeaves: List[NTree[Elem]] -> Set[Elem]
 
-  forall x,y: Elem; 
+  forall x,y: Elem;
          T: NTree[Elem];
          L: List[NTree[Elem]];
          n: Nat
@@ -618,62 +618,62 @@ then %def
   . isEmpty(T) <=> T = nil                 %(isEmpty_def_NTree)%
 
   . not isLeaf(nil)                        %(isLeaf_nil_NTree)%
-  . isLeaf(nTree(x,L)) <=>  
+  . isLeaf(nTree(x,L)) <=>
       forall T:NTree[Elem].
         T eps L => T = nil                 %(isLeaf_nTree)%
 
   . not isCompoundTree(nil)                %(isCompoundTree_nil_NTree)%
-  . isCompoundTree(nTree(x,L)) <=> 
+  . isCompoundTree(nTree(x,L)) <=>
       not isLeaf(nTree(x,L))               %(isCompoundTree_nTree)%
 
   . not (x eps nil)                        %(eps_nil_NTree)%
   . x eps nTree(y,L) <=>
-      (x = y \/ 
+      (x = y \/
       exists T:NTree[Elem].
         T eps L /\  x eps T)               %(eps_nTree)%
 
   . nil is n branching                     %(isKbranching_nil_NTree)%
   . nTree(x,L) is n branching <=>
-      L = [] \/   
+      L = [] \/
      (# L = n /\
-        forall T: NTree[Elem]. 
+        forall T: NTree[Elem].
            T eps L => T is n branching)    %(isKbranching_nTree_NTree)%
 
   %% axioms concerning operations
 
-  . height(nil) = 0                        %(height_nil_NTree)%   
-  . height(nTree(x,L)) = 
+  . height(nil) = 0                        %(height_nil_NTree)%
+  . height(nTree(x,L)) =
       maxHeight(L) + 1                     %(height_nTree)%
 
   . maxHeight([]) = 0                      %(maxHeight_nil)%
-  . maxHeight(T::L) = 
+  . maxHeight(T::L) =
      max( maxHeight(L), height(T))         %(maxHeight_nonEmptyList)%
 
   . leaves(nil) = {}                        %(leaves_nil_NTree)%
-  . leaves(nTree(x,L)) = 
+  . leaves(nTree(x,L)) =
      {x} when isLeaf(nTree(x,L)) else
      allLeaves(L)                           %(leaves_nTree)%
 
   . allLeaves([]) = {}                      %(allLeaves_nil)%
   . allLeaves(T::L) =
-       allLeaves(L) 
+       allLeaves(L)
      union
        leaves(T)                            %(allLeaves_nonEmptyList)%
 end
 
 spec GenerateNTree2 [sort Elem] = %mono
 
-  free types 
+  free types
 
     NonEmptyList[NonEmptyNTree2[Elem]] ::=
-      __ :: __ (first: NonEmptyNTree2[Elem]; 
+      __ :: __ (first: NonEmptyNTree2[Elem];
                 rest:  List[NonEmptyNTree2[Elem]]);
 
     List[NonEmptyNTree2[Elem]]
-     ::= [] 
+     ::= []
        |  sort NonEmptyList[NonEmptyNTree2[Elem]];
-     
-    NonEmptyNTree2[Elem] 
+
+    NonEmptyNTree2[Elem]
       ::= leaf (entry:? Elem)
         | nTree(branches:? NonEmptyList[NonEmptyNTree2[Elem]]);
 
@@ -682,8 +682,8 @@ spec GenerateNTree2 [sort Elem] = %mono
 end
 
 spec NTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
-    GenerateNTree2[sort Elem]  
-  and 
+    GenerateNTree2[sort Elem]
+  and
     Set[sort Elem]
   and
     List[sort NonEmptyNTree2[Elem] fit sort Elem |-> NonEmptyNTree2[Elem]]
@@ -692,7 +692,7 @@ then %def
         isLeaf:  NTree2[Elem];
         isCompoundTree: NTree2[Elem];
         __eps__ : Elem * NTree2[Elem];
-        __ is __ branching: NTree2[Elem] * Nat 
+        __ is __ branching: NTree2[Elem] * Nat
 
   ops   branches: NTree2[Elem] ->? NonEmptyList[NonEmptyNTree2[Elem]];
         h: List[NonEmptyNTree2[Elem]] * Nat -> Nat; %% helps defining height
@@ -700,7 +700,7 @@ then %def
         l: List[NonEmptyNTree2[Elem]] -> Set[Elem]; %% helps defining leaves
         leaves: NTree2[Elem] -> Set[Elem]
 
-  forall x,y: Elem; 
+  forall x,y: Elem;
          n: Nat;
          T: NTree2[Elem];
          NT: NonEmptyNTree2[Elem];
@@ -721,13 +721,13 @@ then %def
 
   . x eps leaf(y) <=> x=y                  %(eps_leaf_NTree2)%
   . x eps nTree(L) <=>
-      exists T: NonEmptyNTree2[Elem]. 
+      exists T: NonEmptyNTree2[Elem].
         T eps L /\ x eps T                 %(eps_nTree_NTree2)%
   . not x eps nil                          %(eps_nil_NTree2)%
 
   . leaf(x) is n branching                 %(isKbranching_leaf_NTree2)%
   . nTree(L) is n branching <=>
-      # L = n /\ 
+      # L = n /\
       (forall T: NonEmptyNTree2[Elem] .
          T eps L => T is n branching )     %(isKbranching_nTree_NTree2)%
   . nil is n branching                     %(isKbranching_nil_NTree2)%
@@ -738,10 +738,10 @@ then %def
 
   . h([],n)  = n                           %(h_nil_nTree2)%
   . h(NT::K,n) = max(height(NT), h(K,n))   %(n_cons_nTree2)%
- 
+
   . height(leaf(x)) = 1                    %(height_leaf_nTree2)%
   . height(nTree(L))= h(L,0) + 1           %(height_nTree_nTree2)%
-  . height(nil) = 0                        %(height_nil_nTree2)%   
+  . height(nil) = 0                        %(height_nil_nTree2)%
 
   . l([])  = {}                            %(l_nil_nTree2)%
   . l(NT::K) = leaves(NT) union l(K)       %(l_cons_nTree2)%
@@ -762,4 +762,3 @@ spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  %mono
 then %mono
   sort KTree2[Elem] = { T : NTree2[Elem] . T is k branching}
 end
-

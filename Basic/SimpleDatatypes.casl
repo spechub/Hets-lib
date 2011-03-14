@@ -1,6 +1,6 @@
 library Basic/SimpleDatatypes
 version 1.0
-%authors: T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
+%authors: T. Mossakowski, M. Roggenbach, L. Schroeder
 %date: 18 June 2002
 
 %{ This library provides the unstructured datatype Boolean.
@@ -14,7 +14,7 @@ from Basic/RelationsAndOrders get BooleanAlgebra, ExtBooleanAlgebra
 
 spec Boolean = %mono
 
-  free type Boolean ::= True | False 
+  free type Boolean ::= True | False
   %%capital True and False, since true and false are predefined
 
   ops   Not__ :           Boolean -> Boolean;
@@ -43,4 +43,3 @@ spec RichBoolean = %mono
   ExtBooleanAlgebra [view BooleanAlgebra_in_Boolean]
   with pred __ <= __, op  compl__
 end
-

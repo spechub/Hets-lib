@@ -1,8 +1,8 @@
-library Basic/Graphs 
+library Basic/Graphs
 version 1.0
-%authors: T. Mossakowski <till@tzi.de>, M. Roggenbach, L. Schröder
+%authors: T. Mossakowski, M. Roggenbach, L. Schroeder
 %date: 18 December 2003
-%% with contributions from Klaus Lüttich
+%% with contributions from Klaus Luettich
 
 %{ We construct directed graphs inductively by successively adding
    nodes and edges.
@@ -22,7 +22,7 @@ from Basic/Numbers get Nat
 spec Graph[sort NodeId][sort EdgeId] =
   generated type Graph ::= emptyGraph
                          | addNode(NodeId; Graph)
-                         | addEdge(NodeId; NodeId; 
+                         | addEdge(NodeId; NodeId;
                                    EdgeId; Graph)?
   ops source, target : EdgeId * Graph ->? NodeId
   preds __isIn__ : NodeId * Graph;
@@ -32,7 +32,7 @@ spec Graph[sort NodeId][sort EdgeId] =
   . def addEdge(s,t,e,g) <=> not e isIn g                   %(dom_addEdge)%
   . not n isIn emptyGraph                               %(isIn_emptyGraph)%
   . n isIn addNode(n1,g) <=> n=n1 \/ n isIn g             %(isIn_addNode1)%
-  . def addEdge(s,t,e,g) => 
+  . def addEdge(s,t,e,g) =>
     (n isIn addEdge(s,t,e,g) <=> n=s \/ n=t \/ n isIn g)  %(isIn_addEdge1)%
   . not e isIn emptyGraph                               %(isIn_emptyGraph)%
   . e isIn addNode(n,g) <=> e isIn g                      %(isIn_addNode2)%
@@ -42,24 +42,24 @@ spec Graph[sort NodeId][sort EdgeId] =
   . not def source(e,emptyGraph)                           %(source_empty)%
   . source(e,addNode(n,g)) = source(e,g)                 %(source_addNode)%
   . def addEdge(s,t,e2,g) =>
-     (source(e1,addEdge(s,t,e2,g)) = 
+     (source(e1,addEdge(s,t,e2,g)) =
        s when e1=e2 else source(e1,g))                   %(source_addEdge)%
   . not def target(e,emptyGraph)                           %(target_empty)%
   . target(e,addNode(n,g)) = target(e,g)                 %(target_addNode)%
   . def addEdge(s,t,e2,g) =>
-     (target(e1,addEdge(s,t,e2,g)) = 
+     (target(e1,addEdge(s,t,e2,g)) =
       t when e1=e2 else target(e1,g))                    %(target_addEdge)%
   . (e::s-->t isIn g) <=> e isIn g /\ source(e,g)=s /\ target(e,g)=t
                                                                %(isIn_def)%
   . g=g' <=> (forall n:NodeId . n isIn g <=> n isIn g')
-         /\ (forall e:EdgeId . e isIn g <=> e isIn g') 
+         /\ (forall e:EdgeId . e isIn g <=> e isIn g')
          /\ (forall e:EdgeId . source(e,g) = source(e,g'))
          /\ (forall e:EdgeId . target(e,g) = target(e,g')) %(extensionality)%
 end
 
 %% Some basic operations and predicates on graphs
 spec RichGraph[sort NodeId][sort EdgeId] =
-  Graph[sort NodeId][sort EdgeId] 
+  Graph[sort NodeId][sort EdgeId]
 then %def
   ops removeNode : NodeId * Graph -> Graph;
       removeEdge : EdgeId * Graph -> Graph
@@ -69,7 +69,7 @@ then %def
   . removeNode(n,addNode(n1,g)) =
       removeNode(n,g) when n=n1
       else addNode(n1,removeNode(n,g))            %(removeNode_addNode)%
-  . def addEdge(n1,n2,e,g) => 
+  . def addEdge(n1,n2,e,g) =>
       removeNode(n,addEdge(n1,n2,e,g)) =
         removeNode(n,g) when n=n1 \/ n=n2
         else addEdge(n1,n2,e,removeNode(n,g))     %(removeNode_addEdge)%
@@ -77,18 +77,18 @@ then %def
   . removeEdge(e,emptyGraph) = emptyGraph      %(removeEdge_emtpyGraph)%
   . removeEdge(e,addNode(n1,g)) =
       addNode(n1,removeEdge(e,g))                 %(removeEdge_addNode)%
-  . def addEdge(n1,n2,e1,g) => 
+  . def addEdge(n1,n2,e1,g) =>
       removeEdge(e,addEdge(n1,n2,e1,g)) =
         g when e=e1
         else addEdge(n1,n2,e1,removeEdge(e,g))    %(removeEdge_addEdge)%
 
-  pred symmetric(g:Graph) <=> 
+  pred symmetric(g:Graph) <=>
     forall n1,n2:NodeId; e:EdgeId .
-        (e::n1-->n2 isIn g) => 
+        (e::n1-->n2 isIn g) =>
            exists e':EdgeId . e'::n2-->n1 isIn g       %(symmetric_def)%
 
   pred transitive(g:Graph) <=>
-    forall n1,n2,n3:NodeId; e1,e2:EdgeId . 
+    forall n1,n2,n3:NodeId; e1,e2:EdgeId .
         (e1::n1-->n2 isIn g) /\ (e2::n2-->n3 isIn g) =>
            exists e3:EdgeId . e2::n1-->n3 isIn g      %(transitive_def)%
 
@@ -113,14 +113,14 @@ then %def
 
   pred __maxCliqueOf__ (g1,g2:Graph) <=>
     g1 cliqueOf g2
-    /\ forall g3:Graph . 
+    /\ forall g3:Graph .
         g1 subgraphOf g3 /\ g3 cliqueOf g2 => g1=g3
                                                     %(max_cliqueOf_def)%
 end
 
 %% Mapping our representation to a set-based one
 spec GraphToSet[sort NodeId][sort EdgeId] =
-  Graph[sort NodeId][sort EdgeId] 
+  Graph[sort NodeId][sort EdgeId]
 and
   %% The following also imports Set[EdgeId] and Set[NodeId]
   Map[sort EdgeId fit S |-> EdgeId]
@@ -139,9 +139,9 @@ then %def
        inDegree,outDegree: NodeId * Graph -> Nat
    forall n,n1,n2: NodeId; e : EdgeId; g: Graph
    . e eps edgeSet(g) <=> e isIn g                       %(edgeSet_def)%
-   . n2 eps successors(n1,g) <=> 
+   . n2 eps successors(n1,g) <=>
      (exists e : EdgeId . e :: n1 --> n2 isIn g)      %(successors_def)%
-   . n1 eps predecessors(n2,g) <=> 
+   . n1 eps predecessors(n2,g) <=>
      (exists e : EdgeId . e :: n1 --> n2 isIn g)    %(predecessors_def)%
    . e eps inEdges(n1,g) <=>
      (exists n2 : NodeId . e :: n2 --> n1 isIn g)        %(inEdges_def)%
@@ -157,24 +157,24 @@ spec SymmetricGraph[sort NodeId][sort EdgeId] =
 then
   Graph[sort NodeId][sort SymEdgeId]
 then
-  sort SymmetricGraph =                           
-       {g:Graph . forall s,t:NodeId; e:EdgeId . 
+  sort SymmetricGraph =
+       {g:Graph . forall s,t:NodeId; e:EdgeId .
                     (left(e)::s-->t isIn g) <=> (right(e)::t-->s isIn g)}
                                                   %(SymmetricGraph_def)%
   type SymmetricGraph ::= emptyGraph
 %[            | addNode(node :? NodeId; graph :? SymmetricGraph)
-            | addEdgeSym(source,target :? NodeId; 
+            | addEdgeSym(source,target :? NodeId;
                          edge :? EdgeId; graph :? SymmetricGraph)?
   preds __isIn__ : NodeId * SymmetricGraph;
         __isIn__ : EdgeId * SymmetricGraph;
-        __::__-->__ isIn __ : 
+        __::__-->__ isIn __ :
                    EdgeId * NodeId * NodeId * SymmetricGraph
   forall s,t:NodeId; e:EdgeId; g:SymmetricGraph
-  . addEdgeSym(s,t,e,g) = 
-      addEdge(s,t,left(e),addEdge(t,s,right(e),g)) as SymmetricGraph  
+  . addEdgeSym(s,t,e,g) =
+      addEdge(s,t,left(e),addEdge(t,s,right(e),g)) as SymmetricGraph
                                                             %(addEdge_def)%
   . e isIn g <=> left(e) isIn g                         %(isIn_def1)
-  . e::s-->t isIn g <=> 
+  . e::s-->t isIn g <=>
       (left(e)::s-->t isIn g \/ left(e)::t-->s isIn g)  %(isIn_def2)%
 end
 ]%
@@ -185,7 +185,7 @@ then
   op sc : Graph -> Graph
   forall n,n1,n2:NodeId; e:EdgeId; g:Graph
   . n isIn sc(g) <=> n isIn g                            %(sc_def_1)%
-  . (e::n1-->n2 isIn sc(g)) <=> 
+  . (e::n1-->n2 isIn sc(g)) <=>
       (e::n1-->n2 isIn g) \/ (e::n2-->n1 isIn g)         %(sc_def_2)%
 then %implies
   forall g:Graph
@@ -212,10 +212,10 @@ then
   . g pathSubgraphOf g' <=>
       (forall n:NodeId . n isIn g <=> n isIn g') /\
       (forall n1,n2:NodeId; e:EdgeId .
-          (e::n1-->n2 isIn g) <=> ([e]::n1-->n2 isIn g')) 
+          (e::n1-->n2 isIn g) <=> ([e]::n1-->n2 isIn g'))
                                                 %(pathSubgraphOf_def)%
   . pathTransitive(g') <=>
-      forall n1,n2,n3:NodeId; e1,e2:List[EdgeId] . 
+      forall n1,n2,n3:NodeId; e1,e2:List[EdgeId] .
         (e1::n1-->n2 isIn g') /\ (e2::n2-->n3 isIn g') =>
            ((e1++e2)::n1-->n3 isIn g')          %(pathTransitive_def)%
 
@@ -225,14 +225,14 @@ then
       tc(g) subgraphOf g'                                  %(tc_def3)%
 
   . p pathOf g <=> p isIn tc(g)                         %(pathOf_def)%
-  
+
   . stc(g) = sc(tc(g))                                     %(stc_def)%
 
   %% Connectedness and acyclity can be elegantly expressed
   %% using (symmetric) transitive closure
   pred connected(g:Graph) <=> complete(stc(g))       %(connected_def)%
 
-  pred stronglyConnected(g:Graph) <=> 
+  pred stronglyConnected(g:Graph) <=>
            complete(tc(g))                   %(stronglyconnected_def)%
 
   pred acyclic(g:Graph) <=> loopFree(tc(g))            %(acyclic_def)%
@@ -242,11 +242,11 @@ then
   %% A tree is an acyclic graph with a root node, such that each
   %% other node is reachable via a unique path from the root
   pred tree(g:Graph) <=> acyclic(g) /\ exists root:NodeId .
-        root isIn g 
+        root isIn g
         /\ forall n:NodeId . n isIn g /\ not n=root =>
-            exists! p:List[EdgeId] . 
-             p pathOf g 
-             /\ source(p,g)=root 
+            exists! p:List[EdgeId] .
+             p pathOf g
+             /\ source(p,g)=root
              /\ target(p,g)=n                            %(tree_def1)%
 
   %% A spanning tree is a tree subgraph that has the same nodes
@@ -257,23 +257,23 @@ then
   %% a symmetric graph is hasCycle iff there is a path that is a cycle
   %% and that does not contain a two-loop
   pred symmetricHasCycle(g:Graph) <=> symmetric(g)
-      /\ (exists p:List[EdgeId]; e:EdgeId . 
+      /\ (exists p:List[EdgeId]; e:EdgeId .
            p pathOf g /\ freq(p,e)=2
            /\ not (exists e1,e2:EdgeId; n1,n2:NodeId .
                     e1 eps p /\ e2 eps p
                       /\ (e1::n1-->n2 isIn g) /\ (e2::n2-->n1 isIn g)))
                                                %(symmetricHasCycle_def)%
 
-  pred symmetricAcyclic(g:Graph) <=> 
-       symmetric(g) /\ not symmetricHasCycle(g) %(symmetricAcyclic_def)%      
+  pred symmetricAcyclic(g:Graph) <=>
+       symmetric(g) /\ not symmetricHasCycle(g) %(symmetricAcyclic_def)%
 
-  pred symmetricTree(g:Graph) <=> 
+  pred symmetricTree(g:Graph) <=>
        symmetricAcyclic(g) /\ connected(g)       %(symmetricTree_def)%
 
 then %implies
   %% finite trees are finite acyclic connected graphs with no
   %% occurrences of --> * <--
-  pred tree(g:Graph) <=> acyclic(g) /\ connected(g) 
+  pred tree(g:Graph) <=> acyclic(g) /\ connected(g)
       /\ not (exists e1,e2:EdgeId; n1,n2,n3:NodeId .
                (e1::n1-->n2 isIn g) /\ (e2::n3-->n2 isIn g)) %(tree_def2)%
 end
@@ -304,10 +304,10 @@ then
   . distance([]) = 0                                    %(distance_nil)%
   . distance(e::p) = weight(e)+distance(p)             %(distance_cons)%
   . def shortestPath(s,t,g) <=>
-        exists p:List[EdgeId] . 
-           p pathOf g /\ source(p,g)=s /\ target(p,g)=t 
+        exists p:List[EdgeId] .
+           p pathOf g /\ source(p,g)=s /\ target(p,g)=t
                                                     %(shortestPath_dom)%
-  . def shortestPath(s,t,g) /\ p pathOf g 
+  . def shortestPath(s,t,g) /\ p pathOf g
         /\ source(p,g)=s /\ target(p,g)=t =>
               distance(shortestPath(s,t,g)) <= distance(p)
                                                     %(shortestPath_def)%
@@ -326,12 +326,12 @@ then
                               target : Graph2;
                               nodeMap : Map[N1,N2];
                               edgeMap : Map[E1,E2])
-  sort Hom =                                               
+  sort Hom =
    {h:PreHom .
       forall n,n':N1; e:E1 . (e::n-->n' isIn source(h)) =>
        (lookup(e,edgeMap(h))::lookup(n,nodeMap(h))-->lookup(n',nodeMap(h))
                                                     isIn target(h))  }
-							%(Hom_def)% 
+                                                        %(Hom_def)%
 end
 
 %% A minor of a graph is something that can be homomorphically
@@ -340,9 +340,9 @@ spec Minor[sort N1][sort E1][sort N2][sort E2] =
   Paths[sort N2][sort E2] with Graph |-> Graph2
 and
   GraphHomomorphism[sort N1][sort E1][sort N2][sort List[E2]]
-  with Graph2 |-> PathGraph 
+  with Graph2 |-> PathGraph
 then
-  pred __minorOf__(g1:Graph1; g2:Graph2) <=>           
+  pred __minorOf__(g1:Graph1; g2:Graph2) <=>
     exists h:Hom . source(h)=g1 /\ target(h)=stc(g2)   %(minorOf_def)%
 end
 
@@ -362,7 +362,7 @@ end
 
 %% The graph consisting of two copies of three nodes,
 %% such that two nodes are linked by an edge iff they stem
-%% from different copies 
+%% from different copies
 spec K3_3 =
   free type Three ::= 1 | 2 | 3
   free type Three2 ::= left(Three) | right(Three)
@@ -381,8 +381,8 @@ end
 %% planar graphs defined using the Kuratowski characterization:
 %% K5 and K3_3 must not occur as minors
 spec Planar[sort NodeId][sort EdgeId] =
-  K5 with Graph |-> Graph5 
-and 
+  K5 with Graph |-> Graph5
+and
   K3_3 with Graph |-> Graph3_3
 and
   Minor[sort Five][sort FivePair][sort NodeId][sort EdgeId]
@@ -407,7 +407,7 @@ then
          removeEdgeLabel :  EdgeLabel * Graph -> Graph
      preds __isIn__ : EdgeLabel * Graph;
            __::__-->__ isIn__ : EdgeLabel * NodeId * NodeId * Graph
-     forall n,n1,n2: NodeId; el,el': EdgeLabel; g: Graph 
+     forall n,n1,n2: NodeId; el,el': EdgeLabel; g: Graph
      . addEdge(n1,n2,el,g) =
          g when el :: n1 --> n2 isIn g
          else addEdge(n1,n2,EI(n1,el,n2),g)          %(addEdgeNU_def)%

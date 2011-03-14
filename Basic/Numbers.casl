@@ -1,6 +1,6 @@
 library Basic/Numbers
 version 1.0
-%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schröder
+%authors: M. Roggenbach <csmarkus@swansea.ac.uk>, T. Mossakowski, L. Schroeder
 %date: 18 December 2003
 
 %{ This library provides specifications of naturals, integers, and
@@ -169,8 +169,8 @@ then %def
           __ ^ __:                           Int * Nat -> Int;
           __ /? __,
           __ div __, __ quot __, __ rem __ : Int * Int ->? Int;
-	  __ mod __:                         Int * Int ->? Nat;
-	  0,1,2,3,4,5,6,7,8,9:               Int
+          __ mod __:                         Int * Int ->? Nat;
+          0,1,2,3,4,5,6,7,8,9:               Int
 
   %% implied operation attributes :
 
@@ -186,9 +186,9 @@ then %def
   %% axioms concerning predicates
 
      . m <= n <=> n - m in Nat                 %(leq_def_Int)%     %simp
-     . m >= n <=> n <= m  	               %(geq_def_Int)%
+     . m >= n <=> n <= m                       %(geq_def_Int)%
      . m < n <=> (m <= n /\ not m=n)           %(less_def_Int)%
-     . m > n <=> n < m   	               %(greater_def_Int)%
+     . m > n <=> n < m                         %(greater_def_Int)%
 
      . even(m) <=> even(abs(m))                %(even_def_Int)%    %simp
      . odd(m)  <=> not even(m)                 %(odd_def_Int)%
@@ -268,7 +268,7 @@ then %implies
 
      . m = sign(m) * abs(m)                         %(abs_decomp_Int)%
 
-     . m mod n = m mod abs(n) 			    %(mod_abs_Int)%
+     . m mod n = m mod abs(n)                       %(mod_abs_Int)%
 
      . m = (m div n) * n + (m mod n) if not n = 0   %(div_mod_Int)%
 
@@ -303,7 +303,7 @@ then %def
          min,max:                   Rat * Rat -> Rat;
          __ / __ :                  Rat * Rat ->? Rat;
          __ ^ __:                   Rat * Int ->? Rat;
-	 0,1,2,3,4,5,6,7,8,9:       Rat
+         0,1,2,3,4,5,6,7,8,9:       Rat
 
   %% implied operation attributes :
 
@@ -342,7 +342,7 @@ then %def
 
      . not def x/0                      %(divide_def1_Rat)%
      . (x/y=z <=> x=z*y)
-       if not y = 0	              	%(divide_def2_Rat)%
+       if not y = 0                     %(divide_def2_Rat)%
 
      . x ^ 0 = 1                        %(power_0_Rat)%
      . x ^ suc(n) = x * x ^ n           %(power_suc_Rat)%

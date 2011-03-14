@@ -1,6 +1,6 @@
 library Basic/LinearAlgebra_II
 version 1.0
-%authors: L. Schröder <lschrode@tzi.de>, M. Roggenbach, T. Mossakowski
+%authors: L. Schroeder, M. Roggenbach, T. Mossakowski
 %date: 9 January 2004
 
 %prec {__ * __} < {__ ^ __}
@@ -28,19 +28,19 @@ spec Algebra [Field]=
      VectorSpace [Field]
 and
      closed
-          {Ring with sort Elem |-> Space, 
-		     ops __ + __, __ * __, 0, e}
+          {Ring with sort Elem |-> Space,
+                     ops __ + __, __ * __, 0, e}
 then
      forall r: Elem; x, y: Space
-     . (r * x) * y = r * (x * y)		%(leftLinear_Algebra)%
-     . x * (r * y) = r  * (x * y)		%(rightLinear_Algebra)%
+     . (r * x) * y = r * (x * y)                %(leftLinear_Algebra)%
+     . x * (r * y) = r  * (x * y)               %(rightLinear_Algebra)%
 end
 
 spec FreeAlgebra [Field] =
      free
-	{Algebra [Field] 
-	 then 
-	     op X: Space}
+        {Algebra [Field]
+         then
+             op X: Space}
 end
 
 spec ExtFreeVectorSpace [FreeVectorSpace[Field][sort Base]] given Int =
@@ -58,10 +58,10 @@ and
      Polynomial [Field]
 then
      op eval: Poly[Elem] * Space -> Space
-	
+
      forall a: Elem; p: Poly[Elem]; x: Space
-     . eval(0,x) = 0				%(eval_0_EAlgebra)%
-     . eval(a:::p, x) = a * e + eval(p,x) * x	%(eval_cons_EAlgebra)%
+     . eval(0,x) = 0                            %(eval_0_EAlgebra)%
+     . eval(a:::p, x) = a * e + eval(p,x) * x   %(eval_cons_EAlgebra)%
 end
 
 spec ExtFreeAlgebra [Field] given Int=
@@ -86,7 +86,7 @@ spec RichFreeAlgebra [Field] =
      ExtFreeAlgebra [Field]
 end
 
-%% The following view expresses that a vector space is free over 
+%% The following view expresses that a vector space is free over
 %% any of its bases
 view FreeVectorSpace_in_VSWithBase [Field] given Int:
      FreeVectorSpace [Field][sort Base] to
@@ -95,7 +95,7 @@ view FreeVectorSpace_in_VSWithBase [Field] given Int:
      then
           op inject: Base -> Space
           forall x:Base
-          . inject(x) = x			%(inject_def_VSB)%
+          . inject(x) = x                       %(inject_def_VSB)%
      }
 end
 

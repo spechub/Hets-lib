@@ -1,6 +1,6 @@
 library Basic/Algebra_I
 version 1.0
-%authors: M. Roggenbach, T. Mossakowski, L. Schröder <lschrode@tzi.de>
+%authors: M. Roggenbach, T. Mossakowski, L. Schroeder
 %date: 21 May 2003
 
 %prec {__ * __} < {__ ^ __}
@@ -33,13 +33,13 @@ then
 end
 
 spec AbelianGroup =
-     Group 
+     Group
 and
      CommutativeMonoid
 end
 
 spec Ring =
-     AbelianGroup with sort Elem, 
+     AbelianGroup with sort Elem,
                        ops __ * __ |-> __ + __,
                            e       |-> 0
 and
@@ -51,7 +51,7 @@ then
 end
 
 view AbelianGroup_in_Ring_add:
-     AbelianGroup to Ring =     
+     AbelianGroup to Ring =
      ops e |-> 0,
          __ * __ |-> __ + __
 end
@@ -59,13 +59,13 @@ end
 spec CommutativeRing =
      Ring with ops 0,  __ + __, e, __ * __
 and
-     CommutativeMonoid with ops e, __ * __     
+     CommutativeMonoid with ops e, __ * __
 end
 
 spec IntegralDomain =
      CommutativeRing
 then
-     forall x,y: Elem 
+     forall x,y: Elem
      . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
      . not (e = 0)                              %(zeroNeqOne)%
 end
@@ -91,7 +91,7 @@ spec Field =
      ConstructField hide sort NonZeroElem
 end
 
-view IntegralDomain_in_Field : IntegralDomain to Field 
+view IntegralDomain_in_Field : IntegralDomain to Field
 end
 
 spec ExtMonoid  [Monoid] given Nat = %def
@@ -114,7 +114,7 @@ then %implies
 end
 
 spec ExtGroup [Group] given Int = %def
-     ExtMonoid [Monoid] 
+     ExtMonoid [Monoid]
 then
      ops __ ^ __: Elem * Int -> Elem;
         inv:     Elem -> Elem;
@@ -160,16 +160,16 @@ and
      forall x,y: Elem
      . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
                                                 %(isUnit_def_Ring)%
-     . isIrred(x) <=> (not isUnit(x) /\ 
-        forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))        
-                                                %(isIrred_def_Ring)% 
+     . isIrred(x) <=> (not isUnit(x) /\
+        forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))
+                                                %(isIrred_def_Ring)%
 then %def
      ops e: RUnit[Elem];
          -__: RUnit[Elem] -> RUnit[Elem];
          __ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
 end
 
-view Group_in_ExtRing [Ring] given Int : 
+view Group_in_ExtRing [Ring] given Int :
      Group to ExtRing[Ring] =
      sort Elem |-> RUnit[Elem]
 end
@@ -181,11 +181,11 @@ then
            __ divides __ :    Elem * Elem;
            associated:        Elem * Elem
      forall x,y: Elem
-     . hasNoZeroDivisors <=> forall x,y: Elem. (x * y = 0 => x=0 \/ y=0) 
+     . hasNoZeroDivisors <=> forall x,y: Elem. (x * y = 0 => x=0 \/ y=0)
                                                 %(hasNoZeroDivisors_def)%
      . x divides y <=> exists z: Elem. x * z = y
                                                 %(divides_def)%
-     . associated(x,y) <=> exists u:RUnit[Elem]. x=u*y             
+     . associated(x,y) <=> exists u:RUnit[Elem]. x=u*y
                                                 %(associated_def)%
 then %implies
      forall x,y:Elem
@@ -197,7 +197,7 @@ view PreOrder_in_ExtCRing  [CommutativeRing] given Int:
      pred __ <= __ |-> __ divides __
 end
 
-view 
+view
      AbelianGroup_in_ExtCRing [CommutativeRing] given Int :
      AbelianGroup to ExtCommutativeRing [CommutativeRing] =
      sort Elem |-> RUnit[Elem]
@@ -218,7 +218,7 @@ then %implies
 end
 
 
-spec ExtField  [Field] given Int= %mono 
+spec ExtField  [Field] given Int= %mono
      ExtRing [Ring]
 then
 closed
@@ -239,7 +239,7 @@ spec RichMonoid =
      ExtMonoid [Monoid]
 end
 
-spec RichCommutativeMonoid = 
+spec RichCommutativeMonoid =
      ExtCommutativeMonoid [CommutativeMonoid]
 end
 
@@ -335,8 +335,8 @@ forall k,l: Int; x: Z[n]
 . [k] + [l] = [k + l]
 . [k] * [l] = [k * l]
 
-view CommutativeRing_in_ResidueClassRing[op n: Int] given Int: 
-	CommutativeRing to ResidueClassRing[op n: Int] =
+view CommutativeRing_in_ResidueClassRing[op n: Int] given Int:
+        CommutativeRing to ResidueClassRing[op n: Int] =
 sort Elem |-> Z[n]
 
 spec Prime[op n:Int] given Int =
@@ -346,7 +346,6 @@ forall m: Int
 spec ResidueClassField[Prime[op n: Int]] given Int =
 ResidueClassRing[op n: Int]
 
-view Field_in_ResidueClassField[Prime[op n: Int]] given Int: 
-	CommutativeRing to ResidueClassField[Prime[op n: Int]] =
+view Field_in_ResidueClassField[Prime[op n: Int]] given Int:
+        CommutativeRing to ResidueClassField[Prime[op n: Int]] =
 sort Elem |-> Z[n]
-
