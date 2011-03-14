@@ -9,16 +9,16 @@ spec Iteration = CpoMonad and Sums then
      vars  m: CpoMonad; a : Cpo
      op    iter: (a --> m Bool) --> (a -->? m a) --> a -->? m a
 
-vars f : a -->? m a ; x, y : a; test : a --> m Bool; b : Bool
+vars f : a -->? m a
 
-
-.     iter test f x = do
+program
+     iter test f x = do
         b <- test x ;;
         if b then do
           y <- f x ;;
           iter test f x
-          else ret x;
+          else ret x
 
      op    while (b : m Bool) (p: m Unit) :? m Unit
-           = iter ((\ x:Unit . b) as Unit --> m Bool)
-                ((\ x:Unit . p) as Unit -->? m Unit) ()
+           = iter ((\ x . b) as Unit --> m Bool)
+                ((\ x . p) as Unit -->? m Unit) ()
