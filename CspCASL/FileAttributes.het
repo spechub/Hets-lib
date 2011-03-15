@@ -16,10 +16,12 @@ spec FileAttributes =
 
   channel
      set:   FileAndAttribute;
-     hugo:   File;
+     query:   File;
      reply: Attribute
 
   process
-      set?fa -> P( setAttr(s,fa) )
-   [] hugo?f  -> reply!getAttr(s,f) -> P(s)
+      P(State):set, query, reply;
+
+      P(s) =  set?fa::FileAndAttribute -> P( setAttr(s,fa) )
+           [] query?f::File -> reply!getAttr(s,f) -> P(s)
 end
