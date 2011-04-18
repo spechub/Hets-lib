@@ -1,56 +1,54 @@
-%[**********************************************************]%
-%[*                                                        *]%
-%[*            Architectural Level - Components            *]%
-%[*                                                        *]%
-%[**********************************************************]%
+%{**********************************************************
+  * Architectural Level - Components
+  **********************************************************}%
 
 logic CASL
 
-%[Architectural communication data that is common to all components]%
+%{Architectural communication data that is common to all components}%
 spec Arch_Common_Data =
    {}
 end
 
-%[Architectural communication data between the Coordinator and the]%
-%[Customer]%
+%{Architectural communication data between the Coordinator and the}%
+%{Customer}%
 spec Arch_Comm_Coordinator_Customer_Data =
    Arch_Common_Data
 then
    sorts LoginReq, Logout < D_C
 end
 
-%[Architectural communication data between the Coordinator and the]%
-%[Warehouse]%
+%{Architectural communication data between the Coordinator and the}%
+%{Warehouse}%
 spec Arch_Comm_Coordinator_Warehouse_Data =
    Arch_Common_Data
 then
    sorts D_W
 end
 
-%[Architectural communication data between the Coordinator and the]%
-%[Payment System]%
+%{Architectural communication data between the Coordinator and the}%
+%{Payment System}%
 spec Arch_Comm_Coordinator_PaymentSystem_Data =
    Arch_Common_Data
 then
    sorts D_PS
 end
 
-%[Architectural communication data for the Customer]%
+%{Architectural communication data for the Customer}%
 spec Arch_Customer_Data =
    Arch_Comm_Coordinator_Customer_Data
 end
 
-%[Architectural communication data for the Warehouse]%
+%{Architectural communication data for the Warehouse}%
 spec Arch_Warehouse_Data =
    Arch_Comm_Coordinator_Warehouse_Data
 end
 
-%[Architectural communication data for the Payment System]%
+%{Architectural communication data for the Payment System}%
 spec Arch_PaymentSystem_Data =
    Arch_Comm_Coordinator_PaymentSystem_Data
 end
 
-%[Architectural communication data for the Coordinator]%
+%{Architectural communication data for the Coordinator}%
 spec Arch_Coordinator_Data =
    Arch_Comm_Coordinator_Customer_Data and
    Arch_Comm_Coordinator_Warehouse_Data and
@@ -59,7 +57,7 @@ end
 
 logic CspCASL
 
-%[Architectural Customer]%
+%{Architectural Customer}%
 spec Arch_Customer =
    data
       Arch_Customer_Data
@@ -93,7 +91,7 @@ spec Arch_Customer =
         |~| Customer_Quit
 end
 
-%[Architectural Warehouse]%
+%{Architectural Warehouse}%
 spec Arch_Warehouse =
    data
       Arch_Warehouse_Data
@@ -109,7 +107,7 @@ spec Arch_Warehouse =
                 [] Warehouse_Dispatch
 end
 
-%[Architectural Payment System]%
+%{Architectural Payment System}%
 spec Arch_PaymentSystem =
    data
       Arch_PaymentSystem_Data
@@ -119,7 +117,7 @@ spec Arch_PaymentSystem =
       PaymentSystem: C_PS;
 end
 
-%[Architectural Coordinator]%
+%{Architectural Coordinator}%
 spec Arch_Coordinator =
    data
       Arch_Coordinator_Data
