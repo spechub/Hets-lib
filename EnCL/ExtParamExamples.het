@@ -280,3 +280,70 @@ spec E86 =
 end
 
 %%spec E87 =
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%          Examples for problematic specifications
+%%          w.r.t. well-defined program evaluation
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%% 1. different independent traces (for different I-values)
+
+spec E90101 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x+1
+       until x > 50
+end
+
+%% 2. dependent, but sortable, different traces (for different I-values)
+%%
+%% sortable w.r.t. the extended parameters, all I-value neq to 0 depend on I=0!
+
+spec E90102 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x+x[I=0]
+       until x > 50
+end
+
+%% 3. interdependent (unsortable) different traces (for different I-values)
+%%
+%% unsortable because x[I=0] depends on x[I=1] and x[I=1] depends on x[I=0]
+
+spec E90103 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x[I=0]+x[I=1]
+       until x > 50
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%          Examples for problematic specifications
+%%          w.r.t. EP elimination in program part
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Problem: what to use for x in until-part (consider context I=1) ?
+%% Solution1: only evaluate loops/programs for an I which is updated in the body, here I>1.
+%% Solution2: use explicit annotations for loops/programs for which I to evaluate them.
+spec E90201 =
+     . x = 1
+     . y = 2
+     . repeat
+       . x[I>1] := x+y
+       until x > 50
+end
+
