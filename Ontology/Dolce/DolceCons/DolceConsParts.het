@@ -80,7 +80,18 @@ end
 %% probably we need to employ some powerset construction here...
 spec TempParthoodTernaryFullSum [sorts left,right,trash,sum] =
   sort T
-  free type sum ::= sort left | sort right | sort trash
+  free type formal_sum ::= sort left | sort right | tsum(formal_sum;formal_sum)
+  generated type sum ::= q(formal_sum)
+  %% the kernel of q should be minimal w.r.t. the following properties:
+  %% (this minimality is a second-order property, note that we can omit it, but then we do not have a definition)
+  forall x,y,z,u:sum
+  . x=y => q(x)=q(y)
+  . q(x)=q(y) /\ q(u)=q(z) => q(tsum(x,u))=q(tsum(y,z))
+  forall a,b,c:left
+  . tSum(a,b,c) => q(a) = q(tsum(b,c))
+  forall a,b,c:right
+  . tSum(a,b,c) => q(a) = q(tsum(b,c))
+  %% the following needs to be adpated:
   pred PRE: sum*T
   pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in trash /\ y in trash /\ tOv(x,y,t) )
   pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in trash /\ y in trash /\ tP(x,y,t) )  
