@@ -87,17 +87,19 @@ spec TempParthoodTernaryFullSum [sorts left,right,trash,sum] =
   forall x,y,z,u:sum
   . x=y => q(x)=q(y)
   . q(x)=q(y) /\ q(u)=q(z) => q(tsum(x,u))=q(tsum(y,z))
-  forall a,b,c:left
-  . tSum(a,b,c) => q(a) = q(tsum(b,c))
-  forall a,b,c:right
-  . tSum(a,b,c) => q(a) = q(tsum(b,c))
+  forall l,l1,l2:left
+  . tSum(l,l1,l2) => q(l) = q(tsum(l1,l2))
+  forall r,r1,r2:right
+  . tSum(r,r1,r2) => q(r) = q(tsum(r1,r2))
+  pred tSum:sum*sum*sum
+  forall x,y,z:formal_sum
+  x=formal_sum(y,x) => tSum (q(x),q(y),q(z))
   %% the following needs to be adpated:
   pred PRE: sum*T
   pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in trash /\ y in trash /\ tOv(x,y,t) )
   pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in trash /\ y in trash /\ tP(x,y,t) )  
   pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in trash /\ y in trash /\ tPP(x,y,t) )	
   pred tDif (x,y,z:sum) <=> false
-  pred tSum  (x,y,z:sum) <=> true
 end
 
 %%%%%%%%%%%%%%%%%% 1 point model for CEP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
