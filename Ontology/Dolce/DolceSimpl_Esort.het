@@ -161,7 +161,8 @@ end
 %% Classical_Extensional_Parthood (p)
 %%----------------------------------
 
-spec Classical_Extensional_Parthood =
+%% first the version without requirement of existence of sums and differences
+spec Classical_Extensional_Parthood_No =
      Partial_Order with Rel |-> P
 then
 
@@ -184,6 +185,9 @@ Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
 %%  Binary Difference
 Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
 
+spec Classical_Extensional_Parthood =
+  Classical_Extensional_Parthood_No 
+then
 forall x,y:s
 . not  P(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
 . exists z:s.(Sum(z,x,y)) %(Existence of the sum)%
@@ -362,6 +366,7 @@ then
   forall t:T . PRE(eternal_object,t) %(eternal_object)%
 end
 
+
 %%-----------------------
 %% Temporary_Parthood (tp)
 %%-----------------------
@@ -386,6 +391,14 @@ forall x,y:s; t:T
 %% .not tP(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
 %% ----------------------------------------------------------------------------------------------------
 end  
+
+spec Temporary_Parthood_Eternal =
+  Temporary_Parthood
+then
+  op eternal_object : s
+  forall t:T . PRE(eternal_object,t) %(eternal_object)%
+end
+
 
 
 

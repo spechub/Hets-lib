@@ -4,6 +4,7 @@ version 1.0
 from Ontology/Dolce/DolceSimpl_Esort 
 	 get Taxonomy, Partial_Order, Ext_Partial_Order,
          Ext_Overlap_or_Connection, Classical_Extensional_Parthood,
+         Classical_Extensional_Parthood_No, Temporary_Parthood_Eternal,
          Time_Mereology, Unary_Temporal_Dissective, Being_Present,
          Mereology, Mereology_and_TemporalPart, Binary_Present,
          Binary_Temporal_Dissective, Temporary_Partial_Order,
@@ -26,13 +27,13 @@ from Ontology/Dolce/DolceSimpl_Esort
 arch spec Parthood_Model =
   units
 	TM                 : Time_Mereology;
-	TP_SC     : {Temporary_Parthood with s |-> SC} given TM;
-	TP_SAG    : {Temporary_Parthood with s |-> SAG} given TM;
+	TP_SC     : {Temporary_Parthood_Eternal with s |-> SC} given TM;
+	TP_SAG    : {Temporary_Parthood_Eternal with s |-> SAG} given TM;
 	TP_NASO   : {Temporary_Parthood with s |-> NASO and OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} 
 							given  TP_SC;
-	TP_APO    : {Temporary_Parthood with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
+	TP_APO    : {Temporary_Parthood_Eternal with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
 							s2 |-> APO} given TP_SAG;
-	TP_F      : {Temporary_Parthood with s |-> F} given TM;
+	TP_F      : {Temporary_Parthood_Eternal with s |-> F} given TM;
       
 	TP_NAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
@@ -86,12 +87,24 @@ arch spec Parthood_Model =
 				 free type ED ::= sort PED | sort NPED | sort AS
 				}
 			       } given TP_PED, TP_NPED;
-	CEP_PD : {{Classical_Extensional_Parthood and sort s} with s |-> PD}
-                                given TP_ED;
+        ACC : {Classical_Extensional_Parthood_No with s |-> ACC}
+        ACH : {Classical_Extensional_Parthood_No with s |-> ACH}
+        EV : {Classical_Extensional_Parthood_No with s |-> EV
+              then free type EV ::= sort ACC | sort ACH}
+             given ACC, ACH
+        ST : {Classical_Extensional_Parthood_No with s |-> ST}
+        PRO : {Classical_Extensional_Parthood_No with s |-> PRO}
+        STV : {Classical_Extensional_Parthood_No with s |-> STV
+              then free type STV ::= sort ST | sort PRO}
+             given ST, PRO
+	CEP_PD : {{Classical_Extensional_Parthood and sort s} with s |-> PD
+                   then free type PD ::= sort EV | sort STV}
+                 given TP_ED, EV, STV;
         Particip           : Participation given CEP_PD;
         Mereology_and_TemporalPartPD : Mereology_and_TemporalPart given Particip;
   result  Mereology_and_TemporalPartPD
 end
+
 
 arch spec Constitution_Model =
    units  ParthoodM : arch spec Parthood_Model;
@@ -193,4 +206,3 @@ arch spec Dolce_Model =
 end
 
 refinement Dolce_Ref = Dolce refined to arch spec Dolce_Model
- 

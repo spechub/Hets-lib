@@ -14,10 +14,14 @@ pred tP : SAG * SAG * T
 pred tPP : SAG * SAG * T
 pred tSum : SAG * SAG * SAG
 
+forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
+                    %(Extensionality+existence of the difference)%
+
+forall x, y : T . exists z : T . Sum(z, x, y)
+                                          %(Existence of the sum)%
+
 %% eternal Social Agent
 . exists x:SAG . forall t:T . PRE(x,t)
-%%
-
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -35,12 +39,6 @@ forall z : T; x : T; y : T
 forall z : T; x : T; y : T
 . Dif(z, x, y)
   <=> forall w : T . P(w, z) <=> P(w, x) /\ not Ov(w, y)   %(Ax6)%
-
-forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
-                    %(Extensionality+existence of the difference)%
-
-forall x, y : T . exists z : T . Sum(z, x, y)
-                                          %(Existence of the sum)%
 
 forall x, y, z : T . P(x, x) %(reflexivity)%
 
