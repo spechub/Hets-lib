@@ -985,6 +985,10 @@ end
 
 
 %% source: esorts -> sorts
+%% TL,TQ, TR new
+%% TL is copy of T
+%% TQ and TL identified (copy of T)
+%% T and TR identified
 
 spec sp =
   source_220
@@ -994,9 +998,9 @@ then %cons
              TR ::= sort T;
             
   pred ql : TR * TQ
-  forall t,u:T . (pred ql : TR * TQ)(t,tl(u)) <=> t=u
+  forall t: T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
   pred ql : T * TL
-  forall t,u:T . (pred ql : T * TL)(t,tl(u)) <=> t=u
+  forall t: T; u:TL . ql(t,u) <=> tl(t)=u
 end
 
 view v : target_220 to sp
