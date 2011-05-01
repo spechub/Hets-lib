@@ -43,12 +43,15 @@ end
 spec target_6 = source_6
 then %cons
 sort SC
+op eternal_object[SC] : SC
 pred PRE : SC * T
 pred tDif : SC * SC * SC
 pred tOv : SC * SC * T
 pred tP : SC * SC * T
 pred tPP : SC * SC * T
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object)%
 
 forall z : SC; x : SC; y : SC
 . tSum(z, x, y)

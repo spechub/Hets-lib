@@ -1,5 +1,8 @@
 spec source_101 =
 sort APO, F, MOB, NAPO, SAG, T
+op eternal_object[APO] : APO
+op eternal_object[F] : F
+op eternal_object[SAG] : SAG
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -38,6 +41,10 @@ pred tSum : F * F * F
 pred tSum : MOB * MOB * MOB
 pred tSum : NAPO * NAPO * NAPO
 pred tSum : SAG * SAG * SAG
+
+forall t : T . PRE(eternal_object[F], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object_75)%
+forall t : T . PRE(eternal_object[APO], t) %(eternal_object_45)%
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
@@ -305,10 +312,13 @@ spec target_101 = source_101
 then %cons
 sorts POB
 sorts APO, NAPO < POB
+op eternal_object[POB] : POB
 pred PRE : POB * T
 pred tOv : POB * POB * T
 pred tP : POB * POB * T
 pred tPP : POB * POB * T
+
+forall t : T . PRE(eternal_object[POB], t) %(eternal_object_99)%
 
 forall x : POB . not (x in APO /\ x in NAPO)
                                     %(ga_disjoint_sorts_APO_NAPO)%

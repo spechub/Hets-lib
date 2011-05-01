@@ -13,6 +13,8 @@ pred tOv : SC * SC * T
 pred tP : SC * SC * T
 pred tPP : SC * SC * T
 pred tSum : SC * SC * SC
+op eternal_object[SC] : SC
+
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
@@ -21,8 +23,8 @@ forall x, y : T . exists z : T . Sum(z, x, y)
                                           %(Existence of the sum)%
 
 %% eternal society
-. exists x:SC . forall t:T . PRE(x,t)
-%%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object)%
+
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 

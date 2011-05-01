@@ -2,6 +2,8 @@ spec source_90 =
 sorts ASO
 sorts NASO, SAG, SC, T
 sorts SAG, SC < ASO
+op eternal_object[SAG] : SAG
+op eternal_object[SC] : SC
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -31,6 +33,9 @@ pred tPP : SC * SC * T
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object_46)%
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
@@ -228,10 +233,13 @@ spec target_90 = source_90
 then %cons
 sorts SOB
 sorts ASO, NASO, SAG, SC < SOB
+op eternal_object[SOB] : SOB
 pred PRE : SOB * T
 pred tOv : SOB * SOB * T
 pred tP : SOB * SOB * T
 pred tPP : SOB * SOB * T
+
+forall t : T . PRE(eternal_object[SOB], t) %(eternal_object_79)%
 
 forall x : SOB . not (x in ASO /\ x in NASO)
                                     %(ga_disjoint_sorts_ASO_NASO)%

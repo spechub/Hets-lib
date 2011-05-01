@@ -5,11 +5,15 @@ esorts ACC, ACH, APO, AS, F, M, MOB, NAPO, NASO, PRO, SAG, SC, ST,
 sorts SAG, SC < ASO; AS, NPED, PED < ED; ACC, ACH < EV;
       NPOB < NPED; MOB, SOB < NPOB; F, M, POB < PED; APO, NAPO < POB;
       ASO, NASO < SOB; PRO, ST < STV
-op eternal_object : NPED
-op eternal_object : NPOB
-op eternal_object : PED
-op eternal_object : POB
-op eternal_object : SOB
+op eternal_object[APO] : APO
+op eternal_object[F] : F
+op eternal_object[NPED] : NPED
+op eternal_object[NPOB] : NPOB
+op eternal_object[PED] : PED
+op eternal_object[POB] : POB
+op eternal_object[SAG] : SAG
+op eternal_object[SC] : SC
+op eternal_object[SOB] : SOB
 pred At : ACC
 pred At : ACH
 pred At : EV
@@ -138,6 +142,16 @@ pred tSum : NAPO * NAPO * NAPO
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[APO], t) %(eternal_object_45)%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object_46)%
+forall t : T . PRE(eternal_object[SOB], t) %(eternal_object_79)%
+forall t : T . PRE(eternal_object[NPOB], t) %(eternal_object_120)%
+forall t : T . PRE(eternal_object[NPED], t) %(eternal_object_131)%
+forall t : T . PRE(eternal_object[F], t) %(eternal_object_173)%
+forall t : T . PRE(eternal_object[POB], t) %(eternal_object_99)%
+forall t : T . PRE(eternal_object[PED], t) %(eternal_object_122)%
 
 forall x : PRO; y : PRO . PP(x, y) <=> P(x, y) /\ not P(y, x)
                                                           %(Dd14)%
@@ -624,7 +638,6 @@ forall x : SOB . not (x in ASO /\ x in NASO)
 %% free
 generated type SOB ::= sort ASO | sort NASO   %(ga_generated_SOB)%
 
-forall t : T . PRE(eternal_object, t) %(eternal_object)%
 
 forall x : SOB; y : SOB; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)    %(Ax1_60_89)%
@@ -656,7 +669,6 @@ forall x : NPOB . not (x in SOB /\ x in MOB)
 %% free
 generated type NPOB ::= sort MOB | sort SOB  %(ga_generated_NPOB)%
 
-forall t : T . PRE(eternal_object, t) %(eternal_object_117)%
 
 forall x : NPOB; y : NPOB; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)  %(Ax1_100_101)%
@@ -682,7 +694,6 @@ forall x, y, z : NPOB; t : T
 forall x : NPOB; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
                                                      %(Ax1_2_103)%
 
-forall t : T . PRE(eternal_object, t) %(eternal_object_128)%
 
 forall x : NPED; y : NPED; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)  %(Ax1_111_113)%
@@ -805,7 +816,6 @@ forall x : POB . not (x in APO /\ x in NAPO)
 %% free
 generated type POB ::= sort APO | sort NAPO   %(ga_generated_POB)%
 
-forall t : T . PRE(eternal_object, t) %(eternal_object_170)%
 
 forall x : POB; y : POB; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)   %(Ax1_79_119)%
@@ -884,7 +894,6 @@ forall x : PED . not (x in M /\ x in F) %(ga_disjoint_sorts_M_F)%
 generated type PED ::= sort F | sort M | sort POB
                                               %(ga_generated_PED)%
 
-forall t : T . PRE(eternal_object, t) %(eternal_object_119)%
 
 forall x : PED; y : PED; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)  %(Ax1_102_103)%
@@ -1017,3 +1026,4 @@ forall x, y, z : PD . P(x, y) /\ P(y, x) => x = y
 
 forall x, y, z : PD . P(x, y) /\ P(y, z) => P(x, z)
                                               %(transitivity_266)%
+

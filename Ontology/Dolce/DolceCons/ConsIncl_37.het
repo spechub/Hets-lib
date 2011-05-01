@@ -1,5 +1,6 @@
 spec source_37 =
 sort SAG, T
+op eternal_object[SAG] : SAG
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -21,7 +22,7 @@ forall x, y : T . exists z : T . Sum(z, x, y)
                                           %(Existence of the sum)%
 
 %% eternal Social Agent
-. exists x:SAG . forall t:T . PRE(x,t)
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 
@@ -91,12 +92,15 @@ end
 spec target_37 = source_37
 then %cons
 sort APO
+op eternal_object[APO] : APO
 pred PRE : APO * T
 pred tDif : APO * APO * APO
 pred tOv : APO * APO * T
 pred tP : APO * APO * T
 pred tPP : APO * APO * T
 pred tSum : APO * APO * APO
+
+forall t : T . PRE(eternal_object[APO], t)
 
 forall y : APO; t : T
 . not PRE(y, t) \/ exists x : SAG . PRE(x : SAG, t : T)

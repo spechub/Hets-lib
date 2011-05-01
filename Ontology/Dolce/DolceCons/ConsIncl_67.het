@@ -1,5 +1,7 @@
 spec source_67 =
 sort SAG, SC, T
+op eternal_object[SAG] : SAG
+op eternal_object[SC] : SC
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -19,6 +21,10 @@ pred tPP : SAG * SAG * T
 pred tPP : SC * SC * T
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object_46)%
+
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%

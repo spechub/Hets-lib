@@ -43,12 +43,15 @@ end
 spec target_44 = source_44
 then %cons
 sort F
+op eternal_object[F] : F
 pred PRE : F * T
 pred tDif : F * F * F
 pred tOv : F * F * T
 pred tP : F * F * T
 pred tPP : F * F * T
 pred tSum : F * F * F
+
+forall t : T . PRE(eternal_object[F], t) %(eternal_object)%
 
 forall z : F; x : F; y : F
 . tSum(z, x, y)

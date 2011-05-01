@@ -359,11 +359,11 @@ end
 %% Temporary_Parthood No Temporal Sums and Diffs, plus an eternal object
 %%-----------------------
 
-spec TP_NoSum_Eternal =
+spec TP_NoSum_Eternal [sort s] =
   Temporary_Parthood_No
 then
-  op eternal_object : s
-  forall t:T . PRE(eternal_object,t) %(eternal_object)%
+  op eternal_object[s] : s
+  forall t:T . PRE(eternal_object[s],t) %(eternal_object)%
 end
 
 
@@ -392,11 +392,11 @@ forall x,y:s; t:T
 %% ----------------------------------------------------------------------------------------------------
 end  
 
-spec Temporary_Parthood_Eternal =
+spec Temporary_Parthood_Eternal [sort s]=
   Temporary_Parthood
 then
-  op eternal_object : s
-  forall t:T . PRE(eternal_object,t) %(eternal_object)%
+  op eternal_object[s] : s
+  forall t:T . PRE(eternal_object[s],t) %(eternal_object)%
 end
 
 

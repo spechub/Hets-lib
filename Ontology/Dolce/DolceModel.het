@@ -27,13 +27,13 @@ from Ontology/Dolce/DolceSimpl_Esort
 arch spec Parthood_Model =
   units
 	TM                 : Time_Mereology;
-	TP_SC     : {Temporary_Parthood_Eternal with s |-> SC} given TM;
-	TP_SAG    : {Temporary_Parthood_Eternal with s |-> SAG} given TM;
+	TP_SC     : {Temporary_Parthood_Eternal[sort SC]} given TM;
+	TP_SAG    : {Temporary_Parthood_Eternal[sort SAG]} given TM;
 	TP_NASO   : {Temporary_Parthood with s |-> NASO and OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC} 
 							given  TP_SC;
-	TP_APO    : {Temporary_Parthood_Eternal with s |-> APO and OneSide_Generic_Dependence with s1 |-> SAG, 
+	TP_APO    : {Temporary_Parthood_Eternal[sort APO] and OneSide_Generic_Dependence with s1 |-> SAG, 
 							s2 |-> APO} given TP_SAG;
-	TP_F      : {Temporary_Parthood_Eternal with s |-> F} given TM;
+	TP_F      : {Temporary_Parthood_Eternal[sort F]} given TM;
       
 	TP_NAPO   : {Temporary_Parthood with s |-> NAPO and
                                OneSide_Generic_Dependence with s1 |-> F, 
@@ -49,18 +49,18 @@ arch spec Parthood_Model =
                                OneSide_Specific_Dependence with s1 |-> MOB, 
 				s2 |-> APO} 
 				given TP_APO;
-	TP_SOB    : {TP_NoSum_Eternal with s |-> SOB 
+	TP_SOB    : {TP_NoSum_Eternal[sort SOB] 
 				and
 				{
 				 free type SOB ::= sort ASO | sort NASO}
 			       } given TP_NASO, TP_ASO;
-        TP_POB    : {TP_NoSum_Eternal with s |-> POB
+        TP_POB    : {TP_NoSum_Eternal[sort POB]
 				and
 				{
 				 free type POB ::= sort APO | sort NAPO
 				}
 			       } given TP_MOB, TP_NAPO;
-        TP_NPOB   : {TP_NoSum_Eternal with s |-> NPOB
+        TP_NPOB   : {TP_NoSum_Eternal[sort NPOB]
 				and
 				{
 				 free type NPOB ::= sort SOB | sort MOB
@@ -68,13 +68,13 @@ arch spec Parthood_Model =
 			       } given TP_SOB, TP_MOB;
         TP_M      : {Temporary_Parthood with s |-> M} given
                                TP_POB;
-        TP_NPED   : {TP_NoSum_Eternal with s |-> NPED
+        TP_NPED   : {TP_NoSum_Eternal[sort NPED]
 				and
 				{
 				 sort NPOB < NPED
 				}
 			       } given TP_NPOB;
-        TP_PED    : {TP_NoSum_Eternal with s |-> PED
+        TP_PED    : {TP_NoSum_Eternal[sort PED]
 				and
 				{
 				 free type PED ::= sort POB | sort M | sort F

@@ -2,6 +2,10 @@ spec source_112 =
 sorts ASO, SOB
 sorts APO, MOB, NASO, SAG, SC, T
 sorts SAG, SC < ASO; ASO, NASO < SOB
+op eternal_object[APO] : APO
+op eternal_object[SAG] : SAG
+op eternal_object[SC] : SC
+op eternal_object[SOB] : SOB
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -48,6 +52,11 @@ pred tSum : MOB * MOB * MOB
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[APO], t) %(eternal_object_45)%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object_46)%
+forall t : T . PRE(eternal_object[SOB], t) %(eternal_object_79)%
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
@@ -374,10 +383,13 @@ spec target_112 = source_112
 then %cons
 sorts NPOB
 sorts ASO, MOB, NASO, SAG, SC, SOB < NPOB
+op eternal_object[NPOB] : NPOB
 pred PRE : NPOB * T
 pred tOv : NPOB * NPOB * T
 pred tP : NPOB * NPOB * T
 pred tPP : NPOB * NPOB * T
+
+forall t : T . PRE(eternal_object[NPOB], t) %(eternal_object_120)%
 
 forall x : NPOB . not (x in SOB /\ x in MOB)
                                      %(ga_disjoint_sorts_SOB_MOB)%

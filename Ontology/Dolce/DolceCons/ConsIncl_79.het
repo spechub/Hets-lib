@@ -1,5 +1,7 @@
 spec source_79 =
 sorts APO, SAG, T
+op eternal_object[APO] : APO
+op eternal_object[SAG] : SAG
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -20,17 +22,15 @@ pred tPP : SAG * SAG * T
 pred tSum : APO * APO * APO
 pred tSum : SAG * SAG * SAG
 
+%% eternal SAG, APO
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[APO], t) %(eternal_object_45)%
+
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
 
 forall x, y : T . exists z : T . Sum(z, x, y)
                                           %(Existence of the sum)%
-
-%% eternal APO
-
-. exists x:APO . forall t: T . PRE(x,t)
-
-%%
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 

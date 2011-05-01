@@ -1,5 +1,6 @@
 spec source_56 =
 sort F, T
+op eternal_object[F] : F
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -21,8 +22,8 @@ forall x, y : T . exists z : T . Sum(z, x, y)
                                           %(Existence of the sum)%
 
 %% eternal Feature F
-. exists x:F . forall t:T . PRE(x,t)
-%%
+forall t : T . PRE(eternal_object[F], t) %(eternal_object)%
+
 
 forall x : T; y : T . PP(x, y) <=> P(x, y) /\ not P(y, x) %(Dd14)%
 

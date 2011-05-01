@@ -2,6 +2,11 @@ spec source_129 =
 sorts ASO, NPOB, SOB
 sorts APO, MOB, NASO, SAG, SC, T
 sorts SAG, SC < ASO; MOB, SOB < NPOB; ASO, NASO < SOB
+op eternal_object[APO] : APO
+op eternal_object[NPOB] : NPOB
+op eternal_object[SAG] : SAG
+op eternal_object[SC] : SC
+op eternal_object[SOB] : SOB
 pred At : T
 pred AtP : T * T
 pred Dif : T * T * T
@@ -52,6 +57,12 @@ pred tSum : MOB * MOB * MOB
 pred tSum : NASO * NASO * NASO
 pred tSum : SAG * SAG * SAG
 pred tSum : SC * SC * SC
+
+forall t : T . PRE(eternal_object[SAG], t) %(eternal_object)%
+forall t : T . PRE(eternal_object[APO], t) %(eternal_object_45)%
+forall t : T . PRE(eternal_object[SC], t) %(eternal_object_46)%
+forall t : T . PRE(eternal_object[SOB], t) %(eternal_object_79)%
+forall t : T . PRE(eternal_object[NPOB], t) %(eternal_object_120)%
 
 forall x, y : T . not P(x, y) => exists z : T . Dif(z, x, y)
                     %(Extensionality+existence of the difference)%
@@ -411,10 +422,13 @@ spec target_129 = source_129
 then %cons
 sorts NPED
 sorts ASO, MOB, NASO, NPOB, SAG, SC, SOB < NPED
+op eternal_object[NPED] : NPED
 pred PRE : NPED * T
 pred tOv : NPED * NPED * T
 pred tP : NPED * NPED * T
 pred tPP : NPED * NPED * T
+
+forall t : T . PRE(eternal_object[NPED], t) %(eternal_object_131)%
 
 forall x : NPED; y : NPED; t : T
 . tPP(x, y, t) <=> tP(x, y, t) /\ not tP(y, x, t)  %(Ax1_109_110)%
