@@ -1355,6 +1355,9 @@ forall x1 : AR; x2 : AQ; t1, t2 : T
 
 forall x : AQ . exists t : T . PRE(x, t) %(Ax1_13_365)%
 end
+
+
+
 spec target_340 = source_340
 then %cons
 pred dqt : AQ * NPED
@@ -1402,9 +1405,13 @@ forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_9)%
 spec sp =
   source_340
 then %cons
+pred dqt : AQ * NPED
+pred dqt : PQ * PED
+pred dqt : TQ * PD
 	op sl : SL
 	op tl : TL
 	op aq : AQ
+	forall x:AQ; forall y:NPED . dqt(x,y) <=> 
 end
 
 view v : target_340 to sp
