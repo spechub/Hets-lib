@@ -1246,7 +1246,8 @@ then %cons
              TR ::= sort T;
             
   pred ql : TR * TQ
-  forall t: T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
+%%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
+  forall v: TR; u:TQ . ql(v,u) <=>  exists t:T . tl(t)=u /\ t = v
   pred ql : T * TL
   forall t: T; u:TL . ql(t,u) <=> tl(t)=u
 end
