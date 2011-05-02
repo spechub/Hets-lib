@@ -1276,25 +1276,28 @@ forall x : PQ . exists! y : PED . dqt(x, y) %(Ax3_338)%
 %% use the same solution as for 200
 %% source: esorts -> sorts; PRE not defined on subsort SL (spatial location)
 %% PRE already defined on PED
+%% identify PQ and SL with PED
 
 spec sp =
   source_261
 then %cons
 %%	free type PQ ::= sort SL %% old
 	free type PQ ::= sort PED %%| ped
-	sorts SL < PQ
+	free type SL ::= sort PQ %%sorts SL < PQ
 	pred PRE : PQ * T
 	pred SD : PED * PQ
 	pred SD : PQ * PED
 	pred dqt : PQ * PED
 
-forall x:PQ; y:PED . dqt(x,y) <=> 
-forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
+forall x:PQ; y:PED . dqt(x,y) <=> x = y
+%forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
+forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . y = x /\ PRE(y,t)
 
-forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+%%forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+forall x:PED; y:PQ . SD(x,y) <=> x=y %% exists t:T . PRE(x,t) %% x = nped /\ y = nped
 
 %% where does this come from???
-forall x:PQ; y:PED . SD(x,y) <=> forall t:T . PRE(y,t) %% SD(y,x)
+forall x:PQ; y:PED . SD(x,y) <=> x = y %%forall t:T . PRE(y,t) %% SD(y,x)
 
 end
 
