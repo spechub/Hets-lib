@@ -1272,10 +1272,10 @@ then %cons
              TR ::= sort T;
   pred dqt : TQ * PD          
   pred ql : TR * TQ
-%%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
-  forall v: TR; u:TQ . ql(v,u) <=>  exists p:PD . pd(p)=u /\ p = v
-  pred ql : T * TL
   op timepoint : T
+%%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
+  forall v: TR; u:TQ . ql(v,u) <=>  v=timepoint %% exists p:PD . pd(p)=u /\ p = v
+  pred ql : T * TL
   forall t: T; u:TL . ql(t,u) <=> t=timepoint
 end
 
