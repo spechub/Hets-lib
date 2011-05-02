@@ -361,10 +361,14 @@ from  Ontology/Dolce/DolceCons/DolceConsParts get TempParthoodBinarySum
 spec sp =
   source_101
 then %cons
+{
    TempParthoodBinarySum [sorts POB,APO,NAPO fit left |-> APO, right |-> NAPO, sum |-> POB]
+then 
+op eternal_object[APO] : POB
+}
 end
 
-view v : target_101 to sp
+view v : target_101 to sp = eternal_object[APO] |-> eternal_object[POB] 
 end
 
 %% goes through
