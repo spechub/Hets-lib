@@ -110,6 +110,7 @@ pred Sum : S * S * S
 pred Sum : ST * ST * ST
 pred Sum : STV * STV * STV
 pred Sum : T * T * T
+pred dqt : AQ * NPED
 pred tDif : APO * APO * APO
 pred tDif : ED * ED * ED
 pred tDif : F * F * F
@@ -1146,6 +1147,14 @@ forall x : ED; t1, t2 : T . PRE(x, t1) /\ P(t2, t1) => PRE(x, t2)
 forall x1 : ED; x2 : ED; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)       %(Ax1_17_302)%
 
+forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_304_384)%
+
+forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_305)%
+
+forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_306)%
+
 forall x : NPED; y : AQ
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
@@ -1221,6 +1230,7 @@ spec target_245 = source_245
 then %cons
 sorts TL, TQ, TR
 sorts TL < TQ; T < TR
+pred dqt : TQ * PD
 pred ql : T * TL
 pred ql : TR * TQ
 
@@ -1231,6 +1241,16 @@ forall y : TQ . exists x : TR . ql(x, y) %(Ax2_330)%
 
 forall x1, x2 : T; y : TL . ql(x1, y) /\ ql(x2, y) => x1 = x2
                                                      %(Ax1_3_329)%
+
+forall y : PD . exists x : TL . dqt(x, y) %(Ax1_335)%
+
+forall x : TQ; y1, y2 : PD . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_335_429)%
+
+forall x1, x2 : TQ; y : PD . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_336)%
+
+forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_337)%
 
 %% where does this come from???
 forall y : TL . exists x : T . ql(x, y) %(Ax2_4_331)%

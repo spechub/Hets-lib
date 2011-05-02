@@ -106,6 +106,7 @@ pred Sum : S * S * S
 pred Sum : ST * ST * ST
 pred Sum : STV * STV * STV
 pred Sum : T * T * T
+pred dqt : AQ * NPED
 pred tDif : APO * APO * APO
 pred tDif : ED * ED * ED
 pred tDif : F * F * F
@@ -1129,6 +1130,14 @@ forall z : PD; x : PD; y : PD
 . Dif(z, x, y)
   <=> forall w : PD . P(w, z) <=> P(w, x) /\ not Ov(w, y)
                                                         %(Ax6_24)%
+
+forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_304_384)%
+
+forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_305)%
+
+forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_306)%
 
 forall x : NPED; y : AQ
 . SD(x, y)

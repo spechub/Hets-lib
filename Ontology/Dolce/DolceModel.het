@@ -111,8 +111,11 @@ arch spec Constitution_Model =
           TP_ED = ParthoodM;
           TP_NPED = ParthoodM;
 
-          DependenceAQNPED   : {Mutual_Specific_Dependence with s1 |-> AQ, 
-				s2 |-> NPED} given TP_ED, TP_NPED;
+          DependenceAQNPED   : {{Mutual_Specific_Dependence with s1 |-> AQ, 
+				 s2 |-> NPED}
+                                 and
+                                 {Direct_Quality_Spec with s1 |-> AQ, s2 |-> NPED}
+                               } given TP_ED, TP_NPED;
           ConstitutionPD     : {Constitution_Spec with s |-> PD} given ParthoodM;
           ConstitutionPED    : {Constantly_Generically_Constituted with 
 				s |-> PED, s1 |-> NAPO, s2 |-> M 	
@@ -145,12 +148,26 @@ units     Constitution: arch spec Constitution_Model;
 
           MereologyAR = Constitution;
 
-          ImmediateQuale     : {Immediate_Quale then sorts TL < TQ; T < TR} given TM;
+          ImmediateQuale     : {{Immediate_Quale then sorts TL < TQ; T < TR}
+                                and
+                                {Direct_Quality_Spec with s1 |-> TQ, s2 |-> PD}
+                                then
+                                  esorts TL < TQ
+                                  forall y:PD
+                                  . exists x:TL.dqt(x,y)
+                                } given TM;
 
 	  BinTempDisS	     : {Binary_Temporal_Dissective with s1 |-> S, 
 				s2 |-> SL} given TP_EDSAR;
-	  DependencePQPED    : {Mutual_Specific_Dependence with s1 |-> PQ, 
-				s2 |-> PED then sort SL < PQ} given TP_PED, BinTempDisS;
+	  DependencePQPED    : {{Mutual_Specific_Dependence with s1 |-> PQ, 
+				s2 |-> PED then sort SL < PQ}
+                               and
+                               {Direct_Quality_Spec with s1 |-> PQ, s2 |-> PED}
+                               then
+                                 esorts SL < PQ
+                                 forall y:PED
+                                 . exists x:SL.dqt(x,y)
+                               } given TP_PED, BinTempDisS;
           DependenceTQPD     : {Mutual_Specific_Dependence with s1 |-> TQ, 
 				s2 |-> PD} given 
                                Particip, ImmediateQuale;
