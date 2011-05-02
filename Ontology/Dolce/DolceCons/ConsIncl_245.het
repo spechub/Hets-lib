@@ -1275,7 +1275,8 @@ then %cons
 %%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
   forall v: TR; u:TQ . ql(v,u) <=>  exists p:PD . pd(p)=u /\ p = v
   pred ql : T * TL
-  forall p: PD; u:TL . ql(t,u) <=> pd(p)=u
+  op timepoint : T
+  forall t: t; u:TL . ql(t,u) <=> t=timepoint
 end
 
 view v : target_245 to sp
