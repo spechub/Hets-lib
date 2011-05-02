@@ -1271,7 +1271,7 @@ then %cons
              TQ ::= sort TL;
              TR ::= sort T;
   pred dqt : TQ * PD          
-	forall u:TQ; v:PD . dqt(u,v) <=> exists l: TL . pd(v) = l /\ l = u
+	forall u:TQ; v:PD . dqt(u,v) <=> forall l: TL . pd(v) = l => l = u
   pred ql : TR * TQ
   op timepoint : T
 %%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
