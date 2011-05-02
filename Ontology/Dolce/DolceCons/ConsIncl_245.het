@@ -1226,6 +1226,7 @@ forall x1 : PD; x2 : PD; t : T
 forall x1 : PD; x2 : PD; t1, t2 : T
 . K(x1, x2, t1) /\ P(t2, t1) => K(x1, x2, t2)   %(Ax1_17_302_959)%
 end
+
 spec target_245 = source_245
 then %cons
 sorts TL, TQ, TR
@@ -1269,7 +1270,7 @@ then %cons
   free types TL ::= tl(T);
              TQ ::= sort TL;
              TR ::= sort T;
-            
+  pred dqt : TQ * PD          
   pred ql : TR * TQ
 %%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
   forall v: TR; u:TQ . ql(v,u) <=>  exists t:T . tl(t)=u /\ t = v
