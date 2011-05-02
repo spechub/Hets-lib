@@ -1280,12 +1280,15 @@ forall x : PQ . exists! y : PED . dqt(x, y) %(Ax3_338)%
 spec sp =
   source_261
 then %cons
-	free type PQ ::= sort SL %%| ped
+%%	free type PQ ::= sort SL %% old
+	free type PQ ::= sort PED %%| ped
 	sorts SL < PQ
 	pred PRE : PQ * T
 	pred SD : PED * PQ
 	pred SD : PQ * PED
+	pred dqt : PQ * PED
 
+forall x:PQ; y:PED . dqt(x,y) <=> 
 forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
 
 forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
