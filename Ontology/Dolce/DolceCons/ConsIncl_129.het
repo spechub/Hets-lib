@@ -475,7 +475,6 @@ pred PRE : NPED * T
 pred tOv : NPED * NPED * T
 pred tP : NPED * NPED * T
 pred tPP : NPED * NPED * T
-%%forall t : T . PRE(eternal_object[NPED], t) %(eternal_object_131)%
 forall x: NPED; z: NPOB; t:T . PRE(x,t) <=> PRE(z,t) /\ x = z
 forall x,y: NPED; z,w: NPOB; t:T . tOv(x,y,t) <=> tOv(z,w,t) /\ x=z /\ y=w
 forall x,y: NPED; z,w: NPOB; t:T . tP(x,y,t) <=> tP(z,w,t) /\ x=z /\ y=w
