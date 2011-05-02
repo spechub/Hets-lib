@@ -1260,8 +1260,8 @@ forall y : TL . exists x : T . ql(x, y) %(Ax2_4_331)%
 
 %% source: esorts -> sorts
 %% TL,TQ, TR new
-%% TL is copy of T
-%% TQ and TL identified (copy of T)
+%% TL is copy of PD
+%% TQ and TL identified 
 %% T and TR identified
 
 spec sp =
@@ -1273,9 +1273,9 @@ then %cons
   pred dqt : TQ * PD          
   pred ql : TR * TQ
 %%  forall t:T; v: TR; u:TQ . ql(v,u) <=> tl(t)=u /\ t = v
-%%  forall v: TR; u:TQ . ql(v,u) <=>  exists t:T . tl(t)=u /\ t = v
+  forall v: TR; u:TQ . ql(v,u) <=>  exists p:PD . pd(p)=u /\ p = v
   pred ql : T * TL
-%%  forall t: T; u:TL . ql(t,u) <=> tl(t)=u
+  forall p: PD; u:TL . ql(t,u) <=> pd(p)=u
 end
 
 view v : target_245 to sp
