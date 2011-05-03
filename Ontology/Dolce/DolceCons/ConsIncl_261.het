@@ -1295,8 +1295,8 @@ forall x:PQ; y:PED . dqt(x,y) <=> x = ped(y)
 %forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
 forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . ped(y) = x /\ PRE(y,t)
 
-%%forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
-forall x:PED; y:PQ . SD(x,y) <=> ped(x)=y %% exists t:T . PRE(x,t) %% x = nped /\ y = nped
+forall x:PED; y:PQ . SD(x,y) <=> exists t:T . PRE(x,t) %% x = nped /\ y = nped
+%%forall x:PED; y:PQ . SD(x,y) <=> ped(x)=y %% exists t:T . PRE(x,t) %% x = nped /\ y = nped
 
 %% where does this come from???
 forall x:PQ; y:PED . SD(x,y) <=> x = ped(y) %%forall t:T . PRE(y,t) %% SD(y,x)
