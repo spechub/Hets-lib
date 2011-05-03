@@ -111,6 +111,7 @@ pred Sum : S * S * S
 pred Sum : ST * ST * ST
 pred Sum : STV * STV * STV
 pred Sum : T * T * T
+pred dqt : AQ * NPED
 pred tDif : APO * APO * APO
 pred tDif : ED * ED * ED
 pred tDif : F * F * F
@@ -184,6 +185,15 @@ forall t : T . PRE(eternal_object[NPED], t) %(eternal_object_131)%
 forall t : T . PRE(eternal_object[F], t) %(eternal_object_173)%
 forall t : T . PRE(eternal_object[POB], t) %(eternal_object_99)%
 forall t : T . PRE(eternal_object[PED], t) %(eternal_object_122)%
+
+forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_304_384)%
+
+forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_305)%
+
+forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_306)%
+
 
 forall x : PRO; y : PRO . PP(x, y) <=> P(x, y) /\ not P(y, x)
                                                           %(Dd14)%

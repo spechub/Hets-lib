@@ -120,6 +120,9 @@ pred Sum : S * S * S
 pred Sum : ST * ST * ST
 pred Sum : STV * STV * STV
 pred Sum : T * T * T
+pred dqt : AQ * NPED
+pred dqt : PQ * PED
+pred dqt : TQ * PD
 pred ql : T * TL
 pred ql : TR * TQ
 pred tDif : APO * APO * APO
@@ -977,6 +980,15 @@ forall x : ED . exists t : T . PRE(x, t) %(Ax1_14_183)%
 forall x1 : ED; x2 : ED; t1, t2 : T
 . tP(x1, x2, t1) /\ P(t2, t1) => tP(x1, x2, t2)     %(Ax1_15_184)%
 
+forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_304_384)%
+
+forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_305)%
+
+forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_306)%
+
+
 forall x, y, z : ED; t : T . PRE(x, t) => tP(x, x, t)
                                                     %(Ax1_27_186)%
 
@@ -1230,6 +1242,17 @@ forall x1 : PD; x2 : PD; t1, t2 : T
 forall x1 : S; x2 : SL; t1, t2 : T
 . Rel(x1, x2, t1) /\ P(t2, t1) => Rel(x1, x2, t2)  %(Ax1_328_421)%
 
+forall y : PED . exists x : SL . dqt(x, y) %(Ax1_336_430)%
+
+forall x : PQ; y1, y2 : PED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_336_431)%
+
+forall x1, x2 : PQ; y : PED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_337)%
+
+forall x : PQ . exists! y : PED . dqt(x, y) %(Ax3_338)%
+
+
 forall x : PED; y : PQ
 . SD(x, y)
   <=> (exists t : T . PRE(x, t))
@@ -1247,7 +1270,20 @@ forall x : PQ; y : PED
   <=> (exists t : T . PRE(x, t))
       /\ forall t : T . PRE(x, t) => PRE(y, t)      %(Ax1_18_331)%
 
+forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_342)%
+
+forall y : PD . exists x : TL . dqt(x, y) %(Ax1_335_773)%
+
+forall x : TQ; y1, y2 : PD . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                               %(Ax1_335_429_774)%
+
+
 forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_335)%
+
+forall x1, x2 : TQ; y : PD . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_336)%
+
+forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_337)%
 
 forall x1, x2 : TR; y : TQ . ql(x1, y) /\ ql(x2, y) => x1 = x2
                                                %(Ax1_328_421_755)%

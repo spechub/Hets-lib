@@ -120,6 +120,9 @@ pred Sum : S * S * S
 pred Sum : ST * ST * ST
 pred Sum : STV * STV * STV
 pred Sum : T * T * T
+pred dqt : AQ * NPED
+pred dqt : PQ * PED
+pred dqt : TQ * PD
 pred ql : T * TL
 pred ql : TR * TQ
 pred tDif : APO * APO * APO
@@ -195,6 +198,35 @@ forall t : T . PRE(eternal_object[NPED], t) %(eternal_object_131)%
 forall t : T . PRE(eternal_object[F], t) %(eternal_object_173)%
 forall t : T . PRE(eternal_object[POB], t) %(eternal_object_99)%
 forall t : T . PRE(eternal_object[PED], t) %(eternal_object_122)%
+
+
+forall x : AQ; y1, y2 : NPED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_304_384)%
+
+forall x1, x2 : AQ; y : NPED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_305)%
+
+forall x : AQ . exists! y : NPED . dqt(x, y) %(Ax3_306)%
+
+forall y : PED . exists x : SL . dqt(x, y) %(Ax1_336_430)%
+
+forall x : PQ; y1, y2 : PED . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                                   %(Ax1_336_431)%
+
+forall x1, x2 : PQ; y : PED . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_337)%
+
+forall x : PQ . exists! y : PED . dqt(x, y) %(Ax3_338)%
+forall x : PQ . exists y : PED . SD(x, y) %(Ax2_23_342)%
+
+forall y : PD . exists x : TL . dqt(x, y) %(Ax1_335_773)%
+
+forall x : TQ; y1, y2 : PD . dqt(x, y1) /\ dqt(x, y2) => y1 = y2
+                                               %(Ax1_335_429_774)%
+forall x1, x2 : TQ; y : PD . dqt(x1, y) /\ dqt(x2, y) => x1 = x2
+                                                       %(Ax2_336)%
+
+forall x : TQ . exists! y : PD . dqt(x, y) %(Ax3_337)%
 
 forall x : PRO; y : PRO . PP(x, y) <=> P(x, y) /\ not P(y, x)
                                                           %(Dd14)%
