@@ -1289,7 +1289,9 @@ then %cons
 	pred SD : PED * PQ
 	pred SD : PQ * PED
 	pred dqt : PQ * PED
-
+	op eternal_object[PQ] : PQ
+ped(eternal_object[PED]) = eternal_object[PQ]
+  
 forall x:PQ; y:PED . dqt(x,y) <=> x = ped(y)
 %forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . PRE(y,t)
 forall x:PQ; t:T . PRE(x,t) <=> exists y:PED . ped(y) = x /\ PRE(y,t)
