@@ -132,6 +132,20 @@ spec Test302 = Test301 then
      until abs(y) < 0.00001
 end
 
+spec Test70100 = 
+     vars x in [0,1]
+
+     . f(x) := cos(x) %(A)%
+     . g(x) := sin(x) %(B)%
+end
+
+spec Test70101 = 
+     vars y in [0.4,1.5]
+
+     . f(y) := cos(y) %(A)%
+     . g(y) := sin(y) %(B)%
+end
+
 
 %[
 This reduce script gives a correct evaluation of newtons method:
@@ -164,6 +178,7 @@ x:=(x+(y/z));
 --> Try to exploit this behviour in the CAS-interface:
 - Formulate requirements for the CAS system in order to support this behaviour.
 
+Solution (delayed and strict evaluation, in Mathematica via := and =, in Maple with quoting t:=`x/2`)
 ]%
 
 spec Test4 =

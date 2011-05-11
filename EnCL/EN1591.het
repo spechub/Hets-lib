@@ -7,6 +7,17 @@ spec FlangeParameter =
 end
 
 spec EN1591 =
+%[ extend the header information
+
+  vars I in {0,1,2,3}
+  or params I in ... (to distinguish from ordinary variables)
+  default I=0, J=1
+
+]%
+
+  eps I default=0; I in [-1, 10]
+
+
      %% distance between screws
  . p_B := Pi * d_3/n_B %(eq1)%
 
