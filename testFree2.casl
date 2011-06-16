@@ -1,0 +1,7 @@
+spec Pos = sort Pos
+
+spec Nat = Pos then free { type Nat ::= Zero | Succ(Nat) } %% then {sort Nat}
+
+spec Int = Nat then sort Int
+
+view v : Nat to Int
