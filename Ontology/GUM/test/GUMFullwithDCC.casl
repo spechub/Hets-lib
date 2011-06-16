@@ -11,10 +11,12 @@ spec GUMwithDCC =
 
 then
 
+	%% definition of frames of reference for interpretation
 	free type FrameOfReference ::= intrinsic | relative | absolute
 	ops
+		%% mapping from the spatial modality to a frame of reference to fix the perspective in the interpretation
 		referenceOfModality : SpatialModality -> FrameOfReference;
-		%% e-connection defined as a mapping from GUM to DCC.
+		%% e-connection for mapping GUM spatial modalities to DCC (15) orientations
 		modalityToOrientation : SpatialModality -> OrientationDCC
 
 	forall x,y: SpatialModality
@@ -85,20 +87,26 @@ then
 
 then
 	ops
-		spatialModalityToOrientation : SpatialModality -> Orientation8;
+		%% e-connection for mapping GUM simple things (locatum and relatum) to DCC points
 		simpleThingToLocation : SimpleThing -> Location;
 
-
-	forall lp: LeftProjection
-        . spatialModalityToOrientation(lp) = leftFront
+	%% define simpleThingToLocation as functional
+	forall a: SimpleThing; b,c: Location
+		. b = simpleThingToLocation(a) /\ c = simpleThingToLocation(a)  =>  b = c
 
 %% example
 
+	forall lp: LeftProjection
+        . modalityToOrientation(lp) = leftFront
+
 	forall gl: GeneralizedLocation; sl: SpatialLocating; lp: LeftProjection; orient: Orientation8; st1, st2, st3: SimpleThing; v, w: Arrow
-		. v = simpleThingToLocation(st1) --> simpleThingToLocation(st2) /\ w = simpleThingToLocation(st2) --> simpleThingToLocation(st3) /\ locatum(sl, st3) /\ placement(sl, gl) /\ relatum(gl, st2) /\ hasSpatialModality(gl, lp) /\ spatialModalityToOrientation(lp) = orient /\ not(st1 = st2) /\ not(st1 = st3) /\ not(st2 = st3) =>
+		. v = simpleThingToLocation(st1) --> simpleThingToLocation(st2) /\ w = simpleThingToLocation(st2) --> simpleThingToLocation(st3) /\ locatum(sl, st3) /\ placement(sl, gl) /\ relatum(gl, st2) /\ hasSpatialModality(gl, lp) /\ modalityToOrientation(lp) = orient /\ not(st1 = st2) /\ not(st1 = st3) /\ not(st2 = st3) =>
 			v # w > orient
 
 end
+
+
+%% example proof
 
 spec GUMwithDCC_example_house_tree =
 	GUMwithDCC
@@ -123,7 +131,7 @@ then
 	. u = simpleThingToLocation(me)    --> simpleThingToLocation(tree)
 
 then %implies
-	. v = simpleThingToLocation(me) --> simpleThingToLocation(house) /\ w = simpleThingToLocation(house) --> simpleThingToLocation(tree) /\ locatum(sl, tree) /\ placement(sl, gl) /\ relatum(gl, house) /\ hasSpatialModality(gl, lp) /\ spatialModalityToOrientation(lp) = leftFront
+	. v = simpleThingToLocation(me) --> simpleThingToLocation(house) /\ w = simpleThingToLocation(house) --> simpleThingToLocation(tree) /\ locatum(sl, tree) /\ placement(sl, gl) /\ relatum(gl, house) /\ hasSpatialModality(gl, lp) /\ modalityToOrientation(lp) = leftFront
 	. v # w > leftFront
 	. (v|w=leftFront /\ v|u=leftFront)
 end
