@@ -1,0 +1,68 @@
+logic THF
+
+spec test =
+
+thf(catalunya,type,(
+    catalunya: reg )).
+
+thf(france,type,(
+    france: reg )).
+
+thf(spain,type,(
+    spain: reg )).
+
+thf(paris,type,(
+    paris: reg )).
+
+thf(a,type,(
+    a: $i > $i > $o )).
+
+thf(fool,type,(
+    fool: $i > $i > $o )).
+
+thf(t_axiom_for_fool,axiom,
+    ( mvalid
+    @ ( mforall_prop
+      @ ^ [A: $i > $o] :
+          ( mimplies @ ( mbox @ fool @ A ) @ A ) ) )).
+
+thf(k_axiom_for_fool,axiom,
+    ( mvalid
+    @ ( mforall_prop
+      @ ^ [A: $i > $o] :
+          ( mimplies @ ( mbox @ fool @ A ) @ ( mbox @ fool @ ( mbox @ fool @ A ) ) ) ) )).
+
+thf(i_axiom_for_fool_a,axiom,
+    ( mvalid
+    @ ( mforall_prop
+      @ ^ [Phi: $i > $o] :
+          ( mimplies @ ( mbox @ fool @ Phi ) @ ( mbox @ a @ Phi ) ) ) )).
+
+thf(ax1,axiom,
+    ( mvalid
+    @ ( mbox @ a
+      @ ^ [X: $i] :
+          ( tpp @ catalunya @ spain ) ) )).
+
+thf(ax2,axiom,
+    ( mvalid
+    @ ( mbox @ fool
+      @ ^ [X: $i] :
+          ( ec @ spain @ france ) ) )).
+
+thf(ax3,axiom,
+    ( mvalid
+    @ ( mbox @ a
+      @ ^ [X: $i] :
+          ( ntpp @ paris @ france ) ) )).
+
+thf(con,conjecture,
+    ( mvalid
+    @ ( mbox @ fool
+      @ ^ [X: $i] :
+        ! [Z: reg,Y: reg] :
+          ( ( ( p @ Z @ spain )
+            & ( p @ Y @ france ) )
+         => ~ ( o @ Z @ Y ) ) ) )).
+
+end
