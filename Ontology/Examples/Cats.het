@@ -1,14 +1,16 @@
 logic OWL
 
 spec Predators =
+     ObjectProperty: isSlower
      ObjectProperty: isFaster
      InverseOf: isSlower
 
+     Class: Carnivore
      Class: Cheetah
-     SubclassOf: Carnivore, isFaster some Tiger
+     SubClassOf: Carnivore, isFaster some Tiger
 
      Class: Tiger
-     SubclassOf: Carnivore, isSlower some Tiger
+     SubClassOf: Carnivore, isSlower some Tiger
 end
 
 logic CASL
