@@ -1,14 +1,17 @@
 logic OWL
 
 spec Node =
- Class: Node SubclassOf: hasValue some Thing
+ ObjectProperty: hasValue
+ Class: Thing
+ Class: Node SubClassOf: hasValue some Thing
 end
 spec Tree =
 Node
 then free {
- ObjectProperty: child Inverses: childInv
+ ObjectProperty: childInv
+ ObjectProperty: child InverseOf: childInv
  Class: EmptyTree
- Class: Tree EquivalentTo: EmptyTree or 
+ Class: Tree EquivalentTo: EmptyTree or
      (Node and childInv max 1 Thing and child some Thing and child only Tree)
   }
 end
@@ -16,6 +19,7 @@ end
 spec Stream =
 Node
 then cofree {
+  ObjectProperty: succ
   Class: Stream EquivalentTo: Node and succ max 1 Thing and succ some Stream
 }
 end
@@ -24,8 +28,8 @@ spec Ancestor =
   ObjectProperty: hasChild
 then
 free {
-  ObjectProperty: ancestor Transitive
-  ObjectProperty: ancestorInv Inverses: ancestor
-  ObjectProperty: hasChild SubpropertyOf: ancestorInv
+  ObjectProperty: ancestor Characteristics: Transitive
+  ObjectProperty: ancestorInv InverseOf: ancestor
+  ObjectProperty: hasChild SubPropertyOf: ancestorInv
   }
 end
