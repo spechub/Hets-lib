@@ -11,7 +11,7 @@ spec Biblio_DL_Sign =
   DataProperty: title
   ObjectProperty: hasJournal
 
-  
+
   Class: Journal
   ObjectProperty: hasArticle
   DataProperty: impactFactor
@@ -22,26 +22,26 @@ spec Biblio_DL =
      Biblio_DL_Sign
 then
   Class: Researcher
-  SubclassOf: name some string 
+  SubClassOf: name some string
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubclassOf: author some Thing, title some string, hasJournal some Journal
-  
+  SubClassOf: author some Thing, title some string, hasJournal some Journal
+
   Class: Journal
-  SubclassOf: name some string, hasArticle some Thing, impactFactor some integer
+  SubClassOf: name some string, hasArticle some Thing, impactFactor some integer
 
 then %implies
   Class: Journal
-  SubclassOf: hasArticle some Article
+  SubClassOf: hasArticle some Article
 
 end
 
 logic RelScheme
 
-spec Biblio_RS_Sign = 
+spec Biblio_RS_Sign =
 
   Tables
     person(key id:pointer, name:string)
@@ -61,9 +61,9 @@ end
 
 logic CASL
 
-spec Interface = 
-   {Biblio_RS_Sign with logic RelScheme -> CASL}  and 
-   {Biblio_DL_Sign with logic DL -> CASL with Thing |-> pointer} 
+spec Interface =
+   {Biblio_RS_Sign with logic RelScheme -> CASL}  and
+   {Biblio_DL_Sign with logic -> CASL with Thing |-> pointer}
 then
    forall a,j,p,x:pointer;n,t:string;f:integer
   . journal(j,n,f) <=> Journal(j) /\ name(j,n) /\ impactFactor(j,f)
