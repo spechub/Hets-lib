@@ -65,6 +65,7 @@ spec Interface =
    {Biblio_RS_Sign with logic RelScheme -> CASL}  and
    {Biblio_DL_Sign with logic -> CASL with Thing |-> pointer}
 then
+  sort string, integer < DATA
    forall a,j,p,x:pointer;n,t:string;f:integer
   . journal(j,n,f) <=> Journal(j) /\ name(j,n) /\ impactFactor(j,f)
   . paper(a,t,j) <=> Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t)
