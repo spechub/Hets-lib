@@ -18,13 +18,13 @@ spec Biblio_DL =
   Biblio_DL_Sig
 then
   Class: Researcher
-  SubclassOf: name some Thing
+  SubClassOf: name some Thing
 
   Class: Article
-  SubclassOf: author some Thing, title some Thing
-  
+  SubClassOf: author some Thing, title some Thing
+
   Class: Journal
-  SubclassOf: name some Thing, hasArticle some Thing, impactFactor some Thing
+  SubClassOf: name some Thing, hasArticle some Thing, impactFactor some Thing
 end
 
 logic RelScheme
@@ -35,7 +35,7 @@ spec Biblio_RS =
     author_of(person:pointer, paper:pointer)
     paper(key id:pointer, title:string, published_in:pointer)
     journal(key id:pointer, name:string, impact_factor:integer)
-  
+
   Relationships
     author_of[person] -> person[id] one_to_many
     author_of[paper] -> paper[id] one_to_many
@@ -45,19 +45,19 @@ end
 logic CASL
 
 spec Interface =
-  Biblio_RS with logic RelationalScheme -> CASL
+  Biblio_RS with logic -> CASL
 and
-  Biblio_DL_Sig with logic DL -> CASL
+  Biblio_DL_Sig with logic -> CASL
 then
   sort Thing = pointer
   sort string < Thing
   sort integer < Thing
   forall p,j:pointer; n:string; f:integer; a:pointer; t:string
-  . journal(j,n,f) <=> 
-      Journal(j) /\ name(j,n) /\ impactFactor(j,f)  %(journal)% 
-  . paper(a,t,j) <=> 
-      Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t) %(paper)% 
-  . author_of(p,a) <=> 
+  . journal(j,n,f) <=>
+      Journal(j) /\ name(j,n) /\ impactFactor(j,f)  %(journal)%
+  . paper(a,t,j) <=>
+      Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t) %(paper)%
+  . author_of(p,a) <=>
       Researcher(p) /\ Article(a) /\ author(p,a) %(author_of)%
   . person(p,n) <=> Researcher(p) /\ name(p,n)  %(person)%
 then %implies
