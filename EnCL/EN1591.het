@@ -261,7 +261,8 @@ spec EN1591 =
  . F_B0min := F_B0nom * (1 - epsilon_minus) %(eq60)%
  . F_B0max := F_B0nom * (1 + epsilon_plus) %(eq61)%
 
- . F_B0min >= F_B0req %(eq62)%
+  %% removed constraints
+%% . F_B0min >= F_B0req %(eq62)%
 
  %% a) Nenn-Schraubenkraft im Montagezustand, zur Festlegung der Schrauben-Anziehparameter
 
@@ -270,7 +271,8 @@ spec EN1591 =
  %% . M_tnom := minimalWith(x, F_B0nom'(x) >= F_B0req/(1 - epsilon_minus)) %(eq63.Bis)%
 
 
- . F_B0nom >= F_B0req/(1 - epsilon_minus) %(eq63)%
+  %% removed constraints
+%% . F_B0nom >= F_B0req/(1 - epsilon_minus) %(eq63)%
 
      %% ohne Messung, F_B0nom auf F_B0av setzen, und epsilon_minus auf 0.5, dann kommt eq63 zum Tragen
 %% . F_B0nom := F_B0av >= F_B0req/(1 - epsilon_minus)  %(eq64)%
@@ -301,7 +303,8 @@ spec EN1591 =
 
  . Phi_B := 1/f_B * sqrt( (F_B/A_B)^2 + 3*(C* M_tB/I_B)^2) %(eq71.1)%
 
- . Phi_B <= 1 %(eq71.1)%
+  %% removed constraints
+%% . Phi_B <= 1 %(eq71.1)%
 
      %% CONTROL: Cases (C)
      %% C haengt vom Zustand I und vom Schraubenwerkstoff ab, und ist fuer I > 0 Null.
@@ -323,11 +326,13 @@ spec EN1591 =
 
      %% * 6.3 Dichtung
  . Phi_G := F_G/(A_Gt * Q_max) %(eq72)%
- . Phi_G <= 1 %(eq72.1)%
+  %% removed constraints
+%% . Phi_G <= 1 %(eq72.1)%
 
      %% * 6.4 Integrierter Flansch
  . Phi_F := abs(F_G * h_G + F_Q * (h_H - h_P) + F_R * h_H)/W_F(k_M, Psi_Z) %(eq73)%
- . Phi_F <= Phi_max %(eq73.1)%
+  %% removed constraints
+%% . Phi_F <= Phi_max %(eq73.1)%
 
      %% EFFECT: shadowing auf Psi_Z, da Psi_Z nicht als veraenderliche declariert
  . W_F(k_M', Psi_Z') :=
@@ -353,7 +358,8 @@ spec EN1591 =
  . Psi(j_S, k_M', k_S) := f_E * d_E * e_D * cos(phi_S)/(f_F * 2 * b_F * e_F) * ((0.5*delta_Q+delta_R) * tan(phi_S) - delta_Q * 2 * e_P/d_E + j_S * k_S * sqrt(e_D*c_M*c_S(j_S)*(1+j_S*k_M')/(d_E*cos(phi_S)^3))) %(eq82)%
 
  . Psi_opt := j_M * (2*e_P/e_F-1) %(eq83.1)%
- . (-1) <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
+  %% removed constraints
+%% . -1 <= Psi_opt and Psi_opt <= 1 %(eq83.2)%
 
      %% CONTROL: Setval=function application
  . Psi_0 := Psi(0, 0, 0) %(eq84.1)%
@@ -390,6 +396,7 @@ end
 
 %%spec EN1591Correctness = operator Phi_F
 
-spec EN1591Correctness =
-  . Phi_F <= Phi_max and True
-end
+%[spec EN1591Correctness =
+  %% removed constraints
+%%  . Phi_F <= Phi_max and True
+end]%
