@@ -1,0 +1,160 @@
+logic CASL
+
+%[from Basic/Numbers get Nat]%
+
+%% Spass seems to always timeout proving my tests.
+
+%[spec DiningPhilosophers_Numbers = Nat then]%
+%[   op n : Nat]%
+%[   op __++__ : Nat * Nat -> Nat]%
+%[   op __--__ : Nat * Nat -> Nat]%
+
+%[   vars x,y:Nat]%
+%[   . n = 5                  %(Number_of_Philosophers)%]%
+%[   . x ++ y = (x + y) mod n]%
+%[then %implies]%
+%[  . 4 mod 5 = 4 %(basic)%]%
+%[  . 3 ++ 1 = 4               %(Number_Test_1)%]%
+%[  . 3 ++ 1 = (3 + 1) mod 5   %(Number_Test_1b)%]%
+%[  . 3 ++ 2 = 0               %(Number_Test_2)%]%
+%[  . 3 ++ 3 = 1               %(Number_Test_3)%]%
+%[end]%
+
+spec DiningPhilosophers_Numbers =
+   free type Nat ::= 0 | 1 | 2 | 3 | 4
+   op __++__ : Nat * Nat -> Nat
+   op __--__ : Nat * Nat -> Nat
+
+   . 0 ++ 0 = 0
+   . 0 ++ 1 = 1
+   . 0 ++ 2 = 2
+   . 0 ++ 3 = 3
+   . 0 ++ 4 = 4
+
+   . 1 ++ 0 = 1
+   . 1 ++ 1 = 2
+   . 1 ++ 2 = 3
+   . 1 ++ 3 = 4
+   . 1 ++ 4 = 0
+
+   . 2 ++ 0 = 2
+   . 2 ++ 1 = 3
+   . 2 ++ 2 = 4
+   . 2 ++ 3 = 0
+   . 2 ++ 4 = 1
+
+   . 3 ++ 0 = 3
+   . 3 ++ 1 = 4
+   . 3 ++ 2 = 0
+   . 3 ++ 3 = 1
+   . 3 ++ 4 = 2
+
+   . 4 ++ 0 = 4
+   . 4 ++ 1 = 0
+   . 4 ++ 2 = 1
+   . 4 ++ 3 = 2
+   . 4 ++ 4 = 3
+
+   . 0 -- 0 = 0
+   . 0 -- 1 = 4
+   . 0 -- 2 = 3
+   . 0 -- 3 = 2
+   . 0 -- 4 = 1
+
+   . 1 -- 0 = 1
+   . 1 -- 1 = 0
+   . 1 -- 2 = 4
+   . 1 -- 3 = 3
+   . 1 -- 4 = 2
+
+   . 2 -- 0 = 2
+   . 2 -- 1 = 1
+   . 2 -- 2 = 0
+   . 2 -- 3 = 4
+   . 2 -- 4 = 3
+
+   . 3 -- 0 = 3
+   . 3 -- 1 = 2
+   . 3 -- 2 = 1
+   . 3 -- 3 = 0
+   . 3 -- 4 = 4
+
+   . 4 -- 0 = 4
+   . 4 -- 1 = 3
+   . 4 -- 2 = 2
+   . 4 -- 3 = 1
+   . 4 -- 4 = 0
+
+then %implies
+  . 3 ++ 1 = 4               %(Number_Test_1a)%
+  . 3 ++ 2 = 0               %(Number_Test_2a)%
+  . 3 ++ 3 = 1               %(Number_Test_3a)%
+  . ((3 ++ 3) ++ 2) ++ 4 = 2 %(Number_Test_4a)%
+
+  . 2 -- 1 = 1               %(Number_Test_1b)%
+  . 2 -- 2 = 0               %(Number_Test_2b)%
+  . 2 -- 3 = 4               %(Number_Test_3b)%
+  . ((2 -- 3) -- 2) -- 4 = 3 %(Number_Test_4b)%
+end
+
+%% I encode channels manually into the data part as channels are not
+%% currently supported well in Hets
+
+%% The table is organised as follows:
+%% fork0 phil0 fork1 phil1 fork2 phil2 fork3 phil3 fork4 phil4 <back to start of circle>
+
+spec DiningPhilosophers_Data = DiningPhilosophers_Numbers then
+  free type Event ::= eats(Nat) %% eats(i) means philosopher i eats
+                    | thinks(Nat) %% thinks(i) means philosopher i thinks
+                    | picksUp(Nat; Nat) %% thinks(i, j) means philosopher i picks up fork j
+                    | putsDown(Nat; Nat) %% thinks(i, j) means philosopher i puts down up fork j
+then %implies
+  . eats(2 -- 3) = eats(4) %(Event_Test_1)%
+end
+
+logic CspCASL
+
+spec DiningPhilosophers =
+   data
+     DiningPhilosophers_Data
+   process
+     fork(Nat): Event
+     fork(i) =    (picksUp(i, i) -> putsDown(i, i) -> fork(i))         %% Action by philosopher to the fork's right
+               [] (picksUp(i -- 1, i) -> putsDown(i--1, i) -> fork(i)) %% Action by philosopher to the fork's left
+
+     %% Naive philosopher who always thinks then, picks up the fork to
+     %% their left, then right, then eats, then put the forks back
+     %% down in the reverse order, and starts again
+     phil(Nat): Event
+     phil(i) = thinks(i) ->
+               picksUp(i, i) -> picksUp(i, i ++ 1) ->
+               eats(i) ->
+               putsDown(i, i ++ 1) -> putsDown(i, i) ->
+               phil(i)
+
+    %% Note: CSP-CASL currently has no indexed parallel operators
+    table: Event
+    table = fork(0) || fork(1) || fork(2) || fork(3) || fork(4) ||
+            phil(0) || phil(1) || phil(2) || phil(3) || phil(4)
+end
+
+spec DiningPhilosophers_Trace_Test =
+  DiningPhilosophers
+then
+  process
+    %% This is a valid trace of the table. This trace also leads directly to a deadlock.
+    trace: Event
+    trace = thinks(0) -> picksUp(0, 0) ->
+            thinks(1) -> picksUp(1, 1) ->
+            thinks(2) -> picksUp(2, 2) ->
+            thinks(3) -> picksUp(3, 3) ->
+            thinks(4) -> picksUp(4, 4) -> STOP
+then %implies
+  %% We currently have no synax for expressing one process refines to another process.
+  %% In CSP one process P refines to process Q (written P <= Q) iff P = Q |~| P
+  %% Here we express that the trace is a valid behavoir of the table
+  %% Note: This only hold in the Traces model! - but again Hets cannot
+  %% yet express this should only holds in the traces model
+  process
+    table = table |~| trace
+end
