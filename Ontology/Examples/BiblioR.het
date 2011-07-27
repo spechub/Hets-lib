@@ -8,17 +8,23 @@ spec Biblio_OWL =
 
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
 
-  Class: researcher
-  SubclassOf: name some xsd:string 
+  DataProperty: name
+  ObjectProperty: author
+  DataProperty: title
+  DataProperty: impactFactor
 
+  Class: researcher
+  SubClassOf: name some xsd:string 
+
+  ObjectProperty: hasJournal
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
-  Class: article
-  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
+  Class: Article
+  SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
   
-  Class: journal
-  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+  Class: Journal
+  SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme
