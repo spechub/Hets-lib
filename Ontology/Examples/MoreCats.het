@@ -4,11 +4,13 @@ spec Cats =
      Characteristics: Transitive, Irreflexive
 
      Class: Cheetah
-     SubclassOf: Carnivore, isFaster some Tiger
+     SubClassOf: Carnivore, isFaster some Tiger
      DisjointWith: Tiger
 
+     Class: Carnivore
+
      Class: Tiger
-     SubclassOf: Carnivore
+     SubClassOf: Carnivore
      DisjointWith: Cheetah
 end
 
@@ -38,4 +40,4 @@ spec MoreCats =
 end
 
 logic CASL
-view cview : Cats to MoreCats
+view cview : Cats to {MoreCats and logic OWL: {}}
