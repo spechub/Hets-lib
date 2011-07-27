@@ -3,7 +3,7 @@ library Ontology/Examples/Biblio
 logic OWL
 
 spec Biblio_OWL =
-  
+
   Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
 
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
@@ -14,7 +14,7 @@ spec Biblio_OWL =
   DataProperty: impactFactor
 
   Class: researcher
-  SubClassOf: name some xsd:string 
+  SubClassOf: name some xsd:string
 
   ObjectProperty: hasJournal
   ObjectProperty: hasArticle
@@ -22,7 +22,7 @@ spec Biblio_OWL =
 
   Class: Article
   SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
-  
+
   Class: Journal
   SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
 end
@@ -35,7 +35,7 @@ spec Biblio_RS =
     author_of(person, paper:pointer)
     paper(key id:pointer,title:string,published_in:pointer)
     journal(key id:pointer,name:string,impact_factor:integer)
-  
+
   Relationships
     author_of[person]      -> person[id]  one_to_many
     author_of[paper]       -> paper[id]   one_to_many
@@ -70,39 +70,39 @@ spec BiblioR =
      forall s,t:Thing
      . not (Nothing(t))
      . Thing(t)
-     . Working_Person(t) => Tangible_Thing(t) /\ 
+     . Working_Person(t) => Tangible_Thing(t) /\
 			     exists y:DATA.(String(y) /\ Name(t,y))
      . Researcher(t)     => Working_Person(t)
-     . Composite_Publication(t) => Tangible_Thing(t) /\ 
+     . Composite_Publication(t) => Tangible_Thing(t) /\
                                     exists y:DATA. (String(y) /\
 					   Name(t,y)) /\
                                     exists z:Thing. (Publication(z) /\
 						     Has_Publication(t,z))
-     . Journal(t) => Composite_Publication(t) /\ 
+     . Journal(t) => Composite_Publication(t) /\
                       exists y:Thing. (Article(y) /\ Has_Article(t,y)) /\
-			     exists i:DATA . (Integer(i) /\ 
+			     exists i:DATA . (Integer(i) /\
 					      Impact_Factor(t,i))
      . Has_Article(s,t) => Has_Publication(s,t)
-     . Proceedings(t) => Composite_Publication(t) /\ 
+     . Proceedings(t) => Composite_Publication(t) /\
                           exists y:Thing. (Paper(y) /\ Has_Paper(t,y))
      . Has_Paper(s,t) => Has_Publication(s,t)
-     . Publication(t) => Tangible_Thing(t) /\ 
+     . Publication(t) => Tangible_Thing(t) /\
                           exists y:Thing. (Researcher(y) /\ Author(t,y)) /\
 			  exists z:DATA. (String(z) /\ Title(t,z))
      . Article(t) => Publication(t)
      . Paper(t)   => Publication(t)
 end
 
-view OWL2R : Biblio_OWL to 
-     {BiblioR
+view OWL2R : Biblio_OWL to
+     {BiblioR and logic OWL: {} %% insert OWL's builtin stuff
       then %def
-       preds 
+       preds
         researcher (p : Thing) <=> Researcher(p);
         name (p:Thing; n:DATA) <=> String(n) /\ Name(p,n);
         article(a:Thing) <=> Publication(a);
         author(a:Thing; p:Thing) <=> Researcher(p) /\ Article(a) /\
-                                     Author(a,p) /\ 
-                                     exists j:Thing . (Journal(j) /\ 
+                                     Author(a,p) /\
+                                     exists j:Thing . (Journal(j) /\
 						       Has_Article(j,a));
         hasArticle(j:Thing; a:Thing) <=> Journal(j) /\ Has_Article(j,a) /\
                                          Publication(a) /\ exists n:DATA .
@@ -113,7 +113,7 @@ view OWL2R : Biblio_OWL to
                                          (String(n) /\ Name(j, n)) /\ exists
                                          i:DATA . (Integer(i) /\ Impact_Factor(j,i));
         impactFactor(j:Thing; i:DATA) <=> Journal(j) /\ Integer(i) /\
-                                             Impact_Factor(j,i) /\ exists n:DATA . 
+                                             Impact_Factor(j,i) /\ exists n:DATA .
                                              (String(n) /\ Name(j,n)) /\ exists
                                              i:DATA . (Integer(i) /\ Impact_Factor(j,i));
         journal(j:Thing) <=> Journal(j);
@@ -125,13 +125,13 @@ view OWL2R : Biblio_OWL to
      }
      end
 
-view RS2R  : {Biblio_RS  with pointer |-> Thing, integer |-> DATA, string |-> DATA 
-	      hide author_of_paper, author_of_person, journal_id, journal_impact_factor, 
-	      journal_name, paper_id, paper_published_in, paper_title, 
-	      person_id, person_name} to 
+view RS2R  : {Biblio_RS  with pointer |-> Thing, integer |-> DATA, string |-> DATA
+	      hide author_of_paper, author_of_person, journal_id, journal_impact_factor,
+	      journal_name, paper_id, paper_published_in, paper_title,
+	      person_id, person_name} to
      {BiblioR
       then %def
-       preds 
+       preds
         person(p:Thing; n:DATA) <=> Researcher(p) /\ Name(p,n) /\ String(n);
         author_of(p:Thing; a:Thing) <=> Author(a,p) /\ Article(a) /\ Researcher(p);
         paper(a:Thing; n:DATA; j:Thing) <=> Article(a) /\ String(n) /\ Journal(j) /\
