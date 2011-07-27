@@ -3,22 +3,22 @@ library Ontology/Examples/Biblio
 logic OWL
 
 spec Biblio_OWL =
-  
+
   Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
 
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
 
   Class: Researcher
-  SubclassOf: name some xsd:string 
+  SubClassOf: name some xsd:string
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubclassOf: author some Thing, title some xsd:string, hasJournal some Journal
-  
+  SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
+
   Class: Journal
-  SubclassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+  SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme
@@ -29,7 +29,7 @@ spec Biblio_RS =
     author_of(person, paper:pointer)
     paper(key id:pointer,title:string,published_in:pointer)
     journal(key id:pointer,name:string,impact_factor:integer)
-  
+
   Relationships
     author_of[person]      -> person[id]  one_to_many
     author_of[paper]       -> paper[id]   one_to_many
