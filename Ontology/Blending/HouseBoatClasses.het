@@ -4,8 +4,8 @@ logic OWL
 
 spec Medium =
   Class: Medium 
-  Class: Land SubclassOf: Medium
-  Class: Water SubclassOf: Medium
+  Class: Land SubClassOf: Medium
+  Class: Water SubClassOf: Medium
 end
 
 
@@ -16,8 +16,8 @@ then
   Class: Object 
   ObjectProperty: use Domain: User Range: UsedObject
   ObjectProperty: on Domain: Object Range: Medium
-  Class: User SubclassOf: Person, use some Object
-  Class: UsedObject SubclassOf: Object
+  Class: User SubClassOf: Person, use some Object
+  Class: UsedObject SubClassOf: Object
 end
 
 spec House =
@@ -27,8 +27,8 @@ then
   Class: Object
   ObjectProperty: live_in Domain: Resident Range: House
   ObjectProperty: on Domain: Object Range: Medium
-  Class: Resident SubclassOf: Person, live_in some House
-  Class: House SubclassOf: Object, on some Land
+  Class: Resident SubClassOf: Person, live_in some House
+  Class: House SubClassOf: Object, on some Land
 end
 
 spec Boat =
@@ -38,8 +38,8 @@ then
   Class: Person
   ObjectProperty: ride Domain: Passenger Range: Boat
   ObjectProperty: on Domain: Object Range: Medium
-  Class: Boat SubclassOf: Object, on some Water
-  Class: Passenger SubclassOf: Person, ride some Boat
+  Class: Boat SubClassOf: Object, on some Water
+  Class: Passenger SubClassOf: Person, ride some Boat
 end
 
 
@@ -64,8 +64,8 @@ then
   Class: Person
   ObjectProperty: live_in_ride Domain: Resident_Passenger Range: House_Boat
   ObjectProperty: on Domain: Object Range: Medium
-  Class: House_Boat SubclassOf: Object, on some Water
-  Class: Resident_Passenger SubclassOf: Person, live_in_ride some House_Boat
+  Class: House_Boat SubClassOf: Object, on some Water
+  Class: Resident_Passenger SubClassOf: Person, live_in_ride some House_Boat
 end
 
 
@@ -97,9 +97,9 @@ then
   ObjectProperty: live_in Domain: Resident_Boat Range: House
   ObjectProperty: ride Domain: Passenger Range: Resident_Boat
   ObjectProperty: on Domain: Object Range: Medium
-  Class: Passenger SubclassOf: Person, ride some Resident_Boat
-  Class: Resident_Boat SubclassOf: Object, live_in some House, on some Water
-  Class: House SubclassOf: Object, on some Land
+  Class: Passenger SubClassOf: Person, ride some Resident_Boat
+  Class: Resident_Boat SubClassOf: Object, live_in some House, on some Water
+  Class: House SubClassOf: Object, on some Land
 end
 
 
@@ -125,16 +125,16 @@ spec Alignment =
   House and Boat and {BoatHouse with House |-> Boat_House}
   and HouseBoat
 then
-  Class: Boat_House SubclassOf: House
-  Class: House_Boat SubclassOf: House
-  Class: House_Boat SubclassOf: Boat
+  Class: Boat_House SubClassOf: House
+  Class: House_Boat SubClassOf: House
+  Class: House_Boat SubClassOf: Boat
 end
 
 spec AlignmentWithoutPersonification =
   Alignment hide Resident_Boat, Person
 and House and Boat 
 then
-  Class: Resident_Boat SubclassOf: Object
+  Class: Resident_Boat SubClassOf: Object
 end
 
 
