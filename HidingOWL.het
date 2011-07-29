@@ -1,15 +1,15 @@
-logic OWL 
+logic OWL
 
 spec FoodOntology =
  Class: Human
- SubclassOf: eats some Food
- Class: Plant 
- SubclassOf: grows_in some Area
- Class: Vegetarian 
+ SubClassOf: eats some Food
+ Class: Plant
+ SubClassOf: grows_in some Area
+ Class: Vegetarian
  Class: FoodAndPlant
  EquivalentTo: Food and Plant
- SubclassOf: Vegetarian
- SubclassOf: Healthy
+ SubClassOf: Vegetarian
+ SubClassOf: Healthy
  Class: Area
  Class: Healthy
  Class: Food
@@ -17,19 +17,19 @@ spec FoodOntology =
  ObjectProperty: eats
  ObjectProperty: grows_in
 
- Class: PlantEater 
- EquivalentTo: Human and eats only  Plant 
+ Class: PlantEater
+ EquivalentTo: Human and eats only  Plant
 
 
-spec FoodOntologyHide = 
+spec FoodOntologyHide =
  FoodOntology hide Food
 
-spec FoodOntologyGoal = 
+spec FoodOntologyGoal =
  FoodOntologyHide
 then %implies
  Class: PlantEater
- SubclassOf: eats some Vegetarian
- 
+ SubClassOf: eats some Vegetarian
+
 %[sorts Thing]%
 %[  preds Human, Plant, Vegetarian, Area, Healthy, Food : Thing]%
 %[  preds eats, grows_in : Thing * Thing]%
