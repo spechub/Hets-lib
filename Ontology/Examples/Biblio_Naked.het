@@ -4,9 +4,15 @@ logic OWL
 
 spec Biblio_OWL =
 
-  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
+  Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
 
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
+  DataProperty: impactFactor
+  DataProperty: name
+  DataProperty: title
+  ObjectProperty: hasJournal
+  ObjectProperty: author
 
   Class: Researcher
   SubClassOf: name some xsd:string
