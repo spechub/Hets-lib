@@ -31,7 +31,7 @@ spec FamilyBase =
   Class: Hybird  EquivalentTo: Man and Woman
   Class: Married
   Class: MarriedMother EquivalentTo: Mother and Married 
-         SubclassOf: Female and Person
+         SubClassOf: Female and Person
   Individual: mary Types: Mother
     Facts: 
         hasChild  john
@@ -41,7 +41,7 @@ spec FamilyBase =
   Individual: clara
 end
 
-view v1: {FamilySkel with logic OWL2CommonLogic} to {FamilyBase with logic OWL2CommonLogic}
+view v1: {FamilySkel with logic OWL22CommonLogic} to {FamilyBase with logic OWL22CommonLogic}
 
 spec NotConser =
      FamilyBase
@@ -58,13 +58,13 @@ then %cons
 
      ObjectProperty: likesBones
 
-     Class: Dog SubclassOf: likesBones some Animal
+     Class: Dog SubClassOf: likesBones some Animal
 end
 
 spec Family =
 FamilyBase
 then %implies
-  Class: Mother SubclassOf: Parent
+  Class: Mother SubClassOf: Parent
    Individual: mary Types: Grandmother
   Class: Man
    EquivalentTo: Woman
