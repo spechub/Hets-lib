@@ -75,11 +75,9 @@ then
      . not (1 = 0)                              %(zeroNeqOne)%
 end
 
-logic HasCASL
-
 spec RingWithNonZeros = IntegralDomain
 then
-     type NonZero = {x:Elem. not (x=0)} %(NonZero type)%
+     sort NonZero = {x:Elem. not (x=0)} %(NonZero type)%
 
      ops 1:NonZero;
 	 __ * __:NonZero*NonZero->NonZero
