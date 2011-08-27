@@ -21,6 +21,7 @@ spec Biblio_OWL =
 
   Class: Journal
   SubClassOf: name some string, hasArticle some Thing, impactFactor some integer
+
 end
 
 logic RelScheme
@@ -39,10 +40,14 @@ spec Biblio_RS =
 end
 
 logic CASL
-
+from Basic/Numbers get Rat
 view Biblio_OWL_in_RS : Biblio_OWL to
   { {Biblio_RS with logic RelScheme -> CASL} with pointer |-> Thing
      and logic OWL: {} %% insert OWL's builtin stuff!
+     and Rat with Rat |-> float
+                , Int |-> integer
+                , Nat |-> nonNegativeInteger
+                , Pos |-> positiveInteger 
      then %def
           sorts string, integer < DATA; DATA < Thing
           preds Thing, Nothing: Thing
@@ -71,3 +76,5 @@ view Biblio_OWL_in_RS : Biblio_OWL to
                     . journal(j, n, i) /\ i = j;
   }
 end
+
+
