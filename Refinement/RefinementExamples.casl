@@ -19,9 +19,9 @@ spec Nat =
 NatWithSuc hide suc
 end
 
-refinement R1 =
+%[refinement R1 =
 
-Monoid refined via Elem |-> Nat to Nat
+Monoid refined via Elem |-> Nat to Nat]%
 
 spec NatBin =generated type Bin ::= 0 | 1 | __0(Bin) | __1(Bin)
 
@@ -37,11 +37,12 @@ ops __+__ , __++__ : Bin * Bin -> Bin forall x
 
  .  x 1 + y 1 = (x ++ y) 0  .  x 1 ++ y 1 = (x ++ y) 1 
 
+
 refinement R2 =
 
 Nat refined via Nat |-> Bin to NatBin
 
-refinement R3 =
+%[refinement R3 =
 
 Monoid refined via Elem |-> Nat to
 
@@ -55,7 +56,7 @@ refinement R3'' =
 
 Monoid refined via Elem |-> Nat to Nat then R2
 
-refinement R3''' = R1 then R2 
+refinement R3''' = R1 then R2 ]%
 
 arch spec Addition_First = units N :
 
@@ -64,17 +65,20 @@ Nat;M : {
 op suc(n : Nat) : Nat = n + 1 } given N result  M
 
 
-arch spec Addition_First_Generic = units N :
 
-Nat;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+%[arch spec Addition_First_Generic = 
+units N :Nat;
+F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
+result lambda X : Nat . F[X]
+]%
 
-result M
+refinement R4' = NatWithSuc then arch spec Addition_First
 
-refinement R4 =
+%%refinement R4 =
 
-NatWithSuc refined to arch spec Addition_First
+%%NatWithSuc refined to arch spec Addition_First
 
-arch spec Addition_First_With_Bin = units N :
+%[arch spec Addition_First_With_Bin = units N :
 
 Nat refined via Nat |-> Bin to NatBin  ;F : Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
 
@@ -86,38 +90,11 @@ units N : R2;F :
 
 Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
 
-result M
+result M]%
 
+refinement RI = {N to R2}
 
-%[arch spec asp1 =]%
-
-%[unit K : SP' -> SP refined to USP result K]%
-
-%[refinement R5 =SP refined to]%
-
-%[arch spec { units]%
-
-%[K : SP' -> SP refined to USP;]%
-%[A' : SP']%
-
-%[refined to arch spec { units]%
-
-%[K' : SP'' -> SP' refined to USP';]%
-%[A'' : SP'' result K'[A''] }]%
-%[result K [A']]%
-%[}]%
-
-arch spec Addition_First_With_Bin' =
-
-units N : R2;F :
-
-Nat -> { op suc(n : Nat) : Nat = n + 1 };M = F [N ]
-
-result M
-
-refinement R =arch spec
-
-Addition_First_Generic then {N to R2}
+refinement R = R4' then RI
 
 %[refinement R5' =SP]%
 
@@ -136,10 +113,4 @@ Addition_First_Generic then {N to R2}
 %[    {units K' : SP'' -> SP'; A'' : SP'' result K'[A'']}}]%
 %[    then  {A' to {K' to USP'}}]%
 
-arch spec Arch_Sbcs =
-
-units P : Value -> Preliminary;
-S : Preliminary -> Sbcs_State;
-A : Sbcs_State -> Sbcs_Analysis;
-C : Sbcs_Analysis -> Steam_Boiler_Control_System result lambda V : Value  .  C [A [S [P [V ]]]]
 
