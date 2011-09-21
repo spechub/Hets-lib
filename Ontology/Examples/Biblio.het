@@ -39,15 +39,25 @@ spec Biblio_RS =
     paper[published_in]    -> journal[id] one_to_many
 end
 
-logic CASL
+
 from Basic/Numbers get Rat
-view Biblio_OWL_in_RS : Biblio_OWL to
-  { {Biblio_RS with logic RelScheme -> CASL} with pointer |-> Thing
-     and logic OWL: {} %% insert OWL's builtin stuff!
-     and Rat with Rat |-> float
+
+logic CASL
+
+%{ this specification could be defined elsewhere }%
+spec Owl =
+     Rat with Rat |-> float
                 , Int |-> integer
                 , Nat |-> nonNegativeInteger
-                , Pos |-> positiveInteger 
+                , Pos |-> positiveInteger
+     and logic OWL: {}
+     %% include other OWL builtin stuff
+end
+
+logic CASL(Owl)
+
+view Biblio_OWL_in_RS : Biblio_OWL to
+  { Biblio_RS with pointer |-> Thing
      then %def
           sorts string, integer < DATA; DATA < Thing
           preds Thing, Nothing: Thing
