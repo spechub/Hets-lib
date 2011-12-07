@@ -1,0 +1,26 @@
+%% taken from ../../Basic/RelationsAndOrders.casl
+%% * spec LeftTotalRelation 
+%% * spec RightUniqueRelation
+%% 
+%% spec Function is new in this example
+
+logic CASL.FOL
+spec LeftTotalRelation = 
+sorts S, T
+pred __R__ : S * T
+pred __R : S
+
+. forall s : S . exists t : T . s R t %(Ax1)%
+
+. forall s : S . s R %(Ax1)%
+
+logic CASL.GHorn=
+spec RightUniqueRelation = 
+sorts S, T
+pred __R__ : S * T
+
+. forall s : S, t1, t2 : T . s R t1 /\ s R t2 => t1 = t2 %(Ax_0)%
+
+logic CASL
+spec Function =
+LeftTotalRelation and RightUniqueRelation
