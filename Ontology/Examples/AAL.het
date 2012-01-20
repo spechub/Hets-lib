@@ -1,0 +1,121 @@
+logic OWL
+
+spec OurAAL =
+  %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
+  %% TODO specify that application conformance criterion: http://trac.informatik.uni-bremen.de:8080/OntoIOp/ticket/27
+  OpenAALOntology
+    %% We rename one OpenAAL class to a more intuitive name.
+    with AP |-> AssistedPerson
+
+  %% add some classes to OpenAAL; we are still in the OWL logic
+  then {
+    Class: LightSwitch
+      SubClassOf: Device
+    Class: Freezer
+      SubClassOf: Device
+  }
+
+  %[commented, for now, the propositional part – does not yet work with Hets.
+
+  I (Christoph) will file some tickets about keywords not yet supported:
+    * that
+    * inverse
+  ]%
+
+  %[%% a simple propositional light switch ontology]%
+  %[then logic Propositional : {]%
+  %[  props light_on, person_in_room, dark_outside]%
+  %[  . light_on <=> person_in_room /\ dark_outside]%
+  %[}]%
+  %[%% TODO the default translation of Propositional to OWL translates propositional variables into "one concrete OWL instance", whereas we would actually, and most reasonably in this use case, like to translate the propositional axiom into an OWL class axiom:]%
+  %[%% ]%
+  %[%% Class: light_on        % think: "a room where light is switched on"]%
+  %[%% Class: person_in_room  % think: "a room in which there is a person"]%
+  %[%% Class: dark_outside    % think: "a room whose outside is dark"]%
+  %[%% EquivalentClasses: light_on, person_in_room and dark_outside]%
+  %[%% ]%
+  %[%% … but that gets us in trouble wrt. translating models across logics, as in an OWL model for that axiom, we could have multiple different individuals, some being an instance of a class, others not being an instance of a class – how would an OWL model translate to a propositional model?]%
+  %[%% An OWL model for the above TBox can contain many individuals, and that's intended in this use case: We would like to be able to interpret the propositional axiom differently for different rooms.  In the same OWL model it should be possible to have rooms where light is switched on, and rooms where light is switched off.]%
+  %[%% So we might have an OWL model with individuals Room1 and Room2, where Room1 is an instance of light_on, person_in_room, and dark_outside.  Room2 might be an instance of person_in_room, but not (by negative assertions) of dark_outsite and not of light_on.  ]%
+  %[%% From that we'd like to obtain a propositional model by picking one specific individual from the OWL model, which represents the particular light switch we are interested in.  (Does that statement make sense? –Christoph)  E.g. by picking Room2, we'd obtain a propositional model { light_on = false, person_in_room = true, dark_outside = false }.]%
+  %[with]%
+  %[  %% We would like to express: The propositional variable person_in_room is true (for one particular room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".]%
+  %[  person_in_room |-> Room that inverse is-in-room AssistedPerson min 1,]%
+  %[  %% The propositional variable light_on is true (for one particular room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.]%
+  %[  light_on |-> Room that]%
+  %[                 inverse is-in-room value]%
+  %[                   not (LightSwitch value has-power-state Off)]%
+
+  %% a simplified remake of the well-known Pizza ontology (http://owl.cs.manchester.ac.uk/tutorials/protegeowltutorial/)
+  then logic OWL : {
+    Individual: Tomato
+    Individual: Mozzarella
+      DifferentFrom: Tomato
+    Class: Topping
+    Class: VegetarianTopping
+      SubClassOf: Topping
+      EquivalentTo: { Tomato, Mozzarella }
+    Class: Pizza
+    ObjectProperty: hasTopping
+      Domain: Pizza
+      Range: Topping
+    Class: VegetarianPizza
+      %% this is slightly over-simplified just for the sake of this example
+      EquivalentTo: Pizza that hasTopping only VegetarianTopping
+    %% TODO connect Pizza to Freezer and to OpenAAL's Oven
+  }
+  
+  %% an RCC-style spatial calculus formalized in first order logic
+  then logic CommonLogic : {
+    . (forall (a1 a2)
+        (or (equal a1 a2)
+            (overlapping a1 a2)
+            (bordering a1 a2)
+            (disconnected a1 a2)
+            (proper_part_of a1 a2)
+            (proper_part_of a2 a1)))
+    %% mutual disjointness of predicates (need this for an exclusive or)
+    . (forall (p)
+        (mutually-disjoint p))
+    . (forall (p q ...)
+       (iff (mutually-disjoint p q ...)
+          (and (forall (...x)
+                  (not (and (p ...x) (q ...x))))
+               (mutually-disjoint p ...)
+               (mutually-disjoint q ...))))
+    %% a utility predicate for talking about inverse relations (similar to owl:inverseOf)
+    . (forall (r x y)
+         (iff ((converse r) x y) (r y x)))
+    %% make the above "or" exclusive
+    . (mutually-disjoint equal overlapping bordering disconnected proper_part_of (converse proper_part_of))
+    %% if some RCC relations hold (so far it would also work in OWL)
+    %% or if there is a door that connects two rooms, then …
+    %% (the latter would only work in OWL if we used an explicit subproperty is-door-of of is-in-room; then we could chain "inverse is-door-of" and "is-door-of", but otherwise we wouldn't be able to restrict the "connecting element" to a Door – am I right? –Christoph)
+    . (forall (a1 a2)
+         (if (or 
+                 (equal a1 a2)
+                 (overlapping a1 a2)
+                 (part_of a1 a2)
+                 (part_of a2 a1)
+                 (exists (door)
+                   (and (Door door)
+                        (is-in-room door a1)
+                        (is-in-room door a2)))
+             )
+             (is-connected-to-room a1 a2)))
+  }
+%% end OurAAL
+
+spec ConcreteScenario = 
+  %% import the TBox from above
+  OurAAL
+  %% now we add our actual ABox
+  then logic OWL : {
+    %% Talk about a concrete pizza.  This item doesn't actually exist in the ProductDB linked open dataset, but we pretend so.
+    Individual: ProductWithEAN4001724819806
+      Facts: hasTopping Tomato, hasTopping Mozzarella
+      %% besides Tomato and Mozzarella this pizza does not have any other toppings
+      %% (note that this is only sufficient because Tomato and Mozzarella have been declared different individuals)
+      Types: hasTopping exactly 2
+  }
+%% end ConcreteScenario

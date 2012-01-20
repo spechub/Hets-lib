@@ -1,0 +1,619 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:l="http://www.openaal.org/SAM/Ontology/location#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:ht="http://www.openaal.org/SAM/Ontology/highLevelThing#"
+    xmlns:a="http://www.openaal.org/SAM/Ontology/appointment#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:lt="http://www.openaal.org/SAM/Ontology/lowLevelThing#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:meta="http://www.openaal.org/SAM/Ontology/meta#"
+    xmlns:p="http://www.openaal.org/SAM/Ontology/person#"
+    xmlns:m="http://www.openaal.org/SAM/Ontology/message#"
+    xmlns="http://www.openaal.org/SAM/Ontology#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:dt="http://www.openaal.org/SAM/Ontology/datatypes#"
+  xml:base="http://www.openaal.org/SAM/Ontology">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Device-State-Actuator">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Actuator"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Yes">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Answer"/>
+    </rdfs:subClassOf>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Closed">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Open-State"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Yes-No-Question">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Question"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Boolean">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//use this class for representation of java-primitive type boolean</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Message-Modality">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Location">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Alarm">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Information"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Power-State">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Bathroom">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Room"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Carer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Notification">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Information"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Answer">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Message"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#On">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Power-State"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Device-State-Sensor">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Sensor"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Sensor">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#TV">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#German">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Language"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Message-Actuator">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Actuator"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-DateTime">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//use this class for representation of java type Date</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Int">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//use this class for representation of java-primitive type int</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Person">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Confirmation">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Answer"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Oven">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Appointment">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-String">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//use this class for representation of java type String</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Room">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >//simulates a room</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Location"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Information">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Message"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Loudspeaker">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Acute-State">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Message-Sensor">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Sensor"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Activity">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Fall-Sensor">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Sensor"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Room-Part">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Location"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Touchscreen">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Not-Due">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Due-State"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Due">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Defines that something is Due. Due is a singleton class.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Due-State"/>
+    </rdfs:subClassOf>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Language">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Entity-With-Coordinates">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Due-State">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Due state can either be Due or Not-Due and can be related to an appointment to define whether the appointment is due or not due</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Text-Message">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Message-Modality"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Question">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Message"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/appointment#Personal-Appointment">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Appointment"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Message">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Lamp">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Actuator">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Standby">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Power-State"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Unspecified-Room">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >\\Use this if the entity is not in one of the other rooms</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/meta#OntologyStatement">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Off">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Power-State"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Open-State">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#English">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/person#Language"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Door">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Entity-With-Coordinates"/>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Front-Door">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Door"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Reminder">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Information"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Device">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Double">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//use this class for representation of java-primitive type double</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/highLevelThing#Open">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Open-State"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Fall-Detected-Message">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Alarm"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/location#Kitchen">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >this is a kitchen</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#Sound-Message">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Message-Modality"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Datatype">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >{{//parent class for the OPENAAL datatypes that represent special datatypes. Use this class only in Queries.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/message#No">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/message#Answer"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#Fall">
+    <isSingletonClass rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >true</isSingletonClass>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >nn</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/person#Acute-State"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.openaal.org/SAM/Ontology/person#AP">
+    <rdfs:subClassOf rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="has-path-to-sound-file">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/message#Sound-Message"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-String"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-actuator-state">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has-low-level-thing-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Actuator"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-person-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="detects-message">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has-sensor-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Message-Sensor"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/message#Answer"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-at-location">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/location#Location"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-state"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-connected-to-device">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-in-room">
+    <rdfs:subPropertyOf rdf:resource="#is-at-location"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-worn-by-person">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-appointment">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Appointment"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-power-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Power-State"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:ID="has-device-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-ap-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:subPropertyOf rdf:resource="#has-person-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#AP"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-acute-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/person#Acute-State"/>
+    <rdfs:subPropertyOf rdf:resource="#has-ap-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#AP"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-connected-to-room">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has-low-level-thing-state">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Low-Level-Thing"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="detects-device-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-sensor-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Device-State-Sensor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-no-super-prop"/>
+    </rdfs:subPropertyOf>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-open-state">
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-device-state"/>
+    </rdfs:subPropertyOf>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Open-State"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has-no-super-prop">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >//super-property of all properties</rdfs:comment>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="changes-device-state">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Device-State-Actuator"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State"/>
+    <rdfs:subPropertyOf rdf:resource="#has-actuator-state"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-reminder-message">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Appointment"/>
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/message#Reminder"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-email-address">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-String"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="speaks-language">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/person#Language"/>
+    <rdfs:subPropertyOf rdf:resource="#has-person-state"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-mobile-phone-number">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-String"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-in-room-part">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Locatable-Entity"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room-Part"/>
+    <rdfs:subPropertyOf rdf:resource="#is-at-location"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="is-in-activity">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdfs:subPropertyOf rdf:resource="#has-person-state"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/person#Activity"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="emits-message">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Message-Actuator"/>
+    <rdfs:subPropertyOf rdf:resource="#has-actuator-state"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/message#Message"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="detects-fall">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Fall-Sensor"/>
+    <rdfs:subPropertyOf>
+      <owl:ObjectProperty rdf:about="#has-sensor-state"/>
+    </rdfs:subPropertyOf>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/person#Fall"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-communicated-message">
+    <rdfs:subPropertyOf rdf:resource="#has-person-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/person#Person"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/message#Message"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has-device-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device-State"/>
+    <rdfs:subPropertyOf rdf:resource="#has-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/highLevelThing#Device"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-coordinates">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >use this property to indicate than an entity has coordinates. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#has-state"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-text">
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/message#Text-Message"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-String"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="has-location-state">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Location"/>
+    <rdfs:subPropertyOf rdf:resource="#has-state"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#has-sensor-state">
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/meta#OpenAALThing"/>
+    <rdfs:subPropertyOf rdf:resource="#has-low-level-thing-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/lowLevelThing#Sensor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="consists-of-room-part">
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room-Part"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Room"/>
+  </owl:ObjectProperty>
+  <owl:FunctionalProperty rdf:ID="has-z-coordinate">
+    <rdfs:subPropertyOf rdf:resource="#has-coordinates"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >use this property to indicate than an entity has a z coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has-due-date">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#has-no-super-prop"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Appointment"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-DateTime"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has-due-state">
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Appointment"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/appointment#Due-State"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:subPropertyOf rdf:resource="#has-state"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has-y-coordinate">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >use this property to indicate than an entity has a y coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="#has-coordinates"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has-x-coordinate">
+    <rdfs:subPropertyOf rdf:resource="#has-coordinates"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >use this property to indicate than an entity has a x coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used.</rdfs:comment>
+  </owl:FunctionalProperty>
+  <owl:FunctionalProperty rdf:ID="has-temperature-in-celsius">
+    <rdfs:subPropertyOf rdf:resource="#has-location-state"/>
+    <rdfs:domain rdf:resource="http://www.openaal.org/SAM/Ontology/location#Location"/>
+    <rdfs:range rdf:resource="http://www.openaal.org/SAM/Ontology/datatypes#OpenAAL-Double"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </owl:FunctionalProperty>
+  <owl:AnnotationProperty rdf:ID="isSingletonClass">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+  </owl:AnnotationProperty>
+  <p:Person rdf:ID="Person_7">
+    <speaks-language>
+      <p:English rdf:ID="English"/>
+    </speaks-language>
+  </p:Person>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.4, Build 579)  http://protege.stanford.edu -->
