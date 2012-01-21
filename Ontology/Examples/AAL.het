@@ -1,6 +1,6 @@
-library Ontology/Examples/AAL
+library AAL
 
-from Ontology/Examples/OpenAALOntology get OpenAAL
+from OpenAALOntology get OpenAAL
 
 logic OWL
 
@@ -13,12 +13,12 @@ spec OurAAL =
 
   %% add some classes to OpenAAL; we are still in the OWL logic
   then {
-    Prefix: p: <http://www.openaal.org/SAM/Ontology/person#>
+    Prefix: ht: <http://www.openaal.org/SAM/Ontology/highLevelThing#>
     
     Class: LightSwitch
-      SubClassOf: p:Device
+      SubClassOf: ht:Device
     Class: Freezer
-      SubClassOf: p:Device
+      SubClassOf: ht:Device
   }
 
   %[commented, for now, the propositional part – does not yet work with Hets.
