@@ -1,18 +1,24 @@
+library Ontology/Examples/AAL
+
+from Ontology/Examples/OpenAALOntology get OpenAAL
+
 logic OWL
 
 spec OurAAL =
   %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
   %% TODO specify that application conformance criterion: http://trac.informatik.uni-bremen.de:8080/OntoIOp/ticket/27
-  OpenAALOntology
+  OpenAAL
     %% We rename one OpenAAL class to a more intuitive name.
-    with AP |-> AssistedPerson
+    with p:AP |-> AssistedPerson
 
   %% add some classes to OpenAAL; we are still in the OWL logic
   then {
+    Prefix: p: <http://www.openaal.org/SAM/Ontology/person#>
+    
     Class: LightSwitch
-      SubClassOf: Device
+      SubClassOf: p:Device
     Class: Freezer
-      SubClassOf: Device
+      SubClassOf: p:Device
   }
 
   %[commented, for now, the propositional part – does not yet work with Hets.
@@ -90,13 +96,12 @@ spec OurAAL =
     . (mutually-disjoint equal overlapping bordering disconnected proper_part_of (converse proper_part_of))
     %% if some RCC relations hold (so far it would also work in OWL)
     %% or if there is a door that connects two rooms, then …
-    %% (the latter would only work in OWL if we used an explicit subproperty is-door-of of is-in-room; then we could chain "inverse is-door-of" and "is-door-of", but otherwise we wouldn't be able to restrict the "connecting element" to a Door – am I right? –Christoph)
+    %% (the latter would only work in OWL if we used an explicit subproperty is-door-of of is-in-room; then we could chain "inverse is-door-of" and "is-door-of", but otherwise we wouldn't be able to restrict the "connecting element" to a Door)
     . (forall (a1 a2)
-         (if (or 
-                 (equal a1 a2)
+         (if (or (equal a1 a2)
                  (overlapping a1 a2)
-                 (part_of a1 a2)
-                 (part_of a2 a1)
+                 (proper_part_of a1 a2)
+                 (proper_part_of a2 a1)
                  (exists (door)
                    (and (Door door)
                         (is-in-room door a1)

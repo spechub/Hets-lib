@@ -1,0 +1,1066 @@
+logic OWL
+
+spec OpenAAL =
+%% For now commenting things that don't work in HetCASL
+
+Prefix: l: <http://www.openaal.org/SAM/Ontology/location#>
+Prefix: m: <http://www.openaal.org/SAM/Ontology/message#>
+Prefix: dt: <http://www.openaal.org/SAM/Ontology/datatypes#>
+Prefix: xsp: <http://www.owl-ontologies.com/2005/08/07/xsp.owl#>
+Prefix: xml: <http://www.w3.org/XML/1998/namespace>
+Prefix: rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+Prefix: swrl: <http://www.w3.org/2003/11/swrl#>
+Prefix: p: <http://www.openaal.org/SAM/Ontology/person#>
+Prefix: a: <http://www.openaal.org/SAM/Ontology/appointment#>
+Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+Prefix: swrlb: <http://www.w3.org/2003/11/swrlb#>
+Prefix: owl: <http://www.w3.org/2002/07/owl#>
+Prefix: protege: <http://protege.stanford.edu/plugins/owl/protege#>
+Prefix: lt: <http://www.openaal.org/SAM/Ontology/lowLevelThing#>
+Prefix: ht: <http://www.openaal.org/SAM/Ontology/highLevelThing#>
+Prefix: : <http://www.openaal.org/SAM/Ontology#>
+Prefix: meta: <http://www.openaal.org/SAM/Ontology/meta#>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+
+
+%% Ontology: <http://www.openaal.org/SAM/Ontology>
+
+
+AnnotationProperty: isSingletonClass
+
+    
+AnnotationProperty: rdfs:comment
+
+    
+Datatype: xsd:boolean
+
+    
+Datatype: xsd:string
+
+    
+ObjectProperty: has-coordinates
+
+    Annotations: 
+        rdfs:comment "use this property to indicate than an entity has coordinates. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used."^^xsd:string
+    
+    SubPropertyOf: 
+        has-state
+    
+    
+ObjectProperty: has-x-coordinate
+
+    Annotations: 
+        rdfs:comment "use this property to indicate than an entity has a x coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used."^^xsd:string
+    
+    SubPropertyOf: 
+        has-coordinates
+    
+    Characteristics: 
+        Functional
+    
+    
+ObjectProperty: speaks-language
+
+    SubPropertyOf: 
+        has-person-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        p:Language
+    
+    
+ObjectProperty: has-no-super-prop
+
+    Annotations: 
+        rdfs:comment "//super-property of all properties"^^xsd:string
+    
+    Domain: 
+        meta:OpenAALThing
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: has-reminder-message
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        a:Appointment
+    
+    Range: 
+        m:Reminder
+    
+    
+ObjectProperty: has-temperature-in-celsius
+
+    SubPropertyOf: 
+        has-location-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        l:Location
+    
+    Range: 
+        dt:OpenAAL-Double
+    
+    
+ObjectProperty: has-device-state
+
+    SubPropertyOf: 
+        has-state
+    
+    Domain: 
+        ht:Device
+    
+    Range: 
+        ht:Device-State
+    
+    
+ObjectProperty: detects-fall
+
+    SubPropertyOf: 
+        has-sensor-state
+    
+    Domain: 
+        lt:Fall-Sensor
+    
+    Range: 
+        p:Fall
+    
+    
+ObjectProperty: is-at-location
+
+    SubPropertyOf: 
+        has-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        l:Locatable-Entity
+    
+    Range: 
+        l:Location
+    
+    
+ObjectProperty: has-text
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        m:Text-Message
+    
+    Range: 
+        dt:OpenAAL-String
+    
+    
+ObjectProperty: has-email-address
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        dt:OpenAAL-String
+    
+    
+ObjectProperty: detects-device-state
+
+    SubPropertyOf: 
+        has-sensor-state
+    
+    Domain: 
+        lt:Device-State-Sensor
+    
+    Range: 
+        ht:Device-State
+    
+    
+ObjectProperty: has-power-state
+
+    SubPropertyOf: 
+        has-device-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        ht:Device
+    
+    Range: 
+        ht:Power-State
+    
+    
+ObjectProperty: has-appointment
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        a:Appointment
+    
+    
+ObjectProperty: emits-message
+
+    SubPropertyOf: 
+        has-actuator-state
+    
+    Domain: 
+        lt:Message-Actuator
+    
+    Range: 
+        m:Message
+    
+    
+ObjectProperty: has-sensor-state
+
+    SubPropertyOf: 
+        has-low-level-thing-state
+    
+    Domain: 
+        lt:Sensor
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: has-person-state
+
+    SubPropertyOf: 
+        has-state
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: is-connected-to-device
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        lt:Low-Level-Thing
+    
+    Range: 
+        ht:Device
+    
+    
+ObjectProperty: has-acute-state
+
+    SubPropertyOf: 
+        has-ap-state
+    
+    Domain: 
+        p:AP
+    
+    Range: 
+        p:Acute-State
+    
+    
+ObjectProperty: has-due-state
+
+    SubPropertyOf: 
+        has-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        a:Appointment
+    
+    Range: 
+        a:Due-State
+    
+    
+ObjectProperty: has-due-date
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        a:Appointment
+    
+    Range: 
+        dt:OpenAAL-DateTime
+    
+    
+ObjectProperty: has-low-level-thing-state
+
+    SubPropertyOf: 
+        has-state
+    
+    Domain: 
+        lt:Low-Level-Thing
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: is-worn-by-person
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        lt:Low-Level-Thing
+    
+    Range: 
+        p:Person
+    
+    
+ObjectProperty: changes-device-state
+
+    SubPropertyOf: 
+        has-actuator-state
+    
+    Domain: 
+        lt:Device-State-Actuator
+    
+    Range: 
+        ht:Device-State
+    
+    
+ObjectProperty: has-open-state
+
+    SubPropertyOf: 
+        has-device-state
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        ht:Device
+    
+    Range: 
+        ht:Open-State
+    
+    
+ObjectProperty: has-communicated-message
+
+    SubPropertyOf: 
+        has-person-state
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        m:Message
+    
+    
+ObjectProperty: has-state
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        meta:OpenAALThing
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: consists-of-room-part
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        l:Room
+    
+    Range: 
+        l:Room-Part
+    
+    
+ObjectProperty: has-z-coordinate
+
+    Annotations: 
+        rdfs:comment "use this property to indicate than an entity has a z coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used."^^xsd:string
+    
+    SubPropertyOf: 
+        has-coordinates
+    
+    Characteristics: 
+        Functional
+    
+    
+ObjectProperty: is-in-room
+
+    SubPropertyOf: 
+        is-at-location
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        l:Locatable-Entity
+    
+    Range: 
+        l:Room
+    
+    
+ObjectProperty: has-mobile-phone-number
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        dt:OpenAAL-String
+    
+    
+ObjectProperty: has-path-to-sound-file
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        m:Sound-Message
+    
+    Range: 
+        dt:OpenAAL-String
+    
+    
+ObjectProperty: is-in-activity
+
+    SubPropertyOf: 
+        has-person-state
+    
+    Domain: 
+        p:Person
+    
+    Range: 
+        p:Activity
+    
+    
+ObjectProperty: has-y-coordinate
+
+    Annotations: 
+        rdfs:comment "use this property to indicate than an entity has a y coordinate. To be useful the frame of reference for the coordinates has to be known to the user of the coordinates. Best practise is to use the same frame of reference for all coordinates that are used."^^xsd:string
+    
+    SubPropertyOf: 
+        has-coordinates
+    
+    Characteristics: 
+        Functional
+    
+    
+ObjectProperty: has-location-state
+
+    SubPropertyOf: 
+        has-state
+    
+    Domain: 
+        l:Location
+    
+    
+ObjectProperty: has-actuator-state
+
+    SubPropertyOf: 
+        has-low-level-thing-state
+    
+    Domain: 
+        lt:Actuator
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: detects-message
+
+    SubPropertyOf: 
+        has-sensor-state
+    
+    Domain: 
+        lt:Message-Sensor
+    
+    Range: 
+        m:Answer
+    
+    
+ObjectProperty: has-ap-state
+
+    SubPropertyOf: 
+        has-person-state
+    
+    Domain: 
+        p:AP
+    
+    Range: 
+        meta:OpenAALThing
+    
+    
+ObjectProperty: is-in-room-part
+
+    SubPropertyOf: 
+        is-at-location
+    
+    Characteristics: 
+        Functional
+    
+    Domain: 
+        l:Locatable-Entity
+    
+    Range: 
+        l:Room-Part
+    
+    
+ObjectProperty: is-connected-to-room
+
+    SubPropertyOf: 
+        has-no-super-prop
+    
+    Domain: 
+        l:Room
+    
+    Range: 
+        l:Room
+    
+    
+DataProperty: isSingletonClass
+
+    Range: 
+        xsd:boolean
+    
+    
+Class: m:Notification
+
+    SubClassOf: 
+        m:Information
+    
+    
+Class: l:Location
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: p:Carer
+
+    SubClassOf: 
+        p:Person
+    
+    
+Class: m:Question
+
+    SubClassOf: 
+        m:Message
+    
+    
+Class: dt:OpenAAL-Datatype
+
+    Annotations: 
+        rdfs:comment "{{//parent class for the OPENAAL datatypes that represent special datatypes. Use this class only in Queries."^^xsd:string
+    
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: l:Entity-With-Coordinates
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: m:Message
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: m:Answer
+
+    SubClassOf: 
+        m:Message
+    
+    
+Class: ht:Device
+
+    SubClassOf: 
+        l:Locatable-Entity
+    
+    
+Class: dt:OpenAAL-Double
+
+    Annotations: 
+        rdfs:comment "{{//use this class for representation of java-primitive type double"^^xsd:string
+    
+    SubClassOf: 
+        dt:OpenAAL-Datatype
+    
+    
+Class: p:AP
+
+    SubClassOf: 
+        p:Person
+    
+    
+Class: dt:OpenAAL-Boolean
+
+    Annotations: 
+        rdfs:comment "{{//use this class for representation of java-primitive type boolean"^^xsd:string
+    
+    SubClassOf: 
+        dt:OpenAAL-Datatype
+    
+    
+Class: lt:Actuator
+
+    SubClassOf: 
+        lt:Low-Level-Thing
+    
+    
+Class: lt:Low-Level-Thing
+
+    SubClassOf: 
+        l:Locatable-Entity
+    
+    
+Class: m:Yes-No-Question
+
+    SubClassOf: 
+        m:Question
+    
+    
+Class: ht:Device-State
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: a:Not-Due
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        a:Due-State
+    
+    
+Class: dt:OpenAAL-String
+
+    Annotations: 
+        rdfs:comment "{{//use this class for representation of java type String"^^xsd:string
+    
+    SubClassOf: 
+        dt:OpenAAL-Datatype
+    
+    
+Class: l:Locatable-Entity
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: p:Acute-State
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: a:Personal-Appointment
+
+    SubClassOf: 
+        a:Appointment
+    
+    
+Class: m:Fall-Detected-Message
+
+    SubClassOf: 
+        m:Alarm
+    
+    
+Class: dt:OpenAAL-DateTime
+
+    Annotations: 
+        rdfs:comment "{{//use this class for representation of java type Date"^^xsd:string
+    
+    SubClassOf: 
+        dt:OpenAAL-Datatype
+    
+    
+Class: lt:Message-Actuator
+
+    SubClassOf: 
+        lt:Actuator
+    
+    
+Class: p:Person
+
+    SubClassOf: 
+        l:Locatable-Entity
+    
+    
+Class: m:Confirmation
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        m:Answer
+    
+    
+Class: a:Due
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "Defines that something is Due. Due is a singleton class."^^xsd:string
+    
+    SubClassOf: 
+        a:Due-State
+    
+    
+Class: a:Appointment
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: p:Language
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: p:English
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        p:Language
+    
+    
+Class: m:Alarm
+
+    SubClassOf: 
+        m:Information
+    
+    
+Class: lt:Device-State-Actuator
+
+    SubClassOf: 
+        lt:Actuator
+    
+    
+Class: ht:Touchscreen
+
+    SubClassOf: 
+        ht:Device
+    
+    
+Class: p:German
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        p:Language
+    
+    
+Class: lt:Sensor
+
+    SubClassOf: 
+        lt:Low-Level-Thing
+    
+    
+Class: lt:Device-State-Sensor
+
+    SubClassOf: 
+        lt:Sensor
+    
+    
+Class: ht:Loudspeaker
+
+    SubClassOf: 
+        ht:Device
+    
+    
+Class: m:Reminder
+
+    SubClassOf: 
+        m:Information
+    
+    
+Class: p:Activity
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: lt:Message-Sensor
+
+    SubClassOf: 
+        lt:Sensor
+    
+    
+Class: ht:Open
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        ht:Open-State
+    
+    
+Class: a:Due-State
+
+    Annotations: 
+        rdfs:comment "Due state can either be Due or Not-Due and can be related to an appointment to define whether the appointment is due or not due"^^xsd:string
+    
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: l:Room-Part
+
+    SubClassOf: 
+        l:Location
+    
+    
+Class: m:No
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        m:Answer
+    
+    
+Class: m:Message-Modality
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: dt:OpenAAL-Int
+
+    Annotations: 
+        rdfs:comment "{{//use this class for representation of java-primitive type int"^^xsd:string
+    
+    SubClassOf: 
+        dt:OpenAAL-Datatype
+    
+    
+Class: ht:On
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        ht:Power-State
+    
+    
+Class: l:Kitchen
+
+    Annotations: 
+        rdfs:comment "this is a kitchen"^^xsd:string
+    
+    SubClassOf: 
+        l:Room
+    
+    
+Class: ht:TV
+
+    SubClassOf: 
+        ht:Device
+    
+    
+Class: l:Unspecified-Room
+
+    Annotations: 
+        rdfs:comment "\\Use this if the entity is not in one of the other rooms"^^xsd:string
+    
+    SubClassOf: 
+        l:Room
+    
+    
+Class: l:Bathroom
+
+    SubClassOf: 
+        l:Room
+    
+    
+Class: p:Fall
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        p:Acute-State
+    
+    
+Class: ht:Standby
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        ht:Power-State
+    
+    
+Class: ht:Front-Door
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string
+    
+    SubClassOf: 
+        ht:Door
+    
+    
+Class: ht:Oven
+
+    SubClassOf: 
+        ht:Device
+    
+    
+Class: m:Sound-Message
+
+    SubClassOf: 
+        m:Message-Modality
+    
+    
+Class: ht:Off
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        ht:Power-State
+    
+    
+Class: meta:OntologyStatement
+
+    SubClassOf: 
+        meta:OpenAALThing
+    
+    
+Class: ht:Closed
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        ht:Open-State
+    
+    
+Class: ht:Power-State
+
+    SubClassOf: 
+        ht:Device-State
+    
+    
+Class: ht:Door
+
+    SubClassOf: 
+        ht:Device,
+        l:Entity-With-Coordinates
+    
+    
+Class: ht:Open-State
+
+    SubClassOf: 
+        ht:Device-State
+    
+    
+Class: m:Information
+
+    SubClassOf: 
+        m:Message
+    
+    
+Class: ht:Lamp
+
+    SubClassOf: 
+        ht:Device
+    
+    
+Class: meta:OpenAALThing
+
+    
+Class: l:Room
+
+    Annotations: 
+        rdfs:comment "//simulates a room"^^xsd:string
+    
+    SubClassOf: 
+        l:Location
+    
+    
+Class: m:Text-Message
+
+    SubClassOf: 
+        m:Message-Modality
+    
+    
+Class: m:Yes
+
+    Annotations: 
+        isSingletonClass "true"^^xsd:string,
+        rdfs:comment "nn"^^xsd:string
+    
+    SubClassOf: 
+        m:Answer
+    
+    
+Class: lt:Fall-Sensor
+
+    SubClassOf: 
+        lt:Sensor
+    
+    
+Individual: Person_7
+
+    Types: 
+        p:Person
+    
+    Facts:  
+     speaks-language  English
+    
+    
+Individual: English
+
+    Types: 
+        p:English
+    
+end    
