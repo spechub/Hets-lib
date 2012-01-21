@@ -1,0 +1,8 @@
+(cl:module Partial_Order_From_Strict_Partial_Order
+  (cl:imports Strict_Partial_Order.clif)
+  (cl:comment '(relatively-interprets ??? Partial_Order)')
+  (forall (x y)
+          (cl:comment 'define "less or equal" in terms of "less than"')
+          (iff (le x y)
+               (or (lt x y)
+                   (= x y)))))
