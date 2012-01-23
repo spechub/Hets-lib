@@ -1,13 +1,13 @@
+logic OWL
+
 library AAL
 
-from OpenAALOntology get OpenAAL
-
-logic OWL
+from OpenAALOntology get httpwwwopenaalorgSAMOntology
 
 spec OurAAL =
   %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
   %% TODO specify that application conformance criterion: http://trac.informatik.uni-bremen.de:8080/OntoIOp/ticket/27
-  OpenAAL
+  httpwwwopenaalorgSAMOntology
     %% We rename one OpenAAL class to a more intuitive name.
     with p:AP |-> AssistedPerson
 
