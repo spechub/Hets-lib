@@ -1,0 +1,34 @@
+logic CommonLogic
+
+spec Strict_Partial_Order =
+. (forall (x)
+          (le x x))
+. (forall (x y)
+          (if (and (le x y)
+                   (le y x))
+              (= x y)))
+. (forall (x y z)
+          (if (and (le x y)
+                   (le y z))
+              (le x z)))
+end
+
+spec Partial_Order_From_Strict_Partial_Order =
+    Strict_Partial_Order
+then
+%% define "less or equal" in terms of "less than"'
+. (forall (x y)
+          (iff (le x y)
+               (or (lt x y)
+                   (= x y))))
+end
+
+spec Partial_Order =
+%% 'define "less or equal" in terms of "less than"'
+. (forall (x y)
+          (iff (le x y)
+               (or (lt x y)
+                   (= x y))))
+end
+
+view v : Partial_Order to Partial_Order_From_Strict_Partial_Order 

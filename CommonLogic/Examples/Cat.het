@@ -1,0 +1,17 @@
+library Cat
+
+logic CommonLogic
+
+spec Pred = 
+. (P x)
+  (and (P x) (Q y))
+
+spec Cat =
+. (or (Cat x) (Mat y))
+  (not (On x y))
+  (if (P x) (Q x))
+
+spec PetHappy =
+Pred and Cat then
+. (exists (z) (and (Pet x) (Happy z) (Attr x z)))
+end
