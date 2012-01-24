@@ -1,0 +1,20 @@
+spec TBox =
+  logic OWL : {
+    Prefix: ex: <http://example.org/ontology#>
+    ObjectProperty: ex:hasTopping
+    Individual: ex:Tomato
+    Individual: ex:Mozzarella
+  }
+spec ABox =
+  TBox
+  then 
+  logic RDF : {
+  %% %% I would actually like to say the following:
+  %% @prefix ex: <http://example.org/ontology#>
+  %% ex:ProductWithEAN4001724819806
+  %%   ex:hasTopping ex:Tomato, ex:Mozzarella .
+  <http://example.org/ontology#ProductWithEAN4001724819806>
+    <http://example.org/ontology#hasTopping> <http://example.org/ontology#Tomato> .
+  <http://example.org/ontology#ProductWithEAN4001724819806>
+    <http://example.org/ontology#hasTopping> <http://example.org/ontology#Mozzarella> .
+  }
