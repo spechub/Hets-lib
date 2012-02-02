@@ -3,11 +3,11 @@ library COLORE-RelativeInterpretation
 logic CommonLogic
 
 %% this assumes that Hets-lib is part of the HETS_LIB path environment variable
-from CommonLogic/colore/lat/booleanlattice get BooleanLattice
-from CommonLogic/colore/ca/booleancontactalgebra get BooleanContactAlgebra
+from CommonLogic/colore/lat/booleanlattice get booleanlattice
+from CommonLogic/colore/ca/booleancontactalgebra get booleancontactalgebra
 
 spec AtomlessBooleanLattice =
-  BooleanLattice
+  booleanlattice
 then
 . (forall (x)
 	  (exists (y)
@@ -16,7 +16,7 @@ then
 end
 
 spec RegionBooleanContactAlgebra =
-  BooleanContactAlgebra
+  booleancontactalgebra
 then
 . (forall (x)     
           (if (and (not (= x 0)) 
