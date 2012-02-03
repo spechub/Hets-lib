@@ -5,7 +5,7 @@ logic CommonLogic
 %% This assumes that Hets-lib is part of the HETS_LIB path environment variable.
 %% Additionally, all subdirectories of Hets-lib/CommonLogic/colore2 need to be part of HETS_LIB.
 %% I may provide a shell script for that. –Christoph
-%% See http://trac.informatik.uni-bremen.de:8080/hets/ticket/994 for details.
+%% TODO This could possibly be improved; see http://trac.informatik.uni-bremen.de:8080/hets/ticket/994 for details.
 from CommonLogic/colore2/approximate_point/ap_interval get ap_interval
 from CommonLogic/colore2/approximate_point/ap_rational get ap_rational
 from CommonLogic/colore2/approximate_point/ap_root get ap_root
@@ -24,6 +24,8 @@ view v1_1_1 : { ap_root with
                 precedes |-> precedence ,
                 finer |-> inclusion
               } to periods_root
+%% TODO figure out how to make explicit that this is "definably equivalent"
+
 %% > • periods
 %% > – nononconservative extension of: periods root
 %%     ^^^^^
@@ -36,6 +38,7 @@ view v1_1_3 : { ap_root with
                 precedes |-> precedence ,
                 finer |-> inclusion
               } to periods
+%% TODO figure out how to make explicit that this is a "relative interpretation"
 %% TODO This is the same symbol map as in v1_1_1; discuss how symbol maps can be shared (see e-mail)
    
 %% • periods_mixed
