@@ -2,13 +2,12 @@
 
 <?xml-stylesheet type="text/xsl" href="/colore/COLORE.xsl"?>
 
-
 <cl-module 	xmlns:cl="http://stl.mie.utoronto.ca/ColoreSchema" 
 					xmlns:time="http://stl.mie.utoronto.ca/Colore/time/" 
 					xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
 					xmlns="http://stl.mie.utoronto.ca/ColoreSchema">
 
-	<moduleDefinition module="approximate-dense-point" axiomFile="approximate-dense-point.clif" />
+	<moduleDefinition module="approximate-point" axiomFile="approximate-point.clif" />
 
 	<head>
 		<version>1.0</version>
@@ -25,17 +24,17 @@
 	</head>
 
 	<lexicon>
-		<definedLexicalSymbol symbol="meets" type="relation" arity="2"/>
-	</lexicon>
-
-	<inheritedLexicon>
-		<primitiveLexicalSymbol symbol="precedes" type="relation" arity="1"/>
+		<primitiveLexicalSymbol symbol="precedes" type="relation" arity="2"/>
 		<primitiveLexicalSymbol symbol="finer" type="relation" arity="2"/>
 		<definedLexicalSymbol symbol="ncdf" type="relation" arity="2"/>
-	</inheritedLexicon>
+		<primitiveLexicalSymbol symbol="moment" type="relation" arity="1"/>
+	</lexicon>
+
+	<inheritedLexicon/>
 
 	<directRelations>
-		<extends extensionType="non-conservative">time:approximate-point</extends>
+		<extendedBy extensionType="non-conservative">time:approximate-dense-point</extendedBy>
+		<extendedBy extensionType="non-conservative">time:approximate-discrete-point</extendedBy>
 	</directRelations>
 
 	<inheritedRelations>
