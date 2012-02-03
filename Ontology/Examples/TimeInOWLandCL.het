@@ -1,0 +1,31 @@
+logic OWL
+spec TimeOWL =
+  Class: TemporalEntity
+  ObjectProperty: before
+    Domain: TemporalEntity
+    Range: TemporalEntity
+    Characteristics: Transitive
+end
+
+logic CommonLogic
+spec TimeCL =
+%% CommonLogic equivalent of Domain and Range above
+. (forall (t1 t2)
+          (if (before t1 t2)
+              (and (TemporalEntity t1)
+                   (TemporalEntity t2))))
+%% CommonLogic equivalent of Transitive above
+. (forall (t1 t2 t3)
+          (if (and (before t1 t2)
+                   (before t2 t3))
+              (before t1 t3)))
+%% A new axiom that cannot be expressed in OWL
+. (forall (t1 t2)
+          (or (before t1 t2)
+              (before t2 t1)
+              (= t1 t2)))
+end
+
+view TimeOWLtoCL : { TimeOWL with logic OWL22CommonLogic } to TimeCL
+%% As OWL22CommonLogic is the default translation,
+%% it is optional to specify it.
