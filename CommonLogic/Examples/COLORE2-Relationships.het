@@ -1,0 +1,27 @@
+library COLORE2-Relationships
+
+logic CommonLogic
+
+%% This assumes that Hets-lib is part of the HETS_LIB path environment variable.
+%% Additionally, all subdirectories of Hets-lib/CommonLogic/colore2 need to be part of HETS_LIB.
+%% I may provide a shell script for that. –Christoph
+from CommonLogic/colore2/approximate_point/ap_root get ap_root
+from CommonLogic/colore2/periods/periods get periods
+from CommonLogic/colore2/periods/periods_root get periods_root
+
+%% • periods root
+%% – definably equivalent to: ap root
+%% • periods
+%% – nononconservative extension of: periods root
+%% – relatively interprets: ap root
+view v : ap_root to periods
+%% • mixed periods
+%% – nononconservative extension of: periods root
+%% – definably equivalent to: ap interval
+%% – relatively interprets: ap
+%% • periods over integers
+%% – nononconservative extension of: mixed periods
+%% • periods over rationals
+%% – nononconservative extension of: mixed periods
+%% – definably equivalent to: ap rational
+
