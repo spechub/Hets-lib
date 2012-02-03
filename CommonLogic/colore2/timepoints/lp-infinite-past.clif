@@ -1,0 +1,12 @@
+
+(cl-module lp-infinite-past
+
+(cl-imports lp-ordering)
+
+(forall (x)
+	(if	(timepoint x) 
+		(exists (y)
+			(and	(timepoint y)
+				(before y x)))))
+
+)
