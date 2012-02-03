@@ -2,12 +2,12 @@ library AAL
 
 logic OWL
 
-from OpenAALOntology get httpwwwdfkideskshetsontologyunamed
+from OpenAALOntology get httpwwwdfkideskshetsontologyunamed |-> OpenAAL
 
 spec OurAAL =
   %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
   %% TODO specify that application conformance criterion: http://trac.informatik.uni-bremen.de:8080/OntoIOp/ticket/27
-  httpwwwdfkideskshetsontologyunamed
+  OpenAAL
     %% We rename one OpenAAL class to a more intuitive name.
     with <http://www.openaal.org/SAM/Ontology/person#AP> |-> AssistedPerson
 
@@ -45,9 +45,9 @@ spec OurAAL =
   %[%% So we might have an OWL model with individuals Room1 and Room2, where Room1 is an instance of light_on, person_in_room, and dark_outside.  Room2 might be an instance of person_in_room, but not (by negative assertions) of dark_outsite and not of light_on.  ]%
   %[%% From that we'd like to obtain a propositional model by picking one specific individual from the OWL model, which represents the particular light switch we are interested in.  (Does that statement make sense? –Christoph)  E.g. by picking Room2, we'd obtain a propositional model { light_on = false, person_in_room = true, dark_outside = false }.]%
   %[with]%
-  %[  %% We would like to express: The propositional variable person_in_room is true (for one particular room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".]%
+  %[  %% We would like to express: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".]%
   %[  person_in_room |-> Room that inverse is-in-room AssistedPerson min 1,]%
-  %[  %% The propositional variable light_on is true (for one particular room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.]%
+  %[  %% The propositional variable light_on is true (for one arbitrary but fixed room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.]%
   %[  light_on |-> Room that]%
   %[                 inverse is-in-room value]%
   %[                   not (LightSwitch value has-power-state Off)]%
