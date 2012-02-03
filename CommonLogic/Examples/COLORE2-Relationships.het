@@ -5,16 +5,32 @@ logic CommonLogic
 %% This assumes that Hets-lib is part of the HETS_LIB path environment variable.
 %% Additionally, all subdirectories of Hets-lib/CommonLogic/colore2 need to be part of HETS_LIB.
 %% I may provide a shell script for that. –Christoph
+%% See http://trac.informatik.uni-bremen.de:8080/hets/ticket/994 for details.
 from CommonLogic/colore2/approximate_point/ap_root get ap_root
 from CommonLogic/colore2/periods/periods get periods
 from CommonLogic/colore2/periods/periods_root get periods_root
 
-%% • periods root
-%% – definably equivalent to: ap root
-%% • periods
-%% – nononconservative extension of: periods root
-%% – relatively interprets: ap root
-view v : ap_root to periods
+%% Comment lines prefixed with "> " quote from Michael's document
+
+%% > 1. Periods Hierarchy
+%% > 1.1 Theories.
+%% > • periods_root
+%% > – definably equivalent to: ap_root
+view v1_1_1 : { ap_root with
+                precedes |-> precedence ,
+                finer |-> inclusion ,
+                %% note: This is apparently required, and it requires both ap_root and periods_root to be implemented as cl-modules, not as cl-texts.
+                ap_root |-> periods_root
+              } to periods_root
+%% > • periods
+%% > – nononconservative extension of: periods root
+%%     ^^^^^
+%%     this should be just "non"
+%% > – relatively interprets: ap root
+%[view v : { ap_root with]%
+%[           precedes |-> precedence ,]%
+%[           finer |-> inclusion]%
+%[           } to periods]%
 %% • mixed periods
 %% – nononconservative extension of: periods root
 %% – definably equivalent to: ap interval
@@ -24,4 +40,11 @@ view v : ap_root to periods
 %% • periods over rationals
 %% – nononconservative extension of: mixed periods
 %% – definably equivalent to: ap rational
+
+%% 1.2. Translation Definitions.
+%% Definition 1. The translation definitions Σp ap for the interpretation of theories
+%% in HApproximate P oint to theories in HP eriods:
+%% (forall (x y) (iff (precedence x y) (precedes x y)))
+%% (forall (x y) (iff (inclusion x y) (finer x y)))
+%% (forall (x y) (iff (overlaps x y) (ncdf x y)))
 
