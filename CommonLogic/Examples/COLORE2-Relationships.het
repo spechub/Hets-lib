@@ -20,11 +20,16 @@ from CommonLogic/colore2/periods/periods_root get periods_root
 %% > 1.1 Theories.
 %% > • periods_root
 %% > – definably equivalent to: ap_root
-view v1_1_1 : { ap_root with
+view v1_1_1 : ap_root to periods_root = 
                 precedes |-> precedence ,
                 finer |-> inclusion
-              } to periods_root
-%% TODO figure out how to make explicit that this is "definably equivalent"
+end
+
+view v1_1_2 : periods_root to ap_root = 
+                precedence |-> precedes ,
+                inclusion |-> finer
+end
+
 
 %% > • periods
 %% > – nononconservative extension of: periods root
