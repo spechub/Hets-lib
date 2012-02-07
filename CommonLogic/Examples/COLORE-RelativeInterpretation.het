@@ -3,27 +3,27 @@ library COLORE-RelativeInterpretation
 logic CommonLogic
 
 %% this assumes that Hets-lib is part of the HETS_LIB path environment variable
-from CommonLogic/colore/lat/BooleanLattice get BooleanLattice
-from CommonLogic/colore/ca/BooleanContactAlgebra get BooleanContactAlgebra
+from CommonLogic/colore/lattices/boolean_lattice get boolean_lattice
+%[from CommonLogic/colore/contact_algebras get boolean_contact_algebra]%
 
-spec AtomlessBooleanLattice =
-  BooleanLattice
-then
-. (forall (x)
-	  (exists (y)
-		  (and (not (= y 0))
-		       (leq y x))))
-end
+%[spec atomless_boolean_lattice =]%
+%[  boolean_lattice]%
+%[then]%
+%[. (forall (x)]%
+%[	  (exists (y)]%
+%[		  (and (not (= y 0))]%
+%[		       (leq y x))))]%
+%[end]%
 
-spec RegionBooleanContactAlgebra =
-  BooleanContactAlgebra
-then
-. (forall (x)     
-          (if (and (not (= x 0)) 
-                   (not (= x 1))) 
-              (exists (y)
-                      (and (complement x y)
-                           (C x y)))))
-end
+%[spec region_boolean_contact_algebra =]%
+%[  boolean_contact_algebra]%
+%[then]%
+%[. (forall (x)     ]%
+%[          (if (and (not (= x 0)) ]%
+%[                   (not (= x 1))) ]%
+%[              (exists (y)]%
+%[                      (and (complement x y)]%
+%[                           (C x y)))))]%
+%[end]%
 
-view v : AtomlessBooleanLattice to RegionBooleanContactAlgebra
+%[view v : atomless_boolean_lattice to region_boolean_contact_algebra]%
