@@ -28,9 +28,9 @@ spec OurAAL =
   }
   with PropToOWL %% non-default Propositional to OWL translation
   then logic OWL : {
-    %% Under the given translation, this means: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".
+    %% Under the given translation, this means: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room min 1 AssistedPerson".
     EquivalentClasses: person_in_room,
-      Room that inverse is-in-room AssistedPerson min 1
+      Room that inverse is-in-room min 1 AssistedPerson
     %% Under the given translation, this means: The propositional variable light_on is true (for one arbitrary but fixed room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.
     EquivalentClasses: light_on,
       Room that inverse is-in-room only
