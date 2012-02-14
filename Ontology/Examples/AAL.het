@@ -2,7 +2,7 @@ library AAL
 
 logic OWL
 
-from OpenAALOntology get httpwwwdfkideskshetsontologyunamed |-> OpenAAL
+from OpenAALOntology get httpwwwopenaalorgSAMOntology |-> OpenAAL
 
 spec OurAAL =
   %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
@@ -21,36 +21,21 @@ spec OurAAL =
       SubClassOf: ht:Device
   }
 
-  %[commented, for now, the propositional part – does not yet work with Hets.
-
-  I (Christoph) will file some tickets about keywords not yet supported:
-    * that
-    * inverse
-  ]%
-
-  %[%% a simple propositional light switch ontology]%
-  %[then logic Propositional : {]%
-  %[  props light_on, person_in_room, dark_outside]%
-  %[  . light_on <=> person_in_room /\ dark_outside]%
-  %[}]%
-  %[%% TODO the default translation of Propositional to OWL translates propositional variables into "one concrete OWL instance", whereas we would actually, and most reasonably in this use case, like to translate the propositional axiom into an OWL class axiom:]%
-  %[%% ]%
-  %[%% Class: light_on        % think: "a room where light is switched on"]%
-  %[%% Class: person_in_room  % think: "a room in which there is a person"]%
-  %[%% Class: dark_outside    % think: "a room whose outside is dark"]%
-  %[%% EquivalentClasses: light_on, person_in_room and dark_outside]%
-  %[%% ]%
-  %[%% … but that gets us in trouble wrt. translating models across logics, as in an OWL model for that axiom, we could have multiple different individuals, some being an instance of a class, others not being an instance of a class – how would an OWL model translate to a propositional model?]%
-  %[%% An OWL model for the above TBox can contain many individuals, and that's intended in this use case: We would like to be able to interpret the propositional axiom differently for different rooms.  In the same OWL model it should be possible to have rooms where light is switched on, and rooms where light is switched off.]%
-  %[%% So we might have an OWL model with individuals Room1 and Room2, where Room1 is an instance of light_on, person_in_room, and dark_outside.  Room2 might be an instance of person_in_room, but not (by negative assertions) of dark_outsite and not of light_on.  ]%
-  %[%% From that we'd like to obtain a propositional model by picking one specific individual from the OWL model, which represents the particular light switch we are interested in.  (Does that statement make sense? –Christoph)  E.g. by picking Room2, we'd obtain a propositional model { light_on = false, person_in_room = true, dark_outside = false }.]%
-  %[with]%
-  %[  %% We would like to express: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".]%
-  %[  person_in_room |-> Room that inverse is-in-room AssistedPerson min 1,]%
-  %[  %% The propositional variable light_on is true (for one arbitrary but fixed room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.]%
-  %[  light_on |-> Room that]%
-  %[                 inverse is-in-room value]%
-  %[                   not (LightSwitch value has-power-state Off)]%
+  %% a simple propositional light switch ontology
+  then logic Propositional : {
+    props light_on, person_in_room, dark_outside
+    . light_on <=> person_in_room /\ dark_outside
+  }
+  with PropToOWL %% non-default Propositional to OWL translation
+  then logic OWL : {
+    %% Under the given translation, this means: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room AssistedPerson min 1".
+    EquivalentClasses: person_in_room,
+      Room that inverse is-in-room AssistedPerson min 1
+    %% Under the given translation, this means: The propositional variable light_on is true (for one arbitrary but fixed room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.
+    EquivalentClasses: light_on,
+      Room that inverse is-in-room only
+        (not (LightSwitch that has-power-state value Off))
+  }
 
   %% a simplified remake of the well-known Pizza ontology (http://owl.cs.manchester.ac.uk/tutorials/protegeowltutorial/)
   then logic OWL : {
