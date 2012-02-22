@@ -3,19 +3,19 @@ library SpecialSymbols
 spec sp1 =
   sort s
   op __*__ : s * s -> s
-  op __*__ : s × s -> s
-  forall x:s . x × x = x
+  op __*__ : s Ã— s -> s
+  forall x:s . x Ã— x = x
 end
 
 spec sp2 =
   sort s
-  op __×__ : s * s -> s
-  op __×*×__ : s * s -> s
-  · ¬ forall x:s . x * x = x
-  . not forall x:s . x ×*× x = x
+  op __Ã—__ : s * s -> s
+  op __Ã—*Ã—__ : s * s -> s
+  Â· Â¬ forall x:s . x * x = x
+  . not forall x:s . x Ã—*Ã— x = x
 end
 
-unit spec usp1 = sp1 × sp1 -> sp1
+unit spec usp1 = sp1 Ã— sp1 -> sp1
 end
 
 unit spec usp2 = sp2 * sp2 -> sp2

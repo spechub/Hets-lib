@@ -56,7 +56,7 @@ spec sp =
   . true %(and this
            also goes
            along several lines!
-           and with special stuff: -*/\&=<>ÓÔÕÖØÙÚÛÜİßàáâBCDEFGHIJKLM!% )%
+           and with special stuff: -*/\&=<>Ã“Ã”Ã•Ã–Ã˜Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢BCDEFGHIJKLM!% )%
 end
 
 %% Comments
@@ -80,16 +80,16 @@ spec Lex =
         abcdefghijlklmnopqrstuvwxyz,
         ABCDEFGHIJKLMONOPQRSTUVWXYZ,
         x0123456789,
-        ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÑÒÓÔÕÖØÙÚÛÜİßàáâãäåæçèéêëìíîïñòóôõöøùúûüıÿ,
+        Ã€ÃÃ‚ÃƒÃ„Ã…Ã†Ã‡ÃˆÃ‰ÃŠÃ‹ÃŒÃÃÃÃ‘Ã’Ã“Ã”Ã•Ã–Ã˜Ã™ÃšÃ›ÃœÃÃŸÃ Ã¡Ã¢Ã£Ã¤Ã¥Ã¦Ã§Ã¨Ã©ÃªÃ«Ã¬Ã­Ã®Ã¯Ã±Ã²Ã³Ã´ÃµÃ¶Ã¸Ã¹ÃºÃ»Ã¼Ã½Ã¿,
         abc, a_b_c, ab2, ab_2_3_a, a', a'b''2        %[WORDS]%
         %[.abc, .a_b_c, .ab2, .ab_2_3_a, .a', .a'b''2,  DOT-WORDS]%
-  op    __+-*/\&=<>!?:.$@#^~¡¿×÷£©±¶§¹²³·¢¬°|__ : s*s->s          %% NO-BRACKET-SIGNs
+  op    __+-*/\&=<>!?:.$@#^~Â¡Â¿Ã—Ã·Â£Â©Â±Â¶Â§Â¹Â²Â³Â·Â¢Â¬Â°|__ : s*s->s          %% NO-BRACKET-SIGNs
   ops 'a','"','\\','\n','\000','\255',
       '\x00','\xFF','\o000','\o377',
       '^','1','2','3','4','5','6','7','8','9','0',
-      'ß','!','§','$','&','/','(',')','=','?','\\' : s;    %%characters
-  %[. def "^1234567890ß!§$&/()=?"; ]%
-        %[ strings ´°%\\\" does not work yet!]%
+      'ÃŸ','!','Â§','$','&','/','(',')','=','?','\\' : s;    %%characters
+  %[. def "^1234567890ÃŸ!Â§$&/()=?"; ]%
+        %[ strings Â´Â°%\\\" does not work yet!]%
   ops 1,2,3,4 : s;
       -__ : s->s;
       __@@__,__exp__,__frac__ : s*s->s;
