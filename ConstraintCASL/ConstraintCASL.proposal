@@ -7,7 +7,7 @@ spec RCC8Base =
      preds __DC__,__EC__,__PO__,__NTPP__,__TPP__:Elem * Elem;
 	   %( -- infix Notationen zur Beschreibung der 
 		 Basisrelationen zugelassen; 
-              -- auch mehrsortige Relationen, zB Punkt-Interval-Kalk¸l;
+              -- auch mehrsortige Relationen, zB Punkt-Interval-Kalk√ºl;
               -- Relationen beliebiger Stellenzahl 
 	   )%
       
@@ -17,9 +17,9 @@ spec RCC8Base =
 
 	  __EQ__: Elem*Elem, id
           %(eq besagt: phi(x) => phi(y) fuer alle Formeln der Sprache, d.h. 
-		Substituierbarkeit des Identischen; wird benˆtigt, da wir
-		nicht unbedingt davon ausgehen kˆnnen,
-		dass die Identit‰t zum Alphabet der Sprache gehˆrt)% 
+		Substituierbarkeit des Identischen; wird ben√∂tigt, da wir
+		nicht unbedingt davon ausgehen k√∂nnen,
+		dass die Identit√§t zum Alphabet der Sprache geh√∂rt)% 
 
 	%%  __?__: Elem*Elem, universal    Logische
      vars x,y,z:Elem
@@ -108,7 +108,7 @@ end
 
 
 
-%(Beispiel f¸r eine def. Erweiterung:)%
+%(Beispiel f√ºr eine def. Erweiterung:)%
 
 spec ExtRCC8ByRelations[RCC8] = %def
      preds __PP__: Elem * Elem;
@@ -132,13 +132,13 @@ spec CSPExample1[RCC8] =
      . a DC,EC,EQ b \/ b TPP,TPPi c /\ a EQ b
 then %implies
     %% dies entspricht der Entailment Relation
-    %% SAT w¸rde Consistency checking entsprechen.
+    %% SAT w√ºrde Consistency checking entsprechen.
     ....
 end
 
 
-%( Wir kˆnnten dann von einem Constraint-Solver oder nach trivialer
-   ‹bersetzung nach FO mit SPASS pr¸fen lassen, ob dies widerspruchsfrei ist. 
+%( Wir k√∂nnten dann von einem Constraint-Solver oder nach trivialer
+   √úbersetzung nach FO mit SPASS pr√ºfen lassen, ob dies widerspruchsfrei ist. 
 )%
 
 
@@ -244,14 +244,14 @@ Language:
 %%For QCSP(??)		  ex x phi, fa x phi ???
 
 Hier schlage ich vor(?):    Set of relations form a Boolean algebra
-			 relation algebras? nein, hˆchstens als partielle Funktion falls
+			 relation algebras? nein, h√∂chstens als partielle Funktion falls
 			 Komposition mengentheoretisch interpretiert.
   
 Models: 
 =======
 Standardmodelle wie in FOL. 
 
-Sehr spezifische Modelle, auch Modelle hˆherer Ordnung, ueber views bzw.
+Sehr spezifische Modelle, auch Modelle h√∂herer Ordnung, ueber views bzw.
 Logik-Projektionen erhaltbar.
 
 Satisfaction: 
@@ -263,15 +263,15 @@ Idee ist:
 =========
 Mit jeder CSP-Sprache muss man auch eine Modellklasse spezifieren.
 Und die Interpretation der Relationen festlegen.  Falls man Komposition hinzunimmt, 
-dann gibt es mehrere Mˆglichkeiten, Interpretation der Komposition festzulegen.
+dann gibt es mehrere M√∂glichkeiten, Interpretation der Komposition festzulegen.
 
-a) Vielleicht irgendwie minimal (d.h axiomatisch ¸ber Eigenschaften)????
+a) Vielleicht irgendwie minimal (d.h axiomatisch √ºber Eigenschaften)????
 b> Sprachl.: partielle Funktion; semant.: mengentheoret. Komposition
 c) Sprachl.: totale Funktion;    semant.: weak compositions, d.h. wir 
 					   ordnen jeder sprachlichen 
 					   Composition die Interpretation der 
-					   st‰rksten Relation zu, die die mengentheoret.
-					   Komposition dieser Relationen enth‰lt.
+					   st√§rksten Relation zu, die die mengentheoret.
+					   Komposition dieser Relationen enth√§lt.
 		 
 
 
