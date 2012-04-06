@@ -1,7 +1,7 @@
 library Basic/SimpleDatatypes
 version 1.0
-%authors: T. Mossakowski, M. Roggenbach, L. Schroeder
-%date: 18 June 2002
+%authors : T. Mossakowski , M. Roggenbach , L. Schroeder
+%date : 18 June 2002
 
 %{ This library provides the unstructured datatype Boolean.
 The Booleans are shown to be a Boolean algebra and then
@@ -10,17 +10,17 @@ enriched with the usual Boolean algebra operations. }%
 %prec {__Or__} < {__And__}
 
 
-from Basic/RelationsAndOrders get BooleanAlgebra, ExtBooleanAlgebra
+from Basic/RelationsAndOrders get BooleanAlgebra , ExtBooleanAlgebra
 
 spec Boolean = %mono
 
   free type Boolean ::= True | False
-  %%capital True and False, since true and false are predefined
+  %%capital True and False , since true and false are predefined
 
   ops   Not__ :           Boolean -> Boolean;
-        __And__, __Or__ : Boolean * Boolean -> Boolean
+        __And__ , __Or__ : Boolean * Boolean -> Boolean
 
-  forall x,y:Boolean
+  forall x , y : Boolean
   . Not(False) = True                %(Not_False)%
   . Not(True) = False                %(Not_True)%
   . False And False = False          %(And_def1)%
@@ -30,16 +30,16 @@ spec Boolean = %mono
   . x Or y = Not(Not(x) And Not(y))  %(Or_def)%
 end
 
-view BooleanAlgebra_in_Boolean : BooleanAlgebra to Boolean =
-     sort Elem |-> Boolean,
-     ops 0 |-> False,
-         1 |-> True,
-         __ cap __ |-> __And__,
+view BooleanAlgebra_in_Boolean : BooleanAlgebra to Boolean = 
+     sort Elem |-> Boolean , 
+     ops 0 |-> False , 
+         1 |-> True , 
+         __ cap __ |-> __And__ , 
          __ cup __ |-> __Or__
 end
 
 %{ Get derived operations for Boolean Algebras }%
 spec RichBoolean = %mono
   ExtBooleanAlgebra [view BooleanAlgebra_in_Boolean]
-  with pred __ <= __, op  compl__
+  with pred __ <= __ , op  compl__
 end

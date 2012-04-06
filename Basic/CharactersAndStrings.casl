@@ -1,15 +1,15 @@
 library Basic/CharactersAndStrings
 version 1.0
-%authors: T. Mossakowski, M. Roggenbach, L. Schroeder
-%date: 18 June 2002
+%authors : T. Mossakowski , M. Roggenbach , L. Schroeder
+%date : 18 June 2002
 
 %{ This library provides the datatypes characters and strings.
 The characters are defined to be the subset 0..255
-of the natural numbers, and then constants for different
-representations (ASCII, decimal, octal, hexadecimal)
+of the natural numbers , and then constants for different
+representations (ASCII , decimal , octal , hexadecimal)
 are introduced. }%
 
-%string emptyString, __:@:__
+%string emptyString , __ : @ : __
 
 from Basic/Numbers get Nat
 
@@ -21,14 +21,14 @@ spec Char = %mono
 then %mono
 
   %% characters are generated from natural numbers 0..255
-  type Char ::= chr(ord:Nat)?
-  forall n:Nat; c:Char
+  type Char ::= chr(ord : Nat)?
+  forall n : Nat; c : Char
   . def chr(n) <=> n <= 255    %(chr_dom)%
-  . chr(ord(c))=c              %(chr_ord_inverse)%
+  . chr(ord(c)) = c              %(chr_ord_inverse)%
 
 
 
-  %% definition of individual characters by decimal codes:
+  %% definition of individual characters by decimal codes : 
   ops  '\000' : Char = chr(0);              %(slash_000)%
        '\001' : Char = chr(1);              %(slash_001)%
        '\002' : Char = chr(2);              %(slash_002)%
@@ -300,7 +300,7 @@ then %mono
        ')' : Char = '\041';             %(printable_41)%
        '*' : Char = '\042';             %(printable_42)%
        '+' : Char = '\043';             %(printable_43)%
-       ',' : Char = '\044';             %(printable_44)%
+       ' , ' : Char = '\044';             %(printable_44)%
        '-' : Char = '\045';             %(printable_45)%
        '.' : Char = '\046';             %(printable_46)%
        '/' : Char = '\047';             %(printable_47)%
@@ -314,10 +314,10 @@ then %mono
        '7' : Char = '\055';             %(printable_55)%
        '8' : Char = '\056';             %(printable_56)%
        '9' : Char = '\057';             %(printable_57)%
-       ':' : Char = '\058';             %(printable_58)%
+       ' : ' : Char = '\058';             %(printable_58)%
        ';' : Char = '\059';             %(printable_59)%
        '<' : Char = '\060';             %(printable_60)%
-       '=' : Char = '\061';             %(printable_61)%
+       ' = ' : Char = '\061';             %(printable_61)%
        '>' : Char = '\062';             %(printable_62)%
        '?' : Char = '\063';             %(printable_63)%
        '@' : Char = '\064';             %(printable_64)%
@@ -384,7 +384,7 @@ then %mono
        '}' : Char = '\125' ;            %(printable_125)%
        '~' : Char = '\126' ;            %(printable_126)%
 
-       %% Iso-Latin-1 character number 160 is displayed as space,
+       %% Iso-Latin-1 character number 160 is displayed as space , 
        %% but internally is different from character 32 (space)
        ' ' : Char = '\160' ;            %(printable_160)%
        '¡' : Char = '\161' ;            %(printable_161)%
@@ -484,19 +484,19 @@ then %mono
        'ÿ' : Char = '\255' ;            %(printable_255)%
 
   preds
-    isLetter(c:Char) <=> (
+    isLetter(c : Char) <=> (
       (ord('A') <= ord(c) /\ ord(c) <= ord('Z')) \/
       (ord('a') <= ord(c) /\ ord(c) <= ord('z')) );     %(isLetter_def)%
-    isDigit(c:Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9');
+    isDigit(c : Char) <=> ord('0') <= ord(c) /\ ord(c) <= ord('9');
                                                          %(isDigit_def)%
-    isPrintable(c:Char) <=> (
+    isPrintable(c : Char) <=> (
       (ord(' ') <= ord(c) /\ ord(c) <= ord('~') ) \/
       (ord(' ') <= ord(c) /\ ord(c) <= ord('ÿ')) )   %(isPrintable_def)%
 
 
 
-  %% definition of characters by octal codes, i.e. '\o ppp',
-  %% where p in {0,1,...,7} :
+  %% definition of characters by octal codes , i.e. '\o ppp' , 
+  %% where p in {0 , 1 , ... , 7} : 
   ops  '\o000' : Char = '\000';             %(slash_o000)%
        '\o001' : Char = '\001';             %(slash_o001)%
        '\o002' : Char = '\002';             %(slash_o002)%
@@ -754,8 +754,8 @@ then %mono
        '\o376' : Char = '\254';             %(slash_o376)%
        '\o377' : Char = '\255';             %(slash_o377)%
 
-     %% definition of characters by hexadecimal codes, i.e. '\xhh',
-     %% where h in {0,1,..., F} :
+     %% definition of characters by hexadecimal codes , i.e. '\xhh' , 
+     %% where h in {0 , 1 , ... , F} : 
      ops
        '\x00' : Char = '\000';             %(slash_x00)%
        '\x01' : Char = '\001';             %(slash_x01)%
@@ -1015,47 +1015,47 @@ then %mono
        '\xFF' : Char = '\255';             %(slash_xFF)%
 
 
-     %% special characters:
-  ops  NUL:Char = '\000';             %(NUL_def)%
-       SOH:Char = '\001';             %(SOH_def)%
-       SYX:Char = '\002';             %(SYX_def)%
-       ETX:Char = '\003';             %(ETX_def)%
-       EOT:Char = '\004';             %(EOT_def)%
-       ENQ:Char = '\005';             %(ENQ_def)%
-       ACK:Char = '\006';             %(ACK_def)%
-       BEL:Char = '\007';             %(BEL_def)%
-       BS:Char = '\008';              %(BS_def)%
-       HT:Char = '\009';              %(HT_def)%
-       LF:Char = '\010';              %(LF_def)%
-       VT:Char = '\011';              %(VT_def)%
-       FF:Char = '\012';              %(FF_def)%
-       CR:Char = '\013';              %(CR_def)%
-       SO:Char = '\014';              %(SO_def)%
-       SI:Char = '\015';              %(SI_def)%
-       DLE:Char = '\016';             %(DLE_def)%
-       DC1:Char = '\017';             %(DC1_def)%
-       DC2:Char = '\018';             %(DC2_def)%
-       DC3:Char = '\019';             %(DC3_def)%
-       DC4:Char = '\020';             %(DC4_def)%
-       NAK:Char = '\021';             %(NAK_def)%
-       SYN:Char = '\022';             %(SYN_def)%
-       ETB:Char = '\023';             %(ETB_def)%
-       CAN:Char = '\024';             %(CAN_def)%
-       EM:Char = '\025';              %(EM_def)%
-       SUB:Char = '\026';             %(SUB_def)%
-       ESC:Char = '\027';             %(ESC_def)%
-       FS:Char = '\028';              %(FS_def)%
-       GS:Char = '\029';              %(GS_def)%
-       RS:Char = '\030';              %(RS_def)%
-       US:Char = '\031';              %(US_def)%
-       SP:Char = '\032';              %(SP_def)%
-       DEL:Char = '\127';             %(DEL_def)%
+     %% special characters : 
+  ops  NUL : Char = '\000';             %(NUL_def)%
+       SOH : Char = '\001';             %(SOH_def)%
+       SYX : Char = '\002';             %(SYX_def)%
+       ETX : Char = '\003';             %(ETX_def)%
+       EOT : Char = '\004';             %(EOT_def)%
+       ENQ : Char = '\005';             %(ENQ_def)%
+       ACK : Char = '\006';             %(ACK_def)%
+       BEL : Char = '\007';             %(BEL_def)%
+       BS : Char = '\008';              %(BS_def)%
+       HT : Char = '\009';              %(HT_def)%
+       LF : Char = '\010';              %(LF_def)%
+       VT : Char = '\011';              %(VT_def)%
+       FF : Char = '\012';              %(FF_def)%
+       CR : Char = '\013';              %(CR_def)%
+       SO : Char = '\014';              %(SO_def)%
+       SI : Char = '\015';              %(SI_def)%
+       DLE : Char = '\016';             %(DLE_def)%
+       DC1 : Char = '\017';             %(DC1_def)%
+       DC2 : Char = '\018';             %(DC2_def)%
+       DC3 : Char = '\019';             %(DC3_def)%
+       DC4 : Char = '\020';             %(DC4_def)%
+       NAK : Char = '\021';             %(NAK_def)%
+       SYN : Char = '\022';             %(SYN_def)%
+       ETB : Char = '\023';             %(ETB_def)%
+       CAN : Char = '\024';             %(CAN_def)%
+       EM : Char = '\025';              %(EM_def)%
+       SUB : Char = '\026';             %(SUB_def)%
+       ESC : Char = '\027';             %(ESC_def)%
+       FS : Char = '\028';              %(FS_def)%
+       GS : Char = '\029';              %(GS_def)%
+       RS : Char = '\030';              %(RS_def)%
+       US : Char = '\031';              %(US_def)%
+       SP : Char = '\032';              %(SP_def)%
+       DEL : Char = '\127';             %(DEL_def)%
 
-  %% alternative names for special characters:
-  ops  NL:Char = LF;                  %(NL_def)%
-       NP:Char = FF;                  %(NP_def)%
+  %% alternative names for special characters : 
+  ops  NL : Char = LF;                  %(NL_def)%
+       NP : Char = FF;                  %(NP_def)%
 
-  %% character constants:
+  %% character constants : 
   ops  '\n' : Char = NL;              %(slash_n)%
        '\t' : Char = HT;              %(slash_t)%
        '\v' : Char = VT;              %(slash_v)%
@@ -1068,7 +1068,7 @@ end
 
 spec String = %mono
  List [Char fit sort Elem |-> Char]
- with sort List[Char] |-> String,
-      ops  []         |-> emptyString,
-           __::__     |-> __:@:__
+ with sort List[Char] |-> String , 
+      ops  []         |-> emptyString , 
+           __ :: __     |-> __ : @ : __
 end
