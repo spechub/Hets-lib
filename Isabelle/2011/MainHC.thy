@@ -5,7 +5,7 @@ begin
 -- "we need full proof object support to use translate_thm later on"
 ML {* proofs := 2 *}
 
-types 'a partial = "'a option"
+type_synonym 'a partial = "'a option"
 
 (* negation of is_none *)
 primrec defOp :: "'a partial => bool"
@@ -51,7 +51,7 @@ where "mapSnd f p == (fst p, f (snd p))"
 definition ifImplOp :: "bool * bool => bool"
 where "ifImplOp p == snd p --> fst p"
 
-definition existEqualOp :: "'a partial => 'a partial => bool" 
+definition existEqualOp :: "'a partial => 'a partial => bool"
   ("(_ =e=/ _)" [50, 51] 50)
 where "existEqualOp a b == defOp a & defOp b & makeTotal a = makeTotal b"
 
@@ -178,7 +178,7 @@ done
 (*
    Identities added by Ewaryst Schulz
 *)
-(* 
+(*
 lemma defOp_implies_makePartial:
 "defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
 -- "for isabelle 2009"
@@ -189,8 +189,8 @@ lemma defOp_implies_makePartial:
   sorry
 *)
 
-axioms
-
+axiomatization
+where
 defOp_implies_makePartial:
 "defOp(x :: 'a partial) ==> (EX (y :: 'a). x = makePartial y)"
 
@@ -199,12 +199,11 @@ defOp_implies_makePartial:
 lemma partial_identity: "!!x. makeTotal(makePartial(x)) = x"
   by (simp add: makeTotal_def makePartial_def)
 
-consts preDefOp :: "'a partial => bool"
-
-axioms
-
+axiomatization
+preDefOp :: "'a partial => bool"
+where
 preDefOp_atom[simp]: "preDefOp a = defOp a"
-
+and
 preDefOp_lift[simp]:
 "preDefOp (lift2partial f a) = (defOp (lift2partial f a) & preDefOp a)"
 
