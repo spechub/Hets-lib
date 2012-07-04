@@ -4,10 +4,12 @@ structure Header :
     end =
 struct
 
-val thmlist = ref [""];
+val thmlist = Unsynchronized.ref [""];
+
+val explode = (map str) o String.explode;
 
 fun record1 name ctxt =
-    let val thm = PureThy.get_thm ctxt name
+    let val thm = Global_Theory.get_thm ctxt name
         val thy = ctxt |> Context.theory_name
         val thm_name = Thm.get_name_hint thm
         fun incl f = String.isPrefix (thy ^ ".") f andalso
