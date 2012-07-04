@@ -1,18 +1,17 @@
 theory HsHOL
-imports "$ISABELLE_HOME/src/HOL/Complex/Complex"
+imports "$ISABELLE_HOME/src/HOL/Complex_Main"
 begin
 
-types
-'a maybeT = "'a option"
-'a listT  = "'a list"
+type_synonym 'a maybeT = "'a option"
+type_synonym 'a listT  = "'a list"
 
 datatype sOrdering = LT | EQ | GT
 
-axclass Bounded < type
-axclass Eq < type
-axclass Num < Eq
-axclass Ord < Eq
-axclass Enum < type
+class Bounded
+class Eq
+class Num = Eq
+class Ord = Eq
+class Enum
 
 instance unit :: Eq ..
 instance int :: Eq ..
@@ -22,25 +21,24 @@ instance char :: Eq ..
 instance int :: Num ..
 
 instance list :: (Eq) Eq ..
-instance "*" :: (Eq, Eq) Eq .. 
-instance "+" :: (Eq,Eq) Eq .. 
 instance option :: (Eq) Eq ..
 
 consts
 eqH :: "('a::Eq) => 'a => bool"
 neqH :: "('a::Eq) => 'a => bool"
 
-defs
+primrec eqHList where
+  "eqHList [] (ys:: ('a::Eq) list) = (ys = [])"
+| "eqHList (x#xs) (ys:: ('a::Eq) list) = ((eqH x (hd ys)) & (eqHList xs (tl ys)))" 
+
+defs (overloaded)
+list_eqH_def: "eqH (x:: ('a::Eq) list) y == eqHList x y"
 bool_eqH_def: "eqH (x::bool) y == x = y" 
 bool_neqH_def: "neqH (x::bool) y == ~eqH x y"
 int_eqH_def: "eqH (x::int) y == x = y" 
 int_neqH_def: "neqH (x::int) y == ~eqH x y"
 
-primrec
-"eqH [] (ys:: ('a::Eq) list) = (ys = [])"
-"eqH (x#xs) (ys:: ('a::Eq) list) = ((eqH x (hd ys)) & (eqH xs (tl ys)))" 
-
-defs
+defs (overloaded)
 list_neqH_def: "neqH (x::('a::Eq) list) y == ~eqH x y"
 
 consts 
