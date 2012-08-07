@@ -5,13 +5,8 @@ begin
 type_synonym 'a maybeT = "'a option"
 type_synonym 'a listT  = "'a list"
 
-datatype sOrdering = LT | EQ | GT
-
-class Bounded
-class Eq
-class Num = Eq
-class Ord = Eq
-class Enum
+class Eq = equal
+class Num = zero + one + plus + minus + uminus + times + ord + abs + sgn
 
 instance unit :: Eq ..
 instance int :: Eq ..
@@ -27,20 +22,13 @@ consts
 eqH :: "('a::Eq) => 'a => bool"
 neqH :: "('a::Eq) => 'a => bool"
 
-primrec eqHList where
-  "eqHList [] (ys:: ('a::Eq) list) = (ys = [])"
-| "eqHList (x#xs) (ys:: ('a::Eq) list) = ((eqH x (hd ys)) & (eqHList xs (tl ys)))" 
+defs
+eqH_def: "eqH x y == x = y"
+neqH_def: "neqH x y == ~(x = y)"
 
-defs (overloaded)
-list_eqH_def: "eqH (x:: ('a::Eq) list) y == eqHList x y"
-bool_eqH_def: "eqH (x::bool) y == x = y" 
-bool_neqH_def: "neqH (x::bool) y == ~eqH x y"
-int_eqH_def: "eqH (x::int) y == x = y" 
-int_neqH_def: "neqH (x::int) y == ~eqH x y"
-
-defs (overloaded)
-list_neqH_def: "neqH (x::('a::Eq) list) y == ~eqH x y"
-
+(*
+ Maybe give definitions obtained through class Num?
+*)
 consts 
 addH   :: "'a::Num => 'a => 'a"
 diffH  :: "'a::Num => 'a => 'a"
