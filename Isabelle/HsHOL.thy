@@ -18,14 +18,6 @@ instance int :: Num ..
 instance list :: (Eq) Eq ..
 instance option :: (Eq) Eq ..
 
-consts
-eqH :: "('a::Eq) => 'a => bool"
-neqH :: "('a::Eq) => 'a => bool"
-
-defs
-eqH_def: "eqH x y == x = y"
-neqH_def: "neqH x y == ~(x = y)"
-
 (*
  Maybe give definitions obtained through class Num?
 *)
