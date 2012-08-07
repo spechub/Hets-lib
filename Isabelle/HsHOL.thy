@@ -22,16 +22,10 @@ instance option :: (Eq) Eq ..
  Maybe give definitions obtained through class Num?
 *)
 consts 
-addH   :: "'a::Num => 'a => 'a"
-diffH  :: "'a::Num => 'a => 'a"
-prodH   :: "'a::Num => 'a => 'a"
 negateH :: "'a::Num => 'a"
 absH    :: "'a::Num => 'a"
 signumH :: "'a::Num => 'a"
 fromIntegerH :: "int => 'a::Num"
-zeroH        :: "'a::Num"
-oneH         :: "'a::Num"
-twoH         :: "'a::Num"
 
 consts
 eqHI :: "('a::Eq) => 'a => bool"
