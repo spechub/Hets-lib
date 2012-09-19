@@ -512,28 +512,21 @@ spec DRAfPreModel  =
                                         fit sort Elem |-> Dipol]
 then
      ops sese: Rel;
-         inv: Rel -> Rel;
-         inv: BaseRel -> BaseRel
+         inv__ : BaseRel -> BaseRel
+
 then
      ops __cmps__ : Rel * Rel -> Rel;
          __cmps__ : BaseRel * BaseRel -> Rel
 end
 
 
-%( Error DRA.het:523.1-531.1, No symbol mapping found for:
-        { op id |-> op sese }
-        sjw: keine Ahnung
-
 view DRAfPreModel_induces_DRAfRelationAlgebra :
-     { DRAf hide ops __+__,__-__,{},{__}
-            hide preds __eps__,__isSubsetOf__,isNonEmpty }
+     { DRAf hide preds __eps__ }
 to
      DRAfPreModel
 =
      op id |-> sese
-
 end
-)%
 
 %{ The next step would be the geometric interpretation of the base relations
 to get a concrete model:
