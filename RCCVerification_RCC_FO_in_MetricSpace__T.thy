@@ -69,17 +69,24 @@ sqrt__X :: "Real => Real partial" ("(sqrt/ _)" [56] 56)
 supX1 :: "Real => Real => Real partial" ("sup''/'(_,/ _')" [3,3] 999)
 supX2 :: "(Real => bool) => Real partial" ("sup''''/'(_')" [3] 999)
 
-axioms
+axiomatization
+where
 Ax1 [rule_format] : "ALL (x :: ClosedBall). nonempty(x) = (x C x)"
 
+axiomatization
+where
 C_def [rule_format] :
 "ALL (x :: ClosedBall).
  ALL (y :: ClosedBall). (x C y) = (EX (s :: S). rep x s & rep y s)"
 
+axiomatization
+where
 EMSCB_center [rule_format] :
 "ALL (r :: Real).
  ALL (x :: S). r >' 0'' --> rep (closedBall(x, r)) x"
 
+axiomatization
+where
 EMSCB_closed [rule_format] :
 "ALL (a :: ClosedBall).
  ALL (x :: S).
@@ -87,236 +94,362 @@ EMSCB_closed [rule_format] :
  (EX (r :: Real).
   ALL (y :: S). ~ (rep (closedBall(x, r)) y & ~ rep a y))"
 
+axiomatization
+where
 EMSCB_rep_pos [rule_format] :
 "ALL (r :: Real).
  ALL (x :: S).
  ALL (y :: S).
  r >' 0'' --> rep (closedBall(x, r)) y = (d(x, y) <=' r)"
 
+axiomatization
+where
 EMSCB_rep_0 [rule_format] :
 "ALL (r :: Real).
  ALL (x :: S).
  ALL (y :: S). ~ r >' 0'' --> ~ rep (closedBall(x, r)) y"
 
+axiomatization
+where
 EMSCB_rep_inj [rule_format] :
 "ALL (a :: ClosedBall).
  ALL (b :: ClosedBall). rep a = rep b --> a = b"
 
+axiomatization
+where
 Ax4 [rule_format] :
 "ALL (a :: ClosedBall).
  EX (z :: S). EX (t :: Real). a = closedBall(z, t)"
 
+axiomatization
+where
 MS_pos [rule_format] :
 "ALL (x :: S). ALL (y :: S). 0'' <=' d(x, y)"
 
+axiomatization
+where
 MS_zero [rule_format] : "ALL (x :: S). d(x, x) = 0''"
 
+axiomatization
+where
 MS_pos_definite [rule_format] :
 "ALL (x :: S). ALL (y :: S). d(x, y) = 0'' = (x = y)"
 
+axiomatization
+where
 MS_symm [rule_format] :
 "ALL (x :: S). ALL (y :: S). d(x, y) = d(y, x)"
 
+axiomatization
+where
 MS_triangle [rule_format] :
 "ALL (x :: S).
  ALL (y :: S). ALL (z :: S). d(x, z) <=' d(x, y) +' d(y, z)"
 
+axiomatization
+where
 one_greater_zero [rule_format] : "1' >' 0''"
 
+axiomatization
+where
 zero_leq_one [rule_format] : "0'' <=' 1'"
 
+axiomatization
+where
 half_gt_zero [rule_format] :
 "ALL (r :: Real). r >' 0'' --> half(r) >' 0''"
 
+axiomatization
+where
 half_plus_minus [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real). r <=' s --> s +' half(r -' s) <=' s"
 
+axiomatization
+where
 add_monotone [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
  ALL (c :: Real).
  ALL (e :: Real). a <=' b & c <=' e --> a +' c <=' b +' e"
 
+axiomatization
+where
 sub_leq [rule_format] :
 "ALL (a :: Real). ALL (b :: Real). ~ a <=' b --> a -' b >' 0''"
 
+axiomatization
+where
 half_leq [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real). a <=' half(a -' b) +' b --> a <=' b"
 
+axiomatization
+where
 half_leq_zero [rule_format] :
 "ALL (r :: Real). 0'' <=' r --> 0'' <=' half(r)"
 
+axiomatization
+where
 comm_add [rule_format] :
 "ALL (a :: Real). ALL (b :: Real). a +' b = b +' a"
 
+axiomatization
+where
 Real_half_plus [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real). half(r +' s) = half(r) +' half(s)"
 
+axiomatization
+where
 Real_half_minus [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real). half(r -' s) = half(r) -' half(s)"
 
+axiomatization
+where
 Real_minus_half [rule_format] :
 "ALL (r :: Real). r -' half(r) = half(r)"
 
+axiomatization
+where
 Real_half_monot [rule_format] :
 "ALL (r :: Real).
  ALL (s :: Real). (half(r) <=' half(s)) = (r <=' s)"
 
+axiomatization
+where
 Real_abs_def [rule_format] :
 "ALL (r :: Real). | r | = max'(r, -' r)"
 
+axiomatization
+where
 Real_sqr_def [rule_format] : "ALL (r :: Real). sqr r = r *' r"
 
+axiomatization
+where
 Real_sqrt_dom [rule_format] :
 "ALL (r :: Real). defOp (sqrt r) = (r >=' 0'')"
 
+axiomatization
+where
 Real_sqrt_idef [rule_format] :
 "ALL (r :: Real). sqrt sqr r = makePartial ( | r | )"
 
+axiomatization
+where
 Real_2_def [rule_format] : "2' = 1' +' 1'"
 
+axiomatization
+where
 Real_minus_def [rule_format] :
 "ALL (r :: Real). ALL (r' :: Real). r -' r' = r +' -' r'"
 
+axiomatization
+where
 Real_divide_dom [rule_format] :
 "ALL (r :: Real). ~ defOp (r /' 0'')"
 
+axiomatization
+where
 Real_divide_idef [rule_format] :
 "ALL (r :: Real).
  ALL (r' :: Real).
  ALL (r'' :: Real).
  (~ r' = 0'' --> r /' r' = makePartial r'') = (r'' *' r' = r)"
 
+axiomatization
+where
 Real_half_idef [rule_format] : "ALL (r :: Real). 2' *' half(r) = r"
 
+axiomatization
+where
 Real_ub_def [rule_format] :
 "ALL (M :: Real => bool).
  ALL (r :: Real). (M <=_3 r) = (ALL (s :: Real). M s --> s <=' r)"
 
+axiomatization
+where
 Real_lb_def [rule_format] :
 "ALL (M :: Real => bool).
  ALL (r :: Real). (r <='' M) = (ALL (s :: Real). M s --> r <=' s)"
 
+axiomatization
+where
 Real_inf_def [rule_format] :
 "ALL (M :: Real => bool).
  ALL (r :: Real).
  inf''(M) = makePartial r =
  (r <='' M & (ALL (s :: Real). s <='' M --> s <=' r))"
 
+axiomatization
+where
 Real_sup_def [rule_format] :
 "ALL (M :: Real => bool).
  ALL (r :: Real).
  sup''(M) = makePartial r =
  (M <=_3 r & (ALL (s :: Real). M <=_3 s --> r <=' s))"
 
+axiomatization
+where
 Real_isBounded_def [rule_format] :
 "ALL (M :: Real => bool).
  isBounded(M) =
  (EX (ub :: Real). EX (lb :: Real). lb <='' M & M <=_3 ub)"
 
+axiomatization
+where
 completeness [rule_format] :
 "ALL (M :: Real => bool).
  isBounded(M) --> defOp (inf''(M)) & defOp (sup''(M))"
 
+axiomatization
+where
 Real_inj_0 [rule_format] : "inj'(0') = 0''"
 
+axiomatization
+where
 Real_inj_suc [rule_format] :
 "ALL (X_n :: X_Nat). inj'(suc(X_n)) = 1' +' inj'(X_n)"
 
+axiomatization
+where
 Real_archimedian [rule_format] :
 "ALL (r :: Real). EX (X_n :: X_Nat). r <=' inj'(X_n)"
 
+axiomatization
+where
 FWO_plus_right [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real). ALL (c :: Real). b <=' c --> a +' b <=' a +' c"
 
+axiomatization
+where
 FWO_times_right [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
  ALL (c :: Real). b <=' c & 0'' <=' a --> a *' b <=' a *' c"
 
+axiomatization
+where
 FWO_plus [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
  ALL (c :: Real).
  ALL (X_d :: Real). a <=' c & b <=' X_d --> a +' b <=' c +' X_d"
 
+axiomatization
+where
 FWO_plus_left [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real). ALL (c :: Real). a <=' b --> a +' c <=' b +' c"
 
+axiomatization
+where
 FWO_times_left [rule_format] :
 "ALL (a :: Real).
  ALL (b :: Real).
  ALL (c :: Real). a <=' b & 0'' <=' c --> a *' c <=' b *' c"
 
+axiomatization
+where
 dichotomy_TotalOrder [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). x <=' y | y <=' x"
 
+axiomatization
+where
 antisym [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). x <=' y & y <=' x --> x = y"
 
+axiomatization
+where
 trans [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real). ALL (z :: Real). x <=' y & y <=' z --> x <=' z"
 
+axiomatization
+where
 refl [rule_format] : "ALL (x :: Real). x <=' x"
 
+axiomatization
+where
 Field_unary_minus_idef [rule_format] :
 "ALL (x :: Real). -' x +' x = 0''"
 
+axiomatization
+where
 min_inf_relation [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real). makePartial (min'(x, y)) = inf'(x, y)"
 
+axiomatization
+where
 max_sup_relation [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real). makePartial (max'(x, y)) = sup'(x, y)"
 
+axiomatization
+where
 ga_comm_min [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). min'(x, y) = min'(y, x)"
 
+axiomatization
+where
 ga_comm_max [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). max'(x, y) = max'(y, x)"
 
+axiomatization
+where
 ga_assoc_min [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real). min'(min'(x, y), z) = min'(x, min'(y, z))"
 
+axiomatization
+where
 ga_assoc_max [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real). max'(max'(x, y), z) = max'(x, max'(y, z))"
 
+axiomatization
+where
 ga_left_comm_min [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real). min'(x, min'(y, z)) = min'(y, min'(x, z))"
 
+axiomatization
+where
 ga_left_comm_max [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
  ALL (z :: Real). max'(x, max'(y, z)) = max'(y, max'(x, z))"
 
+axiomatization
+where
 min_def_ExtTotalOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real). min'(x, y) = (if x <=' y then x else y)"
 
+axiomatization
+where
 max_def_ExtTotalOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real). max'(x, y) = (if x <=' y then y else x)"
 
+axiomatization
+where
 ga_comm_inf [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). inf'(x, y) = inf'(y, x)"
 
+axiomatization
+where
 ga_comm_sup [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). sup'(x, y) = sup'(y, x)"
 
+axiomatization
+where
 inf_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
@@ -325,6 +458,8 @@ inf_def_ExtPartialOrder [rule_format] :
  (z <=' x &
   z <=' y & (ALL (t :: Real). t <=' x & t <=' y --> t <=' z))"
 
+axiomatization
+where
 sup_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real).
  ALL (y :: Real).
@@ -333,12 +468,18 @@ sup_def_ExtPartialOrder [rule_format] :
  (x <=' z &
   y <=' z & (ALL (t :: Real). x <=' t & y <=' t --> z <=' t))"
 
+axiomatization
+where
 geq_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). (x >=' y) = (y <=' x)"
 
+axiomatization
+where
 less_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). (x <' y) = (x <=' y & ~ x = y)"
 
+axiomatization
+where
 greater_def_ExtPartialOrder [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). (x >' y) = (y <' x)"
 
