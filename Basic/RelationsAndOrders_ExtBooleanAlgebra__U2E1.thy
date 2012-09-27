@@ -112,8 +112,6 @@ done
 lemmas ga_assoc___cap__rev =
   ga_assoc___cap__[THEN spec, THEN spec, THEN spec, THEN sym]
 
-thm ga_assoc___cap__
-
 lemmas ga_assoc___cup__rev =
   ga_assoc___cup__[THEN spec, THEN spec, THEN spec, THEN sym]
 
