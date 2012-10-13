@@ -1,0 +1,2386 @@
+
+(forall (s occ)
+   (iff (form:subactivity-occurrence-neq s occ)
+        (and (psl:subactivity_occurrence s occ)
+             (not (= s occSuper)))))
+
+(forall (f s)
+   (iff (form:priorA f s)
+        (exists (sRoot)
+           (and (psl:root_occ sRoot s)
+                (psl:prior f sRoot)))))
+
+(forall (f s)
+   (iff (form:holdsA f s)
+        (exists (sLeaf)
+           (and (psl:leaf_occ sLeaf s)
+                (psl:holds f sLeaf)))))
+
+(forall (s1 s2 a)
+   (iff (form:min-precedesA s1 s2 a)
+        (exists (s1Leaf s2Root)
+           (and (psl:leaf_occ s1Leaf s1)
+                (psl:root_occ s2Root s2)
+                (psl:min_precedes s1Leaf s2Root a)))))
+
+/* 10.3  Structure
+This sub clause covers the structural aspects of the base semantics.
+
+10.3.1  Primitive Types
+This sub clause covers primitive types in bUML: Boolean, UnlimitedNatural, Integer, and String, as well as other kinds of 
+numbers and sequences introduced for the formalization.
+
+10.3.1.1 Boolean
+*/
+
+(forall (x)
+   (if (buml:Boolean x)
+       (or (= x form:true)
+           (= x form:false))))
+
+(not (= form:true form:false))
+(forall (x y)
+   (if (form:not x y)       
+       (and (buml:Boolean x)
+            (buml:Boolean y))))
+
+(forall (x y)
+   (if (form:not x y)
+       (not (= x y))))
+(forall (x y z)
+   (if (form:and x y z)       
+       (and (buml:Boolean x)
+
+            (buml:Boolean y)
+            (buml:Boolean z))))
+
+(forall (x y z)
+   (if (form:and x y z)
+       (and (iff (= z form:false)
+                 (or (= x form:false)
+                     (= y form:false)))
+            (iff (= z form:true)
+                 (and (= x form:true)
+                      (= y form:true))))))
+/*
+10.3.1.2 Numbers
+The add-one relation.
+*/
+
+(forall (x y)
+   (if (form:add-one x y)
+       (and (form:Number x)
+            (form:Number y))))
+
+(forall (x y1 y2)
+   (if (and (form:add-one x y1)
+            (form:add-one x y2))
+       (= y1 y2)))
+
+(forall (x)
+   (if (form:Number x)
+       (exists (y)
+          (form:add-one x y))))
+/* The add relation. */
+(forall (x y z)
+   (if (form:add x y z)
+       (and (form:Number x)
+            (form:Number y)
+            (form:Number z))))
+
+(forall (x y z1 z2)
+   (if (and (form:add x y z1)
+            (form:add x y z2))
+       (= z1 z2)))
+
+(forall (x y)
+   (if (and (form:Number x)
+            (form:Number y))
+       (exists (z)
+          (form:add x y z))))
+
+(forall (y y1 x z1 z)
+  (if (and (form:add-one y y1)
+           (form:add x y1 z1)
+           (form:add x y z))
+      (form:add-one z z1)))
+/* Basic numeric constants. */
+(form:Number form:0)
+(form:add-one form:0 form:1)
+(form:add-one form:-1 form:0)
+/* The less-than relation. */
+(forall (x y)
+   (if (form:less-than x y)
+       (and (form:Number x)
+            (form:Number y))))
+
+(forall (x y)
+   (iff (form:less-than x y)
+        (exists (z)
+           (and (form:Number z)
+                (not (= z form:0))
+                (form:add x z y)))))
+/* Specialized numbers: whole, natural, unlimited natural, and integers. */
+(forall (x)
+   (iff (form:WholeNumber x)
+        (or (= x form:1)
+            (exists (y)
+               (and (form:WholeNumber y)
+                    (form:add-one y x))))))
+
+(forall (x)
+   (iff (form:NaturalNumber x)
+        (or (= x form:0)
+            (form:WholeNumber x))))
+
+(forall (x)
+   (if (buml:UnlimitedNatural x)
+       (or (form:NaturalNumber x)
+           (= x buml:*))))
+(forall (x)
+   (if (form:NaturalNumber x)
+       (buml:Integer x)))
+
+(forall (x)
+   (iff (buml:Integer x)
+        (or (= x form:-1)
+            (exists (y)
+               (and (buml:Integer y)
+                    (or (form:add-one y x)
+                        (form:add-one x y)))))))
+(forall (x y)
+   (iff (form:negate x y)
+        (form:add x y form:0)))
+
+/* 10.3.1.3 Sequences 
+   Sequences are a finite series of things, where the same thing can appear more than once in the series. The serial aspect is  
+   represented by positions, each of which identifies exactly one thing. This thing can be the same as ones identified by  
+   other positions in the series. */
+
+/* The in-sequence relation links sequences to their postions. */
+(forall (s pt)
+   (if (form:in-sequence s pt)
+       (and (form:Sequence s)
+            (form:Position pt))))
+
+(forall (s1 s2 pt)
+   (if (and (form:in-sequence s1 pt)
+            (form:in-sequence s2 pt))
+       (= s1 s2)))
+
+(forall (pt)
+   (if (form:Position pt)
+       (exists (s)
+          (form:in-sequence s pt))))
+/* The before-in-sequence relation serializes positions. */
+(forall (s pt1 pt2)
+   (if (form:before-in-sequence s pt1 pt2)
+       (and (buml:Sequence s)
+            (form:Position pt1)
+            (form:Position pt2))))
+
+(forall (s pt1 pt2)
+   (if (form:before-in-sequence s pt1 pt2)
+       (and (form:in-sequence s pt1)
+            (form:in-sequence s pt2))))
+
+(not (exists (s pt1 pt2)
+   (and (form:before-in-sequence s pt1 pt2)
+        (form:before-in-sequence s pt2 pt1))))
+
+(forall (s pt1 pt2 pt11 pt22)
+   (if (and (form:before-in-sequence s pt1 pt2)
+            (form:before-in-sequence s pt11 pt22))
+       (iff (= pt1 pt11)
+            (= pt2 pt22))))
+
+(forall (s)
+   (if (form:Sequence s)
+       (if (exists (pt)
+              (form:in-sequence s pt))
+           (and (exists (pt1)
+                   (not (exists (pt2)
+                           (form:before-in-sequence s pt1 pt2))))
+                (exists (pt2)
+                   (not (exists (pt1)
+                           (form:before-in-sequence s pt1 pt2))))))))
+(forall (s pt1 pt11)
+   (if (and (form:Sequence s)
+            (not (exists (pt2)
+                    (form:before-in-sequence s pt1 pt2)))
+            (not (exists (pt2)
+                    (form:before-in-sequence s pt11 pt2))))
+       (= pt1 pt11)))
+
+(forall (s)
+   (if (form:Sequence s)
+
+       (exists (pt2)
+          (not (exists (pt1)
+                  (form:before-in-sequence s pt1 pt2))))))
+
+(forall (s pt2 pt22)
+   (if (and (form:Sequence s)
+            (not (exists (pt1)
+                    (form:before-in-sequence s pt1 pt2)))
+            (not (exists (pt1)
+                    (form:before-in-sequence s pt1 pt22))))
+       (= pt2 pt22)))
+/* An empty sequence has no positions. */
+(forall (s)
+   (if (form:empty-sequence s)
+       (form:Sequence s)))
+
+(forall (s)
+   (if (form:Sequence s)
+       (iff (form:empty-sequence s)
+            (not (exists (pt)
+                    (form:in-sequence s pt))))))
+/* The position-count relation links positions to how far they are along in the sequence. */
+(forall (s pt n)
+   (if (form:position-count s pt n)
+       (and (form:Sequence s)
+            (form:Position pt)
+            (buml:UnlimtedNatural n))))
+
+(forall (s pt n1 n2)
+   (if (and (form:position-count s pt n1)
+            (form:position-count s pt n2))
+       (= n1 n2)))
+
+(forall (s pt)
+   (if (form:in-sequence s pt)
+       (exists (n)
+          (form:position-count s pt n))))
+
+(forall (s pt2)
+   (if (and (form:Sequence s)
+            (not (exists (pt1)
+                    (form:before-in-sequence s pt1 pt2))))
+       (form:position-count s pt2 form:1)))
+
+(forall (s pt1 n1 pt2 n2)
+   (if (and (form:position-count s pt1 n1)
+            (form:before-in-sequence s pt1 pt2)
+            (form:position-count s pt2 n2))
+       (form:add-one n1 n2)))
+/* The sequence-length relation links sequences to how many positions they have. */
+(forall (s n)
+    (if (form:sequence-length s n)
+        (and (form:Sequence s)
+             (buml:UnlimtedNatural n))))
+
+(forall (s n)
+   (iff (form:sequence-length s n)
+        (or (and (form:empty-sequence s)
+                 (= n form:0))
+            (exists (pt1)
+               (and (not (exists (pt2)
+                            (form:before-in-sequence s pt1 pt2)))
+                    (form:position-count s pt1 n))))))
+/* The in-position relation links positions to things they identify.  Each position identifies  
+   exactly one thing. */
+(forall (pt x)
+    (if (form:in-position pt x)
+         (form:Position pt)))
+
+ (forall (pt x1 x2)
+    (if (and (form:in-position pt x1)
+             (form:in-position pt x2))
+        (= x1 x2)))
+
+ (forall (pt)
+   (if (form:Position pt)
+       (exists (x)
+           (form:in-position pt x))))
+/* The in-position-count relation links sequences to a thing based on how far along the  
+   position is in the sequence. */
+(forall (s n x)
+   (if (form:in-position-count s n x)
+       (and (buml:Sequence s)
+            (form:NaturalNumber n))))
+
+(forall (s n x)
+   (iff (form:in-position-count s n x)
+        (exists (pt)
+           (and (form:in-position pt x)
+                (form:position-count s pt n)))))
+/* The same-sequence relation is true for sequences that identify the same things in the same  
+   order. */
+(forall (s1 s2)
+   (if (form:same-sequence s1 s2)
+       (and (form:Sequence s1)
+            (form:Sequence s2))))
+
+(forall (s1 s2)
+   (iff (form:same-sequence s1 s2)
+        (forall (x n)
+           (iff (form:in-position-count s1 n x)
+                (form:in-position-count s2 n x)))))
+
+/* 10.3.1.4 Strings 
+   Strings are sequences of characters. */
+(forall (s)
+    (if (buml:String s)
+
+        (form:Sequence s)))
+(forall (s pt x)
+    (if (and (buml:String s)
+             (form:in-sequence s pt)
+             (form:in-position pt x))
+        (form:Character x)))
+/* The string-index-character relation links strings to a character based on how far along the  
+   position is in the sequence. */
+(forall (s n ch)
+   (if (form:string-index-character s n ch)
+       (and (buml:String s)
+            (form:WholeNumber n)
+            (form:Character ch))))
+
+(forall (s n ch)
+   (if (buml:String s)
+       (iff (form:string-index-char s n ch)
+            (form:in-position-count s n ch))))
+/* The string-length relation links strings to how many positions they have. */
+(forall (s n)
+   (if (form:string-length s n)
+       (and (buml:String s)
+            (form:NaturalNumber n))))
+
+(forall (s)
+   (if (buml:String s)
+       (forall (n)
+          (iff (form:string-length s n)
+               (form:sequence-length s n)))))
+/* The same-string relation is true for string that identify the same characters in the same  
+   order.  */
+(forall (s1 s2)
+   (if (form:same-string s1 s2)
+       (and (buml:String s1)
+            (buml:String s2))))
+
+(forall (s1 s2)
+   (if (and (buml:String s1)
+            (buml:String s2))
+       (iff (form:same-string s1 s2)
+            (form:same-sequence s1 s2))))
+
+/* 10.3.2  Classification and Generalization 
+   Classification links classifiers to the things they classify.  Classifiers are categories into which things fall. */
+(forall (c o f)
+   (if (form:classifies c o f)
+       (and (buml:Classifier c)
+            (psl:state f))))
+
+/* A classifier is more general than another when the things classified by the specialized classifier are classified by the  
+   general classifier. */
+
+(forall (csub csuper o f)
+   (iff (buml:general csub csuper)
+        (if (form:classifies csub o f)
+            (form:classifies csuper o f))))
+
+/* Classification applies in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an occurrence  
+   are the same as states prior to legal successor occurrences, so this constaint applies to states holding after occurrences as  
+   well as prior. */
+
+(forall (occ f c o)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:classifies c o f))
+       (forall (f2)
+          (if (psl:prior f2 occ)
+              (form:classifies c o f2)))))
+
+/* 10.3.3  Classifier Cardinality 
+   Classifier cardinality is the number of things classified by a classifier in a PSL state. */
+(forall (c card f)
+  (if (form:classifier-cardinality c card f)
+      (and (buml:Classifier c)
+           (form:NaturalNumber card)
+           (psl:state f))))
+
+(forall (c1 c2)
+  (if (and (buml:Classifier c1)
+           (buml:Classifier c2))
+      (buml:Classifier (form:union c1 c2))))
+
+(forall (c1 c2 o f)
+  (iff (form:classifies (form:union c1 c2) o f)
+       (or (form:classifies c1 o f)
+           (form:classifies c2 o f))))
+
+(forall (c1 c2 c1Card o1 f c1Card1)
+   (if (and (buml:Classifer c1)
+            (form:NaturalNumber c1Card)
+            (form:classifer-cardinality c1 c1Card f)
+            (not (form:classifies c1 o1 f))
+            (buml:Classifier c2)
+            (forall (o2)
+               (iff (form:classifies c2 o2 f)
+                    (= o1 o2)))
+            (form:add-one c1Card c1Card1))
+       (form:classifier-cardinality (form:union c1 c2) c1Card1 f)))
+
+/* 10.3.4  Properties 
+   Properties link things to other things in a certain PSL state. */
+
+(forall (o p v f)
+   (if (form:property-value o p v f)
+       (and (buml:Property p)
+            (psl:state f))))
+
+/* Property values apply in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an occurrence  
+   are the same as states prior to legal successor occurrences, so this constaint applies to states holding after occurrences as  
+   well as prior. */
+
+(forall (occ f o p v)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:property-value o p v f))
+       (forall (f2)
+          (if (psl:prior f2 occ)
+              (form:property-value o p v f2)))))
+
+/* Things with property values must be classified by the class owning the property (classes are classifiers in UML). */
+(forall (c p occ f o v)
+   (if (and (buml:ownedAttribute c p)
+            (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:property-value o p v f))
+       (exists (f2)
+          (and (psl:prior f2 occ)
+               (form:classifies c o f2)))))
+
+/* Property values must be classified by the type of the property. */
+(forall (p c occ f o v)
+   (if (and (buml:type p c)
+            (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:property-value o p v f))
+       (exists (f2)
+          (and (psl:prior f2 occ)
+               (form:classifies c v f2)))))
+
+/* The achieves-property-value relation links objects, properties, and values to occurrences that give the property the value.   
+   The property does not have the achieved value before the occurrence and does after. */
+
+(forall (o p v occ)
+   (iff (form:achieves-property-value o p v occ)
+        (and (forall (f)
+                (if (form:priorA f occ)
+                    (not (form:property-value o p v f))))
+             (exists (f)
+                (and (form:holdsA f occ)
+                     (form:property-value o p v f))))))
+
+/* Property value cardinality is number of values of a property on a particular thing. */
+(forall (o p n f)
+   (if (form:property-value-cardinality o p n f)
+       (and (buml:Property p)
+            (psl:state f)
+            (form:NaturalNumber n))))
+
+(forall (occ f o p n)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:property-value-cardinality o p n f))
+       (exists (fv fp fvc vc)
+          (and (psl:prior fv occ)
+               (psl:prior fp occ)
+               (psl:prior fvc occ)
+               (forall (v)
+                   (iff (form:classifies vc v fv)
+                        (form:property-value o p v fp)))
+               (form:classifier-cardinality vc n fvc)))))
+
+/* Property value cardinality is constrained by the multiplicity of the property, but when the constraints are enforced is not  
+   defined in UML.  For example, when an object is created, it will violate non-zero lower multiplicities on its properties. */
+
+(forall (p m c occ fc o n fp)
+   (if (and (buml:lower p m)
+            (buml:ownedAttribute c p)
+            (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior fc occ)
+            (form:classifies c o fc)
+            (psl:prior fp occ)
+            (form:property-value-cardinality o p n fp))
+       (or (= m n)
+           (form:less-than m n))))
+
+(forall (p m c occ fc o n fp)
+   (if (and (buml:upper p m)
+            (buml:ownedAttribute c p)
+            (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior fc occ)
+            (form:classifies c o fc)
+            (psl:prior fp occ)
+            (form:property-value-cardinality o p n fp))
+       (or (= m n)
+           (form:less-than n m))))
+
+/* Composite properties collectively do not have values that form cycles.  Destruction propagation is not formalized because  
+   the execution model does not destroy things. */
+
+(forall (x y f)
+   (iff (form:composite-link-trans x y f)
+        (forall (occ)
+           (if (and (psl:occurrence occ)
+                    (psl:legal occ)
+                    (psl:prior f occ))
+               (or (exists (f2 p)
+
+                      (and (psl:prior f2 occ)
+                           (form:property-value y p x f2)
+                           (buml:aggregation p buml:composite)))
+                   (exists (f2 p z f3)
+                      (and (psl:prior f2 occ)
+                           (form:property-value z p x f2)
+                           (buml:aggregation p buml:composite)
+                           (psl:prior f3 occ)
+                           (form:composite-link-trans z y f3))))))))
+(forall (occ)
+   (iff (and (psl:occurrence occ)
+             (psl:legal occ))
+        (not (exists (x f)
+               (and (psl:prior f occ)
+                    (form:composite-link-trans x x f))))))
+
+/* Properties in bUML are ordered and nonunique, which means the values are ordered, and the same value can appear more  
+   than once in the order. The property-value-sequence gives the sequence of values of a property in a PSL state. */
+
+(forall (o p s f)
+   (if (form:property-value-sequence o p s f)
+       (and (buml:Property p)
+            (form:Sequence s)
+            (psl:state f))))
+
+/* Property values sequences apply in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an  
+   occurrence are the same as states prior to legal successor occurrences, so this constaint applies to states holding after  
+   occurrences as well as prior. */
+
+(forall (occ f o p s)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ)
+            (form:property-value-sequence o p s f))
+       (forall (f2)
+          (if (psl:prior f2 occ)
+              (form:property-value-sequence o p s f2)))))
+
+(forall (occ f1 f2 o p s1 s2)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f1 occ)
+            (psl:prior f2 occ)
+            (form:property-value-sequence o p s1 f1)
+            (form:property-value-sequence o p s2 f2))
+       (= s1 s2)))
+
+(forall (occ f)
+    (if (and (psl:occurrence occ)
+              (psl:legal occ)
+              (psl:prior f occ))
+        (forall (o p v)
+           (iff (form:property-value o p v f)
+                (exists (f2 s pt)
+                   (and (psl:prior f2 occ)
+                        (form:property-value-sequence o p s f2)
+
+                        (form:in-sequence s pt)
+                        (form:in-position pt v)))))))
+(forall (occ f)
+   (if (and (psl:occurrence occ)
+            (psl:legal occ)
+            (psl:prior f occ))
+       (forall (o p)
+          (iff (not (exists (v)
+                       (form:property-value o p v f)))
+               (or (not (exists (f2 s)
+                           (and (psl:prior f2 occ)
+                                (form:property-value-sequence o p s f2))))
+                   (exists (f2 s)
+                      (and (psl:prior f2 occ)
+                           (form:property-value-sequence o p s f2)
+                           (form:empty-sequence s))))))))
+
+/* 10.4  Behavior 
+   This sub clause covers the behavioral aspects of the base semantics. */
+
+/* 10.4.1  Property Value Modifiers 
+   This sub clause specifies PSL activities that modify property values. */
+(forall (o p v a)
+   (if (or (form:add-property-value o p v a)
+           (form:remove-property-value o p v a))
+       (and (buml:Property p)
+            (psl:activity a))))
+
+(forall (o p v a aocc)
+   (if (and (form:add-property-value o p v a)
+            (psl:occurrence_of aocc a))
+       (exists (f)
+          (and (psl:holds f aocc)
+               (form:property-value o p v f)))))
+
+(forall (a o p v aocc)
+   (if (and (form:remove-property-value o p v a)
+            (psl:occurrence_of aocc a))
+       (forall (f)
+           (and (psl:holds f aocc)
+                (not (form:property-value o p v f))))))
+
+(forall (o p s a aocc)
+   (if (and (form:set-property-value-sequence o p s a)
+            (psl:occurrence_of aocc a))
+       (exists (f s2)
+          (and (psl:holds f aocc)
+               (form:property-value-sequence o p s2 f)
+               (form:same-sequence s s2)))))
+
+(forall (o p a aocc)
+   (if (and (form:clear-property-value-sequence o p a)
+            (psl:occurrence_of aocc a))
+       (exists (f s)
+          (and (psl:holds f aocc)
+               (form:property-value-sequence o p s f)
+               (form:empty-sequence s)))))
+
+/* 10.4.2  Common Behavior 
+   This sub clause covers the semantics of elements used in all behaviors. It includes Operations, which appear the bUML  
+   Kernel, rather than Common Behavior. 
+   1.10.2.1 Syntax */
+
+/* Behaviors are classes of executions, as in UML. Behaviors specify constraints on their valid executions. */
+
+/* Operations are formalized as abstract behaviors that specify only inputs and outputs. More details about the executed  
+   behavior are not determined until runtime, when the operation is called on a particular object and a more detailed  
+   behavior is selected ("dispatch"). Operations are not formalized as features or properties on classes because they have no  
+   values at runtime. This sub clause adds a generalization of bml:Behavior and buml:Operation that parameterizes them  
+(form:ProcessDefinition). */
+
+(forall (pd)
+   (if (form:ProcessDefinition pd)
+       (and (buml:Class pd)
+            (psl:activity pd))))
+
+(forall (x)
+   (if (or (buml:Behavior x)
+           (buml:Operation x))
+       (form:ProcessDefinition x)))
+
+(forall (op b c)
+   (if (form:method op b c)
+       (and (buml:Operation op)
+            (buml:Behavior b)
+            (buml:Class c))))
+
+/* Parameters are formalized as properties. The value of a parameter as a property on an execution is the value of the  
+   parameter for that execution in a particular PSL state. This assumes no inout parameters. */
+
+(forall (p)
+   (if (buml:Parameter p)
+       (buml:Property p)))
+
+(forall (pd p)
+  (if (form:ownedParameter pd p)
+      (and (form:ProcessDefinition pd)
+           (buml:Parameter p))))
+
+(forall (po p)
+  (if (buml:ownedParameter po p)
+      (form:ownedParameter po p)))
+
+(forall (po1 p po2)
+   (if (and (form:ownedParameter po1 p)
+            (form:ownedParameter po2 p))
+       (= po1 po2)))
+
+(forall (p)
+   (if (buml:Parameter p)
+       (exists (po)
+          (form:ownedParameter po p))))
+
+(forall (po p)
+   (if (form:ownedParameter po p)
+       (buml:ownedAttribute po p)))
+
+(forall (p dk)
+   (iff (form:InputParameter p)
+        (and (buml:direction p dk)
+             (= dk buml:in))))
+
+(forall (p)
+   (iff (form:OutputParameter p)
+        (forall (dk)
+           (and (buml:direction p dk)
+                (or (= dk buml:out)
+                    (= dk buml:return))))))
+
+/* 10.4.2.1 Syntax 
+   Behaviors are classes of executions, as in UML.  Behaviors specify constraints on their valid executions. 
+   Operations are formalized as abstract behaviors that specify only inputs and outputs. More details about the executed  
+   behavior are not determined until runtime, when the operation is called on a particular object and a more detailed  
+   behavior is selected ("dispatch"). Operations are not formalized as features or properties on classes because they have no  
+   values at runtime. This sub clause adds a generalization of bml:Behavior and buml:Operation that parameterizes them  (form:ProcessDefinition). */
+
+(forall (pd)
+   (if (form:ProcessDefinition pd)
+       (and (buml:Class pd)
+            (psl:activity pd))))
+
+(forall (x)
+   (if (or (buml:Behavior x)
+           (buml:Operation x))
+       (form:ProcessDefinition x)))
+
+(forall (op b c)
+   (if (form:method op b c)
+       (and (buml:Operation op)
+            (buml:Behavior b)
+            (buml:Class c))))
+
+/* Parameters are formalized as properties.  The value of a parameter as a property on an execution is the value of the  
+   parameter for that execution in a particular PSL state.  This assumes no inout parameters. */
+
+(forall (p)
+   (if (buml:Parameter p)
+       (buml:Property p)))
+
+(forall (pd p)
+  (if (form:ownedParameter pd p)
+      (and (form:ProcessDefinition pd)
+           (buml:Parameter p))))
+
+(forall (po p)
+  (if (buml:ownedParameter po p)
+      (form:ownedParameter po p)))
+
+(forall (po1 p po2)
+   (if (and (form:ownedParameter po1 p)
+            (form:ownedParameter po2 p))
+       (= po1 po2)))
+
+(forall (p)
+   (if (buml:Parameter p)
+       (exists (po)
+          (form:ownedParameter po p))))
+
+(forall (po p)
+   (if (form:ownedParameter po p)
+       (buml:ownedAttribute po p)))
+
+(forall (p dk)
+   (iff (form:InputParameter p)
+        (and (buml:direction p dk)
+             (= dk buml:in))))
+
+(forall (p)
+   (iff (form:OutputParameter p)
+        (forall (dk)
+           (and (buml:direction p dk)
+                (or (= dk buml:out)
+                    (= dk buml:return))))))
+
+/* 10.4.2.2 Semantics 
+   Behaviors are classes of executions. Behaviors specify constraints on their valid executions.  Executions are interpreted as  
+   PSL activity occurrences, which represent one of potentially many possible traces that might transpire when the execution  
+   model is executing.  Behaviors classify their executions independently of PSL state (the classifies relation on behaviors is  
+   never used with PSL states that are constrained against occurrences), and similarly for property values of occurrences  
+   when the values are also occurrences. */
+
+(forall (pd x f)
+   (if (and (form:ProcessDefinition pd)
+            (form:classifies pd x f))
+       (form:execution x)))
+
+(forall (pd x f)
+   (if (and (form:ProcessDefinition pd)
+            (form:classifies pd x f))
+       (forall (f2)
+          (form:classifies pd x f2))))
+
+/* The rest of the axioms in this sub clause relate PSL occurrences to executions to support multiple classification of  
+   executions. */
+
+(forall (x occ)
+   (if (form:execution-occ x occ)
+       (and (form:execution x)
+            (psl:activity_occurrence occ))))
+
+(forall (x1 x2 occ)
+   (if (and (form:execution-occ x1 occ)
+            (form:execution-occ x2 occ))
+       (= x1 x2)))
+
+(forall (x occ1 occ2)
+   (if (and (form:execution-occ x occ1)
+            (form:execution-occ x occ2))
+       (form:same-suboccs occ1 occ2)))
+
+(forall (occ1 occ2 subocc)
+   (iff (form:same-suboccs occ1 occ2)
+        (iff (form:subactivity-occurrence-neq subocc occ1)
+             (form:subactivity-occurrence-neq subocc occ2))))
+
+(forall (x)
+   (if (form:execution x)
+       (and (psl:activity_occurrence x)
+            (exists (xocc)
+               (and (form:execution-occ x xocc)
+                    (= x xocc))))))
+
+(forall (pd x f)
+   (if (and (form:ProcessDefinition pd)
+            (form:classifies pd x f)
+            (not (psl:atomic pd)))
+       (exists (occ)
+          (and (form:execution-occ x occ)
+               (psl:occurrence_of occ pd)))))
+
+(forall (pd x f)
+   (if (and (form:ProcessDefinition pd)
+            (form:classifies pd x f)
+            (psl:atomic pd))
+       (exists (occ cab)
+          (and (form:execution-occ x occ)
+               (form:complex-atomic cab pd)
+               (psl:occurrence_of occ cab)))))
+
+(forall (b cab)
+   (iff (form:complex-atomic cab b)
+        (and (not (psl:atomic cab))
+             (atomic b)
+             (forall (cabocc)
+                (if (psl:occurrence_of cabocc cab)
+                    (exists (bocc)
+
+                       (and (psl:occurrence_of bocc b)
+
+                            (psl:root_occ bocc cabocc)
+                            (psl:leaf_occ bocc cabocc))))))))
+
+/* 10.4.3  Activity Edges Generally 
+   This sub clause specifies additional syntactic relations on activity edges for the formalization, including a generalization  
+   of activity edges that generalizes activity nodes also (form:ActivityElement), see 10.4.4. */
+
+(forall (x)
+   (if (buml:ActivityEdge x)
+       (form:ActivityElement x)))
+ 
+(forall (n)
+  (if (buml:ActivityNode n)
+      (iff (form:max-one-incoming-edge-node n)
+           (forall (e1 e2)
+              (if (and (buml:incoming n e1)
+                       (buml:incoming n e2))
+                  (= e1 e2))))))
+
+(forall (n)
+  (iff (form:no-incoming-edge n)
+       (not (exists (e)
+                (buml:incoming n e)))))
+
+(forall (n)
+  (iff (form:no-outgoing-edge n)
+       (not (exists (e)
+                (buml:outgoing n e)))))
+(forall (n)
+  (iff (form:max-one-incoming-edge n)
+       (forall (e1 e2)
+           (if (and (buml:incoming n e1)
+                    (buml:incoming n e2))
+               (= e1 e2)))))
+
+(forall (n)
+   (iff (form:max-one-outgoing-edge n)
+        (forall (e1 e2)
+           (if (and (buml:outgoing n e1)
+                    (buml:outgoing n e2))
+               (= e1 e2)))))
+
+/* 10.4.4  Activity Nodes Generally 
+   10.4.4.1 Syntax 
+   This sub clause specifies additional syntactic relations on activity edges for the formalization, including a generalization  
+   of activity nodes that generalizes activity edges also (form:ActivityElement), see 10.4.3. */
+
+(forall (x)
+   (if (buml:ActivityNode x)
+       (form:ActivityElement x)))
+
+/* Executable nodes and object nodes are formalized as properties (executable nodes generalize actions and structured  
+   nodes, and object nodes generalize pins and activity parameter nodes). Execution nodes are properties of the activities that  
+   contain them, typed by behaviors that vary according by the particular executable node. The value of an execution node  
+   as a property on an activity execution is the execution of that node. The value of an object node as a property on an  
+   activity execution is the value in that object node in a particular PSL state.  */
+
+(forall (n)
+   (if (or (buml:ExecutableNode n)
+           (buml:ObjectNode n))
+       (buml:Property n)))
+
+/* The activity relation in the formalization links activity elements to the activity that contains them, regardless of  
+   intervening structured nodes. */
+
+(forall (ae a)
+  (if (form:activity ae a)
+      (and (form:ActivityElement ae)
+           (buml:Activity a))))
+
+(forall (ae a1 a2)
+   (if (and (form:activity ae a1)
+            (form:activity ae a2))
+       (= a1 a2)))
+
+(forall (ae)
+  (if (form:ActivityElement ae)
+      (exists (a)
+         (form:activity ae a))))
+
+(forall (ae a)
+  (if (buml:activity ae a)
+      (form:activity ae a)))
+
+(forall (n a)
+   (if (and (or (buml:ExecutableNode n)
+                (buml:ObjectNode n))
+            (form:activity n a))
+       (buml:ownedAttribute a n)))
+
+/* Executable nodes as properties have exactly one type, which is a behavior (UML allows at most one type per property). */
+(forall (n b)
+   (if (and (buml:ExecutableNode n)
+            (buml:type n b))
+       (buml:Behavior b)))
+
+(forall (n)
+   (if (buml:ExecutableNode n)
+       (exists (b)
+          (buml:type n b))))
+
+/* 10.4.4.2 Semantics 
+   Executions that are values of executable nodes as properties of activity executions are PSL subactivity occurrences of the  
+   the activity execution.  PSL subactivity occurrences happen during their superoccurrences. */
+
+(forall (n a xa f xn)
+   (if (and (buml:ExecutableNode n)
+            (form:activity n a)
+            (form:classifies a xa f)
+            (form:property-value xa n xn f))
+       (form:subactivity_occurrence-neq xn xa)))
+
+/* Executions that are values of executable nodes as properties of activity executions are values in all PSL states or none.   
+   PSL states are not used to formalize the state of execution. */
+
+(forall (n a xa f xn)
+   (if (and (buml:ExecutableNode n)
+            (form:activity n a)
+            (form:classifies a xa f)
+            (form:property-value xa n xn f))
+       (forall (f2)
+           (form:property-value xa n xn f2))))
+
+ (forall (n a xa1 xa2 f xn rxa1 rxa2)
+   (if (and (buml:ExecutableNode n)
+            (form:activity n a)
+            (form:classifies a xa1 f)
+            (form:classifies a xa2 f)
+            (form:property-value xa1 n xn f)
+            (form:property-value xa2 n xn f)
+            (psl:root_occ rxa1 xa1)
+            (psl:root_occ rxa2 xa2))
+       (= rxa1 rxa2)))
+
+/* 10.4.5  Structured Nodes Generally 
+   Executions that are values of structured nodes as properties of activity executions are PSL subactivity occurrences of the  
+   structured node execution. PSL subactivity occurrences happen during their superoccurrences. */
+
+(forall (n sn a xa f xn xsn)
+   (if (and (buml:inStructuredNode n sn)
+            (buml:ExecutableNode n)
+            (form:activity n a)
+            (form:classifies a xa f)
+            (form:property-value xa n xn f)
+            (form:property-value xa sn xsn f))
+       (form:subactivity_occurrence-neq xn xsn)))
+
+ (forall (ip a)
+  (if (and (buml:InputPin ip)
+           (form:activity ip a))
+      (iff (form:required-inputpin ip)
+           (forall (ipmin)
+              (if (buml:lower ip ipmin)
+                  (not (= ipmin form:0)))))))
+(forall (n)
+   (iff (form:executable-without-input n)
+        (and (buml:ExecutableNode n)
+             (form:no-incoming-edge n)
+             (forall (ip)
+
+                (if (buml:input n ip)
+                    (not (or (form:required-inputpin ip)
+                             (exists (e)
+                                (buml:incoming ip e)))))))))
+
+/* This constraint applies to the syntactic pattern of a structured activity node containing executable nodes that have no  
+   incoming control flows, no incoming object flows to any pins, and no required inputs.  It requires the contained nodes to  
+   execute when the structured node does. */
+
+(forall (sn n a)
+   (if (and (buml:inStructuredNode sn n)
+            (form:executable-without-input n)
+            (form:activity n a))
+       (forall (xa f xsn)
+            (if (and (form:classifies a xa f)
+                     (form:property-value xa sn xsn f))
+                (exists (xn)
+                   (form:property-value xa n xn f))))))
+
+(forall (a xa sn xsn)
+ (iff (form:move-structured-pin-values a xa sn xsn)
+      (and (forall (ip on2 fxsn sip xsnroot asnroot)
+             (if (and (buml:input sn ip)
+                      (form:structured-input-or-output ip on2)
+                      (form:flows-trans-fork-merge ip on2)
+                      (form:priorA fxsn xsn)
+                      (form:property-value-sequence xa ip sip fxsn)
+                       (psl:root_occ xsnroot xsn)
+                       (psl:occurrence_of xsnroot asnroot))
+                  (form:set-property-value-sequence xa on2 sip asnroot)))
+            (forall (op on2 xsnleaf asnleaf fxsnleaf son2)
+              (if (and (buml:output sn op)
+                       (form:structured-input-or-output on2 op)
+                       (form:flows-trans-fork-merge on2 op)
+                       (psl:leaf_occ xsnleaf xsn)
+                       (psl:occurrence_of xsnleaf asnleaf)
+                       (form:priorA fxsnleaf xsnleaf)
+                       (form:property-value-sequence xa on2 son2 fxsnleaf))
+                  (and (form:clear-property-value-sequence xa on2 asnleaf)
+                       (form:set-property-value-sequence xa op son2 asnleaf)))))))
+
+/* This constraint requires values of structured node pins to be transferred in and out of the structured node when the node  
+   execution begins and ends respectively. */
+
+(forall (sn a)
+   (if (and (buml:StructuredNode sn)
+            (form:activity sn a))
+       (forall (xa f xsn)
+            (if (and (form:classifies a xa f)
+                     (form:property-value xa sn xsn f))
+                (form:move-structured-pin-values a xa sn xsn)))))
+
+/* This constraint ensures executions of isolated structured nodes do not read objects modified by external executions during  
+   the execution of the structured node. */
+
+(forall (sn a)
+   (if (and (buml:StructuredNode sn)
+            (buml:isMustIsolate sn form:true)
+            (form:activity sn a))
+       (forall (xa f xsn xacrsf xa2 acrsf oip o fxacrsf)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa sn xsn f)
+                   (form:subactivity_occurrence-neq xacrsf xsn)
+                   (psl:subactivity_occurrence xa2 xsn)
+                   (form:property-value xa2 acrsf xacrsf f)
+                   (buml:ReadStructuralFeatureAction acrsf)
+                   (buml:object acrsf oip)
+                   (form:priorA xacrsf fxacrsf)
+                   (form:property-value xa2 oip o fxacrsf))
+              (not (exists (xout p v)
+                      (and (not (form:subactivity_occurrence-neq xout xsn))
+                           (form:achieves-property-value o p v xout))))))))
+
+/* 10.4.6  Expansion Regions 
+   10.4.6.1 Syntax 
+   Expansion regions are formalized as call actions, where the activity called is constructed from the nodes in the region.    
+   The activity has parameter nodes corresponding to the pins of the expansion region, including the expansion nodes.  */
+
+(forall (n)
+   (if (buml:ExpansionRegion n)
+       (buml:CallAction n)))
+
+/* The expansion-activity relation links expansion regions to the constructed activity it calls. */
+(forall (ac a)
+   (if (form:expansion-activity ac a)
+       (and (buml:ExpansionRegion ac)
+            (buml:Activity a))))
+
+(forall (ac a)
+   (if (form:expansion-activity ac a)
+       (form:called ac a)))
+
+(forall (ac1 ac2 a)
+   (if (and (form:expansion-activity ac1 a)
+            (form:expansion-activity ac2 a))
+       (= ac1 ac2)))
+/* Expansion nodes are formalized as pins. */
+(forall (n)
+   (if (buml:ExpansionNode n)
+       (buml:Pin n)))
+
+/* 10.4.6.2 Semantics 
+   All the values of input expansion nodes are taken as a single collection, whereas in UML each value is taken as a separate  
+   collection. It is assumed edges do not cross expansion region boundaries and expansion regions are not nested. */
+
+/* The expansion-input-value-xcall relation links executions of expansion region actions (the xac variable) and positions (pt)  
+   in a property value sequence of an input expansion node with executions of its constructed activity (xcall) (in the  
+   execution model, all input expansion nodes have the same number of values at the beginning of region execution). For  
+   each expansion region action executions, this relation is one-to-one between positions and executions of the constructed  
+   activity, see the necessary condition on expansion region executions at the end of this sub clause. */
+
+(forall (xac pt xcall)
+   (if (form:expansion-input-value-xcall xac pt xcall)
+       (and (form:execution xac)
+            (form:Position pt)
+            (form:execution xcall)))) 
+(forall (xac pt1 xcall1 pt2 xcall2)
+   (if (and (form:expansion-input-value-xcall xac pt1 xcall1)
+            (form:expansion-input-value-xcall xac pt2 xcall2))
+       (iff (= pt1 pt2)
+            (= xcall1 xcall2)))) 
+
+/* The expanded-value-to-fill relation links expansion region actions (the xac variable) under activity executions (xa),  
+   executions of the expansion region constructed activity (xcall) to input expansion nodes of the region (ip) and a value of  
+   the expansion node (v) to pass to a constructed activity execution.  It uses expansion-input-value-xcall to link each value  
+   of the expansion node to one of the constructed activity executions. */
+
+(forall (xa xac xcall ip v)
+   (iff (form:expanded-value-to-fill xa xac xcall ip v)
+        (forall (ptindex sindex n)
+           (if (and (form:expansion-input-value-xcall xac ptindex xcall)
+                    (form:position-count sindex ptindex n))
+               (exists (fxac s pt)
+                  (and (form:priorA fxac xac)
+                       (form:property-value-sequence xa ip s fxac)
+                       (form:position-count s pt n)
+                       (form:in-position pt v)))))))
+
+/* The fill-input-parameter-node relation ensures executions of expansion region actions (the xac variable) transfer values  
+   from an input pin of the expansion region (ip) to the corresponding input parameter nodes of the executions of the  
+   constructed activity (xcall).  It assumes input pins never have more tokens than the action can accept in one execution,  
+   and input pin multiplicity upper is one or unlimited (ipmax). */
+
+(forall (xa xac xcall ip ipmax)
+   (iff (form:fill-input-parameter-node xa xac xcall ip ipmax)
+        (forall (srootxac arootxac p pnode a)
+           (if (and (psl:root_occ srootxac xac)
+                    (psl:occurrence_of srootxac arootxac)
+                    (form:pin-parameter-match ip p)
+                    (buml:parameter pnode p)
+                    (form:activity pnode  a)
+                    (form:activity ip a))
+               (or (and (= ipmax form:1)
+                        (forall (v)
+                           (if (and (if (buml:ExpansionNode ip)
+                                        (form:expanded-value-to-fill xa xac xcall ip v))
+                                    (if (not (buml:ExpansionNode ip))
+                                        (exists (fxac)
+                                           (and (form:priorA fxac xac)
+                                                (form:property-value xa ip v fxac)))))
+
+                               (form:add-property-value xcall pnode v arootxac))))
+                   (and (= ipmax buml:*)
+                        (forall (fxac s)
+                           (if (and (form:priorA fxac xac)
+                                    (form:property-value-sequence xa ip s fxac))
+                               (form:set-property-value-sequence xcall pnode s 
+                                                                 arootxac)))))))))
+
+/* The empty-output-parameter-node relation ensures executions of expansion region action (the xac variable) transfer  
+   values from an outut parameter node of the executions of the constructed activity (xcall) to the corresponding output pin  
+   of the expansion region (op).  It assumes output pin multiplicity upper (opmax) is one or unlimited. This does not put null  
+   tokens in output pins when output parameter nodes are empty, as in UML. */
+
+(forall (xa xac xcall op opmax)
+   (iff (form:empty-output-parameter-node xa xac xcall op opmax)
+        (forall (sleafxac aleafxac p pnode a fxcall)
+           (if (and (psl:leaf_occ sleafxac xac)
+                    (psl:occurrence_of sleafxac aleafxac)
+                    (form:pin-parameter-match op p)
+                    (buml:parameter pnode p)
+                    (form:activity pnode a)
+                    (form:activity op a)
+                    (form:holdsA fxcall xcall))
+               (or (and (= opmax form:1)
+                        (forall (v)
+                           (if (form:property-value xcall pnode v fxcall)
+                               (form:add-property-value xa op v aleafxac))))
+                   (and (= opmax buml:*)
+                        (forall (s)
+                           (if (form:property-value-sequence xcall pnode s fxcall)
+                               (form:set-property-value-sequence xa op s 
+                                                                 aleafxac)))))))))
+
+/* The fill-empty-parameter-node relation combines the fill-input-parameter-node relation and empty-output-parameter-node   
+   relations. */
+
+(forall (a xa ac xac xcall)
+   (iff (form:fill-empty-parameter-node a xa ac xac xcall)
+        (and (forall (ip ipmax)
+                (if (and (buml:input ac ip)
+                         (not (buml:ExpansionNode ip))
+                         (buml:upper ip ipmax))
+                    (form:fill-input-parameter-node xa xac xac ip ipmax)))
+             (forall (op opmax)
+                (if (and (buml:output ac op)
+                         (not (buml:ExpansionNode op))
+                         (buml:upper op opmax))
+                (form:empty-output-parameter-node xa xac xac op opmax))))))
+
+/* The expansion-input-value-output relation links two sequences and their positions. The relation  is one-to-one, except not  
+   all positions in the first sequence are necessarily in the second sequence. The relation preserves the ordering of the  
+   sequences. */
+
+(forall (s1 pt1 s2 pt2)
+   (if (form:expansion-input-value-output s1 pt1 s2 pt2)
+       (and (form:Sequence s1)
+            (form:Position pt1)
+            (form:in-sequence s1 pt1)
+            (form:Sequence s2)
+            (form:Position pt2)
+            (form:in-sequence s2 pt2))))
+(forall (s1 pt1 pt12 s2 pt21 pt22)
+   (if (and (form:expansion-input-value-output s1 pt1 s2 pt12)
+            (form:expansion-input-value-output s1 pt21 s2 pt22))
+       (iff (= pt1 pt21)
+            (= pt12 pt22))))
+(forall (s1 pt1 pt12 s2 pt2 pt22 )
+   (if (and (form:expansion-input-value-output s1 pt1 s2 pt2)
+            (form:expansion-input-value-output s1 pt12 s2 pt22))
+       (iff (forall (n1 n2)
+               (and (form:position-count s1 pt1 n1)
+                    (form:position-count s1 pt12 n2)
+                    (form:less-than n1 n2)))
+            (forall (n1 n2)
+               (and (form:position-count s2 pt2 n1)
+                    (form:position-count s2 pt22 n2)
+                    (form:less-than n1 n2))))))
+
+/* The contracted-sequence-to-empty relation links executions of expansion region actions (the xac variable) and executions  
+   of its constructed activity (xcall) with property value sequences (s) of an output pin (op). It assumes each execution of the  
+   body of the expansion region supplies no more than one value to each output expansion node. It ensures the value of the  
+   output parameter node of the constructed activity execution, if any, is in the output expansion node in the proper order. It  
+   uses the expansion-input-value-output relation for output value ordering. */
+
+(forall (xa xac xcall op sout)
+   (iff (form:contracted-sequence-to-empty xa xac xcall op sout)
+        (forall (ptin sin n pnode p a)
+           (if (and (form:expansion-input-value-xcall xac ptin xcall)
+                    (form:position-count sin ptin n)
+                    (form:pin-parameter-match op p)
+                    (buml:parameter pnode p)
+                    (form:activity pnode  a)
+                    (form:activity op a))
+               (and (forall (v fxcallv)
+                       (if (and (form:holdsA fxcallv xcall)
+                                (form:property-value xcall pnode v fxcallv))
+                           (exists (ptout)
+                              (and (form:in-sequence sout ptout)
+                                   (form:in-position ptout v)
+                                   (form:expansion-input-value-output sin ptin sout 
+                                                                      ptout)))))
+                    (if (not (exists (v fxcallv)
+                                (and (form:holdsA fxcallv xcall)
+                                     (form:property-value xcall pnode v fxcallv))))
+                        (not (exists (ptout)
+                                (form:expansion-input-value-output sin ptin sout ptout))))
+                    (forall (ptout)
+                       (iff (form:in-sequence sout ptout)
+                            (exists (ptin2)
+                               (form:expansion-input-value-output sin ptin2 sout 
+                                                                  ptout)))))))))
+
+/* This is a necessary condition on executions of expansion region actions that its constructed activity execute as many times  
+   as there are input values in the input expansion nodes (in the execution model, all input expansion nodes have the same  
+   number of values at the beginning of region execution), that values are transferred between pins of the action and  
+   parameter nodes of the contructed activity execution, and if the region mode is iterative that the executions are ordered in  
+   time in the same way as the input values (see the three conditions in the large conjunction). This assumes parallel  
+   expansion nodes have no output expansion nodes. */
+
+(forall (ac a acall)
+
+(if (and (buml:ExpansionRegion ac)
+
+(form:activity ac a)
+(form:expansion-activity ac acall))
+(forall (xa xac f)
+
+(if (and (form:classifies a xa f)
+                 (form:property-value xa ac xac f))
+            (and (forall (ipindex fxac s pt)
+                   (if (and (buml:input ac ipindex)
+                             (buml:ExpansionNode ipindex)
+                             (form:priorA fxac xac)
+                             (form:property-value-sequence xa ipindex s fxac)
+                             (form:in-sequence s pt))
+                       (exists (xcall)
+                          (and (form:classifies acall xcall f)
+                               (form:subactivity_occurrence-neq xcall xac)
+                               (form:expansion-input-value-xcall xac pt xcall)))))
+                 (forall (ptany xcall)
+                   (if (form:expansion-node-value-xcall xac ptany xcall)
+                       (and (form:fill-empty-parameter-node a xa ac xac xcall)
+                            (forall (ip)
+                              (if (and (buml:input ac ip)
+                                       (buml:ExpansionNode ip))
+                                  (form:fill-input-parameter-node xa xac xcall ip 
+ form:1)))
+                            (forall (op)
+                              (if (and (buml:output ac op)
+                                       (buml:ExpansionNode op))
+                                  (and (form:empty-output-parameter-node xa xac xcall op 
+                                                                         form:1)
+                                       (exists (s2 fxacs)
+                                           (and (form:contracted-sequence-to-empty xa xac 
+                                                                              xcall 
+ op s2) 
+                                                (form:holdsA fxacs xac)
+                                                (form:property-value-sequence xa op s2 
+                                                                              
+ fxacs))))))))) 
+
+                 (forall (ptany1 xcall1 ptany2 xcall2)
+                   (if (and (buml:mode ac buml:iterative)
+                            (form:expansion-node-value-xcall xac ptany1 xcall2)
+                            (form:expansion-node-value-xcall xac ptany2 xcall2)
+                            (not (= xcall1 xcall2)))
+                       (forall (xcall1root xcall1leaf xcall2root xcall2leaf)
+                         (if (and (form:expansion-input-value-xcall xac ptany1 xcall2)
+                                  (form:expansion-input-value-xcall xac ptany2 xcall2)
+                                  (not (= xcall1 xcall2))
+                                  (psl:root_occ xcall1root xcall1)
+
+                                  (psl:leaf_occ xcall1leaf xcall1)
+                                  (psl:root_occ xcall2root xcall2)
+                                  (psl:leaf_occ xcall2leaf xcall2))
+                             (or (psl:earlier xcall1root xcall2leaf)
+                                 (psl:earlier xcall1leaf xcall2root)))))))))))
+
+/* 10.4.7  Control Flow 
+   This sub clause gives sufficient conditions for existence of action execution due to control flow, except for 10.4.7.3,  
+   which gives a necessary condition. The syntactic patterns of this sub clause do not include any object flows. */
+
+/* 10.4.7.1 Top level action 
+   This sub clause applies to the syntactic pattern of an action directly contained in an activity that requires no input to start.    
+   The constraint requires the action to execute for every execution of the containing activity. */
+
+(forall (n a)
+   (if (and (buml:activity n a)
+            (form:executable-without-input n))
+       (forall (xa f)
+            (if (form:classifies a xa f)
+                (exists (xn)
+                   (form:property-value xa n xn f))))))
+
+/* 10.4.7.2 Initial Node to Action 
+   This sub clause applies to the syntactic pattern of a control flow from an initial node to an action, with no more than one  
+   edge going out of the initial node, no more than one edge coming into the action, and no pins on the action (for example,  
+   see Statement Sequence pattern in Annex A.3.1).  It requires the action to execute for every execution of the containing  
+   activity. */
+
+(forall (n1 n2)
+   (iff (form:same-syntactic-container n1 n2)
+        (exists (c)
+           (or (and (buml:inStructuredNode n1 c)
+                    (buml:inStructuredNode n2 c))
+               (and (buml:activity n1 c)
+                    (buml:activity n2 c))))))
+
+(forall (i e ac a)
+   (if (and (buml:InitialNode i)
+            (form:max-one-outgoing-edge i)
+            (buml:target e ac)
+            (form:same-syntactic-container i ac)
+            (buml:Action ac)
+            (not (exists (ip)
+                    (buml:input ac ip)))
+            (form:activity i a))
+       (forall (xa sn xsn f)
+          (if (and (form:classifies a xa f)
+                   (or (not (buml:inStructuredNode i sn))
+                       (form:property-value xa sn xsn f)))
+              (exists (xac)
+                 (form:property-value xa ac xac f))))))
+
+/* 10.4.7.3 Action to Action, general necessary condition 
+   This sub clause applies to syntactic pattern of a control flow between actions, with any intervening and chained control  
+   nodes, and regardless of any other flows. It requires each target action execution to follow no more than one source action  
+   execution, and each source action execution to be followed by no more than one source action execution. It does not  
+   require the target action to execute.  */
+
+(forall (n1 n2)
+   (iff (form:flow-trans-control-node n1 n2)
+        (exists (e)
+           (and (buml:outgoing n1 e)
+                (or (buml:target e n2)
+                    (exists (nt)
+                       (and (buml:target e nt)
+                            (buml:ControlNode nt)
+                            (form:flow-trans-control-node nt n2))))))))
+
+/* The follows relation links two PSL occurrences (s1 and  s2 variables) under an execution of an activity (a), where the first  
+   occurrence happens sometime before the second. The follows relation is used in sufficient conditions for the existence of  
+   action executions due to control flow from other actions, for example in sub clause. */
+
+(forall (s1 s2 a)
+   (if (form:follows s1 s2 a)
+       (form:min-precedesA s1 s2 a)))
+ 
+(forall (ac1 ac2 a)
+   (if (and (buml:Action ac1)
+            (buml:Action ac2)
+            (form:flow-trans-control-node ac1 ac2)
+            (form:activity ac1 a))
+       (forall (xa f xac1 xac2 xac12 xac22)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac1 xac1 f)
+                   (form:property-value xa ac2 xac2 f)
+                   (form:property-value xa ac1 xac12 f)
+                   (form:property-value xa ac2 xac22 f)
+                   (form:follows xac1 xac2 a)
+                   (form:follows xac12 xac22 a))
+              (iff (= xac1 xac12)
+                   (= xac2 xac22))))))
+
+/* 10.4.7.4 Action to Action, single control flow, optional merge/fork 
+   This sub clause applies to the syntactic pattern of a control flow between actions, with any intervening and chained fork  
+   and merge nodes (for example, see the Statement Sequence pattern in Annex A.3.1). The target action has no other  
+   incoming control flows and no input pins. The constraint requires the target action to execute after the source action does. */
+
+/* The flow-trans-fork-merge links activity nodes that have a control or object flow between them (the n1 variable as source,  
+   n2 as target), possibily with intervening and chained fork and merge nodes. The flow will be a control flow if the nodes  
+   are actions and an object flow if the nodes are object nodes. */
+
+(forall (n1 n2)
+   (iff (form:flow-trans-fork-merge n1 n2)
+        (exists (e)
+           (and (buml:outgoing n1 e)
+                (or (buml:target e n2)
+                    (exists (nt)
+                       (and (buml:target e nt)
+                            (or (buml:ForkNode nt)
+                                (buml:MergeNode nt))
+                            (form:flow-trans-fork-merge nt n2))))))))
+(forall (ac1 ac2 a)
+   (if (and (buml:Action ac1)
+            (buml:Action ac2)
+            (form:max-one-incoming-edge ac2)
+            (form:flow-trans-fork-merge ac1 ac2)
+            (not (exists (ip)
+                    (buml:input ac ip)))
+            (form:activity ac1 a))
+       (forall (xa f xac1)
+           (if (and (form:classifies a xa f)
+                    (form:property-value xa ac1 xac1 f))
+               (exists (xac2)
+                  (and (form:property-value xa ac2 xac2 f)
+                       (form:follows xac1 xac2 a)))))))
+
+/* 10.4.8  Object Flow 
+   This sub clause gives sufficient conditions for the presence of values in object nodes in 10.4.8.1 and 10.4.8.2 and for the  
+   existence of action execution due to object flow in 10.4.8.3 through 10.4.8.6, and also control flow in 10.4.8.4 through  
+   10.4.8.6. The syntactic patterns of this sub clause do not have object nodes with more than one outgoing edge (no token  
+   competition). */
+
+/* 10.4.8.1 Object node to object node, optional fork/merge 
+   This sub clause applies to the syntactic pattern of object flow between object nodes, with any intervening and chained  
+   fork and merge nodes, where the flow is not into or out of a structured node pin (for example, see the two Instance  
+   Variable Assignment patterns in Annex A.3.4 and A.3.5). The source object node has exactly one outgoing object flow.  
+   The constraints require values in the source object node be transferred to the target object node. */
+
+(forall (n sn)
+   (iff (form:inStructuredNode-trans n sn)
+        (or (buml:inStructuredNode n sn)
+            (exists (nt)
+               (and (buml:inStructuredNode n nt)
+                    (form:inStructuredNode-trans nt sn))))))
+
+/* The structured-input-or-output relation links input pins (the on1 variable) or output pins (on2) of structured nodes with  
+   object nodes in the structured node.  */
+
+(forall (on1 on2)
+   (iff (form:structured-input-or-output on1 on2)
+        (exists (sn)
+           (and (buml:StructuredNode sn)
+                (or (and (buml:input sn on1)
+
+                         (form:inStructuredNode-trans on2 sn))
+                    (and (buml:output sn on2)
+                         (form:inStructuredNode-trans on1 sn)))))))
+(forall (on1 on2 a)
+   (if (and (buml:ObjectNode on1)
+            (buml:ObjectNode on2)
+            (not (form:structured-input-or-output on1 on2))
+            (form:max-one-outgoing-edge on1)
+            (form:flows-trans-fork-merge on1 on2)
+            (form:activity on1 a))
+       (forall (xa f xsub v fon1s son1)
+          (if (and (form:classifies a xa f)
+                   (form:subactivity_occurrence-neq xsub xa)
+                   (form:achieves-property-value xa son1 v xsub)
+                   (psl:holds fon1s xsub)
+                   (form:property-value-sequence xa on1 son1 fon1s))
+              (exists (amove)
+                 (and (form:clear-property-value-sequence xa on1 amove)
+                      (form:set-property-value-sequence xa on2 son1 amove)
+                      (form:subactivity_occurrence-neq
+                         (psl:successor amove xsub) xa)))))))
+
+/* 10.4.8.2 Object node to object node, decision, optional fork/merge 
+   This sub clause applies to the syntactic pattern of object flow between object nodes, with any intervening and chained  
+   fork and merge nodes, one intervening decision node, where the flow is not into or out of a structured node pin (for  
+   example, see the Do-While Loop pattern in Annex A.3.10).  The decision input flow comes from an output pin on the  
+   same action as the output pin providing the decision input. The source object node has exactly one outgoing object flow.  
+   The constraints require the values in the source object node to be transferred to the target object node if the decision input  
+   matches the guard. 
+
+   The flow-trans-fork-merge-decision relation links activity nodes that have a control or object flow between them (the n1  
+   variable as source, n2 as target), where the flow is not into or out of a structured node pin, possibily with intervening and  
+   chained fork and merge nodes. The flow has one intervening decision node with a decision input flow from an output pin 
+(dip), possibily with intervening and chained fork and merge nodes, and a guard specification (g). The flow will be a 
+   control flow if the nodes (n1 and n2) are actions and an object flow if the nodes are object nodes.  */
+
+(forall (n1 n2 dip g)
+   (iff (form:flow-trans-fork-merge-decision n1 n2 dip g)
+        (exists (dn)
+           (and (buml:DecisionNode dn)
+                (form:flow-trans-fork-merge n1 dn)
+                (form:flow-trans-fork-merge dn n2)
+                (exists (edn nt gvs)
+                   (and (buml:outgoing dn edn)
+                        (buml:target edn nt)
+                        (or (= nt n2)
+                            (form:flow-trans-fork-merge nt n2))
+                            (buml:guard edn gvs)
+                            (buml:value gvs g)))
+                (form:flow-trans-fork-merge dip dn)
+                (buml:OutputPin dip)
+                (exists (edn nt)
+                   (and (buml:incoming dn edn)
+
+                        (buml:decisionNodeInputFlow dn edn)
+                        (buml:source edn nt)
+                        (or (= nt dip)
+                            (form:flow-trans-fork-merge dip nt))))))))
+
+/* This assumes the output pin providing the decision input has exactly one value. */
+(forall (on1 on2 ac dip g a)
+   (if (and (buml:ObjectNode on1)
+            (buml:ObjectNode on2)
+            (not (form:structured-input-or-output on1 on2))
+            (buml:Action ac)
+            (buml:output ac on1)
+            (buml:output ac dip)
+            (form:max-one-outgoing-edge on1)
+            (form:max-one-outgoing-edge dip)
+            (form:flow-trans-fork-merge-decision on1 on2 dip g)
+            (form:activity on1 a))
+       (forall (xa f xac fxac vdip son1)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:holdsA fxac xac)
+                   (form:property-value xa dip vdip fxac)
+                   (= vdip g)
+                   (form:property-value-sequence xa on1 son1 fxac))
+              (exists (amove occmove)
+                 (and (form:remove-property-value xa dip vdip amove)
+                      (form:clear-property-value-sequence xa on1 amove)
+                      (form:set-property-value-sequence xa on2 son1 amove)
+                      (psl:occurrence_of occmove amove) 
+                      (psl:next_subocc xac occmove a)))))))
+
+/* 10.4.8.3 Action with pins, no incoming control flow or one from initial 
+   This sub clause applies to the syntactic pattern of an action with pins, and no incoming control flow or one from an initial  
+   node (for example, see the Testing String Equality pattern in Annex A.4.9). It requires the action to execute for every  
+   execution of the activity when the input pins are provided enough values to meet their lower multiplicity. */
+
+/* The action-input-pins-satisfied links actions (the ac variable) under executions of their containing activities (xa), with  
+   other executions (xsub) after which the values in the action's pins meet their lower multiplicity.  An incoming control  
+   flow is required if all input pins are optional (lower multiplicity of zero).  It assumes that the input pin multiplicity lower  
+   bound is zero or one. */
+
+(forall (ac xa xsub)
+   (iff (form:action-input-pins-satisfied ac xa xsub)
+        (and (forall (ip ipmin)
+                (if (and (buml:input ac ip)
+                         (buml:lower ip ipmin))
+                    (or (= ipmin form:0)
+                        (and (= ipmin form:1)
+                             (exists (v f)
+                                (and (form:holdsA f xsub)
+                                     (form:property-value xa ip v f)))))))
+             (or (exists (e)
+                    (buml:target e ac))
+
+                 (exists (ip)
+                    (and (buml:input ac ip)
+                         (exists (v f)
+                            (and (form:holdsA f xsub)
+                                 (form:property-value xa ip v f)))))))))
+
+/* The action-pin-trigger relation links actions (the ac variable) under executions of their containing activities (xa), with  
+   other executions (xsub) under the activity execution before which the action input pins are not satisfied and after which  
+   they are. */
+
+(forall (xac ac xa xsub) /* added */
+   (iff (form:action-pin-trigger ac xsub xa)
+        (and (form:subactivity_occurrence-neq xsub xa)
+             (forall (xlsub alsub)
+                (if (and (psl:leaf_occ xlsub xsub)
+                         (psl:occurrence_of xlsub alsub))
+                    (exists (xbsub)
+                       (and (= xlsub (psl:successor xbsub alsub))
+                            (not (form:action-input-pins-satisfied ac xa xbsub))
+                            (form:action-input-pins-satisfied ac xa xlsub))))))))
+
+/* The take-input relation ensures that executions (the xac variable) remove values from input pins that are values just after  
+   another execution is complete (xsub). The other execution brings about pin satisfaction, see action-pin-trigger above. It  
+   assumes that the input pin multiplicity upper bound is one or unlimited. */
+
+(forall (xac ac xa xsub)
+  (iff (form:take-input xac ac xa xsub)
+       (forall (srootxac arootxac ip ipmax)
+          (if (and (psl:root_occ srootxac xac)
+                   (psl:occurrence_of srootxac arootxac)
+                   (buml:input ac ip)
+                   (buml:upper ip ipmax))
+              (or (and (= ipmax form:1)
+                       (forall (fxsubh v)
+                          (if  (and (form:holdsA fxsubh xsub)
+                                    (form:property-value xa ip v fxsubh))
+                               (form:remove-property-value xa ip v arootxac))))
+                  (and (= ipmax buml:*)
+                       (forall (fxsubh v)
+                          (if (and (form:holdsA fxsubh xsub)
+                                   (form:property-value xa ip v fxsubh))
+                              (form:remove-property-value xa ip v 
+                                                          arootxac)))))))))
+(forall (n)
+   (iff (form:no-incoming-edge-or-one-from-initial n)
+        (and (forall (e1 e2)
+                (if (and (buml:incoming e1 n)
+                         (buml:incoming e2 n))
+                    ( = e1 e2)))
+             (forall (n2)
+                (if (form:flow-trans-fork-merge n2 n)
+                    (buml:InitialNode n2))))))
+
+(forall (ac a ip)
+   (if (and (buml:Action ac)
+            (form:no-incoming-edge-or-one-from-initial ac)
+            (buml:input ac ip)
+
+            (form:activity ac a))
+       (forall (xa f xsub)
+           (if (and (form:classifies a xa f)
+                    (form:action-pin-trigger ac xsub xa))
+               (exists (xac)
+                  (and (form:property-value xa ac xac f)
+                       (psl:min_precedes xsub xac a)
+                       (form:take-input xac ac xa xsub)))))))
+
+/* 10.4.8.4 Action with pins, one incoming control flow from action, optional fork/merge 
+   This sub clause applies to the syntactic pattern of an action with pins, and one incoming control flow from another action  
+   with any intervening and chained fork and merge nodes (for example, see the Method Call pattern in Annex A.4.11). It  
+   requires the target action to execute after the source action when the input pins are provided enough values to meet their  
+   lower multiplicity. */
+
+/* The joinable-control-input relation links actions and their executions (the ac0 and xac0 variables respectively) under  
+   executions of their containing activities (xa and a, respectively), with other executions (xsub) under the activity execution  
+   that satisfy the pins of a target action (ac). The action executions (xac0) and the other pin-satisfying executions (xsub) are  
+   paired one-to-one in time order. The pairing begins with action executions and pin-satisfying executions that have no  
+   other ones before them (the first part of the disjunctioin), and the pairs after that are in time order (the second part of the  
+   disjunction). */
+
+(forall (xac0 xsub xa a ac0)
+   (iff (form:joinable-control-input ac0 xac0 xsub ac a xa)
+        (forall (f)
+           (or (and (not (exists (xac00)
+                            (and (form:property-value xa ac0 xac00 f)
+                                 (psl:min_precedes xac00 xac0 a))))
+                    (not (exists (xsub0)
+                            (and (form:action-pin-trigger ac xsub0 xa)
+                                 (psl:min_precedes xsub0 xsub a)))))
+               (exists (xac02 xsub2)
+                  (and (form:joinable-control-input ac0 xac02 xsub2 ac a xa)
+                       (not (exists (xac00)
+                               (and (form:property-value xa ac0 xac00 f)
+                                    (psl:min_precedes xac02 xac00 a)
+                                    (psl:min_precedes xac00 xac0 a))))
+                       (not (exists (xsub0)
+                               (and (form:action-pin-trigger ac0 xsub0 xa)
+                                    (psl:min_precedes xsub2 xsub0 a)
+                                    (psl:min_precedes xsub0 xsub a))))))))))
+
+/* The joined-follows relation links PSL occurrences where two of the occurrences (the s1 and  s2 variables) happen before  
+   the third (s3) under execution of an activity (a). The third occurrence is constrained to follow no more than one pair of the  
+   other two occurrences, and each pair of the other two occurrences to be followed by no more than one of the third 
+(compare to the follows relation in 10.4.7.3). */
+
+(forall (s1 s2 s3 a)
+  (if (form:joined-follows s1 s2 s3 a)
+      (and (form:min_precedesA s1 s3 a)
+           (form:min_precedesA s2 s3 a))))
+
+(forall (s1 s2 s3 s12 s22 s32 a)
+   (if (and (form:joined-follows s1 s2 s3 a)
+
+            (form:joined-follows s12 s22 s32 a))
+       (iff (and (= s1 s12)
+                 (= s2 s22))
+            (= s3 s32))))
+
+/* The joined-action-execution-exists relation establishes existence of executions of actions (the ac variable) under activity  
+   exections (xa, an execution of activity a) where an action execution happens after its input pins are satisfied, and after  
+   another action execution completes (xac0, an execution of action ac0).  An earlier constraint requires the source of control  
+   flow (xac0) to execute before the target action (ac), see 10.4.7.3. The constraint below addresses the remaining cases, one  
+   where the input pins are satisfied at the time the source of control flow is completed (the first part of the disjunction), and  
+   another where the input pins are satisfied sometime after the source of control flow is completed (the second part of the  
+   disjunction), see action-pin-trigger and  joinable-control-input. */
+
+(forall (ac ac0 xac0 a xa)
+  (iff (form:joined-action-execution-exists ac ac0 xac0 a xa)
+       (forall (f)
+          (or (and (form:action-input-pins-satisfied ac xa xac0)
+                   (exists (xac)
+                      (and (form:property-value xa ac xac f)
+                           (form:take-input xac ac xa xac0))))
+              (and (not (form:action-input-pins-satisfied ac xa xac0))
+                   (forall (xsub)
+                     (if (and (form:action-pin-trigger ac xsub xa)
+                              (form:joinable-control-input ac0 xac0 xsub ac a xa))
+                         (exists (xac)
+                            (and (form:property-value xa ac xac f)
+                                 (form:follows xac0 xac a)
+                                 (form:joined-follows xac0 xsub xac a)
+                                 (form:take-input xac ac xa xsub))))))))))
+(forall (ac0 ac a)
+   (if (and (buml:Action ac0)
+            (buml:Action ac)
+            (form:max-one-incoming-edge ac)
+            (form:flow-trans-fork-merge ac0 ac)
+            (form:activity ac a))
+       (forall (xa f xac0)
+           (if (and (form:classifies a xa f)
+                    (form:property-value xa ac0 xac0 f))
+               (form:joined-action-execution-exists ac ac0 xac0 a xa)))))
+
+/* 10.4.8.5 Action with pins, one incoming control flow from action, decision with decision flow from same  action, optional fork/merge 
+   This sub clause applies to the syntactic pattern an action with pins, and one incoming control flow from another action  
+   with any intervening and chained fork and merge nodes, and one intervening decision node in both the object flows and  
+   control flows (for example, see the Do-While pattern in Annex A.3.10). The decision inputs come from output pins on the  
+   same action as the source of the control flow.  It requires the target action to execute after the source action when the  
+   input pins are provided enough values to meet their lower multiplicity. */
+
+/* The guarded-joined-action-execution-exists relation augments the joined-action-execution-exists relation for a syntactic  
+   pattern that has a decision node with a decision input from an output pin (the dip variable) and guard value (g). It assumes  
+   the output pin has exactly one value, and the guard is a literal value specification. It ensures the value of the output pin is  
+   removed. */
+
+(forall (ac ac0 dip g a)
+  (iff (form:guarded-joined-action-execution-exists ac ac0 dip g a)
+       (forall (xa f xac0 vdip fxac0)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac0 xac0 f)
+                   (form:holdsA fxac0 xac0)
+                   (form:property-value xa dip vdip fxac0)
+                   (= vdip g))
+              (and (form:joined-action-execution-exists ac ac0 xac0 a xa)
+                   (exists (amove occmove)
+                      (and (form:remove-property-value xa dip vdip amove)
+                           (psl:occurrence_of occmove amove) 
+                           (psl:next_subocc xac0 occmove a))))))))
+(forall (ac0 ac dip g a)
+   (if (and (buml:Action ac0)
+            (buml:Action ac)
+            (form:max-one-incoming-edge ac)
+            (form:flow-trans-fork-merge-decision ac0 ac dip g)
+            (buml:output ac0 dip)
+            (form:activity ac a))
+       (form:guarded-joined-action-execution-exists ac ac0 dip g a)))
+
+/* 10.4.8.6 Action with pins, one incoming control flow from initial, decision with decision flow from initial  action in same, optional fork/merge */
+
+/* This sub clause applies to the syntactic pattern an action with pins, and one incoming control flow from and intial node  
+   with any intervening and chained fork and merge nodes, and one intervening decision node the control flow (for example,  
+   see the If Statement pattern in Annex A.3.9). The decision inputs come from output pins on the same action as the source  
+   of the control flow. It requires the target action to execute for every execution of the activity when the input pins are  
+   provided enough values to meet their lower multiplicity. */
+
+(forall (i ac dip g ac0 a)
+   (if (and (buml:InitialNode i)
+            (buml:Action ac)
+            (form:max-one-incoming-edge ac)
+            (form:flow-trans-fork-merge-decision i ac dip g)
+            (buml:output ac0 dip)
+            (form:executable-without-input ac0)
+            (form:same-syntactic-container i ac)
+            (form:same-syntactic-container i ac0)
+            (form:activity ac a))
+       (form:guarded-joined-action-execution-exists  ac ac0 dip g a)))
+
+/* 10.4.9  Invocation Actions 
+   10.4.9.1 Syntax 
+   This sub clause specifies additional syntax for invocation actions. The called relation links call actions to behaviors and  
+   operations that are called. */
+
+(forall (ac pd)
+   (if (form:called ac pd)
+       (and (buml:CallAction ac)
+            (form: ProcessDefinition pd))))
+
+(forall (ac po1 po2)
+   (if (and (form:called ac po1)
+            (form:called ac po2))
+       (= po1 po2)))
+
+(forall (ac)
+   (if (buml:CallAction ac)
+       (exists (po)
+          (form:called ac po))))
+
+/* The pin-parameter-match relation links pins and called parameters as derived from pin and parameter ordering in the  
+   model. */
+
+(forall (pn p)
+   (if (form:pin-parameter-match pn p)
+       (and (buml:Pin pn)
+            (buml:Parameter p))))
+
+(forall (pn1 p1 pn2 p2)
+   (if (and (form:pin-parameter-match pn1 p1)
+            (form:pin-parameter-match pn2 p2))
+       (iff (= pn1 pn2)
+            (= p1 p2))))
+
+(forall (pn p)
+   (if (form:pin-parameter-match pn p)
+       (and (if (form:InputParameter p)
+                (buml:InputPin pn))
+            (if (form:OutputParameter p)
+                (buml:OutputPin pn)))))
+
+(forall (pn p)
+   (if (form:pin-parameter-match pn p)
+       (forall (m)
+          (and (iff (buml:lower pn m)
+                    (buml:lower p m))
+               (iff (buml:upper pn m)
+                    (buml:upper p m))
+               (iff (buml:type pn m)
+                    (buml:type p m))))))
+
+(forall (pn p)
+   (if (form:pin-parameter-match pn p)
+       (forall (t)
+          (iff (buml:type pn t)
+               (buml:type p t)))))
+
+(forall (ac po)
+   (if (and (buml:CallAction ac)
+            (form:called ac po))
+       (forall (pn p)
+          (iff (and (form:put ac pn)
+                    (form:pin-parameter-match pn p))
+               (form:ownedParameter po p)))))
+
+(forall (ac b)
+   (if (buml:behavior ac b)
+       (buml:type ac b)))
+
+(forall (ac b)
+   (if (buml:behavior ac b)
+       (form:called ac b)))
+
+(forall (ac op)
+   (if (buml:operation ac op)
+       (form:called ac op)))
+
+(forall (ac op)
+   (if (buml:operation ac op)
+       (buml:type ac op)))
+
+/* The pin-property-match relation links pins and properties as derived from pin and signal property ordering in the model.   */
+(forall (pn p)
+   (if (form:pin-property-match pn p)
+       (and (buml:Pin pn)
+            (buml:Property p))))
+
+(forall (pn1 p1 pn2 p2)
+   (if (and (form:pin-property-match pn1 p1)
+            (form:pin-property-match pn2 p2))
+       (iff (= pn1 pn2)
+            (= p1 p2))))
+(forall (pn p)
+   (if (form:pin-property-match pn p)
+       (forall (m)
+          (and (iff (buml:lower pn m)
+                    (buml:lower p m))
+               (iff (buml:upper pn m)
+                    (buml:upper p m))
+               (iff (buml:type pn m)
+                    (buml:type p m))))))
+
+(forall (ac sig)
+   (if (and (buml:SendSignalAction ac)
+            (form:signal ac sig))
+       (forall (pn p)
+          (iff (and (form:argument ac pn)
+                    (form:pin-property-match pn p))
+               (buml:ownedAttribute sig p)))))
+
+/* 10.4.9.2 Semantics 
+   This sub clause gives necessary conditions on executions of invocation actions as used in the execution engine 
+(CallBehaviorAction, CallOpertationAction, and SendSignalAction). */
+
+/* The change-only-pin relation links actions and their executions under the activity executions, where the action executions  
+   only affect spins of the action. */
+
+(forall (ac xac xa)
+   (iff (form:change-only-pin ac xac xa)
+
+        (forall (xsub o p v)
+           (if (and (form:subactivity_occurrence-neq xsub xac)
+                    (form:achieves-property-value o p v xsub))
+               (and (= o xa)
+                    (or (buml:input ac p)
+                        (buml:input ac p)))))))
+
+/* This ensures activities invoked with call behavior actions transfer values between pins and parameter nodes, and that  
+   called function behaviors only affect pins of their calling actions. */
+
+(forall (ac a b)
+   (if (and (buml:CallBehaviorAction ac)
+            (form:activity ac a)
+            (buml:type ac b))
+       (forall (xa xac f)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f))
+              (and (if (buml:Activity b)
+                       (form:fill-empty-parameter-node a xa ac xac xac))
+                   (if (buml:FunctionBehavior b)
+                       (form:change-only-pin ac xac xa)))))))
+
+/* The dispatch relation links links objects to operations and behaviors in a PSL states.  It is used to determine more detailed  
+   behavior (method) based on the thing on which an operation is invoked.  It assumes multiple generalization does not  
+   affect the choice of method. */
+
+ (forall (o op b f)
+   (if (form:dispatch o op b f)
+       (and (buml:Operation op)
+            (buml:Behavior b)
+            (psl:state f))))
+
+(forall (o op b f)
+   (if (form:dispatch o op b f)
+       (exists (c)
+          (and (form:classifies c o f)
+               (form:method op b c)
+               (not (exists (c2 b2)
+                       (and (not (= c c2))
+                            (buml:general c2 c)
+                            (form:method op b2 c)
+                            (form:classifies c2 o f))))))))
+
+/* The execution-performer relation links executions to things performing those executions. */
+(forall (x o)
+  (if (form:execution-performer x o)
+      (form:execution x)))
+
+(forall (x o1 o2)
+  (if (and (form:execution-performer x o1)
+           (form:execution-performer x o2))
+      (= o1 o2)))
+
+/* This ensures activities invoked with call operation actions transfer values between pins and parameter nodes, and that  
+   called function behaviors only affect pins of their calling actions. */
+
+(forall (ac a op b tip)
+   (if (and (buml:CallOperationAction ac)
+            (form:activity ac a)
+            (buml:operation ac op)
+            (buml:target ac tip))
+       (forall (xa xac f fxac to)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa tip to fxac)
+                   (form:dispatch to op b fxac))
+              (and (form:classifies b xac f)
+                   (form:execution-performer xac to)
+                   (form:fill-empty-parameter-node a xa ac xac xac))))))
+
+/* The new-object relation links things to PSL occurrences before which the object does not exist.  */
+(forall (o occ)
+   (if (form:new-object o occ)
+       (psl:occurrence occ)))
+
+(forall (o occ)
+   (if (form:new-object o occ)
+       (and (forall (locc occ2)
+               (if (and (psl:leaf_occ locc occ)
+                        (psl:earlierEq occ2 locc))
+                   (not (exists (f p s o2 c)
+                           (and (psl:prior f occ2)
+                                (or (form:property-value-sequence o p s f)
+                                    (form:property-value-sequence o2 p o f)
+                                    (form:classifies c o f)))))))
+            (exists (f p s o2 c)
+               (and (psl:holdsA f occ)
+                    (or (form:property-value-sequence o p s f)
+                        (form:property-value-sequence o2 p o f)
+                        (form:classifies c o f)))))))
+
+/* The fill-signal-property relation links signal objects to input pins that have values for properties of the signal.  It assumes  
+   input pin multiplicity upper is one or unlimited. */
+
+(forall (osig ip ipmax xa xac)
+  (iff (form:fill-signal-property osig ip ipmax xa xac)
+       (forall (srootxac arootxac p fxac)
+          (if (and (psl:root_occ srootxac xac)
+                   (psl:occurrence_of srootxac arootxac)
+                   (form:pin-property-match ip p)
+                   (form:priorA fxac xac))
+              (or (and (= ipmax buml:*)
+                       (forall (s)
+                          (if (form:property-value-sequence xa ip s fxac)
+                              (form:set-property-value-sequence osig p s 
+                                                                arootxac))))
+                  (and (= ipmax form:1)
+                       (forall (v)
+                          (if (form:property-value xa ip v fxac)
+                              (form:add-property-value osig p v arootxac)))))))))
+
+/* The event-pool relation links things to collections of events sent to them and waiting to be processed. */
+(forall (o osig f)
+  (if (form:event-pool o osig f)
+      (psl:state f)))
+
+/* This ensures ensures send signal action executions transfer values between pins and signal properties, and that the signal  
+   is in the event pool of the target. */
+
+(forall (ac a sig tip)
+   (if (and (buml:SendSignalAction ac)
+            (form:activity ac a)
+            (buml:signal ac sig)
+            (buml:target ac tip))
+       (forall (xa xac f fxac to)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa tip to fxac))
+  
+            (exists (fxac2 osig)
+                 (and (form:holdsA fxac2 xac)
+                      (form:classifies sig osig fxac2)
+                      (form:new-object osig xac)
+                      (forall (ip ipmax)
+                          (if (and (buml:argument ac ip)
+                                   (buml:upper ip ipmax))
+                              (form:fill-signal-property osig ip ipmax xa xac)))
+                      (form:event-pool to osig fxac2)))))))
+
+/* 10.4.10 Object Actions (Intermediate) 
+   This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution  
+   engine (CreateObjectAction, TestIdentityAction, ReadSelfAction, and ValueSpecificationAction). */
+
+(forall (ac a c op)
+   (if (and (buml:CreateObjectAction ac)
+            (form:activity ac a)
+            (buml:classifier ac c)
+            (buml:result ac op))
+       (forall (xa xac f)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f))
+              (exists (fxac o)
+                 (and (form:holdsA fxac xac)
+                      (form:classifies c o fxac)
+                      (form:new-object o xac)
+                      (form:property-value xa op o fxac)))))))
+
+/* This covers testing equivalence of datatype values, which the UML TestIdentityAction does not. */
+(forall (ac a ip1 ip2 op)
+   (if (and (buml:TestIdentityAction ac)
+            (form:activity ac a)
+            (buml:first ac ip1)
+            (buml:first ac ip2)
+
+            (buml:result ac op))
+       (forall (xa xac f v1 v2 fxac)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa ip1 v1 fxac)
+                   (form:property-value xa ip2 v2 fxac))
+              (exists (fxac2)
+                 (and (form:holdsA fxac2 xac)
+                      (if (or (= v1 v2)
+                              (form:same-string v1 v2))
+                          (form:property-value xa op form:true fxac2))
+                      (if (not (= v1 v2))
+                          (form:property-value xa op form:false fxac2))))))))
+(forall (ac a op)
+   (if (and (buml:ReadSelfAction ac)
+            (form:activity ac a)
+            (buml:result ac op))
+       (forall (xa xac f xsuper o)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:subactivity_occurrence-neq xac xsuper)
+                   (form:execution-performer o xsuper)
+                   (not (exists (xsuper2 o2)
+                           (and (form:subactivity_occurrence-neq xac xsuper2)
+                                (form:subactivity_occurrence-neq xsuper2 xsuper)
+                                (form:execution-performer o2 xsuper2)))))
+              (exists (fxac)
+                 (and (form:holdsA fxac xac)
+                      (form:property-value xa op o fxac)))))))
+(forall (ac a vs op)
+   (if (and (buml:ValueSpecificationAction ac)
+            (form:activity ac a)
+            (buml:value ac vs)
+            (buml:result ac op))
+       (forall (xa xac f)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f))
+              (exists (fxac)
+                 (and (form:holdsA fxac xac)
+                      (forall (v)
+                         (if (buml:value vs v)
+                             (form:property-value xa op v fxac)))
+                      (if (buml:LiteralNull vs)
+                          (form:property-value xa op form:null fxac))
+                      (if (buml:InstanceValue vs)
+                          (forall (i)
+                             (if (buml:instance vs i)
+                                 (form:property-value xa op i fxac))))))))))
+
+/* 10.4.11 Structural Feature Actions 
+   This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution model  
+(ReadStructuralFeatureAction, ClearStructuralFeatureAction, AddStructuralFeatureAction, 
+ RemoveStructuralFeatureAction). */
+
+(forall (ac a p oip op)
+   (if (and (buml:ReadStructuralFeatureAction ac)
+            (form:activity ac a)
+            (buml:structuralFeature ac p)
+            (buml:object ac oip)
+            (buml:result ac op))
+       (forall (xa xac f o fxac v)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa oip o fxac)
+                   (form:property-value o p v fxac))
+              (exists (fxac2)
+                 (and (form:holdsA fxac2 xac)
+                      (form:property-value xa op v fxac2)))))))
+(forall (ac a p oip op)
+   (if (and (buml:ClearStructuralFeatureAction ac)
+            (form:activity ac a)
+            (buml:structuralFeature ac p)
+            (buml:object ac oip)
+            (buml:result ac op))
+       (forall (xa xac f o fxac)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa oip o fxac))
+              (and (not (exists (fxac2 v)
+                           (and (form:holdsA fxac2 xac)
+                                (form:property-value o p v fxac2))))
+                   (exists (fxac2)
+                      (and (form:holdsA fxac2 xac)
+                           (form:property-value xa op o fxac2))))))))
+
+(forall (ac a p oip vip)
+   (if (and (buml:AddStructuralFeatureAction ac)
+            (form:activity ac a)
+            (buml:structuralFeature ac p)
+            (buml:object ac oip)
+            (buml:value ac vip))
+       (forall (xa xac f o fxac v)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa oip o fxac)                   
+                   (form:property-value xa vip v fxac))
+              (and (form:property-value o p v fxac)
+                   (forall (iraip irav)
+                     (if (and (buml:isReplaceAll ac iraip)
+                              (form:property-value xa iraip irav fxac)
+
+                              (= iraip form:true))
+                         (not (exists (fxac2 v2)
+                                 (and (form:holdsA fxac2 xac)
+                                      (form:property-value o p v2 fxac2)
+                                      (not (= v v2)))))))
+                   (forall (iaip iav s sl sl1 n)
+                     (if (and (buml:insertAt ac iaip)
+                              (form:property-value xa iaip iav fxac)
+                              (form:property-value-sequence o p s fxac)
+                              (form:sequence-length s sl)
+                              (form:add-one sl sl1)
+                              (if (= iav buml:*)
+                                  (= n sl1))
+                              (if (not (= iav buml:*))
+                                  (= n iav)))
+                         (exists (fxac2 s2)
+                           (and (or (= iav buml:*)
+                                    (and (form:WholeNumber iav)
+                                         (form:less-than iav sl1)))
+                                (form:holdsA fxac2 xac)
+                                (form:property-value-sequence o p s2 fxac2)
+                                (form:in-position-count s2 v n)
+                                (forall (nless v2)
+                                   (if (and (form:WholeNumber nless)
+                                            (form:less-than nless n)
+                                            (form:in-position-count s v2 nless))
+                                       (form:in-position-count s2 v2 nless)))
+                                (if (form:WholeNumber iav)
+                                    (forall (nmore v2 nmore1)
+                                      (if (and (form:WholeNumber nmore)
+                                               (form:less-than n nmore)
+                                               (form:less-than nmore sl1)
+                                               (form:in-position-count s v2 nmore)
+                                               (form:add-one nmore nmore1))
+                                          (form:in-position-count s2 v2 
+                                                               nmore1)))))))))))))
+
+/* This assumes isRemoveDuplicates on the action is false. */
+(forall (ac a p oip vip)
+   (if (and (buml:RemoveStructuralFeatureAction ac)
+            (form:activity ac a)
+            (buml:structuralFeature ac p)
+            (buml:object ac oip)
+            (buml:value ac vip))
+       (forall (xa xac f o fxac v)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa oip o fxac)
+                   (form:property-value xa vip v fxac))
+              (and (if (not (exists (raip)
+                               (buml:insertAt ac raip)))
+                       (not (exists (fxac2)
+                               (and (form:holdsA fxac2 xac)
+                                    (form:property-value o p v fxac)))))
+
+                   (forall (raip n s sl sl1)
+                      (if (and (buml:removeAt ac raip)
+                               (form:property-value xa raip n fxac)
+                               (form:property-value-sequence o p s fxac)
+                               (form:sequence-length s sl)
+                               (form:add-one sl sl1))
+                          (exists (fxac2 s2)
+                             (and (form:holds fxac2 xac)
+                                  (form:property-value-sequence o p s2 fxac2)
+                                  (form:WholeNumber n)
+                                  (form:less-than n sl1)
+                                  (forall (nless v2)
+                                     (if (and (form:WholeNumber nless)
+                                              (form:less-than nless n)
+                                              (form:in-position-count s v2 nless))
+                                          (form:in-position-count s2 v2 nless)))
+                                  (forall (nmore v2 nmore1)
+                                    (if (and (form:WholeNumber nmore)
+                                             (form:less-than n nmore)
+                                             (form:less-than nmore sl1)
+                                             (form:in-position-count s v2 nmore)
+                                             (form:add-one nmore1 nmore))
+                                        (form:in-position-count s2 v2 
+                                                                nmore1))))))))))))
+
+/* 10.4.12 Object Actions (Complete) 
+   This sub clause specifies necessary conditions on executions of complete object actions as used in the execution model 
+(ReadIsClassifiedObjectAction and StartObjectBehaviorAction).
+
+ This assumes the isDirect attribute on the action is false. */
+(forall (ac a ip c op)
+   (if (and (buml:ReadIsClassifiedObjectAction  ac)
+            (form:activity ac a)
+            (buml:object ac ip)
+            (buml:classifier ac c)
+            (buml:result ac op))
+       (forall (xa xac f o fxac)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa ip o fxac))
+              (exists (fxac2)
+                 (and (form:holdsA fxac2 xac)
+                      (if (form:classifies c o fxac)
+                          (form:property-value xa op form:true fxac2))
+                      (if (not (form:classifies c o fxac))
+                          (form:property-value xa op form:false fxac2))))))))
+
+/* This assumes the object input is not a behavior, that no arguments are passed, and the action is not synchronous. */
+(forall (ac a ip)
+   (if (and (buml:StartObjectBehaviorAction  ac)
+            (form:activity ac a)
+
+            (buml:object ac ip))
+       (forall (xa xac f o fxac c b)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:priorA fxac xac)
+                   (form:property-value xa ip o fxac)
+                   (form:classifies c o fxac)
+                   (buml:classifierBehavior c b))
+              (exists (xb srootxb)
+                 (and (form:classifies b xb f)
+                      (form:execution-performer xb o)
+                      (psl:root_occ srootxb xb)
+                      (form:subactivity_occurrence-neq srootxb xac)))))))
+
+/* 10.4.13 Accept Event Action 
+   This sub clause specifies necessary conditions on executions of AcceptEventAction. The getNextEvent relation links  
+   things and triggers with signal objects in the thing's event pool in a PSL state. */
+
+(forall (o osig tr f)
+   (if (form:getNextEvent o osig tr f)
+       (exists (ev sig)
+          (and (form:event-pool o osig f)
+               (buml:event tr ev)
+               (buml:signal ev sig)
+               (form:classifies sig osig f)))))
+(forall (o osig1 tr osig2 f)
+   (if (and (form:getNextEvent o osig1 tr f)
+            (form:getNextEvent o osig2 tr f))
+       (= osig1 osig2)))
+
+(forall (ac)
+   (if (buml:AcceptEventAction ac)
+       (buml:type ac form:AcceptEventBehavior)))
+
+(forall (ac a tr op)
+   (if (and (buml:AcceptEventAction ac)
+            (form:activity ac a)
+            (buml:trigger ac tr)
+            (buml:result ac op))
+       (forall (xa xac f o xlac fxlac)
+          (if (and (form:classifies a xa f)
+                   (form:property-value xa ac xac f)
+                   (form:execution-performer xac o)
+                   (psl:leaf_occ xlac xac)
+                   (form:priorA fxlac xlac))
+              (exists (osig)
+               (and (form:getNextEvent o osig tr fxlac)
+                    (exists (fxac2)
+                      (and (psl:holds fxac2 xac)
+                           (not (form:event-pool o osig fxac2))
+                           (form:property-value xa op osig fxac2)))
+                     (not (exists (xac2 lxac2)
+                            (and (form:classifies form:AcceptEventBehavior xac2 f)
+                                 (form:execution-performer xac2 o)
+
+                                 (not (= xac2 xac))
+                                 (psl:leaf_occ lxac2 xac2)
+                                 (psl:leaf_occ lxac2 xac))))))))))
+
