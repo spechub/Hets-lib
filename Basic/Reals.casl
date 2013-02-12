@@ -3,7 +3,7 @@ library Basic/Reals
 %% for the full theory of the real numbers, see HasCASL/Reals
 
 %prec( { __^__, __>__, __>=__ } < { __!__ } )%
-%prec( { __/__ } < { __*__ } )%
+
 from Basic/Numbers get Nat, Int, Rat
 
 from Basic/Algebra_I get Field, ExtField
@@ -290,8 +290,8 @@ then
        %%              arcsin(x) and pi:
        .              def arcsin(x) <=> abs(x) <= 1
        .               arcsin(x) = sum(
-                              (2*N+1)! * constSeq(x)^(2*N+1) /
-                              (2*N+1)* 2^(2*N-1) * (N-1)! * N! ) if def arcsin(x)
+                              ((2*N+1)! * constSeq(x)^(2*N+1)) /
+                              ((2*N+1)* 2^(2*N-1) * (N-1)! * N!)) if def arcsin(x)
 
        .              pi = 4*arcsin(sqrt(1/2))
        .              arcsin(1) = pi/2
