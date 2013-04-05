@@ -26,7 +26,7 @@ spec Nat =
  free type Nat ::= 0 | suc(Nat)
 end
 
-spec NatComp = 
+spec Nat_Comp = 
  Nat then 
  free {
   pred __<__ : Nat * Nat
@@ -69,7 +69,7 @@ spec Pos_Overload =
 
 %% definition of addition
 
-spec NatAdd = 
+spec Nat_Add = 
  Nat then
  op __+__ : Nat * Nat -> Nat
  forall x,y : Nat 
@@ -79,7 +79,7 @@ spec NatAdd =
 %% leading term consists of not only vars and constructors
 
 spec Nat_Multi = 
- NatAdd
+ Nat_Add
 then
  op __*__ : Nat * Nat -> Nat
  forall r,s,t : Nat
@@ -87,10 +87,10 @@ then
  . t * (r + s) = (t * r) + (t * s)
 end
 
-%% 
+%% PartialFunctionNoDomainTerminatingSufComplete
 
 spec Nat_Pred = 
-  NatComp then
+  Nat then
   op pre : Nat -> ?Nat
   forall x : Nat 
    . not def(pre(0))
@@ -98,7 +98,7 @@ spec Nat_Pred =
 end
 
 spec Nat_Diff = 
-  Nat_Pred then 
+  Nat_Pred and Nat_Comp then 
   op __-__ : Nat * Nat -> ?Nat
   forall x, y : Nat 
    . def(x - y) <=> (y < x \/ y = x)
@@ -115,14 +115,14 @@ spec Nat_F =
 end 
 
 spec Nat_Leq = 
- NatComp then
+ Nat_Comp then
  pred __<=__ : Nat * Nat
  forall x,y : Nat 
   . x <= y <=> (x < y \/ x = y)
 end
 
 spec Nat_Overlap = 
- NatAdd then 
+ Nat_Add then 
  op f : Nat -> Nat 
  forall x : Nat 
   . f(x) = x + x
@@ -194,4 +194,92 @@ spec Nat_Non_Left_Linear =
   . suc(m) + m = suc(m + m)
 end
 
+%% examples for each branch of the diagram
 
+ spec NotConfluent = 
+   sort s 
+   ops a, b : s
+   then 
+   op f : s -> s
+   forall x : s 
+    . f(x) = a 
+    . f(x) = b
+ end
+
+ spec NotConfluent2 = 
+  free type s ::= a | b
+  then 
+  op f : s -> s
+  forall x :s
+   . f(x) = a
+   . f(x) = b
+ end
+
+ spec PartialNoDomainNonTerminating = 
+   Nat then
+   op f : Nat -> ?Nat
+   forall n : Nat 
+    . f(n) = f(n)
+ end
+
+ spec PartialNoDomainTerminatingNotSC = 
+  Nat then
+  op f : Nat -> ?Nat
+  . f(0) = 0
+  . f(suc(0)) = 0
+ end
+
+ spec PartialDomainProofSC = 
+  Nat then
+   op f : Nat -> ?Nat
+   var n : Nat
+   . def(f(n)) <=> n = 0
+   . f(0) = 0
+   . f(suc(n)) = f(suc(suc(n)))
+ end
+ 
+ spec PartialDomainProofNotSC = 
+  Nat then
+   op f : Nat -> ?Nat
+   var n : Nat
+   . def(f(n)) <=> n = 0
+   . f(0) = 0
+ end
+
+%% for this case we can't decide syntactically
+%% and we have an example for each possibility
+%% since we require f to be totally defined
+%% they also provide examples for the case
+%% when the function is total but not terminating
+
+ spec PartialDomainNoProofCons = 
+   Nat then
+   op f : Nat -> ?Nat
+   var n : Nat
+   . def(f(n)) <=> true
+   . f(0) = 0
+   . f(suc(n)) = f(suc(suc(n)))
+  end
+
+ spec PartialDomainNoProofNotCons = 
+  Nat then
+  op f : Nat -> ?Nat
+  var n : Nat
+  . def(f(n)) <=> true
+  . f(0) = 0
+  . f(suc(n)) = suc(f(suc(n)))  
+ end
+
+%% total functions
+
+ spec TotalTermNotSC =
+   Nat then
+   op f : Nat -> Nat 
+   . f(0) = 0
+  end
+
+ spec TotalTermSC = 
+  Nat then 
+  op f : Nat -> Nat
+  var n : Nat
+  . f(n) = n
