@@ -1,3 +1,5 @@
+distributed-ontology Alignment
+
 logic OWL
 alignment Alignment1 : { Class: Woman } to { Class: Person } =
   Woman < Person
@@ -20,12 +22,13 @@ ontology Onto2 =
 end
 
 alignment VAlignment : Onto1 to Onto2 =
-  Person |-> HumanBeing,
-  Woman |-> Woman
+  Person = HumanBeing,
+  Woman = Woman
 end
 
 ontology VAlignedOntology =
-  combine 1 : Onto1, 2 : Onto2, VAlignment
+  combine Onto1, Onto2, VAlignment
+%%  combine 1 : Onto1, 2 : Onto2, VAlignment
   %% 1:Person is identified with 2:HumanBeing
   %% 1:Woman is identified with 2:Woman
   %% 1:Bank and 2:Bank are kept distinct
