@@ -1,0 +1,41 @@
+distributed-ontology Blocks_with_Circumscription
+logic OWL
+
+ontology Blocks = 
+  %% FIXED PART 
+  Class: Block
+  Individual: B1 Types: Block
+  Individual: B2 Types: Block DifferentFrom: B1
+              %% B1 and B2 are different blocks
+then
+  %% CIRCUMSCRIBED PART
+  minimize {
+  Class: Ab
+  Individual: B1 Types: Ab
+     %% B1 is abnormal
+  }
+then
+  %% VARYING PART
+  Class: Ontable 
+  Class: BlockNotAb EquivalentTo: Block and not Ab SubClassOf: Ontable 
+        %% Normally, a block is on the table
+then %implies
+  Individual: B2 Types: Ontable
+     %% B2 is on the table
+end
+
+ontology Blocks_Alternative =
+  Class: Block
+  Class: Ab
+  Individual: B1 Types: Block, Ab
+  Individual: B2 Types: Block DifferentFrom: B1
+              %% B1 and B2 are different blocks
+              %% B1 is abnormal
+  Class: Ontable 
+  Class: BlockNotAb EquivalentTo: Block and not Ab SubClassOf: Ontable 
+        %% Normally, a block is on the table
+  circ Ab var Ontable
+then %implies
+  Individual: B2 Types: Ontable
+     %% B2 is on the table
+end
