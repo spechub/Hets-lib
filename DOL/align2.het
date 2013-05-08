@@ -1,0 +1,18 @@
+logic OWL
+
+ontology Onto1 =
+  Class: Person
+  Class: Woman SubClassOf: Person
+  Class: Bank
+end
+
+ontology Onto2 =
+  Class: HumanBeing
+  Class: Woman SubClassOf: HumanBeing
+  Class: Bank
+end
+
+alignment VAlignment : Onto1 to Onto2 =
+  Class Person = Class HumanBeing,
+  Class Woman = Class Woman
+end
