@@ -1,0 +1,95 @@
+
+(text
+ (phrase
+  (forall ((thing1 "http://example.com/system2/A") (thing2 "http://example.com/system2/B") (thing3 "http://example.com/system2/C") var4 var5 var6 var7 var8 var9 var10 var11 var12 var13)
+   (if
+    (and
+     ("http://example.com/system2/rel1" thing1 var4)
+     ("http://example.com/system2/rel2" thing1 var5)
+     ("http://example.com/system2/rel3" thing1 var12)
+     ("http://example.com/system2/rel4" thing3 thing2)
+     ("http://example.com/system2/rel5" thing2 thing1)
+     ("http://example.com/system2/rel6" thing3 var6)
+     ("http://example.com/system2/rel7" thing3 var7)
+     ("http://example.com/system2/rel8" thing3 var13)
+     (not
+      (= var13 'X'))
+     (not
+      ("http://www.w3.org/2005/xpath-functions/#starts-with" var6 'lit5'))
+     (or
+      (= var12 1)
+      (= var12 2))
+     ("http://example.com/system2/rel9" thing3 var10)
+     ("http://example.com/system2/rel10" thing3 var11)
+     (if
+      (not
+       (= var10 'null'))
+      ("http://www.w3.org/2005/xpath-functions/#numeric-greater-than" var11 0))
+     ("http://example.com/system2/rel11" thing3 var8)
+     (not
+      (exists ((thing14 "http://example.com/system2/D"))
+       (and
+        ("http://example.com/system2/rel12" thing14 thing3)
+        ("http://example.com/system2/rel13" thing14 'X'))))
+     (not
+      (exists ((thing15 "http://example.com/system2/E"))
+       (and
+        ("http://example.com/system2/rel14" thing15 var6)
+        ("http://example.com/system2/rel15" thing15 var5)
+        ("http://example.com/system2/rel16" thing15 'X'))))
+     (exists ((thing16 "http://example.com/system1/A") (thing17 "http://example.com/system1/B"))
+      (and
+       ("http://example.com/system1/rel1" thing16 thing17)
+       ("http://example.com/system1/rel2" thing17 var4)))
+     (not
+      (exists ((thing18 "http://example.com/system2/F") var19)
+       (and
+        ("http://example.com/system2/rel17" thing3 thing18)
+        ("http://example.com/system2/rel18" thing18 var19)
+        (not
+         (= var19 'null')))))
+     (bind'' var9))
+    (exists ((thing20 "http://example.com/system1/A") (thing21 "http://example.com/system1/B") (thing22 "http://example.com/system1/B") var23 var24 var25)
+     (and
+      ("http://example.com/system1/rel2" thing21 var4)
+      ("http://example.com/system1/rel3" thing21 'true')
+      ("http://example.com/system1/rel4" thing21 var23)
+      (not
+       ("http://www.w3.org/2005/xpath-functions/#starts-with" var23 'lit4'))
+      (or
+       ("http://example.com/system1/rel2" thing22 var6)
+       (exists ((thing26 "http://example.com/system1/C") (thing27 "http://example.com/system1/B"))
+        (and
+         ("http://example.com/system1/rel2" thing27 var6)
+         (or
+          (and
+           ("http://example.com/system1/rel5" thing26 thing27)
+           ("http://example.com/system1/rel6" thing26 thing22))
+          (and
+           ("http://example.com/system1/rel6" thing26 thing27)
+           ("http://example.com/system1/rel5" thing26 thing22)))))
+       (exists ((thing28 "http://example.com/system1/D") (thing29 "http://example.com/system1/B") (thing30 "http://example.com/system1/E"))
+        (and
+         ("http://example.com/system1/rel7" thing30 thing21)
+         ("http://example.com/system1/rel8" thing28 thing30)
+         ("http://example.com/system1/rel2" thing29 var6)
+         (or
+          (and
+           ("http://example.com/system1/rel9" thing30 thing22)
+           ("http://example.com/system1/rel10" thing28 thing29))
+          (and
+           ("http://example.com/system1/rel9" thing30 thing29)
+           ("http://example.com/system1/rel10" thing28 thing22))))))
+      ("http://example.com/system1/rel1" thing20 thing21)
+      ("http://example.com/system1/rel11" thing20 thing22)
+      ("http://example.com/system1/rel12" thing20 var5)
+      ("http://example.com/system1/rel13" thing20 var7)
+      ("http://example.com/system1/rel14" thing20 var24)
+      (if
+       (= var9 'lit1')
+       (= var24 'lit1'))
+      ("http://example.com/system1/rel15" thing22 'lit2')
+      ("http://example.com/system1/rel16" thing22 var25)
+      (not
+       ("http://www.w3.org/2005/xpath-functions/#starts-with" var25 'lit3'))))))
+  (cl-comment 'Certain constellations of data in system 2 must be valid with respect to corresponding constellations of data in system 1.')))
