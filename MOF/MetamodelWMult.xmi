@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ASCII"?>
+<CSMOF:Metamodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:CSMOF="urn:CSMOF.ecore" xsi:schemaLocation="urn:CSMOF.ecore ../metamodel/CSMOF.ecore" name="MetamodelWModel">
+  <element xsi:type="CSMOF:DataType" name="String"/>
+  <element xsi:type="CSMOF:Class" name="Classifier" isAbstract="true" subClass="//@element.2 //@element.3">
+    <ownedAttribute name="name" type="//@element.0"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Class" superClass="//@element.1">
+    <ownedAttribute upper="2" name="attr" type="//@element.4"/>
+    <ownedAttribute lower="0" upper="-1" name="asoc" type="//@element.3" opposite="//@element.3/@ownedAttribute.0"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Association" superClass="//@element.1">
+    <ownedAttribute lower="2" upper="2" name="class" type="//@element.2" opposite="//@element.2/@ownedAttribute.1"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Attribute">
+    <ownedAttribute name="kind" type="//@element.0"/>
+  </element>
+</CSMOF:Metamodel>

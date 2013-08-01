@@ -1,0 +1,10 @@
+logic CSMOF
+
+from MOF/MetamodelWModel get MetamodelWModel |-> Metamodel
+from MOF/MetamodelWMult get MetamodelWModel |-> Constraints
+
+spec Proof = Metamodel
+then %implies
+  Constraints
+end
+
