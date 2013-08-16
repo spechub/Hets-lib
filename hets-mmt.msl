@@ -1,0 +1,35 @@
+// hets-test script
+
+log console
+log file hets-mmt.log
+//log+ presenter
+//log+ backend
+//log+ controller
+//log+ extman
+//log+ reader
+//log+ archive
+//log+ checker
+//log+ object-checker
+//log+ query
+//log+ catalog
+//log+ server
+//log+ uom
+//log+ abox
+//log+ structure-parser
+//log+ parser
+//log+ scanner
+//log+ lf
+
+archive add MMT/
+extension info.kwarc.mmt.lf.Plugin
+extension info.kwarc.mmt.api.objects.ErrorsPlugin
+extension info.kwarc.mmt.lf.modulo.Plugin
+
+build hetslib_mmt mmt-omdoc
+build hetslib_mmt index
+
+//archive test compile
+
+//read /home/aivaras/TPTP/test/source/hets-test/testpat.mmt
+
+//exit

@@ -1,0 +1,17 @@
+namespace http://cds.omdoc.org/hets-test
+
+theory PLtest : http://cds.omdoc.org/urtheories?LF =
+  bool : type
+  true : bool
+  false : bool
+  and  : bool → bool → bool  # 1 ∧ 2 prec 15
+  or  : bool → bool → bool  # 1 ∨ 2 prec 14
+  not : bool → bool # ¬ 1 prec 5
+  impl : bool → bool → bool  # 1 ⇒ 2 prec 10
+  equiv : bool → bool → bool = [x:bool,y:bool] (x ⇒ y) ∧ (y ⇒ x) # 1 ≡ 2 prec 10
+  ded : bool → type
+
+  pattern . :: [F : bool]  >> [ax : (ded F)]  # : 1 prec -9999
+
+  pattern prop >> [ p : bool ] # proposition prec -9999
+
