@@ -10,8 +10,6 @@ theory PLpatt : http://cds.omdoc.org/urtheories?LF =
   impl : bool → bool → bool  # 1 ⇒ 2 prec 10
   equiv : bool → bool → bool = [x:bool,y:bool] (x ⇒ y) ∧ (y ⇒ x) # 1 ≡ 2 prec 10
   ded : bool → type
-
   pattern . :: [F : bool]  >> [ax : (ded F)]  # : 1 prec -9999
-
-  pattern prop >> [ p : bool ] # proposition prec -9999
+  pattern prop  >> [ p : bool ] # proposition prec -9999
 
