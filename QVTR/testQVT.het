@@ -1,0 +1,34 @@
+logic CSMOF
+
+from QVTR/UML get UML |-> UMLMetamodel
+from QVTR/UML_WMult get UML |-> UMLConstraints
+
+spec UMLProof = UMLMetamodel
+then %implies
+  UMLConstraints
+end
+
+
+from QVTR/RDBMS get RDBMS |-> RDBMSMetamodel
+from QVTR/RDBMS_WMult get RDBMS |-> RDBMSConstraints
+
+spec RDBMSProof = RDBMSMetamodel
+then %implies
+  RDBMSConstraints
+end
+
+
+logic QVTR
+
+from QVTR/uml2rdbms get uml2rdbms |-> QVTTransformation
+
+logic CASL
+
+spec ModelTransformation = QVTTransformation with logic QVTR2CASL
+then %implies
+  . key_RDBMS_Table
+  . key_RDBMS_Column
+  . key_RDBMS_Key
+%%  . Top_ClassToTable
+%%  . Top_PackageToSchema
+end
