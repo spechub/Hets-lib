@@ -16,11 +16,11 @@ transformation uml2rdbms  ( uml : UML , rdbms : RDBMS ) {
 	  pn : String;
 	  
 	  checkonly domain uml p : UML::Package {
-	    name = pn;
+	    name = pn
 	  };
 	  
 	  enforce domain rdbms s : RDBMS::Schema {
-	    name = pn;
+	    name = pn
 	  };
 	  
 	}
@@ -35,7 +35,7 @@ transformation uml2rdbms  ( uml : UML , rdbms : RDBMS ) {
 	    namespace = p : UML::Package {
 	    },
 	    kind = 'Persistent',
-	    name = cn;
+	    name = cn
 	  };
 	  
 	  enforce domain rdbms t : RDBMS::Table {
@@ -43,13 +43,13 @@ transformation uml2rdbms  ( uml : UML , rdbms : RDBMS ) {
 	    },
 	    name = cn,
 	    column = cl : RDBMS::Column {
-	      name = cn + '_tid',
-	      typeT = 'NUMBER';
+	      name = 'TID',
+	      typeT = 'NUMBER'
 	    },
 	    keyK = k : RDBMS::Key {
-	    	name = cn + '_pk',
-	      	column = cl;
-	    };
+	    	name = 'PK',
+	      	column = cl
+	    }
 	  };
 	  
 	  when {
@@ -58,7 +58,9 @@ transformation uml2rdbms  ( uml : UML , rdbms : RDBMS ) {
 	  
 	  where {
 	    AttributeToColumn(c, t, prefix);
-	    prefix = '';
+
+            = (prefix) ('EMPTY');
+	    --prefix = '';
 	  }
 	  
 	}
@@ -74,21 +76,30 @@ transformation uml2rdbms  ( uml : UML , rdbms : RDBMS ) {
 	    attribute = a : UML::Attribute {
 	      name = an,
 	      typeT = p : UML::PrimitiveDataType {
-	        name = pn;
-	      };
-	    };
+	        name = pn
+	      }
+	    }
 	  };
 	  
 	  enforce domain rdbms t : RDBMS::Table {
 	    column = cl : RDBMS::Column {
 	      name = cn,
-	      typeT = sqltype;
-	    };
+	      typeT = sqltype
+	    }
 	  };
 	  
 	  where {
-	    cn = if prefix = '' then an else prefix + '_' + an endif;
-	    sqltype = if pn = 'INTEGER' then 'NUMBER' else if pn = 'BOOLEAN' then 'BOOLEAN' else 'VARCHAR' endif endif;
+	    --cn = if prefix = '' then an else prefix + an endif;
+  
+            or ( and (= (prefix) ('EMPTY')) (= (cn) (an)) )
+               ( and (not (= (prefix) ('EMPTY'))) (= (cn) (prefix + an)) );
+
+            -- sqltype = if pn = 'INTEGER' then 'NUMBER' else if pn = 'BOOLEAN' then 'BOOLEAN' else 'VARCHAR' endif endif;
+            
+            or (or ( and (= (pn) ('INTEGER')) (= (sqltype) ('NUMBER') ) )
+                   ( and (= (pn) ('BOOLEAN')) (= (sqltype) ('BOOLEAN')) ))
+               ( and (and (not (= (pn) ('INTEGER'))) (not (= (pn) ('BOOLEAN')))) (= (sqltype) ('VARCHAR')) );
+
 	  }
 	  
 	}
