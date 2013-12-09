@@ -30,10 +30,12 @@ ontology BasicParthood =                             %% Parthood in SROIQ, as fa
   Class: Atom EquivalentTo: inverse isProperPartOf only owl:Nothing
 end                                          %% an atom has no proper parts
 
+%[
 interpretation TaxonomyToParthood : Taxonomy to BasicParthood =
   PT |-> Particular, S |-> SpaceRegion, T |-> TimeInterval, A |-> AbstractRegion %[ and so on ]%
 %%  logic Propositional2OWL2 %% translation trans:PropositionalToSROIQ    %% translate the logic, then rename the entities
 end
+
 
 logic CommonLogic
 %% logic log:CommonLogic syntax ser:CommonLogic/CLIF
@@ -58,3 +60,4 @@ then
             (forall (b) (iff (overlaps b a)
                              (exists (c) (and (Set c) (overlaps c a)))))))
 end
+]%

@@ -24,7 +24,7 @@ ontology Blocks_Alternative =
   (Ab B1) %% B1 is abnormal
   (forall (x) (if (and (Block x) (not (Ab x))) (Ontable x)))
           %% Normally, a block is on the table
-  circ Ab var Ontable
+  minimize Ab %% var Ontable
 then %implies
   (Ontable B2)  %% B2 is on the table
 end
