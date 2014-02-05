@@ -1,0 +1,125 @@
+library Ontology/Blending/SignForest
+
+logic OWL
+
+%% signs are physical artifacts
+%% Signs have a low density of symbols, i.e., the number of symbols on a sign may not exceed seven (?) items. 
+%% symbols convey information or point to other objects.     
+%% ( in principle: signs can be classified into different types of signs, such as road sign or warning sign. )
+
+ontology Signage = 
+ObjectProperty: conveys
+    Characteristics: Irreflexive, Antisymmetric    
+    Domain: Symbol or Shape or Colour
+    Range: Information
+ObjectProperty: depicts
+    Characteristics: Irreflexive, Antisymmetric    
+    Domain: Sign    
+    Range: Symbol
+ObjectProperty: pointsTo
+    Domain: Information
+    Range: Object
+ObjectProperty: hasColour
+    Range: Colour
+ObjectProperty: hasShape
+    Range: Shape
+ObjectProperty: locatedAt
+    Range: PhysicalSupport
+Class: Sign
+    SubClassOf:  PhysicalArtefact
+    EquivalentTo: depicts max 7 Symbol
+Class: Symbol
+    EquivalentTo: conveys some Information
+Class: Information
+Class: PhysicalArtefact
+    SubClassOf: hasColour exactly 1 Colour,
+		hasShape exactly 1 Shape,
+		locatedAt some PhysicalSupport
+Class: Object
+Class: Colour
+Class: Shape
+Class: PhysicalSupport
+end
+
+
+ontology Forest = 
+%% forests are natural groups of `soil, plant, and animal life'
+%% todo: with a high density of trees, i.e., more than 100 (?)
+%% ( in principle: They can be classified into types, such as rainforest or tropical forest. )
+Class: NaturalGroup
+Class: Plant
+Class: Tree
+    SubClassOf: Plant
+ObjectProperty: contains
+Class: Forest
+    SubClassOf: NaturalGroup
+%% TODO: 100 instead of 5!!!
+    EquivalentTo: contains min 5 Tree,
+		  contains some (Soil or Plant or AnimalLife)
+Class: Soil
+Class: AnimalLife
+end
+
+ontology SignForestBase = %% Schilderwald
+Class: AbstractSupport
+ObjectProperty: hasLocation
+ObjectProperty: contains
+Class: BaseObject
+    SubClassOf: hasLocation some AbstractSupport
+Class: Container
+    SubClassOf: contains some BaseObject
+end
+
+view SignageWithSignForestBase : {SignForestBase hide Container, contains} to Signage = 
+    BaseObject |-> Sign,
+    AbstractSupport |-> PhysicalSupport,
+    hasLocation |-> locatedAt
+%% hidden the following and extend conservatively later to calculate colimit
+%%    Container |-> SignCollection,
+%%    contains |-> contains
+end
+
+ontology SignageConservativeExt = Signage then %cons
+ObjectProperty: contains
+Class: SignCollection
+    SubClassOf: contains some Sign
+end
+
+view SignageWithSignForestBaseForColimit : SignForestBase to SignageConservativeExt =
+    BaseObject |-> Sign,
+    AbstractSupport |-> PhysicalSupport,
+    hasLocation |-> locatedAt,
+    Container |-> SignCollection,
+    contains |-> contains
+end
+
+
+view ForestWithSignForestBase : {SignForestBase hide hasLocation} to Forest = 
+    AbstractSupport |-> Soil,
+    Container |-> Forest,
+    contains |-> contains,
+    BaseObject |-> Tree
+end
+
+ontology ForestConservativeExt = Forest then %cons
+ObjectProperty: growsOn
+Class: Tree
+    SubClassOf: growsOn some Soil
+end
+
+view ForestWithSignForestBaseForColimit : SignForestBase to ForestConservativeExt = 
+    AbstractSupport |-> Soil,
+    Container |-> Forest,
+    contains |-> contains,
+    BaseObject |-> Tree,
+    hasLocation |-> growsOn
+end
+
+%% in hets:
+%% SignForest colimit from SignageWithSignForestBaseForColimit to ForestWithSignForestBaseForColimit
+ontology Blend1 = combine SignageWithSignForestBase, ForestWithSignForestBase
+end
+
+ontology Blend2 = combine SignageWithSignForestBaseForColimit, ForestWithSignForestBaseForColimit
+end
+
