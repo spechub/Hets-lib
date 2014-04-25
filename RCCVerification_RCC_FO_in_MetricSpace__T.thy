@@ -1,8 +1,7 @@
 theory RCCVerification_RCC_FO_in_MetricSpace__T
 imports "$HETS_ISABELLE_LIB/MainHC"
+uses "$HETS_ISABELLE_LIB/prelude.ML"
 begin
-
-ML_file "$HETS_ISABELLE_LIB/prelude.ML"
 
 setup "Header.initialize
        [\"Ax1\", \"C_def\", \"EMSCB_center\", \"EMSCB_closed\",
