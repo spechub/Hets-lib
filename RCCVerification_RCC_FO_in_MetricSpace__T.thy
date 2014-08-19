@@ -396,9 +396,6 @@ by (auto)
 
 setup "Header.record \"C_sym\""
 
-lemma swap : "A --> B=D ==> B ==> A-->D"
-by auto
-
 lemma impLemma : "[| A; A==>B; B-->D|] ==> D"
 by auto
 
@@ -409,24 +406,23 @@ lemma MS_triangle_rev :
 "d(x, z) <=' (d(x, y) +' d(z, y))"
 by (simp add: MS_symm)
 
+lemma EMSCB_rep_pos1 : "rep (closedBall(x, r)) y \<Longrightarrow> r >' 0'' \<longrightarrow> d(x, y) <=' r"
+by auto
+
 lemma C_id_lemma : "!!x y xa.
        ALL z. (EX s. rep z s & rep x s) = (EX s. rep z s & rep y s)
        ==> rep x xa ==> rep y xa"
 apply (erule contrapos_pp)
 apply (subst not_all)
-thm Ax4 [THEN allI, of "%x. x"]
 apply (insert Ax4 [THEN allI, of "%x. x"])
 apply (frule_tac x="x" in spec)
 apply (drule_tac x="y" in spec)
-apply (erule exE)
-apply (erule exE)
-apply (erule exE)
-apply (erule exE)
+apply (erule exE)+
 apply (subst not_iff)
 apply (case_tac "ta >' 0''")
 apply (rule_tac x="closedBall(xa, half (d(za, xa) -' ta))" in exI)
 apply(auto)
-apply((drule EMSCB_rep_pos [COMP impI, THEN swap]))+
+apply(drule EMSCB_rep_pos1)+
 apply(rule_tac P="d(za, xa) <=' ta" in notE)
 apply(assumption)
 apply(rule half_leq)
@@ -479,8 +475,7 @@ setup "Header.record \"C_id\""
 
 theorem C_non_triv : "EX (x :: ClosedBall). x C x"
 apply (simp add: C_def)
-apply (rule exI)
-apply (rule exI)
+apply (rule exI)+
 apply (rule EMSCB_rep_pos [THEN iffD2])
 apply(rule one_greater_zero)
 apply(rule iffD2)
