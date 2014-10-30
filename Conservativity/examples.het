@@ -2,32 +2,32 @@
 
 %% declaration of a new sort
 
-spec SP1 = 
+spec SP1 =
  sort s
 end
 
-spec SP2 = 
-  SP1 
+spec SP2 =
+  SP1
  then %cons
   sort t
 end
 
 %% declaration of a new subsort
 
-spec SP3 = 
-  SP1 
+spec SP3 =
+  SP1
  then
   sort u < s
 end
 
 %% subsort definition
 
-spec Nat = 
+spec Nat =
  free type Nat ::= 0 | suc(Nat)
 end
 
-spec NatComp = 
- Nat then 
+spec NatComp =
+ Nat then
  free {
   pred __<__ : Nat * Nat
   forall x,y : Nat
@@ -35,50 +35,51 @@ spec NatComp =
     . x < y => suc(x) < suc(y)
  }
 
-spec Pos = 
+spec Pos =
  Nat then
  sort Pos = {p:Nat . not p = 0}
 end
 
 %% definition of a E-subsort
 
-spec Pos_Esort = 
+spec Pos_Esort =
  Nat then
  esort Pos = {p:Nat . not p = 0}
 end
 
 %% freely generated with no term of that sort
 
-spec Nat_NotCons = 
+spec Nat_NotCons =
  free type Nat ::= suc(Nat)
 
 %% freely generated E-type
 
-spec Nat_Etype = 
+spec Nat_Etype =
  free etype Nat ::= suc(Nat)
 
 %% Examples for the second diagram:
 
 %% new subsort with overloaded constructors
 
-spec Pos_Overload = 
-  Nat 
+spec Pos_Overload =
+  Nat
  then
   sort Pos = {p:Nat . not p = 0 }
   op suc : Nat -> Pos
 
 %% definition of addition
 
-spec NatAdd = 
+spec NatAdd =
  Nat then
  op __+__ : Nat * Nat -> Nat
- forall x,y : Nat 
+ forall x,y : Nat
   . x + 0 = x
-  . x + suc(y) = suc(x + y)
+  . x = 0 => y = 0 => x + suc(y) = suc(y)
+  . not (x = 0) \/ x = 0 => x + suc(y) = suc(x + y)
 
 %% leading term consists of not only vars and constructors
 
-spec Nat_Multi = 
+spec Nat_Multi =
  NatAdd
 then
  op __*__ : Nat * Nat -> Nat
@@ -87,49 +88,59 @@ then
  . t * (r + s) = (t * r) + (t * s)
 end
 
-%% 
+%%
 
-spec Nat_Pred = 
+spec Nat_Pred =
   NatComp then
   op pre : Nat -> ?Nat
-  forall x : Nat 
+  forall x : Nat
    . not def(pre(0))
-   . pre(suc(x)) = x 
+   . pre(suc(x)) = x
 end
 
-spec Nat_Diff = 
-  Nat_Pred then 
+spec Nat_Diff =
+  Nat_Pred then
   op __-__ : Nat * Nat -> ?Nat
-  forall x, y : Nat 
+  forall x, y : Nat
    . def(x - y) <=> (y < x \/ y = x)
    . def(x - 0) => x - 0 = x
    . def(x- suc(y)) => x - suc(y) = pre(x -y)
 end
 
-spec Nat_F = 
- Nat then 
+spec Nat_F =
+ Nat then
  op __f__ : Nat * Nat -> ?Nat
- forall x, y : Nat 
+ forall x, y : Nat
    . def(x f y) <=> not y = 0
    . x f y = x
-end 
+end
 
-spec Nat_Leq = 
+spec Nat_Leq =
  NatComp then
  pred __<=__ : Nat * Nat
- forall x,y : Nat 
+ forall x,y : Nat
   . x <= y <=> (x < y \/ x = y)
 end
 
-spec Nat_Overlap = 
- NatAdd then 
- op f : Nat -> Nat 
- forall x : Nat 
-  . f(x) = x + x
-  . f(x) = suc(x)
+spec Nat_Overlap =
+ NatAdd then
+ op f : Nat -> Nat
+ forall x : Nat
+  . not x = 0 => f(x) = x + x
+  . x = 0 => f(x) = suc(x)
 end
 
-spec Nat_Overlap_OK = 
+spec Nat_Overlap2 =
+ NatAdd then
+ op f : Nat * Nat -> Nat
+ forall x,y,z : Nat
+  . f(x, suc(y)) = y
+  . f(y, x) = y
+end
+
+
+
+spec Nat_Overlap_OK =
  Nat_Leq then
  op f : Nat -> Nat
  forall x : Nat
@@ -137,18 +148,18 @@ spec Nat_Overlap_OK =
   . not (x < suc(suc(suc(0)))) => f(x) = suc(x)
 end
 
-spec Nat_Incomplete_Domain = 
- Nat_Leq then 
- op f : Nat -> Nat 
+spec Nat_Incomplete_Domain =
+ Nat_Leq then
+ op f : Nat -> Nat
  forall x : Nat
   . x <= suc(suc(0)) => f(x) = x
-  . not (x < suc(suc(suc(0)))) /\ x <= suc(suc(suc(suc(suc(suc(0)))))) 
+  . not (x < suc(suc(suc(0)))) /\ x <= suc(suc(suc(suc(suc(suc(0))))))
    => f(x) = suc(x)
-end 
+end
 
-spec Nat_MultiOverlap = 
- Nat then 
- op f : Nat * Nat -> Nat 
+spec Nat_MultiOverlap =
+ Nat then
+ op f : Nat * Nat -> Nat
  forall x, y : Nat
   . f(x, suc(y)) = 0
   . f(suc(x), y) = suc(0)
@@ -165,18 +176,18 @@ end
 
 %% overlapping on undefined values
 
-spec Nat_Overlap_Partial = 
+spec Nat_Overlap_Partial =
  Nat then
  op f : Nat * Nat -> ?Nat
  forall x, y : Nat
   . not def(f(0,x))
   . f(x, 0) = 0
-  . f(x, suc(y)) = x 
+  . f(x, suc(y)) = x
 end
 
 %% incomplete and overlapping
 
-spec Nat_Incomplete = 
+spec Nat_Incomplete =
  Nat then
  op f : Nat * Nat -> Nat
  forall x, y : Nat
@@ -186,12 +197,10 @@ end
 
 %% not left-linear
 
-spec Nat_Non_Left_Linear = 
+spec Nat_Non_Left_Linear =
  Nat then
  op __+__ : Nat * Nat -> Nat
- forall m : Nat 
+ forall m : Nat
   . 0 + m = m
   . suc(m) + m = suc(m + m)
 end
-
-
