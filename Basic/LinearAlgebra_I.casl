@@ -83,7 +83,7 @@ then
                                                 %(isZero_def_EVS)%
 end
 
-spec ConstructVSWithBase [Field][sort Base] given Int=
+spec ConstructVSWithBase [Field][sort Base] given Int =
 %mono
      VectorSpaceLC [VectorSpace [Field]]
 then
@@ -104,7 +104,7 @@ then
 }
 end
 
-spec VSWithBase [Field][sort Base]=
+spec VSWithBase [Field][sort Base] =
      ConstructVSWithBase [Field][sort Base]
           reveal sorts Space, Elem, Base,
                  ops __ + __: Space * Space -> Space,
@@ -234,7 +234,7 @@ spec Vector [Field][op n: Pos] given Int =
                 0 : Vector[Elem,n]
 end
 
-view VectorSpace_in_Vector [Field][op n: Pos] given Nat:
+view VectorSpace_in_Vector [Field][op n: Pos] given Nat :
      VectorSpace [Field] to Vector [Field][op n: Pos] =
      sort Space |-> Vector[Elem,n]
 end
@@ -268,8 +268,8 @@ then %cons
      . exists i: PermIndex[n]. perm(i) = p              %(permSurj_SymGroup)%
 end
 
-view Group_in_SymmetricGroup [op n: Pos] given Nat:
-     Group to SymmetricGroup [op n: Pos]=
+view Group_in_SymmetricGroup [op n: Pos] given Nat :
+     Group to SymmetricGroup [op n: Pos] =
      sort Elem |-> Perm[n],
      op __ * __ |-> __ comp __,
         e |-> id
@@ -340,7 +340,7 @@ end
 
 
 view VectorSpace_in_VectorTuple [VectorSpace [Field]]
-     [op n:Pos] given Int:
+     [op n:Pos] given Int :
      VectorSpace [Field] to
      VectorTuple [VectorSpace [Field]][op n: Pos] =
      sort Space |-> Tuple[Space,n]
@@ -354,13 +354,13 @@ view VSWithBase_in_Field [Field then op a: Elem . not a = 0]:
                           __ * __: Elem * Elem -> Elem
 end
 
-view VSWithBase_in_Vector [Field][op n: Pos] given Nat:
+view VSWithBase_in_Vector [Field][op n: Pos] given Nat :
      VSWithBase [Field][sort Base] to Vector [Field][op n:Pos] =
      sorts Space |-> Vector[Elem,n],
            Base |-> UnitVector[Elem,n]
 end
 
-view VSWithBase_in_Matrix [Field][op n: Pos] given Nat:
+view VSWithBase_in_Matrix [Field][op n: Pos] given Nat :
      VSWithBase [Field][sort Base] to Matrix [Field][op n: Pos]=
      sorts Space |-> Matrix[Elem,n],
            Base |-> ElementaryMatrix[Elem,n]
@@ -368,7 +368,7 @@ end
 
 %% The following view expresses that every vector space has a base.
 %% This holds because the CASL semantics assumes the axiom of choice.
-view VSWithBase_in_VectorSpace [Field] given Int:
+view VSWithBase_in_VectorSpace [Field] given Int :
      {VSWithBase [Field][sort Base] hide sort Base} to
      VectorSpace [Field]
 end

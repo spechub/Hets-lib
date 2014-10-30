@@ -64,17 +64,17 @@ then
      . eval(a:::p, x) = a * e + eval(p,x) * x   %(eval_cons_EAlgebra)%
 end
 
-spec ExtFreeAlgebra [Field] given Int=
+spec ExtFreeAlgebra [Field] given Int =
      ExtAlgebra [FreeAlgebra[Field]]
 end
 
-view Algebra_in_Matrix [Field][op n: Pos] given Nat:
-     Algebra [Field] to Matrix [Field][op n: Pos]=
+view Algebra_in_Matrix [Field][op n: Pos] given Nat :
+     Algebra [Field] to Matrix [Field][op n: Pos] =
      sort Space |-> Matrix[Elem,n],
      op e: Space |-> 1
 end
 
-spec RichAlgebra [Field]=
+spec RichAlgebra [Field] =
      ExtAlgebra [Algebra [Field]]
 end
 
@@ -88,7 +88,7 @@ end
 
 %% The following view expresses that a vector space is free over
 %% any of its bases
-view FreeVectorSpace_in_VSWithBase [Field] given Int:
+view FreeVectorSpace_in_VSWithBase [Field] given Int :
      FreeVectorSpace [Field][sort Base] to
      {
           VSWithBase [Field][sort Base]
@@ -99,7 +99,7 @@ view FreeVectorSpace_in_VSWithBase [Field] given Int:
      }
 end
 
-view FreeAlgebra_in_Polynomial [Field] given Int:
+view FreeAlgebra_in_Polynomial [Field] given Int :
      FreeAlgebra[Field] to Polynomial [Field]=
      sort Space |-> Poly[Elem]
 end

@@ -143,7 +143,7 @@ within
      }
 end
 
-view CRing_in_CPolynomial [CommutativeRing] given Int:
+view CRing_in_CPolynomial [CommutativeRing] given Int :
      CommutativeRing to ConstructPolynomial [CommutativeRing] =
      sort Elem |-> Poly[Elem]
 end
@@ -160,7 +160,7 @@ then %implies
                                                 %(degree_mult2_Poly)%
 end
 
-view EuclidianRing_in_Polynomial [Field] given Int:
+view EuclidianRing_in_Polynomial [Field] given Int :
      EuclidianRing to
         {Polynomial [Field]
           then
@@ -190,7 +190,7 @@ spec ExtEuclidianRing [EuclidianRing] given Int = %mono
      RichIntegralDomain
 end
 
-spec ExtFactorialRing  [FactorialRing] given Int=
+spec ExtFactorialRing  [FactorialRing] given Int =
      RichIntegralDomain
 and
      ConstructFactorialRing
@@ -205,7 +205,7 @@ then
                                                 %(connected_def_EMAction)%
 end
 
-view PreOrder_in_ExtMonoidAction [MonoidAction [Monoid]] given Nat:
+view PreOrder_in_ExtMonoidAction [MonoidAction [Monoid]] given Nat :
      PreOrder to ExtMonoidAction [MonoidAction [Monoid]] =
      sort Elem |-> Space,
      pred __ <= __ |-> connected
@@ -224,7 +224,7 @@ then
 
 end
 
-view EqRel_in_ExtGroupAction [GroupAction [Group]] given Int:
+view EqRel_in_ExtGroupAction [GroupAction [Group]] given Int :
      EquivalenceRelation to ExtGroupAction [GroupAction [Group]] =
      sort Elem |-> Space,
      pred __ ~ __ |-> connected
@@ -295,7 +295,7 @@ view FreeMonoid_in_List  [sort Elem] given Nat :
        inject |-> singleton
 end
 
-view FreeCommutativeMonoid_in_Bag  [sort Elem] given Nat:
+view FreeCommutativeMonoid_in_Bag  [sort Elem] given Nat :
   {sort Generators
    then
    free{
