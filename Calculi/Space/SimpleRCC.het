@@ -32,15 +32,15 @@ spec ClosedBall = MetricSpace then %def
   ops closedBall : Space * Real ->? ClosedBall;
   pred covers : ClosedBall * Space
   forall x, y : Space;  r : Real;  a, b : ClosedBall
-  . r > 0 /\ a = closedBall(x, r) 
+  . r > 0 /\ a = closedBall(x, r)
     => (covers (a, y) <=> distance(x, y) <= r)          %(CB_covers_pos)%
   . r > 0 <=> def closedBall(x, r)                             %(CB_def)%
-  . (forall z : Space . covers (a, z) <=> covers (b, z)) 
+  . (forall z : Space . covers (a, z) <=> covers (b, z))
     => a = b                                                    %(CB_id)%
   . exists z : Space; t : Real . a = closedBall(z,t)
 
-view RCC_FO_in_ClosedBall:
-     RCC_FO to 
+view RCC_FO_in_ClosedBall :
+     RCC_FO to
      { ClosedBall then %def
          pred __C__ : ClosedBall * ClosedBall
          forall a, b : ClosedBall

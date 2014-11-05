@@ -10,7 +10,7 @@ spec Modal_RCC8 =
 and
   S4
 and
-  logic CASL: {RichBooleanAlgebra with Elem |-> Region} with logic CASL2Modal
+  logic CASL : {RichBooleanAlgebra with Elem |-> Region} with logic CASL2Modal
 then
   flexible pred Tr : Region
   forall x,y:Region
@@ -25,8 +25,8 @@ then
   . EQ(x,y) <=> [u] (Tr(x) <=> Tr(y))
   . DC(x,y) <=> not <u> (Tr(x) /\ Tr(y))
   . EC(x,y) <=> <u> (Tr(x) /\ Tr(y)) /\ not <u> ([]Tr(x) /\ []Tr(y))
-  . PO(x,y) <=> <u> ([]Tr(x) /\ []Tr(y)) 
-                /\ <u> (Tr(x) /\ not [] Tr(y)) 
+  . PO(x,y) <=> <u> ([]Tr(x) /\ []Tr(y))
+                /\ <u> (Tr(x) /\ not [] Tr(y))
                 /\ <u> (not [] Tr(x) /\ Tr(y))
   . TPP(x,y) <=> [u](Tr(x) => Tr(y)) /\ <u> (Tr(x) /\ not [] Tr(y))
   . NTPP(x,y) <=> [u](Tr(x) => [] Tr(y))
