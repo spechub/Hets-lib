@@ -1,7 +1,8 @@
 theory RelationsAndOrders_ExtBooleanAlgebra__U2E1
 imports Main
-uses "$HETS_ISABELLE_LIB/prelude.ML"
 begin
+
+ML_file "$HETS_ISABELLE_LIB/prelude.ML"
 
 setup "Header.initialize
        [\"compl_def_ExtBooleanAlgebra\",

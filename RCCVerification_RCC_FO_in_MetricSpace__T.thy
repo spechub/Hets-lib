@@ -1,7 +1,8 @@
 theory RCCVerification_RCC_FO_in_MetricSpace__T
 imports "$HETS_ISABELLE_LIB/MainHC"
-uses "$HETS_ISABELLE_LIB/prelude.ML"
 begin
+
+ML_file "$HETS_ISABELLE_LIB/prelude.ML"
 
 setup "Header.initialize
        [\"Ax1\", \"C_def\", \"EMSCB_center\", \"EMSCB_closed\",
@@ -19,16 +20,15 @@ setup "Header.initialize
         \"completeness\", \"Real_inj_0\", \"Real_inj_suc\",
         \"Real_archimedian\", \"FWO_plus_right\", \"FWO_times_right\",
         \"FWO_plus\", \"FWO_plus_left\", \"FWO_times_left\",
-        \"dichotomy_TotalOrder\", \"antisym\", \"trans\", \"refl\",
-        \"Field_unary_minus_idef\", \"min_inf_relation\",
-        \"max_sup_relation\", \"ga_comm_min\", \"ga_comm_max\",
-        \"ga_assoc_min\", \"ga_assoc_max\", \"ga_left_comm_min\",
-        \"ga_left_comm_max\", \"min_def_ExtTotalOrder\",
-        \"max_def_ExtTotalOrder\", \"ga_comm_inf\", \"ga_comm_sup\",
-        \"inf_def_ExtPartialOrder\", \"sup_def_ExtPartialOrder\",
-        \"geq_def_ExtPartialOrder\", \"less_def_ExtPartialOrder\",
-        \"greater_def_ExtPartialOrder\", \"C_non_null\", \"C_sym\",
-        \"C_id\", \"C_non_triv\"]"
+        \"Field_unary_minus_idef\", \"dichotomy_TotalOrder\", \"antisym\",
+        \"trans\", \"refl\", \"min_inf_relation\", \"max_sup_relation\",
+        \"ga_comm_min\", \"ga_comm_max\", \"ga_assoc_min\",
+        \"ga_assoc_max\", \"ga_left_comm_min\", \"ga_left_comm_max\",
+        \"min_def_ExtTotalOrder\", \"max_def_ExtTotalOrder\",
+        \"ga_comm_inf\", \"ga_comm_sup\", \"inf_def_ExtPartialOrder\",
+        \"sup_def_ExtPartialOrder\", \"geq_def_ExtPartialOrder\",
+        \"less_def_ExtPartialOrder\", \"greater_def_ExtPartialOrder\",
+        \"C_non_null\", \"C_sym\", \"C_id\", \"C_non_triv\"]"
 
 typedecl ClosedBall
 typedecl Real
@@ -255,6 +255,9 @@ FWO_times_left [rule_format] :
  ALL (b :: Real).
  ALL (c :: Real). a <=' b & 0'' <=' c --> a *' c <=' b *' c"
 and
+Field_unary_minus_idef [rule_format] :
+"ALL (x :: Real). -' x +' x = 0''"
+and
 dichotomy_TotalOrder [rule_format] :
 "ALL (x :: Real). ALL (y :: Real). x <=' y | y <=' x"
 and
@@ -266,9 +269,6 @@ trans [rule_format] :
  ALL (y :: Real). ALL (z :: Real). x <=' y & y <=' z --> x <=' z"
 and
 refl [rule_format] : "ALL (x :: Real). x <=' x"
-and
-Field_unary_minus_idef [rule_format] :
-"ALL (x :: Real). -' x +' x = 0''"
 and
 min_inf_relation [rule_format] :
 "ALL (x :: Real).
@@ -348,8 +348,8 @@ declare EMSCB_center [simp]
 declare EMSCB_rep_0 [simp]
 declare MS_pos [simp]
 declare MS_zero [simp]
-declare MS_triangle [simp]
 declare MS_pos_definite [simp]
+declare MS_triangle [simp]
 declare one_greater_zero [simp]
 declare zero_leq_one [simp]
 declare half_plus_minus [simp]
@@ -363,8 +363,8 @@ declare completeness [simp]
 declare Real_inj_0 [simp]
 declare FWO_plus_right [simp]
 declare FWO_plus_left [simp]
-declare refl [simp]
 declare Field_unary_minus_idef [simp]
+declare refl [simp]
 declare min_inf_relation [simp]
 declare max_sup_relation [simp]
 declare ga_comm_min [simp]
