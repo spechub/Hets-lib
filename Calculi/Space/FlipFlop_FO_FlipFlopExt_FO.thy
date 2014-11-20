@@ -16,173 +16,339 @@ consts
 "tri" :: "Point => Point => Point => bool"   ( "tri" )
 
 
-axioms
+axiomatization
+where
 X: "!! x :: Point . !! y :: Point . !! z :: Point . (so x y z) = (x = z & (Not (x = y)))"
+and
 X1: "!! x :: Point . !! y :: Point . !! z :: Point . (sr x y z) = (y = z & (Not (x = y)))"
+and
 X2: "!! x :: Point . !! y :: Point . !! z :: Point . so x y z = sr y x z"
+and
 X3: "!! x :: Point . !! y :: Point . !! z :: Point . so x y z = sr y z x"
+and
 X4: "!! x :: Point . !! y :: Point . !! z :: Point . so x y z = so z y x"
+and
 X5: "!! x :: Point . !! y :: Point . !! z :: Point . sr x y z = so y x z"
+and
 X6: "!! x :: Point . !! y :: Point . !! z :: Point . sr x y z = sr x z y"
+and
 X7: "!! x :: Point . !! y :: Point . !! z :: Point . sr x y z = so z x y"
+and
 X8: "!! x :: Point . !! y :: Point . !! z :: Point . ri x y z = le y x z"
+and
 X9: "!! x :: Point . !! y :: Point . !! z :: Point . ri x y z = le x z y"
+and
 X10: "!! x :: Point . !! y :: Point . !! z :: Point . ri x y z = ri y z x"
+and
 X11: "!! x :: Point . !! y :: Point . !! z :: Point . ri x y z = ri z x y"
+and
 X12: "!! x :: Point . !! y :: Point . !! z :: Point . ri x y z = le z y x"
+and
 X13: "!! x :: Point . !! y :: Point . !! z :: Point . le x y z = ri y x z"
+and
 X14: "!! x :: Point . !! y :: Point . !! z :: Point . le x y z = ri x z y"
+and
 X15: "!! x :: Point . !! y :: Point . !! z :: Point . le x y z = le y z x"
+and
 X16: "!! x :: Point . !! y :: Point . !! z :: Point . le x y z = le z x y"
+and
 X17: "!! x :: Point . !! y :: Point . !! z :: Point . le x y z = ri z y x"
+and
 X18: "!! x :: Point . !! y :: Point . !! z :: Point . ba x y z = bo y x z"
+and
 X19: "!! x :: Point . !! y :: Point . !! z :: Point . ba x y z = fr x z y"
+and
 X20: "!! x :: Point . !! y :: Point . !! z :: Point . ba x y z = bo y z x"
+and
 X21: "!! x :: Point . !! y :: Point . !! z :: Point . ba x y z = fr z x y"
+and
 X22: "!! x :: Point . !! y :: Point . !! z :: Point . ba x y z = ba z y x"
+and
 X23: "!! x :: Point . !! y :: Point . !! z :: Point . fr x y z = fr y x z"
+and
 X24: "!! x :: Point . !! y :: Point . !! z :: Point . fr x y z = ba x z y"
+and
 X25: "!! x :: Point . !! y :: Point . !! z :: Point . fr x y z = ba y z x"
+and
 X26: "!! x :: Point . !! y :: Point . !! z :: Point . fr x y z = bo z x y"
+and
 X27: "!! x :: Point . !! y :: Point . !! z :: Point . fr x y z = bo z y x"
+and
 X28: "!! x :: Point . !! y :: Point . !! z :: Point . bo x y z = ba y x z"
+and
 X29: "!! x :: Point . !! y :: Point . !! z :: Point . bo x y z = bo x z y"
+and
 X30: "!! x :: Point . !! y :: Point . !! z :: Point . bo x y z = fr y z x"
+and
 X31: "!! x :: Point . !! y :: Point . !! z :: Point . bo x y z = ba z x y"
+and
 X32: "!! x :: Point . !! y :: Point . !! z :: Point . bo x y z = fr z y x"
+and
 X33: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (ri w y z)) ==> ((ri x y z) | (le x y z) | (ba x y z))"
+and
 X34: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (le w y z)) ==> ((ri x y z) | (le x y z) | (fr x y z) | (bo x y z) | (so x y z))"
+and
 X35: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (ba w y z)) ==> (le x y z)"
+and
 X36: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (fr w y z)) ==> (ri x y z)"
+and
 X37: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (bo w y z)) ==> (ri x y z)"
+and
 X38: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (so w y z)) ==> (ri x y z)"
+and
 X39: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X40: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (ri w y z)) ==> ((ri x y z) | (le x y z) | (fr x y z) | (bo x y z) | (so x y z))"
+and
 X41: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (le w y z)) ==> ((ri x y z) | (le x y z) | (ba x y z))"
+and
 X42: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (ba w y z)) ==> (ri x y z)"
+and
 X43: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (fr w y z)) ==> (le x y z)"
+and
 X44: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (bo w y z)) ==> (le x y z)"
+and
 X45: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (so w y z)) ==> (le x y z)"
+and
 X46: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X47: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (ri w y z)) ==> (le x y z)"
+and
 X48: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (le w y z)) ==> (ri x y z)"
+and
 X49: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (ba w y z)) ==> ((fr x y z) | (bo x y z) | (so x y z))"
+and
 X50: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (fr w y z)) ==> (ba x y z)"
+and
 X51: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (bo w y z)) ==> (ba x y z)"
+and
 X52: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (so w y z)) ==> (ba x y z)"
+and
 X53: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X54: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (ri w y z)) ==> (ri x y z)"
+and
 X55: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (le w y z)) ==> (le x y z)"
+and
 X56: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (ba w y z)) ==> (ba x y z)"
+and
 X57: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (fr w y z)) ==> (fr x y z)"
+and
 X58: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (bo w y z)) ==> ((fr x y z) | (bo x y z) | (so x y z))"
+and
 X59: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (so w y z)) ==> (fr x y z)"
+and
 X60: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X61: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (ri w y z)) ==> (ri x y z)"
+and
 X62: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (le w y z)) ==> (le x y z)"
+and
 X63: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (ba w y z)) ==> (ba x y z)"
+and
 X64: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (fr w y z)) ==> ((fr x y z) | (bo x y z) | (so x y z))"
+and
 X65: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (bo w y z)) ==> (bo x y z)"
+and
 X66: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (so w y z)) ==> (bo x y z)"
+and
 X67: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X68: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (ri w y z)) ==> (ri x y z)"
+and
 X69: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (le w y z)) ==> (le x y z)"
+and
 X70: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (ba w y z)) ==> (ba x y z)"
+and
 X71: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (fr w y z)) ==> (fr x y z)"
+and
 X72: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (bo w y z)) ==> (bo x y z)"
+and
 X73: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (so w y z)) ==> (so x y z)"
+and
 X74: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (sr w y z)) ==> (sr x y z)"
+and
 X75: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (ri w y z)) ==> False"
+and
 X76: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (le w y z)) ==> False"
+and
 X77: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (ba w y z)) ==> False"
+and
 X78: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (fr w y z)) ==> False"
+and
 X79: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (bo w y z)) ==> False"
+and
 X80: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (so w y z)) ==> False"
+and
 X81: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (sr w y z)) ==> False"
+and
 X82: "!! x :: Point . !! y :: Point . !! z :: Point . (tri x y z) = (x = y & y = z)"
+and
 X83: "!! x :: Point . !! y :: Point . !! z :: Point . (dou x y z) = (x = y & (Not (y = z)))"
+and
 X84: "!! x :: Point . tri x x x"
+and
 X85: "!! x :: Point . !! y :: Point . !! z :: Point . tri x y z = tri y x z"
+and
 X86: "!! x :: Point . !! y :: Point . !! z :: Point . tri x y z = tri x z y"
+and
 X87: "!! x :: Point . !! y :: Point . !! z :: Point . tri x y z = tri y z x"
+and
 X88: "!! x :: Point . !! y :: Point . !! z :: Point . tri x y z = tri z x y"
+and
 X89: "!! x :: Point . !! y :: Point . !! z :: Point . tri x y z = tri z y x"
+and
 X90: "!! x :: Point . !! y :: Point . !! z :: Point . dou x y z = dou y x z"
+and
 X91: "!! x :: Point . !! y :: Point . !! z :: Point . dou x y z = so x z y"
+and
 X92: "!! x :: Point . !! y :: Point . !! z :: Point . dou x y z = so y z x"
+and
 X93: "!! x :: Point . !! y :: Point . !! z :: Point . dou x y z = sr z x y"
+and
 X94: "!! x :: Point . !! y :: Point . !! z :: Point . dou x y z = sr z y x"
+and
 X95: "!! x :: Point . !! y :: Point . !! z :: Point . so x y z = dou x z y"
+and
 X96: "!! x :: Point . !! y :: Point . !! z :: Point . so x y z = dou z x y"
+and
 X97: "!! x :: Point . !! y :: Point . !! z :: Point . sr x y z = dou y z x"
+and
 X98: "!! x :: Point . !! y :: Point . !! z :: Point . sr x y z = dou z y x"
+and
 X99: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (dou w y z)) ==> False"
+and
 X100: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ri x y w) & (tri w y z)) ==> False"
+and
 X101: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (dou w y z)) ==> False"
+and
 X102: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((le x y w) & (tri w y z)) ==> False"
+and
 X103: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (dou w y z)) ==> False"
+and
 X104: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((ba x y w) & (tri w y z)) ==> False"
+and
 X105: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (dou w y z)) ==> False"
+and
 X106: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((fr x y w) & (tri w y z)) ==> False"
+and
 X107: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (dou w y z)) ==> False"
+and
 X108: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((bo x y w) & (tri w y z)) ==> False"
+and
 X109: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (dou w y z)) ==> False"
+and
 X110: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((so x y w) & (tri w y z)) ==> False"
+and
 X111: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (dou w y z)) ==> ((ri x y z) | (le x y z) | (ba x y z) | (fr x y z) | (bo x y z) | (so x y z))"
+and
 X112: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((sr x y w) & (tri w y z)) ==> (sr x y z)"
+and
 X113: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (ri w y z)) ==> (dou x y z)"
+and
 X114: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (le w y z)) ==> (dou x y z)"
+and
 X115: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (ba w y z)) ==> (dou x y z)"
+and
 X116: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (fr w y z)) ==> (dou x y z)"
+and
 X117: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (bo w y z)) ==> (dou x y z)"
+and
 X118: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (so w y z)) ==> (dou x y z)"
+and
 X119: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (sr w y z)) ==> (tri x y z)"
+and
 X120: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (dou w y z)) ==> False"
+and
 X121: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((dou x y w) & (tri w y z)) ==> False"
+and
 X122: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (ri w y z)) ==> False"
+and
 X123: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (le w y z)) ==> False"
+and
 X124: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (ba w y z)) ==> False"
+and
 X125: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (fr w y z)) ==> False"
+and
 X126: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (bo w y z)) ==> False"
+and
 X127: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (so w y z)) ==> False"
+and
 X128: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (sr w y z)) ==> False"
+and
 X129: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (dou w y z)) ==> (dou x y z)"
+and
 X130: "!! x :: Point . !! y :: Point . !! z :: Point . !! w :: Point . ((tri x y w) & (tri w y z)) ==> (tri x y z)"
 
+and
 X131: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (le x y z))"
+and
 X132: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (ba x y z))"
+and
 X133: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (fr x y z))"
+and
 X134: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (bo x y z))"
+and
 X135: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (so x y z))"
+and
 X136: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (sr x y z))"
+and
 X137: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (dou x y z))"
+and
 X138: "!! x :: Point . !! y :: Point . !! z :: Point . (ri x y z) ==> (Not (tri x y z))"
+and
 X139: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (ba x y z))"
+and
 X140: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (fr x y z))"
+and
 X141: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (bo x y z))"
+and
 X142: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (so x y z))"
+and
 X143: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (sr x y z))"
+and
 X144: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (dou x y z))"
+and
 X145: "!! x :: Point . !! y :: Point . !! z :: Point . (le x y z) ==> (Not (tri x y z))"
+and
 X146: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (fr x y z))"
+and
 X147: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (bo x y z))"
+and
 X148: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (so x y z))"
+and
 X149: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (sr x y z))"
+and
 X150: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (dou x y z))"
+and
 X151: "!! x :: Point . !! y :: Point . !! z :: Point . (ba x y z) ==> (Not (tri x y z))"
+and
 X152: "!! x :: Point . !! y :: Point . !! z :: Point . (fr x y z) ==> (Not (bo x y z))"
+and
 X153: "!! x :: Point . !! y :: Point . !! z :: Point . (fr x y z) ==> (Not (so x y z))"
+and
 X154: "!! x :: Point . !! y :: Point . !! z :: Point . (fr x y z) ==> (Not (sr x y z))"
+and
 X155: "!! x :: Point . !! y :: Point . !! z :: Point . (fr x y z) ==> (Not (dou x y z))"
+and
 X156: "!! x :: Point . !! y :: Point . !! z :: Point . (fr x y z) ==> (Not (tri x y z))"
+and
 X157: "!! x :: Point . !! y :: Point . !! z :: Point . (bo x y z) ==> (Not (so x y z))"
+and
 X158: "!! x :: Point . !! y :: Point . !! z :: Point . (bo x y z) ==> (Not (sr x y z))"
+and
 X159: "!! x :: Point . !! y :: Point . !! z :: Point . (bo x y z) ==> (Not (dou x y z))"
+and
 X160: "!! x :: Point . !! y :: Point . !! z :: Point . (bo x y z) ==> (Not (tri x y z))"
+and
 X161: "!! x :: Point . !! y :: Point . !! z :: Point . (so x y z) ==> (Not (sr x y z))"
+and
 X162: "!! x :: Point . !! y :: Point . !! z :: Point . (so x y z) ==> (Not (dou x y z))"
+and
 X163: "!! x :: Point . !! y :: Point . !! z :: Point . (so x y z) ==> (Not (tri x y z))"
+and
 X164: "!! x :: Point . !! y :: Point . !! z :: Point . (sr x y z) ==> (Not (dou x y z))"
+and
 X165: "!! x :: Point . !! y :: Point . !! z :: Point . (sr x y z) ==> (Not (tri x y z))"
 
 
@@ -227,7 +393,7 @@ declare X18 [simp del]
 
 theorem assumes an: "((sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)) & ((le p21 p22 p31 & le p21 p22 p32) & (le p31 p32 p21 & le p31 p32 p22))" shows "(ri p11 p12 p31 & ri p11 p12 p32) & (le p31 p32 p11 & le p31 p32 p12)"
 proof
-  have an1: "(sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)" by (rule conjE)
+  from an have an1: "(sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)" ..
   then have an11: "sr p11 p12 p21 & so p11 p12 p22" ..
   then have a1: "sr p11 p12 p21" ..
   from an11 have a2: "so p11 p12 p22" .. 
@@ -292,7 +458,7 @@ qed --"eses cmps llll = rrll"
 
 theorem assumes an: "((ba p11 p12 p21 & le p11 p12 p22) & (le p21 p22 p11 & le p21 p22 p12)) & ((ba p21 p22 p31 & ba p21 p22 p32) & (bo p31 p32 p21 & bo p31 p32 p22))" shows "(le p11 p12 p31 & le p11 p12 p32) & (le p31 p32 p11 & le p31 p32 p12)"
 proof
- have an1: "(ba p11 p12 p21 & le p11 p12 p22) & (le p21 p22 p11 & le p21 p22 p12)" by (rule conjE)
+ from an have an1: "(ba p11 p12 p21 & le p11 p12 p22) & (le p21 p22 p11 & le p21 p22 p12)" by (rule conjE)
   then have an11: "ba p11 p12 p21 & le p11 p12 p22" ..
   then have a1: "ba p11 p12 p21" ..
   from an11 have a2: "le p11 p12 p22" .. 
@@ -386,7 +552,7 @@ qed -- "flll cmps ffbb = llll"
 
 theorem assumes an: "((ba p11 p12 p21 & ri p11 p12 p22) & (ri p21 p22 p11 & ri p21 p22 p12)) & ((ba p21 p22 p31 & ba p21 p22 p32) & (bo p31 p32 p21 & bo p31 p32 p22))" shows "(ri p11 p12 p31 & ri p11 p12 p32) & (ri p31 p32 p11 & ri p31 p32 p12)"
 proof
- have an1: "(ba p11 p12 p21 & ri p11 p12 p22) & (ri p21 p22 p11 & ri p21 p22 p12)" by (rule conjE)
+ from an have an1: "(ba p11 p12 p21 & ri p11 p12 p22) & (ri p21 p22 p11 & ri p21 p22 p12)" by  (rule conjE)
   then have an11: "ba p11 p12 p21 & ri p11 p12 p22" ..
   then have a1: "ba p11 p12 p21" ..
   from an11 have a2: "ri p11 p12 p22" .. 
@@ -461,7 +627,7 @@ qed -- "flll cmps ffbb = llll"
 
 theorem assumes an: "((sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)) & ((ri p21 p22 p31 & ri p21 p22 p32) & (ri p31 p32 p21 & ri p31 p32 p22))" shows "(le p11 p12 p31 & le p11 p12 p32) & (ri p31 p32 p11 & ri p31 p32 p12)"
 proof 
-  have an1: "(sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)" by (rule conjE)
+  from an have an1: "(sr p11 p12 p21 & so p11 p12 p22) & (sr p21 p22 p11 & so p21 p22 p12)" by (rule conjE)
   then have an11: "sr p11 p12 p21 & so p11 p12 p22" ..
   then have a1: "sr p11 p12 p21" ..
   from an11 have a2: "so p11 p12 p22" .. 
