@@ -1,4 +1,4 @@
-theory RCCDagstuhl2_RCC_FO_in_MetricSpace__T
+theory RCCDagstuhl2_NN_T
 imports "$HETS_ISABELLE_LIB/MainHC"
 begin
 
