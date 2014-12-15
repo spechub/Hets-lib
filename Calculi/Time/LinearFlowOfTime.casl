@@ -194,7 +194,7 @@ then
 end
 
 
-view LinFlowOfTimeSEnd_Is_NonTrivial:
+view LinFlowOfTimeSEnd_Is_NonTrivial :
      NTLinFlowOfTime to LinFlowOfTimeSEnd
 end
 
@@ -204,19 +204,19 @@ end
 from Basic/Numbers get Nat, Int, Rat
 
 
-view FlowOfTime_in_Nat: LinFlowOfTimeSMax to Nat =
+view FlowOfTime_in_Nat : LinFlowOfTimeSMax to Nat =
      sort Instant |-> Nat, pred __ pre __ |-> __ < __
 end
 
-view FlowOfTime_in_Nat_inverse: LinFlowOfTimeSMin to Nat =
+view FlowOfTime_in_Nat_inverse : LinFlowOfTimeSMin to Nat =
      sort Instant |-> Nat,  pred __ pre __ |-> __ > __
 end
 
-view FlowOfTime_in_Int: LinFlowOfTimeSEnd to Int =
+view FlowOfTime_in_Int : LinFlowOfTimeSEnd to Int =
      sort Instant |-> Int, pred __ pre __ |-> __ < __
 end
 
-view FlowOfTime_in_Rat: DnsLinFlowOfTimeSEnd to Rat =
+view FlowOfTime_in_Rat : DnsLinFlowOfTimeSEnd to Rat =
      sort Instant |-> Nat, pred __ pre __ |-> __ < __
 end
 

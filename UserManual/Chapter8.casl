@@ -63,13 +63,13 @@ end
 
 arch spec System =
     units
-	N: Natural_Order; C: Cont [Natural_Order] given N;
-	D: Cont_Diff [Natural_Order] given C
+	N : Natural_Order ; C : Cont [Natural_Order] given N ;
+	D : Cont_Diff [Natural_Order] given C
     result D
 end
 
 arch spec System_1 =
-    units N: Natural_Order; CD: Cont_Diff [Natural_Order] given N
+    units N : Natural_Order ; CD : Cont_Diff [Natural_Order] given N
     result CD
 end
 
@@ -90,36 +90,36 @@ end
 
 arch spec Inconsistent =
     units
-	N: Natural_Order; C: Cont [Natural_Order] given N;
-	D: Cont_Diff_1 given C
+	N : Natural_Order ; C : Cont [Natural_Order] given N ;
+	D : Cont_Diff_1 given C
     result D
 end
 
 arch spec System_G =
     units
-	N: Natural_Order; F: Natural_Order -> Cont [Natural_Order];
-	G: Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+	N : Natural_Order ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
     result G [F [N]]
 end
 
 arch spec System_A =
     units
-	NA: Natural_Arithmetic; F: Natural_Order -> Cont [Natural_Order];
-	G: Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
     result G [F [NA]]
 end
 
 arch spec System_A_1 =
     units
-	NA: Natural_Arithmetic; F: Natural_Order -> Cont [Natural_Order];
-	G: Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
     result G [F [NA]] hide  1,  __+__,  __*__
 end
 
 arch spec System_A_2 =
     units
-	NA: Natural_Arithmetic; F: Natural_Order -> Cont [Natural_Order];
-	G: Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order];
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
     result G [F [NA hide  1,  __+__,  __*__]]
 end
 
@@ -130,7 +130,7 @@ unit spec Diff_Comp = Cont [Elem] -> Cont_Diff [Elem]
 end
 
 arch spec System_G1 =
-    units N: Natural_Order; F: Cont_Comp; G: Diff_Comp
+    units N : Natural_Order ; F : Cont_Comp ; G : Diff_Comp
     result G [F [N]]
 end
 
@@ -141,15 +141,15 @@ unit spec Diff_Comp_1 =
 end
 
 arch spec Other_System =
-    units N: Natural_Order; C: Color; F: Cont_Comp
+    units N : Natural_Order ; C : Color ; F : Cont_Comp
     result F [N] and F [C fit  Elem |-> RGB]
 end
 
 arch spec Other_System_1 =
     units
-	N: Natural_Order; C: Color;
-	FN: Natural_Order -> Cont [Natural_Order];
-	FC: Color -> Cont [Color fit  Elem |-> RGB]
+	N : Natural_Order ; C : Color ;
+	FN : Natural_Order -> Cont [Natural_Order];
+	FC : Color -> Cont [Color fit  Elem |-> RGB]
     result FN [N] and FC [C]
 end
 
@@ -167,27 +167,27 @@ end
 
 arch spec Arch_Cont2Set_Nat =
     units
-	N: Natural_Order; C: Cont_Comp; S: Set_Comp;
-	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+	N : Natural_Order ; C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
     result F [C [N]] [S [N]]
 end
 
 arch spec Arch_Cont2Set =
     units
-	C: Cont_Comp; S: Set_Comp;
-	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+	C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
     result lambda X : Elem . F [C [X]] [S [X]]
 end
 
 arch spec Arch_Cont2Set_Used =
-    units N: Natural_Order; CSF: arch spec Arch_Cont2Set
+    units N : Natural_Order ; CSF : arch spec Arch_Cont2Set
     result CSF [N]
 end
 
 arch spec Arch_Cont2Set_Nat_1 =
     units
-	N: Natural_Order; C: Cont_Comp; S: Set_Comp;
-	G: {Cont [Elem] and Generated_Set [Elem]} -> Cont2Set [Elem]
+	N : Natural_Order ; C : Cont_Comp ; S : Set_Comp ;
+	G : {Cont [Elem] and Generated_Set [Elem]} -> Cont2Set [Elem]
     result G [C [N] and S [N] fit  Cont[Elem] |-> Cont[Nat]]
 end
 
@@ -210,17 +210,17 @@ end
 
 arch spec Well_Structured_Arch_Spec =
     units
-	N: Natural_Order; A: Natural_Order -> Natural_Arithmetic;
-	AN = A [N]; C: Cont_Comp; S: Set_Comp;
-	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+	N : Natural_Order ; A : Natural_Order -> Natural_Arithmetic ;
+	AN = A [N]; C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
     result F [C [AN]] [S [AN]]
 end
 
 arch spec Another_Well_Structured_Arch_Spec =
     units
-	N: Natural_Order; A: Natural_Order -> Natural_Arithmetic;
-	C: Cont_Comp; S: Set_Comp;
-	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+	N : Natural_Order ; A : Natural_Order -> Natural_Arithmetic ;
+	C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
     result local AN = A [N]
 	   within F [C [AN]] [S [AN]]
 end

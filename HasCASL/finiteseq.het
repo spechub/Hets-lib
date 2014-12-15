@@ -3,25 +3,26 @@ library HasCASL/Functions
 from Basic/Numbers get Nat
 
 spec Nat1 = Nat hide Pos
+end
 
 logic HasCASL
 spec FiniteSeq = Nat1
 then
   var S: Type
   type Seq S := Nat ->? S;
-  ops 
+  ops
     tail: Seq S -> Seq S;
     head: Seq S ->? S;
-    filter: Seq S -> Pred S -> Seq S;    
+    filter: Seq S -> Pred S -> Seq S;
     nf : Seq S -> Seq S;
     nfh : Seq S ->? S;
     nft : Seq S -> Seq S;
     concat : Seq S * Seq S -> Seq S;
-    length : Seq S ->? Nat;    
+    length : Seq S ->? Nat;
     min: Pred(Nat) ->? Nat;
     start: Seq S ->? Nat;
     map : (S ->? S) -> Seq S -> Seq S;
-    __o__ : forall a, b, c:Type . 
+    __o__ : forall a, b, c:Type .
                (b ->? c) * (a ->? b) -> (a ->? c);
   preds
     empty: Seq S;
@@ -29,7 +30,7 @@ then
     all : Seq S * Pred(S)
 
   vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred(Nat); f,g:S ->? S;
-  . def (min Q) => exists m:Nat. Q m 
+  . def (min Q) => exists m:Nat. Q m
   . (exists m:Nat. Q m) => min Q =  0 when Q 0 else min (\ m:Nat. Q (m+1))
   . start s = min (\m:Nat. def (s m))
   . head(s) = s(0);

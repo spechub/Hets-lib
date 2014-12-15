@@ -122,7 +122,7 @@ then %implies
   . (M intersection N) isSubsetOf M             %(intersection_isSubsetOf)%
 end
 
-view PartialOrder_in_Set  [sort Elem] given Nat:
+view PartialOrder_in_Set  [sort Elem] given Nat :
      PartialOrder to Set [sort Elem] =
      sort Elem     |-> Set[Elem] ,
      pred __ <= __ |-> __ isSubsetOf __
@@ -160,7 +160,7 @@ spec PowerSet [Set[sort Elem] then op X: Set[Elem]] given Nat
 end
 
 view BooleanAlgebra_in_PowerSet
-     [Set[sort Elem] then op X: Set[Elem]] given Nat:
+     [Set[sort Elem] then op X: Set[Elem]] given Nat :
      BooleanAlgebra to
      PowerSet[Set[sort Elem] then op X: Set[Elem]]
 =
@@ -259,7 +259,7 @@ then %implies
 
 end
 
-view Monoid_in_List  [sort Elem] given Nat:
+view Monoid_in_List  [sort Elem] given Nat :
   Monoid to List [sort Elem]
 =
   sort Elem |-> List[Elem],
@@ -278,7 +278,7 @@ spec GenerateMap [sort S] [sort T] = %mono
 end
 
 
-spec Map [sort S][sort T] given Nat= %mono
+spec Map [sort S][sort T] given Nat = %mono
      GenerateMap [sort S][sort T]
    and
      Set [sort S fit Elem |-> S]
@@ -429,7 +429,7 @@ then %def
 
 end
 
-view CommutativeMonoid_in_Bag  [sort Elem] given Nat:
+view CommutativeMonoid_in_Bag  [sort Elem] given Nat :
   CommutativeMonoid to Bag [sort Elem]
 =
   sort Elem |-> Bag[Elem],
@@ -437,7 +437,7 @@ view CommutativeMonoid_in_Bag  [sort Elem] given Nat:
        __*__ |-> __ union __
 end
 
-view PartialOrder_in_Bag [sort Elem] given Nat:
+view PartialOrder_in_Bag [sort Elem] given Nat :
   PartialOrder to Bag [sort Elem]
 =
   sort Elem |-> Bag[Elem],
@@ -478,7 +478,7 @@ spec GenerateBinTree [sort Elem] = %mono
                                right:? BinTree[Elem])
 end
 
-spec BinTree [sort Elem] given Nat, Set[sort Elem] = %mono
+spec BinTree [sort Elem] given Nat , Set[sort Elem] = %mono
     GenerateBinTree[sort Elem]
   and
     Set[sort Elem]
@@ -531,7 +531,7 @@ spec GenerateBinTree2 [sort Elem] = %mono
     BinTree2[Elem] ::= nil | sort NonEmptyBinTree2[Elem]
 end
 
-spec BinTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
+spec BinTree2 [sort Elem] given Nat , Set[sort Elem] = %mono
     GenerateBinTree2[sort Elem]
   and
     Set[sort Elem]
@@ -590,7 +590,7 @@ spec GenerateNTree [sort Elem] = %mono
        | nTree(entry:? Elem; branches:? List[NTree[Elem]])
 end
 
-spec NTree [sort Elem] given Nat, Set[sort Elem] = %mono
+spec NTree [sort Elem] given Nat , Set[sort Elem] = %mono
     GenerateNTree[sort Elem]
   and
     Set[sort Elem]
@@ -681,7 +681,7 @@ spec GenerateNTree2 [sort Elem] = %mono
 
 end
 
-spec NTree2 [sort Elem] given Nat, Set[sort Elem] = %mono
+spec NTree2 [sort Elem] given Nat , Set[sort Elem] = %mono
     GenerateNTree2[sort Elem]
   and
     Set[sort Elem]
@@ -751,13 +751,13 @@ then %def
   . leaves(nil) = {}                       %(leaves_nil_nTree2)%
 end
 
-spec KTree [sort Elem][op k: Nat] given Nat, Set[sort Elem] = %mono
+spec KTree [sort Elem][op k: Nat] given Nat , Set[sort Elem] = %mono
   NTree [sort Elem]
 then %mono
   sort KTree[Elem] = { T : NTree[Elem] . T is k branching}
 end
 
-spec KTree2 [sort Elem][op k: Nat] given Nat, Set[sort Elem] =  %mono
+spec KTree2 [sort Elem][op k: Nat] given Nat , Set[sort Elem] =  %mono
   NTree2 [sort Elem]
 then %mono
   sort KTree2[Elem] = { T : NTree2[Elem] . T is k branching}

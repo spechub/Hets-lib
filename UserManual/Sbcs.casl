@@ -522,18 +522,18 @@ end
 
 arch spec Arch_Sbcs =
     units
-	P: Value -> Preliminary; S: Preliminary -> Sbcs_State;
-	A: Sbcs_State -> Sbcs_Analysis;
-	C: Sbcs_Analysis -> Steam_Boiler_Control_System
+	P : Value -> Preliminary ; S : Preliminary -> Sbcs_State ;
+	A : Sbcs_State -> Sbcs_Analysis ;
+	C : Sbcs_Analysis -> Steam_Boiler_Control_System
     result lambda V : Value . C [A [S [P [V]]]]
 end
 
 arch spec Arch_Preliminary =
     units
-	SET: {sort Elem} *  Nat -> Set [sort Elem]; B: Basics;
-	MS: Messages_Sent given B; 
-        MR: Value -> Messages_Received given B;
-	CST: Value -> Sbcs_Constants
+	SET : {sort Elem} *  Nat -> Set [sort Elem]; B : Basics ;
+	MS : Messages_Sent given B ;
+        MR : Value -> Messages_Received given B ;
+	CST : Value -> Sbcs_Constants
     result lambda
 	       V : Value
 	     . SET [MS fit  Elem |-> S_Message] [V] and
@@ -580,20 +580,20 @@ end
 
 arch spec Arch_Analysis =
     units
-	FD: Sbcs_State -> Failure_Detection;
-	PR: Failure_Detection -> PU_Prediction;
-	ME: PU_Prediction -> Mode_Evolution [PU_Prediction];
-	MTS: Mode_Evolution [PU_Prediction] -> Sbcs_Analysis
+	FD : Sbcs_State -> Failure_Detection ;
+	PR : Failure_Detection -> PU_Prediction ;
+	ME : PU_Prediction -> Mode_Evolution [PU_Prediction];
+	MTS : Mode_Evolution [PU_Prediction] -> Sbcs_Analysis
     result lambda S : Sbcs_State . MTS [ME [PR [FD [S]]]]
 end
 
 arch spec Arch_Failure_Detection =
     units
-	MTSF: Sbcs_State -> Message_Transmission_System_Failure;
-	PF: Sbcs_State -> Pump_Failure;
-	PCF: Sbcs_State -> Pump_Controller_Failure;
-	SF: Sbcs_State -> Steam_Failure; LF: Sbcs_State -> Level_Failure;
-	PU: Message_Transmission_System_Failure *  Pump_Failure *
+	MTSF : Sbcs_State -> Message_Transmission_System_Failure ;
+	PF : Sbcs_State -> Pump_Failure ;
+	PCF : Sbcs_State -> Pump_Controller_Failure ;
+	SF : Sbcs_State -> Steam_Failure ; LF : Sbcs_State -> Level_Failure ;
+	PU : Message_Transmission_System_Failure *  Pump_Failure *
 	Pump_Controller_Failure *  Steam_Failure *
     Level_Failure -> Failure_Detection
     result lambda S : Sbcs_State
@@ -603,11 +603,11 @@ end
 
 arch spec Arch_Prediction =
     units
-	SE: Failure_Detection -> Status_Evolution [Failure_Detection];
-	SLP: Failure_Detection -> Steam_And_Level_Prediction;
-	PP: Status_Evolution [Failure_Detection] *
-	    Steam_And_Level_Prediction -> Pump_State_Prediction;
-	PCP: Status_Evolution [Failure_Detection] *
+	SE : Failure_Detection -> Status_Evolution [Failure_Detection];
+	SLP : Failure_Detection -> Steam_And_Level_Prediction ;
+	PP : Status_Evolution [Failure_Detection] *
+	    Steam_And_Level_Prediction -> Pump_State_Prediction ;
+	PCP : Status_Evolution [Failure_Detection] *
 	     Steam_And_Level_Prediction -> Pump_Controller_State_Prediction
     result lambda FD : Failure_Detection
 	     . local SEFD = SE [FD]; SLPFD = SLP [FD]
@@ -638,13 +638,13 @@ refinement StateRef =
 refinement Ref_Sbcs' =
 
 Ref_Sbcs then {
- P to arch spec Arch_Preliminary,
- S to StateRef,
+ P to arch spec Arch_Preliminary ,
+ S to StateRef ,
  A to arch spec Arch_Analysis}
 
 refinement Ref_Sbcs'' =
 
 Ref_Sbcs' then {A to {
-  FD to arch spec Arch_Failure_Detection,
+  FD to arch spec Arch_Failure_Detection ,
   PR to arch spec Arch_Prediction
 } }

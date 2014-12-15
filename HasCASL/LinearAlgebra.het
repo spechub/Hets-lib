@@ -59,8 +59,8 @@ end
 spec NormedSpace[FieldWithValuation] =
 VectorSpace[FieldWithValuation]
 then
-     op ||__|| : Space -> Real 
-     vars a:Elem ; v,w: Space   
+     op ||__|| : Space -> Real
+     vars a:Elem ; v,w: Space
      . ||a * v|| = val(a) * ||v||	%(homogeneous)%
      . ||v + w|| <= ||v|| + ||w||      	%(triangle inequality)%
      . ||v|| = 0 <=> v = 0  	 	%(definite)%
@@ -68,7 +68,7 @@ then %implies
      forall v:Space. 0 <= ||v||          %(pos definite)%
 end
 
-spec EuclideanVectorSpace = 
+spec EuclideanVectorSpace =
      VectorSpace[OrderedReals fit Elem |-> Real]
 then
      op __*__ : Space * Space -> Real   %% (bilinear form)
@@ -89,7 +89,7 @@ end
 %( Definition of Norm and Projection )%
 spec ExtEuclideanVectorSpace[EuclideanVectorSpace] given RealFunctions
 = %def
-ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then 
+ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then
      ops  ||__|| (x:Space): Real = sqrt(x*x as RealNonNeg); %(norm from inner prod def)%
 	  proj(v,w:Space):Space
 	       = 0 when w = 0 else ((v*w)/(w*w as NonZero)) * w; %(proj def)%
@@ -126,7 +126,7 @@ then %implies
 	  => x=v /\ y=w %(unique orthogonal decomposition)%
 end
 
-view EuclideanSpaceIsNormedSpace:
+view EuclideanSpaceIsNormedSpace :
      NormedSpace[view OrderedReals_as_FieldWithValuation]
      to ExtEuclideanVectorSpace[EuclideanVectorSpace]
 end

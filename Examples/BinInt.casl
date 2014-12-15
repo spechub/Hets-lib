@@ -2,7 +2,7 @@ library Examples/BinInt
 
 from Basic/Numbers get Nat, Int
 
-spec BigInt = 
+spec BigInt =
   Nat
 then
   free type Int ::= p(Nat) | n(Pos)
@@ -37,7 +37,7 @@ spec IntHInt = Int1
 then %cons
 { closed {BigInt with sort Int |-> HInt}
 then
-  ops h : HInt -> Int;   
+  ops h : HInt -> Int;
       p : Nat -> Int;
       n : Pos -> Int
   forall i:HInt; x:Nat; y:Pos
@@ -49,7 +49,7 @@ then
 }
 end
 
-view v1: Int1 to IntHInt %% = Int |-> HInt
+view v1 : Int1 to IntHInt %% = Int |-> HInt
 end
 
 %[ Alternative approach:

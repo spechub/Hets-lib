@@ -5,15 +5,15 @@ library CondensedSemantics
 
 logic CASL
 
-spec Types = 
+spec Types =
 
      sort Endpoint;
      sort Segment_Index;
-	  
+
      free type Position ::= Left | Right | Start | End | Back | Interior | Front
      free type Endpoint ::= StartA | StartB | EndA | EndB
 
-     free type Segment_Index ::= Segment1start | Segment1end | 
+     free type Segment_Index ::= Segment1start | Segment1end |
          Segment2 | Segment3start | Segment3end
 
      ops Location             : Endpoint -> Segment_Index;
@@ -24,16 +24,16 @@ spec Types =
 
 end
 
-spec CondensedSemanticsCross=
+spec CondensedSemanticsCross =
      Types then
 
-     . (Location(StartA) = Segment1start) \/ (Location(StartA) = Segment2) \/ 
+     . (Location(StartA) = Segment1start) \/ (Location(StartA) = Segment2) \/
 	  (Location(StartA) = Segment3start)
-     . (Location(EndA) = Segment1end) \/ (Location(EndA) = Segment2) \/ 
+     . (Location(EndA) = Segment1end) \/ (Location(EndA) = Segment2) \/
 	  (Location(EndA) = Segment3end)
-     . (Location(StartB) = Segment1start) \/ (Location(StartB) = Segment2) \/ 
+     . (Location(StartB) = Segment1start) \/ (Location(StartB) = Segment2) \/
 	  (Location(StartB) = Segment3start)
-     . (Location(EndB) = Segment1end) \/ (Location(EndB) = Segment2) \/ 
+     . (Location(EndB) = Segment1end) \/ (Location(EndB) = Segment2) \/
 	  (Location(EndB) = Segment3end)
      %% Damit sind die moeglichen Orte der Endpunkte definiert
 
@@ -46,10 +46,10 @@ spec CondensedSemanticsCross=
      %% Damit kann man die Ordnung der Endpunkte einschraenken
 
      forall x, y: Segment_Index
-     . ((Location(StartA) = x) /\ (Location(EndA) = y)) 
+     . ((Location(StartA) = x) /\ (Location(EndA) = y))
 	  => Behind(x, y)
      forall w, z: Segment_Index
-     . ((Location(StartB) = w) /\ (Location(EndB) = z)) 
+     . ((Location(StartB) = w) /\ (Location(EndB) = z))
 	  => Behind(w, z)
      %% Dann sind nur noch gueltige Konfigurationen moeglich
 
@@ -57,21 +57,21 @@ spec CondensedSemanticsCross=
      %% Jetzt kommen die eigentlichen Constraints in Bezug auf relative Positionen
      . (Location(StartB) = Segment1start) => (PositionRelativeTo_A(StartB) = Left)
      . (Location(StartB) = Segment3start) => (PositionRelativeTo_A(StartB) = Right)
-     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment2) => 
+     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment2) =>
 	  (PositionRelativeTo_A(StartB) = Start)
-     . (Location(StartB) = Segment2) /\ (Location(EndA) = Segment2) => 
+     . (Location(StartB) = Segment2) /\ (Location(EndA) = Segment2) =>
 	  (PositionRelativeTo_A(StartB) = End)
-     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment3start) => 
+     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment3start) =>
 	  (PositionRelativeTo_A(StartB) = Back)
-     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment1start) 
+     . (Location(StartB) = Segment2) /\ (Location(StartA) = Segment1start)
      . (Location(EndA) = Segment3end)  => (PositionRelativeTo_A(StartB) = Interior)
-     . (Location(StartB) = Segment2) /\ (Location(EndA) = Segment1end) => 
+     . (Location(StartB) = Segment2) /\ (Location(EndA) = Segment1end) =>
 	  (PositionRelativeTo_A(StartB) = Front)
 
 end
 
-spec CondensedSemanticsCrossMirror = 
+spec CondensedSemanticsCrossMirror =
      CondensedSemanticsCross with Segment1start |-> Segment3end,  Segment1end|-> Segment3start,  Segment3start|-> Segment1end, Segment3end |-> Segment1start
-end 
-     
+end
+
      %% Die anderen Faelle sind symmetrisch

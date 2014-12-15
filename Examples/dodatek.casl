@@ -22,37 +22,37 @@ end
 
 spec Interpreter =
   Ident and simpleNum and Syntax then
-    op Meaning : Prog * Num ->? Num; 
-    then 
+    op Meaning : Prog * Num ->? Num;
+    then
       %% local
         free type Env ::= nil | cons(Ident; Num; Env);
         vars E, E' : Env; n,n' : Num; id, id' : Ident; nE,nE' : NumExp;
-        
+
         op 1 : Num;
         op __+__: Num * Num -> Num;
         axioms
           1 = s(0);
           0+n = n;
           s(n) + n' = s(n + n');
-      
+
         op find : Ident * Env -> Num;
         axioms
           find(id,cons(id,n,E)) = n;
           find(id,cons(id',n,E)) = find(id,E) if not id=id';
-        
+
         op M : NumExp * Env -> Num;
         axioms
           M(0,E) = 0;
           M(1,E) = s(0);
           M(nE+nE',E) =  M(nE,E) + M(nE',E);
           M(variable(id),E) = find(id,E);
-        
+
         pred M : BoolExp * Env;
         axioms
           M(isZero(nE),E) <=> M(nE,E) = 0;
-        
+
           then free {
-        
+
             op M : Instr * Env ->? Env;
             vars E : Env; I,I' : Instr; nE : NumExp; bE : BoolExp; id : Ident;
             axioms
@@ -63,7 +63,7 @@ spec Interpreter =
               M(if_then_else(bE,I,I'),E) = M(I',E) if not M(bE,E);
               M(while(bE,I),E) = M(while(bE,I),M(I,E)) if M(bE,E);
               M(while(bE,I),E) = E if not M(bE,E);
-           } 
+           }
 
       then {
         vars I : Instr; n : Num;
@@ -96,7 +96,7 @@ end
 %% OrderedIdent * simpleNum * Syntax -> OrderedInterpreter
 %%
 
-%% Najpierw z otrzymanych liczb z nastepnikiem tworzymy byc moze efektywniejsza 
+%% Najpierw z otrzymanych liczb z nastepnikiem tworzymy byc moze efektywniejsza
 %% implementacje z dodawaniem
 %% typ unitu: simpleNum -> simpleNumAndNum
 
@@ -167,7 +167,7 @@ spec Env = {
   } reveal empty, set, find
 end
 
-spec IdentTotalOrderEnvWithAnything = 
+spec IdentTotalOrderEnvWithAnything =
   Env and Elem1 and IdentTotalOrder
 end
 
@@ -176,7 +176,7 @@ spec Env' =
 end
 
 
-spec ExtInterpreter = 
+spec ExtInterpreter =
   Interpreter and Env' and Num
 end
 
@@ -187,17 +187,17 @@ arch spec MakeInterpreter =
     makeEnv : IdentTotalOrder * Elem1 -> IdentTotalOrderEnvWithAnything;
     makeWhole : Ident * Num * Env' * Syntax -> ExtInterpreter;
   result
-    lambda Id : OrderedIdent; sN : simpleNum; Syn : Syntax . 
+    lambda Id : OrderedIdent; sN : simpleNum; Syn : Syntax .
        local
          N = makeNum[sN] hide sort Num;
-         Env = makeEnv[Id reveal pred __<__][N reveal sort Num' |-> Elem, op 0 |-> anything] 
+         Env = makeEnv[Id reveal pred __<__][N reveal sort Num' |-> Elem, op 0 |-> anything]
          									with sort Elem |-> Num';
        within {
          makeWhole[Id hide pred __<__][N][Env hide pred __<__][Syn] hide sort Env, Num'
        }
 end
 
-    
+
   %% : OrderedIdent * simpleNum * Syntax -> OrderedIdentInterpreter;
 ]%
 
@@ -256,18 +256,18 @@ spec InstrSemantics =
         M(if_then_else(bE,I,I'),E) = M(I',E) if not M(bE,E);
         M(while(bE,I),E) = M(while(bE,I),M(I,E)) if M(bE,E);
         M(while(bE,I),E) = E if not M(bE,E);
-      } 
+      }
 end
 
 
 arch spec MakeSemantics =
   units
-    makeNExp : Num * Env' * NExpSyntax -> NExpSemantics;
-    makeExp : NExpSemantics * ExpSyntax -> ExpSemantics;
-    makeInstr : ExpSemantics * InstrSyntax -> InstrSemantics;
-    makeProg : InstrSemantics * Ident * Syntax -> ExtInterpreter;
+    makeNExp : Num * Env' * NExpSyntax -> NExpSemantics ;
+    makeExp : NExpSemantics * ExpSyntax -> ExpSemantics ;
+    makeInstr : ExpSemantics * InstrSyntax -> InstrSemantics ;
+    makeProg : InstrSemantics * Ident * Syntax -> ExtInterpreter ;
   result
-    lambda Id : Ident; N : Num; Env : Env'; Syn : Syntax .
+    lambda Id : Ident ; N : Num ; Env : Env' ; Syn : Syntax .
       local
         NExp = makeNExp[N][Env][Syn hide sort BoolExp];
         Exp = makeExp[NExp][Syn hide sort Instr];
@@ -276,4 +276,3 @@ arch spec MakeSemantics =
         makeProg[Ins][Id][Syn]
 end
  %% Ident * Num * Env' * Syntax -> ExtInterpreter
- 

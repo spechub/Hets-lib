@@ -50,7 +50,7 @@ then
      . z * ( x + y ) = (z * x) + (z * y)        %(distr2_Ring)%
 end
 
-view AbelianGroup_in_Ring_add:
+view AbelianGroup_in_Ring_add :
      AbelianGroup to Ring =
      ops e |-> 0,
          __ * __ |-> __ + __
@@ -192,7 +192,7 @@ then %implies
      . associated(x,y) <=> (x divides y /\ y divides x)
 end
 
-view PreOrder_in_ExtCRing  [CommutativeRing] given Int:
+view PreOrder_in_ExtCRing  [CommutativeRing] given Int :
      PreOrder to ExtCommutativeRing[CommutativeRing] =
      pred __ <= __ |-> __ divides __
 end
@@ -203,7 +203,7 @@ view
      sort Elem |-> RUnit[Elem]
 end
 
-view EqRel_in_ExtCRing  [CommutativeRing] given Int:
+view EqRel_in_ExtCRing  [CommutativeRing] given Int :
      EquivalenceRelation to
      ExtCommutativeRing[CommutativeRing] =
      pred __ ~ __ |-> associated
@@ -218,7 +218,7 @@ then %implies
 end
 
 
-spec ExtField  [Field] given Int= %mono
+spec ExtField  [Field] given Int = %mono
      ExtRing [Ring]
 then
 closed
@@ -299,14 +299,14 @@ view CommutativeMonoid_in_Nat_Mult :
          __ * __ |-> __ * __
 end
 
-view CommutativeMonoid_in_Int_Mult:
-     CommutativeMonoid to Int=
+view CommutativeMonoid_in_Int_Mult :
+     CommutativeMonoid to Int =
      sort Elem |-> Int,
      ops e |-> 1,
          __ * __ |-> __ * __
 end
 
-view AbelianGroup_in_Int_Add:
+view AbelianGroup_in_Int_Add :
      AbelianGroup to Int =
      sort Elem |-> Int,
      ops e |-> 0,
@@ -319,7 +319,7 @@ view IntegralDomain_in_Int :
      op e |-> 1
 end
 
-view Field_in_Rat: Field to Rat =
+view Field_in_Rat : Field to Rat =
      sort Elem |-> Rat,
      op e |-> 1
 end
@@ -335,7 +335,7 @@ forall k,l: Int; x: Z[n]
 . [k] + [l] = [k + l]
 . [k] * [l] = [k * l]
 
-view CommutativeRing_in_ResidueClassRing[op n: Int] given Int:
+view CommutativeRing_in_ResidueClassRing[op n: Int] given Int :
         CommutativeRing to ResidueClassRing[op n: Int] =
 sort Elem |-> Z[n]
 
@@ -346,6 +346,6 @@ forall m: Int
 spec ResidueClassField[Prime[op n: Int]] given Int =
 ResidueClassRing[op n: Int]
 
-view Field_in_ResidueClassField[Prime[op n: Int]] given Int:
+view Field_in_ResidueClassField[Prime[op n: Int]] given Int :
         CommutativeRing to ResidueClassField[Prime[op n: Int]] =
 sort Elem |-> Z[n]
