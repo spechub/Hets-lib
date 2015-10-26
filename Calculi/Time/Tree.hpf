@@ -1,0 +1,217 @@
+# automatically generated hets proof-script
+
+use Calculi/Time/Tree
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic StrictOrder__TE1
+drop-translations
+prover SPASS
+set goals asym
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic BranchingDnsTree__E2
+drop-translations
+prover SPASS
+set goals help_3
+set axioms def_suc branching_dense
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic DnsTreeSEnd__E1
+drop-translations
+prover SPASS
+set goals help_4
+set axioms dense no_maxima def_suc PA_comp_uncmppre_elim
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ConnectedTree__E2
+drop-translations
+prover SPASS
+set goals connected1
+set axioms connected uncmp_sym cmp_sym def_cmp def_uncmp def_preE PA_comp_preuncmp_elim
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_Tree__E1
+drop-translations
+prover SPASS
+set goals cmp_inh
+set axioms cmp_sym def_cmp trans left_linear
+prove
+
+set goals uncmp_inh
+set axioms def_uncmp cmp_inh
+prove
+
+set goals PA_comp_presuc_elim
+set axioms def_cmp def_suc cmp_inh
+prove
+
+set goals PA_comp_preuncmp_elim
+set axioms def_uncmp cmp_sym def_cmp trans
+prove
+
+set goals PA_comp_sucpre_elim
+set axioms def_uncmp def_suc def_cmp
+prove
+
+set goals PA_comp_sucuncmp_elim
+set axioms def_suc uncmp_inh
+prove
+
+set goals PA_comp_uncmppre_elim
+set axioms uncmp_sym uncmp_inh
+prove
+
+set goals PA_comp_uncmpsuc_elim
+set axioms def_uncmp def_cmp def_suc uncmp_inh PA_comp_preuncmp_elim PA_comp_presuc_elim
+prove
+
+set goals PA_comp_uncmpuncmp_elim
+set axioms def_uncmp def_suc def_cmp
+prove
+
+set goals PA_comp_uncmpeq_elim PA_comp_equncmp_elim
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_RootedTree__E2
+drop-translations
+prover SPASS
+set goals connected
+set axioms Ax1
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic BranchingDnsTreeSEnd__E1
+drop-translations
+prover SPASS
+set goals help_5
+set axioms no_minima uncmp_sym def_suc help_3 no_maxima uncmp_inh
+prove
+
+set goals help_6
+set axioms no_minima def_uncmp uncmp_sym help_5 PA_comp_sucuncmp_elim
+prove
+
+set goals help_7
+set axioms branching_dense no_maxima uncmp_sym help_5
+prove
+
+set goals help_8
+set axioms help_3 help_7 uncmp_sym help_5 help_6 def_suc def_cmp
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Linear_implies_Connected__T
+drop-translations
+prover SPASS
+set goals left_linear
+set axioms linear
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic StrongBranchingDnsTree__E2
+drop-translations
+prover SPASS
+set goals branching_dense
+set axioms strong_branching_dense
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ConnectedDnsStrongBranchingDnsTreeSEnd
+drop-translations
+prover SPASS
+set goals PA_comp_prepre_intro
+set time-limit 40
+prove
+
+set goals PA_comp_presuc_intro
+set axioms strong_branching_dense no_maxima def_suc trans
+set time-limit 40
+prove
+
+set goals PA_comp_preuncmp_intro
+set axioms no_maxima help_3 help_7 uncmp_sym def_uncmp def_suc cmp_inh
+set time-limit 40
+prove
+
+set goals PA_comp_sucpre_intro
+set axioms help_7 no_minima no_maxima irrefl connected1 PA_comp_preuncmp_intro def_uncmp uncmp_sym cmp_sym equi_preE_sucE def_cmp def_preE def_suc asym def_sucE uncmp_inh cmp_inh trans PA_comp_preuncmp_elim left_linear PA_comp_uncmpuncmp_elim
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpsuc_intro
+set axioms help_4 help_7 uncmp_sym help_3
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpuncmp_intro
+set axioms help_9 help_7 uncmp_sym help_8 def_cmp def_suc
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpeq_intro PA_comp_equncmp_intro
+set time-limit 40
+prove
+
+set goals PA_comp_prepre
+set axioms no_maxima PA_comp_prepre_intro trans
+set time-limit 40
+prove
+
+set goals PA_comp_presuc
+set axioms no_maxima PA_comp_presuc_intro def_suc PA_comp_prepre PA_comp_presuc_elim
+set time-limit 40
+prove
+
+set goals PA_comp_preuncmp
+set axioms no_maxima PA_comp_preuncmp_intro def_uncmp uncmp_sym def_cmp uncmp_inh PA_comp_prepre
+set time-limit 40
+prove
+
+set goals PA_comp_preeq
+set time-limit 40
+prove
+
+set goals PA_comp_sucpre
+set axioms no_minima def_suc PA_comp_sucpre_intro PA_comp_sucpre_elim
+set time-limit 40
+prove
+
+set goals PA_comp_suceq
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpsuc
+set axioms help_7 uncmp_sym PA_comp_uncmpsuc_intro PA_comp_uncmpsuc_elim
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpuncmp
+set axioms help_7 uncmp_sym PA_comp_uncmpuncmp_intro PA_comp_uncmpuncmp_elim
+set time-limit 40
+prove
+
+set goals PA_comp_uncmpeq PA_comp_eqpre PA_comp_eqsuc PA_comp_equncmp PA_comp_eqeq
+set time-limit 40
+prove
+
+drop-translations
+prover Vampire
+set goals PA_comp_sucsuc_intro PA_comp_sucsuc
+prove

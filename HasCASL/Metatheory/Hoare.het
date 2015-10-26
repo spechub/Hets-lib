@@ -1,0 +1,57 @@
+library HasCASL/Metatheory/Hoare
+
+%display __>>=__ %LATEX __\gg=__
+%display __<-__{__} %LATEX __\leftarrow__{__}
+
+%prec {{}__, {__}__} < {__{__}}
+
+logic HasCASL
+
+from HasCASL/Metatheory/Monad get CpoMonad
+
+spec Hoare = CpoMonad then
+var m : CpoMonad; a : Cpo
+type PostCondition
+fun   __{__} : m a * Logical -> m PostCondition;
+      pure : m a -> Logical;
+      bindPostCondition : m a * (a ->? Logical) -> m PostCondition;
+      %binder(__<-__{__})%
+      {}__ : m PostCondition -> Logical;
+      {__}__ : Logical * m PostCondition -> Logical
+
+spec Reference = Hoare then
+var   a: Cpo
+types R: CpoMonad; Ref a: Cppo
+ops   read: Ref a --> R a;
+      __:=__ : Ref a * a --> R Unit;
+      * : Ref a --> a
+
+forall x, y: a; r, s: Ref a
+. pure (read r)                           %(pure_read)%
+. {} r := x {x = * r}                     %(read_write)%
+. {not r = s /\ x = * r} s := y {x = * r} %(read_write_other)%
+
+spec DynamicReference = Reference then
+vars a, b: Cpo
+op   new: a --> R (Ref a)
+vars x, y : a; r : Ref a; z: b -> a; p: Ref a -> R b
+. {} r <- new x {x = * r}                     %(read_new)
+. {x = * r} s <- new y {not r = s /\ x = * r} %(read_new_other)%
+. {} r <- new x ;; w <- p r ;; s <- new (z w) {not r = s}
+                                              %(read_distinct)%
+
+spec Nondeterminism = Hoare then
+var  a: Cpo
+type N: CpoMonad
+ops  fail, chaos: N a;
+     __[]__, __sync__ : N a * N a --> N a
+vars psi, phi: Logical; p, q: N a; x1, x2: a -> Logical
+. {} fail[a] {psi}
+. {phi} x <- p {x1 x} /\ {phi} x <- q {x2 x}
+  => {phi} x <- p [] q {x1 x \/ x2 x}
+. {phi} x <- p {x1 x} /\ {phi} x <- q {x2 x}
+  => {phi} x <- p sync q {x1 x /\ x2 x}
+
+spec NondeterminismDynamicReference =
+     DynamicReference with R |-> NR
+and  Nondeterminism with N |-> NR

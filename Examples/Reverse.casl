@@ -1,0 +1,33 @@
+spec Reverse = 
+sort Elem
+free type List ::= nil | cons(Elem; List)
+ops	reverse: List -> List;
+	reverseacc: List * List -> List;
+	concat: List * List -> List
+var x,y: Elem; k,l: List
+. concat(nil,l) = l 					%(concat_nil)%
+. concat(cons(x,k),l)=cons(x,concat(k,l))		%(concat_cons)%
+. reverse(nil) = nil					%(reverse_nil)%
+. reverse(cons(x,k))=concat(reverse(k),cons(x,nil))	%(reverse_cons)%
+. reverseacc(nil,l)=l					%(reverseacc_nil)%
+. reverseacc(cons(x,k),l)=reverseacc(k,cons(x,l))	%(reverseacc_cons)%
+then %implies
+var k,l,v: List; x: Elem
+. concat(k,nil) = k					%(concat_nil_right)%
+. concat(concat(k,l),v)=concat(k,concat(l,v))		%(concat_assoc)%
+. reverseacc(nil,k) = concat(reverse(nil),k)	%(reverseacc_correct_nil)%
+. concat(reverse(cons(x,k)),l) = concat(reverse(k),cons(x,l)) %(reverseacc_lemma)%
+. reverseacc(k,l)=concat(reverse(k),l)			%(reverseacc_correct)%
+. reverse(concat(nil,l)) = concat(reverse(l),reverse(nil)) 
+							%(reverse_concat_nil)%
+. reverse(concat(cons(x,k),l)) = 
+	concat(reverse(concat(k,l)),cons(x,nil))	%(reverse_lemma1)%
+. concat(reverse(l),reverse(cons(x,k)))=
+	concat(concat(reverse(l),reverse(k)),cons(x,nil))
+							%(reverse_lemma2)%
+. reverse(concat(k,l)) = concat(reverse(l),reverse(k)) 	%(reverse_concat)%
+. reverse(reverse(nil)) = nil				%(reverse_reverse_nil)%
+. reverse(reverse(cons(x,l))) = concat(reverse(cons(x,nil)),
+	reverse(reverse(l)))				%(revrev_lemma1)%
+. cons(x,l)=concat(reverse(cons(x,nil)),l)		%(revrev_lemma2)%
+. reverse(reverse(k))=k					%(reverse_reverse)%

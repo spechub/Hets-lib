@@ -1,0 +1,81 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/LR
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Point
+drop-translations
+prover SPASS
+set goals neq_point
+set axioms eq_point
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic OrderedField_in_FieldWithOrdering__T
+drop-translations
+prover SPASS
+set goals OF_times OF_mutex OF_exhaust
+prove
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover Vampire
+set goals OF_plus
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic FieldWithOrdering__E2
+drop-translations
+prover SPASS
+set goals FWO_plus_right FWO_times_right
+prove
+
+drop-translations
+prover MathServe Broker
+set goals FWO_plus
+set time-limit 40
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic FieldWithOrdering_in_OrderedField__T
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set goals refl
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Vector_Point_Relations
+drop-translations
+prover SPASS
+set goals cmps_b_s cmps_b_r cmps_b_e cmps_b_dou cmps_b_tri cmps_r_r
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ForeverFailure
+drop-translations
+prover SPASS
+set goals failure
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic PreReal__E3
+drop-translations
+prover SPASS
+set goals one_greater_zero zero_leq_one add_monotone comm_add
+prove
+
+set time-limit 40
+set goals half_gt_zero
+prove

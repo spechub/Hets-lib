@@ -1,0 +1,19 @@
+logic CSMOF
+
+from MOF/MetamodelWModel get MetamodelWModel |-> Metamodel
+from MOF/MetamodelWMult get MetamodelWModel |-> Constraints
+
+spec Proof = Metamodel
+then %implies
+  Constraints
+end
+
+
+logic CASL
+
+spec MoreProofs = Metamodel with logic CSMOF2CASL
+then %implies
+  forall x,y : Classifier; str : String
+    . name(x,str) /\ name(y,str) => x = y
+end
+

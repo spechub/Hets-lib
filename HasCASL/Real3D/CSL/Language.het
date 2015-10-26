@@ -1,0 +1,65 @@
+library HasCASL/Real3D/CSL/Language
+version 0.1
+
+%author: E. Schulz
+%date: 14-07-2010
+
+
+from Basic/Numbers get DecimalFraction
+from HasCASL/Reals get RealFunctions
+
+logic HasCASL
+
+%% We want to define the syntax of the programs generic in a way that we can
+%% instantiate it with the signature we have. Unfortunately the types mustn't
+%% be empty, hence we need a solution...
+spec SyntaxParam =
+     types  EPS, EPI %% Types for extended param specifications and instantiations
+	  , Nums, Fun0, Fun1, Fun2, Fun3 %% Types for Numbers and n-ary function symbols
+	  , Pred0, Pred1, Pred2, Pred3 %% Types for n-ary predicate symbols
+
+end
+
+spec Syntax[SyntaxParam] given DecimalFraction =
+     type Consts %% Type for program constants
+     free type T ::= Const EPI Consts
+		   | Var Nat
+		   | Num Nums
+		   | App0 Fun0
+		   | App1 Fun1 T
+		   | App2 Fun2 T T
+		   | App3 Fun3 T T T
+
+     free type F ::= Not F
+		   | And F F
+		   | Or F F
+		   | True | False
+		   | Prd0 Pred0
+		   | Prd1 Pred1 T
+		   | Prd2 Pred2 T T
+		   | Prd3 Pred3 T T T
+
+     free type P ::= Assign EPS Consts T  %% Consts[EPS] := T
+		   | Seq P P  %% P; P
+		   | Rep P F  %% repeat P until F
+		   | Prd0 Pred0
+		   | Prd1 Pred1 T
+		   | Prd2 Pred2 T T
+		   | Prd3 Pred3 T T T
+end
+
+spec CSLSyntaxParams = DecimalFraction then
+     types  EPS, EPI; Nums < Rat; Rat < Nums
+     free types Fun0 ::= PI;
+                Fun1 ::= SQRT | COS | SIN | TAN | NEG;
+                Fun2 ::= PLUS | MULT | POW | MINUS | DIVIDE;
+                Pred2 ::= EQ | LT | LE
+     types Fun3, Pred0, Pred1, Pred3
+end
+
+spec CSLSyntax = Syntax[CSLSyntaxParams]
+
+
+spec Test = CSLSyntax then
+     . App1 SQRT (Num 4) = Num 2 %% without semantics this is meaningless
+

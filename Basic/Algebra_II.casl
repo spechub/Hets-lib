@@ -1,0 +1,314 @@
+library Basic/Algebra_II
+version 1.0
+%authors: L. Schroeder, M. Roggenbach, T. Mossakowski
+%date: 21 May 2003
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __
+
+
+from Basic/RelationsAndOrders get
+     PreOrder, TotalOrder, EquivalenceRelation
+from Basic/Algebra_I  get
+     Monoid, CommutativeMonoid, Group, CommutativeRing,
+     IntegralDomain, RichIntegralDomain, Field,
+     ExtMonoid, ExtGroup, ExtCommutativeRing
+from Basic/Numbers  get Nat, Int
+from Basic/StructuredDatatypes  get List, Bag
+
+spec EuclidianRing =
+     IntegralDomain and {Nat reveal pred  __<__ }
+then
+     op delta: Elem ->? Nat
+     forall a,b: Elem
+     . def delta(a) if not a = 0                %(delta_dom_ER)%
+     . (exists q,r : Elem . a = q * b + r /\
+                               (r = 0 \/ delta(r) < delta(b) ))
+                if not b = 0                    %(div_ER)%
+end
+
+
+spec ConstructFactorialRing =
+     RichIntegralDomain with sorts RUnit[Elem], preds isIrred,associated
+then %mono
+     Bag [sort Elem]
+then %mono
+     sort irredFactors[Elem] =
+        { S: Bag[Elem]. forall s: Elem. s eps S => isIrred(s)}
+then %def
+     pred associated: Bag[Elem] * Bag[Elem]
+     op prod: Bag[Elem] -> Elem
+
+     forall i: Elem; S,T:Bag[Elem]
+     . prod({}) = e                             %(prod_empty_CFR)%
+     . prod(S+i) = prod(S)*i                    %(prod_plus_CFR)%
+     . associated(S,T) <=> (( S={} /\ T={} ) \/
+        (exists s,t: Elem . (s eps S /\ t eps T /\
+        associated(s,t) /\ associated(S - s, T - t)) ) )
+                                                %(associated_def_CFR)%
+then
+     forall x: Elem; S, T: irredFactors[Elem]
+     . exists V: irredFactors[Elem] . x = prod(V) %(existsFact_CFR)%
+     . associated(S,T) if associated(prod(S), prod(T))
+                                                %(uniqueFact_CFR)%
+end
+
+spec FactorialRing =
+     ConstructFactorialRing
+        reveal sort Elem,
+               ops __ + __: Elem * Elem -> Elem,
+                   __ * __: Elem * Elem -> Elem,
+                   0: Elem, e: Elem
+end
+
+spec IntInfinity = Int
+then
+ {
+     free type
+           IntInfty ::= sort Int | infty | negInfty
+     ops
+           __ + __, __ * __: IntInfty * IntInfty ->? IntInfty, comm;
+           __ - __:          IntInfty * IntInfty ->? IntInfty;
+           - __:             IntInfty -> IntInfty
+     preds __ < __, __ <= __: IntInfty * IntInfty
+then
+     forall n: Int; m, k: IntInfty
+     . - infty = negInfty                       %(neg_def1_II)%
+     . - negInfty = infty                       %(neg_def2_II)%
+
+     . negInfty <= m                            %(leq_def1_II)%
+     . m <= infty                               %(leq_def2_II)%
+     . m <= negInfty => m = negInfty            %(leq_def3_II)%
+     . infty <= m => infty = m                  %(leq_def4_II)%
+     . m < k <=> m <= k /\ not m = k            %(less_def_II)%
+
+     . infty + n = infty                        %(add_def1_II)%
+     . infty + infty = infty                    %(add_def2_II)%
+     . not def infty + negInfty                 %(add_def3_II)%
+     . negInfty + k = - (infty + (- k))         %(add_def4_II)%
+
+     . 0 < m => infty * m = infty               %(mult_def1_II)%
+     . not def infty * 0                        %(mult_def2_II)%
+     . (- m) * k = -(m * k)                     %(mult_def3_II)%
+
+     . m - k = m + (- k)                        %(sub_def_II)%
+ }
+hide
+     negInfty
+end
+
+view TotalOrder_in_IntInfinity :
+     TotalOrder to IntInfinity =
+     sort Elem |-> IntInfty
+end
+
+spec ConstructPolynomial [CommutativeRing] given Int =
+%mono
+     IntInfinity
+then
+     local
+        List[sort Elem] hide op __+__: List[Elem] * Elem -> List[Elem]
+
+within
+     {
+
+                %% [a_0,...,a_n] is a_n * x^n + ... + a_0
+          sort  Poly[Elem] = { l: List[Elem] . not last(l) = 0 }
+     then
+          sort Elem < Poly[Elem]
+          ops 0,e,X: Poly[Elem];
+              degree: Poly[Elem] -> IntInfty;
+              __ ::: __, __ * __: Elem * Poly[Elem] -> Poly[Elem];
+              __ + __, __ * __:
+                        Poly[Elem] * Poly[Elem] -> Poly[Elem]
+
+          forall a, b: Elem; p, q: Poly[Elem]
+          . X = [0, e]                          %(X_def_Poly)%
+          . a = [] when a = 0 else [a]          %(emb_def_Poly)%
+
+          . a ::: p = a when p = 0 else a :: p  %(cons_def_Poly)%
+          . degree(p) = - infty when p = 0 else pre(#p)
+                                                %(degree_def_Poly)%
+
+          . p + 0 = p                           %(add_zero1_Poly)%
+          . 0 + p = p                           %(add_zero2_Poly)%
+          . (a ::: p) + (b ::: q) = (a + b) ::: (p + q)
+                                                %(add_cons_Poly)%
+
+          . p * 0 = 0                           %(mult_zero1_Poly)%
+          . 0 * p = 0                           %(mult_zero2_Poly)%
+          . (a ::: p) * (b ::: q) = ((a * b) ::: ((b * p) + (a * q))) +
+                (0 ::: (0 ::: (p * q)))             %(mult_cons_Poly)%
+     }
+end
+
+view CRing_in_CPolynomial [CommutativeRing] given Int :
+     CommutativeRing to ConstructPolynomial [CommutativeRing] =
+     sort Elem |-> Poly[Elem]
+end
+
+spec Polynomial [CommutativeRing] given Int =
+     ExtCommutativeRing [view CRing_in_CPolynomial [CommutativeRing]]
+then %implies
+     forall p,q:Poly[Elem]
+     . degree(p) <= degree(q) => degree(p + q) <= degree(q)
+                                                %(degree_add_Poly)%
+     . degree(p * q) <= degree(p) + degree(q)
+                                                %(degree_mult1_Poly)%
+     . hasNoZeroDivisors => degree(p * q) = degree(p) + degree(q)
+                                                %(degree_mult2_Poly)%
+end
+
+view EuclidianRing_in_Polynomial [Field] given Int :
+     EuclidianRing to
+        {Polynomial [Field]
+          then
+             op natDegree: Poly[Elem] ->? Nat
+             forall p: Poly[Elem]
+             . natDegree(p) = degree(p) as Nat  %(natDegree_def)%
+        } =
+     sorts Elem |-> Poly[Elem],
+     ops delta |-> natDegree
+end
+
+
+
+spec MonoidAction [Monoid] =
+     sort Space
+     op __*__: Elem * Space -> Space
+     forall x: Space; a,b: Elem
+     . e * x = x                                %(unit_MAction)%
+     . (a * b) * x = a * (b * x)                %(assoc_MAction)%
+end
+
+spec GroupAction [Group] =
+     MonoidAction [Group]
+end
+
+spec ExtEuclidianRing [EuclidianRing] given Int = %mono
+     RichIntegralDomain
+end
+
+spec ExtFactorialRing  [FactorialRing] given Int =
+     RichIntegralDomain
+and
+     ConstructFactorialRing
+end
+
+spec ExtMonoidAction [MonoidAction [Monoid]] given Nat = %def
+     ExtMonoid [Monoid]
+then
+     pred connected: Space * Space
+     forall x,y: Space
+     . connected(x,y) <=> exists a: Elem . a * x = y
+                                                %(connected_def_EMAction)%
+end
+
+view PreOrder_in_ExtMonoidAction [MonoidAction [Monoid]] given Nat :
+     PreOrder to ExtMonoidAction [MonoidAction [Monoid]] =
+     sort Elem |-> Space,
+     pred __ <= __ |-> connected
+end
+
+
+spec ExtGroupAction [GroupAction [Group]] given Int = %def
+     ExtMonoidAction [GroupAction [Group]]
+and
+     ExtGroup [Group]
+then
+     %implies
+     forall a,b:Elem; x,y: Space
+     . x = y if a * x = a * y                   %(inj_EGAction)%
+     . exists z: Space . a * z = x              %(surj_EGAction)%
+
+end
+
+view EqRel_in_ExtGroupAction [GroupAction [Group]] given Int :
+     EquivalenceRelation to ExtGroupAction [GroupAction [Group]] =
+     sort Elem |-> Space,
+     pred __ ~ __ |-> connected
+end
+
+spec RichMonoidAction [Monoid] =
+     ExtMonoidAction [MonoidAction [Monoid]]
+end
+
+view PreOrder_in_RichMonoidAction [Monoid]:
+     PreOrder to RichMonoidAction [Monoid]=
+     sort Elem |-> Space,
+     pred __ <= __ |-> connected
+end
+
+spec RichGroupAction [Group] =
+     ExtGroupAction [GroupAction [Group]]
+end
+
+view EqRel_in_RichGroupAction [Group]:
+     EquivalenceRelation to RichGroupAction [Group]=
+     sort Elem |-> Space,
+     pred __ ~ __ |-> connected
+end
+
+
+spec RichEuclidianRing =
+     ExtEuclidianRing [EuclidianRing]
+end
+
+spec RichFactorialRing =
+     ExtFactorialRing [FactorialRing]
+end
+
+view FactorialRing_in_ExtEuclRing  [EuclidianRing] given Int :
+     FactorialRing to ExtEuclidianRing [EuclidianRing]
+end
+
+view FactorialRing_in_RichEuclidianRing :
+     FactorialRing to RichEuclidianRing
+end
+
+view EuclidianRing_in_Int :
+     EuclidianRing to Int =
+     sorts Elem |-> Int,
+     ops delta |-> abs,
+         e |-> 1
+end
+
+view FreeMonoid_in_List  [sort Elem] given Nat :
+  {sort Generators
+   then
+   free{
+          Monoid
+          then
+          op inject: Generators -> Elem
+        }
+  }
+   to
+  {List [sort Elem]
+   then
+   op singleton(x: Elem): List[Elem] = [x]
+  }
+=
+  sorts Elem |-> List[Elem], Generators |-> Elem,
+  ops  e |-> [],
+       __*__ |-> __ ++ __,
+       inject |-> singleton
+end
+
+view FreeCommutativeMonoid_in_Bag  [sort Elem] given Nat :
+  {sort Generators
+   then
+   free{
+          CommutativeMonoid
+          then
+          op inject: Generators -> Elem
+        }
+  }
+   to
+  Bag [sort Elem]
+=
+  sorts Elem |-> Bag[Elem], Generators |-> Elem,
+  ops  e |-> {},
+       __*__ |-> __ union __,
+       inject |-> {__}
+end

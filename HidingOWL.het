@@ -1,0 +1,45 @@
+logic OWL
+
+spec FoodOntology =
+ Class: Human
+ SubClassOf: eats some Food
+ Class: Plant
+ SubClassOf: grows_in some Area
+ Class: Vegetarian
+ Class: FoodAndPlant
+ EquivalentTo: Food and Plant
+ SubClassOf: Vegetarian
+ SubClassOf: Healthy
+ Class: Area
+ Class: Healthy
+ Class: Food
+
+ ObjectProperty: eats
+ ObjectProperty: grows_in
+
+ Class: PlantEater
+ EquivalentTo: Human and eats only  Plant
+
+
+spec FoodOntologyHide =
+ FoodOntology hide Food
+
+spec FoodOntologyGoal =
+ FoodOntologyHide
+then %implies
+ Class: PlantEater
+ SubClassOf: eats some Vegetarian
+
+%[sorts Thing]%
+%[  preds Human, Plant, Vegetarian, Area, Healthy, Food : Thing]%
+%[  preds eats, grows_in : Thing * Thing]%
+%[  forall x:Thing]%
+%[  . Plant(x) => exists y:Thing . grows_in(x,y) /\ Area(y)]%
+%[  . Vegetarian(x) => Healthy(x)]%
+%[  . Human(x) => exists y:Thing . eats(x,y) /\ Food(y)]%
+%[  . Food(x) /\ Plant(x) => Vegetarian(x)]%
+%[hide Food]%
+%[then %implies]%
+%[  forall x:Thing]%
+%[  . Human(x) /\ (forall y:Thing .eats(x,y) => Plant(y)) =>]%
+%[    exists y:Thing . eats(x,y) /\ Vegetarian(y)]%

@@ -1,0 +1,71 @@
+%% little example
+spec X = sort s; op f:s->s
+
+spec Y[X] = op g:s*s->s
+
+spec X1 = sort s; op f:s->s
+
+spec Z1 = Y[X1]
+
+%% extension of little example
+spec X2 = sort s; op h:s->s
+spec X3 = sort t; op h:t->t
+
+spec Z2 = Y[X2 with h |-> f]
+
+spec Z3 = Y[X3 fit s |-> t, f |-> h]
+
+
+%[
+Contains specs which have different variants of associativity axioms
+Together with commutativity they are all equivalent
+]%
+
+spec A = 
+     sort s
+     ops g:s*s->s
+then
+     forall x,y,z:s . g(x,g(y,z)) = g(g(x,y),z) %(myax7)%
+end
+
+spec Aext = A then
+     sort t
+     ops h:s->t
+     forall x:t . exists y:s. h(y) = x %(h surj)%
+end
+
+spec A1 = 
+     sort s
+     ops g:s*s->s
+
+     forall x,y:s . g(x,y) = g(y,x) %(myax1)%
+     forall x,y,z:s . g(x,g(y,z)) = g(g(x,z),y) %(myax2)%
+then %implies
+     forall x,y,z:s . g(x,g(y,z)) = g(g(y,x),z) %(myth5)%
+end
+
+spec B = 
+     sort s
+     ops f:s*s->s
+     ops h:s*s->s
+
+     forall x,y:s . h(x,y) = h(y,x) %(myax3)%
+     forall x,y,z:s . h(x,h(y,z)) = h(h(x,y),z) %(myax4)%
+then %implies
+     forall x,y,z:s . h(x,h(y,z)) = h(h(z,x),y) %(myth6)%
+end
+
+spec C[A] = forall x,y:s . g(x,y) = g(y,x) %(my_c_ax)%
+
+%% will introduce a thm-link from A to A1
+spec G = C[A1]
+then %implies
+     forall x,y,z:s . g(z,g(y,x)) = g(g(x,z),y) %(myth8)%
+
+
+view myview1 : B to G = h |-> g, f |-> g
+
+view myview2 : A to A1
+
+view myview3 : B  to A1 = h |-> g, f |-> g
+

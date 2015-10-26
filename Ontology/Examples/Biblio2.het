@@ -1,0 +1,68 @@
+library Ontology/Examples/Biblio2
+
+logic OWL
+
+spec Biblio_DL_Sig =
+  Class: Researcher
+  Class: Article
+  Class: Journal
+  ObjectProperty: name
+  ObjectProperty: author
+  ObjectProperty: title
+  ObjectProperty: hasArticle
+  ObjectProperty: impactFactor
+end
+
+
+spec Biblio_DL =
+  Biblio_DL_Sig
+then
+  Class: Researcher
+  SubClassOf: name some Thing
+
+  Class: Article
+  SubClassOf: author some Thing, title some Thing
+
+  Class: Journal
+  SubClassOf: name some Thing, hasArticle some Thing, impactFactor some Thing
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person:pointer, paper:pointer)
+    paper(key id:pointer, title:string, published_in:pointer)
+    journal(key id:pointer, name:string, impact_factor:integer)
+
+  Relationships
+    author_of[person] -> person[id] one_to_many
+    author_of[paper] -> paper[id] one_to_many
+    paper[published_in] -> journal[id] one_to_many
+end
+
+logic CASL
+
+spec Interface =
+  Biblio_RS with logic -> CASL
+and
+  Biblio_DL_Sig with logic -> CASL
+then
+  sort Thing = pointer
+  sort string < Thing
+  sort integer < Thing
+  forall p,j:pointer; n:string; f:integer; a:pointer; t:string
+  . journal(j,n,f) <=>
+      Journal(j) /\ name(j,n) /\ impactFactor(j,f)  %(journal)%
+  . paper(a,t,j) <=>
+      Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t) %(paper)%
+  . author_of(p,a) <=>
+      Researcher(p) /\ Article(a) /\ author(p,a) %(author_of)%
+  . person(p,n) <=> Researcher(p) /\ name(p,n)  %(person)%
+then %implies
+  Biblio_DL with logic -> CASL
+end
+
+view correctness : Biblio_DL to Interface
+end

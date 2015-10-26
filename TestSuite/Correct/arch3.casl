@@ -1,0 +1,39 @@
+library arch3
+
+spec Value =
+sorts Nat, Pos, Value
+sorts Nat < Value; Pos < Nat; Pos < Value
+end
+
+spec Preliminary = 
+  Value then
+  sorts Mode, PhysicalUnit, PumpControllerState,
+        PumpNumber, PumpState, R_Message, S_Message, Set[R_Message],
+        Set[S_Message]
+end
+
+spec Sbcs_State =
+  Preliminary then
+  sorts ExtendedPumpControllerState, ExtendedPumpState, State,
+        Status, Valpair
+  sorts PumpControllerState < ExtendedPumpControllerState;
+        PumpState < ExtendedPumpState
+end
+
+spec Sbcs_Analysis = Sbcs_State then
+  sort Set[PumpNumber]
+end
+
+spec Steam_Boiler_Control_System =
+  Sbcs_Analysis
+end
+
+
+arch spec Arch_Sbcs =
+    units
+	P: Value -> Preliminary; S: Preliminary -> Sbcs_State;
+	A: Sbcs_State -> Sbcs_Analysis;
+	C: Sbcs_Analysis -> Steam_Boiler_Control_System
+    result lambda V : Value . C [A [S [P [V]]]]
+end
+

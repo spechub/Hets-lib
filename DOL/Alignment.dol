@@ -1,0 +1,39 @@
+distributed-ontology Alignment
+
+logic OWL
+alignment Alignment1 : { Class: Woman } to { Class: Person } =
+  Class Woman < Class Person
+end
+
+ontology AlignedOntology1 =
+  combine Alignment1
+end
+
+ontology Onto1 =
+  Class: Person
+  Class: Woman SubClassOf: Person
+  Class: Bank
+end
+
+ontology Onto2 =
+  Class: HumanBeing
+  Class: Woman SubClassOf: HumanBeing
+  Class: Bank
+end
+
+alignment VAlignment : Onto1 to Onto2 =
+  Class Person = Class HumanBeing,
+  Class Woman = Class Woman
+end
+
+ontology VAlignedOntology =
+  combine Onto1, Onto2, VAlignment
+%%  combine 1 : Onto1, 2 : Onto2, VAlignment
+  %% 1:Person is identified with 2:HumanBeing
+  %% 1:Woman is identified with 2:Woman
+  %% 1:Bank and 2:Bank are kept distinct
+end
+
+%% ontology VAlignedOntologyRenamed =
+%%   VAlignedOntology with 1:Bank |-> RiverBank, 2:Bank |-> FinancialBank
+%% end

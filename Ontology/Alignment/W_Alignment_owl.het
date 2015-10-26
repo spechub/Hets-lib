@@ -1,0 +1,41 @@
+library Ontology/Alignment/W_Alignment_owl
+
+logic OWL
+
+spec Ontology1 =
+  Class: Woman SubClassOf: Female
+  Class: Female
+  Class: Bank
+end
+
+spec Ontology2 =
+  Class: Person
+  Class: Parent
+  Class: Bank
+end
+
+spec Interface1 =
+  Class: Woman
+end
+
+spec Interface2 =
+  Class: Person
+end
+
+spec Bridge =
+  Class: Woman SubClassOf: Person
+  Class: Person
+end
+
+view v1 : Interface1 to Ontology1 
+end
+
+view v2 : Interface1 to Bridge
+end
+
+view v3 : Interface2 to Ontology2 
+end
+
+view v4 : Interface2 to Bridge 
+end
+

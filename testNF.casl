@@ -1,0 +1,23 @@
+spec ConstructField =
+  sorts Elem, NZElem
+end
+
+spec Field =
+  ConstructField hide NZElem
+end
+
+spec ConstrutVector =
+  Field
+then
+  sort Vector
+end
+
+spec ExtField =
+  Field
+then
+  op c:Elem
+end
+
+spec Matrix =
+  ConstrutVector and ExtField
+end

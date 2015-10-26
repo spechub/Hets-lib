@@ -1,0 +1,165 @@
+library piotr_short
+%% Example provided by Piotr Hoffman
+
+
+
+
+spec TotalOrder[sort Elem] =
+  preds __<__, __>__ : Elem * Elem
+  forall x,y,z : Elem
+  . not x<x
+  . x<y /\ y<z => x<z
+  . x<y \/ y<x
+end
+
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+  then TotalOrder[sort Nat]
+end
+spec List[sort Elem] =
+  free type List ::= nil | __::__(Elem;List)
+end
+
+spec ListWithMost[sort Elem] =
+   List[sort Elem] then
+      local
+         op leave_only : List * Elem -> List
+         pred longer_or_eq : List * List
+
+         vars e, e' : Elem; l, l' : List
+         
+         axioms
+           leave_only(nil, e) = nil;
+           leave_only(e::l, e') = 
+               e::leave_only(l, e') when e=e' else leave_only(l, e');
+               
+           longer_or_eq(l, nil);
+           longer_or_eq(e::l, e'::l') <=> longer_or_eq(l, l');
+           not longer_or_eq(nil, e::l)
+      within
+         op most : List ->? Elem
+         axiom
+            forall l : List; e : Elem . not l=nil =>
+               longer_or_eq( leave_only(l, most(l)), leave_only(l, e))
+end
+
+%% Our goal: to define the 'most' operation assuming a total order on
+%% the type of list elements
+
+unit spec GOAL = 
+   TotalOrder[sort Elem] * List[sort Elem] -> ListWithMost[sort Elem]
+end
+
+%%***************************************************************************
+
+spec Pair[sort Elem1][sort Elem2] =
+  free type Pair[Elem1,Elem2] ::= pair( p1 : Elem1; p2 : Elem2)
+end
+
+
+%% First a CounterDict without the special 'incNum' operation.
+%% We have the following ops:
+%% - empty - all elements have count zero
+%% - inc - increment the count of the given element by one
+%% - dec - decrement the count of the given element by one
+%% - remove - set the count of the given element to zero
+%% - num - return the count of the given element
+
+spec CounterDict[sort Elem] =
+  Nat then
+    sort Dict;
+    ops inc, dec, remove : Dict * Elem -> Dict;
+        num : Dict * Elem -> Nat;
+        empty : Dict
+        
+    %% axioms ...
+end
+
+spec CounterDictWith_IncNum[sort Elem] =
+  CounterDict[sort Elem] and 
+  Pair[sort Dict][sort Nat] then
+  
+    op incNum : Dict * Elem -> Pair[Dict,Nat]
+    axiom
+      forall d : Dict; e : Elem . incNum(d, e) = pair(inc(d, e), num(d, e))
+end
+
+unit spec MakePair =
+  {sort Elem1} * {sort Elem2} -> Pair[sort Elem1][sort Elem2]
+end
+
+
+arch spec MAIN =
+  units
+    MakePair : MakePair;
+
+    N : Nat;
+
+    MakeDict :   Nat * 
+		 TotalOrder[sort Elem] * 
+		 Pair[sort Elem][sort Nat] 
+		 ->
+    		 CounterDictWith_IncNum[sort Elem];
+
+    DictToListMost :  CounterDictWith_IncNum[sort Elem] * 
+			List[sort Elem] 
+			-> 
+    			ListWithMost[sort Elem]	
+  result
+    lambda TO : TotalOrder[sort Elem]; 
+	     L : List[sort Elem] .
+    N %[  DictToListMost[ MakeDict[N][TO][MakePair[TO][N]] ][L]
+       reveal Elem, List, __::__, nil, most, __<__
+       
+       : GOAL ]%
+end
+
+%%***************************************************************************
+
+unit spec EnlargeSort = {sort Elem} -> {sorts Elem; Enlarged}
+
+spec EnlargeSort1[sort Elem] = {}
+
+arch spec DictToListMost =
+  units
+    N : Nat;
+
+    EnlargeSort : EnlargeSort;
+
+    MakePair : MakePair;
+
+    ExtDictToListMost : CounterDictWith_IncNum[sort Elem] *
+    			List[sort Elem] *
+  			EnlargeSort1[sort Elem] * 
+  			Pair[sort Enlarged][sort Nat]
+			->
+			ListWithMost[sort Elem]
+  result
+    lambda CDW_IN : CounterDictWith_IncNum[sort Elem];
+    	   L : List[sort Elem] .
+    	   	local
+    	   	  ES = EnlargeSort[ L ];
+    	   	  Pair = MakePair[ ES fit Elem1 |-> Enlarged ][ N ];
+    	   	within
+    	   	  ExtDictToListMost[CDW_IN][L][ES][Pair]
+    	   	  reveal Elem, List, __::__, nil, most
+    	   	  
+    	%[ : CounterDictWith_IncNum[sort Elem] * 
+			List[sort Elem] -> 
+    			ListWithMost[sort Elem]	
+        ]%
+end
+
+%%************************************************************************
+
+spec BinTree[sort Elem] =
+  free type Tree[Elem] ::= emptyTree | 
+  			consTree( left, right :? Tree[Elem]; key :? Elem)
+end 
+
+spec ExtBinTree[sort Elem] =
+   BinTree[sort Elem]
+end
+
+
+      		

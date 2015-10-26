@@ -1,0 +1,133 @@
+library HasCASL/RealDefNAdd
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat, Rat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+from HasCASL/Reals get 
+        SimpleReals, Reals, FieldWithOrdering
+
+from HasCASL/RealDef get 
+    Quotient, NegExtension, NegExtensionQuotient, Dist, PRat, NatDist
+
+logic HasCASL
+
+spec Naddfunctions = Nat and NatDist
+then %def
+  preds
+   is_nadd:Nat->Nat;
+
+  . forall x:Nat->Nat . is_nadd(x) <=>
+     (exists B:Nat. forall m,n:Nat. dist(m * x(n),n * x(m)) <= B * (m + n))
+
+then %mono
+  free type NaddAux ::= mk_NaddAux (dest_NaddAux: Nat->Nat)
+  type Nadd = {X: NaddAux . is_nadd(dest_NaddAux X)}
+  sort Nat < Nadd
+  forall k:Nat . k = mk_NaddAux (\n:Nat.! k * n) %% Injection Natural Numbers
+ops
+    __ ++ __: Nadd * Nadd -> Nadd;
+    __ ** __: Nadd * Nadd -> Nadd;
+    nadd_rinv:Nadd -> Nadd;
+    
+    . forall x,y:Nadd . x ++ y = mk_NaddAux \n:Nat.! (dest_NaddAux x)(n) + (dest_NaddAux y)(n)   %% Addition on Nadd
+    . forall x,y:Nadd . x ** y  = mk_NaddAux \n:Nat.! (dest_NaddAux x)((dest_NaddAux y)(n))      %% Multiplication on Nadd
+    . forall x:Nadd . nadd_rinv(x) = mk_NaddAux \n:Nat.! (n * n) div (dest_NaddAux x)(n)  %% RInverse on Nadd
+
+then %def
+  preds
+   __ === __ : Nadd*Nadd;          %% Equivalence Relation
+   __ <<= __ : Nadd*Nadd;          %% refl. Ordering on Nadd
+
+  . forall x,y:Nadd . x === y <=>
+      (exists B:Nat. forall n:Nat. dist((dest_NaddAux x)(n), (dest_NaddAux y)(n)) <= B)
+
+ops
+    nadd_inv:Nadd -> Nadd;
+    . forall x:Nadd . nadd_inv(x) = 0 when (x === 0) else nadd_rinv(x)  %% Proper Inverse
+end
+
+view naddequivEquivalenceRelation :
+     EquivalenceRelation to Naddfunctions
+=    Elem |-> Nadd,
+     __ ~ __ |-> __ === __
+end
+
+view naddorderTotalOrder :
+    TotalOrder to Naddfunctions
+=   __ <= __ |-> __ <<= __,
+    Elem |-> Nadd
+end
+
+spec PosReal = Naddfunctions and Quotient[Naddfunctions fit Elem |-> Nadd, __~__ |-> __===__] with sort Quotient |-> PReal
+%% ersetzen von PReal durch Quotient
+then
+%%  free type PReal ::= mk_PReal(dest_PReal:Nadd)
+%%  sort Nadd < PReal;
+  ops __ ++ __ :PReal * PReal -> PReal;
+  ops __ ** __ :PReal * PReal -> PReal;
+  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
+  . forall a,b:Nadd . (mk_quot a) ** (mk_quot b) = mk_quot (a ** b)
+end
+
+spec SignedReal = PosReal
+then
+   generated type SReal ::= __ - __(PReal;PReal)
+   sort  PReal < SReal	
+   forall a,b,c,d: PReal
+   .  a - b = c - d <=> (unquot a) ++ (unquot d) = (unquot c) ++ (unquot b)    %(equality_Quot)%
+   . forall a: PReal . a = a - 0             %(Nadd2SReal_embedding)%
+
+ops
+  inv_mul : SReal -> SReal;                %% multiplicative inverse
+  __ ++ __ : SReal * SReal -> SReal;       %% addition
+  __ ** __ :SReal * SReal -> SReal;        %% multiplication
+  inv_add :SReal -> SReal;                 %% additive inverse
+
+  . forall x,y:PReal .  inv_add(x - y) = (y - x) %(SReal_addinv)%
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) ++ (x2 - y2) = (x1 ++ x2) - (y1 ++ y2) %(SReal_add)%
+  . forall a,b:Nadd . (mk_quot a) ++ (mk_quot b) = mk_quot (a ++ b)
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) ** (x2 - y2) = ((x1 ** x2) ++ (y1 ** y2)) - ( (x1 ** y2) ++ (y1 ** x2)) %(SReal_mul)%
+  
+preds  __ <<= __ : SReal * SReal;
+       __ === __ : SReal * SReal;      
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) === (x2 - y2) <=> (x1 ++ y2 = x2 ++ y1)   %(SReal_eqv)%
+  . forall x1,x2,y1,y2:PReal . (x1 - y1) <<= (x2 - y2) <=> (x1 ++ y2 <<= x2 ++ y1) %(SReal_leq)%
+  . forall x:SReal. inv_mul(x) = x
+%[  . forall x,y:SReal . inv(x,y) = (0 - 0) when (x = y) ]%
+%[                    else ((inv(@d. x = y + d), &0) when (y <<= x)  ]%
+%[                    else (&0, inv(@d. y = x + d))]%
+%[			  )]%
+end
+
+view SignedRealEquiv :
+     EquivalenceRelation to SignedReal
+=    Elem |-> SReal,
+     __ ~ __ |-> __ === __
+end
+
+view SignedRealTotalOrder :
+    TotalOrder to SignedReal
+=   __ <= __ |-> __ <<= __,
+    Elem |-> PReal
+end
+
+
+%[view RealsSignedReal :]%
+%[  {Reals} to SignedReal]%
+%[= ]%
+%[  sort Real |-> SReal,]%
+%[  pred __ <= __ |-> __ <<= __,]%
+%[  ops ]%
+%[    __ + __ |-> __ ++ __,]%
+%[    __ * __ |-> __ ** __,]%
+%[    0 |-> 0,]%
+%[    1 |-> 1,]%
+%[    -__ |-> inv_add]%
+%[end]%

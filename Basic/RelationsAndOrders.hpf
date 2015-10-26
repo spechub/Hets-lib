@@ -1,0 +1,64 @@
+use Basic/RelationsAndOrders
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic BooleanAlgebra__E1
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic StrictOrder__TE1
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic PartialOrder_in_ExtBooleanAlgebra__T
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtTotalOrder__E1U2
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtTotalOrder__E1
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtPartialOrder__U2
+prover MathServe Broker
+set goals ga_comm_sup
+set time-limit 60
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtBooleanAlgebra__U2E1
+prover SPASS
+set goals involution_compl_ExtBooleanAlgebra
+prove
+
+prover SPASS
+set goals de_Morgan2
+set time-limit 60
+prove
+
+prover SPASS
+set goals de_Morgan1
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Nat
+prover Vampire
+set time-limit 40
+prove-all

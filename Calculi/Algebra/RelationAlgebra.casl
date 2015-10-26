@@ -1,0 +1,222 @@
+library Calculi/Algebra/RelationAlgebra
+version 0.6
+%author: T. Mossakowski, K. Luettich, S. Woelfl
+%date: 22-06-2005
+
+%(
+    This library defines some basic concepts from the
+    theory of relation algebras
+)%
+
+
+%left_assoc __cup__,__cap__,__cmps__
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__}
+
+
+
+%% from Basic/Numbers get Nat
+from Calculi/Algebra/Set get Set
+from Calculi/Algebra/BooleanAlgebra get
+        BooleanAlgebra,
+        BooleanAlgebraWithCompl,
+        ExtBooleanAlgebraByOrderRelations,
+        AtomicBooleanAlgebra
+from Calculi/Algebra/Algebra get
+        InvolutedSemiGroup,
+        InvolutedMonoid
+
+
+
+%(
+    First we define the concept of a relation algebra,
+    according to I. Hodkinson, Atom structures of relation algebras, 1995.
+)%
+
+
+
+
+spec RelationAlgebra  =
+     BooleanAlgebraWithCompl with sort Elem |-> Rel
+and
+     InvolutedMonoid with sort Elem |-> Rel,
+                           ops __*__ |-> __cmps__,
+                               inv__ |-> inv__,
+                                   e |-> id
+then
+     forall x,y,z:Rel
+     . (x cup y) cmps z = (x cmps z) cup (y cmps z)             %(cmps_cup_rdistrib)%
+     . inv(x cup y) = inv(x) cup inv(y)                         %(inv_cup)%
+     . inv(0) = 0                                               %(inv_0)%
+     . 0 cmps x = 0                                             %(rcmps_0)%
+     . inv(compl(x)) = compl(inv(x))                            %(inv_compl)%
+     . x cup (1 cmps x) = 1 cmps x                              %(compl_cl_1)%
+     . compl(1 cmps x) = 1 cmps compl(1 cmps x)                 %(compl_cl_2)%
+
+then %implies
+     forall x,y,z:Rel
+     . x cmps 0 = 0                                             %(lcmps_0)%
+     . z cmps (x cup y) = (z cmps x) cup (z cmps y)             %(cmps_cup_ldistrib)%
+%% Das folgende muesste schon als Axiom vorhanden sein:
+     . inv(x cmps y) = inv(y) cmps inv(x)                       %(inv_cmps)%
+     . (x cmps y) cap inv(z) = 0 => (y cmps z) cap inv(x) = 0   %(triangle)%
+     . (inv(x) cmps compl(x cmps y)) cap y = 0                  %(RelAlg)%
+     . (x cmps y) cap z = 0 => (inv(x) cmps z) cap y = 0        %(lPeircean)%
+     . (x cmps y) cap z = 0 => (z cmps inv(y)) cap x = 0        %(rPeircean)%
+%% Das folgende gilt vermutlich nicht:
+    . not x = 0 => 1 cmps x cmps 1 = 1                          %(tarski)%
+%% Sicher  aber:
+    . x cmps 1 = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1          %(tarski1)%
+%% sowie
+    . 1 cmps compl(x) = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1   %(tarski2)%
+    . x = 0 <=> inv(x) cmps x = 0                               %(nnull)%
+%% sowie
+    . 1 cmps compl(x) = 1 /\ not x = 0 => 1 cmps x cmps 1 = 1   %(tarski2)%
+    . x = 0 <=> inv(x) cmps x = 0                               %(nnull)%
+end
+
+
+
+%( Weaker structures are often desirable. In particular, relation
+   algebra where composition is not necessarily associative are of
+    special interest in the domain of qualitative reasoning.
+)%
+
+
+spec NonAssocRelationAlgebra  =
+     BooleanAlgebraWithCompl with sort Elem |-> Rel
+then
+     ops      id:Rel;
+        __cmps__: Rel*Rel -> Rel, unit id;
+           inv__: Rel -> Rel;
+
+     forall x,y,z:Rel
+     . inv(inv(x)) = x
+     . x cmps (y cup z) = (x cmps y) cup (x cmps z)
+     . inv(x cup y) = inv(x) cup inv(y)
+     . inv(compl(x)) = compl(inv(x))
+     . inv(x cmps y) = inv(y) cmps inv(x)
+     . (x cmps y) cap inv(z) = 0 <=> (y cmps z) cap inv(x) = 0
+end
+
+
+spec SemiAssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     forall x:Rel
+     . (x cmps 1) cmps 1 = x cmps 1
+end
+
+%% TBD: WeaklyAssocRelationAlgebra
+
+
+spec AssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     ops __cmps__: Rel*Rel -> Rel, assoc
+end
+
+
+view AssocImpliesSemiAssoc :
+     SemiAssocRelationAlgebra to AssocRelationAlgebra
+end
+
+
+%( Associative (non-associative) relation algebras correspond one-to-one to
+   relation algebras in the usual sense.
+)%
+
+view AssocRelationAlgebra_as_RelationAlgebra :
+     RelationAlgebra to AssocRelationAlgebra
+end
+
+view RelationAlgebra_as_AssocRelationAlgebra :
+     AssocRelationAlgebra to RelationAlgebra
+end
+
+
+
+spec ExtPseudoRelationAlgebraByOrderRelations[NonAssocRelationAlgebra] = %def
+     ExtBooleanAlgebraByOrderRelations[BooleanAlgebra] with sort Elem |-> Rel
+
+then %implies
+    forall x,y,z,x',y': Rel
+    . x <= x' /\ y <= y' => x cmps y <= x' cmps y'              %(cmps_monotonic)%
+    . x <= id => inv(x) = x                                     %(inv_below_id)%
+%% Das folgende muesste schon als Axiom vorhanden sein:
+    . inv(id) = id                                              %(inv_id)%
+    . x cmps y <= z => inv(x) cmps compl(z) <= compl(y)         %(schreoeder_1)%
+    . inv(x) cmps compl(z) <= compl(y)  =>
+        compl(z) cmps inv(y) <= compl(x)                        %(schreoeder_2)%
+    . compl(z) cmps inv(y) <= compl(x)  => x cmps y <= z        %(schreoeder_3)%
+    . (x cmps y) cap z <=
+        (x cap (z cmps inv(y))) cmps (y cap (inv(x) cmps z))    %(dedekind)%
+    . x cmps (y cap z) <= (x cmps y) cap (x cmps z)             %(cmps_cap_lsubdistrib)%
+    . (y cap z) cmps x <= (y cmps x) cap (z cmps x)             %(cmps_cap_rsubdistrib)%
+
+end
+
+
+spec NonAssocRelationAlgebraWithOrderRelations =
+     ExtPseudoRelationAlgebraByOrderRelations[NonAssocRelationAlgebra]
+
+
+spec RelationAlgebraWithOrderRelations =
+     ExtPseudoRelationAlgebraByOrderRelations[RelationAlgebra]
+
+
+spec IntegralNonAssocRelationAlgebra =
+     NonAssocRelationAlgebraWithOrderRelations
+then
+     . Atom(id)
+then %implies
+     forall x,y:Rel
+     . x cmps y = 0 => x=0 \/ y = 0
+end
+
+
+spec IntegralRelationAlgebra =
+     RelationAlgebra
+and  IntegralNonAssocRelationAlgebra
+end
+
+
+spec SymmetricNonAssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     forall x:Rel
+     . inv(x) = x
+end
+
+spec SymmetricRelationAlgebra =
+     RelationAlgebra
+and  SymmetricNonAssocRelationAlgebra
+end
+
+
+spec CommutativeNonAssocRelationAlgebra =
+     NonAssocRelationAlgebra
+then
+     op
+         __cmps__: Rel * Rel -> Rel, comm, unit id
+end
+
+
+spec CommutativeRelationAlgebra =
+     RelationAlgebra
+and  CommutativeNonAssocRelationAlgebra
+end
+
+
+
+spec AtomicNonAssocRelationAlgebra =
+     { NonAssocRelationAlgebraWithOrderRelations hide pred Atom }
+and
+     AtomicBooleanAlgebra with sort Elem |-> Rel, AtomElem |-> AtomRel
+end
+
+
+spec AtomicRelationAlgebra =
+     RelationAlgebra
+and  AtomicNonAssocRelationAlgebra
+end

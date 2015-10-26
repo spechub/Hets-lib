@@ -1,0 +1,21 @@
+library HasCASL/Metatheory/Interpreter
+
+from HasCASL/Metatheory/Coproduct get Sums
+
+logic HasCASL
+
+spec Interpreter = Sums then
+     var  s : Cpo
+     free type Prog s ::= skip
+       | basic (s -->? s)
+       | seq (Prog s) (Prog s)
+       | if (s --> Bool) (Prog s) (Prog s)
+       | while (s --> Bool) (Prog s)
+     op  eval : Prog s --> s -->? s
+     var s : s
+     program
+     eval skip s = s;
+     eval (basic f) s = f s;
+     eval (seq p q) s = eval q (eval p s);
+     eval (if b p q) s = if b s then eval p s else eval q s;
+     eval (while b p) s = if b s then eval (while b p)(eval p s) else s

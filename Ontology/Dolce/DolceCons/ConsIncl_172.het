@@ -1,0 +1,116 @@
+spec source_172 =
+esorts PRO, ST
+pred At : PRO
+pred At : ST
+pred AtP : PRO * PRO
+pred AtP : ST * ST
+pred Dif : PRO * PRO * PRO
+pred Dif : ST * ST * ST
+pred Ov : PRO * PRO
+pred Ov : ST * ST
+pred P : PRO * PRO
+pred P : ST * ST
+pred PP : PRO * PRO
+pred PP : ST * ST
+pred Sum : PRO * PRO * PRO
+pred Sum : ST * ST * ST
+
+forall x : PRO; y : PRO . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                          %(Dd14)%
+
+forall x : PRO; y : PRO
+. Ov(x, y) <=> exists z : PRO . P(z, x) /\ P(z, y)        %(Dd15)%
+
+forall x : PRO . At(x) <=> not exists y : PRO . PP(y, x) %(Dd16)%
+
+forall x : PRO; y : PRO . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : PRO; x : PRO; y : PRO
+. Sum(z, x, y)
+  <=> forall w : PRO . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)   %(Ax5)%
+
+forall z : PRO; x : PRO; y : PRO
+. Dif(z, x, y)
+  <=> forall w : PRO . P(w, z) <=> P(w, x) /\ not Ov(w, y) %(Ax6)%
+
+forall x, y, z : PRO . P(x, x) %(reflexivity)%
+
+forall x, y, z : PRO . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : PRO . P(x, y) /\ P(y, z) => P(x, z)
+                                                  %(transitivity)%
+
+forall x : ST; y : ST . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                       %(Dd14_12)%
+
+forall x : ST; y : ST
+. Ov(x, y) <=> exists z : ST . P(z, x) /\ P(z, y)      %(Dd15_13)%
+
+forall x : ST . At(x) <=> not exists y : ST . PP(y, x) %(Dd16_14)%
+
+forall x : ST; y : ST . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17_15)%
+
+forall z : ST; x : ST; y : ST
+. Sum(z, x, y)
+  <=> forall w : ST . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y) %(Ax5_10)%
+
+forall z : ST; x : ST; y : ST
+. Dif(z, x, y)
+  <=> forall w : ST . P(w, z) <=> P(w, x) /\ not Ov(w, y)
+                                                        %(Ax6_11)%
+
+forall x, y, z : ST . P(x, x) %(reflexivity_17)%
+
+forall x, y, z : ST . P(x, y) /\ P(y, x) => x = y
+                                               %(antisymmetry_16)%
+
+forall x, y, z : ST . P(x, y) /\ P(y, z) => P(x, z)
+                                               %(transitivity_18)%
+end
+spec target_172 = source_172
+then %cons
+sorts STV
+sorts PRO, ST < STV
+pred At : STV
+pred AtP : STV * STV
+pred Dif : STV * STV * STV
+pred Ov : STV * STV
+pred P : STV * STV
+pred PP : STV * STV
+pred Sum : STV * STV * STV
+
+forall x : STV . not (x in ST /\ x in PRO)
+                                      %(ga_disjoint_sorts_ST_PRO)%
+
+%% free
+generated type STV ::= sort PRO | sort ST     %(ga_generated_STV)%
+
+forall x : STV; y : STV . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                       %(Dd14_21)%
+
+forall x : STV; y : STV
+. Ov(x, y) <=> exists z : STV . P(z, x) /\ P(z, y)     %(Dd15_22)%
+
+forall x : STV . At(x) <=> not exists y : STV . PP(y, x)
+                                                       %(Dd16_23)%
+
+forall x : STV; y : STV . AtP(x, y) <=> P(x, y) /\ At(x)
+                                                       %(Dd17_24)%
+
+forall z : STV; x : STV; y : STV
+. Sum(z, x, y)
+  <=> forall w : STV . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                     %(Ax5_19_21)%
+
+forall z : STV; x : STV; y : STV
+. Dif(z, x, y)
+  <=> forall w : STV . P(w, z) <=> P(w, x) /\ not Ov(w, y)
+                                                        %(Ax6_20)%
+
+forall x, y, z : STV . P(x, x) %(reflexivity_26)%
+
+forall x, y, z : STV . P(x, y) /\ P(y, x) => x = y
+                                               %(antisymmetry_25)%
+
+forall x, y, z : STV . P(x, y) /\ P(y, z) => P(x, z)
+                                               %(transitivity_27)%

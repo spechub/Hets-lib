@@ -1,0 +1,62 @@
+library Ontology/Alignment/V_Alignment_owl_multi_compo
+
+logic OWL
+
+spec Ontology1 =
+  Class: Woman SubClassOf: Person
+  Class: Child SubClassOf: Person
+  Class: Person
+  Class: Bank
+  Individual: John Types: Person
+end
+
+spec Ontology2 =
+  Class: Woman SubClassOf: HumanBeing
+  Class: Parent SubClassOf: HumanBeing
+  Class: HumanBeing
+  Class: Bank
+  Class: Human
+end
+
+spec Ontology3 =
+  Class: Female SubClassOf: not Citizen
+  Class: Citizen
+  Class: Financial_Institute
+  Individual: Mary Types: Female
+end
+
+spec Interface12 =
+  Class: Woman
+  Class: Person_HumanBeing
+  Class: Person_Human
+end
+
+view v1 : Interface12 to Ontology1 = 
+    Person_HumanBeing |-> Person, Person_Human |-> Person
+end
+
+view v2 : Interface12 to Ontology2 = 
+  Person_HumanBeing |-> HumanBeing, Person_Human |-> Human 
+end
+
+spec Interface23 =
+  Class: Woman_Female
+  Class: HumanBeing_Citizen
+  Class: Human_Citizen
+  Class: Bank_Financial_Institute
+end
+
+view v3 : Interface23 to Ontology2 = 
+    Woman_Female |-> Woman, 
+	HumanBeing_Citizen |-> HumanBeing, 
+	Human_Citizen |-> Human, 
+	Bank_Financial_Institute |-> Bank
+end
+
+view v4 : Interface23 to Ontology3	 = 
+	Woman_Female |-> Female, 
+	HumanBeing_Citizen |-> Citizen, 
+	Human_Citizen |-> Citizen,
+	Bank_Financial_Institute |-> Financial_Institute 
+end
+

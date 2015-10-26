@@ -1,0 +1,279 @@
+library HasCASL/Set
+
+%prec({__isIn__, __subset__, __disjoint__,__ :: __ --> __} 
+		 < {__union__, __intersection__, __\\__,
+		    __disjointUnion__} )%
+%prec {__union__} < {__*__}
+
+from Basic/Numbers get Nat
+from Basic/SimpleDatatypes get Boolean
+
+logic HasCASL
+
+from HasCASL/Categories get Category, Coproduct, Coequalizer, 
+                            PushoutAsCoequalizerOfCoproduct
+
+%{ Typed sets are represented by predicates over the type.
+   Set membership is just holding of the predicate: x isIn s <=> s x
+   Note that for disjoint unions and products, the type changes.  }%
+
+spec Set = Boolean then
+  var S,T : Type
+  type Set S := S ->? Unit;
+  ops emptySet : Set S;
+      allSet : Set S;
+      {__} : S -> Set S;
+      __isIn__ : S * Set S ->? Unit;
+      __subset__ :Pred( Set(S) * Set(S) );
+      __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
+      bigunion : Set(Set S) -> Set S;
+      __disjoint__ : Pred( Set(S) * Set(S) );
+      __*__ : Set S * Set T -> Set (S*T);
+      __disjointUnion__ :  Set S * Set S -> Set (S*Boolean);
+      injl,injr : S -> S*Boolean;
+  forall x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
+  . not (x isIn emptySet)
+  . x isIn allSet
+  . x isIn {x'} <=> x=x'
+  . x isIn s <=> s x
+  . s subset s' <=> forall x:S . x isIn s => x isIn s'
+  . x isIn s union s' <=> x isIn s \/ x isIn s'
+  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X
+  . x isIn s intersection s' <=> x isIn s /\ x isIn s'
+  . x isIn s \\ s' <=> x isIn s /\ not x isIn s'
+  . s disjoint s' <=> s intersection s' = emptySet
+  . (x,y) isIn s * t <=> x isIn s /\ y isIn t
+  . injl x = (x,False)
+  . injr x = (x,True)
+  . s disjointUnion s' = s * {False} union s' * {True}
+end
+
+%{ Unique choice only holds in toposes, not in general pcccs }%
+
+spec UniqueChoice [sort S] given Set =
+  op choice : Set S ->? S
+  forall x:S; s: Set S
+  . def choice s <=> exists x:S . s = {x}
+  . choice {x} = x
+end
+
+
+%{ Relations and partial equivalence relations (PERs) }%
+spec Relation =
+  Set
+then
+  var S : Type
+  ops reflexive, symmetric, transitive : Pred(Set(S*S))
+  forall r:Set(S*S)
+  . reflexive r <=> forall x:S . r(x,x)
+  . symmetric r <=> forall x,y:S . r(x,y) => r(y,x)
+  . transitive r <=> forall x,y,z:S . r(x,y) /\ r(y,z) => r(x,y)
+  type PER S = { r : Set(S*S) . symmetric r /\ transitive r }
+  op dom : PER S -> Set S
+  forall x:S; r: PER S
+   . x isIn dom r <=> (x,x) isIn r
+end
+
+%{ Partial maps and endomaps }%  
+spec Map =
+  Set then
+  var S,T,U : Type
+  type Map S := S->?S
+  ops dom : (S->?T) -> Set S;
+      range : (S->?T) -> Set T; 
+      image : (S->?T) -> Set S -> Set T;
+      invimage(f:(S->?T))(t:Set T):Set S = \x:S. f(x) isIn t;
+      emptyMap : (S->?T);
+      __ :: __ --> __ : Pred ( (S->?T) * Pred(S) * Pred(T) );
+      __ [__/__] : (S->?T) * S * T -> (S->?T);
+      __ - __ : (S->?T) * S -> (S->?T);
+      __o__ : (T->?U) * (S->?T) -> (S->?U);
+      __||__ : (S->?T) * Set S -> (S->?T);
+      undef__ : S ->?T;
+      ker : (S->?T) -> Pred (S*S);
+      injective : Pred(S->?T);
+      __intersectionMap__, __unionMap__ : (S->?T) * (S->?T) -> (S->?T);
+      __restrict__ : (S->?T) * Set S -> (S->?T)
+  forall f,g:S->?T; h:T->?U; s,s':Set S; t:Set T; x,x':S; y:T
+  . x isIn dom f <=> def f x
+  . y isIn range f <=> exists x:S . f x = y
+  . y isIn image f s <=> exists x:S . x isIn s /\ f x = y
+  . not def (emptyMap x : T)
+  . f :: s --> t <=> forall x:S . x isIn s => f x isIn t
+  . (f[x/y]) x' = y when x=x' else f x
+  . (f - x) x' = undef() when x=x' else f x
+  . (f intersectionMap g) x = f x when f x = g x else undef()
+  . def (f unionMap g) <=> forall x:S. def f x /\ def g x => f x = g x
+  . def (f unionMap g) => (f unionMap g) x = f x when def f x else g x
+  . (h o g) x = h(g x)
+  . (f || s) x = f x when x isIn s else undef()
+  %{ the kernel is a PER with same domain as the function, 
+     hence the existential equation}%
+  . (x,x') isIn ker f <=> f x =e= f x'
+  %% injectivity only for values in the domain, hence the existential equation
+  . injective f <=> forall x,y:S . f x =e= f y => x=y
+  . dom (f restrict s) = dom f intersection s
+  . def (f restrict s) x => (f restrict s) x = f x
+end
+
+spec FinSet = 
+  Map and Nat
+then
+  var S,T : Type
+  preds isFinite : Set S;  
+        finiteDomain : Nat->?S
+  forall s:Set S; f:Nat->?S 
+  . finiteDomain f <=> exists n:Nat . forall m:Nat . def f m => m<n
+  . isFinite s <=> 
+     exists f:Nat->?S . finiteDomain f /\ s subset range f
+end
+
+spec SumNatSet =
+  FinSet
+then
+  var a:Type
+  ops sumN : (Nat->?Nat) -> Nat -> Nat;
+      sumSet : Set Nat ->? Nat;
+      sum : (a->?Nat) -> Pred a ->? Nat
+  forall f:Nat->?Nat; s:Set Nat; n,x:Nat; m:a->?Nat; p: Pred a
+  . sumN f 0 = 0
+  . sumN f (suc(n)) = sumN f n + (f (suc n) when def f (suc n) else 0)
+  . sumSet s = x <=> 
+      exists f:Nat->?Nat; n:Nat . 
+         (forall m:Nat . def f m => m<n) /\ range f subset s /\ injective f 
+         /\ sumN f n = x 
+  . sum m p = x <=>
+      exists g:Nat ->? a; n:Nat .
+        injective g /\ range g subset p /\ sumN (m o g) n = x  
+        /\ forall y:a . m y > 0 /\ p y => y isIn (range g)
+end
+
+spec SetCategory =
+  Map
+then
+  type S : Type		
+  type SetS := Set S
+  type MapS := Set S * Map S * Set S
+  ops dom (a : Set S; f : Map S; b: Set S): Set S = a;
+      cod (a : Set S; f : Map S; b: Set S): Set S = b;
+      func (a : Set S; f : Map S; b: Set S): Map S = f;
+      __o__ : MapS * MapS ->? MapS;
+      id : SetS -> MapS  %% was missing for CategoryOfSets
+  forall a,b,c : SetS; f,g : MapS; f',g' : Map S 
+  . def (f o g) <=> cod g = dom f
+  . (b,g',c) o (a,f',b) = (a,g' o f',c)
+end
+
+view CategoryOfSets : Category to SetCategory =
+     Ob |-> SetS, Mor |-> MapS, __o__, dom, cod, id
+end
+
+
+%{ If we want to iterate the constructions product, disjoint union
+   and quotients on sets, we need to circumvent the problem that
+   the type of the sets changes with each construction.
+   This means that we need a specific type S which comes with
+   the possibility to represent the result of the above mentioned
+   operations again in S.
+   The following specification states the abstract requirement that
+   such representations exists for a given type S. }%
+spec SetRepresentation =
+  Map and Relation
+then
+  type S : Type;
+  ops pair : S*S->S;   %% represent S*S in S
+      inl,inr : S->S;  %{ represent S disjointUnion S in S, 
+                          with left and right injection }%
+      %% represent quotient by a PER, yields the quotient map
+      %% the quotient is then the image of the quotient map
+      coeq: PER S -> Map S; 
+  . injective pair
+  . injective inl
+  . injective inr
+  . (range inl) disjoint (range inr);
+  forall r:PER S
+  . ker (coeq r) = r 
+end
+
+%{ Some sample set representation for the natural numbers ... }%
+spec Nat_SetRepresentation =
+  Map and Nat and Relation
+then
+  ops pair : Nat*Nat->Nat;   
+      inl,inr : Nat->Nat; 
+      coeq: PER Nat -> Map Nat; 
+      min : Pred Nat ->? Nat
+  forall r:PER Nat; m,n:Nat; p: Pred Nat
+  %% Use Cantor's diagonalization for pairs of natural numbers
+  . pair(m,n) = ((m+n)*(m+n+1)+2*m) div 2
+  %% Use even and odd numbers as two copies of the natural numbers
+  . inl m = 2*m
+  . inr m = 2*m+1
+  %% choose the minimal element as representative of an equivalence class
+  . min p = n <=> p n /\ forall m:Nat . m<n => not p m
+  . coeq r n = min (\ m:Nat . (m,n) isIn r) 
+end
+
+%{ ... and the statement that this is indeed a set representation }%
+view v : SetRepresentation to Nat_SetRepresentation = S |-> Nat
+end
+
+%{ Given a set representation and unique choice, we now can define coproducts,
+   while staying within the same type of sets.
+   We also specify the mediating morphisms that exist by the
+   respective (co)universal properties of the constructions. }%
+spec SetCoproduct[SetRepresentation] given Map = %def
+  SetCategory and UniqueChoice[sort S]
+then
+  type CPCocone = {(h,k) : MapS * MapS . cod h = cod k}
+  ops __coproduct__ : SetS * SetS -> (CPCocone * (CPCocone ->? MapS));
+  forall s1,s2:SetS
+  . s1 coproduct s2 = 
+       let copr: SetS = (image inl s1) union (image inr s2);
+           med = \c:CPCocone . 
+	      let ((sf,f,tf), (sg,g,tg)) = c; 
+                  medfun = \y:S . choice (\z . 
+			 (exists x:S . y = inl x /\ z = f x)
+			 \/ (exists x:S . y = inr x /\ z = g x))
+              in (copr,medfun,tf)
+       in (((s1,inl,copr),(s2,inr,copr)), med)
+end
+
+%[view SetHasCoproducts [SetRepresentation] given Map : 
+        Coproduct[Category] to SetCoproduct[SetRepresentation] =
+     Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coproduct__
+end     
+]%
+
+%{ Given a set representation, we now can define coequalizers,
+   while staying within the same type of sets.
+   Note that __*__ is now overloaded: for two given S-sets,
+   We also specify the mediating morphisms that exist by the
+   respective (co)universal properties of the constructions. }%
+spec SetCoequalizer[SetRepresentation] given Map = %def
+  SetCategory and UniqueChoice [sort S]
+then
+  type CEDiagram = {(f,g) : MapS * MapS . dom f = dom g /\ cod f = cod g};
+  ops coequalizer : CEDiagram -> (MapS * (MapS -> MapS))
+  forall s1,s2,t:SetS; f,g,h : MapS; d : CEDiagram
+  . (f,g) as CEDiagram= d =>
+    coequalizer d = 
+       let r = \(x:S,y:S) . exists z:S . func f z = x /\ func g z = y;
+           c:Map S = coeq (r as PER S);
+           med = \h:MapS .! (cod h,\x:S . choice(\y:S . 
+	       exists z:S . func h z = x /\ c z = y),range c)
+       in
+       ((cod f, c, range c),med)
+end
+
+
+%[view SetHasCoequalizers [SetRepresentation] given Map : 
+        Coequalizer[Category] to SetCoequalizer[SetRepresentation] =
+     Ob |-> SetS, Mor |-> MapS, id, __o__, dom, cod, __coequalizer__
+end     
+
+spec SetPushOut [SetRepresentation] =
+  PushoutAsCoequalizerOfCoproduct[view SetHasCoproducts]
+  [view SetHasCoequalizers]
+end
+]%

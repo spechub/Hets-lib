@@ -1,0 +1,58 @@
+# automatically generated hets proof-script
+
+use Calculi/Time/LinearFlowOfTime
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic StrictOrder__TE1
+drop-translations
+prover SPASS
+set goals asym
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic LinFlowOfTimeSEnd
+drop-translations
+prover SPASS
+set goals Ax1
+set axioms no_minima irrefl
+set time-limit 60
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Nat
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover Vampire
+set goals trans
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Int
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover Vampire
+set goals trans
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_DnsLinFlowOfTimeSEnd__E1
+drop-translations
+prover SPASS
+set goals PA_comp_prepre
+set axioms no_maxima dense trans
+set time-limit 40
+prove
+
+set goals PA_comp_preeq PA_comp_suceq PA_comp_eqpre PA_comp_eqsuc PA_comp_eqeq
+set time-limit 40
+prove

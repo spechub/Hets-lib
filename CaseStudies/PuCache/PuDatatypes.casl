@@ -1,0 +1,12 @@
+library CaseStudies/PuCache/PuDatatypes
+
+from CaseStudies/PuCache/PFS_Protocol get PFS_Protocol
+
+
+spec PuDatatypes = 
+  PFS_Protocol
+then
+
+free type Pu_RetGetMTime ::= Pu_GetMTime (err:Errno;time:Time)
+free type Pu_RetRead ::= Pu_Read (err:Errno; attr:Attributes; count:Count; 
+                                  eof:Boolean; data:Data)

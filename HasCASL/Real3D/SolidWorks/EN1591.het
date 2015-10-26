@@ -1,0 +1,168 @@
+library HasCASL/Real3D/SolidWorks/EN1591
+version 0.1
+
+
+%author: E. Schulz
+%date: 24-02-2010
+
+logic HasCASL
+
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
+
+%[
+   This Specification formalizes the norm EN 1591 for flanges.
+   We only consider the integral flange with spherical shell.
+
+   Content:
+
+   1. Application area
+   2. Glossary
+   3. Parameters for calculation
+   4. Derived parameters
+   5. Limit load equation
+
+
+]%
+
+
+%% 1. Application area
+
+%% 2. Glossary
+
+%[
+
+@Indizes
+
+A - Zusatz (FA, MA)
+B - Schraube
+C - Kriechen der Dichtung (gc)
+D - Aequivalenter Zylinder (kegeliger Ansatz + angeschlossene Schale) zur Berechnung der Belastungsgrenze
+E - Aequivalenter Zylinder (kegeliger Ansatz + angeschlossene Schale) zur Berechnung der Nachgiebigkeit
+F - Flansch
+G - Dichtung
+H - Ansatz
+I - Kennzahl fuer den Belastungszustand (mit den Werten 0, 1, 2 ...)
+L - Loser Flansch
+M - Moment
+P - Druck
+Q - Resultierende axiale Kraft durch Druck
+R - Resultierende axiale Kraft durch aeussere Kraft
+S - Schale, Scherbeanspruchung
+T - Schale, modifiziert
+X - Schwacher Querschnitt
+Delta - Symbol fuer Aenderung oder Differenz
+av - Mittelwert
+c - berechnet
+d - Auslegung
+e - effektiv
+max - Maximum
+min - Minimum
+nom - nominal
+opt - optimal
+req - erforderlich
+s - Schaft (glatter Teil der Schraube)
+t - theoretisch, Drehmoment, Gewinde
+0 - Montagezustand (I = 0, siehe Index I)
+]%
+
+
+%% REMARK: A big deal for the specification of the parameters is their types.
+%%         We don't want to spend a lot of space for type annotations (... as T)
+%%         in order to have a well typed specifications.
+%%         Sometimes we need, e.g., cos phi to be positive hence phi to be in [-pi/2, pi/2]
+%%         , i.e, we need more fine-grained types (predicate subtypes).
+%%         Another example is sqrt(e_1 - e_2), here we need e_1 >= e_2,
+%%         or in 1/(e_1 - e_2) we need e_1 <> e_2
+%%         This is not realizable by types, so we have to type-annotate the terms
+%%         and leave the job to be done in the prover.
+
+%% !Section Parameters for calculation
+
+%% !Section Derived parameters
+
+%[
+@predecessors
+
+DIN 2505:1927-01, 1964-10
+DIN V 2505: 1986-01
+DIN 2506: 1927-01
+DIN 2507: 1927-07
+
+]%
+
+spec DerivedParameter = AffineRealSpace3DWithSets then
+
+     %% * Flange ring
+
+     %% ** Screw holes
+
+     ops p_B, n_B, d_3, d_5, d_5e, d_5t, l_5t, e_Fb:RealPos;
+         d_3e:Real
+
+     %% distance between screws
+     . p_B = Pi * d_3/n_B                    %(eq1)%
+     %% effective diameter of screw hole
+     . d_5e = d_5 * sqrt(d_5/p_B)            %(eq2)%
+     %% diameter of blind hole
+     . d_5 = d_5t * l_5t/e_Fb                %(eq3)%
+     %% diameter of bolt circle
+     . d_3e = d_3 * (1-2/n_B^2)           %(eq4)%
+
+     %% ** Ring
+
+     ops d_0, d_4, d_o:RealPos;
+         b_F, d_F, e_F, b_L, d_L, e_L, A_F:Real
+
+     . b_F = (d_4 - d_0)/2 - d_5e            %(eq5.1)%
+     . d_F = (d_4 + d_0)/2                   %(eq5.2)%
+     . e_F = 2 * A_F/(d_4 - d_o as NonZero)  %(eq5.3)%
+
+     . b_L = 0                               %(eq6.1)%
+     . d_L = 0                               %(eq6.2)%
+     . e_L = 0                               %(eq6.3)%
+
+
+     %% * Spheric shell
+
+     ops beta, d_1, d_2, e_1, e_2, l_H:RealPos;
+         e_E, d_E:Real
+
+     . beta = e_2/e_1                        %(eq9.1)%
+     . e_E = e_E %(eq9.2)% %% dummy for fast type checking
+%%     . e_E = e_1 * (1 + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H)) %(eq9.2)%
+%%     . e_E = e_1 * (1 + ((beta-1)*(l_H/(((beta/3) * sqrt(d_1*e_1)) + l_H)))) %(eq9.2)%
+%%     . e_E = e_1 * ((1:RealPos) + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H)) %(eq9.2)%
+%% second variant nearly four times faster
+     %% REMARK: we interpret that - binds stronger than +
+     . d_E = (min(d_1-e_1+e_E, d_2+e_2-e_E) + max(d_1+e_1-e_E, d_2-e_2+e_E))/2
+       %(eq10)%
+
+     %% * Lever arm
+
+     ops d_Ge:RealPos;
+         h_P, e_P:Real;
+
+%[
+@comment
+ ANMERKUNG Im Falle einer Flachdichtung koennen die unten angegebenen
+ Parameter $h_P und h_G nur errechnet werden nach Auswertung von $d_Ge,
+ d. h. nachdem die Berechnungen in 4.3.2 durchgefuehrt wurden.
+]%
+
+     . h_P = h_P %(eq13)% %% dummy for fast type checking
+%%     . h_P = ((d_Ge - d_E)^2 * (2*d_Ge + d_E)/6 + 2*e_P^2*d_F)/d_Ge^2 %(eq13)%
+
+
+     %% * Elasticity related flange paramters
+
+     ops gamma, phi_s:Real;
+         %% TODO: outsource cos
+         cos: Real->Real;
+
+     . gamma = e_E * d_F/(b_F * d_E * cos(phi_s) as NonZero) %(eq17)%
+
+     %% TODO: stopped at page 22(24), eq18
+end
+
+
+%% 5. Limit load equation

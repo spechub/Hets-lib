@@ -1,0 +1,52 @@
+library Ontology/Blending/HouseBoat
+
+logic OWL
+
+ontology Object = 
+ Class: Object
+ Individual: object Types: Object
+end
+
+spec Base =
+ Object then
+  Class: Person
+  Class: Medium
+  Individual: land Types: Medium
+  Individual: water Types: Medium
+  
+  ObjectProperty: on 
+    Domain: Object 
+    Range: Medium
+  ObjectProperty: use 
+    Domain: Person 
+    Range: Object
+  
+  Individual: person Types: Person
+  Facts: use object  
+end
+
+spec House =
+  Base with object |-> house, person |-> resident, use |-> live_in
+  then 
+   Individual: house
+   Facts: on land
+end
+
+spec Boat =
+  Base with object |-> boat, person |-> passenger, use |-> ride 
+  then 
+    Individual: boat
+    Facts: on water
+end
+
+
+%%view boat : B to Boat = object |-> boat end
+
+view house : Object to House = 
+  Object |-> Person,
+  object |-> resident
+
+spec BoatHouse = combine Object, House, Boat, house
+end
+
+

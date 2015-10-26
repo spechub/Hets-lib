@@ -1,0 +1,21 @@
+library subsorts
+
+spec Nat =
+  free types Nat ::= 0 | sort Pos;
+             Pos ::= suc(pre:Nat)
+  ops pre:Nat->?Nat;
+      __+__ : Nat*Nat->Nat
+  forall x:Nat
+  . pre(suc(x)) = x
+end
+
+spec Int = Nat then
+  sort Nat < Int  %% if this is left out, we get an ambiguity
+  generated type Int ::= __-__(Nat;Nat)
+  ops 0 : Int;
+      __+__ : Int*Int->Int;
+      suc : Int -> Int;
+      pre : Int ->? Int
+  . not def pre(0)
+  . pre(suc(0))+pre(suc(0))=0
+end

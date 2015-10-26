@@ -1,0 +1,115 @@
+library HasCASL/Real3D/SolidWorks/FlangePattern
+version 0.1
+
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/SW get SWDefault
+
+%[
+%% We do not exploit the constraints now so we keep simple in the imported libraries
+%% from HasCASL/Real3D/SolidWorks/SWExt get SWExt
+
+%% this spec is needed for the real arith constraint in the pattern
+
+spec Prelim = SWExt
+then
+     pred OnPlane(plane:SWPlane; pt:Point) <=> NormalVector(plane) * vec(SpacePoint(plane),pt) = 0;
+     op   d(p1,p2:Point):Real = ||vec(p1,p2)||;
+end
+]%
+
+spec Prelim = SWDefault
+then
+     pred OnPlane: SWPlane*Point;
+     op   d: Point*Point -> Real;
+end
+
+spec FlangeParams = SWDefault
+then
+     ops
+
+     Bottom:SWPlane;
+
+     Offset:Point;
+     BoundaryRing:Point;
+     BoundaryTube:Point;
+     BoltOffset:Point;
+     BoltBoundary:Point;
+
+     RingHeight:Real;
+end
+
+spec FlangePattern[FlangeParams] given Prelim =
+     ops
+
+     RingCircle:SWCircle = SWCircle(Offset, BoundaryRing);
+     RingSketch:SWSketch = SWSketch([RingCircle], Bottom);
+
+     FlangeRing:SWExtrusion = SWExtrusion(RingSketch, RingHeight);
+
+     BoltCircle:SWCircle = SWCircle(BoltOffset, BoltBoundary);
+     BoltSketch:SWSketch = SWSketch([BoltCircle], Bottom);
+
+     %% We need full expanded patterns
+
+     BoltHole:SWCut = SWCut(BoltSketch);
+
+     TubeCircle:SWCircle = SWCircle(Offset, BoundaryTube);
+     TubeSketch:SWSketch = SWSketch([TubeCircle],Bottom);
+
+     BoreHole:SWCut = SWCut(TubeSketch);
+
+     %% Constraints:
+
+     . not Offset = BoundaryRing %(constr1)%
+     . not RingHeight = 0 %(constr2)%
+     . OnPlane(Bottom, Offset) %(constr3a)%
+     . OnPlane(Bottom, BoundaryRing) %(constr3b)%
+
+     . not BoltOffset = BoltBoundary %(constr4)%
+     . OnPlane(Bottom, BoltOffset) %(constr6a)%
+     . OnPlane(Bottom, BoltBoundary) %(constr6b)%
+
+     . not Offset = BoundaryTube %(constr7)%
+     %% . OnPlane(Bottom, Offset) %(constr9a)%
+     . OnPlane(Bottom, BoundaryTube) %(constr9b)%
+
+     ops
+     d1:Real = d(Offset, BoltBoundary);
+     d2:Real = d(Offset, BoundaryRing);
+     d3:Real = d(BoltOffset, BoltBoundary);
+
+     %% This constraint needs the extended swlib SWExt
+     %% . d1 + d3 < d2 %(constr10)%
+
+
+%[ Geometric constraints
+
+1. Offset != BoundaryRing
+2. RingHeight != 0
+3. Offset, BoundaryRing are on Bottom
+
+Same for Bolt (4-6)
+
+Same for Tube (7-9)
+
+
+Let d1 = d(Offset, BoltBoundary)
+    d2 = d(Offset, BoundaryRing)
+    d3 = d(BoltOffset, BoltBoundary)
+
+10. d1 + d3 < d2
+
+
+The Matching Algorithm:
+
+a. Find a match (substitution)
+b. For all constraints check whether they are satisfiable
+c. in case of unsat backtrack (find next match)
+
+
+]%
+
+
+
+end

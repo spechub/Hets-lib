@@ -1,0 +1,203 @@
+library CoCASL/CCS_Automaton
+
+%prec({__union__} < {__*__})%
+
+%%from Basic/StructuredDatatypes get Pair
+from CoCASL/CCS get Action, ActionRelabelling, CCS
+
+
+logic CoCASL
+
+%% Should come from CASL!
+spec Pair [sort S] [sort T] = %mono
+  free type Pair[S,T] ::= pair(first:S; second:T)
+end
+
+spec Map [sort S] [sort T] = %mono
+  generated type Map[S,T] ::= empty | __[__/__] (Map[S,T];T;S) 
+  op  lookup:  S * Map[S,T] ->? T;
+  forall M,N:Map[S,T];s,s1,s2:S; t1,t2:T
+     . not def lookup(s,empty)                          %(lookup_empty_Map)%
+     . lookup(s, M[t1/s1]) = t1 when s=s1	else	
+	                   lookup(s,M)                  %(lookup_nonEmpty_Map)%
+     . M=N <=> forall s:S . lookup(s,M)=lookup(s,N)       %(equality_Map)%
+end
+
+
+spec Set[sort Elem] =
+  free {
+         type Set[Elem] ::= {} | {__}(Elem) | __union__ (Set[Elem] ; Set[Elem]) 
+         op __union__ : Set[Elem] * Set[Elem] -> Set[Elem] , assoc, comm, idem, unit {} 
+     } 
+end
+
+spec ExtSet[sort Elem] =
+  Set[sort Elem]
+then
+  pred __eps__ : Elem * Set[Elem]
+  op __intersection__ : Set[Elem] * Set[Elem] -> Set[Elem]
+  forall a,b:Elem; s1,s2:Set[Elem]
+  . not a eps {}
+  . a eps {b} <=> a=b
+  . a eps (s1 union s2) <=> a eps s1 \/ a eps s2
+  . a eps (s1 intersection s2) <=> a eps s1 /\ a eps s2
+end
+
+spec FinalNonDeterministicAutomaton[Action] =
+  cofree {
+    Set[sort State]
+    then cotype State ::= (next : Act -> Set[State])   }
+end
+
+
+spec Zero =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op zero : State 
+  vars a : Act
+  . next (a, zero) = {} 
+end
+
+spec ActionPrefixing =
+  FinalNonDeterministicAutomaton[Action] 
+then
+  op __->__ : Act * State -> State
+  forall x, y : Act; s : State
+  . next (x , y ->s) = {s} when x=y else {} 
+end
+
+spec BinRel[sort S] =
+    Set[sort S]
+and Pair[sort S][sort S] 
+and Set[sort Pair[S,S]]
+then 
+  ops __*__ : S * Set[S] -> Set [Pair[S,S]];
+      __*__ : Set[S] * Set[S] -> Set [Pair[S,S]];
+      __*__ : Set[S] * S -> Set [Pair[S,S]]; 
+  forall a : S; b : S ; U,X : Set[S]; Y,Z : Set[S]
+  . a * {} = {}
+  . a * {b} = {pair(a, b)}
+  . a * (Y union Z) = a * Y union a * Z
+  . {} * Y = {}
+  . {a} * Y = a * Y
+  . (U union X) * Y = U * Y union X * Y 
+  . X * b = X * {b} 
+end
+
+spec BinRelFun[sort S; op __+__:S*S->S] =
+  BinRel[sort S]
+then
+  op pplus : Set[Pair[S,S]] -> Set[S]
+  forall s1 , s2 : S; set1,set2: Set[Pair[S,S]]
+  . pplus({}) = {}
+  . pplus({pair(s1,s2)}) = {s1+s2} 
+  . pplus(set1 union set2) = pplus(set1) union pplus(set2)
+end
+
+spec Summation =
+  Zero 
+and BinRelFun[sort State; op  __+__ : State * State -> State]
+then
+  forall a : Act; s1 , s2 : State
+  . next (a, s1 + s2 ) = pplus((zero * next(a, s2 )) union (next(a, s1 ) * zero)) 
+end
+
+spec FinAct = 
+  ExtSet[sort Label]
+then
+  op actions : Set[Label]
+  forall l:Label
+  . l eps actions
+end
+
+spec Composition = 
+  FinAct
+and FinalNonDeterministicAutomaton[Action]
+and BinRelFun[sort State; op  __||__ : State * State -> State]
+    with pplus |-> ppar
+and
+  ExtSet[sort State]
+and
+  ExtSet[sort Act]
+then
+  ops __||__ : State * State -> State;
+      h : State * State * Set[Label] -> Set[State]
+  vars l : Label; s1, s2 : State; set1, set2 : Set[Label]
+  . h(s1 , s2, {}) = {}
+  . h(s1, s2, {l}) = next(l, s1) intersection next(bar(l), s2)
+  . h(s1, s2, set1 union set2) = h(s1, s2, set1) union h(s1, s2, set2)
+  . next(l, s1 || s2) = ppar(next (l, s1 ) * s2 union s1 * next (l, s2))
+  . next(tau, s1 || s2) = 
+      ppar(next (tau, s1 ) * s2 union s1 * next (tau, s2)) union h(s1, s2, actions)
+end
+
+spec Hiding = 
+  FinalNonDeterministicAutomaton[Action]
+and ActionRelabelling
+then
+  op __-__ : State * Set [Label] -> State 
+  forall l : Label; s : State; L : Set [Label]
+  . next (l, s - L) = {} when l isIn L = True else next (l, s) 
+  . next (tau, s - L) = next (tau, s) 
+end
+
+spec Relabelling = 
+  FinalNonDeterministicAutomaton[Action]
+and ExtSet[sort Act] 
+and ActionRelabelling
+then
+  op rel : State * Relabelling -> State
+  forall l:Label; s : State; f : Relabelling
+  . next(l,rel(s,f)) = next(eval(f,l),s)
+  . next(tau,rel(s,f)) = next(tau,s)
+end
+
+spec CCS_Coalgebraic_Semantics =
+  FinAct
+and Zero and ActionPrefixing and Summation and Composition and Hiding and Relabelling
+and CCS
+and Map[sort AgentVariable][sort State] with Map[AgentVariable,State] |-> Env
+then
+  preds prefixedVars, isWeaklyGuarded : AgentExpression
+  op {{__}}__ : AgentExpression * Env ->? State 
+  forall a:Act; env:Env; C:AgentConstant; E,E1,E2:AgentExpression; X:AgentVariable;
+         set : Set[Label]; f : Relabelling
+ 
+  . prefixedVars(C)
+  . not prefixedVars(X)
+  . prefixedVars(0)
+  . prefixedVars(a->E)
+  . prefixedVars(E1+E2) <=> prefixedVars(E1) /\ prefixedVars(E2)
+  . prefixedVars(E1||E2) <=> prefixedVars(E1) /\ prefixedVars(E2)
+  . prefixedVars(E1-set) <=> prefixedVars(E1)
+  . prefixedVars(rel(E,f)) <=> prefixedVars(E)
+  . prefixedVars(fix(X,E)) <=> prefixedVars(E)
+
+  . isWeaklyGuarded(C)
+  . isWeaklyGuarded(X)
+  . isWeaklyGuarded(0)
+  . isWeaklyGuarded(a->E) <=> isWeaklyGuarded(E)
+  . isWeaklyGuarded(E1+E2) <=> isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2)
+  . isWeaklyGuarded(E1||E2) <=> isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2)
+  . isWeaklyGuarded(E1-set) <=> isWeaklyGuarded(E1)
+  . isWeaklyGuarded(rel(E,f)) <=> isWeaklyGuarded(E)
+  . isWeaklyGuarded(fix(X,E)) <=> isWeaklyGuarded(E) /\ prefixedVars(E)
+
+  . {{X}}env = lookup(X,env)
+  . {{C}}env = {{definitionOf(C)}}env
+  . {{0}}env = zero
+  . {{a->E}}env = a->{{E}}env
+  . {{E1+E2}}env = {{E1}}env + {{E2}}env
+  . {{E1||E2}} env = {{E1}}env || {{E2}}env
+  . {{E-set}}env = {{E}}env - set
+  . {{rel(E,f)}}env = rel({{E}}env,f)
+  . isWeaklyGuarded(E) =>
+    {{fix(X,E)}}env =e= {{E}}env[{{fix(X,E)}}env/X]
+  . not isWeaklyGuarded(E) => not def {{fix(X,E)}}env
+
+then %implies
+  forall a:Act; env:Env; E,E1,E2:AgentExpression; X:AgentVariable; s:State
+  . isWeaklyGuarded(E) => s = {{E}}env[s/X] => s={{fix(X,E)}}env  %(uniqueFinxedPoint)%
+  . isWeaklyGuarded(E1) /\ isWeaklyGuarded(E2) =>
+    (E1 - a -> E2 <=> {{E2}}env eps next(a,{{E1}}env))
+end

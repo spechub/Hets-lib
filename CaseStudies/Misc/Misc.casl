@@ -1,0 +1,35 @@
+library CaseStudies/Misc/Misc version 0.1
+
+%% from Christoph Lueth <cxl@tzi.de>
+
+from CaseStudies/Misc/Stateful get Stateful
+
+spec Unit = 
+   free type Unit ::=  *
+end
+
+spec Ref[sort Elem] = 
+   Stateful[sort Elem]
+and
+   Stateful[sort Unit]
+then
+   sorts Ref[Elem]
+then
+   Stateful[sort Ref[Elem]]
+then 
+   ops
+      newRef : World* Elem            -> Stateful[Ref[Elem]];
+      getRef : World* Ref[Elem]       -> Stateful[Elem];
+      setRef : World* Ref[Elem]* Elem -> Stateful[Unit];
+
+   forall s, s', s'', s''': World; r, r1, r2: Ref[Elem]; a, b: Elem
+   . newRef(s, a) = sf(s', r1) /\ newRef(s', b)= sf(s'', r2)
+      => not (r1= r2) 
+   . newRef(s, a) = sf(s', r1) => rs(getRef(s', r1))= a
+   . rs(getRef(wr(setRef(s, r, a)), r))= a
+   . rs(getRef(wr(setRef(s, r1, a)), r2))= rs(getRef(s, r2)) 
+                                                if not(r1= r2)
+   . setRef(wr(setRef(s, r, a)), r, b)  = setRef(s, r, b)
+   . setRef(wr(setRef(s, r1, a)), r2, b)= 
+     setRef(wr(setRef(s, r2, b)), r1, a)     if not (r1= r2)
+end

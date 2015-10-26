@@ -1,0 +1,117 @@
+spec source_161 =
+esorts ACC, ACH
+pred At : ACC
+pred At : ACH
+pred AtP : ACC * ACC
+pred AtP : ACH * ACH
+pred Dif : ACC * ACC * ACC
+pred Dif : ACH * ACH * ACH
+pred Ov : ACC * ACC
+pred Ov : ACH * ACH
+pred P : ACC * ACC
+pred P : ACH * ACH
+pred PP : ACC * ACC
+pred PP : ACH * ACH
+pred Sum : ACC * ACC * ACC
+pred Sum : ACH * ACH * ACH
+
+forall x : ACH; y : ACH . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                          %(Dd14)%
+
+forall x : ACH; y : ACH
+. Ov(x, y) <=> exists z : ACH . P(z, x) /\ P(z, y)        %(Dd15)%
+
+forall x : ACH . At(x) <=> not exists y : ACH . PP(y, x) %(Dd16)%
+
+forall x : ACH; y : ACH . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17)%
+
+forall z : ACH; x : ACH; y : ACH
+. Sum(z, x, y)
+  <=> forall w : ACH . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)   %(Ax5)%
+
+forall z : ACH; x : ACH; y : ACH
+. Dif(z, x, y)
+  <=> forall w : ACH . P(w, z) <=> P(w, x) /\ not Ov(w, y) %(Ax6)%
+
+forall x, y, z : ACH . P(x, x) %(reflexivity)%
+
+forall x, y, z : ACH . P(x, y) /\ P(y, x) => x = y %(antisymmetry)%
+
+forall x, y, z : ACH . P(x, y) /\ P(y, z) => P(x, z)
+                                                  %(transitivity)%
+
+forall x : ACC; y : ACC . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                       %(Dd14_12)%
+
+forall x : ACC; y : ACC
+. Ov(x, y) <=> exists z : ACC . P(z, x) /\ P(z, y)     %(Dd15_13)%
+
+forall x : ACC . At(x) <=> not exists y : ACC . PP(y, x)
+                                                       %(Dd16_14)%
+
+forall x : ACC; y : ACC . AtP(x, y) <=> P(x, y) /\ At(x)
+                                                       %(Dd17_15)%
+
+forall z : ACC; x : ACC; y : ACC
+. Sum(z, x, y)
+  <=> forall w : ACC . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                        %(Ax5_10)%
+
+forall z : ACC; x : ACC; y : ACC
+. Dif(z, x, y)
+  <=> forall w : ACC . P(w, z) <=> P(w, x) /\ not Ov(w, y)
+                                                        %(Ax6_11)%
+
+forall x, y, z : ACC . P(x, x) %(reflexivity_17)%
+
+forall x, y, z : ACC . P(x, y) /\ P(y, x) => x = y
+                                               %(antisymmetry_16)%
+
+forall x, y, z : ACC . P(x, y) /\ P(y, z) => P(x, z)
+                                               %(transitivity_18)%
+end
+spec target_161 = source_161
+then %cons
+sorts EV
+sorts ACC, ACH < EV
+pred At : EV
+pred AtP : EV * EV
+pred Dif : EV * EV * EV
+pred Ov : EV * EV
+pred P : EV * EV
+pred PP : EV * EV
+pred Sum : EV * EV * EV
+
+forall x : EV . not (x in ACC /\ x in ACH)
+                                     %(ga_disjoint_sorts_ACC_ACH)%
+
+%% free
+generated type EV ::= sort ACC | sort ACH      %(ga_generated_EV)%
+
+forall x : EV; y : EV . PP(x, y) <=> P(x, y) /\ not P(y, x)
+                                                       %(Dd14_21)%
+
+forall x : EV; y : EV
+. Ov(x, y) <=> exists z : EV . P(z, x) /\ P(z, y)      %(Dd15_22)%
+
+forall x : EV . At(x) <=> not exists y : EV . PP(y, x) %(Dd16_23)%
+
+forall x : EV; y : EV . AtP(x, y) <=> P(x, y) /\ At(x) %(Dd17_24)%
+
+forall z : EV; x : EV; y : EV
+. Sum(z, x, y)
+  <=> forall w : EV . Ov(w, z) <=> Ov(w, x) \/ Ov(w, y)
+                                                     %(Ax5_19_21)%
+
+forall z : EV; x : EV; y : EV
+. Dif(z, x, y)
+  <=> forall w : EV . P(w, z) <=> P(w, x) /\ not Ov(w, y)
+                                                        %(Ax6_20)%
+
+forall x, y, z : EV . P(x, x) %(reflexivity_26)%
+
+forall x, y, z : EV . P(x, y) /\ P(y, x) => x = y
+                                               %(antisymmetry_25)%
+
+forall x, y, z : EV . P(x, y) /\ P(y, z) => P(x, z)
+                                               %(transitivity_27)%

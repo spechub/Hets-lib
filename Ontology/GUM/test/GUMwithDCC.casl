@@ -1,0 +1,25 @@
+library Ontology/GUM/test/GUMwithDCC
+version 0.4
+
+from Ontology/GUM/GUM get GUM_Spatial_Relations
+from Ontology/GUM/test/OrientationCalculi get DoubleCrossCalculus8
+
+spec GUMwithDCC =
+	GUM_Spatial_Relations and
+	DoubleCrossCalculus8
+
+then
+	ops
+		spatialModalityToOrientation : SpatialModality -> Orientation8;
+		simpleThingToLocation : SimpleThing -> Location;
+
+
+	forall lp: LeftProjection
+        . spatialModalityToOrientation(lp) = leftFront
+
+
+
+	forall gl: GeneralizedLocation; sl: SpatialLocating; lp: LeftProjection; orient: Orientation8; st1, st2, st3: SimpleThing; v, w: Arrow
+		. v = simpleThingToLocation(st1) --> simpleThingToLocation(st2) /\ w = simpleThingToLocation(st2) --> simpleThingToLocation(st3) /\ locatum(sl, st3) /\ placement(sl, gl) /\ relatum(gl, st2) /\ hasSpatialModality(gl, lp) /\ spatialModalityToOrientation(lp) = orient /\ not(st1 = st2) /\ not(st1 = st3) /\ not(st2 = st3) =>
+			v # w > orient
+end

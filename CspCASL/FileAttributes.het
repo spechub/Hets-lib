@@ -1,0 +1,27 @@
+library FileAttributes
+
+logic CASL
+
+spec Attributes =
+   sorts Attribute, File, FileAndAttribute, State
+   op setAttr: State * FileAndAttribute -> State;
+      getAttr: State * File ->? Attribute;
+      initial: State
+end
+
+logic CspCASL
+
+spec FileAttributes =
+  data Attributes
+
+  channel
+     set:   FileAndAttribute;
+     query:   File;
+     reply: Attribute
+
+  process
+      P(State):set, query, reply;
+
+      P(s) =  set?fa::FileAndAttribute -> P( setAttr(s,fa) )
+           [] query?f::File -> reply!getAttr(s,f) -> P(s)
+end

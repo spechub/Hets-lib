@@ -1,0 +1,34 @@
+library testHeterogeneity
+
+logic Propositional
+
+spec sp = 
+prop p
+. p %implied
+end
+
+logic CASL
+
+spec sp1 = sp 
+  then sort t
+end
+
+spec spp =
+  pred q:()
+  with logic -> HasCASL
+end
+
+logic HasCASL
+
+spec sppp =
+  pred r:()
+end
+
+spec sp2 = sp  %% with logic -> CASL
+  then sort t
+end
+
+logic HasCASL
+
+spec sp3 = sp1 and sp2
+end

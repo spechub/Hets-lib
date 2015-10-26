@@ -1,0 +1,98 @@
+use Basic/Algebra_I
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Int
+prover SPASS
+set goals zeroNeqOne
+prove
+
+prover MathServe Broker
+set goals noZeroDiv
+set time-limit 40
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic RichCommutativeRing
+prover SPASS
+set goals refl refl_7 sym ga_assoc___*__ ga_comm___*__ ga_left_unit___*__ ga_right_unit___*__
+prove
+
+prover MathServe Broker
+set goals inv_Group
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic EqRel_in_ExtCRing__T
+prover SPASS
+set goals refl sym
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic PreOrder_in_ExtCRing__T
+prover SPASS
+set goals refl
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic AbelianGroup_in_ExtCRing__T
+prover SPASS
+set goals ga_assoc___*__ ga_comm___*__ ga_left_unit___*__ ga_right_unit___*__
+prove
+
+prover MathServe Broker
+set goals inv_Group
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtIntegralDomain__E2
+prover SPASS
+set goals Ax1
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Group_in_ExtRing__T
+prover SPASS
+set goals ga_assoc___*__ ga_left_unit___*__ ga_right_unit___*__
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic RichRing
+prover SPASS
+set goals ga_assoc___*__ ga_left_unit___*__ ga_right_unit___*__
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ConstructField
+prover SPASS
+set goals ga_comm___*__
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtGroup__E2
+prover SPASS
+set goals invUnit_Group
+prove
+
+prover MathServe Broker
+set goals rightInv_Group leftCancel_Group
+prove
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set goals rightCancel_Group invInv_Group
+set time-limit 40
+prove

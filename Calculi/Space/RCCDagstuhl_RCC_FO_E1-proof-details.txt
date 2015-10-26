@@ -1,0 +1,79 @@
+O_sym
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "O_sym", "O_def", "ga_non_empty_sort_QReg", "Ax1"
+        Prover: SPASS
+
+cmps_PP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_PP", "P_def", "ga_non_empty_sort_QReg", "Ax1",
+                     "C_non_null"
+        Prover: SPASS
+
+P_impl_C
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "P_impl_C", "Ax1", "P_def", "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+P_impl_O
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "P_impl_O", "Ax1", "P_def", "ga_non_empty_sort_QReg",
+                     "O_def"
+        Prover: SPASS
+
+O_impl_C
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "O_impl_C", "O_def", "ga_non_empty_sort_QReg", "Ax1",
+                     "C_sym", "P_impl_C", "P_def"
+        Prover: SPASS
+
+NTP_impl_C
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "NTP_impl_C", "Ax1", "O_impl_C", "NTP_def",
+                     "ga_non_empty_sort_QReg"
+        Prover: SPASS
+
+NTP_impl_P
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "NTP_impl_P", "P_def", "ga_non_empty_sort_QReg",
+                     "Ax1", "C_non_null", "O_impl_C", "NTP_def"
+        Prover: SPASS
+
+P_inh_O
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "P_inh_O", "O_def", "ga_non_empty_sort_QReg", "Ax1",
+                     "O_sym", "cmps_PP"
+        Prover: SPASS
+
+extens
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "extens", "C_id", "ga_non_empty_sort_QReg", "P_def"
+        Prover: SPASS
+
+NTP_trans
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "NTP_trans", "NTP_impl_P", "cmps_P_NTP"
+        Prover: SPASS
+
+cmps_NTP_P
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_NTP_P", "NTP_def", "ga_non_empty_sort_QReg",
+                     "O_def", "Ax1", "cmps_PP"
+        Prover: SPASS
+
+cmps_P_NTP
+    Com: CASL2SPASS : CASL -> SPASS
+        Status: Proved
+        Used axioms: "cmps_P_NTP", "NTP_def", "ga_non_empty_sort_QReg",
+                     "P_def"
+        Prover: SPASS

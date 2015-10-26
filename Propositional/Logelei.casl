@@ -1,0 +1,32 @@
+logic Propositional
+
+spec Logelei =
+  props O,P,B,C,N,D,G,H,M,I,L,J,K,A,E,F
+  . O <=> (not B /\ not C => not N)  %(Olga1)%
+  . P <=> (D /\ N => E)              %(Petra1)%
+  . O <=> (I /\ not G => H)          %(Olga2)%
+  . P <=> (not F /\ M => not J)      %(Petra2)%
+  . O <=> (H /\ A => not C)          %(Olga3)%
+  . P <=> (I => not J)               %(Petra3)%
+  . O <=> (K => L)                   %(Olga4)%
+  . P <=> (M /\ not L => B)          %(Petra4)%
+  . O <=> (not A /\ not K => not C)  %(Olga5)%
+  . O <=> not P                      %(OlgaOderPetra)%
+then %implies
+  . O %(O)% 
+  . not P %(P)% 
+  . not B %(B)% 
+  . C %(C)% 
+  . N %(N)% 
+  . D %(D)% 
+  . G %(G)% 
+  . not H %(H)% 
+  . M %(M)% 
+  . I %(I)% 
+  . not L %(L)% 
+  . J %(J)% 
+  . not K %(K)% 
+  . A %(A)% 
+  . not E %(E)% 
+  . not F %(F)% 
+end

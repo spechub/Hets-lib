@@ -1,0 +1,265 @@
+\begin{hetcasl}
+\KW{library} \=\SId{Ontology/Dolce/DolceModel} \KW{version} \Ax{1}\Id{\Ax{.}}\Ax{0}\\
+\\
+\FROM \=\SId{Ontology/Dolce/DolceSimpl\_Esort} \KW{get} \\
+\> \SId{Taxonomy}, \SId{Partial\_Order}, \SId{Ext\_Partial\_Order}, \\
+\> \SId{Ext\_Overlap\_or\_Connection}, \\
+\> \SId{Classical\_Extensional\_Parthood}, \\
+\> \SId{Classical\_Extensional\_Parthood\_No}, \\
+\> \SId{Temporary\_Parthood\_Eternal}, \SId{Time\_Mereology}, \\
+\> \SId{Unary\_Temporal\_Dissective}, \SId{Being\_Present}, \\
+\> \SId{Mereology}, \SId{Mereology\_and\_TemporalPart}, \\
+\> \SId{Binary\_Present}, \SId{Binary\_Temporal\_Dissective}, \\
+\> \SId{Temporary\_Partial\_Order}, \\
+\> \SId{Temporary\_Strict\_Partial\_Order}, \\
+\> \SId{Temporary\_Parthood\_No}, \SId{Temporary\_Parthood}, \\
+\> \SId{TP\_NoSum\_Eternal}, \SId{Temporary\_Mereology}, \\
+\> \SId{Constitution\_Spec}, \\
+\> \SId{Constantly\_Generically\_Constituted}, \SId{Constitution}, \\
+\> \SId{Participation}, \SId{Direct\_Quality\_Spec}, \SId{Direct\_Quality}, \\
+\> \SId{Immediate\_Quale\_Spec}, \SId{Immediate\_Quale}, \\
+\> \SId{Temporary\_Quale\_Spec}, \SId{Temporary\_Quale}, \\
+\> \SId{Specific\_Dependence}, \SId{Mutual\_Specific\_Dependence}, \\
+\> \SId{OneSide\_Specific\_Dependence}, \SId{Generic\_Dependence}, \\
+\> \SId{Mutual\_Generic\_Dependence}, \\
+\> \SId{OneSide\_Generic\_Dependence}, \SId{Dependence}, \\
+\> \SId{Strongly\_Non\_Empty}, \SId{Cumulative}, \SId{Anti\_Cumulative}, \\
+\> \SId{Homeomerous}, \SId{Anti\_Homeomerous}, \SId{Atomic}, \\
+\> \SId{Anti\_Atomic}, \SId{PreDolce}, \SId{Dolce}\\
+{\small{}\KW{\%\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}\Ax{\%}}\\
+\\
+\ARCH \=\KW{spec} \SId{Parthood\_Model} \Ax{=} \\
+\> \KW{units} \SId{TM} \Ax{:} \Id{Time\Ax{\_}Mereology}; \\
+\> \SId{TP\_SC} \Ax{:} \SId{Temporary\_Parthood\_Eternal}[\KW{sort} \IdDeclLabel{\Id{SC}}{SC}] \KW{given} \\
+\> \SId{TM}; \\
+\> \SId{TP\_SAG} \Ax{:} \SId{Temporary\_Parthood\_Eternal}[\KW{sort} \IdDeclLabel{\Id{SAG}}{SAG}] \\
+\> \KW{given} \SId{TM}; \\
+\> \SId{TP\_NASO} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{NASO} \\
+\> \AND \=\SId{OneSide\_Generic\_Dependence} \\
+\>\> \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{NASO}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{SC}}{SC}\\
+\> \} \\
+\> \KW{given} \SId{TP\_SC}; \\
+\> \SId{TP\_APO} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood\_Eternal}[\KW{sort} \IdDeclLabel{\Id{APO}}{APO}] \\
+\> \AND \=\SId{OneSide\_Generic\_Dependence} \\
+\>\> \KW{with} \=\Id{s1} \Ax{\mapsto} \IdApplLabel{\Id{SAG}}{SAG}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{APO}}{APO}\\
+\> \} \\
+\> \KW{given} \SId{TP\_SAG}; \\
+\> \SId{TP\_F} \Ax{:} \SId{Temporary\_Parthood\_Eternal}[\KW{sort} \IdDeclLabel{\Id{F}}{F}] \KW{given} \\
+\> \SId{TM}; \\
+\> \SId{TP\_NAPO} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{NAPO} \\
+\> \AND \=\SId{OneSide\_Generic\_Dependence} \\
+\>\> \KW{with} \=\Id{s1} \Ax{\mapsto} \IdApplLabel{\Id{F}}{F}, \=\Id{s2} \Ax{\mapsto} \Id{NAPO}\\
+\> \} \\
+\> \KW{given} \SId{TP\_F}; \\
+\> \SId{TP\_ASO} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{ASO}}{ASO} \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{ASO}}{ASO} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{SC}}{SC} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{SAG}}{SAG}\\
+\> \} \\
+\> \KW{given} \SId{TP\_SC}, \SId{TP\_SAG}; \\
+\> \SId{TP\_MOB} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{MOB} \\
+\> \AND \=\SId{OneSide\_Specific\_Dependence} \\
+\>\> \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{MOB}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{APO}}{APO}\\
+\> \} \\
+\> \KW{given} \SId{TP\_APO}; \\
+\> \SId{TP\_SOB} \Ax{:} \\
+\> \{\SId{TP\_NoSum\_Eternal}[\KW{sort} \IdDeclLabel{\Id{SOB}}{SOB}] \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{SOB}}{SOB} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{ASO}}{ASO} \AltBar{} \=\Id{sort} \Id{NASO}\\
+\> \} \\
+\> \KW{given} \SId{TP\_NASO}, \SId{TP\_ASO}; \\
+\> \SId{TP\_POB} \Ax{:} \\
+\> \{\SId{TP\_NoSum\_Eternal}[\KW{sort} \IdDeclLabel{\Id{POB}}{POB}] \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{POB}}{POB} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{APO}}{APO} \AltBar{} \=\Id{sort} \Id{NAPO}\\
+\> \} \\
+\> \KW{given} \SId{TP\_MOB}, \SId{TP\_NAPO}; \\
+\> \SId{TP\_NPOB} \Ax{:} \\
+\> \{\SId{TP\_NoSum\_Eternal}[\KW{sort} \IdDeclLabel{\Id{NPOB}}{NPOB}] \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{NPOB}}{NPOB} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{SOB}}{SOB} \AltBar{} \=\Id{sort} \Id{MOB}\\
+\> \} \\
+\> \KW{given} \SId{TP\_SOB}, \SId{TP\_MOB}; \\
+\> \SId{TP\_M} \Ax{:} \{\SId{Temporary\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{M}\} \KW{given} \\
+\> \SId{TP\_POB}; \\
+\> \SId{TP\_NPED} \Ax{:} \\
+\> \{\SId{TP\_NoSum\_Eternal}[\KW{sort} \IdDeclLabel{\Id{NPED}}{NPED}] \\
+\> \AND \SORT \=\IdApplLabel{\Id{NPOB}}{NPOB} \Ax{<} \IdApplLabel{\Id{NPED}}{NPED}\\
+\> \} \\
+\> \KW{given} \SId{TP\_NPOB}; \\
+\> \SId{TP\_PED} \Ax{:} \\
+\> \{\SId{TP\_NoSum\_Eternal}[\KW{sort} \IdDeclLabel{\Id{PED}}{PED}] \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{PED}}{PED} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{POB}}{POB} \AltBar{} \=\Id{sort} \Id{M} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{F}}{F}\\
+\> \} \\
+\> \KW{given} \SId{TP\_M}; \\
+\> \SId{TP\_ED} \Ax{:} \\
+\> \{\SId{Temporary\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{ED}}{ED} \\
+\> \AND \=\ESORT \IdDeclLabel{\Id{AS}}{AS}\\
+\>\> \KW{free} \KW{type} \=\IdDeclLabel{\Id{ED}}{ED} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{PED}}{PED} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{NPED}}{NPED} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{AS}}{AS}\\
+\> \} \\
+\> \KW{given} \SId{TP\_PED}, \SId{TP\_NPED}; \\
+\> \SId{ACC} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{ACC}\\
+\> \}; \\
+\> \SId{ACH} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{ACH}\\
+\> \}; \\
+\> \SId{EV} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{EV}}{EV} \\
+\> \THEN \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{EV}}{EV} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \Id{ACC} \AltBar{} \=\Id{sort} \Id{ACH}\\
+\> \} \\
+\> \KW{given} \SId{ACC}, \SId{ACH}; \\
+\> \SId{ST} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{ST}\}; \\
+\> \SId{PRO} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{PRO}\}; \\
+\> \SId{STV} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood\_No} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{STV}}{STV} \\
+\> \THEN \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{STV}}{STV} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \Id{ST} \AltBar{} \=\Id{sort} \Id{PRO}\\
+\> \} \\
+\> \KW{given} \SId{ST}, \SId{PRO}; \\
+\> \SId{CEP\_PD} \Ax{:} \\
+\> \{\{\SId{Classical\_Extensional\_Parthood} \AND \SORT \IdDeclLabel{\Id{s}}{s}\} \\
+\> \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{PD}}{PD} \\
+\> \THEN \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{PD}}{PD} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{EV}}{EV} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{STV}}{STV}\\
+\> \} \\
+\> \KW{given} \SId{TP\_ED}, \SId{EV}, \SId{STV}; \\
+\> \SId{Particip} \Ax{:} \Id{Participation} \KW{given} \SId{CEP\_PD}; \\
+\> \SId{Mereology\_and\_TemporalPartPD} \Ax{:} \\
+\> \Id{Mereology\Ax{\_}and\Ax{\_}TemporalPart} \KW{given} \SId{Particip} \\
+\> \KW{result} \SId{Mereology\_and\_TemporalPartPD}\\
+\KW{end}\\
+\\
+\ARCH \=\KW{spec} \SId{Constitution\_Model} \Ax{=} \\
+\> \KW{units} \SId{ParthoodM} \Ax{:} \=\KW{arch} \KW{spec} \Id{Parthood\Ax{\_}Model}; \\
+\> \SId{TP\_ED} \Ax{=} \SId{ParthoodM}; \SId{TP\_NPED} \Ax{=} \SId{ParthoodM}; \\
+\> \SId{DependenceAQNPED} \Ax{:} \\
+\> \{\SId{Mutual\_Specific\_Dependence} \\
+\> \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{AQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{NPED}}{NPED} \\
+\> \AND \=\SId{Direct\_Quality\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{AQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{NPED}}{NPED}\\
+\> \} \\
+\> \KW{given} \SId{TP\_ED}, \SId{TP\_NPED}; \\
+\> \SId{ConstitutionPD} \Ax{:} \{\SId{Constitution\_Spec} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{PD}}{PD}\} \\
+\> \KW{given} \SId{ParthoodM}; \\
+\> \SId{ConstitutionPED} \Ax{:} \\
+\> \{\SId{Constantly\_Generically\_Constituted} \\
+\> \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{PED}}{PED}, \Id{s1} \Ax{\mapsto} \Id{NAPO}, \=\Id{s2} \Ax{\mapsto} \Id{M} \\
+\> \AND \=\SId{Constantly\_Generically\_Constituted} \\
+\>\> \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{PED}}{PED}, \Id{s1} \Ax{\mapsto} \IdApplLabel{\Id{APO}}{APO}, \=\Id{s2} \Ax{\mapsto} \Id{NAPO}\\
+\> \} \\
+\> \KW{given} \SId{ParthoodM}; \\
+\> \SId{ConstitutionNPED} \Ax{:} \\
+\> \{\SId{Constantly\_Generically\_Constituted} \\
+\> \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{NPED}}{NPED}, \Id{s1} \Ax{\mapsto} \IdApplLabel{\Id{SC}}{SC}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{SAG}}{SAG}\\
+\> \} \\
+\> \KW{given} \SId{ParthoodM}, \SId{DependenceAQNPED}; \\
+\> \SId{ConstitutionED} \Ax{:} \{\SId{Constitution\_Spec} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{ED}}{ED}\} \\
+\> \KW{given} \SId{TP\_ED}; \\
+\> \SId{Constitution} \Ax{=} \\
+\> \SId{ConstitutionPD} \\
+\> \KW{and} \SId{ConstitutionPED} \\
+\> \KW{and} \SId{ConstitutionNPED} \\
+\> \KW{and} \SId{ConstitutionED} \\
+\> \KW{result} \SId{Constitution}\\
+\KW{end}\\
+\\
+\ARCH \=\KW{spec} \SId{PreDolce\_Model} \Ax{=} \\
+\> \KW{units} \SId{Constitution} \Ax{:} \=\KW{arch} \KW{spec} \Id{Constitution\Ax{\_}Model}; \\
+\> \SId{TM} \Ax{=} \SId{Constitution}; \SId{TP\_EDSAR} \Ax{=} \SId{Constitution}; \\
+\> \SId{TP\_ED} \Ax{=} \SId{TP\_EDSAR}; \SId{TP\_PED} \Ax{=} \SId{Constitution}; \\
+\> \SId{Particip} \Ax{=} \SId{Constitution}; \\
+\> \SId{DependenceAQNPED} \Ax{=} \SId{Constitution}; \\
+\> \SId{MereologyAR} \Ax{=} \SId{Constitution}; \\
+\> \SId{ImmediateQuale} \Ax{:} \\
+\> \{\{\SId{Immediate\_Quale} \\
+\> \THEN \SORTS \=\Id{TL} \Ax{<} \Id{TQ};\\
+\>\> \Id{T} \Ax{<} \Id{TR}\\
+\> \} \\
+\> \AND \=\SId{Direct\_Quality\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{TQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{PD}}{PD} \\
+\> \THEN \=\ESORT \=\Id{TL} \Ax{<} \Id{TQ}\\
+\>\> \Ax{\forall} \=\Id{y} \Ax{:} \IdApplLabel{\Id{PD}}{PD} \Ax{\bullet} \=\Ax{\exists} \Id{x} \Ax{:} \Id{TL} \Ax{\bullet} \Id{dqt}(\=\Id{x}, \Id{y})\\
+\> \} \\
+\> \KW{given} \SId{TM}; \\
+\> \SId{BinTempDisS} \Ax{:} \\
+\> \{\SId{Binary\_Temporal\_Dissective} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{S}, \=\Id{s2} \Ax{\mapsto} \Id{SL}\} \\
+\> \KW{given} \SId{TP\_EDSAR}; \\
+\> \SId{DependencePQPED} \Ax{:} \\
+\> \{\{\SId{Mutual\_Specific\_Dependence} \\
+\> \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{PQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{PED}}{PED} \\
+\> \THEN \SORT \=\Id{SL} \Ax{<} \Id{PQ}\\
+\> \} \\
+\> \AND \=\SId{Direct\_Quality\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{PQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{PED}}{PED} \\
+\> \THEN \=\ESORT \=\Id{SL} \Ax{<} \Id{PQ}\\
+\>\> \Ax{\forall} \=\Id{y} \Ax{:} \IdApplLabel{\Id{PED}}{PED} \Ax{\bullet} \=\Ax{\exists} \Id{x} \Ax{:} \Id{SL} \Ax{\bullet} \Id{dqt}(\=\Id{x}, \Id{y})\\
+\> \} \\
+\> \KW{given} \SId{TP\_PED}, \SId{BinTempDisS}; \\
+\> \SId{DependenceTQPD} \Ax{:} \\
+\> \{\SId{Mutual\_Specific\_Dependence} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{TQ}, \=\Id{s2} \Ax{\mapsto} \IdApplLabel{\Id{PD}}{PD}\} \\
+\> \KW{given} \SId{Particip}, \SId{ImmediateQuale}; \\
+\> \SId{BeingPresentEDorDP} \Ax{:} \\
+\> \{\SId{Being\_Present} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \IdApplLabel{\Id{EDorPDorQ}}{EDorPDorQ} \\
+\> \AND \=\KW{free} \KW{type} \=\IdDeclLabel{\Id{Q}}{Q} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \Id{TQ} \AltBar{} \=\Id{sort} \Id{PQ} \AltBar{} \=\Id{sort} \Id{AQ}\\
+\>\> \KW{free} \KW{type} \=\IdDeclLabel{\Id{EDorPDorQ}}{EDorPDorQ} \Ax{:}\Ax{:}\=\Ax{=} \=\Id{sort} \IdApplLabel{\Id{Q}}{Q} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{PD}}{PD} \AltBar{} \=\Id{sort} \IdApplLabel{\Id{ED}}{ED}\\
+\> \} \\
+\> \KW{given} \SId{DependenceTQPD}, \SId{DependencePQPED}, \\
+\> \SId{DependenceAQNPED}\\
+\> {\small{}\KW{\%\%} Temporary\Ax{\_}Quale and binary temporal dissective}; \\
+\> \SId{TempQualePR} \Ax{:} \\
+\> \{\SId{Temporary\_Quale\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{PR}, \=\Id{s2} \Ax{\mapsto} \Id{PQ} \\
+\> \THEN \SORT \=\Id{S} \Ax{<} \Id{PR}\\
+\> \} \\
+\> \KW{given} \SId{BeingPresentEDorDP}, \SId{BinTempDisS}; \\
+\> \SId{TempQualeAR} \Ax{:} \\
+\> \{\SId{Temporary\_Quale\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{AR}, \=\Id{s2} \Ax{\mapsto} \Id{AQ}\} \KW{given} \\
+\> \SId{BeingPresentEDorDP}, \SId{BinTempDisS}; \\
+\> \SId{TempQualeS} \Ax{:} \\
+\> \{\SId{Temporary\_Quale\_Spec} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{S}, \=\Id{s2} \Ax{\mapsto} \Id{SL}\} \KW{given} \\
+\> \SId{BeingPresentEDorDP}, \SId{BinTempDisS}; \\
+\> \SId{TempQuale} \Ax{=} \\
+\> \SId{TempQualePR} \KW{and} \SId{TempQualeAR} \KW{and} \SId{TempQualeS}; \\
+\> \SId{BinTempDisPR} \Ax{:} \\
+\> \{\SId{Binary\_Temporal\_Dissective} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{PR}, \=\Id{s2} \Ax{\mapsto} \Id{PQ}\} \\
+\> \KW{given} \\
+\> \\
+\> {\small{}\KW{\%}\{}\={\small{} and}\\
+\>\> {\small{} \Ax{\{}}\\
+\>\> {\small{} esort S \Ax{<} PR}\\
+\>\> {\small{} \}\KW{\%}}\\
+\> \SId{TempQualePR}; \\
+\> \SId{CEP\_S} \Ax{:} \\
+\> \{\SId{Classical\_Extensional\_Parthood} \KW{with} \=\IdApplLabel{\Id{s}}{s} \Ax{\mapsto} \Id{S}\} \KW{given} \\
+\> \SId{BinTempDisS}; \\
+\> \\
+\> {\small{}\KW{\%\%} AR}\\
+\> {\small{}\KW{\%\%} CEP\Ax{\_}AR \Ax{:} \Ax{\{}Classical\Ax{\_}Extensional\Ax{\_}Parthood with s \Ax{|}\Ax{-}\Ax{>} AR}\\
+\> {\small{}\KW{\%\%}then}\\
+\> {\small{}\KW{\%\%}\Ax{.} exists x\Ax{:}AR\Ax{.} x in AR}\\
+\> {\small{}\KW{\%\%}\Ax{\}} given DependenceAQNPED\Ax{,} TempQualeAR\Ax{,} MereologyAR\Ax{;}}\\
+\> \SId{BinTempDisAR} \Ax{:} \\
+\> \{\SId{Binary\_Temporal\_Dissective} \KW{with} \=\Id{s1} \Ax{\mapsto} \Id{AR}, \=\Id{s2} \Ax{\mapsto} \Id{AQ}\} \\
+\> \KW{given} \SId{DependenceAQNPED}, \SId{MereologyAR}\\
+\> {\small{}\KW{\%\%}CEP\Ax{\_}AR\Ax{;}}\\
+\> {\small{}\KW{\%\%} Direct Quality}; \\
+\> \SId{DirectQuality} \Ax{:} \Id{Direct\Ax{\_}Quality} \KW{given} \\
+\> \SId{BeingPresentEDorDP}, \SId{BinTempDisS}, \SId{Constitution}, \\
+\> \SId{TempQuale}, \SId{BinTempDisPR}, \SId{BinTempDisAR}, \SId{CEP\_S} \\
+\> \KW{result} \\
+\> \SId{Constitution} \\
+\> \KW{and} \SId{DirectQuality} \\
+\> \KW{and} \SId{TempQuale} \\
+\> \KW{and} \SId{BinTempDisPR} \\
+\> \KW{and} \SId{BinTempDisAR} \\
+\> \KW{and} \SId{CEP\_S}\\
+\KW{end}\\
+\\
+\ARCH \=\KW{spec} \SId{Dolce\_Model} \Ax{=} \\
+\> \KW{units} \SId{PreDolce} \Ax{:} \=\KW{arch} \KW{spec} \Id{PreDolce\Ax{\_}Model}; \\
+\> \SId{Tax} \Ax{:} \{\SId{Taxonomy} \AND \PRED \=\IdDeclLabel{\Id{K}}{K} \Ax{:} \=\IdApplLabel{\Id{ED}}{ED} \Ax{\times} \IdApplLabel{\Id{ED}}{ED} \Ax{\times} \Id{T}\} \KW{given} \\
+\> \SId{PreDolce} \\
+\> \KW{result} \SId{Tax}\\
+\KW{end}\\
+\\
+\KW{refinement} \=\SId{Dolce\_Ref} \Ax{=} \\
+\> \Id{Dolce} \KW{refined} \KW{to} \=\KW{arch} \KW{spec} \Id{Dolce\Ax{\_}Model}\\
+\KW{end}
+\end{hetcasl}

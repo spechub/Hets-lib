@@ -1,0 +1,58 @@
+library HasCASL/Functions
+
+from Basic/Numbers get Nat
+
+spec Nat1 = Nat hide Pos
+end
+
+logic HasCASL
+spec FiniteSeq = Nat1
+then
+  var S: Type
+  type Seq S := Nat ->? S;
+  ops
+    tail: Seq S -> Seq S;
+    head: Seq S ->? S;
+    filter: Seq S -> Pred S -> Seq S;
+    nf : Seq S -> Seq S;
+    nfh : Seq S ->? S;
+    nft : Seq S -> Seq S;
+    concat : Seq S * Seq S -> Seq S;
+    length : Seq S ->? Nat;
+    min: Pred(Nat) ->? Nat;
+    start: Seq S ->? Nat;
+    map : (S ->? S) -> Seq S -> Seq S;
+    __o__ : forall a, b, c:Type .
+               (b ->? c) * (a ->? b) -> (a ->? c);
+  preds
+    empty: Seq S;
+    finite:Seq S;
+    all : Seq S * Pred(S)
+
+  vars s,t,s2:Seq S; P:Pred S; n:Nat; r:S; Q: Pred(Nat); f,g:S ->? S;
+  . def (min Q) => exists m:Nat. Q m
+  . (exists m:Nat. Q m) => min Q =  0 when Q 0 else min (\ m:Nat. Q (m+1))
+  . start s = min (\m:Nat. def (s m))
+  . head(s) = s(0);
+  . tail(s) = \x:Nat. s(x+1);
+  . head (nf s) = nfh s;
+  . tail (nf s) = nf (nft s);
+  . head (filter s P) = (head s) res P (head s);
+  . tail (filter s P) = filter (tail s) P;
+  . nfh s = s (start s)
+  . nft s = \k:Nat. s (k + 1 + (start s))
+  . finite(s) <=> exists n:Nat. forall m:Nat. m>n => not def(s m);
+  . empty(s) <=> forall m:Nat. not def(s m);
+  . head(concat(s,s2)) = head(s) when not(empty(s)) else head(s2);
+  . tail(concat(s,s2)) = concat(tail(s),s2) when not(empty(s)) else tail(s2);
+  . head (map f s) = f(head(s));
+  . tail (map f s) = map f (tail s);
+  . g o f = \ x . g (f x)               %(o_def)%
+then %implies
+var S: Type
+vars s:Seq S; P:Pred S; n:Nat; f,g:S ->? S;
+  . nf (filter s P) =  filter (nf s) P;
+  . filter (filter s P) P = filter s P
+  . def(nfh(s)) <=> not empty(s);
+  . map (f o g) = (map f) o (map g)
+end

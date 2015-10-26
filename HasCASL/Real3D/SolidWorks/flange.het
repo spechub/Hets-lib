@@ -1,0 +1,43 @@
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/SW get SWDefault
+%% from HasCASL/Real3D/SolidWorks/SWExt get SWExt
+
+%% these imports are only for the reason to have the pattern and the
+%% actual design in one development graph!
+from HasCASL/Real3D/SolidWorks/FlangePattern get FlangePattern, FlangeParams
+from HasCASL/Real3D/SolidWorks/ComputeParams get ComputeParams
+
+spec Component = SWDefault
+then
+     ops
+
+     Vorne:SWPlane = SWPlane(P(0,0,0),V(0,0,1));
+     Oben:SWPlane = SWPlane(P(0,0,0),V(0,1,0));
+     Rechts:SWPlane = SWPlane(P(0,0,0),V(1,0,0));
+
+     Skizze1_0_1:SWCircle = SWCircle(P(0,0,0),P(0.105193523155934,0.0321608875195011,0));
+     Skizze1:SWSketch = SWSketch([Skizze1_0_1],Oben);
+     Ring:SWExtrusion = SWExtrusion(Skizze1,0.02);
+
+     Skizze2_1_2:SWCircle = SWCircle(P(0,0.09,0),P(0.00860674280366732,0.0926313453425046,0));
+     Skizze2:SWSketch = SWSketch([Skizze2_1_2],Oben);
+     Durchgangsloch:SWCut = SWCut(Skizze2);
+
+     Skizze3_0_1:SWCircle = SWCircle(P(0,0,0),P(0.0549875234678745,0.0168113730215574,0));
+     Skizze3:SWSketch = SWSketch([Skizze3_0_1],Oben);
+     Zentralloch:SWCut = SWCut(Skizze3);
+
+%[ only relevant for the revolution. not handled yet.
+     
+     Skizze4_1_1:SWLine = SWLine(P(0.0575,-0.0805,0),P(0.0475,-0.0805,0));
+     Skizze4_2_2:SWLine = SWLine(P(0.0575,-0.0805,0),P(0.0575,0.0165,0));
+     Skizze4_3_3:SWLine = SWLine(P(0.0545,0.0195,0),P(0.0475,0.0195,0));
+     Skizze4_4_4:SWLine = SWLine(P(0.0475,-0.0805,0),P(0.0475,0.0195,0));
+     Skizze4_5_6:SWLine = SWLine(P(0.0575,0.0165,0),P(0.0545,0.0195,0));
+     Skizze4:SWSketch = SWSketch([Skizze4_1_1,Skizze4_2_2,Skizze4_3_3,Skizze4_4_4,Skizze4_5_6],Vorne);
+]%
+end
+
+%% TODO: remove that!
+spec Match = Component and FlangePattern[FlangeParams]

@@ -1,0 +1,111 @@
+library AAL
+
+logic OWL
+
+from OpenAALOntology get httpwwwopenaalorgSAMOntology |-> OpenAAL
+
+spec OurAAL =
+  %% Import the OpenAAL OWL ontology.  The ontology is available for download from http://openaal.org; you can find a local copy in OpenAALOntology.owl.
+  %% TODO specify that application conformance criterion: http://trac.informatik.uni-bremen.de:8080/OntoIOp/ticket/27
+  OpenAAL
+    %% We rename one OpenAAL class to a more intuitive name.
+    with <http://www.openaal.org/SAM/Ontology/person#AP> |-> AssistedPerson
+
+  %% add some classes to OpenAAL; we are still in the OWL logic
+  then {
+    Prefix: ht: <http://www.openaal.org/SAM/Ontology/highLevelThing#>
+    
+    Class: LightSwitch
+      SubClassOf: ht:Device
+    Class: Freezer
+      SubClassOf: ht:Device
+  }
+
+  %% a simple propositional light switch ontology
+  then logic Propositional : {
+    props light_on, person_in_room, dark_outside
+    . light_on <=> person_in_room /\ dark_outside
+  }
+  with PropToOWL %% non-default Propositional to OWL translation
+  then logic OWL : {
+    %% Under the given translation, this means: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room min 1 AssistedPerson".
+    EquivalentClasses: person_in_room,
+      Room that inverse is-in-room min 1 AssistedPerson
+    %% Under the given translation, this means: The propositional variable light_on is true (for one arbitrary but fixed room, see above) iff the given OWL individual is a room in which all light switches (if any) are on, i.e. there is no light switch that is not on.
+    EquivalentClasses: light_on,
+      Room that inverse is-in-room only
+        (not (LightSwitch that has-power-state value Off))
+  }
+
+  %% a simplified remake of the well-known Pizza ontology (http://owl.cs.manchester.ac.uk/tutorials/protegeowltutorial/)
+  then logic OWL : {
+    Individual: Tomato
+    Individual: Mozzarella
+      DifferentFrom: Tomato
+    Class: Topping
+    Class: VegetarianTopping
+      SubClassOf: Topping
+      EquivalentTo: { Tomato, Mozzarella }
+    Class: Pizza
+    ObjectProperty: hasTopping
+      Domain: Pizza
+      Range: Topping
+    Class: VegetarianPizza
+      %% this is slightly over-simplified just for the sake of this example
+      EquivalentTo: Pizza that hasTopping only VegetarianTopping
+    %% TODO connect Pizza to Freezer and to OpenAAL's Oven
+  }
+  
+  %% an RCC-style spatial calculus formalized in first order logic
+  then logic CommonLogic : {
+    . (forall (a1 a2)
+        (or (equal a1 a2)
+            (overlapping a1 a2)
+            (bordering a1 a2)
+            (disconnected a1 a2)
+            (proper_part_of a1 a2)
+            (proper_part_of a2 a1)))
+    %% mutual disjointness of predicates (need this for an exclusive or)
+    . (forall (p)
+        (mutually-disjoint p))
+    . (forall (p q ...)
+       (iff (mutually-disjoint p q ...)
+          (and (forall (...x)
+                  (not (and (p ...x) (q ...x))))
+               (mutually-disjoint p ...)
+               (mutually-disjoint q ...))))
+    %% a utility predicate for talking about inverse relations (similar to owl:inverseOf)
+    . (forall (r x y)
+         (iff ((converse r) x y) (r y x)))
+    %% make the above "or" exclusive
+    . (mutually-disjoint equal overlapping bordering disconnected proper_part_of (converse proper_part_of))
+    %% if some RCC relations hold (so far it would also work in OWL)
+    %% or if there is a door that connects two rooms, then …
+    %% (the latter would only work in OWL if we used an explicit subproperty is-door-of of is-in-room; then we could chain "inverse is-door-of" and "is-door-of", but otherwise we wouldn't be able to restrict the "connecting element" to a Door)
+    . (forall (a1 a2)
+         (if (or (equal a1 a2)
+                 (overlapping a1 a2)
+                 (proper_part_of a1 a2)
+                 (proper_part_of a2 a1)
+                 (exists (door)
+                   (and (Door door)
+                        (is-in-room door a1)
+                        (is-in-room door a2)))
+             )
+             (is-connected-to-room a1 a2)))
+  }
+%% end OurAAL
+
+spec ConcreteScenario = 
+  %% import the TBox from above
+  OurAAL
+  %% now we add our actual ABox
+  then logic OWL : {
+    %% Talk about a concrete pizza.  This item doesn't actually exist in the ProductDB linked open dataset, but we pretend so.
+    Individual: ProductWithEAN4001724819806
+      Facts: hasTopping Tomato, hasTopping Mozzarella
+      %% besides Tomato and Mozzarella this pizza does not have any other toppings
+      %% (note that this is only sufficient because Tomato and Mozzarella have been declared different individuals)
+      Types: hasTopping exactly 2
+  }
+%% end ConcreteScenario

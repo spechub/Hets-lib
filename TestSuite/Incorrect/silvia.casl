@@ -1,0 +1,58 @@
+library silvia
+
+%% Examples provided by Silvia Clerici
+%% showing that compound ids should not be used in parameter specs
+
+spec SET[sort Elem] =
+   type Set[Elem] ::= empty | insert(Elem;Set[Elem])
+end
+
+spec NAT = free type Nat ::= 0 | suc(Nat) end
+
+spec SETNAT = SET[NAT] 
+
+spec DBLSET [sort Elem] = 
+     SET[SET[sort Elem] fit Elem |-> Set[Elem]]
+
+spec BAG[sort Elem] = type Bag[Elem] ::= void | put(Elem;Bag[Elem])
+
+spec BAGSET[sort Elem] = BAG[SET[sort Elem] fit Elem |-> Set[Elem]]
+
+spec SILVIA[BAG[SET[sort Elem] fit Elem |-> Set[Elem]]] = 
+     sort silvia
+end
+
+spec TRY = SET[SET[NAT] fit Elem |-> Set[Nat]]
+
+spec MICHEL= SILVIA[TRY  fit Elem |-> Nat, 
+                         Set[Elem] |-> Set[Nat],
+                         Bag[Set[Elem]] |-> Set[Set[Nat]],
+                         void |-> empty:Set[Set[Nat]], 
+                          put |-> insert:Set[Nat]*
+                                   Set[Set[Nat]] -> Set[Set[Nat]]
+                    ]
+ 
+spec ROSA =
+     SILVIA[SET[SET[NAT] fit Elem |-> Set[Nat]]
+            fit Elem |-> Nat, 
+                Set[Elem] |-> Set[Nat],
+            Bag[Set[Elem]] |-> Set[Set[Nat]],
+            void |-> empty:Set[Set[Nat]], 
+            put |-> insert:Set[Nat]*Set[Set[Nat]] -> Set[Set[Nat]]
+            ]
+
+
+
+spec S1[BAG[sort Elem]] = sort s1
+ end
+spec S2= S1[BAG[NAT]fit Elem |-> Nat]
+
+spec S3[sort Elem]=S1[SET[sort Elem]
+                       fit Bag[Elem] |-> Set[Elem],
+                           void |-> empty,
+                           put |-> insert ]
+
+ spec S4[SET[sort Elem]]=S1[SET[sort Elem]
+                            fit Bag[Elem] |-> Set[Elem],
+                            void |-> empty,
+                            put |-> insert ]

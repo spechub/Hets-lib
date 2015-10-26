@@ -1,0 +1,636 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>CL Rule visualization</title>
+      <style type="text/css">
+div.metadata {margin-left: 2em;margin-bottom: 6pt;}
+div.rule {margin-top: 12pt;border-top: solid black 2pt;}
+
+table.ruled {background: #eeeeee;}
+table.ruled table {background: #dddddd; width: 100%;}
+table.ruled table table {background: #cccccc;}
+table.ruled table table table {background: #bbbbbb;}
+
+/* table included because IE doesn't inherit in table */
+body,table {font-family: Helvetica,sans-serif;
+	    font-size: 10pt;}
+
+.turtle {font-family: Courier,monospace}
+
+.operator {font-family: Courier,monospace;
+	   font-weight: bold;}
+
+.var {font-style: italic;}
+
+table {border: solid gray 1pt;width:100%;}
+.bordered-cell {border: solid gray 1pt;}
+
+table.ruled {border-collapse: collapse}
+table.ruled td,th {border: solid gray 1pt;}
+
+.quantification {text-align: left;}
+
+span.literal:before {content: open-quote;}
+span.literal:after {content: close-quote;}
+      </style>
+   </head>
+   <body>
+      <h1>Data integrity rules: xcl-text-1</h1>
+      <div style="margin-left:24pt;">
+         <h2>Summary</h2>
+         <table class="ruled" style="width:80%;">
+            <col style="width:30%;"/>
+            <col style="width:70%;"/>
+            <tbody>
+               <tr>
+                  <td><a href="#xcl-phrase-1">xcl-phrase-1</a></td>
+                  <td>
+                     <p>Certain constellations of data in system 2 must be valid with respect to corresponding constellations of data in system 1.</p>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+      <div>
+         <div class="rule" id="xcl-phrase-1">
+            <h3>xcl-phrase-1</h3>
+            <p>Certain constellations of data in system 2 must be valid with respect to corresponding constellations of data in system 1.</p>
+            <table>
+               <thead>
+                  <tr>
+                     <th class="quantification">For all <span class="var">thing1</span> (a http://example.com/system2/A), <span class="var">thing2</span> (a http://example.com/system2/B), <span class="var">thing3</span> (a http://example.com/system2/C), <span class="var">var4</span>, <span class="var">var5</span>, <span class="var">var6</span>, <span class="var">var7</span>, <span class="var">var8</span>, <span class="var">var9</span>, <span class="var">var10</span>, <span class="var">var11</span>, <span class="var">var12</span>, <span class="var">var13</span>:
+                     </th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                     <td>
+                        <table class="ruled">
+                           <tbody>
+                              <tr>
+                                 <td>IF</td>
+                                 <td>
+                                    <table style="border-collapse:collapse;">
+                                       <tbody>
+                                          <tr>
+                                             <td rowspan="20"><span class="operator">And</span></td>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel1">rel1</span></span>(<span class="var">thing1</span>, <span class="var">var4</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel2">rel2</span></span>(<span class="var">thing1</span>, <span class="var">var5</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel3">rel3</span></span>(<span class="var">thing1</span>, <span class="var">var12</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel4">rel4</span></span>(<span class="var">thing3</span>, <span class="var">thing2</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel5">rel5</span></span>(<span class="var">thing2</span>, <span class="var">thing1</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel6">rel6</span></span>(<span class="var">thing3</span>, <span class="var">var6</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel7">rel7</span></span>(<span class="var">thing3</span>, <span class="var">var7</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel8">rel8</span></span>(<span class="var">thing3</span>, <span class="var">var13</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td><span class="operator">Not</span></td>
+                                                         <td class="bordered-cell"><span class="var">var13</span> = <span class="literal">X</span></td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td><span class="operator">Not</span></td>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://www.w3.org/2005/xpath-functions/#starts-with">starts-with</span></span>(<span class="var">var6</span>, <span class="literal">lit5</span>)
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td rowspan="2"><span class="operator">Or</span></td>
+                                                         <td class="bordered-cell"><span class="var">var12</span> = <span class="literal">1</span></td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="var">var12</span> = <span class="literal">2</span></td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel9">rel9</span></span>(<span class="var">thing3</span>, <span class="var">var10</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel10">rel10</span></span>(<span class="var">thing3</span>, <span class="var">var11</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table class="ruled">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td>IF</td>
+                                                         <td>
+                                                            <table style="border-collapse:collapse;">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td><span class="operator">Not</span></td>
+                                                                     <td class="bordered-cell"><span class="var">var10</span> = <span class="null">null</span></td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td>THEN</td>
+                                                         <td><span class="predicate"><span title="http://www.w3.org/2005/xpath-functions/#numeric-greater-than">numeric-greater-than</span></span>(<span class="var">var11</span>, <span class="literal">0</span>)
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel11">rel11</span></span>(<span class="var">thing3</span>, <span class="var">var8</span>)
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td><span class="operator">Not</span></td>
+                                                         <td class="bordered-cell">
+                                                            <table>
+                                                               <thead>
+								 <tr>
+								   <th class="quantification">Exists <span class="var">thing14</span> (a http://example.com/system2/D) such that:
+                                                                  </th>
+								 </tr>
+                                                               </thead>
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td>
+                                                                        <table style="border-collapse:collapse;">
+                                                                           <tbody>
+                                                                              <tr>
+                                                                                 <td rowspan="2"><span class="operator">And</span></td>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel12">rel12</span></span>(<span class="var">thing14</span>, <span class="var">thing3</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel13">rel13</span></span>(<span class="var">thing14</span>, <span class="literal">X</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                           </tbody>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td><span class="operator">Not</span></td>
+                                                         <td class="bordered-cell">
+                                                            <table>
+                                                               <thead>
+								 <tr>
+								   <th class="quantification">Exists <span class="var">thing15</span> (a http://example.com/system2/E) such that:
+								   </th>
+								 </tr>
+                                                               </thead>
+							       <tbody>
+                                                                  <tr>
+                                                                     <td>
+                                                                        <table style="border-collapse:collapse;">
+                                                                           <tbody>
+                                                                              <tr>
+                                                                                 <td rowspan="3"><span class="operator">And</span></td>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel14">rel14</span></span>(<span class="var">thing15</span>, <span class="var">var6</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel15">rel15</span></span>(<span class="var">thing15</span>, <span class="var">var5</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel16">rel16</span></span>(<span class="var">thing15</span>, <span class="literal">X</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                           </tbody>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table>
+                                                   <thead>
+						     <tr>
+						       <th class="quantification">Exists <span class="var">thing16</span> (a http://example.com/system1/A), <span class="var">thing17</span> (a http://example.com/system1/B) such that:
+						       </th>
+						     </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                      <tr>
+                                                         <td>
+                                                            <table style="border-collapse:collapse;">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td rowspan="2"><span class="operator">And</span></td>
+                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel1">rel1</span></span>(<span class="var">thing16</span>, <span class="var">thing17</span>)
+                                                                     </td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel2">rel2</span></span>(<span class="var">thing17</span>, <span class="var">var4</span>)
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell">
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td><span class="operator">Not</span></td>
+                                                         <td class="bordered-cell">
+                                                            <table>
+                                                               <thead>
+								 <tr>
+								   <th class="quantification">Exists <span class="var">thing18</span> (a http://example.com/system2/F), <span class="var">var19</span> such that:
+								   </th>
+								 </tr>
+                                                               </thead>
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td>
+                                                                        <table style="border-collapse:collapse;">
+                                                                           <tbody>
+                                                                              <tr>
+                                                                                 <td rowspan="3"><span class="operator">And</span></td>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel17">rel17</span></span>(<span class="var">thing3</span>, <span class="var">thing18</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                 <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system2/rel18">rel18</span></span>(<span class="var">thing18</span>, <span class="var">var19</span>)
+                                                                                 </td>
+                                                                              </tr>
+                                                                              <tr>
+                                                                                 <td class="bordered-cell">
+                                                                                    <table style="border-collapse:collapse;">
+                                                                                       <tbody>
+                                                                                          <tr>
+                                                                                             <td><span class="operator">Not</span></td>
+                                                                                             <td class="bordered-cell"><span class="var">var19</span> = <span class="null">null</span></td>
+                                                                                          </tr>
+                                                                                       </tbody>
+                                                                                    </table>
+                                                                                 </td>
+                                                                              </tr>
+                                                                           </tbody>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                          <tr>
+                                             <td class="bordered-cell"></td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                              <tr>
+                                 <td>THEN</td>
+                                 <td>
+                                    <table>
+				      <thead>
+					<tr>
+					  <th class="quantification">Exists <span class="var">thing20</span> (a http://example.com/system1/A), <span class="var">thing21</span> (a http://example.com/system1/B), <span class="var">thing22</span> (a http://example.com/system1/B), <span class="var">var23</span>, <span class="var">var24</span>, <span class="var">var25</span> such that:
+					  </th>
+					</tr>
+				      </thead>
+				      <tbody>
+					<tr>
+                                             <td>
+                                                <table style="border-collapse:collapse;">
+                                                   <tbody>
+                                                      <tr>
+                                                         <td rowspan="14"><span class="operator">And</span></td>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel2">rel2</span></span>(<span class="var">thing21</span>, <span class="var">var4</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel3">rel3</span></span>(<span class="var">thing21</span>, <span class="literal">true</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel4">rel4</span></span>(<span class="var">thing21</span>, <span class="var">var23</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell">
+                                                            <table style="border-collapse:collapse;">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td><span class="operator">Not</span></td>
+                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://www.w3.org/2005/xpath-functions/#starts-with">starts-with</span></span>(<span class="var">var23</span>, <span class="literal">lit4</span>)
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell">
+                                                            <table style="border-collapse:collapse;">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td rowspan="3"><span class="operator">Or</span></td>
+                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel2">rel2</span></span>(<span class="var">thing22</span>, <span class="var">var6</span>)
+                                                                     </td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                     <td class="bordered-cell">
+                                                                        <table>
+                                                                           <thead>
+									     <tr>
+                                                                              <th class="quantification">Exists <span class="var">thing26</span> (a http://example.com/system1/C), <span class="var">thing27</span> (a http://example.com/system1/B) such that:
+                                                                              </th>
+									     </tr>
+                                                                           </thead>
+                                                                           <tbody>
+                                                                              <tr>
+                                                                                 <td>
+                                                                                    <table style="border-collapse:collapse;">
+                                                                                       <tbody>
+                                                                                          <tr>
+                                                                                             <td rowspan="2"><span class="operator">And</span></td>
+                                                                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel2">rel2</span></span>(<span class="var">thing27</span>, <span class="var">var6</span>)
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                             <td class="bordered-cell">
+                                                                                                <table style="border-collapse:collapse;">
+                                                                                                   <tbody>
+                                                                                                      <tr>
+                                                                                                         <td rowspan="2"><span class="operator">Or</span></td>
+                                                                                                         <td class="bordered-cell">
+                                                                                                            <table style="border-collapse:collapse;">
+                                                                                                               <tbody>
+                                                                                                                  <tr>
+                                                                                                                     <td rowspan="2"><span class="operator">And</span></td>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel5">rel5</span></span>(<span class="var">thing26</span>, <span class="var">thing27</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                                  <tr>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel6">rel6</span></span>(<span class="var">thing26</span>, <span class="var">thing22</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                               </tbody>
+                                                                                                            </table>
+                                                                                                         </td>
+                                                                                                      </tr>
+                                                                                                      <tr>
+                                                                                                         <td class="bordered-cell">
+                                                                                                            <table style="border-collapse:collapse;">
+                                                                                                               <tbody>
+                                                                                                                  <tr>
+                                                                                                                     <td rowspan="2"><span class="operator">And</span></td>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel6">rel6</span></span>(<span class="var">thing26</span>, <span class="var">thing27</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                                  <tr>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel5">rel5</span></span>(<span class="var">thing26</span>, <span class="var">thing22</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                               </tbody>
+                                                                                                            </table>
+                                                                                                         </td>
+                                                                                                      </tr>
+                                                                                                   </tbody>
+                                                                                                </table>
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                       </tbody>
+                                                                                    </table>
+                                                                                 </td>
+                                                                              </tr>
+                                                                           </tbody>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                     <td class="bordered-cell">
+                                                                        <table>
+                                                                           <thead>
+									     <tr>
+									       <th class="quantification">Exists <span class="var">thing28</span> (a http://example.com/system1/D), <span class="var">thing29</span> (a http://example.com/system1/B), <span class="var">thing30</span> (a http://example.com/system1/E) such that:
+									       </th>
+									     </tr>
+                                                                           </thead>
+                                                                           <tbody>
+                                                                              <tr>
+                                                                                 <td>
+                                                                                    <table style="border-collapse:collapse;">
+                                                                                       <tbody>
+                                                                                          <tr>
+                                                                                             <td rowspan="4"><span class="operator">And</span></td>
+                                                                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel7">rel7</span></span>(<span class="var">thing30</span>, <span class="var">thing21</span>)
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel8">rel8</span></span>(<span class="var">thing28</span>, <span class="var">thing30</span>)
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                             <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel2">rel2</span></span>(<span class="var">thing29</span>, <span class="var">var6</span>)
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                          <tr>
+                                                                                             <td class="bordered-cell">
+                                                                                                <table style="border-collapse:collapse;">
+                                                                                                   <tbody>
+                                                                                                      <tr>
+                                                                                                         <td rowspan="2"><span class="operator">Or</span></td>
+                                                                                                         <td class="bordered-cell">
+                                                                                                            <table style="border-collapse:collapse;">
+                                                                                                               <tbody>
+                                                                                                                  <tr>
+                                                                                                                     <td rowspan="2"><span class="operator">And</span></td>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel9">rel9</span></span>(<span class="var">thing30</span>, <span class="var">thing22</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                                  <tr>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel10">rel10</span></span>(<span class="var">thing28</span>, <span class="var">thing29</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                               </tbody>
+                                                                                                            </table>
+                                                                                                         </td>
+                                                                                                      </tr>
+                                                                                                      <tr>
+                                                                                                         <td class="bordered-cell">
+                                                                                                            <table style="border-collapse:collapse;">
+                                                                                                               <tbody>
+                                                                                                                  <tr>
+                                                                                                                     <td rowspan="2"><span class="operator">And</span></td>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel9">rel9</span></span>(<span class="var">thing30</span>, <span class="var">thing29</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                                  <tr>
+                                                                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel10">rel10</span></span>(<span class="var">thing28</span>, <span class="var">thing22</span>)
+                                                                                                                     </td>
+                                                                                                                  </tr>
+                                                                                                               </tbody>
+                                                                                                            </table>
+                                                                                                         </td>
+                                                                                                      </tr>
+                                                                                                   </tbody>
+                                                                                                </table>
+                                                                                             </td>
+                                                                                          </tr>
+                                                                                       </tbody>
+                                                                                    </table>
+                                                                                 </td>
+                                                                              </tr>
+                                                                           </tbody>
+                                                                        </table>
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel1">rel1</span></span>(<span class="var">thing20</span>, <span class="var">thing21</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel11">rel11</span></span>(<span class="var">thing20</span>, <span class="var">thing22</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel12">rel12</span></span>(<span class="var">thing20</span>, <span class="var">var5</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel13">rel13</span></span>(<span class="var">thing20</span>, <span class="var">var7</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel14">rel14</span></span>(<span class="var">thing20</span>, <span class="var">var24</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell">
+                                                            <table class="ruled">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td>IF</td>
+                                                                     <td><span class="var">var9</span> = <span class="literal">lit1</span></td>
+                                                                  </tr>
+                                                                  <tr>
+                                                                     <td>THEN</td>
+                                                                     <td><span class="var">var24</span> = <span class="literal">lit1</span></td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel15">rel15</span></span>(<span class="var">thing22</span>, <span class="literal">lit2</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell"><span class="predicate"><span title="http://example.com/system1/rel16">rel16</span></span>(<span class="var">thing22</span>, <span class="var">var25</span>)
+                                                         </td>
+                                                      </tr>
+                                                      <tr>
+                                                         <td class="bordered-cell">
+                                                            <table style="border-collapse:collapse;">
+                                                               <tbody>
+                                                                  <tr>
+                                                                     <td><span class="operator">Not</span></td>
+                                                                     <td class="bordered-cell"><span class="predicate"><span title="http://www.w3.org/2005/xpath-functions/#starts-with">starts-with</span></span>(<span class="var">var25</span>, <span class="literal">lit3</span>)
+                                                                     </td>
+                                                                  </tr>
+                                                               </tbody>
+                                                            </table>
+                                                         </td>
+                                                      </tr>
+                                                   </tbody>
+                                                </table>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </body>
+</html>

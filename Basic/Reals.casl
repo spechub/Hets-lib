@@ -1,0 +1,339 @@
+library Basic/Reals
+%% first-order theory of real numbers (approximation only!)
+%% for the full theory of the real numbers, see HasCASL/Reals
+
+%prec( { __^__, __>__, __>=__ } < { __!__ } )%
+
+from Basic/Numbers get Nat, Int, Rat
+
+from Basic/Algebra_I get Field, ExtField
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
+
+spec
+     CommutativeField =
+     Field with sort Elem, ops 0, e |-> 1, __+__, __ * __
+then
+     op
+           __ * __ : Elem * Elem -> Elem,
+                     comm
+end
+
+spec
+     ExtCommutativeField
+     [CommutativeField with
+      sort Elem,
+      ops 0, 1, __+__, __ * __
+     ] =
+%def
+     ExtField [Field]
+end
+
+spec
+       OrderedField =
+       CommutativeField and TotalOrder
+then
+       vars
+              a,b,c:Elem
+       .              a+c <= b+c if a <= b
+       .              a*c <= b*c if a <= b /\ 0 <= c
+end
+
+spec
+       ExtOrderedField [OrderedField] =
+       ExtCommutativeField[CommutativeField]
+and    ExtTotalOrder[TotalOrder]
+end
+
+spec
+       ArchimedianField =
+       OrderedField and Nat
+then
+       sort
+              Nat < Elem
+       %%              The embedding is determined by overloading of 0,1,+,<
+       var
+              x:Elem
+       .              exists n:Nat . x<=n
+end
+
+spec ExtArchimedianField[ArchimedianField] =
+    ExtOrderedField[OrderedField]
+and ExtTotalOrder[TotalOrder]
+and Int
+then
+       sort Int < Elem
+       ops
+               __ ^ __ :
+                        Elem * Nat -> Elem;
+               -__ , abs:
+                        Elem -> Elem;
+               trunc :
+                        Elem -> Nat;
+               sign :
+                        Elem -> Int
+
+       vars
+              n : Nat; r:Elem
+       %%              rn:
+       .              r ^ 0 = 1
+       .              r ^ suc(n) = r * (r ^ n)
+       %%              -r:
+       .              -r = 0-r
+       %%              abs(r):
+       .              abs(r) = r if r >= 0
+       .              abs(r) = -r if r < 0
+       %%              trunc(r):
+       .              trunc(r) <= r
+       .              r < trunc(r)+1
+       %%              sign(r):
+       .              sign(r)= -1 if r<0
+       .              sign(0)=0
+       .              sign(r)=1 if r>0;
+then
+       %%              Sequences and sequence combinators:
+       sort
+              Sequence
+       preds
+               isNat,
+               isInt,
+               nonZero:
+                        Elem;
+
+       ops
+               __ ! __ :
+                                  Sequence * Nat -> Elem;
+               constSeq:
+                                  Elem -> Sequence;
+               N,0,1,2 :
+                                  Sequence ;
+               __+__,__-__, __*__:
+                                  Sequence * Sequence -> Sequence;
+               __ ^ __ , __/__ ,
+               __div__,__mod__ :
+                                  Sequence * Sequence ->? Sequence;
+               -__, trunc, sign :
+                                  Sequence -> Sequence;
+               __! :
+                                  Sequence ->? Sequence;
+               partialSums :
+                                  Sequence -> Sequence;
+               ifnz__theN__elsE__ :
+                                  Sequence * Sequence * Sequence -> Sequence;
+               __>__,__ >= __,
+               __==__ :
+                                  Sequence * Sequence -> Sequence
+
+       vars
+              n:Nat; r:Elem; a,b,c,d:Sequence
+       .              isNat(r) <=> r in Nat
+       .              isInt(r) <=> r in Int
+       .              nonZero(r) <=> not r=0
+       %%              defining the constant sequence r,r,r, ...:
+       .              constSeq(r)!n = r
+       %%              defining the identity sequence 0,1,2,3, ...:
+       .              N!n = n
+       %%              defining the sequences 0= 0, 0, 0, ...,
+       %%              1=1,1,1 ... and 2 = 2,2,2, ...:
+       .              0 = constSeq(0)
+       .              1 = constSeq(1)
+       .              2 = constSeq(2)
+       %%              add, subtract, multiyply sequences componentwise:
+       .              (a+b)!n = a!n + b!n
+       .              (a-b)!n = a!n - b!n
+       .              (a*b)!n = a!n * b!n
+       %%              power function for sequences:
+       .              def (a ^ b) <=> forall k: Nat . isNat(b!k)
+       .              (a ^ b)!n = a!n ^ ((b!n) as Nat) if def (a ^ b)
+       %%              devide sequences componentwise:
+       .              def (a/b) <=> forall k: Nat . nonZero(b!k)
+       .              (a/b)!n = a!n / b!n if def a/b
+       %%              div componentwise:
+       .               def (a div b) <=>
+                               forall k:Nat .                               isInt(a!k) /\ isInt(b!k) /\ nonZero(b!k)
+
+       .              (a div b)!n = ((a!n) as Int) div ((b!n) as Int) if def (a div b)
+       %%              mod componentwise:
+       .               def (a mod b) <=>
+                                forall k:Nat .                                isInt(a!k) /\ isInt(b!k) /\ nonZero(b!k)
+
+       .              (a mod b)!n = ((a!n) as Int) mod ((b!n) as Int) if def(a mod b)
+       %%              invert all elements of a sequence:
+       .              (-a)!n = -(a!n)
+       %%              trunc:
+       .              trunc(a)!n = trunc(a!n)
+       %%              sign:
+       .              sign(a)!n = sign(a!n)
+       %%              factorial function for sequences:
+       .              def(a!) <=> forall k: Nat . isNat(a!k)
+       .              (a!)!n = ((a!n) as Nat)! if def (a!)
+       %%              partial sums of a sequence:
+       %%              a!i := a!0 + a!1 + ...+ a!i
+       .              partialSums(a)!0 = a!0
+       .              partialSums(a)!suc(n) = partialSums(a)!n + a!suc(n)
+       %%              if-then-else for sequences:
+       .               (ifnz a theN b elsE c) !n =
+                                     b!n when nonZero(a!n) else
+                                     c!n
+
+       %%              comparison functions, 1 represents true, 0 represents false:
+       .              (a > b)!n = 1 when a!n > b!n else 0
+       .              (a >= b) !n = 1 when a!n >= b!n else 0
+       .              (a==b)!n = 1 when a!n = b!n else 0
+then
+       %%              Polynomials:
+       pred
+              __ isZeroAfter __ : Sequence * Nat
+       vars
+              s: Sequence; n: Nat
+       .              s isZeroAfter n <=> forall m: Nat . m>n => s!m=0
+       sort
+              Polynom = { p:Sequence . exists n:Nat . p isZeroAfter n }
+       op
+              degree : Polynom -> Int
+       var
+              p:Polynom; n:Nat
+       .              degree(p)=n <=> nonZero(p!n) /\ p isZeroAfter n
+       .              degree(0 as Polynom) = -1
+then
+       %%              Convergence, infinite sums, and Cauchy sequences:
+       ops
+              lim,sum : Sequence ->? Elem
+       preds
+               __ -> __ :
+                                 Sequence * Elem;
+               converges,isCauchy :
+                                 Sequence
+
+       vars
+              r:Elem; a:Sequence
+       %%              Convergence of a sequence:
+       .               a->r <=>
+                         forall epsilon:Elem . exists n:Nat . forall m:Nat .                         m >= n => abs(a!m - r) < epsilon
+
+       .              lim(a)=r <=> a->r
+       .              converges(a) <=> def lim(a)
+       %%              infinite sums:
+       .              sum(a) = lim(partialSums(a))
+       %%              Cauchy sequences:
+       .               isCauchy(a) <=>
+                              forall epsilon:Elem . exists n:Nat . forall m,k:Nat .                              m >= n /\ k >= n => abs(a!m - a!k) < epsilon
+
+then
+       %%              Algebraic closedness of the field:
+       var
+              p:Polynom
+       .              odd(degree(p)) => exists x:Elem . sum(p * (constSeq(x) ^ N))=0
+then
+       %%              completeness axiom:
+       var
+              a:Sequence
+       .              isCauchy(a) => converges(a)
+end
+
+
+spec BasicReal =
+  ArchimedianField with Elem |-> Real
+  and Rat
+end
+
+spec
+ExtBasicReal[BasicReal] =
+  { ExtArchimedianField[ArchimedianField] with Elem |-> Real }
+then
+       ops
+               exp :
+                                         Real -> Real;
+               ln,sqrt :
+                                         Real ->? Real;
+               e :
+                                         Real;
+               __ ^ __ :
+                                         Real * Real ->? Real;
+               sin, cos, sinh, cosh :
+                                         Real -> Real;
+               tan, cot, arcsin, arccos,
+               arctan, arccot, tanh, coth,
+               arsinh, arcosh, artanh, arcoth :
+                                         Real ->? Real;
+               pi :
+                                         Real;
+
+       vars
+              x,y:Real
+       %%              we use Taylor series for exp, ln, sin, cos, arcsin -
+       %%              the other functions can be defined in terms of these:
+       %%              exp(x), e:
+       .              exp(x) = sum( constSeq(x) ^ N / (N !) )
+       .              e = exp(1)
+       %%              ln(x):
+       .              def ln(x) <=> x > 0
+       .               ln(x) = sum(
+                          constSeq(x-1) ^ (2*N+1) /
+                          ( (2*N+1) * (constSeq(x+1) ^ (2*N+1)) ))
+                          if def ln(x)
+
+       %%              x ^ y:
+       .              def x ^ y <=> x > 0
+       .              x ^ y = exp(ln(x)*y)
+       %%              sqrt(x):
+       .              def sqrt(x) <=> x >= 0
+       .              sqrt(0) = 0
+       .              sqrt(x) = x ^ (1/2) if x>0
+       %%              sin(x) and cos(x):
+       .              sin(x) = sum( ((-1) ^ N * constSeq(x) ^ (2*N+1)) / (2*N+1)! )
+       .              cos(x) = sum( ((-1) ^ N * constSeq(x) ^ (2*N)) / (2*N)! )
+       %%              tan(x) and cot(x):
+       .              def tan(x) <=> not exists z: Int . x= (2*z+1) * (pi/2)
+       .              tan(x) = sin(x) / cos(x) if def tan(x)
+       .              def cot(x) <=> not exists z: Int . x= 2* z * (pi/2)
+       .              cot(x) = cos(x) / sin(x) if def cot(x)
+       %%              arcsin(x) and pi:
+       .              def arcsin(x) <=> abs(x) <= 1
+       .               arcsin(x) = sum(
+                              ((2*N+1)! * constSeq(x)^(2*N+1)) /
+                              ((2*N+1)* 2^(2*N-1) * (N-1)! * N!)) if def arcsin(x)
+
+       .              pi = 4*arcsin(sqrt(1/2))
+       .              arcsin(1) = pi/2
+       .              arcsin(-1) = -pi/2
+       %%              arccos(x):
+       .              def arccos(x) <=> abs(x) <= 1
+       .              arccos(x) = pi/2-arcsin(x) if def arccos(x)
+       %%              cyclometric functions:
+       .              arctan(x) = arcsin(x/sqrt(1+x ^ 2))
+       .              arccot(x) = arccos(x/sqrt(1+x ^ 2))
+       %%              hyperbolic functions:
+       .              sinh(x) = (exp(x)-exp(-x))/2
+       .              cosh(x) = (exp(x)+exp(-x))/2
+       .              tanh(x) = sinh(x)/cosh(x)
+       .              coth(x) = cosh(x)/sinh(x)
+       %%              area functions:
+       .              arsinh(x) = ln(x+sqrt(x ^ 2+1))
+       .              arcosh(x) = arsinh(sqrt(x ^ 2+1))
+       .              artanh(x) = arsinh(x/sqrt(1-x ^ 2))
+       .              arcoth(x) = arsinh(1/sqrt(x ^ 2-1))
+end
+
+view
+       CommutativeField_in_BasicReal :
+       CommutativeField to ExtBasicReal[BasicReal] =
+       sorts
+               Elem |-> Real,
+
+       ops
+               0 |-> 0,
+               1 |-> 1,
+               __+__ |-> __+__,
+               __*__ |-> __*__
+
+end
+
+view
+       TotalOrder_in_BasicReal :
+TotalOrder
+       to ExtBasicReal[BasicReal] =
+       sort
+              Elem |-> Real,
+       pred
+              __ <= __ |-> __ <= __
+end

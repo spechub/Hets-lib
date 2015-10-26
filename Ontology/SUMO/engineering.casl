@@ -1,0 +1,1592 @@
+
+%{termFormat
+"Associates a concept with a natural language text."}%
+sort U
+ops AbsoluteValueFn, Abstract, AcrossVariableAccumulator,
+    AcrossVariableSource, Agent, AlgebraicAttribute, AlgebraicEquation,
+    AlgebroDifferentialAttribute, Amplifier, AngularVelocity,
+    ApplicationDomain, ArticleCategory, AstronomyDomain,
+    AsymmetricRelation, AttrFn, Attribute, Autonomous, Backlashless,
+    Base, Battery, BesselsEquation, BinaryFunction, BjtTransistor,
+    BridgeSinglePhaseRectifier, Brushless, Capacitor, CapacitorElement,
+    Car, CircuitTheoryDomain, Class, Collector, Compliance, Computer,
+    ComputerDirectory, ComputerFile, ComputerProgram, Conductivity,
+    Conductor, ConductorSubstance, ContentBearingObject,
+    ControlDesignMethod, ControlDomain, Controller, CosineFn, Current,
+    Cylinder, DCPowerSource, DamperElement, DcMotor,
+    DifferentialAttribute, DifferentialEquation, Dimensionless, Diode,
+    DirectionalControlValve, Discretization, Dissipator,
+    DocumentCategory, DoublerSinglePhaseRectifier, DynamicMultipole,
+    Electrical, ElectricalCircuit, ElectricalComponent,
+    ElectricalDevice, ElectricalDrivesDomain,
+    ElectricalEngineeringDomain, ElectricalEngineeringMethod,
+    ElectricalMotor, ElectricalMultipoleModel, ElectricalProcess,
+    ElectricalResonance, ElectricalTwopole,
+    ElectroMechanicalDevicesDomain, ElectronicsDomain, Emitter,
+    EngineeringComponent, EngineeringDomain, EngineersProcess,
+    EngineersSubprocess, Equation, EquationAttribute, FetTransistor,
+    FileSystem, FirstOrderDifferentialEquation, FluidPower,
+    FluidPowerDevice, FluidPowerDomain, Force, FourierAnalysis,
+    FourierSynthesis, Fourpole, FrequencyFilter, Friction, Gear,
+    GearTrain, Gearbox, Group, Gyrator, HalfWaveSinglePhaseRectifier,
+    HigherOrderDifferentialEquation, Human, ITAgent, ITProcess,
+    IdealOperationalAmplifier, IdealSwitch, IdealTwopole,
+    IndependentMultipole, Inductance, InductionMotor, Inductor,
+    InductorElement, Inertor, Installation, InsulatorSubstance,
+    IntentionalProcess, InternalAttribute, InvertingAmplifier,
+    JfetTransistor, LED, Law, Length, LexAdjective, LexAdverb, LexNoun,
+    LexVerb, LexiconCategory, LibraryModelCategory, LinearEquation,
+    LinearMultipole, MathematicalMethod, MathematicalModel,
+    MathematicalPendulum, MathematicsDomain, MechanicalDevice,
+    MechanicalEngineeringDomain, MechanicalProcess,
+    MechanicalResonance, MechanicsDomain, Method, Model, Modeling,
+    MosfetTransistor, Motor, Multipole, MultipoleAttribute,
+    MultipoleDiagram, MultipoleModel, MultipoleModeling, MultipolePole,
+    MultipolePort, MultipolePostulate, MultipoleQuantity,
+    MultipoleSection, MultipoleVariable, MutualInductance,
+    NaturalProcess, NaturalSciencesDomain, NewtonsFirstLaw, NewtonsLaw,
+    NewtonsSecondLaw, NewtonsThirdLaw, NoninvertingAmplifier,
+    Nonlinear, NonlinearCircuit, NonlinearEquation, NpnTransistor,
+    Number, Object, OperatingSystem, OperationalAmplifier,
+    OrdinaryDifferentialEquation, ParallelResonance,
+    PartialDifferentialEquation, PartialOrderingRelation, Pendulum,
+    PermanentMagnetDcMotor, PhysicalAttribute, PhysicalDimension,
+    PhysicalDomain, PhysicsDomain, PnpTransistor,
+    PostulateOfContinuity, Power, PowerElectronicsDomain, PowerSource,
+    Pressure, PressureControlValve, Procedure, Process, Proposition,
+    PureTwopole, Pwm, Quantity, QuaternaryRelation, RCCircuit,
+    RLCCircuit, RLCircuit, Rectifier, Relation, Relay, RelaysDomain,
+    ReliefValve, Resistivity, Resistor, ResistorElement, Resonance,
+    RootLocus, Rotary, Rotor, ScienceDomain, SemiconductorComponent,
+    SeparatelyExcitedDcMotor, SeriesResonance, Set, SetOfEquations,
+    SetOrClass, Shaft, SineFn, SinglePhasePowerSource,
+    SinglePhaseRectifier, SingleValuedRelation, SolvedExampleCategory,
+    Source, SpoolValve, Spring, SpringElement, Stator, Stiffness,
+    Substance, SymbolicString, SystemDesign, SystemSpecification,
+    Technique, Terminal, TernaryRelation, ThreePhasePowerSource,
+    ThreePhaseRectifier, ThroughVariableAccumulator,
+    ThroughVariableSource, Thyristor, Torque, Transducer, Transformer,
+    TransformerDevice, Transistor, TransitiveRelation, Translatory,
+    TranslatoryTwopole, Truck, TutorialCategory, Twopole, Twoport,
+    UnInstallation, UnknownDomainDevice, Valve, VanderpolsEquation,
+    Vehicle, Velocity, Voltage, VolumeControlValve, VolumeFlow,
+    WebDocument, WebDocumentAttribute, ZenerDiode, a_1, a_2, a_3,
+    a_Quot_B_J_T_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_B_e_s_s_e_l_'_s_Space_e_q_u_a_t_i_o_n_Quot,
+    a_Quot_D_C_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot,
+    a_Quot_D_C_Space_m_o_t_o_r_Quot,
+    a_Quot_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_F_o_u_r_i_e_r_Space_a_n_a_l_y_s_i_s_Quot,
+    a_Quot_F_o_u_r_i_e_r_Space_s_y_n_t_h_e_s_i_s_Quot,
+    a_Quot_J_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_f_i_r_s_t_RBrace_Space_l_a_w_Quot,
+    a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_s_e_c_o_n_d_RBrace_Space_l_a_w_Quot,
+    a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_t_h_i_r_d_RBrace_Space_l_a_w_Quot,
+    a_Quot_LBrace_V_a_n_Space_d_e_r_Space_P_o_l_'_s_RBrace_Space_e_q_u_a_t_i_o_n_Quot,
+    a_Quot_LBrace_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_RBrace_Space_a_c_c_u_m_u_l_a_t_o_r_Quot,
+    a_Quot_LBrace_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_RBrace_Space_s_o_u_r_c_e_Quot,
+    a_Quot_LBrace_c_o_m_p_u_t_e_r_Space_p_r_o_g_r_a_m_RBrace_Quot,
+    a_Quot_LBrace_d_e_s_i_g_n_Space_o_f_RBrace_Space_s_y_s_t_e_m_Quot,
+    a_Quot_LBrace_d_i_r_e_c_t_i_o_n_a_l_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot,
+    a_Quot_LBrace_e_l_e_c_t_r_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_RBrace_Space_m_e_t_h_o_d_Quot,
+    a_Quot_LBrace_f_i_l_e_Space_s_y_s_t_e_m_RBrace_Quot,
+    a_Quot_LBrace_f_l_u_i_d_Space_p_o_w_e_r_RBrace_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot,
+    a_Quot_LBrace_f_l_u_i_d_Space_p_o_w_e_r_RBrace_Space_d_e_v_i_c_e_Quot,
+    a_Quot_LBrace_p_e_r_m_a_n_e_n_t_Space_m_a_g_n_e_t_RBrace_Space_D_C_Space_m_o_t_o_r_Quot,
+    a_Quot_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot,
+    a_Quot_LBrace_p_o_l_e_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot,
+    a_Quot_LBrace_p_o_r_t_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot,
+    a_Quot_LBrace_p_r_e_s_s_u_r_e_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot,
+    a_Quot_LBrace_r_o_o_t_Space_l_o_c_u_s_RBrace_Quot,
+    a_Quot_LBrace_s_e_c_t_i_o_n_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot,
+    a_Quot_LBrace_s_e_p_a_r_a_t_e_l_y_Space_e_x_c_i_t_e_d_RBrace_Space_D_C_Space_m_o_t_o_r_Quot,
+    a_Quot_LBrace_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_RBrace_Space_a_c_c_u_m_u_l_a_t_o_r_Quot,
+    a_Quot_LBrace_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_RBrace_Space_s_o_u_r_c_e_Quot,
+    a_Quot_LBrace_u_n_k_n_o_w_n_Space_d_o_m_a_i_n_RBrace_Space_d_e_v_i_c_e_Quot,
+    a_Quot_LBrace_v_o_l_u_m_e_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot,
+    a_Quot_L_E_D_Quot,
+    a_Quot_M_O_S_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_N_P_N_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_N_e_w_t_o_n_'_s_Space_l_a_w_Quot,
+    a_Quot_P_N_P_Space_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_Percent_1_Space_a_n_d_Space_Percent_2_Space_f_o_r_m_Space_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_Space_Percent_3_Quot,
+    a_Quot_Percent_1_Space_c_a_n_Space_b_e_Space_u_s_e_d_Space_a_s_Space_a_Space_m_o_d_e_l_Space_f_o_r_Space_Percent_2_Quot,
+    a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_Percent_2_Space_a_s_Space_a_Space_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_Quot,
+    a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_Percent_2_Space_a_s_Space_a_n_Space_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_Quot,
+    a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_d_i_m_e_n_s_i_o_n_Space_Percent_2_Quot,
+    a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_v_a_r_i_a_b_l_e_Space_Percent_2_Quot,
+    a_Quot_Percent_1_Space_i_s_Space_Percent_n_Space_a_Space_Amp_Percent_p_a_r_t_Space_o_f_Space_Percent_2_Quot,
+    a_Quot_Percent_1_Space_i_s_Space_Percent_n_Space_a_Space_m_e_r_o_n_y_m_Space_o_f_Space_Percent_2_Quot,
+    a_Quot_R_C_Space_c_i_r_c_u_i_t_Quot,
+    a_Quot_R_L_C_Space_c_i_r_c_u_i_t_Quot,
+    a_Quot_R_L_Space_c_i_r_c_u_i_t_Quot, a_Quot_a_b_s_Quot,
+    a_Quot_a_b_s_o_l_u_t_e_Space_v_a_l_u_e_Quot,
+    a_Quot_a_l_g_e_b_r_a_i_c_Quot,
+    a_Quot_a_l_g_e_b_r_o_Minus_d_i_f_f_e_r_e_n_t_i_a_l_Quot,
+    a_Quot_a_m_p_l_i_f_i_e_r_Quot,
+    a_Quot_a_p_p_l_i_c_a_t_i_o_n_Space_d_o_m_a_i_n_Quot,
+    a_Quot_a_r_t_i_c_l_e_Quot, a_Quot_a_s_t_r_o_n_o_m_y_Quot,
+    a_Quot_a_u_t_o_n_o_m_o_u_s_Quot,
+    a_Quot_a_u_t_o_n_o_m_o_u_s_l_y_Quot,
+    a_Quot_b_a_c_k_l_a_s_h_l_e_s_s_Quot, a_Quot_b_a_s_e_Quot,
+    a_Quot_b_r_i_d_g_e_Space_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot,
+    a_Quot_b_r_u_s_h_l_e_s_s_Quot, a_Quot_c_a_p_a_c_i_t_o_r_Quot,
+    a_Quot_c_a_r_Quot, a_Quot_c_i_r_c_u_i_t_Space_t_h_e_o_r_y_Quot,
+    a_Quot_c_o_l_l_e_c_t_o_r_Quot, a_Quot_c_o_m_p_u_t_e_r_Quot,
+    a_Quot_c_o_n_d_u_c_t_o_r_Quot, a_Quot_c_o_n_t_r_o_l_Quot,
+    a_Quot_c_o_s_Quot, a_Quot_c_o_s_i_n_u_s_Quot,
+    a_Quot_c_y_l_i_n_d_e_r_Quot, a_Quot_d_a_m_p_e_r_Quot,
+    a_Quot_d_i_f_f_e_r_e_n_t_i_a_l_Quot,
+    a_Quot_d_i_m_e_n_s_i_o_n_l_e_s_s_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_i_m_e_n_s_i_o_n_RBrace_Quot,
+    a_Quot_d_i_o_d_e_Quot, a_Quot_d_i_r_e_c_t_o_r_y_Quot,
+    a_Quot_d_i_s_c_r_e_t_i_z_a_t_i_o_n_Quot,
+    a_Quot_d_i_s_c_r_e_t_i_z_e_Quot, a_Quot_d_o_c_u_m_e_n_t_Quot,
+    a_Quot_d_o_c_u_m_e_n_t_Space_c_a_t_e_g_o_r_y_Quot,
+    a_Quot_d_o_m_a_i_n_Quot,
+    a_Quot_d_o_m_a_i_n_Space_o_f_Space_i_n_t_e_r_e_s_t_Quot,
+    a_Quot_d_o_u_b_l_e_r_Space_r_e_c_t_i_f_i_e_r_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_c_i_r_c_u_i_t_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_d_r_i_v_e_s_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_m_o_t_o_r_Quot,
+    a_Quot_e_l_e_c_t_r_i_c_a_l_Space_r_e_l_a_y_Quot,
+    a_Quot_e_l_e_c_t_r_o_Minus_m_e_c_h_a_n_i_c_a_l_Space_d_e_v_i_c_e_s_Quot,
+    a_Quot_e_l_e_c_t_r_o_d_e_Quot, a_Quot_e_l_e_c_t_r_o_n_i_c_s_Quot,
+    a_Quot_e_m_i_t_t_e_r_Quot, a_Quot_e_n_g_i_n_e_Quot,
+    a_Quot_e_n_g_i_n_e_e_r_i_n_g_Quot,
+    a_Quot_e_n_g_i_n_e_e_r_i_n_g_Space_d_o_m_a_i_n_Quot,
+    a_Quot_e_q_u_a_t_i_o_n_Quot, a_Quot_e_q_u_a_t_i_o_n_s_Quot,
+    a_Quot_f_i_l_e_Quot,
+    a_Quot_f_i_r_s_t_Minus_o_r_d_e_r_Space_d_i_f_f_e_r_e_n_t_i_a_l_Space_e_q_u_a_t_i_o_n_Quot,
+    a_Quot_f_l_u_i_d_Minus_p_o_w_e_r_Quot,
+    a_Quot_f_l_u_i_d_Minus_p_o_w_e_r_Space_s_y_s_t_e_m_s_Quot,
+    a_Quot_f_o_l_d_e_r_Quot,
+    a_Quot_f_r_e_q_u_e_n_c_y_Space_f_i_l_t_e_r_Quot,
+    a_Quot_g_y_r_a_t_o_r_Quot,
+    a_Quot_h_a_l_f_Minus_w_a_v_e_Space_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot,
+    a_Quot_h_i_g_h_e_r_Minus_o_r_d_e_r_Space_d_i_f_f_e_r_e_n_t_i_a_l_Space_e_q_u_a_t_i_o_n_Quot,
+    a_Quot_h_y_d_r_a_u_l_i_c_Space_c_y_l_i_n_d_e_r_Quot,
+    a_Quot_i_d_e_a_l_Space_LBrace_p_h_y_s_i_c_a_l_Space_e_l_e_m_e_n_t_RBrace_Quot,
+    a_Quot_i_d_e_a_l_Space_o_p_e_r_a_t_i_o_n_a_l_Space_a_m_p_l_i_f_i_e_r_Quot,
+    a_Quot_i_d_e_a_l_Space_t_w_o_p_o_l_e_Quot,
+    a_Quot_i_n_d_u_c_t_i_o_n_Space_m_o_t_o_r_Quot,
+    a_Quot_i_n_d_u_c_t_o_r_Quot, a_Quot_i_n_e_r_t_o_r_Quot,
+    a_Quot_i_n_s_t_a_l_l_Quot, a_Quot_i_n_s_t_a_l_l_a_t_i_o_n_Quot,
+    a_Quot_i_n_s_u_l_a_t_o_r_Quot,
+    a_Quot_i_n_v_e_r_t_i_n_g_Space_a_m_p_l_i_f_i_e_r_Quot,
+    a_Quot_k_n_o_w_l_e_d_g_e_Space_b_a_s_e_Space_d_o_c_u_m_e_n_t_Quot,
+    a_Quot_k_n_o_w_l_e_d_g_e_Space_b_a_s_e_Space_d_o_c_u_m_e_n_t_Space_a_t_t_r_i_b_u_t_e_Quot,
+    a_Quot_l_i_b_r_a_r_y_Space_m_o_d_e_l_Quot,
+    a_Quot_l_i_g_h_t_Minus_e_m_i_t_t_i_n_g_Space_d_i_o_d_e_Quot,
+    a_Quot_m_a_t_h_e_m_a_t_i_c_s_Quot,
+    a_Quot_m_e_c_h_a_n_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_Quot,
+    a_Quot_m_e_c_h_a_n_i_c_s_Quot, a_Quot_m_o_d_e_l_Quot,
+    a_Quot_m_o_d_e_l_i_n_g_Quot, a_Quot_m_o_d_e_l_l_i_n_g_Quot,
+    a_Quot_m_o_t_o_r_Quot, a_Quot_m_u_l_t_i_p_o_l_e_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_d_i_a_g_r_a_m_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_i_n_g_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_l_i_n_g_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_p_o_l_e_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_p_o_r_t_Quot,
+    a_Quot_m_u_l_t_i_p_o_l_e_Space_s_e_c_t_i_o_n_Quot,
+    a_Quot_n_a_t_u_r_a_l_Space_s_c_i_e_n_c_e_s_Quot,
+    a_Quot_n_o_n_Minus_i_n_v_e_r_t_i_n_g_Space_a_m_p_l_i_f_i_e_r_Quot,
+    a_Quot_n_o_n_l_i_n_e_a_r_Quot, a_Quot_n_o_n_l_i_n_e_a_r_i_t_y_Quot,
+    a_Quot_o_n_e_p_o_r_t_Quot,
+    a_Quot_o_p_e_r_a_t_i_n_g_Space_s_y_s_t_e_m_Quot,
+    a_Quot_o_p_e_r_a_t_i_o_n_a_l_Space_a_m_p_l_i_f_i_e_r_Quot,
+    a_Quot_p_h_y_s_i_c_a_l_Space_d_i_m_e_n_s_i_o_n_Quot,
+    a_Quot_p_h_y_s_i_c_a_l_Space_e_l_e_m_e_n_t_Quot,
+    a_Quot_p_h_y_s_i_c_s_Quot, a_Quot_p_o_l_e_Quot,
+    a_Quot_p_o_r_t_Quot,
+    a_Quot_p_o_s_t_u_l_a_t_e_Space_LBrace_o_f_Space_c_o_n_t_i_n_u_i_t_y_RBrace_Quot,
+    a_Quot_p_o_w_e_r_Space_e_l_e_c_t_r_o_n_i_c_s_Quot,
+    a_Quot_p_o_w_e_r_Space_s_o_u_r_c_e_Quot, a_Quot_p_r_o_g_r_a_m_Quot,
+    a_Quot_p_u_r_e_Space_t_w_o_p_o_l_e_Quot,
+    a_Quot_r_e_c_t_i_f_i_e_r_Quot, a_Quot_r_e_l_a_y_Quot,
+    a_Quot_r_e_l_a_y_s_Quot, a_Quot_r_e_l_i_e_f_Space_v_a_l_v_e_Quot,
+    a_Quot_r_e_s_i_s_t_i_v_i_t_y_Quot, a_Quot_r_e_s_i_s_t_o_r_Quot,
+    a_Quot_r_o_t_a_r_y_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot,
+    a_Quot_s_c_i_e_n_c_e_Quot,
+    a_Quot_s_c_i_e_n_c_e_Space_d_o_m_a_i_n_Quot,
+    a_Quot_s_e_c_t_i_o_n_Quot,
+    a_Quot_s_e_t_Space_o_f_Space_e_q_u_a_t_i_o_n_s_Quot,
+    a_Quot_s_i_n_Quot,
+    a_Quot_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot,
+    a_Quot_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot,
+    a_Quot_s_i_n_u_s_Quot, a_Quot_s_o_l_v_e_d_Space_e_x_a_m_p_l_e_Quot,
+    a_Quot_s_o_u_r_c_e_Space_LBrace_o_f_Space_p_o_w_e_r_RBrace_Quot,
+    a_Quot_s_p_r_i_n_g_Quot, a_Quot_s_y_s_t_e_m_Space_d_e_s_i_g_n_Quot,
+    a_Quot_s_y_s_t_e_m_Space_s_p_e_c_i_f_i_c_a_t_i_o_n_Quot,
+    a_Quot_t_e_r_m_i_n_a_l_Quot,
+    a_Quot_t_h_r_e_e_Minus_p_h_a_s_e_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot,
+    a_Quot_t_h_r_e_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot,
+    a_Quot_t_h_y_r_i_s_t_e_r_Quot, a_Quot_t_h_y_r_i_s_t_o_r_Quot,
+    a_Quot_t_r_a_n_s_d_u_c_e_r_Quot, a_Quot_t_r_a_n_s_f_o_r_m_e_r_Quot,
+    a_Quot_t_r_a_n_s_i_s_t_o_r_Quot,
+    a_Quot_t_r_a_n_s_l_a_t_o_r_y_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot,
+    a_Quot_t_r_u_c_k_Quot, a_Quot_t_u_t_o_r_i_a_l_Quot,
+    a_Quot_t_w_o_p_o_l_e_Quot, a_Quot_u_n_i_n_s_t_a_l_l_Quot,
+    a_Quot_u_n_i_n_s_t_a_l_l_a_t_i_o_n_Quot, a_Quot_v_a_l_v_e_Quot,
+    a_Quot_v_e_h_i_c_l_e_Quot, a_Quot_w_e_b_Space_d_o_c_u_m_e_n_t_Quot,
+    a_Quot_z_e_n_e_r_Space_d_i_o_d_e_Quot, abstractPart, format,
+    hasAcrossVariable, hasDimension, hasThroughVariable, hasVariable,
+    lexicon, meronym, models, part, physicalDomain, termFormat
+        : U;
+    AttrFn : U * U -> U
+preds a_r_e_s_u_l_t, abstractPart, agent, attribute,
+      contraryAttribute, disjoint, format, hasAcrossVariable,
+      hasDimension, hasThroughVariable, hasVariable, instance, material,
+      member, meronym, models, patient, property, range, subclass,
+      termFormat : U * U;
+      disjointDecomposition, domain, domainSubclass, lexicon,
+      physicalDomain : U * U * U
+vars vACROSS, vAGENT, vATTR, vATTRIBUTE, vC, vDACROSS, vDOMAIN,
+     vDTHROUGH, vF, vFS, vI, vM, vMODEL, vMODELING, vMULTIPOLE, vOBJ,
+     vOBJECT, vPATIENT, vPOLE, vPOLE1, vPOLE2, vPOLE3, vPORT, vPROCESS,
+     vQACROSS, vQTHROUGH, vS, vSECTION, vTHROUGH, vTWOPOLE, vX: U
+. instance(termFormat, Relation)
+. domain(termFormat, a_1, SetOrClass)
+. domain(termFormat, a_2, SymbolicString)
+%{format
+"Associates a relation or a function with a natural
+language text."}%
+. instance(format, Relation)
+. domain(format, a_1, SetOrClass)
+. domain(format, a_2, SymbolicString)
+%{AttrFn
+"For given class and for given attribute, return
+a subclass of the class of object having the attribute"}%
+. instance(AttrFn, BinaryFunction)
+. range(AttrFn, Class)
+. domain(AttrFn, a_1, Class)
+. domain(AttrFn, a_2, Attribute)
+%{lexicon
+"associates a SUMO concept with a lexicon word"}%
+. instance(lexicon, QuaternaryRelation)
+. domain(lexicon, a_1, SetOrClass)
+. domain(lexicon, a_2, LexiconCategory)
+. domain(lexicon, a_3, SymbolicString)
+%{LexiconCategory
+"WordNet category: noun, verb, adjective or adverb"}%
+. subclass(LexiconCategory, InternalAttribute)
+%{LexNoun
+"noun"}%
+. instance(LexNoun, LexiconCategory)
+%{LexVerb
+"verb"}%
+. instance(LexVerb, LexiconCategory)
+%{LexAdjective
+"adjective"}%
+. instance(LexAdjective, LexiconCategory)
+%{LexAdverb
+"adverb"}%
+. instance(LexAdverb, LexiconCategory)
+%{models
+"A relation signaling that certain model is
+convenient for modeling of certain class of devices."}%
+. subclass(models, AsymmetricRelation)
+. domain(models, a_1, Model)
+. domainSubclass(models, a_2, EngineeringComponent)
+. format(models,
+         a_Quot_Percent_1_Space_c_a_n_Space_b_e_Space_u_s_e_d_Space_a_s_Space_a_Space_m_o_d_e_l_Space_f_o_r_Space_Percent_2_Quot)
+%{Model
+"An abstract object that models certain aspect of a
+physical object; is subject to abstraction and idealization."}%
+. subclass(Model, Abstract)
+%{meronym
+"A relation similar to WordNet meronymy relation.
+If class A is a meronym of class B, it means that instances of A
+typically are parts of instances of B."}%
+. instance(meronym, AsymmetricRelation)
+. instance(meronym, TransitiveRelation)
+. domainSubclass(meronym, a_1, Object)
+. domainSubclass(meronym, a_2, Object)
+. format(meronym,
+         a_Quot_Percent_1_Space_i_s_Space_Percent_n_Space_a_Space_m_e_r_o_n_y_m_Space_o_f_Space_Percent_2_Quot)
+%{PhysicalDimension
+"A physical dimension such as
+length, mass, force etc."}%
+. lexicon(PhysicalDimension, LexNoun,
+          a_Quot_p_h_y_s_i_c_a_l_Space_d_i_m_e_n_s_i_o_n_Quot)
+. subclass(PhysicalDimension, Quantity)
+%{Length
+"&%PhysicalDimension of length, [m]."}%
+. instance(Length, PhysicalDimension)
+%{Velocity
+"&%PhysicalDimension of velocity, [m/s]."}%
+. instance(Velocity, PhysicalDimension)
+%{Force
+"&%PhysicalDimension of force, [N]."}%
+. instance(Force, PhysicalDimension)
+%{AngularVelocity
+"&%PhysicalDimension of angular velocity, [s^-1]."}%
+. instance(AngularVelocity, PhysicalDimension)
+%{Torque
+"&%PhysicalDimension of torque, [N/m]."}%
+. instance(Torque, PhysicalDimension)
+%{Voltage
+"&%PhysicalDimension of voltage, [V]."}%
+. instance(Voltage, PhysicalDimension)
+%{Current
+"&%PhysicalDimension of electrical current, [A]."}%
+. instance(Current, PhysicalDimension)
+%{Pressure
+"&%PhysicalDimension of pressure, [Pa],[N.m^-2]."}%
+. instance(Pressure, PhysicalDimension)
+%{VolumeFlow
+"&%PhysicalDimension of volume flow, [m^-3]."}%
+. instance(VolumeFlow, PhysicalDimension)
+%{Power
+"&%PhysicalDimension of power, [W]."}%
+. instance(Power, PhysicalDimension)
+%{Dimensionless
+"Dimensionless &%PhysicalDimension."}%
+. lexicon(Dimensionless, LexAdjective,
+          a_Quot_d_i_m_e_n_s_i_o_n_l_e_s_s_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_i_m_e_n_s_i_o_n_RBrace_Quot)
+. instance(Dimensionless, PhysicalDimension)
+%{Modeling
+"A creative process of creating a model."}%
+. lexicon(Modeling, LexNoun, a_Quot_m_o_d_e_l_i_n_g_Quot)
+. lexicon(Modeling, LexNoun, a_Quot_m_o_d_e_l_l_i_n_g_Quot)
+. lexicon(Modeling, LexVerb, a_Quot_m_o_d_e_l_Quot)
+. subclass(Modeling, IntentionalProcess)
+. instance(vMODELING, Modeling) =>
+      exists vMODEL: U
+          . instance(vMODEL, Model) /\ a_r_e_s_u_l_t(vMODELING, vMODEL)
+%{abstractPart
+"A meronymy relation similar to &%part, but
+for abstract rather than physical things."}%
+. termFormat(abstractPart, part)
+. instance(abstractPart, PartialOrderingRelation)
+. domain(abstractPart, a_1, Abstract)
+. domain(abstractPart, a_2, Abstract)
+. format(abstractPart,
+         a_Quot_Percent_1_Space_i_s_Space_Percent_n_Space_a_Space_Amp_Percent_p_a_r_t_Space_o_f_Space_Percent_2_Quot)
+. lexicon(AbsoluteValueFn, LexNoun, a_Quot_a_b_s_Quot)
+. lexicon(AbsoluteValueFn, LexNoun,
+          a_Quot_a_b_s_o_l_u_t_e_Space_v_a_l_u_e_Quot)
+. lexicon(SineFn, LexNoun, a_Quot_s_i_n_u_s_Quot)
+. lexicon(SineFn, LexNoun, a_Quot_s_i_n_Quot)
+. lexicon(CosineFn, LexNoun, a_Quot_c_o_s_i_n_u_s_Quot)
+. lexicon(CosineFn, LexNoun, a_Quot_c_o_s_Quot)
+%{Equation
+"a mathematical statement that two expressions are
+equal."}%
+. lexicon(Equation, LexNoun, a_Quot_e_q_u_a_t_i_o_n_Quot)
+. subclass(Equation, Proposition)
+%{DifferentialEquation
+"An &%Equation containing differentials
+of a function "}%
+. subclass(DifferentialEquation, Equation)
+. instance(vX, DifferentialEquation) <=>
+      instance(vX, AttrFn(Equation, DifferentialAttribute))
+%{LinearEquation
+"A polynomial &%Equation of the first degree."}%
+. subclass(LinearEquation, Equation)
+%{NonlinearEquation
+"An &%Equation that is not
+a &%LinearEquation."}%
+. subclass(NonlinearEquation, Equation)
+%{AlgebraicEquation
+"An &%Equation that is not
+a &%DifferentialEquation"}%
+. subclass(AlgebraicEquation, Equation)
+%{FirstOrderDifferentialEquation
+"A &%DifferentialEquation
+where variables are differentiated only once."}%
+. lexicon(FirstOrderDifferentialEquation, LexNoun,
+          a_Quot_f_i_r_s_t_Minus_o_r_d_e_r_Space_d_i_f_f_e_r_e_n_t_i_a_l_Space_e_q_u_a_t_i_o_n_Quot)
+. subclass(FirstOrderDifferentialEquation, DifferentialEquation)
+%{HigherOrderDifferentialEquation
+"A &%DifferentialEquation
+where variables are differentiated more than once."}%
+. lexicon(HigherOrderDifferentialEquation, LexNoun,
+          a_Quot_h_i_g_h_e_r_Minus_o_r_d_e_r_Space_d_i_f_f_e_r_e_n_t_i_a_l_Space_e_q_u_a_t_i_o_n_Quot)
+. subclass(HigherOrderDifferentialEquation, DifferentialEquation)
+. disjointDecomposition(DifferentialEquation,
+                        FirstOrderDifferentialEquation,
+                        HigherOrderDifferentialEquation)
+%{PartialDifferentialEquation
+"A &%DifferentialEquation
+involving a functions of more than one variable."}%
+. subclass(PartialDifferentialEquation, DifferentialEquation)
+%{OrdinaryDifferentialEquation
+"A &%DifferentialEquation
+that is not a &%PartialDifferentialEquation."}%
+. subclass(OrdinaryDifferentialEquation, DifferentialEquation)
+. disjointDecomposition(DifferentialEquation,
+                        OrdinaryDifferentialEquation,
+                        PartialDifferentialEquation)
+%{BesselsEquation
+"Bessel's equation"}%
+. lexicon(BesselsEquation, LexNoun,
+          a_Quot_B_e_s_s_e_l_'_s_Space_e_q_u_a_t_i_o_n_Quot)
+. subclass(BesselsEquation, OrdinaryDifferentialEquation)
+. subclass(BesselsEquation, NonlinearEquation)
+%{VanderpolsEquation
+"Bessel's equation"}%
+. lexicon(VanderpolsEquation, LexNoun,
+          a_Quot_LBrace_V_a_n_Space_d_e_r_Space_P_o_l_'_s_RBrace_Space_e_q_u_a_t_i_o_n_Quot)
+. subclass(VanderpolsEquation, OrdinaryDifferentialEquation)
+. subclass(VanderpolsEquation, NonlinearEquation)
+%{SetOfEquations
+"A &%Set of equations"}%
+. lexicon(SetOfEquations, LexNoun,
+          a_Quot_s_e_t_Space_o_f_Space_e_q_u_a_t_i_o_n_s_Quot)
+. lexicon(SetOfEquations, LexNoun, a_Quot_e_q_u_a_t_i_o_n_s_Quot)
+. subclass(SetOfEquations, Set)
+%{EquationAttribute
+"an attribute that applies to an equation
+or to a set of equations"}%
+. subclass(EquationAttribute, InternalAttribute)
+%{"&%EquationAttribute applies to equations or sets of equations"}%
+. property(vOBJECT, vATTRIBUTE)
+  /\ instance(vATTRIBUTE, EquationAttribute) =>
+      instance(vOBJECT, Equation) \/ instance(vOBJECT, SetOfEquations)
+%{DifferentialAttribute
+"differential equation or set of equations"}%
+. lexicon(DifferentialAttribute, LexAdjective,
+          a_Quot_d_i_f_f_e_r_e_n_t_i_a_l_Quot)
+. instance(DifferentialAttribute, EquationAttribute)
+%{AlgebraicAttribute
+"algebraic equation or set of equations"}%
+. lexicon(AlgebraicAttribute, LexAdjective,
+          a_Quot_a_l_g_e_b_r_a_i_c_Quot)
+. instance(AlgebraicAttribute, EquationAttribute)
+%{AlgebroDifferentialAttribute
+"Set of both differential and algebraic equations"}%
+. lexicon(AlgebroDifferentialAttribute, LexAdjective,
+          a_Quot_a_l_g_e_b_r_o_Minus_d_i_f_f_e_r_e_n_t_i_a_l_Quot)
+. instance(AlgebroDifferentialAttribute, InternalAttribute)
+. property(vOBJECT, vATTRIBUTE)
+  /\ instance(vATTRIBUTE, AlgebroDifferentialAttribute) =>
+      instance(vOBJECT, SetOfEquations)
+%{MathematicalModel
+"A model that uses the mathematical
+aparatus"}%
+. subclass(MathematicalModel, Model)
+%{MathematicalPendulum
+"A model of a &%Pendulum consisting
+of a mass hanged on a stiff string."}%
+. subclass(MathematicalPendulum, MathematicalModel)
+%{PhysicalDomain
+"An attribute of a multipole pole describing
+the kind of physical interaction the pole models."}%
+. lexicon(PhysicalDomain, LexNoun,
+          a_Quot_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot)
+. subclass(PhysicalDomain, InternalAttribute)
+%{Electrical
+"Electrical energetic interaction"}%
+. lexicon(Electrical, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot)
+. instance(Electrical, PhysicalDomain)
+%{Translatory
+"Mechanic translatory energetic interaction"}%
+. lexicon(Translatory, LexNoun,
+          a_Quot_t_r_a_n_s_l_a_t_o_r_y_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot)
+. instance(Translatory, PhysicalDomain)
+%{Rotary
+"Mechanic rotary energetic interaction"}%
+. lexicon(Rotary, LexNoun,
+          a_Quot_r_o_t_a_r_y_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot)
+. instance(Rotary, PhysicalDomain)
+%{FluidPower
+"Fluid power energetic interaction"}%
+. lexicon(FluidPower, LexNoun,
+          a_Quot_LBrace_f_l_u_i_d_Space_p_o_w_e_r_RBrace_Space_LBrace_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_RBrace_Quot)
+. instance(FluidPower, PhysicalDomain)
+%{physicalDomain
+"Relation that holds for pairs of physical
+dimensions that multiply up into a physical dimension of Power.
+The first is considered for across variable, the second for through
+variable."}%
+. instance(physicalDomain, TernaryRelation)
+. format(physicalDomain,
+         a_Quot_Percent_1_Space_a_n_d_Space_Percent_2_Space_f_o_r_m_Space_p_h_y_s_i_c_a_l_Space_d_o_m_a_i_n_Space_Percent_3_Quot)
+. domain(physicalDomain, a_1, PhysicalDimension)
+. domain(physicalDomain, a_2, PhysicalDimension)
+. domain(physicalDomain, a_3, PhysicalDomain)
+. physicalDomain(Velocity, Force, Translatory)
+. physicalDomain(AngularVelocity, Torque, Rotary)
+. physicalDomain(Voltage, Current, Electrical)
+. physicalDomain(Pressure, VolumeFlow, FluidPower)
+%{MultipoleVariable
+"a variable that describes energetical
+interactions between multipoles."}%
+. subclass(MultipoleVariable, Number)
+%{MultipoleQuantity
+"a multipole variable that have physical
+dimension and meaning."}%
+. subclass(MultipoleQuantity, Quantity)
+%{hasDimension
+"multipole quantity has certain dimension"}%
+. instance(hasDimension, SingleValuedRelation)
+. format(hasDimension,
+         a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_d_i_m_e_n_s_i_o_n_Space_Percent_2_Quot)
+. domain(hasDimension, a_1, MultipoleQuantity)
+. domain(hasDimension, a_2, PhysicalDimension)
+%{hasVariable
+"multipole quantity has certain variable"}%
+. instance(hasVariable, SingleValuedRelation)
+. format(hasVariable,
+         a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_v_a_r_i_a_b_l_e_Space_Percent_2_Quot)
+. domain(hasVariable, a_1, MultipoleQuantity)
+. domain(hasVariable, a_2, MultipoleVariable)
+%{Multipole
+"Basic element of a multipole diagram; a
+multipole is a model of a component of a dynamic system; it can model a
+real separable component, such as a motor of a vehicle, or just an
+attribute of the system, such as inertia or friction; multipole interacts
+with other multipoles through its poles."}%
+. lexicon(Multipole, LexNoun, a_Quot_m_u_l_t_i_p_o_l_e_Quot)
+. subclass(Multipole, Model)
+%{MultipoleAttribute
+"a set of tags that can be associated
+with multipoles"}%
+. subclass(MultipoleAttribute, InternalAttribute)
+%{IndependentMultipole
+"Asserts that a constitutive relation
+of a multipole does not refer to other variables than terminal or
+inner."}%
+. instance(IndependentMultipole, MultipoleAttribute)
+%{DynamicMultipole
+"Asserts that the constitutive relation of
+a multipole does depend on time."}%
+. instance(DynamicMultipole, MultipoleAttribute)
+%{LinearMultipole
+"Asserts that the constitutive relation of
+a multipole is linear."}%
+. instance(LinearMultipole, MultipoleAttribute)
+%{MultipoleModel
+"Model of a physical system consisting of
+mutually interconnected multipoles."}%
+. lexicon(MultipoleModel, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_Quot)
+. subclass(MultipoleModel, Model)
+%{ElectricalMultipoleModel
+"A &%MultipoleModel containing only
+electrical multipoles."}%
+. lexicon(ElectricalMultipoleModel, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_c_i_r_c_u_i_t_Quot)
+. subclass(ElectricalMultipoleModel, MultipoleModel)
+%{NonlinearCircuit
+"An &%ElectricalMultipoleModel containing
+nonlinear multipoles."}%
+. subclass(NonlinearCircuit, ElectricalMultipoleModel)
+%{RLCircuit
+"An &%ElectricalMultipoleModel containing
+a &%ResistorElement and an &%InductorElement."}%
+. lexicon(RLCircuit, LexNoun, a_Quot_R_L_Space_c_i_r_c_u_i_t_Quot)
+. subclass(RLCircuit, ElectricalMultipoleModel)
+%{RLCCircuit
+"An &%ElectricalMultipoleModel containing
+a &%ResistorElement, an &%InductorElement and a &%CapacitorElement."}%
+. lexicon(RLCCircuit, LexNoun,
+          a_Quot_R_L_C_Space_c_i_r_c_u_i_t_Quot)
+. subclass(RLCCircuit, ElectricalMultipoleModel)
+%{RCCircuit
+"An &%ElectricalMultipoleModel containing
+a &%ResistorElement and a &%CapacitorElement."}%
+. lexicon(RCCircuit, LexNoun, a_Quot_R_C_Space_c_i_r_c_u_i_t_Quot)
+. subclass(RCCircuit, ElectricalMultipoleModel)
+%{MultipoleModeling
+"modeling of a dynamic system by means of
+its representation by a multipole diagram."}%
+. lexicon(MultipoleModeling, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_i_n_g_Quot)
+. lexicon(MultipoleModeling, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_m_o_d_e_l_l_i_n_g_Quot)
+. subclass(MultipoleModeling, Modeling)
+. instance(vMODELING, MultipoleModeling) =>
+      exists vMODEL: U
+          . instance(vMODEL, MultipoleModel)
+            /\ a_r_e_s_u_l_t(vMODELING, vMODEL)
+%{MultipoleDiagram
+"Graphical representation of a
+&%MultipoleModel."}%
+. lexicon(MultipoleDiagram, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_d_i_a_g_r_a_m_Quot)
+. subclass(MultipoleDiagram, ContentBearingObject)
+%{MultipolePole
+"A part of multipole pole that models
+a single energetical interaction."}%
+. lexicon(MultipolePole, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_p_o_l_e_Quot)
+. lexicon(MultipolePole, LexNoun, a_Quot_p_o_l_e_Quot)
+. lexicon(MultipolePole, LexNoun,
+          a_Quot_LBrace_p_o_l_e_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot)
+. subclass(MultipolePole, Model)
+%{"If pole belongs to a multipole, it also belongs to
+one of its sections."}%
+. instance(vPOLE, MultipolePole)
+  /\ abstractPart(vPOLE, vMULTIPOLE) =>
+      exists vSECTION: U
+          . instance(vSECTION, MultipoleSection)
+            /\ abstractPart(vPOLE, vSECTION)
+            /\ abstractPart(vSECTION, vMULTIPOLE)
+%{hasAcrossVariable
+"multipole pole has across variable"}%
+. instance(hasAcrossVariable, AsymmetricRelation)
+. format(hasAcrossVariable,
+         a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_Percent_2_Space_a_s_Space_a_n_Space_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_Quot)
+. domain(hasAcrossVariable, a_1, MultipolePole)
+. domain(hasAcrossVariable, a_2, MultipoleVariable)
+%{"Each pole has an across variable"}%
+%{hasThroughVariable
+"multipole pole has through variable"}%
+. instance(hasThroughVariable, AsymmetricRelation)
+. format(hasThroughVariable,
+         a_Quot_Percent_1_Space_h_a_s_Space_Percent_n_Space_Percent_2_Space_a_s_Space_a_Space_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_Quot)
+. domain(hasThroughVariable, a_1, MultipolePole)
+. domain(hasThroughVariable, a_2, MultipoleVariable)
+%{"Each pole has an through variable"}%
+%{"variables of a pole must be related power variables"}%
+. hasAcrossVariable(vPOLE, vACROSS)
+  /\ hasThroughVariable(vPOLE, vTHROUGH)
+  /\ hasVariable(vQACROSS, vACROSS)
+  /\ hasVariable(vQTHROUGH, vTHROUGH)
+  /\ hasDimension(vQACROSS, vDACROSS)
+  /\ hasDimension(vQTHROUGH, vDTHROUGH) =>
+      exists vDOMAIN: U . physicalDomain(vDACROSS, vDTHROUGH, vDOMAIN)
+%{MultipoleSection
+"A set of poles that is subject to
+the postulate of continuity. A multipole may consist of one or
+more sections. Sections of a single multipole do not overlap
+and cover all its poles."}%
+. lexicon(MultipoleSection, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_s_e_c_t_i_o_n_Quot)
+. lexicon(MultipoleSection, LexNoun, a_Quot_s_e_c_t_i_o_n_Quot)
+. lexicon(MultipoleSection, LexNoun,
+          a_Quot_LBrace_s_e_c_t_i_o_n_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot)
+. subclass(MultipoleSection, Model)
+%{"Each multipole must have at least one section."}%
+. instance(vMULTIPOLE, Multipole) =>
+      exists vSECTION: U
+          . instance(vSECTION, MultipoleSection)
+            /\ abstractPart(vSECTION, vMULTIPOLE)
+%{"Each section must have at least two distinct poles."}%
+. instance(vSECTION, MultipoleSection) =>
+      exists vPOLE1: U; vPOLE2: U
+          . instance(vPOLE1, MultipolePole)
+            /\ instance(vPOLE2, MultipolePole)
+            /\ abstractPart(vPOLE1, vSECTION)
+            /\ abstractPart(vPOLE2, vSECTION)
+            /\ not vPOLE1 = vPOLE2
+%{MultipolePort
+"&%MultipoleSection that contains exactly two
+poles."}%
+. subclass(MultipolePort, MultipoleSection)
+. lexicon(MultipolePort, LexNoun,
+          a_Quot_m_u_l_t_i_p_o_l_e_Space_p_o_r_t_Quot)
+. lexicon(MultipolePort, LexNoun, a_Quot_p_o_r_t_Quot)
+. lexicon(MultipolePort, LexNoun,
+          a_Quot_LBrace_p_o_r_t_Space_o_f_RBrace_Space_m_u_l_t_i_p_o_l_e_Quot)
+%{"Ports do not have three distinct poles."}%
+. instance(vPORT, MultipolePort) =>
+      not (exists vPOLE1: U; vPOLE2: U; vPOLE3: U
+               . instance(vPOLE1, MultipolePole)
+                 /\ instance(vPOLE2, MultipolePole)
+                 /\ instance(vPOLE3, MultipolePole)
+                 /\ abstractPart(vPOLE1, vPORT)
+                 /\ abstractPart(vPOLE2, vPORT)
+                 /\ abstractPart(vPOLE3, vPORT)
+                 /\ not vPOLE1 = vPOLE2
+                 /\ not vPOLE2 = vPOLE3
+                 /\ not vPOLE1 = vPOLE3)
+%{Twopole
+"A &%Multipole with exactly two poles."}%
+. lexicon(Twopole, LexNoun, a_Quot_t_w_o_p_o_l_e_Quot)
+. lexicon(Twopole, LexNoun, a_Quot_o_n_e_p_o_r_t_Quot)
+. subclass(Twopole, Multipole)
+%{"Twopole has exactly one port."}%
+. instance(vTWOPOLE, Twopole) =>
+      exists vPORT: U
+          . instance(vPORT, MultipolePort)
+            /\ abstractPart(vPORT, vTWOPOLE)
+            /\ not (exists vSECTION: U
+                        . instance(vSECTION, MultipoleSection)
+                          /\ abstractPart(vSECTION, vTWOPOLE)
+                          /\ not vSECTION = vPORT)
+%{PureTwopole
+"A &%Twopole that models single physical
+phenomenon, its constitutive relation has special structure."}%
+. lexicon(PureTwopole, LexNoun,
+          a_Quot_p_u_r_e_Space_t_w_o_p_o_l_e_Quot)
+. lexicon(PureTwopole, LexNoun,
+          a_Quot_p_h_y_s_i_c_a_l_Space_e_l_e_m_e_n_t_Quot)
+. subclass(PureTwopole, Twopole)
+%{IdealSwitch
+"A &%PureTwopole that models an ideal switch."}%
+. subclass(IdealSwitch, PureTwopole)
+%{IdealTwopole
+"A &%PureTwopole that is linear."}%
+. lexicon(IdealTwopole, LexNoun,
+          a_Quot_i_d_e_a_l_Space_t_w_o_p_o_l_e_Quot)
+. lexicon(IdealTwopole, LexNoun,
+          a_Quot_i_d_e_a_l_Space_LBrace_p_h_y_s_i_c_a_l_Space_e_l_e_m_e_n_t_RBrace_Quot)
+. subclass(IdealTwopole, PureTwopole)
+%{Dissipator
+"A &%PureTwopole that models a dissipation of energy."}%
+. subclass(Dissipator, PureTwopole)
+%{AcrossVariableAccumulator
+"A &%PureTwopole that accumulates across variable."}%
+. lexicon(AcrossVariableAccumulator, LexNoun,
+          a_Quot_LBrace_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_RBrace_Space_a_c_c_u_m_u_l_a_t_o_r_Quot)
+. subclass(AcrossVariableAccumulator, PureTwopole)
+%{ThroughVariableAccumulator
+"A &%PureTwopole that accumulates through variable."}%
+. lexicon(ThroughVariableAccumulator, LexNoun,
+          a_Quot_LBrace_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_RBrace_Space_a_c_c_u_m_u_l_a_t_o_r_Quot)
+. subclass(ThroughVariableAccumulator, PureTwopole)
+%{Source
+"A &%PureTwopole that models a generator of either across or through variable."}%
+. subclass(Source, PureTwopole)
+%{AcrossVariableSource
+"A &%Source that models a generator of across variable."}%
+. lexicon(AcrossVariableSource, LexNoun,
+          a_Quot_LBrace_a_c_r_o_s_s_Space_v_a_r_i_a_b_l_e_RBrace_Space_s_o_u_r_c_e_Quot)
+. subclass(AcrossVariableSource, Source)
+%{ThroughVariableSource
+"A &%Source that models a generator of through variable."}%
+. lexicon(ThroughVariableSource, LexNoun,
+          a_Quot_LBrace_t_h_r_o_u_g_h_Space_v_a_r_i_a_b_l_e_RBrace_Space_s_o_u_r_c_e_Quot)
+. subclass(ThroughVariableSource, Source)
+%{ElectricalTwopole
+"A &%PureTwopole from electrical energy domain."}%
+. subclass(ElectricalTwopole, PureTwopole)
+%{ResistorElement
+"A &%Dissipator from electrical energy domain."}%
+. lexicon(ResistorElement, LexNoun, a_Quot_r_e_s_i_s_t_o_r_Quot)
+. subclass(ResistorElement, Dissipator)
+. subclass(ResistorElement, ElectricalTwopole)
+%{CapacitorElement
+"An &%AcrossVariableAccumulator from electrical energy domain."}%
+. lexicon(CapacitorElement, LexNoun, a_Quot_c_a_p_a_c_i_t_o_r_Quot)
+. subclass(CapacitorElement, AcrossVariableAccumulator)
+. subclass(CapacitorElement, ElectricalTwopole)
+%{InductorElement
+"A &%ThroughVariableAccumulator from electrical energy domain."}%
+. lexicon(InductorElement, LexNoun, a_Quot_i_n_d_u_c_t_o_r_Quot)
+. subclass(InductorElement, ThroughVariableAccumulator)
+. subclass(InductorElement, ElectricalTwopole)
+%{TranslatoryTwopole
+"A &%PureTwopole from translatory energy domain."}%
+. subclass(TranslatoryTwopole, PureTwopole)
+%{DamperElement
+"A &%Dissipator from translatory energy domain."}%
+. lexicon(DamperElement, LexNoun, a_Quot_d_a_m_p_e_r_Quot)
+. subclass(DamperElement, Dissipator)
+. subclass(DamperElement, TranslatoryTwopole)
+%{Inertor
+"An &%AcrossVariableAccumulator from translatory energy domain."}%
+. lexicon(Inertor, LexNoun, a_Quot_i_n_e_r_t_o_r_Quot)
+. subclass(Inertor, AcrossVariableAccumulator)
+. subclass(Inertor, TranslatoryTwopole)
+%{SpringElement
+"A &%ThroughVariableAccumulator from translatory energy domain."}%
+. lexicon(SpringElement, LexNoun, a_Quot_s_p_r_i_n_g_Quot)
+. subclass(SpringElement, ThroughVariableAccumulator)
+. subclass(SpringElement, TranslatoryTwopole)
+%{Fourpole
+"A &%Multipole with exactly four poles."}%
+. subclass(Fourpole, Multipole)
+%{Twoport
+"A &%Multipole with exactly two sections."}%
+. subclass(Twoport, Fourpole)
+%{IdealOperationalAmplifier
+"A &%Fourpole modeling an
+&%OperationalAmplifier with ideal properties."}%
+. lexicon(IdealOperationalAmplifier, LexNoun,
+          a_Quot_i_d_e_a_l_Space_o_p_e_r_a_t_i_o_n_a_l_Space_a_m_p_l_i_f_i_e_r_Quot)
+. lexicon(IdealOperationalAmplifier, LexNoun,
+          a_Quot_o_p_e_r_a_t_i_o_n_a_l_Space_a_m_p_l_i_f_i_e_r_Quot)
+. subclass(IdealOperationalAmplifier, Fourpole)
+%{Transducer
+"A &%Device which is capable of converting one 
+form of energy into another.  Formally, a &%Twoport that neither stores 
+nor dissipates, but only transfers energy between its two ports."}%
+. lexicon(Transducer, LexNoun, a_Quot_t_r_a_n_s_d_u_c_e_r_Quot)
+. subclass(Transducer, Twoport)
+%{Transformer
+"A &%Transducer for which the ratio of
+across variables and through variables respectively is equal."}%
+. lexicon(Transformer, LexNoun, a_Quot_t_r_a_n_s_f_o_r_m_e_r_Quot)
+. subclass(Transformer, Transducer)
+%{Gyrator
+"A &%Transducer for which the ratio of
+across variable on one side and through variable on the
+other side is equal to the ratio of the remaining two variables."}%
+. lexicon(Gyrator, LexNoun, a_Quot_g_y_r_a_t_o_r_Quot)
+. subclass(Gyrator, Transducer)
+%{NaturalProcess
+"A &%Process that take place in nature
+spontanously."}%
+. subclass(NaturalProcess, Process)
+. disjoint(NaturalProcess, IntentionalProcess)
+%{MechanicalProcess
+"A &%Process in which mechanical
+interactions take place"}%
+. subclass(MechanicalProcess, NaturalProcess)
+%{ElectricalProcess
+"A &%Process in which electrical
+interactions take place"}%
+. subclass(ElectricalProcess, NaturalProcess)
+%{Friction
+"A &%MechanicalProcess in which mechanical
+energy is converted into a heat"}%
+. subclass(Friction, MechanicalProcess)
+%{Resonance
+"a vibration of large amplitude produced by
+a relatively small vibration near the same frequency of vibration
+as the natural frequency of the resonating system."}%
+. subclass(Resonance, NaturalProcess)
+%{MechanicalResonance
+"a resonance of mechanical energy."}%
+. subclass(MechanicalResonance, Resonance)
+. subclass(MechanicalResonance, MechanicalProcess)
+%{ElectricalResonance
+"a resonance of electrical energy."}%
+. subclass(ElectricalResonance, Resonance)
+. subclass(ElectricalResonance, ElectricalProcess)
+%{SeriesResonance
+"Resonance taking place in a parallel RLC
+circuit, i.e. in a circuit where its elements are connected in-parallel."}%
+. subclass(SeriesResonance, ElectricalResonance)
+%{ParallelResonance
+"Resonance taking place in a series RLC
+circuit, i.e. in a circuit where its elements are connected in-series."}%
+. subclass(ParallelResonance, ElectricalResonance)
+%{PhysicalAttribute
+"An &%InternalAttribute given by physical
+properties of the object."}%
+. subclass(PhysicalAttribute, InternalAttribute)
+%{Conductivity
+"the ability of a material to lead current"}%
+. instance(Conductivity, PhysicalAttribute)
+. contraryAttribute(Conductivity, Resistivity)
+%{Resistivity
+"A material's opposition to the flow of
+electric current."}%
+. lexicon(Resistivity, LexNoun, a_Quot_r_e_s_i_s_t_i_v_i_t_y_Quot)
+. instance(Resistivity, PhysicalAttribute)
+%{Inductance
+"A property of an electric circuit by which an
+electromotive force is induced in it by a variation of current."}%
+. instance(Inductance, PhysicalAttribute)
+%{MutualInductance
+"Property whereby an electromotive force is
+induced in a circuit by variation of current in a neighboring circuit."}%
+. subclass(MutualInductance, Inductance)
+%{Stiffness
+"The physical property of being inflexible
+and hard to stretch."}%
+. instance(Stiffness, PhysicalAttribute)
+%{Compliance
+"The ability of material to stretch or bend."}%
+. instance(Compliance, PhysicalAttribute)
+. contraryAttribute(Stiffness, Compliance)
+%{Nonlinear
+"The description of the entity (e.g. a &%Model)
+involves nonlinear functions."}%
+. subclass(Nonlinear, InternalAttribute)
+. lexicon(Nonlinear, LexNoun, a_Quot_n_o_n_l_i_n_e_a_r_i_t_y_Quot)
+. lexicon(Nonlinear, LexAdjective, a_Quot_n_o_n_l_i_n_e_a_r_Quot)
+%{Backlashless
+"With no backlash."}%
+. lexicon(Backlashless, LexAdjective,
+          a_Quot_b_a_c_k_l_a_s_h_l_e_s_s_Quot)
+. subclass(Backlashless, InternalAttribute)
+%{Brushless
+"With no brushes (of electrical motors)"}%
+. lexicon(Brushless, LexAdjective, a_Quot_b_r_u_s_h_l_e_s_s_Quot)
+. subclass(Brushless, InternalAttribute)
+. attribute(vOBJECT, vATTRIBUTE)
+  /\ instance(vATTRIBUTE, Brushless) =>
+      instance(vOBJECT, ElectricalMotor)
+%{Autonomous
+"autonomous"}%
+. lexicon(Autonomous, LexAdjective,
+          a_Quot_a_u_t_o_n_o_m_o_u_s_Quot)
+. lexicon(Autonomous, LexAdverb,
+          a_Quot_a_u_t_o_n_o_m_o_u_s_l_y_Quot)
+. subclass(Autonomous, InternalAttribute)
+%{MechanicalDevice
+"An &%EngineeringComponent in function of
+which play role mechanical energetical interactions."}%
+. subclass(MechanicalDevice, EngineeringComponent)
+%{ElectricalDevice
+"An &%EngineeringComponent in function of
+which play role electrical energetical interactions."}%
+. subclass(ElectricalDevice, EngineeringComponent)
+%{FluidPowerDevice
+"An &%EngineeringComponent in function of
+which play role fluid-power energetical interactions."}%
+. lexicon(FluidPowerDevice, LexNoun,
+          a_Quot_LBrace_f_l_u_i_d_Space_p_o_w_e_r_RBrace_Space_d_e_v_i_c_e_Quot)
+. subclass(FluidPowerDevice, EngineeringComponent)
+%{UnknownDomainDevice
+"An &%EngineeringComponent for which
+the principal physical domain is not specified."}%
+. lexicon(UnknownDomainDevice, LexNoun,
+          a_Quot_LBrace_u_n_k_n_o_w_n_Space_d_o_m_a_i_n_RBrace_Space_d_e_v_i_c_e_Quot)
+. subclass(UnknownDomainDevice, EngineeringComponent)
+%{Motor
+"An actuator intended to deliver mechanical power"}%
+. lexicon(Motor, LexNoun, a_Quot_m_o_t_o_r_Quot)
+. lexicon(Motor, LexNoun, a_Quot_e_n_g_i_n_e_Quot)
+. subclass(Motor, MechanicalDevice)
+. models(Transformer, Motor)
+%{Relay
+"an electro-mechanical device used as a controlled switch"}%
+. lexicon(Relay, LexNoun, a_Quot_r_e_l_a_y_Quot)
+. lexicon(Relay, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_r_e_l_a_y_Quot)
+. subclass(Relay, ElectricalComponent)
+. subclass(Relay, MechanicalDevice)
+%{Pendulum
+"A &%MechanicalDevice of an object mounted so that
+it swings freely under the influence of gravity."}%
+. subclass(Pendulum, MechanicalDevice)
+%{Gear
+"a toothed wheel that engages another toothed
+mechanism in order to change the speed or direction of transmitted motion."}%
+. subclass(Gear, MechanicalDevice)
+%{GearTrain
+"a pair of gears that are used to change speed or
+direction of an angular motion; ideal gear train can be modeled using
+a transformer."}%
+. subclass(GearTrain, MechanicalDevice)
+. meronym(Gear, GearTrain)
+%{Gearbox
+"A device composed of several gear-trains used
+to change speed and torque of transmitted motion."}%
+. subclass(Gearbox, MechanicalDevice)
+. meronym(GearTrain, Gearbox)
+%{Shaft
+"A revolving rod that transmits power or motion."}%
+. subclass(Shaft, MechanicalDevice)
+. meronym(Shaft, Motor)
+%{Spring
+"a metal device that returns to its shape or
+position when pushed or pulled or pressed"}%
+. subclass(Spring, MechanicalDevice)
+%{Rotor
+"The rotating armature of a motor or generator."}%
+. subclass(Rotor, MechanicalDevice)
+. subclass(Rotor, ElectricalDevice)
+. meronym(Rotor, ElectricalMotor)
+%{Stator
+"Stationary part of a motor or generator in or
+around which the rotor revolves."}%
+. subclass(Stator, MechanicalDevice)
+. subclass(Stator, ElectricalDevice)
+%{ElectricalMotor
+"An electrical motor."}%
+. lexicon(ElectricalMotor, LexNoun, a_Quot_m_o_t_o_r_Quot)
+. lexicon(ElectricalMotor, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_m_o_t_o_r_Quot)
+. subclass(ElectricalMotor, Motor)
+. subclass(ElectricalMotor, ElectricalDevice)
+%{DcMotor
+"A direct-current electrical motor."}%
+. lexicon(DcMotor, LexNoun, a_Quot_D_C_Space_m_o_t_o_r_Quot)
+. subclass(DcMotor, ElectricalMotor)
+%{PermanentMagnetDcMotor
+"A DC motor in which the auxiliary
+magnetic field is provided by a permanent magnet."}%
+. lexicon(PermanentMagnetDcMotor, LexNoun,
+          a_Quot_LBrace_p_e_r_m_a_n_e_n_t_Space_m_a_g_n_e_t_RBrace_Space_D_C_Space_m_o_t_o_r_Quot)
+. subclass(PermanentMagnetDcMotor, DcMotor)
+%{SeparatelyExcitedDcMotor
+"A DC motor in which the auxiliary
+magnetic field is provided an active circuit."}%
+. lexicon(SeparatelyExcitedDcMotor, LexNoun,
+          a_Quot_LBrace_s_e_p_a_r_a_t_e_l_y_Space_e_x_c_i_t_e_d_RBrace_Space_D_C_Space_m_o_t_o_r_Quot)
+. subclass(SeparatelyExcitedDcMotor, DcMotor)
+%{InductionMotor
+"An electrical motor powered by a
+three-phase power suply."}%
+. lexicon(InductionMotor, LexNoun,
+          a_Quot_i_n_d_u_c_t_i_o_n_Space_m_o_t_o_r_Quot)
+. subclass(InductionMotor, ElectricalMotor)
+%{Terminal
+"a point on an electrical device (such as a 
+battery) at which electric current enters or leaves "}%
+. subclass(Terminal, ElectricalDevice)
+. lexicon(Terminal, LexNoun, a_Quot_t_e_r_m_i_n_a_l_Quot)
+. lexicon(Terminal, LexNoun, a_Quot_e_l_e_c_t_r_o_d_e_Quot)
+. meronym(Terminal, ElectricalComponent)
+%{Conductor
+"An &%ElectricalComponent designed to
+transmit electricity"}%
+. subclass(Conductor, ElectricalComponent)
+. instance(vC, Conductor) =>
+      exists vS: U . instance(vS, ConductorSubstance) /\ material(vS, vC)
+%{Resistor
+"An &%ElectricalComponent that resists the flow of
+electrical current."}%
+. subclass(Resistor, ElectricalComponent)
+. instance(vI, Resistor) =>
+      exists vS: U . instance(vI, InsulatorSubstance) /\ material(vI, vC)
+%{Capacitor
+"An &%ElectricalComponent characterized by its
+capacitance."}%
+. subclass(Capacitor, ElectricalComponent)
+%{Inductor
+"An &%ElectricalComponent that introduces inductance
+into a circuit."}%
+. subclass(Inductor, ElectricalComponent)
+%{TransformerDevice
+"An &%ElectricalDevice by which alternating 
+current of one voltage is changed to another voltage."}%
+. lexicon(TransformerDevice, LexNoun,
+          a_Quot_t_r_a_n_s_f_o_r_m_e_r_Quot)
+. subclass(TransformerDevice, ElectricalDevice)
+%{PowerSource
+"A source of electrical power."}%
+. lexicon(PowerSource, LexNoun,
+          a_Quot_p_o_w_e_r_Space_s_o_u_r_c_e_Quot)
+. lexicon(PowerSource, LexNoun,
+          a_Quot_s_o_u_r_c_e_Space_LBrace_o_f_Space_p_o_w_e_r_RBrace_Quot)
+. subclass(PowerSource, ElectricalDevice)
+%{SinglePhasePowerSource
+"A &%PowerSource of single phase
+alternating current."}%
+. lexicon(SinglePhasePowerSource, LexNoun,
+          a_Quot_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot)
+. subclass(SinglePhasePowerSource, PowerSource)
+%{ThreePhasePowerSource
+"A &%PowerSource of three phase
+alternating current."}%
+. lexicon(ThreePhasePowerSource, LexNoun,
+          a_Quot_t_h_r_e_e_Minus_p_h_a_s_e_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot)
+. subclass(ThreePhasePowerSource, PowerSource)
+%{DCPowerSource
+"A direct-current &%PowerSource."}%
+. lexicon(DCPowerSource, LexNoun,
+          a_Quot_D_C_Space_LBrace_p_o_w_e_r_Space_s_o_u_r_c_e_RBrace_Quot)
+. subclass(DCPowerSource, PowerSource)
+%{Battery
+"A portable &%DCPowerSource that converts chemical
+into mechanical energy."}%
+. subclass(Battery, DCPowerSource)
+%{Cylinder
+"A &%FluidPowerDevice designed to transform
+fluid-power energy into mechanical translatory energy."}%
+. lexicon(Cylinder, LexNoun, a_Quot_c_y_l_i_n_d_e_r_Quot)
+. lexicon(Cylinder, LexNoun,
+          a_Quot_h_y_d_r_a_u_l_i_c_Space_c_y_l_i_n_d_e_r_Quot)
+. subclass(Cylinder, MechanicalDevice)
+. subclass(Cylinder, FluidPowerDevice)
+. models(Gyrator, Cylinder)
+%{Valve
+"A hydraulic valve."}%
+. lexicon(Valve, LexNoun, a_Quot_v_a_l_v_e_Quot)
+. subclass(Valve, MechanicalDevice)
+. subclass(Valve, FluidPowerDevice)
+%{DirectionalControlValve
+"Valve that controls the direction
+of flow of a fluid"}%
+. lexicon(DirectionalControlValve, LexNoun,
+          a_Quot_LBrace_d_i_r_e_c_t_i_o_n_a_l_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot)
+. subclass(DirectionalControlValve, Valve)
+%{SpoolValve
+"a directional control valve that uses a spool
+to control the direction of flow"}%
+. subclass(SpoolValve, DirectionalControlValve)
+%{PressureControlValve
+"valve that controls the pressure in
+a fluid"}%
+. lexicon(PressureControlValve, LexNoun,
+          a_Quot_LBrace_p_r_e_s_s_u_r_e_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot)
+. subclass(PressureControlValve, Valve)
+%{ReliefValve
+"Most common type of a presure control valve;
+it consists of a piston that is retained on its seat by a spring"}%
+. lexicon(ReliefValve, LexNoun,
+          a_Quot_r_e_l_i_e_f_Space_v_a_l_v_e_Quot)
+. subclass(ReliefValve, PressureControlValve)
+%{VolumeControlValve
+"valve that controls the flow rate of
+a fluid"}%
+. lexicon(VolumeControlValve, LexNoun,
+          a_Quot_LBrace_v_o_l_u_m_e_Space_c_o_n_t_r_o_l_RBrace_Space_v_a_l_v_e_Quot)
+. subclass(VolumeControlValve, Valve)
+%{ElectricalComponent
+"A discrete &%ElectricalDevice for
+general usage, such as resistors, capacitors, diodes, transistors etc."}%
+. subclass(ElectricalComponent, ElectricalDevice)
+%{ElectricalCircuit
+"A complex &%ElectricalDevice consisting
+of several mutually interconnected electrical components."}%
+. subclass(ElectricalCircuit, ElectricalDevice)
+%{Amplifier
+"Electronic equipment that increases strength of
+signals passing through it; it can be modeled using a controlled
+source, or an operational amplifier."}%
+. lexicon(Amplifier, LexNoun, a_Quot_a_m_p_l_i_f_i_e_r_Quot)
+. subclass(Amplifier, ElectricalCircuit)
+%{FrequencyFilter
+"Alters the frequency spectrum of signals
+passing through it"}%
+. lexicon(FrequencyFilter, LexNoun,
+          a_Quot_f_r_e_q_u_e_n_c_y_Space_f_i_l_t_e_r_Quot)
+. subclass(FrequencyFilter, ElectricalCircuit)
+%{InvertingAmplifier
+"An &%Amplifier that changes the polarity	
+of the input signal."}%
+. lexicon(InvertingAmplifier, LexNoun,
+          a_Quot_i_n_v_e_r_t_i_n_g_Space_a_m_p_l_i_f_i_e_r_Quot)
+. subclass(InvertingAmplifier, Amplifier)
+%{NoninvertingAmplifier
+"An &%Amplifier that does not change the polarity	
+of the input signal."}%
+. lexicon(Amplifier, LexNoun,
+          a_Quot_n_o_n_Minus_i_n_v_e_r_t_i_n_g_Space_a_m_p_l_i_f_i_e_r_Quot)
+. subclass(NoninvertingAmplifier, Amplifier)
+%{Rectifier
+"electrical device that transforms alternating
+into direct current."}%
+. lexicon(Rectifier, LexNoun, a_Quot_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(Rectifier, ElectricalCircuit)
+%{SinglePhaseRectifier
+"A &%Rectifier of single phase AC
+voltage."}%
+. lexicon(SinglePhaseRectifier, LexNoun,
+          a_Quot_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(SinglePhaseRectifier, Rectifier)
+%{HalfWaveSinglePhaseRectifier
+"A &%SinglePhaseRectifier of
+that exploits only one polarity of the input power source."}%
+. lexicon(HalfWaveSinglePhaseRectifier, LexNoun,
+          a_Quot_h_a_l_f_Minus_w_a_v_e_Space_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(HalfWaveSinglePhaseRectifier, SinglePhaseRectifier)
+%{BridgeSinglePhaseRectifier
+"A &%SinglePhaseRectifier of
+that exploits both polarities of the input power source."}%
+. lexicon(BridgeSinglePhaseRectifier, LexNoun,
+          a_Quot_b_r_i_d_g_e_Space_s_i_n_g_l_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(BridgeSinglePhaseRectifier, SinglePhaseRectifier)
+%{DoublerSinglePhaseRectifier
+"A &%SinglePhaseRectifier of
+that exploits both polarities of the input power source."}%
+. lexicon(DoublerSinglePhaseRectifier, LexNoun,
+          a_Quot_d_o_u_b_l_e_r_Space_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(DoublerSinglePhaseRectifier, SinglePhaseRectifier)
+%{ThreePhaseRectifier
+"A &%Rectifier of single phase AC
+voltage."}%
+. lexicon(ThreePhaseRectifier, LexNoun,
+          a_Quot_t_h_r_e_e_Minus_p_h_a_s_e_Space_r_e_c_t_i_f_i_e_r_Quot)
+. subclass(ThreePhaseRectifier, Rectifier)
+%{SemiconductorComponent
+"An electrical device that exploits
+properties of semiconductors."}%
+. subclass(SemiconductorComponent, ElectricalComponent)
+%{OperationalAmplifier
+"A complex semiconductor device with
+behaviour similar to the &%IdealOperationalAmplifier."}%
+. lexicon(OperationalAmplifier, LexNoun,
+          a_Quot_o_p_e_r_a_t_i_o_n_a_l_Space_a_m_p_l_i_f_i_e_r_Quot)
+. subclass(OperationalAmplifier, ElectricalCircuit)
+%{Diode
+"A semiconductor device that consists of a p-n
+junction; it is used e.g. in rectifiers or demodulators."}%
+. subclass(Diode, SemiconductorComponent)
+. lexicon(Diode, LexNoun, a_Quot_d_i_o_d_e_Quot)
+%{ZenerDiode
+" "}%
+. subclass(ZenerDiode, Diode)
+. lexicon(ZenerDiode, LexNoun,
+          a_Quot_z_e_n_e_r_Space_d_i_o_d_e_Quot)
+%{LED
+"light emitted at a p-n junction is proportional 
+to the bias current; color depends on the material used"}%
+. subclass(LED, Diode)
+. lexicon(LED, LexNoun, a_Quot_L_E_D_Quot)
+. lexicon(LED, LexNoun,
+          a_Quot_l_i_g_h_t_Minus_e_m_i_t_t_i_n_g_Space_d_i_o_d_e_Quot)
+%{Transistor
+"A semiconductor device capable of amplification
+or switching."}%
+. lexicon(Transistor, LexNoun, a_Quot_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(Transistor, SemiconductorComponent)
+%{Base
+"the part of a transistor that separates the emitter 
+from the collector"}%
+. subclass(Base, Terminal)
+. lexicon(Base, LexNoun, a_Quot_b_a_s_e_Quot)
+. meronym(Base, BjtTransistor)
+%{Collector
+"the electrode in a transistor through which a 
+primary flow of carriers leaves the inter-electrode region"}%
+. subclass(Collector, Terminal)
+. lexicon(Collector, LexNoun, a_Quot_c_o_l_l_e_c_t_o_r_Quot)
+. meronym(Collector, BjtTransistor)
+%{Emitter
+"the electrode in a transistor where electrons originate"}%
+. subclass(Emitter, Terminal)
+. lexicon(Emitter, LexNoun, a_Quot_e_m_i_t_t_e_r_Quot)
+. meronym(Emitter, BjtTransistor)
+%{BjtTransistor
+"Bipolar transistor"}%
+. lexicon(BjtTransistor, LexNoun,
+          a_Quot_B_J_T_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(BjtTransistor, Transistor)
+%{FetTransistor
+"Field-effect transistor."}%
+. lexicon(FetTransistor, LexNoun,
+          a_Quot_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(FetTransistor, Transistor)
+%{JfetTransistor
+"Junction field-effect transistor."}%
+. lexicon(JfetTransistor, LexNoun,
+          a_Quot_J_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(JfetTransistor, FetTransistor)
+%{MosfetTransistor
+"Metal-oxyde semiconductor field-effect
+transistor."}%
+. lexicon(MosfetTransistor, LexNoun,
+          a_Quot_M_O_S_F_E_T_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(MosfetTransistor, FetTransistor)
+%{NpnTransistor
+"A &%BjtTransistor with N-P-N junctions."}%
+. lexicon(NpnTransistor, LexNoun,
+          a_Quot_N_P_N_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(NpnTransistor, BjtTransistor)
+%{PnpTransistor
+"A &%BjtTransistor with P-N-P junctions."}%
+. lexicon(PnpTransistor, LexNoun,
+          a_Quot_P_N_P_Space_t_r_a_n_s_i_s_t_o_r_Quot)
+. subclass(PnpTransistor, BjtTransistor)
+%{Thyristor
+"a &%SemiconductorComponent that consists of three
+p-n junctions; it is used e.g. in controlled rectifiers."}%
+. lexicon(Thyristor, LexNoun, a_Quot_t_h_y_r_i_s_t_o_r_Quot)
+. lexicon(Thyristor, LexNoun, a_Quot_t_h_y_r_i_s_t_e_r_Quot)
+. subclass(Thyristor, SemiconductorComponent)
+%{Controller
+"a mechanism that controls the operation of some
+device"}%
+. subclass(Controller, UnknownDomainDevice)
+. lexicon(Vehicle, LexNoun, a_Quot_v_e_h_i_c_l_e_Quot)
+%{Car
+"4-wheeled motor vehicle; usually propelled by
+an internal combustion engine"}%
+. lexicon(Car, LexNoun, a_Quot_c_a_r_Quot)
+. subclass(Car, Vehicle)
+%{Truck
+"an automotive vehicle suitable for hauling"}%
+. lexicon(Truck, LexNoun, a_Quot_t_r_u_c_k_Quot)
+. subclass(Truck, Car)
+%{Method
+"a way of doing something, esp. a systematic one;
+implies an orderly logical arrangement (usually in steps)."}%
+. subclass(Method, Procedure)
+%{MathematicalMethod
+"A &%Method that involves using
+mathematical aparatus."}%
+. subclass(MathematicalMethod, Method)
+%{FourierAnalysis
+"Computing a Fourier series for given
+periodic function"}%
+. lexicon(FourierAnalysis, LexNoun,
+          a_Quot_F_o_u_r_i_e_r_Space_a_n_a_l_y_s_i_s_Quot)
+. subclass(FourierAnalysis, MathematicalMethod)
+%{FourierSynthesis
+"Reconstruction of a periodic function
+from its Fourier series representation."}%
+. lexicon(FourierSynthesis, LexNoun,
+          a_Quot_F_o_u_r_i_e_r_Space_s_y_n_t_h_e_s_i_s_Quot)
+. subclass(FourierSynthesis, MathematicalMethod)
+%{Discretization
+"A method of converting continuous problem
+to a discrete one, loaded by some discretization error."}%
+. lexicon(Discretization, LexNoun,
+          a_Quot_d_i_s_c_r_e_t_i_z_a_t_i_o_n_Quot)
+. lexicon(Discretization, LexVerb, a_Quot_d_i_s_c_r_e_t_i_z_e_Quot)
+. subclass(Discretization, MathematicalMethod)
+%{Technique
+"A practical &%Method or art applied to some
+particular task"}%
+. subclass(Technique, Method)
+%{ElectricalEngineeringMethod
+"A &%Method used in electrical
+engineering for designing and constructing electrical devices."}%
+. lexicon(ElectricalEngineeringMethod, LexNoun,
+          a_Quot_LBrace_e_l_e_c_t_r_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_RBrace_Space_m_e_t_h_o_d_Quot)
+. subclass(ElectricalEngineeringMethod, Method)
+%{Pwm
+"Pulse-width modulation technique"}%
+. subclass(Pwm, ElectricalEngineeringMethod)
+%{EngineersSubprocess
+"a class of subprocesses that are needed to
+design and operate an engineering system"}%
+. subclass(EngineersSubprocess, IntentionalProcess)
+%{EngineersProcess
+"a process of designing, manufacturing and
+operating of an engineering system involving all stages of the life cycle."}%
+. subclass(EngineersProcess, EngineersSubprocess)
+%{SystemSpecification
+"a process of specifying requirements
+on a system"}%
+. lexicon(SystemSpecification, LexNoun,
+          a_Quot_s_y_s_t_e_m_Space_s_p_e_c_i_f_i_c_a_t_i_o_n_Quot)
+. subclass(SystemSpecification, EngineersSubprocess)
+%{SystemDesign
+"a process of designing an engineering system"}%
+. lexicon(SystemDesign, LexNoun,
+          a_Quot_s_y_s_t_e_m_Space_d_e_s_i_g_n_Quot)
+. lexicon(SystemDesign, LexNoun,
+          a_Quot_LBrace_d_e_s_i_g_n_Space_o_f_RBrace_Space_s_y_s_t_e_m_Quot)
+. subclass(SystemDesign, EngineersSubprocess)
+%{ControlDesignMethod
+"A class of control design method"}%
+. subclass(ControlDesignMethod, Method)
+%{RootLocus
+"Root-locus control design method"}%
+. subclass(RootLocus, ControlDesignMethod)
+. lexicon(RootLocus, LexNoun,
+          a_Quot_LBrace_r_o_o_t_Space_l_o_c_u_s_RBrace_Quot)
+%{Law
+"A generalization based on recurring facts or events 
+(in science or mathematics etc)"}%
+. subclass(Law, Proposition)
+%{NewtonsLaw
+"One of three basic laws of classical mechanics."}%
+. lexicon(NewtonsLaw, LexNoun,
+          a_Quot_N_e_w_t_o_n_'_s_Space_l_a_w_Quot)
+. subclass(NewtonsLaw, Law)
+%{NewtonsFirstLaw
+"A body remains at rest or in motion with
+a constant velocity unless acted upon by an external force"}%
+. lexicon(NewtonsFirstLaw, LexNoun,
+          a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_f_i_r_s_t_RBrace_Space_l_a_w_Quot)
+. subclass(NewtonsFirstLaw, NewtonsLaw)
+%{NewtonsSecondLaw
+"The rate of change of momentum is
+proportional to the imposed force and goes in the direction of
+the force"}%
+. lexicon(NewtonsSecondLaw, LexNoun,
+          a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_s_e_c_o_n_d_RBrace_Space_l_a_w_Quot)
+. subclass(NewtonsSecondLaw, NewtonsLaw)
+%{NewtonsThirdLaw
+"Action and reaction are equal and opposite."}%
+. lexicon(NewtonsThirdLaw, LexNoun,
+          a_Quot_LBrace_N_e_w_t_o_n_'_s_Space_t_h_i_r_d_RBrace_Space_l_a_w_Quot)
+. subclass(NewtonsThirdLaw, NewtonsLaw)
+%{MultipolePostulate
+"One of the postulates of the multipole
+modeling theory."}%
+. subclass(MultipolePostulate, Law)
+%{PostulateOfContinuity
+"The sum of through variables of
+poles of multipole section is equal to zero."}%
+. subclass(PostulateOfContinuity, MultipolePostulate)
+. lexicon(PostulateOfContinuity, LexNoun,
+          a_Quot_p_o_s_t_u_l_a_t_e_Space_LBrace_o_f_Space_c_o_n_t_i_n_u_i_t_y_RBrace_Quot)
+%{ConductorSubstance
+"A &%Substance that readily conducts
+electricity."}%
+. lexicon(ConductorSubstance, LexNoun,
+          a_Quot_c_o_n_d_u_c_t_o_r_Quot)
+. subclass(ConductorSubstance, Substance)
+%{InsulatorSubstance
+"a &%Substance such as glass or
+porcelain with negligible electrical conductivity."}%
+. lexicon(InsulatorSubstance, LexNoun,
+          a_Quot_i_n_s_u_l_a_t_o_r_Quot)
+. subclass(InsulatorSubstance, Substance)
+. lexicon(Computer, LexNoun, a_Quot_c_o_m_p_u_t_e_r_Quot)
+. lexicon(ComputerProgram, LexNoun,
+          a_Quot_LBrace_c_o_m_p_u_t_e_r_Space_p_r_o_g_r_a_m_RBrace_Quot)
+. lexicon(ComputerProgram, LexNoun, a_Quot_p_r_o_g_r_a_m_Quot)
+. subclass(ComputerProgram, ITAgent)
+. subclass(Human, ITAgent)
+%{ITAgent
+"agent capable of performing ITProcess"}%
+. subclass(ITAgent, Agent)
+%{ITProcess
+"A process performed on a computer by a human
+operator."}%
+. subclass(ITProcess, IntentionalProcess)
+%{"&%Each ITProcess is performed by a human on a computer."}%
+. instance(vPROCESS, ITProcess) =>
+      exists vAGENT: U; vPATIENT: U
+          . agent(vPROCESS, vAGENT)
+            /\ patient(vPROCESS, vPATIENT)
+            /\ instance(vAGENT, ITAgent)
+            /\ instance(vPATIENT, Computer)
+%{Installation
+"The process of deploying an application
+on a computer."}%
+. lexicon(Installation, LexNoun,
+          a_Quot_i_n_s_t_a_l_l_a_t_i_o_n_Quot)
+. lexicon(Installation, LexVerb, a_Quot_i_n_s_t_a_l_l_Quot)
+. subclass(Installation, ITProcess)
+%{UnInstallation
+"The process of removing of an installed
+application from a computer."}%
+. lexicon(UnInstallation, LexNoun,
+          a_Quot_u_n_i_n_s_t_a_l_l_a_t_i_o_n_Quot)
+. lexicon(UnInstallation, LexVerb, a_Quot_u_n_i_n_s_t_a_l_l_Quot)
+. subclass(UnInstallation, ITProcess)
+. lexicon(OperatingSystem, LexNoun,
+          a_Quot_o_p_e_r_a_t_i_n_g_Space_s_y_s_t_e_m_Quot)
+%{FileSystem
+"file system"}%
+. subclass(FileSystem, Group)
+. lexicon(FileSystem, LexNoun,
+          a_Quot_LBrace_f_i_l_e_Space_s_y_s_t_e_m_RBrace_Quot)
+. lexicon(ComputerDirectory, LexNoun, a_Quot_f_o_l_d_e_r_Quot)
+. lexicon(ComputerDirectory, LexNoun,
+          a_Quot_d_i_r_e_c_t_o_r_y_Quot)
+. subclass(ComputerFile, ContentBearingObject)
+. lexicon(ComputerFile, LexNoun, a_Quot_f_i_l_e_Quot)
+%{"file systems contain only files and folders"}%
+. instance(vFS, FileSystem) /\ member(vM, vFS) =>
+      instance(vM, ComputerFile)
+%{"folders contain only files and folders"}%
+. instance(vF, ComputerDirectory) /\ member(vM, vF) =>
+      instance(vM, ComputerFile)
+%{ApplicationDomain
+"set of application domains (medicine, physics, etc)"}%
+. subclass(ApplicationDomain, InternalAttribute)
+. lexicon(ApplicationDomain, LexNoun,
+          a_Quot_a_p_p_l_i_c_a_t_i_o_n_Space_d_o_m_a_i_n_Quot)
+. lexicon(ApplicationDomain, LexNoun, a_Quot_d_o_m_a_i_n_Quot)
+. lexicon(ApplicationDomain, LexNoun,
+          a_Quot_d_o_m_a_i_n_Space_o_f_Space_i_n_t_e_r_e_s_t_Quot)
+%{ScienceDomain
+"science (natural sciences, engineering, medicine...)"}%
+. subclass(ScienceDomain, ApplicationDomain)
+. lexicon(ScienceDomain, LexNoun,
+          a_Quot_s_c_i_e_n_c_e_Space_d_o_m_a_i_n_Quot)
+. lexicon(ScienceDomain, LexNoun, a_Quot_s_c_i_e_n_c_e_Quot)
+%{EngineeringDomain
+"engineering (mechanical, electrical)"}%
+. subclass(EngineeringDomain, ScienceDomain)
+. lexicon(EngineeringDomain, LexNoun,
+          a_Quot_e_n_g_i_n_e_e_r_i_n_g_Quot)
+. lexicon(EngineeringDomain, LexNoun,
+          a_Quot_e_n_g_i_n_e_e_r_i_n_g_Space_d_o_m_a_i_n_Quot)
+%{MechanicalEngineeringDomain
+"domain involving mechanical engineering"}%
+. subclass(MechanicalEngineeringDomain, EngineeringDomain)
+. lexicon(MechanicalEngineeringDomain, LexNoun,
+          a_Quot_m_e_c_h_a_n_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_Quot)
+%{FluidPowerDomain
+"fluid power (hydraulic) systems"}%
+. subclass(FluidPowerDomain, MechanicalEngineeringDomain)
+. lexicon(FluidPowerDomain, LexNoun,
+          a_Quot_f_l_u_i_d_Minus_p_o_w_e_r_Quot)
+. lexicon(FluidPowerDomain, LexNoun,
+          a_Quot_f_l_u_i_d_Minus_p_o_w_e_r_Space_s_y_s_t_e_m_s_Quot)
+%{ElectricalEngineeringDomain
+"domain involving electrical engineering"}%
+. subclass(ElectricalEngineeringDomain, EngineeringDomain)
+. lexicon(ElectricalEngineeringDomain, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_e_n_g_i_n_e_e_r_i_n_g_Quot)
+%{CircuitTheoryDomain
+"circuit theory"}%
+. subclass(CircuitTheoryDomain, ElectricalEngineeringDomain)
+. subclass(CircuitTheoryDomain, PhysicsDomain)
+. lexicon(CircuitTheoryDomain, LexNoun,
+          a_Quot_c_i_r_c_u_i_t_Space_t_h_e_o_r_y_Quot)
+%{ControlDomain
+"control"}%
+. subclass(ControlDomain, EngineeringDomain)
+. lexicon(ControlDomain, LexNoun, a_Quot_c_o_n_t_r_o_l_Quot)
+%{ElectroMechanicalDevicesDomain
+"electrical drives (motors)"}%
+. subclass(ElectroMechanicalDevicesDomain,
+           ElectricalEngineeringDomain)
+. subclass(ElectroMechanicalDevicesDomain,
+           MechanicalEngineeringDomain)
+. lexicon(ElectroMechanicalDevicesDomain, LexNoun,
+          a_Quot_e_l_e_c_t_r_o_Minus_m_e_c_h_a_n_i_c_a_l_Space_d_e_v_i_c_e_s_Quot)
+%{ElectricalDrivesDomain
+"electrical drives (motors)"}%
+. subclass(ElectricalDrivesDomain, ElectroMechanicalDevicesDomain)
+. lexicon(ElectricalDrivesDomain, LexNoun,
+          a_Quot_e_l_e_c_t_r_i_c_a_l_Space_d_r_i_v_e_s_Quot)
+%{RelaysDomain
+"relays"}%
+. subclass(RelaysDomain, ElectroMechanicalDevicesDomain)
+. lexicon(RelaysDomain, LexNoun, a_Quot_r_e_l_a_y_s_Quot)
+%{ElectronicsDomain
+"electronic circuits - electrical circuits 
+containing complex semiconductor components "}%
+. subclass(ElectronicsDomain, ElectricalEngineeringDomain)
+. lexicon(ElectronicsDomain, LexNoun,
+          a_Quot_e_l_e_c_t_r_o_n_i_c_s_Quot)
+%{PowerElectronicsDomain
+"power electronic circuits (power supplies etc.)"}%
+. subclass(PowerElectronicsDomain, ElectronicsDomain)
+. lexicon(PowerElectronicsDomain, LexNoun,
+          a_Quot_p_o_w_e_r_Space_e_l_e_c_t_r_o_n_i_c_s_Quot)
+%{NaturalSciencesDomain
+"natural sciences (mathematics, physics)"}%
+. subclass(NaturalSciencesDomain, ScienceDomain)
+. lexicon(NaturalSciencesDomain, LexNoun,
+          a_Quot_n_a_t_u_r_a_l_Space_s_c_i_e_n_c_e_s_Quot)
+%{MathematicsDomain
+"mathematics"}%
+. subclass(MathematicsDomain, NaturalSciencesDomain)
+. lexicon(MathematicsDomain, LexNoun,
+          a_Quot_m_a_t_h_e_m_a_t_i_c_s_Quot)
+%{PhysicsDomain
+"physics"}%
+. subclass(PhysicsDomain, NaturalSciencesDomain)
+. lexicon(PhysicsDomain, LexNoun, a_Quot_p_h_y_s_i_c_s_Quot)
+%{MechanicsDomain
+"basic (theoretic) mechanics"}%
+. subclass(MechanicsDomain, PhysicsDomain)
+. lexicon(MechanicsDomain, LexNoun, a_Quot_m_e_c_h_a_n_i_c_s_Quot)
+%{AstronomyDomain
+"astronomy"}%
+. subclass(AstronomyDomain, PhysicsDomain)
+. lexicon(AstronomyDomain, LexNoun, a_Quot_a_s_t_r_o_n_o_m_y_Quot)
+%{WebDocument
+"knowledge base document - a document in natural language 
+representing one piece of knowledge in the knowledge base"}%
+. subclass(WebDocument, ContentBearingObject)
+. lexicon(WebDocument, LexNoun,
+          a_Quot_k_n_o_w_l_e_d_g_e_Space_b_a_s_e_Space_d_o_c_u_m_e_n_t_Quot)
+. lexicon(WebDocument, LexNoun, a_Quot_d_o_c_u_m_e_n_t_Quot)
+. lexicon(WebDocument, LexNoun,
+          a_Quot_w_e_b_Space_d_o_c_u_m_e_n_t_Quot)
+%{WebDocumentAttribute
+"knowledge base document attribute"}%
+. subclass(WebDocumentAttribute, InternalAttribute)
+. lexicon(WebDocumentAttribute, LexNoun,
+          a_Quot_k_n_o_w_l_e_d_g_e_Space_b_a_s_e_Space_d_o_c_u_m_e_n_t_Space_a_t_t_r_i_b_u_t_e_Quot)
+. instance(vATTR, WebDocumentAttribute)
+  /\ attribute(vOBJ, vATTR) =>
+      instance(vOBJ, WebDocument)
+%{DocumentCategory
+"document category"}%
+. subclass(DocumentCategory, WebDocumentAttribute)
+. lexicon(DocumentCategory, LexNoun,
+          a_Quot_d_o_c_u_m_e_n_t_Space_c_a_t_e_g_o_r_y_Quot)
+%{SolvedExampleCategory
+"solved example"}%
+. instance(SolvedExampleCategory, DocumentCategory)
+. lexicon(SolvedExampleCategory, LexNoun,
+          a_Quot_s_o_l_v_e_d_Space_e_x_a_m_p_l_e_Quot)
+%{ArticleCategory
+"article"}%
+. instance(ArticleCategory, DocumentCategory)
+. lexicon(ArticleCategory, LexNoun, a_Quot_a_r_t_i_c_l_e_Quot)
+%{TutorialCategory
+"tutorial"}%
+. instance(TutorialCategory, DocumentCategory)
+. lexicon(TutorialCategory, LexNoun, a_Quot_t_u_t_o_r_i_a_l_Quot)
+%{LibraryModelCategory
+"library model"}%
+. instance(LibraryModelCategory, DocumentCategory)
+. lexicon(LibraryModelCategory, LexNoun,
+          a_Quot_l_i_b_r_a_r_y_Space_m_o_d_e_l_Quot)

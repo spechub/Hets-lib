@@ -1,0 +1,81 @@
+library Ontology/Dolce/CEPSet
+
+from Ontology/Dolce/DolceSimpl get Classical_Extensional_Parthood
+
+spec CEPSet =
+sorts At, Set 
+ops __union__,__difference__ : Set*Set->Set;
+    {__} : At -> Set
+preds __elem__:At*Set; __subset__ : Set*Set
+forall x,y:At; s,t:Set
+. exists z:At . x elem s %(nonempty)%
+. x elem {y} <=> x=y
+. s subset t <=> (forall x:At . x elem s => x elem t)
+. x elem (s union t) <=> (x elem s \/ x elem t)
+. x elem (s difference t) <=> (x elem s /\ x elem t)
+end
+
+%[
+view v1 : CEPSet to 
+   {Classical_Extensional_Parthood 
+    then
+   } =
+end
+]%
+
+view v2 : Classical_Extensional_Parthood  to 
+   {CEPSet
+    then
+    preds
+      PP(x:Set; y:Set) <=> x subset y /\  not x=y;
+      %% Overlap
+      Ov(x:Set; y:Set) <=> exists z:At. z elem x /\ z elem y;
+      %% Atom
+      At(x:Set) <=> exists y:At. x={y};
+      %%  Atomic Part
+      AtP(x:Set; y:Set) <=> x subset y /\  At(x);
+      %%  Binary Sum
+      Sum(z:Set; x:Set; y:Set) <=> z = x union y;
+      %%  Binary Difference
+      Dif(z:Set; x:Set; y:Set) <=> z = x difference y
+   } = s |-> Set, P |-> __subset__
+end
+
+from Basic/RelationsAndOrders get BooleanAlgebra, RichBooleanAlgebra
+
+view v3 :  Classical_Extensional_Parthood  to 
+   {RichBooleanAlgebra
+    then
+    sort NzElem = {x:Elem . not x=0 /\ not x=1}
+    preds
+      __<=__ : NzElem * NzElem;
+      PP(x:NzElem; y:NzElem) <=> x <= y /\  not x=y;
+      %% Overlap
+      Ov(x:NzElem; y:NzElem) <=> x cap y in NzElem;
+      %% Atom
+      At(x:NzElem) <=> not exists y:NzElem. PP(y,x);
+      %%  Atomic Part
+      AtP(x:NzElem; y:NzElem) <=> x <= y /\  At(x);
+      %%  Binary Sum
+      Sum(z:NzElem; x:NzElem; y:NzElem) <=> z = x cup y;
+      %%  Binary Difference
+      Dif(z:NzElem; x:NzElem; y:NzElem) <=> z = x cap (compl y)
+   } = s |-> NzElem, P |-> __<=__
+end
+
+view v4: BooleanAlgebra to
+   {Classical_Extensional_Parthood
+    then
+    free type Elem ::= sort s | 0 | 1
+    op __cap__ : Elem * Elem -> Elem
+    op __cup__ : Elem * Elem -> Elem
+    forall x,y,z:s
+    . x cap y = z <=> Dif(z,x,y)
+    . x cup y = z <=> Sum(z,x,y)
+    forall a:Elem
+    . a cap 0 = 0
+    . 0 cap a = 0
+    . a cup 0 = a
+    . 0 cup a = a
+   }
+end

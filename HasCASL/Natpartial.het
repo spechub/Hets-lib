@@ -1,0 +1,16 @@
+library Natpartial
+version 1.0
+
+from Basic/Numbers get Nat
+
+spec Natpartialtests = Nat
+then %implies
+  forall a,b,c,m,n:Nat
+  . pre(suc(n)) = n
+  . 5 -? 2 = 3
+  . (a * b) mod c = (a * (b mod c)) mod c
+  . (a * b) mod c = (a mod c) * (b mod c)
+  . (a * b) mod c = ((a mod c) * (b mod c)) mod c
+%%  . (a * b) div c = a * (b div c) + a * (b mod c) div c
+%%  . n * (m div n) = m - m mod n
+end

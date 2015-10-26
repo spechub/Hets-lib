@@ -1,0 +1,349 @@
+library EnCL/ExtParamExamples
+
+logic EnCL
+
+%% newton method with 2 functions
+spec E2 =
+     . y[I=0] := x^2 - o %(A1)%
+     . z[I=0] := -2*x %(B1)%
+     . y[I=1] := cos(x) %(A2)%
+     . z[I=1] := sin(x) %(B2)%
+     . x[I=1] := 10 %(C2)%
+     . x := 100 %(C1)%
+     . o := 3 %(offset)%  %% consider also o[I=0] := 3
+     . repeat
+       . x := x + y/z %(D)%
+     until abs(y) < 0.001
+
+    %% query for x alone is ambiguous, it makes only sense if we ask x[I=0] or x[I=1]
+end
+
+%% simplest repeat
+spec E4 =
+     . y := x/2 %(A)%
+     . x := 10 %(B)%
+     . x[I=0] := 12 %(C)%
+     . repeat
+       . x := y %(D)%
+     until abs(y) < 0.001
+end
+
+%% Example for Range Computation
+spec E5 =
+     . r[I>1] := 2 %(A)%
+     . r := 1 %(B)%
+     . p[I>0] := r %(C)%
+     . p := 20 %(D)%
+
+     . t := p+1 %(E)%
+
+     %% Q: How many ranges does exist for t?
+     %% A: 3; t[I=1]=1+1, t[I>1]=2+1, t=20+1
+end
+
+%% * EXAMPLES FOR OVERWRITING PARAMETER VALUES FOR TESTING ITS CONSEQUENCES
+
+spec E6 =
+     . z := 1 %(A)%
+     . z[I=2] := 30 %(B)%
+     . z[I=1] := 10 %(C)%
+     . x := z[I=1] + z[I=2] + z %(D)%
+end
+
+%% Good Example (Split on F=0)
+spec E7 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0] := 30 %(B)%
+     . y[I=1] := 10 %(C)%
+     . x := y[I=1] + y[I=0] %(D)%
+end
+
+%% Good Example 2 (Double Split, F=0, F=2)
+spec E8 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0,F=2] := 35 %(B.1)%
+     . y[I=0] := 30 %(B)%
+     . y[I=1] := 10 %(C)%
+     . x := y[I=1] + y[I=0] %(D)%
+end
+
+%% Good Example 3 (Symmetric Double Split, F=0)
+spec E80 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0,F=0] := 35 %(B.1)%
+     . y[I=0] := 30 %(B)%
+     . y[I=1] := 10 %(C)%
+     . x := y[I=1] + y[I=0] %(D)%
+end
+
+%% * PARTITIONING EXAMPLES
+spec E81 =
+     . c[I>0] := a[I=0] + b %(A)%
+     . b[I=1,F=0] := 20 %(B)%
+     . b[I>1,F=1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0,F>0] := 201 %(E)%
+     . a := 1 %(F)%
+end
+
+spec E821 =
+     . b[I>3] := 25 %(C)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+end
+
+spec E822 =
+     . b[I>3] := 25 %(C)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+end
+
+spec E82 =
+     . c[I>0] := a + b %(A)%
+     . c := a * b %(A1)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+%[ Expected ep-elimination outcome:
+     a1 = 201 , I>=0
+     a2 = 1   , C(I>=0)
+
+     b1 = 20  , I=1
+     b2 = 23  , I>1
+     b3 = 231 , C(Un (I=1, I>1))
+
+     c1 = a1 * b3, I=0
+     c2 = a1 + b1, I=1
+     c3 = a1 + b2, I>1
+     c4 = a2 * b3, C(I>=0)
+
+]%
+end
+
+spec E83 =
+     . c[I>0] := a + b %(A)%
+     . c := a[I=0] * b %(A1)%
+     . b[I=1] := 20 %(B)%
+     . b[I>1] := 23 %(C)%
+     . b := 231 %(D)%
+     . a[I>=0] := 201 %(E)%
+     . a := 1 %(F)%
+
+%[ Expected ep-elimination outcome:
+     a1 = 201 , I>=0
+     a2 = 1   , C(I>=0)
+
+     b1 = 20  , I=1
+     b2 = 23  , I>1
+     b3 = 231 , C(Un (I=1, I>1))
+
+     c1 = a1 * b3, C(I>0)
+     c2 = a1 + b1, I=1
+     c3 = a1 + b2, I>1
+
+]%
+end
+
+%% Good Example (fixing both dimensions)
+spec E9 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I=0] := 30 %(B)%
+     . y[I=1] := 10 %(C)%
+     . x := y[I=1] + y[F=0] %(D)%
+end
+
+%% allowed overlapping illustration
+spec E91 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I>0] := 30 %(B)%
+     . y[I>2] := 30 %(C)%
+     . y[I=1] := 10 %(D)%
+end
+
+%% forbidden overlapping illustration (A,B,C intersect nonempty without being inclusions)
+spec E92 =
+     . y[I=1,F=0] := 20 %(A)%
+     . y[I>0,F>2] := 30 %(B)%
+     . y[I>2] := 30 %(C)%
+     . y[I=1] := 10 %(D)%
+end
+
+
+%[ * PROPAGATION BREAK
+
+   For the propagation break to be handled easily we will interpret a [I-|] as:
+   - instantiate all occurrences of constants with the default value for I
+   e.g.
+       default(I) = 0
+       f[I-|] = c[I=1] + c + d[J=0] -> f = c[I=1] + c[I=0] + d[J=0, I=0]
+
+  This has the advantage to be reducible to the subset of EPs where no propagation breaks occur.
+]%
+
+%% 
+
+spec E84 =
+     . x := y + y[I=1]
+
+     . y[I=1] := 20
+     . y := 23
+
+     . z := x * y
+
+     . a := z + z[I=1]
+
+%[ Expected ep-elimination outcome:
+     y1 = 20 , I=1
+     y2 = 23 , C(I=1)
+
+     x1 = y1 + y1 , I=1
+     x2 = y2 + y1 , C(I=1)
+
+     z1 = x1 * y1  , I=1
+     z2 = x2 * y2  , C(I=1)
+
+     a1 = z1 + z1  , I=1
+     a2 = z2 + z1  , C(I=1)
+]%
+end
+
+spec E85 =
+     . x[I-|] := y + y[I=1]
+
+     . y[I=1] := 20
+     . y := 23
+
+     . z := x * y
+
+     . a := z + z[I=1]
+
+%[ Expected ep-elimination outcome:
+     y1 = 20 , I=1
+     y2 = 23 , C(I=1)
+
+     x1 = y2 + y1
+
+     z1 = x1 * y1  , I=1
+     z2 = x1 * y2  , C(I=1)
+
+     a1 = z1 + z1  , I=1
+     a2 = z2 + z1  , C(I=1)
+]%
+end
+
+
+spec E86 =
+    . x[J<=0] = t1
+    . x[J>1] = t2
+    . x[J=1,I>0] = t3
+    . x[J=1,I<=0] = t4
+
+    . y[I-|] = x^2
+    . y[I=0] = x^3
+
+    . z = x^2
+    . z[I=0] = x^3
+
+%[ Here we need a default value for I (because for x with J=1 there is no canonical choice):
+
+   Given default(I) = 0 gives us
+   this expected ep-elimination outcome:
+     x1 = t1, J<=0
+     x2 = t2, J>1
+     x3 = t3, In(I>0, J=1)
+     x4 = t4, In(I<=0, J=1)
+
+     y1 = x1^3 , In(I=0, J<=0)
+     y2 = x2^3 , In(I=0, J>1)
+     y3 = x4^3 , In(I=0, J=1)
+
+     y4 = x1^2 , In(C(I=0), J<=0)
+     y5 = x2^2 , In(C(I=0), J>1)
+     y6 = x4^2 , In(C(I=0), J=1)
+
+     z1 = x1^3 , In(I=0, J<=0)
+     z2 = x2^3 , In(I=0, J>1)
+     z3 = x4^3 , In(I=0, J=1)
+
+     z4 = x1^2 , In(C(I=0), J<=0)
+     z5 = x2^2 , In(C(I=0), J>1)
+     z6 = x3^2 , In(I>0, J=1)
+     z7 = x4^2 , In(I<=0, J=1)
+]%
+
+end
+
+%%spec E87 =
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%          Examples for problematic specifications
+%%          w.r.t. well-defined program evaluation
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%% 1. different independent traces (for different I-values)
+
+spec E90101 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x+1
+       until x > 50
+end
+
+%% 2. dependent, but sortable, different traces (for different I-values)
+%%
+%% sortable w.r.t. the extended parameters, all I-value neq to 0 depend on I=0!
+
+spec E90102 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x+x[I=0]
+       until x > 50
+end
+
+%% 3. interdependent (unsortable) different traces (for different I-values)
+%%
+%% unsortable because x[I=0] depends on x[I=1] and x[I=1] depends on x[I=0]
+
+spec E90103 =
+     . x[I=0] = 10
+     . x[I>0] = 20
+     . repeat
+       . x := x[I=0]+x[I=1]
+       until x > 50
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 
+%%          Examples for problematic specifications
+%%          w.r.t. EP elimination in program part
+%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% Problem: what to use for x in until-part (consider context I=1) ?
+%% Solution1: only evaluate loops/programs for an I which is updated in the body, here I>1.
+%% Solution2: use explicit annotations for loops/programs for which I to evaluate them.
+spec E90201 =
+     . x = 1
+     . y = 2
+     . repeat
+       . x[I>1] := x+y
+       until x > 50
+end
+

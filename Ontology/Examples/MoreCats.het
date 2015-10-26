@@ -1,0 +1,43 @@
+logic OWL
+spec Cats =
+     ObjectProperty: isFaster
+     Characteristics: Transitive, Irreflexive
+
+     Class: Cheetah
+     SubClassOf: Carnivore, isFaster some Tiger
+     DisjointWith: Tiger
+
+     Class: Carnivore
+
+     Class: Tiger
+     SubClassOf: Carnivore
+     DisjointWith: Cheetah
+end
+
+logic CASL
+spec MoreCats =
+     sort Thing
+     pred Universal : Thing * Thing
+     pred Self : Thing
+     pred Cheetah, Tiger, Lion : Thing
+     pred isFaster  : Thing * Thing
+     pred Carnivore : Thing
+     pred Nothing : Thing
+     pred Thing : Thing
+     forall a,b,c :Thing
+     . not(Nothing(a))
+     . Thing(a)
+     . Cheetah (a) => Carnivore (a)
+     . Tiger   (a) => Carnivore (a)
+     . Lion    (a) => Carnivore (a)
+     . Cheetah(a)  => exists b : Thing . isFaster(a,b) /\ Tiger(b)
+     . Tiger(a)    => exists b : Thing . isFaster(a,b) /\ Lion(b)
+     . not (Tiger(a) /\ Cheetah(a))
+     . not (Tiger(a) /\ Lion(a))
+     . not (Lion(a) /\ Cheetah(a))
+     . not isFaster(a, a) 
+     . isFaster(a, b) /\ isFaster(b, c) => isFaster(a, c) 
+end
+
+logic CASL
+view cview : Cats to {MoreCats and logic OWL: {}}

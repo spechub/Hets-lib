@@ -1,0 +1,30 @@
+distributed-ontology Blocks_with_Circumscription
+logic CommonLogic
+
+ontology Blocks = 
+  %% FIXED PART 
+    (and (Block B1) (Block B2) (not (= B1 B2))) 
+        %% B1 and B2 are different blocks
+then
+  %% CIRCUMSCRIBED PART
+  minimize {
+    (Ab B1) %% B1 is abnormal
+  }
+then
+  %% VARYING PART
+  (forall (x) (if (and (Block x) (not (Ab x))) (Ontable x)))
+        %% Normally, a block is on the table
+then %implied
+  (Ontable B2)  %% B2 is on the table
+end
+
+ontology Blocks_Alternative =
+  (and (Block B1) (Block B2) (not (= B1 B2)))
+          %% B1 and B2 are different blocks
+  (Ab B1) %% B1 is abnormal
+  (forall (x) (if (and (Block x) (not (Ab x))) (Ontable x)))
+          %% Normally, a block is on the table
+  minimize Ab %% var Ontable
+then %implies
+  (Ontable B2)  %% B2 is on the table
+end

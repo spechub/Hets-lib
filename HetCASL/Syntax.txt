@@ -1,0 +1,300 @@
+Examples for HetCASL syntax
+---------------------------
+
+library VariousReals
+
+logic CASL
+
+from Basic/Numbers get Nat
+from Basic/Algebra_I get OrderedField
+
+Explicit translations
+---------------------
+logic HasCASL
+
+spec DefineHigherOrderReal1 = 
+   logic CASL : Nat with logic -> HasCASL
+and logic CASL OrderedField with logic -> HasCASL with Elem |-> Real 
+then ...
+
+ %% Scope of "logic CASL" is just the following GROUP-SPEC
+
+Implicit translations
+---------------------
+
+logic HasCASL
+
+spec DefineHigherOrderReal1 = 
+  Nat
+  and  OrderedField with Elem |-> Real 
+then ...
+
+with versus hide
+----------------
+
+spec Real =
+  logic CASL : Nat with logic -> HasCASL
+  then ... %%definition of reals
+  hide logic -> CASL  %% projection back to CASL
+end
+
+Named translations
+------------------
+
+spec Sp =
+  logic CASL : Nat with logic encoding1:CASL -> HasCASL
+and
+  logic CASL : Nat with logic encoding2:CASL -> HasCASL,
+  type sort Nat |-> Nat2
+end
+
+
+Making the source explicit
+--------------------------
+
+spec Sp =
+  logic CASL : Nat with logic CASL -> HasCASL
+and
+  logic CASL : Nat with logic CASL -> HasCASL
+  with type Nat |-> Nat2
+end
+
+
+Just use the name of the logic translation
+------------------------------------------
+
+spec Sp =
+  logic CASL : Nat with logic encoding1
+and
+  logic CASL : Nat with logic encoding2
+  with type Nat |-> Nat2
+end
+
+Join two withs in one
+---------------------
+
+spec Sp =
+  logic CASL : Nat with logic encoding1
+and
+  logic CASL : Nat with logic encoding2, type Nat |-> Nat2
+end
+
+Views: intra, inter, intra
+--------------------------
+
+view v : {logic CASL : SPEC1} to SPEC2 =
+  op f:s->t |-> g,  %% CASL syntax
+  logic CASL -> HasCASL,
+  op p:Pred(s) |-> q  %% HasCASL syntax
+end
+
+Sublogics
+---------
+
+spec Nat =
+  logic CASL.PCFOL= :
+  free type Nat ::= 0 | suc(pre:?Nat)
+  hide logic -> CASL.CFOL=  %% Hides the operation pre
+end
+
+spec Nat =
+  free type Nat ::= 0 | suc(pre:?Nat)
+  hide logic -> CASL.Eq=  %% Hides the operation pre and axioms (which still take effect)
+end
+
+Larger example
+--------------
+
+library VariousReals
+
+logic CASL
+
+from Basic/Numbers get Nat
+from Basic/Algebra_I get OrderedField
+
+logic HasCASL
+
+%% Reals via convergence of Cauchy sequences
+spec DefineHigherOrderReal1 = 
+  Nat  %% implicitly coerced from CASL to HasCASL
+and OrderedField with Elem |-> Real 
+then
+  ops  __ < __ : Pred(Real * Pred(Real)); 
+       __ < __ : Pred(Pred(Real) * Real); 
+       isBounded : Pred(Pred(Real)); 
+       __ < __ : Pred(Real * (Nat -> Real)); 
+       __ < __ :  Pred((Nat -> Real * Real); 
+       isBounded : Pred(Nat -> Real) 
+
+  forall r,s:Real; M:Pred(Real); a:Nat -> Real 
+  . M < r <=> forall s:Real . M(s) => s < r 
+  . r < M <=> forall s:Real . M(s) => r < s 
+  . isBounded(M) <=> exists ub,lb:Real . lb < M /\ M < ub 
+  . a < r <=> forall n:Nat . a(n) < r 
+  . r < a <=> forall n:Nat . r < a(n) 
+  . isBounded(a) <=> exists ub,lb:Real . lb < a /\ a < ub 
+  %% weak choice: 
+  . not isBounded(M) => exists a:Nat -> Real. not isBounded(a) /\ forall n:Nat. M(a(n)) 
+then
+  ops partialSums : (Nat -> Real) -> Nat -> Real 
+  forall n:Nat; r:Real; a:Nat -> Real 
+  . partialSums(a)(0) = a(0) 
+  . partialSums(a)(succ(n)) = partialSums(a)(n) + a(succ(n)) 
+  %% Convergence, infinite sums, and Cauchy sequences: 
+  ops lim,sum : Nat -> Real ->? Real 
+  ops __ -> __ : Pred ((Nat -> Real) * Real); 
+      converges,cauchy : Pred(Nat -> Real) 
+  forall r:Real; a:Nat -> Real 
+  %% Convergence of a sequence: 
+  .  a->r <=> 
+        forall epsilon:Real . epsilon > 0 => 
+        ( exists n:Nat . forall m:Nat . 
+          m > n => abs(a(m) - r) < epsilon ) 
+  . lim(a)=r <=> a->r 
+  . converges(a) <=> def lim(a) 
+  %% infinite sums: 
+  . sum(a) = lim(partialSums(a)) 
+  %% Cauchy sequences: 
+  . cauchy(a) <=> 
+        forall epsilon:Real . epsilon > 0 => 
+        (exists n:Nat . forall m,k:Nat . 
+        m > n /\ k > n => abs(a(m) - a(k)) < epsilon ) 
+then
+  %% completeness axiom: every Cauchy sequence converges
+  forall a:Nat -> Real 
+  . cauchy(a) => converges(a) 
+end
+
+%% Reals via suprema and infima of bounded sets
+spec DefineHigherOrderReal2 = 
+  OrderedField with Elem |-> Real 
+then
+  ops __ < __ : Pred(Real * Pred(Real)); 
+      __ < __ : Pred(Pred(Real) * Real); 
+      isBounded : Pred(Pred(Real)); 
+      inf,sup : Pred(Real) ->? Real 
+  forall r,s:Real; M:Pred(Real) 
+  . M < r <=> forall s:Real . M(s) => s < r 
+  . r < M <=> forall s:Real . M(s) => r < s 
+  . inf(M)=r <=> r < M /\ forall s:Real . s < M => s < r 
+  . sup(M)=r <=> M < r /\ forall s:Real . M < s => r < s 
+  . isBounded(M) <=> exists ub,lb:Real . lb < M /\ M < ub 
+  %% completeness: every bounded set has a supremum and an infimum
+  . isBounded(M) => def inf(M) /\ def sup(M) 
+end
+
+
+
+logic CoCASL
+
+%% Reals coalgebraically
+spec DefineCoCASLReal1 =
+  Nat
+then
+  free type Bit ::= 0 | 1
+  cofree types BinSeq ::= (head:Bit; tail:BinSeq)
+               PreReal ::= (beforeComma:Nat; afterComma:BinSeq)
+  generated type Real ::= mkReal(PreReal)
+
+  %% identify binseqs with a trailing sequence of ones with those with zeros
+  op __[__] : BinSeq * Nat  -> Bit
+  preds trailingOnes : PreReal
+        __normalizesTo__ : PreReal * PreReal
+  forall n:Nat; s:BinSeq
+  . b[0] = head(b)
+  . b(suc(n)) = tail(b)[n]
+  var p,p1,p2:PreReal
+  . trailingOnes(p) <=> exists n:Nat . forall m:Nat . n<m => afterComma(r)[m]=1
+  . mkReal(p1)=mkReal(p2) <=> 
+    (not trailingOnes(p1) /\ p1=p2)
+    \/
+    (trailingOnes(p1) /\ p1 normalizesTo p2)
+    \/
+    (trailingOnes(p2) /\ p2 normalizesTo p1)
+  %%  . p1 normalizesTo p2 <=> details need to be filled in
+ 
+  %% Provide operations of an ordered field
+  preds __<__ : Bit * Bit;
+        __<__ : BinSeq * BinSeq;
+        __<__ : PreReal * PreReal
+        __<__ : Real * Real        
+  ops __+__ : Bit * Bit -> Bit
+      carry : Bit * Bit -> Bit
+      __+__ : BinSeq * BinSeq -> BinSeq
+      carry : BinSeq * BinSeq -> Bit
+      0,1 : PreReal;
+      __+__, __*__ : PreReal * PreReal -> PreReal
+      0,1 : Real;
+      __+__, __*__ : Real * Real -> Real
+  forall p1,p2:PreReal; r1,r2:Real; b1,b2:BinSeq; bit1,bit2:Bit; n:Nat
+  . bit1<bit2 <=> (bit1=0 /\ bit2=1)
+  . 0:Bit + 0 = 0
+  . 0:Bit + 1 = 1
+  . 1:Bit + 0 = 1
+  . 1:Bit + 1 = 0
+  . carry(0,0) = 0
+  . carry(0,1) = 0
+  . carry(1,0) = 0
+  . carry(1,1) = 1
+  . b1<b2 <=> head(b1)<head(b2) \/ (head(b1)=head(b2) /\ tail(b1)<tail(b2)) 
+  . p1<p2 <=> beforeComma(p1)<beforeComma(p2) \/ 
+              (beforeComma(p1)=beforeComma(p2) /\ afterComma(p1)<afterComma(p2))
+  . beforeComma(0) = 0
+  . afterComma(0)[n] = 0
+  . beforeComma(1) = 1
+  . afterComma(1)[n] = 0
+  . beforeComma(p1+p2) = beforeComma(p1)+beforeComma(p2)+
+      1 when carry(afterComma(p1),atferComma(p2))=1 else 0
+  . afterComma(p1+p2) = afterComma(p1)+afterComma(p2)
+  . head(b1+b2) = head(b1)+head(b2)+carry(tail(b1),tail(b2))
+  . tail(b1+b2) = tail(b1)+tail(b2)
+  %% . carry(b1,b2) =  details need to be filled in
+  %% spec of * needs to be filled in
+  
+  %% operations carry over from PreReals to Reals
+  . 0 = mkReal(0)
+  . 1 = mkReal(1)
+  . mkReal(p1)+mkReal(p2) = mkReal(p1+p2)
+  . mkReal(p1)*mkReal(p2) = mkReal(p1*p2)
+  . mkReal(p1)<mkReal(p2) <=> p1<p2
+
+end
+
+logic HasCASL
+
+view RealEquivalence0 : 
+     { DefineHigherOrderReal1 
+       reveal sort Real, ops 0,1,__+__,__*__, __<__ }
+     to 
+     DefineHigherOrderReal2
+end
+
+
+view RealEquivalence1 : 
+     { DefineHigherOrderReal1 
+       reveal sort Real, ops 0,1,__+__,__*__,__<__
+       hide logic -> CASL }
+     to     
+     { logic CoCASL: DefineCoCASLReal1
+       hide logic -> CASL }
+end
+
+%% Should we provide the following alternative notation?
+
+view RealEquivalence1a : 
+     { DefineHigherOrderReal1 
+       reveal sort Real, ops 0,1,__+__,__*__, __<__
+       hide logic -> CASL}
+     to 
+     DefineCoCASLReal1 =
+     logic CASL -> CoCASL
+end
+
+view RealEquivalence2 : 
+     { DefineHigherOrderReal2 
+       reveal sort Real, ops 0,1,__+__,__*__, pred __<__
+       hide logic -> CASL }
+     to 
+     { logic CoCASL: DefineCoCASLReal1
+       hide logic -> CASL }
+end

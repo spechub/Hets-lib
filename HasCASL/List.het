@@ -1,0 +1,110 @@
+library HasCASL/List 
+
+%% HaskellLibs
+
+logic HasCASL
+
+spec Nat =
+
+  free type Nat ::= 0 | Suc Nat
+
+spec Bool = 
+
+  free type Bool ::= True | False
+
+
+spec Composition =
+  
+   ops __o__ : forall a, b, c:Type . 
+                (b ->? c) * (a ->? b) -> (a ->? c);
+
+  forall a, b, c : Type; 
+         f       : b ->? c; 
+         g       : a ->? b
+   . f o g = \ x:a . f (g x)               %(comp)%
+
+
+spec List = Nat and Bool and Composition then
+
+ var a : Type
+ free type List a ::= Nil | Cons a (List a)
+
+ ops length     : forall a:Type . List a -> Nat;
+     head       : forall a:Type . List a ->? a;
+     foldr      : forall a, b:Type 
+                    . (a * b ->? b) * b * List a ->? b;
+     foldl      : forall a, b:Type 
+                    . (a * b ->? a) * a * List b ->? a;
+     map        : forall a, b:Type 
+                    . (a ->? b) * List a ->? List b;
+     filter     : forall a:Type 
+                    . (a ->? Bool) * List a ->? List a;
+     __++__     : forall a:Type 
+                    . List a * List a -> List a;
+     zip        : forall a, b:Type 
+                    . List a * List b -> List (a * b);
+     unzip      : forall a, b:Type 
+                    . List (a * b) -> (List a * List b)
+
+
+ forall a, b : Type; 
+        f    : a * b ->? b; 
+        g    : a * b ->? a;
+        h    : a ->? b; 
+        p    : a ->? Bool; 
+        x,t  : a; 
+        xs,l : List a; 
+        z,s  : b; 
+        zs   : List b; 
+        ps   : List (a * b)
+  . length (Nil : List a) = 0              %(length_nil)%
+  . length (Cons x xs) = Suc(length xs)    %(length_cons)%
+  . not def head (Nil : List a)            %(not_def_head)%
+  . head (Cons x xs) = x                   %(head_def)%
+  . foldr (f, s, Nil) = s                  %(foldr_nil)%
+  . foldr (f, s, Cons x xs) 
+      = f (x, (foldr (f, s, xs)))          %(foldr_cons)%
+  . foldl (g, t, Nil) = t                  %(foldl_nil)%
+  . foldl (g, t, Cons z zs) 
+      = foldl (g, (g (t, z)), zs)          %(foldl_cons)%
+  . map (h, Nil) = Nil                     %(map_nil)%
+  . map (h, Cons x xs) 
+      = (Cons (h x) (map (h, xs)))         %(map_cons)%
+  . filter (p, Nil) = Nil                  %(filter_nil)%
+  . filter (p, Cons x xs) = 
+      case (p x) of True  -> Cons x (filter (p, xs))
+                  | False -> 
+                      filter (p, xs)       %(filter_cons)%
+  . Nil ++ l = l                           %(++_nil)%
+  . (Cons x xs) ++ l = Cons x (xs ++ l)    %(++_cons)%
+  . zip (Nil : List a, l) = Nil            %(zip_nil)%
+  . zip (Cons x xs, l) = 
+      case l of Nil       -> Nil
+              | Cons y ys -> 
+                  Cons (x,y) (zip (xs, ys)) %(zip_cons)%
+  . unzip (Nil : List (a * b)) = (Nil, Nil) %(unzip_nil)%
+  . unzip (Cons (x,z) ps) = 
+      let (ys, zs) = unzip ps 
+        in (Cons x ys, Cons z zs)           %(unzip_cons)%
+
+  then %implies
+
+  forall a, b, c : Type; 
+         f       : a ->? b; 
+         g       : b ->? c; 
+         h       : a * a ->? a; 
+         i       : a * a ->? a; 
+         p       : b ->? Bool; 
+         xs,zs   : List a;
+         ys      : List b;
+         z, e    : a;
+         xxs     : List (List a)
+   . foldl (i, e, (xs ++ zs)) 
+       = foldl (i, foldl (i, e, xs), zs)    %(foldl_decomp)%
+   . map (f, (xs ++ zs)) 
+       = (map (f, xs)) ++ (map (f, zs))     %(map_decomp)%
+   . map (g o f, xs) = map (g, map (f, xs)) %(map_functor)%
+   . filter (p, map (f,xs)) 
+       = map (f, filter ((p o f), xs))      %(filter_prom)%
+   . length xs = length ys => 
+       unzip (zip (xs, ys)) = (xs, ys)      %(zip_spec)%

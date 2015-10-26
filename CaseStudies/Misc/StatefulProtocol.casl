@@ -1,0 +1,278 @@
+library CaseStudies/Misc/StatefulProtocol version 0.1
+
+from Basic/Numbers version 0.7 get Int
+from Basic/SimpleDatatypes version 0.7 get Boolean
+from Basic/StructuredDatatypes version 0.7 get String, List
+
+from CaseStudies/Misc/Prerequisites version 0.1 get Prerequisites
+from CaseStudies/Misc/Stateful version 0.1 get Stateful
+
+spec StatefulProtocol =
+
+  %% -------------------------------------------------------------------------
+  %% Datatypes and Lists needed by PFS features
+  %% -------------------------------------------------------------------------
+
+	{ List[Prerequisites fit sort Elem |-> Filename] 
+	  with List[Filename] |-> OfflineList }
+  then  
+	{ List[{String then 
+		free type ExtAttribute::= ExtAttr (name:String; val:String)}
+		fit sort Elem |-> ExtAttribute ]  
+	  with List[ExtAttribute] |-> ExtAttributes }
+  then
+	{ List[sort Entry fit sort Elem |-> Entry]
+          with List[Entry] |-> DirList }
+  then
+	{ List[sort EntryPlus fit sort Elem |-> EntryPlus]
+	  with List[EntryPlus] |-> DirListPlus }
+  then
+  	free type
+	  LockType 	::= Set | Clear | Break;
+	  Filehandle 	::= FH (server_id:Int; server_fh:FS_Filehandle)
+
+  %% -------------------------------------------------------------------------
+  %% Some sorts
+  %% -------------------------------------------------------------------------
+
+  %% FIXME: there should be no sorts, only free types, a protocol spec
+  %%        should say exactly what is transmitted over the network
+
+  sorts
+	Data, FS_Filehandle;
+
+  %% -------------------------------------------------------------------------
+  %% Datatypes taken from NFSv3 expressed as free types
+  %% -------------------------------------------------------------------------
+
+  free type
+	Attributes   	::= Attr (ftype:FType; mode:Mode; nlink:Int; uid:Uid; 
+				  gid:Gid; size:Size; used:Size; fsid:Int;
+				  fileid: FileId; atime:Time; mtime:Time;
+				  ctime:Time);
+	FType		::= Reg | Dir | Lnk | Sock | Fifo;
+	Time		::= Time (seconds:Int; nanoseconds:Int);
+	PosixAttributes	::= PAttr (linkmax:Int; name_max:Int; no_trunc:Boolean;
+				  chown_restr:Boolean; case_insens:Boolean; 
+				  case_preserv:Boolean);
+	How		::= Unchecked | Guarded (obj_attr:?Attributes) 
+			  | Exclusive (verf:?CreateVerf);
+	Entry		::= Entry (id:FileId; name:Filename);
+	EntryPlus	::= EntryPlus (id:FileId; name:Filename;
+			               attr:Attributes; fh:Filehandle);
+	FSStat		::= FSStat (attr:Attributes; total_bytes:Size;
+				    free_bytes:Size; avail_bytes:Size; 
+				    total_files:Size; free_files:Size;
+				    avail_files:Size);
+	FSInfo		::= FSInfo(attr:Attributes; rtmax:Int; rtpref:Int;
+				   rtmult:Int; wtmax:Int; wtpref:Int;
+				   wtmult:Int; max_file_size:Size;
+				   time_delta:Time; prop:Int)
+  %% -------------------------------------------------------------------------
+  %% Request messages to be sent from PU to QM
+  %% -------------------------------------------------------------------------
+
+  free type	
+	PFS_Request	::= Req (user:Uid; req:PFS_Command);
+	PFS_Command	::= GetAttrArg (fh:?Filehandle)
+			  | SetAttrArg (fh:?Filehandle; new_attr:?Attributes)
+			  | LookupArg (dir_fh:?Filehandle; name:?Filename)
+			  | AccessArg (fh:?Filehandle; req_bits:?AccessBits)
+			  | ReadLinkArg (fh:?Filehandle)
+			  | ReadArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | WriteArg (fh:?Filehandle; off:?Offset; cnt:?Count; 
+                                      data:?Data)
+			  | CreateArg (fh:?Filehandle; name:?Filename; how:?How)
+			  | MkDirArg (new_fh:?Filehandle; name:?Filename; 
+                                      new_attr:?Attributes)
+			  | SymlinkArg (dir_fh:?Filehandle; name:?Filename; 
+                                        new_attr:?Attributes; path:?Path)
+			  | RemoveArg (dir_fh:?Filehandle; name:?Filename)
+			  | RmDirArg (dir_fh:?Filehandle; name:?Filename)
+			  | RenameArg (dir_fh1:?Filehandle; name:?Filename; 
+                                       dir_fh2:?Filehandle; new_name:?Filename)
+			  | LinkArg (fh1:?Filehandle; fh2:?Filehandle; 
+                                     name:?Filename)
+			  | ReadDirArg (fh:?Filehandle)
+			  | ReadDirPlusArg (fh:?Filehandle)
+			  | FSStatArg (fh:?Filehandle)
+			  | FSInfoArg (fh:?Filehandle)
+			  | PathConfArg (fh:?Filehandle)
+			  | CommitArg (fh:?Filehandle; off:?Offset; cnt:?Count)
+			  | GetAttrPlusArg (fh:?Filehandle)
+			  | SetAttrPlusArg (fh:?Filehandle; ex:?ExtAttributes) 
+			  | GetOfflineArg
+			  | SetOfflineArg (list:?OfflineList)
+			  | GetLockArg (fh:?Filehandle)
+			  | SetLockArg (fh:?Filehandle; which:?LockType)
+			  | MountArg (path:?Path)
+			  | UMountArg (fh:?Filehandle)
+
+  %% -------------------------------------------------------------------------
+  %% Return messages to be sent from QM to PU upon a request
+  %% -------------------------------------------------------------------------
+
+  free type
+        PFS_Return	::= Ret (err:Errno; val:PFS_Answer);
+        PFS_Answer	::= GetAttr (attr:?Attributes)
+			  | SetAttr (attr:?Attributes)
+			  | Lookup (new_fh:?Filehandle; attr:?Attributes;
+			            dir_attr:?Attributes)
+			  | Access (attr:?Attributes; ans_bits:?AccessBits)
+			  | ReadLink (attr:?Attributes; path:?Path)
+			  | Read (attr:?Attributes; count:?Count; eof:?Boolean;
+			          data:?Data)
+			  | Write (attr:?Attributes; count:?Count)
+			  | Create (new_fh:?Filehandle; attr:?Attributes;
+			            dir_attr:?Attributes)
+			  | MkDir (new_fh:?Filehandle; attr:?Attributes;
+			           dir_attr:?Attributes)
+			  | Symlink (new_fh:?Filehandle; attr:?Attributes;
+			             dir_attr:?Attributes)
+			  | Remove (dir_attr:?Attributes)
+			  | RmDir (dir_attr:?Attributes)
+			  | Rename (old_attr:?Attributes; new_attr:?Attributes)
+			  | Link (attr:?Attributes; dir_attr:?Attributes)
+			  | ReadDir (attr:?Attributes; list:?DirList)
+			  | ReadDirPlus (attr:?Attributes; list:?DirListPlus)
+			  | FSStat (fsinfo:?FSStat)
+			  | FSInfo (fsinfo:?FSInfo)
+			  | PathConf (attr:?Attributes; posix:?PosixAttributes)
+			  | Commit (attr:?Attributes)
+			  | GetAttrPlus (ex:?ExtAttributes)
+        		  | SetAttrPlus (ex:?ExtAttributes)
+			  | GetOffline (offline:?OfflineList)
+        		  | SetOffline (offline:?OfflineList)
+        	  	  | GetLock (which:?LockType)
+        		  | SetLock
+			  | Mount (fh:?Filehandle)
+			  | UMount
+
+and
+  Stateful[sort PFS_Return]
+and
+  Stateful[sort PFS_Request]
+then
+
+  %% -------------------------------------------------------------------------
+  %% Operation do_protocol represents a message exchange between PU and QM,
+  %% PU sends a request and QM answers with a return message
+  %% -------------------------------------------------------------------------
+
+  op
+    do_protocol : Stateful[PFS_Request] -> Stateful[PFS_Return];
+
+  %% -------------------------------------------------------------------------
+  %% Axioms that specify which return messages belongs to a specific request,
+  %% they have to proven for QM's implementation
+  %% -------------------------------------------------------------------------
+
+  forall u:Uid; w1,w2:World
+
+  . forall fh:Filehandle . (exists e:Errno; a:Attributes .
+	do_protocol(sf(w1,Req(u,GetAttrArg(fh)))) = sf(w2,Ret(e,GetAttr(a))))
+
+  . forall fh:Filehandle; a:Attributes . (exists e:Errno; b:Attributes .
+	do_protocol(sf(w1,Req(u,SetAttrArg(fh,a)))) = sf(w2,Ret(e,SetAttr(b))))
+
+  . forall fh:Filehandle; n:Filename .
+      (exists e:Errno; d,oo:Attributes; f:Filehandle .
+	do_protocol(sf(w1,Req(u,LookupArg(fh,n)))) 
+                                          = sf(w2,Ret(e,Lookup(f,oo,d))))
+
+  . forall fh:Filehandle; b:AccessBits .
+      (exists e:Errno; a:Attributes; bits:AccessBits .
+	do_protocol(sf(w1,Req(u,AccessArg(fh,b)))) 
+                                          = sf(w2,Ret(e,Access(a,bits))))
+
+  . forall fh:Filehandle . (exists e:Errno; a:Attributes; p:Path .
+	do_protocol(sf(w1,Req(u,ReadLinkArg(fh)))) 
+                                          = sf(w2,Ret(e,ReadLink(a,p))))
+
+  . forall fh:Filehandle; o:Offset; c:Count .
+      (exists e:Errno; att:Attributes; cnt:Count; eof:Boolean; d:Data .
+	do_protocol(sf(w1,Req(u,ReadArg(fh,o,c)))) 
+                                          = sf(w2,Ret(e,Read(att,cnt,eof,d))))
+
+  . forall fh:Filehandle; o:Offset; c:Count; d:Data .
+      (exists e:Errno; att:Attributes; cnt:Count .
+	do_protocol(sf(w1,Req(u,WriteArg(fh,o,c,d)))) 
+                                          = sf(w2,Ret(e,Write(att,cnt))))
+
+  . forall fh:Filehandle; n:Filename; h:How .
+      (exists e:Errno; f:Filehandle; a,b:Attributes .
+	do_protocol(sf(w1,Req(u,CreateArg(fh,n,h)))) 
+                                          = sf(w2,Ret(e,Create(f,a,b))))
+
+  . forall fh:Filehandle; n:Filename; a:Attributes .
+      (exists e:Errno; f:Filehandle; b,c:Attributes .
+	do_protocol(sf(w1,Req(u,MkDirArg(fh,n,a)))) 
+                                          = sf(w2,Ret(e,MkDir(f,b,c))))
+
+  . forall fh:Filehandle; n:Filename; a:Attributes; p:Path .
+      (exists e:Errno; f:Filehandle; b,c:Attributes .
+	do_protocol(sf(w1,Req(u,SymlinkArg(fh,n,a,p)))) 
+                                          = sf(w2,Ret(e,Symlink(f,b,c))))
+
+  . forall fh:Filehandle; n:Filename . (exists e:Errno; a:Attributes .
+	do_protocol(sf(w1,Req(u,RemoveArg(fh,n)))) = sf(w2,Ret(e,Remove(a))))
+
+  . forall fh:Filehandle; n:Filename . (exists e:Errno; a:Attributes .
+	do_protocol(sf(w1,Req(u,RmDirArg(fh,n)))) = sf(w2,Ret(e,RmDir(a))))
+
+  . forall f,g:Filehandle; n,m:Filename . (exists e:Errno; a,b:Attributes .
+	do_protocol(sf(w1,Req(u,RenameArg(f,n,g,m)))) 
+                                         = sf(w2,Ret(e,Rename(a,b))))
+
+  . forall f,g:Filehandle; n:Filename . (exists e:Errno; a,b:Attributes .
+	do_protocol(sf(w1,Req(u,LinkArg(f,g,n)))) = sf(w2,Ret(e,Link(a,b))))
+
+  . forall fh:Filehandle . (exists e:Errno; a:Attributes; d:DirList .
+	do_protocol(sf(w1,Req(u,ReadDirArg(fh)))) = sf(w2,Ret(e,ReadDir(a,d))))
+
+  . forall fh:Filehandle . (exists e:Errno; a:Attributes; d:DirListPlus .
+	do_protocol(sf(w1,Req(u,ReadDirPlusArg(fh)))) 
+                                         = sf(w2,Ret(e,ReadDirPlus(a,d))))
+
+  . forall fh:Filehandle . (exists e:Errno; f:FSStat .
+        do_protocol(sf(w1,Req(u,FSStatArg(fh)))) = sf(w2,Ret(e,FSStat(f))))
+
+  . forall fh:Filehandle . (exists e:Errno; f:FSInfo .
+        do_protocol(sf(w1,Req(u,FSInfoArg(fh)))) = sf(w2,Ret(e,FSInfo(f))))
+
+  . forall fh:Filehandle . (exists e:Errno; a:Attributes; p:PosixAttributes .
+        do_protocol(sf(w1,Req(u,PathConfArg(fh)))) 
+                                         = sf(w2,Ret(e,PathConf(a,p))))
+
+  . forall fh:Filehandle; o:Offset; c:Count . (exists e:Errno; a:Attributes .
+        do_protocol(sf(w1,Req(u,CommitArg(fh,o,c)))) = sf(w2,Ret(e,Commit(a))))
+
+  . forall fh:Filehandle . (exists e:Errno; a:ExtAttributes .
+        do_protocol(sf(w1,Req(u,GetAttrPlusArg(fh)))) 
+                                         = sf(w2,Ret(e,GetAttrPlus(a))))
+
+  . forall fh:Filehandle; a:ExtAttributes .
+      (exists e:Errno; b:ExtAttributes .
+        do_protocol(sf(w1,Req(u,SetAttrPlusArg(fh,a))))
+                                         = sf(w2,Ret(e,SetAttrPlus(b))))
+
+  . exists e:Errno; o:OfflineList .
+        do_protocol(sf(w1,Req(u,GetOfflineArg))) = sf(w2,Ret(e,GetOffline(o)))
+
+  . forall o:OfflineList . (exists e:Errno; p:OfflineList .
+        do_protocol(sf(w1,Req(u,SetOfflineArg(o)))) 
+                                         = sf(w2,Ret(e,SetOffline(p))))
+
+  . forall fh:Filehandle . (exists e:Errno; l:LockType .
+        do_protocol(sf(w1,Req(u,GetLockArg(fh)))) = sf(w2,Ret(e,GetLock(l))))
+
+  . forall fh:Filehandle; l:LockType . (exists e:Errno .
+        do_protocol(sf(w1,Req(u,SetLockArg(fh,l)))) = sf(w2,Ret(e,SetLock)))
+
+  . forall p:Path . (exists e:Errno; fh:Filehandle .
+    	do_protocol(sf(w1,Req(u,MountArg(p)))) = sf(w2,Ret(e,Mount(fh))))
+
+  . forall fh:Filehandle . (exists e:Errno .
+        do_protocol(sf(w1,Req(u,UMountArg(fh)))) = sf(w2,Ret(e,UMount)))
+
+end

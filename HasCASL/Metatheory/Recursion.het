@@ -1,0 +1,66 @@
+library HasCASL/Metatheory/Recursion
+
+%display __<<=__ %LATEX __\sqsubseteq__
+
+%% latex "s c <<=[?a]" correctly
+%display __<<= %LATEX __\sqsubseteq
+
+from HasCASL/Metatheory/Ord get Ord
+from Basic/Numbers get Nat
+
+logic HasCASL
+
+spec Recursion = Ord with Ord |-> InfOrd, __<=__ |-> __<<=__ and Nat then
+class  Cpo < InfOrd {
+var    a: Cpo
+fun    __<<=__ : Pred (a * a)
+op     undefined: ?a
+. not def (undefined: ?a)
+type   Chain a = {s: Nat ->? a . forall n: Nat . def s n => s n <<= s (n + 1)}
+fun    sup: Chain a ->? a
+var    x: ?a; c: Chain a
+. sup c <<=[?a] x <=> forall n: Nat . c n <<=[?a] x
+}
+
+class Cppo < Cpo {
+var    a : Cppo
+fun    bottom : a
+. bottom <<= x
+}
+
+class FlatCpo < Cpo {
+vars   a : FlatCpo; x, y: a
+. x <<= y => x = y
+}
+
+vars a, b: Cpo; c: Cppo; x, y: a; z, w: b
+type instance __*__ : +Cpo -> +Cpo -> Cpo
+type instance __*__ : +Cppo -> +Cppo -> Cppo
+
+type instance Unit : Cppo
+type instance Unit : FlatCpo
+
+type a -->? b = { f : a ->? b . forall c: Chain a .
+                 sup ((\ n: Nat . f (c n)) as Chain b) = f (sup c) }
+
+type a --> b = { f : a -->? b . f in a -> b }
+
+type instance __-->?__ : -Cpo -> +Cpo -> Cppo
+var  f, g: a -->? b
+. f <<= g <=> forall x: a . def (f x) => f x <<= g x
+
+type instance __-->__ : -Cpo -> +Cpo -> Cpo
+var  f, g: a --> b
+. f <<= g <=> forall x: a . f x <<= g x
+
+type instance __-->__ : -Cpo -> +Cppo -> Cppo
+. bottom[a --> c] = \ x: a . bottom[c]
+
+then %def
+
+var c: Cppo
+fun Y : (c --> c) --> c
+var f : c --> c; x: c; P : Pred c
+. f(Y f) = Y f
+. f x = x => Y f <<= x
+. P bottom /\ (forall x : c . P x => P (f x)) => P (Y f) %implied

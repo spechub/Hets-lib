@@ -1,0 +1,61 @@
+# automatically generated hets proof-script
+
+use Calculi/Time/AllenHayes
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic BaseAllenHayes__E2
+
+drop-translations
+prover SPASS
+set goals M_irrefl
+set axioms M2a M3 M2b
+prove
+
+set goals M_asym
+set axioms M2a M3 M2c
+prove
+
+set goals M_atrans
+set axioms M2b
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic ConstructPointsFromIntervals__E2
+drop-translations
+prover SPASS
+set goals Equiv_refl
+set axioms Equiv_def
+prove
+
+set goals Equiv_sym
+set axioms Equiv_def M1
+prove
+
+set goals Equiv_trans
+set axioms Equiv_def Equiv_sym M1
+prove
+
+drop-translations
+prover Vampire
+set goals PointLess_irrefl
+prove
+
+drop-translations
+translate CASL2SoftFOLInduction
+prover darwin
+set goals PointLess_linear
+set axioms M1 M2a M2b M2c M2d M3 M4 M_irrefl M_asym M_atrans M5exist Equiv_def PointLess_def Equiv_refl Equiv_sym Equiv_trans PointLess_irrefl
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic AllenHayes__E2
+drop-translations
+prover SPASS
+set goals M5exist
+set axioms M3 M2a
+prove

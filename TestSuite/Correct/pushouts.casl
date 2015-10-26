@@ -1,0 +1,52 @@
+library pushouts
+
+%% Examples testing the pushout check
+
+spec Group =
+sort Elem
+op 0: Elem;
+  __+__: Elem*Elem->Elem
+end
+
+spec ExtGroup[Group] =
+sorts Pos < Nat
+ops 0,1:Nat; 0,1:Pos
+op inv : Elem-> Elem
+end
+
+spec Field =
+sorts NonZeroElem <  Elem
+ops   __*__: NonZeroElem*NonZeroElem->NonZeroElem;
+0:Elem;  1:NonZeroElem;
+  __+__: Elem*Elem->Elem;
+  __*__: Elem*Elem->Elem;
+1:Elem;
+end
+
+spec ExtField[Field] =
+ExtGroup[Field fit sort Elem |->NonZeroElem, op 0:Elem |-> 1, __+__ |-> __*__]
+end
+
+
+%[
+
+spec Function[sort S] =
+
+  ExtFiniteMap[sort S][sort T fit sort T|->S]
+                with sort FiniteMap[S,S]|-> Function[S]
+...
+
+The instantiation does not give a pushout, because
+e.g. FinSet[S] and FinSet[T] are identified, while
+in the pushout they would be distinct.
+
+A workaround is to use
+
+spec Function[sort S] =
+
+  ExtFiniteMap[sort S][sort T]
+                with sorts T |-> S, FinSet[T] |-> FinSet[S],
+                           FiniteMap[S,T]|-> Function[S]
+...
+
+]%

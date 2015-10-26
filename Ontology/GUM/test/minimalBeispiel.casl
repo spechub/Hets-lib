@@ -1,0 +1,32 @@
+library Ontology/GUM/test/minimalBeispiel
+version 0.1
+
+from Ontology/GUM/test/GUMwithDCC get GUMwithDCC
+
+spec GUMwithDCC_example_house_tree =
+	GUMwithDCC
+then
+	ops
+		sl              : SpatialLocating;
+		house, tree, me : SimpleThing;
+		gl              : GeneralizedLocation;
+		lp              : LeftProjection;
+		u, v, w         : Arrow;
+
+	. not(me = house)
+	. not(me = tree)
+	. not(house = tree) 
+	. locatum(sl, tree)
+	. placement(sl, gl)
+	. relatum(gl, house)
+	. hasSpatialModality(gl, lp)
+
+	. v = simpleThingToLocation(me)    --> simpleThingToLocation(house)
+	. w = simpleThingToLocation(house) --> simpleThingToLocation(tree)
+	. u = simpleThingToLocation(me)    --> simpleThingToLocation(tree)
+
+then %implies
+	. v = simpleThingToLocation(me) --> simpleThingToLocation(house) /\ w = simpleThingToLocation(house) --> simpleThingToLocation(tree) /\ locatum(sl, tree) /\ placement(sl, gl) /\ relatum(gl, house) /\ hasSpatialModality(gl, lp) /\ spatialModalityToOrientation(lp) = leftFront
+	. v # w > leftFront
+	. (v|w=leftFront /\ v|u=leftFront)
+end

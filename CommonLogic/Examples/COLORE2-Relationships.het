@@ -1,0 +1,92 @@
+library COLORE2-Relationships
+
+logic CommonLogic
+
+%% This assumes that Hets-lib is part of the HETS_LIB path environment variable.
+%% Additionally, all subdirectories of Hets-lib/CommonLogic/colore need to be part of HETS_LIB.
+%% I may provide a shell script for that. –Christoph
+%% TODO This could possibly be improved; see http://trac.informatik.uni-bremen.de:8080/hets/ticket/994 for details.
+from CommonLogic/colore/approximate_point/ap_interval get ap_interval
+from CommonLogic/colore/approximate_point/ap_rational get ap_rational
+from CommonLogic/colore/approximate_point/ap_root get ap_root
+from CommonLogic/colore/periods/mixed_periods get mixed_periods
+from CommonLogic/colore/periods/periods get periods
+from CommonLogic/colore/periods/periods_over_rationals get periods_over_rationals
+from CommonLogic/colore/periods/periods_root get periods_root
+
+%% Comment lines prefixed with "> " quote from Michael's document colore-meta.pdf
+
+%% > 1. Periods Hierarchy
+%% > 1.1 Theories.
+%% > • periods_root
+%% > – definably equivalent to: ap_root
+%% FIXME wrong: periods_root is strictly stronger than ap_root (see Till's mail)
+view v1_1_1 : ap_root to periods_root = 
+                precedes |-> precedence ,
+                finer |-> inclusion
+end
+
+view v1_1_2 : periods_root to ap_root = 
+                precedence |-> precedes ,
+                inclusion |-> finer
+end
+
+
+%% > • periods
+%% > – nononconservative extension of: periods root
+%%     ^^^^^
+%%     this should be just "non"
+%%
+%% TODO Find out how to express nonconservative extensions in HetCASL.
+%% 
+%% > – relatively interprets: ap root
+view v1_1_3 : ap_root to periods =
+                precedes |-> precedence ,
+                finer |-> inclusion
+end
+
+%% TODO This is the same symbol map as in v1_1_1; discuss how symbol maps can be shared (see e-mail)
+   
+%% • mixed_periods
+%% – nononconservative extension of: periods_root
+%% – definably equivalent to: ap_interval
+
+%% FIXME: This view does not yet work:
+%% CommonLogic symbol(s) missing in target: {moment}
+%% But how?  The PDF doesn't cover moment.
+
+%[view v1_1_5 : { ap_interval with]%
+%[                precedes |-> precedence ,]%
+%[                finer |-> inclusion ,]%
+%[                ncdf |-> overlaps]%
+%[              } to mixed_periods]%
+
+%% – relatively interprets: ap
+
+%% FIXME: "ap" does not exist.
+
+%% • periods over integers
+%% – nononconservative extension of: mixed_periods
+%% • periods_over_rationals
+%% – nononconservative extension of: mixed_periods
+%% – definably equivalent to: ap_rational
+
+%% FIXME: The following symbols still need to be mapped:
+%% CommonLogic symbol(s) missing in target: {meets, moment}
+%% See above for moment.
+%% meets is covered by Definition 3, but how do we express it in HetCASL?
+%% By extending periods_over_rationals with a CL spec that contains Definition 3?
+
+%[view v1_1_9 : { ap_rational with]%
+%[                precedes |-> precedence ,]%
+%[                finer |-> inclusion ,]%
+%[                ncdf |-> overlaps]%
+%[              } to periods_over_rationals]%
+
+%% 1.2. Translation Definitions.
+%% Definition 1. The translation definitions Σp ap for the interpretation of theories
+%% in HApproximate P oint to theories in HP eriods:
+%% (forall (x y) (iff (precedence x y) (precedes x y)))
+%% (forall (x y) (iff (inclusion x y) (finer x y)))
+%% (forall (x y) (iff (overlaps x y) (ncdf x y)))
+

@@ -1,0 +1,21 @@
+library view_test4
+
+spec Elem =
+  sort Elem
+end
+
+spec Ord =
+  Elem
+then
+  pred __<=__ : Elem * Elem
+end
+
+spec List[Ord] =
+  free type List[Elem] ::= [] | __::__(Elem; List[Elem])
+end
+
+spec ExtList[Ord] =
+  List[Ord]
+then
+  op __++__ : List[Elem] *  List[Elem] ->  List[Elem]
+end

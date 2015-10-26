@@ -1,0 +1,839 @@
+library Ontology/Dolce/DolceSimpl
+
+
+%%--------------------------------------------------------------------------------
+%% CASL translation of DOLCEv2.1 (see WonderWeb Deliverable D18 v1.0)
+%%--------------------------------------------------------------------------------
+%% CASL simplifications:
+%%
+%% - No explicit parameters are used to specify the DOLCE theory: only simple
+%%   specifications and imports of these specifications using the "with" operator.
+%% - No "Views" are still used.
+%%
+%%---------------------------------------------------------------------------------
+%% DOLCE simplifications:
+%%
+%% 0.All the axioms involving a quantification on leaves (or other specific sorts
+%%   in the taxonomy) are introduced only considering the actual taxonomy of DOLCE.
+%%   (see for example the axiom (Ad44) or (Ad51)).
+%%   In the case of axioms (Ad75)-(Ad82), all the Meta-relations NEP, CM, AT, etc.
+%%   are defined in this CASL version, but there are not leaves in the actual DOLCE
+%%   taxonomy that instantiate these properties.
+%% 1.(Ad9) and (Ad15) are weakened assuming only the existence of binary sum
+%%   and difference (instead of a General Extensional Mereology, we have only a
+%%   Classical Extensional Mereology).
+%% 2.The predicate PRE (being present),defined in DOLCEv2.1 by means of the fusion
+%%   is here introduced as a primitive relation.
+%% 3.The "spatial inclusion" relation is not defined here (originally it needs fusion)
+%%   therefore axioms (Ad19),(Ad28), and (Ad68) can not be expressed.
+%%   In the case of (Ad68) I introduced a simply mutual specific dependence.
+%% 4.The quality relation (qt) is simplified considering only "direct qualities"(dqt)
+%%   Therefore axiom (Ad42) is not considered.
+%% 5.Axioms (Ad56),(Ad57),(Ad63), and (Ad64) are instantiated only by temporal and
+%%   spatial locations (TL and SL) and by Time intervals (T) and Space Regions (S),
+%%   i.e. all the leaves present in dolce.
+%% 6.(Ad74) not introduced (I'm unable to do the logical OR between specific and
+%%   Generic dependence.
+%%-----------------------------------------------------------------------------------
+
+
+
+%%------------------------
+%% Taxonomy
+%%------------------------
+
+spec Taxonomy =
+
+sorts
+EDorPDorQ,PT,AB,R,TR,T,PR,S,AR,Q,TQ,TL,PQ,SL,AQ,ED,PED,M,F,POB,APO,NAPO,NPED,NPOB,
+MOB,SOB,ASO,SAG,SC,NASO,AS,PD,EV,ACH,ACC,STV,ST,PRO
+
+%%Definition of the taxonomy
+free type PT   ::= sorts  AB, EDorPDorQ
+free type EDorPDorQ ::= sorts ED, PD, Q
+
+free type ED   ::= sorts  PED, NPED, AS
+forall ed:ED . (exists ped:PED . ed=ped)
+               \/ (exists nped:NPED . ed=nped)
+               \/ (exists a:AS . ed=a)
+forall ped:PED; nped:NPED . not ped = nped
+forall ped:PED; a:AS . not ped = a
+forall a:AS; nped:NPED . not a = nped
+
+
+free type PD   ::= sorts  EV, STV
+free type Q    ::= sorts  TQ, PQ, AQ
+free type R    ::= sorts  TR, PR, AR
+free type PED  ::= sorts  M, F, POB
+free type EV   ::= sorts  ACH, ACC
+free type STV  ::= sorts  ST, PRO
+free type NPOB ::= sorts  MOB, SOB
+free type POB  ::= sorts  APO, NAPO
+free type SOB  ::= sorts  ASO, NASO
+free type ASO  ::= sorts  SAG, SC
+sorts  R<AB; NPOB<NPED; TL<TQ; SL<PQ; T<TR; S<PR;
+
+end
+
+
+%%------------------------
+%% Partial_Order (po)
+%%------------------------
+
+spec Partial_Order =
+
+sort s
+pred Rel:s * s
+forall x,y,z: s
+. Rel(x,x) %(reflexivity)%
+. Rel(x,y) /\ Rel(y,x) => x = y %(antisymmetry)%
+. Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
+end
+
+
+%%-----------------------------------
+%% Classical_Extensional_Parthood (p)
+%%----------------------------------
+
+spec Classical_Extensional_Parthood =
+     Partial_Order with Rel |-> P
+then
+
+preds
+%% Proper Part
+PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
+
+%% Overlap
+Ov(x:s; y:s) <=> exists z:s. (P(z, x) /\  P(z, y)); %(Dd15)%
+
+%% Atom
+At(x:s) <=> not exists y:s. (PP(y, x)); %(Dd16)%
+
+%%  Atomic Part
+AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+
+%%  Binary Sum
+Sum(z:s; x:s; y:s) <=> forall w:s. (Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y))); %(binary_sum)%
+
+%%  Binary Difference
+Dif(z:s; x:s; y:s) <=> forall w:s. (P(w,z) <=> (P(w, x) /\ not Ov(w, y))); %(binary_difference)%
+
+forall x,y:s
+. not  P(x,y) => exists z:s. (Dif(z,x,y)) %(Extensionality+existence of the difference)%
+. exists z:s. (Sum(z,x,y)) %(Existence of the sum)%
+
+forall x,y,z:s
+. Sum(z,x,y) => P(x,z) /\ P(y,z) %(parts_of_sum)% %implied
+. not P(x,y) /\ Sum(z,x,y) => PP(y,z) %(proper_parts_of_sum)% %implied
+end
+
+
+%%---------------
+%% Time_Mereology
+%%---------------
+%% Time_Mereology is needed in oder to specify the properties of perdurants
+
+spec Time_Mereology =
+     Classical_Extensional_Parthood with s |-> T
+end
+
+
+%%--------------------------------
+%% Unary_Temporal_Dissective (utd)
+%%--------------------------------
+
+spec Unary_Temporal_Dissective =
+     Time_Mereology
+then
+sort s
+pred Rel: s * T
+
+forall x:s; t1,t2:T
+. (Rel(x,t1) /\ P(t2,t1)) => Rel(x,t2)
+end
+
+
+%%-------------------
+%% Being_Present
+%%-------------------
+
+spec Being_Present =
+     Unary_Temporal_Dissective with Rel |-> PRE
+  %% PRE(x,t) means that x is present during all of t
+then
+
+forall x:s
+. exists t:T. (PRE(x,t)) %(everything_is_present_sometimes)%
+end
+
+
+%%-----------
+%% Mereology
+%%-----------
+
+spec Mereology =
+     Time_Mereology
+and  Classical_Extensional_Parthood with s |-> PD
+and  Classical_Extensional_Parthood with s |-> S
+and  Classical_Extensional_Parthood with s |-> AR
+then forall x:S . P(x,x) %(reflex_th)% %implied
+end
+
+%%----------------------------
+%% Mereology_and_TemporalPart
+%%----------------------------
+
+spec Mereology_and_TemporalPart =
+     Mereology
+and  Being_Present with s |-> PD
+
+then
+
+pred
+
+%% Temporal Part
+P_T(x:PD; y:PD) <=> P(x,y) /\ forall z:PD. ((P(z,y) /\ forall t:T. (PRE(z,t) => PRE(x,t))) => P(z,x))
+end
+
+%%---------------------
+%% Binary_Present (bpre)
+%%---------------------
+
+spec Binary_Present =
+     Being_Present with s |-> s1
+then
+     Being_Present with s |-> s2
+then
+
+pred Rel: s1 * s2 * T
+
+forall x1:s1; x2:s2; t:T
+. Rel(x1,x2,t) => PRE(x1,t) /\ PRE(x2,t)
+end
+
+
+%%---------------------------------
+%% Binary_Temporal_Dissective (btd)
+%%---------------------------------
+
+spec Binary_Temporal_Dissective =
+     Time_Mereology
+then
+
+sort s1,s2
+pred Rel: s1 * s2 * T
+
+forall x1:s1; x2:s2; t1,t2:T
+. (Rel(x1,x2,t1) /\ P(t2,t1)) => Rel(x1,x2,t2)
+end
+
+
+%%-----------------------------
+%% Temporary_Partial_Order (tpo)
+%%-----------------------------
+
+spec Temporary_Partial_Order =
+     Being_Present
+then
+
+pred Rel: s * s * T
+
+forall x,y,z:s; t:T
+. PRE(x,t) => Rel(x,x,t)                 %(temporal_reflexivity)%
+. Rel(x,y,t) /\ Rel(y,x,t) => x = y %(antisymmetry)%
+. Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t) %(temporal_transitivity)%
+end
+
+
+%%-------------------------------------
+%% Temporary_Strict_Partial_Order (tspo)
+%%-------------------------------------
+
+spec Temporary_Strict_Partial_Order =
+sorts s,T
+pred Rel: s * s * T
+
+forall x,y,z:s; t:T
+. Rel(x,y,t) => not Rel(y,x,t)
+. Rel(x,y,t) /\ Rel(y,z,t) => Rel(x,z,t)
+end
+
+
+%%-----------------------
+%% Temporary_Parthood (tp)
+%%-----------------------
+
+spec Temporary_Parthood =
+     Temporary_Partial_Order with Rel |-> tP
+and  Binary_Temporal_Dissective with s1 |-> s, s2 |-> s, Rel |-> tP
+and  Binary_Present with s1 |-> s, s2 |-> s, Rel |-> tP
+
+then
+
+preds
+%% Temporary Proper Part
+tPP(x:s; y:s; t:T) <=> tP(x,y,t) /\  not tP(y,x,t);
+
+%% Temporary Overlap
+tOv(x:s; y:s; t:T) <=> exists z:s. (tP(z,x,t) /\ tP(z,y,t));
+
+%% Temporary Atom
+tAt(x:s; t:T) <=> not exists y:s. (tPP(y, x, t)); %(Dd16)%
+
+%% Temporary Atomic Part
+tAtP(x:s; y:s; t:T) <=> tP(x, y, t) /\  tAt(x, t); %(Dd17)%
+
+%% Temporary Binary Sum
+tSum(z:s; x:s; y:s) <=> forall w:s;t:T. (tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)));
+
+tDif(z:s; x:s; y:s) <=> forall w:s;t:T. (tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
+
+forall x,y:s; t,t1,t2:T
+. exists z:s. (tSum(z,x,y)) %(Existence of the sum)%
+. (forall t:T . not tP(x,y,t)) => exists z:s.(tDif(z,x,y)) %(Extensionality+existence of the difference)%
+%%. PRE(x,t1) /\ PRE(x,t2) /\ Sum(t,t1,t2) => PRE(x,t)
+
+forall x,y,z:s; t:T
+. not forall x,y,z:s; t:T . PRE(x,t) /\ tSum(z,x,y) => tP(x,z,t) %(parts_of_sum1)% %%implied
+%%. PRE(y,t) /\ tSum(z,x,y) => tP(y,z,t) %(parts_of_sum1)% %implied
+%% . not tP(x,y,t) /\ tSum(z,x,y) => tPP(y,z,t) %(proper_parts_of_sum)% %implied
+
+end
+
+%% ----------------------------------------------------------------------------------------------------
+%% The case of difference for temporary parthood is more complex.... I need to control in Peter Simons
+%% .not tP(x,y) => exists z:s.(Dif(z,x,y)) %(Extensionality+existence of the difference)%
+%% ----------------------------------------------------------------------------------------------------
+%% Temporary Binary Difference
+%% tDif(z:s; x:s; y:s) <=> forall w:s;t:T. (tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)));
+%% 
+%% forall x,y:s; t:T
+%% . PRE(x,t) /\ PRE(y,t) /\ not tP(x,y,t) => exists z:s. (tP(z,x,t) /\ not tOv(z,y,t))
+%% 
+%% end
+
+
+%%---------------------
+%% Temporary_Mereology
+%%---------------------
+
+spec Temporary_Mereology =
+     Temporary_Parthood with s |-> PED
+and  Temporary_Parthood with s |-> NPED
+end
+
+
+%%-----------------------
+%% Constitution_Spec (k)
+%%----------------------
+
+spec Constitution_Spec =
+     Binary_Temporal_Dissective with s1 |-> s, s2 |-> s, Rel |-> K
+and  Binary_Present with s1 |-> s, s2 |-> s, Rel |-> K
+and  Temporary_Strict_Partial_Order with  Rel |-> K
+and  Temporary_Parthood
+
+then
+
+forall x,y,y1:s; t:T
+. K(x,y,t) /\ tP(y1,y,t) => exists x1:s. (tP(x1,x,t) /\ K(x1,y1,t))
+then %implies
+     forall x:s; t: T
+     . not K(x,x,t)       %(Td1)%
+end
+
+
+%%-----------------------------------------
+%% Constantly_Generically_Constituted (cgc)
+%%-----------------------------------------
+
+spec Constantly_Generically_Constituted =
+     Constitution_Spec
+
+then
+
+sorts s1 < s; s2 < s
+
+forall x:s1
+. exists t:T. (PRE(x,t))
+
+forall x:s1; t:T
+. At(t) /\ PRE(x,t) => exists y:s2. K(y,x,t)
+end
+
+
+%%--------------
+%% Constitution
+%%--------------
+
+spec Constitution =
+     Constitution_Spec with s |-> PD
+and  Constantly_Generically_Constituted with s |-> PED, s1 |-> NAPO, s2 |-> M
+and  Constantly_Generically_Constituted with s |-> PED, s1 |-> APO, s2 |-> NAPO
+and  Constantly_Generically_Constituted with s |-> NPED, s1 |-> SC, s2 |-> SAG
+end
+
+
+%%----------------
+%% Participation
+%%----------------
+
+spec Participation =
+     Binary_Temporal_Dissective with s1 |-> ED, s2 |-> PD, Rel |-> PC
+and  Binary_Present with s1 |-> ED, s2 |-> PD,  Rel |-> PC
+
+then
+forall y:PD; t:T
+. PRE(y,t) => exists x:ED. (PC(x,y,t))
+
+
+forall x:ED;y:PD;t:T
+. (PRE(x,t) => exists y : PD . PC(x,y,t))
+
+then %implies
+     forall x:ED;y:PD;t:T
+     . PC(x,y,t) => PRE(x,t) /\ PRE(y,t) %(T33)%
+     forall x:ED
+     . exists y:PD;t:T. (PC(x,y,t))        %(T35a)%
+
+end
+
+
+%%--------------------------
+%% Direct_Quality_Spec (dqt)
+%%-------------------------
+
+spec Direct_Quality_Spec =
+
+sorts s1, s2
+preds dqt : s1 * s2
+
+forall x:s1; y1,y2:s2
+. dqt(x,y1) /\ dqt(x,y2) => y1 = y2
+
+forall x1,x2:s1; y:s2
+. dqt(x1,y) /\ dqt(x2,y) => x1 = x2
+
+forall x:s1
+. exists! y:s2. dqt(x,y)
+end
+%% the first two axioms can be introduced as two separated specification for
+%% functions and inverse functions
+
+
+%%----------------
+%% Direct_Quality
+%%----------------
+
+spec Direct_Quality =
+%[     Taxonomy
+and ]% Direct_Quality_Spec with s1 |-> TQ, s2 |-> PD
+and  Direct_Quality_Spec with s1 |-> PQ, s2 |-> PED
+and  Direct_Quality_Spec with s1 |-> AQ, s2 |-> NPED
+
+then
+sorts TL < TQ; SL < PQ
+forall y:PD
+. exists x:TL. dqt(x,y)
+
+forall y:PED
+. exists x:SL. dqt(x,y)
+end
+
+
+%%---------------------------
+%% Immediate_Quale_Spec (ql)
+%%---------------------------
+
+spec Immediate_Quale_Spec =
+
+sorts s1, s2
+preds ql : s1 * s2
+
+forall x1,x2:s1; y:s2
+. ql(x1,y) /\ ql(x2,y) => x1 = x2
+
+forall y:s2
+. exists x:s1. ql(x,y)
+end
+
+
+%%-----------------
+%% Immediate_Quale
+%%-----------------
+
+spec Immediate_Quale =
+%[     Taxonomy
+and]%  Immediate_Quale_Spec with s1 |-> T, s2 |-> TL
+and  Immediate_Quale_Spec with s1 |-> TR, s2 |-> TQ
+end
+
+
+%%---------------------------
+%% Temporary_Quale_Spec (tql)
+%%---------------------------
+
+spec Temporary_Quale_Spec =
+     Being_Present with s |-> s2
+and  Binary_Temporal_Dissective with Rel |-> tql
+
+then
+
+forall y:s2; t:T
+. PRE(y,t) => exists x:s1. tql(x,y,t)
+
+forall x:s1; y:s2; t:T
+. tql(x,y,t) => PRE(y,t)
+end
+
+
+%%-------------------
+%% Temporary_Quale
+%%-------------------
+
+spec Temporary_Quale =
+     Temporary_Quale_Spec with s1 |-> PR, s2 |-> PQ
+and  Temporary_Quale_Spec with s1 |-> AR, s2 |-> AQ
+and  Temporary_Quale_Spec with s1 |-> S, s2 |-> SL
+end
+
+
+%%-------------------------
+%% Specific_Dependence (sd)
+%%-------------------------
+
+spec Specific_Dependence =
+     Being_Present with s |-> s1
+then
+     Being_Present with s |-> s2
+then
+
+preds
+%% Specific Dependence
+SD(x:s1; y:s2) <=> (exists t:T. (PRE(x,t))) /\
+                   (forall t:T. (PRE(x,t) => PRE(y,t)));
+
+forall x:s1
+. exists y:s2. SD(x,y)
+end
+
+
+%%---------------------------------
+%% Mutual_Specific_Dependence (msd)
+%%---------------------------------
+
+spec Mutual_Specific_Dependence =
+     Specific_Dependence with s1 |-> s1, s2 |-> s2
+and  Specific_Dependence with s1 |-> s2, s2 |-> s1
+end
+
+
+%%----------------------------------
+%% OneSide_Specific_Dependence (osd)
+%%----------------------------------
+
+spec OneSide_Specific_Dependence =
+     Specific_Dependence
+
+then
+
+forall y:s2; t:T
+. not PRE(y,t) \/ exists x:s1. (PRE(y,t) /\ not PRE(x,t))
+%% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
+end
+
+
+%%------------------------
+%% Generic_Dependence (gd)
+%%------------------------
+
+spec Generic_Dependence =
+     Being_Present with s |-> s1
+then
+     Being_Present with s |-> s2
+then
+
+forall x:s1
+. exists t:T. PRE(x,t)
+
+forall x:s1; t:T
+. At(t) /\ PRE(x,t) => exists y:s2. PRE(y,t)
+end
+
+%%--------------------------------
+%% Mutual_Generic_Dependence (mgd)
+%%--------------------------------
+
+spec Mutual_Generic_Dependence =
+     Generic_Dependence with s1 |-> s1, s2 |-> s2
+and  Generic_Dependence with s1 |-> s2, s2 |-> s1
+end
+
+
+%%---------------------------------
+%% OneSide_Generic_Dependence (ogd)
+%%---------------------------------
+
+spec OneSide_Generic_Dependence =
+     Generic_Dependence with s1 |-> s1, s2 |-> s2
+
+then
+
+forall y:s2; t:T
+. not PRE(y,t) \/ exists x:s1. (PRE(y,t) /\ not PRE(x,t))
+%% DA CONTROLLARE, BISOGNA FARE LA NEGAZIONE PER BENE
+end
+
+
+%%------------
+%% Dependence
+%%------------
+
+spec Dependence =
+     Mutual_Specific_Dependence with s1 |-> TQ, s2 |-> PD
+and  Mutual_Specific_Dependence with s1 |-> PQ, s2 |-> PED
+and  Mutual_Specific_Dependence with s1 |-> AQ, s2 |-> NPED
+and  OneSide_Specific_Dependence with s1 |-> MOB, s2 |-> APO
+and  OneSide_Generic_Dependence with s1 |-> F, s2 |-> NAPO
+and  OneSide_Generic_Dependence with s1 |-> SAG, s2 |-> APO
+and  OneSide_Generic_Dependence with s1 |-> NASO, s2 |-> SC
+end
+
+
+%%-------------------------
+%% Strongly_Non_Empty (nep)
+%%-------------------------
+
+spec Strongly_Non_Empty =
+     Mereology
+
+then
+
+sort s<PD;
+
+forall z:s
+. exists x,y:s. (not P(x,y) /\ not P(y,x))
+end
+
+%%-----------------
+%% Cumulative (cum)
+%%-----------------
+
+spec Cumulative =
+     Mereology
+
+then
+
+sort s<PD
+forall x,y:s
+. exists z:s. Sum(z,x,y)
+end
+
+
+%%-----------------------
+%% Anti_Cumulative (acum)
+%%-----------------------
+
+spec Anti_Cumulative =
+     Mereology
+
+then
+
+sort s<PD
+forall x,y:s
+. exists z:PD. (Sum(z,x,y) /\ not z in s)
+end
+
+
+%%-------------------
+%% Homeomerous (hom)
+%%-------------------
+
+spec Homeomerous =
+     Mereology_and_TemporalPart
+
+then
+
+sort s<PD
+forall x:s; y:PD
+. P_T(y,x) => y in s
+end
+
+
+%%------------------------
+%% Anti_Homeomerous (ahom)
+%%------------------------
+
+spec Anti_Homeomerous =
+     Mereology_and_TemporalPart
+
+then
+
+sort s<PD
+forall x:s
+. exists y:PD. (P_T(y,x) /\ not y in s)
+end
+
+
+%%-------------
+%% Atomic (at)
+%%-------------
+
+spec Atomic =
+     Mereology
+
+then
+
+sort s<PD
+forall x:s
+. At(x)
+end
+
+
+%%------------------
+%% Anti_Atomic (aat)
+%%------------------
+
+spec Anti_Atomic =
+     Mereology
+
+then
+
+sort s<PD
+forall x:s
+. not At(x)
+end
+
+
+%[
+%%--------------------------------
+%% Conditions_On_Perdurant_Leaves
+%%--------------------------------
+
+spec Conditions_On_Perdurant_Leaves =
+sort s
+%% rigth now there are no perdurant's leaves, therefore there are no conditions on these leaves
+%% in any case, wa can express dolce's axioms (Ad79)-(ad82) using the specifications introduced before
+end
+]%
+
+
+%%-------
+%% Dolce
+%%-------
+
+spec PreDolce =
+     Mereology_and_TemporalPart
+and  Temporary_Mereology
+and  Participation
+and  Constitution
+and  Dependence
+and  Direct_Quality
+and  Temporary_Quale
+and  Immediate_Quale
+end
+
+spec Dolce =
+     PreDolce
+and
+     Taxonomy
+and
+     Being_Present with s |-> EDorPDorQ
+end
+
+
+%%-------------------
+%% Ext_Partial_Order
+%%-------------------
+
+spec Ext_Partial_Order =
+     Partial_Order
+
+then
+forall x,y: s
+. not Rel(x,y) => exists z:s. (Rel(z,x) /\ not exists w:s. (Rel(w,z) /\ Rel(w,y))) %(extensionality)%
+end
+
+%%------------------------------
+%% Ext_Overlap_or_Connection
+%%------------------------------
+
+spec Ext_Overlap_or_Connection =
+
+sort s
+pred OvCn:s*s
+forall x,y:s
+. OvCn(x,x) %(reflexivity)%
+. OvCn(x,y) => OvCn(y,x) %(symmetry)%
+. (forall z:s. OvCn(z,x) <=> OvCn(z,y)) => x=y %(extensionality)%
+end
+
+
+
+%[
+view Td2 : Generic_Dependence to Constantly_Generically_Constituted
+end
+
+view T31 : { Constantly_Generically_Constituted with s1 |-> phi, s2 |-> chi }
+        to {    Constantly_Generically_Constituted with s1 |-> phi, s2 |-> psi
+            and Constantly_Generically_Constituted with s1 |-> psi, s2 |-> chi }
+end
+
+spec CGC[sort s1][sort s2] =
+     Constantly_Generically_Constituted
+end
+
+view T31a : { CGC[sort phi][sort chi] }
+        to {    CGC[sort phi][sort psi]
+            and CGC[sort psi][sort chi] }
+end
+]%
+
+
+%%8621
+%[
+todo
+- [Claudio] add theorems with %implies, %implied
+- [Claudio] add views for theorems like T31, or equivalence of parthood + overlap
+- [Claudio] add Dd and Ad labels or comments whenever possible
+- [Claudio] add modalities, use "logic Modal" only where you really use modalities
+- [Claudio, Stefano] check use of hybrid modal logic
+- [Klaus, Till] prove theorems using Isabelle
+- [Till] open question: how to form disjunctions (and negations) of specifications, like in
+    spec SD[sort s] = ...
+    spec GD[sort s] = ...
+    spec D[sort s] = SD[sort s] or GD[sort s]
+- [Klaus, Till] CASL extension
+- [Klaus, Till] find out how to increase model size for consistency checks in Isabelle
+- [Till] add further consistency checkers (look at workshop on disproving theorems),
+- [Klaus] check consistency of DOLCE
+- [Till] mark imported theorems as proved theorems, not axioms
+- [Till, Klaus] use underscores for label disambiguation
+- [Klaus] automatic installer for Hets
+paper:
+ECAI, KI, FOIS
+report on practical experiences
+stress modularization
+]%
+
+%%logic Modal
+
+%%from DOLCE/LaTeX get display_annotations
+
+%%modality empty
+
+
+%%---------------------------
+%% Strict_Partial_Order (spo)
+%%---------------------------
+
+%[
+spec Strict_Partial_Order =
+
+sort s
+pred Rel: s * s
+forall x,y,z: s
+. Rel(x,y) => not Rel(y,x)
+. Rel(x,y) /\ Rel(y,z) => Rel(x,z) %(transitivity)%
+end
+]%

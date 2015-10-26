@@ -1,0 +1,278 @@
+library Examples/dodatek
+
+spec Ident =
+  sort Ident;
+  op in_data, out_data : Ident;
+end
+
+spec simpleNum =
+  free type Num ::= 0 | s( Num );
+end
+
+spec Syntax =
+  sort Ident;
+  free type NumExp ::= 0 | 1 | __+__(NumExp; NumExp) | variable( Ident );
+  free type BoolExp ::= isZero( NumExp);
+  free type Instr ::= empty | compose(Instr; Instr) |
+  				set( Ident; NumExp ) |
+  				while( BoolExp; Instr ) |
+  				if_then_else( BoolExp; Instr; Instr );
+  free type Prog ::= program( Instr );
+end
+
+spec Interpreter =
+  Ident and simpleNum and Syntax then
+    op Meaning : Prog * Num ->? Num;
+    then
+      %% local
+        free type Env ::= nil | cons(Ident; Num; Env);
+        vars E, E' : Env; n,n' : Num; id, id' : Ident; nE,nE' : NumExp;
+
+        op 1 : Num;
+        op __+__: Num * Num -> Num;
+        axioms
+          1 = s(0);
+          0+n = n;
+          s(n) + n' = s(n + n');
+
+        op find : Ident * Env -> Num;
+        axioms
+          find(id,cons(id,n,E)) = n;
+          find(id,cons(id',n,E)) = find(id,E) if not id=id';
+
+        op M : NumExp * Env -> Num;
+        axioms
+          M(0,E) = 0;
+          M(1,E) = s(0);
+          M(nE+nE',E) =  M(nE,E) + M(nE',E);
+          M(variable(id),E) = find(id,E);
+
+        pred M : BoolExp * Env;
+        axioms
+          M(isZero(nE),E) <=> M(nE,E) = 0;
+
+          then free {
+
+            op M : Instr * Env ->? Env;
+            vars E : Env; I,I' : Instr; nE : NumExp; bE : BoolExp; id : Ident;
+            axioms
+              M(empty,E) = E;
+              M(compose(I,I'),E) = M(I',M(I,E));
+              M(set(id,nE),E) = cons(id,M(nE,E),E);
+              M(if_then_else(bE,I,I'),E) = M(I,E) if M(bE,E);
+              M(if_then_else(bE,I,I'),E) = M(I',E) if not M(bE,E);
+              M(while(bE,I),E) = M(while(bE,I),M(I,E)) if M(bE,E);
+              M(while(bE,I),E) = E if not M(bE,E);
+           }
+
+      then {
+        vars I : Instr; n : Num;
+        axioms
+          Meaning(program(I),n) = find(out_data,M(I,cons(in_data,n,nil)));
+      }
+end
+
+spec TotalOrder =
+  sort Elem;
+  pred __<__ : Elem * Elem;
+  vars e,e',e'' : Elem;
+  axioms
+    e < e;
+    e < e' /\ e' < e'' => e < e'';
+    e < e' \/ e' < e;
+    e < e' /\ e' < e => e = e';
+end
+
+spec OrderedIdent =
+  Ident and { TotalOrder with sort Elem |-> Ident }
+end
+
+spec OrderedIdentInterpreter =
+  OrderedIdent and Interpreter
+end
+
+%%
+%% Teraz dekompozycja zadania
+%% OrderedIdent * simpleNum * Syntax -> OrderedInterpreter
+%%
+
+%% Najpierw z otrzymanych liczb z nastepnikiem tworzymy byc moze efektywniejsza
+%% implementacje z dodawaniem
+%% typ unitu: simpleNum -> simpleNumAndNum
+
+spec Num =
+  sort Num';
+  op 0, 1 : Num';
+  op __+__ : Num' * Num' -> Num';
+  pred isZero : Num';
+  then
+    %%local
+      pred OK : Num';
+      vars n,n' : Num';
+      axioms
+        OK(0);
+        OK(1);
+        OK(n) /\ OK(n') => OK(n+n');
+     then
+       vars n,n' : Num';
+       axioms
+         OK(n) => 0+n=n;
+         OK(n)/\ OK(n') => (n+1)+n' = (n+n')+1;
+         OK(n) => (isZero(n) <=> n=0);
+end
+
+spec simpleNumAndNum =
+  simpleNum and Num then
+    op inject : Num -> Num';
+    op project : Num' ->? Num;
+    vars n0, n0' : Num; n,n' : Num';
+    axioms
+      inject(0) = 0;
+      inject(s(n0)) = inject(n0) + 1;
+      project(inject(n0)) = n0;
+end
+
+%% Nastepnie tworzymy srodowiska
+%% typ unitu: IdentTotalOrder * Elem1 -> IdentTotalOrderEnvWithAnything
+
+spec IdentTotalOrder =
+  TotalOrder with sort Elem |-> Ident
+end
+
+spec Elem1 =
+  sort Elem;
+  op anything : Elem;
+end
+
+spec Env = {
+    sort Elem;
+    sort Ident;
+    sort Env;
+    op empty : Env;
+    op set : Ident * Elem * Env -> Env;
+    op find : Ident * Env -> Elem;
+    then
+      local
+        pred OK : Env;
+        vars E : Env; id : Ident; e : Elem;
+        axioms
+          OK(empty);
+          OK(E) => OK(set(id,e,E));
+      within
+        vars E : Env; id,id' : Ident; e : Elem;
+        axioms
+    %%      find(id,empty) = anything;
+          OK(E) => find(id, set(id,e,E)) = e;
+          OK(E) => (find(id, set(id',e,E)) = find(id,E) if not id=id');
+  } reveal empty, set, find
+end
+
+spec IdentTotalOrderEnvWithAnything =
+  Env and Elem1 and IdentTotalOrder
+end
+
+spec Env' =
+  Env with Elem |-> Num'
+end
+
+
+spec ExtInterpreter =
+  Interpreter and Env' and Num
+end
+
+%[
+arch spec MakeInterpreter =
+  units
+    makeNum : simpleNum -> simpleNumAndNum;
+    makeEnv : IdentTotalOrder * Elem1 -> IdentTotalOrderEnvWithAnything;
+    makeWhole : Ident * Num * Env' * Syntax -> ExtInterpreter;
+  result
+    lambda Id : OrderedIdent; sN : simpleNum; Syn : Syntax .
+       local
+         N = makeNum[sN] hide sort Num;
+         Env = makeEnv[Id reveal pred __<__][N reveal sort Num' |-> Elem, op 0 |-> anything]
+         									with sort Elem |-> Num';
+       within {
+         makeWhole[Id hide pred __<__][N][Env hide pred __<__][Syn] hide sort Env, Num'
+       }
+end
+
+
+  %% : OrderedIdent * simpleNum * Syntax -> OrderedIdentInterpreter;
+]%
+
+
+%% -----------------------------------------------------------------------------
+%% dekompozycja Ident * Num * Env' * Syntax -> ExtInterpreter
+
+spec NExpSyntax =
+  sort Ident;
+  free type NumExp ::= 0 | 1 | __+__(NumExp; NumExp) | variable( Ident );
+end
+
+spec NExpSemantics =
+  NExpSyntax and Env' and Num then
+    op M : NumExp * Env -> Num';
+    vars nE,nE' : NumExp; E : Env; id : Ident;
+    axioms
+      M(0,E) = 0;
+      M(1,E) = 1;
+      M(nE+nE',E) = M(nE,E) + M(nE',E);
+      M(variable(id),E) = find(id,E);
+end
+
+
+spec ExpSyntax =
+  NExpSyntax then
+    free type BoolExp ::= isZero( NumExp);
+end
+
+spec ExpSemantics =
+  ExpSyntax and NExpSemantics then
+    pred M : BoolExp * Env;
+    vars nE : NumExp; E : Env;
+    axioms
+      M(isZero(nE),E) <=> isZero(M(nE,E));
+end
+
+spec InstrSyntax =
+  ExpSyntax then
+    free type Instr ::= empty | compose(Instr; Instr) |
+  				set( Ident; NumExp ) |
+  				while( BoolExp; Instr ) |
+  				if_then_else( BoolExp; Instr; Instr );
+end
+
+spec InstrSemantics =
+  InstrSyntax and ExpSemantics then
+    free {
+      op M : Instr * Env ->? Env;
+      vars E : Env; I,I' : Instr; nE : NumExp; bE : BoolExp; id : Ident;
+      axioms
+        M(empty,E) = E;
+        M(compose(I,I'),E) = M(I',M(I,E));
+        M(set(id,nE),E) = set(id,M(nE,E),E);
+        M(if_then_else(bE,I,I'),E) = M(I,E) if M(bE,E);
+        M(if_then_else(bE,I,I'),E) = M(I',E) if not M(bE,E);
+        M(while(bE,I),E) = M(while(bE,I),M(I,E)) if M(bE,E);
+        M(while(bE,I),E) = E if not M(bE,E);
+      }
+end
+
+
+arch spec MakeSemantics =
+  units
+    makeNExp : Num * Env' * NExpSyntax -> NExpSemantics ;
+    makeExp : NExpSemantics * ExpSyntax -> ExpSemantics ;
+    makeInstr : ExpSemantics * InstrSyntax -> InstrSemantics ;
+    makeProg : InstrSemantics * Ident * Syntax -> ExtInterpreter ;
+  result
+    lambda Id : Ident ; N : Num ; Env : Env' ; Syn : Syntax .
+      local
+        NExp = makeNExp[N][Env][Syn hide sort BoolExp];
+        Exp = makeExp[NExp][Syn hide sort Instr];
+        Ins = makeInstr[Exp][Syn hide sort Prog];
+      within
+        makeProg[Ins][Id][Syn]
+end
+ %% Ident * Num * Env' * Syntax -> ExtInterpreter

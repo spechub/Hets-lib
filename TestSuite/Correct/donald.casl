@@ -1,0 +1,27 @@
+library donald
+
+%% Example provided by a student of Don Sannella (?)
+
+spec 
+
+example = 
+	sort s
+
+	free type nnat::=zero|suc(pre:?nnat);
+
+	ops plus (n:nnat;m:nnat):nnat=m when n=zero else suc(plus(pre(n),m));
+	
+	axiom forall f:THEOREM . forall x,y,z:nnat . 
+					plus(x,plus(y,z))=plus(plus(x,y),z)
+
+
+
+	free type llist::=empty|lcons(hd:?s;tl:?llist)
+
+	ops append(l:llist;m:llist):llist = m when l=empty else 
+					lcons(hd(l),append(tl(l),m));
+
+
+	pred contains(x:s;l:llist)<=> (not l=empty) /\ (hd(l)=x \/
+							(contains(x,tl(l))))
+	

@@ -1,0 +1,49 @@
+library HasCASL/Real3D/SolidWorks/ComputeParams
+version 0.1
+
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/FlangePattern get FlangeParams
+
+%[ this spec is needed for the real arith constraint in the pattern
+from HasCASL/Real3D/Basics get AffineRealSpace3D
+
+spec Prelim = AffineRealSpace3D
+then
+     op   diff(p,q:Point):Vector = V(C1(p)-C1(q), C2(p)-C2(q), C3(p)-C3(q));
+     op   dist(p,q:Point):Real = sqrt(diff(p,q)*diff(p,q) as RealNonNeg); %% Does not analyze this
+     op   diam(p,q:Point):Real = 2*dist(p,q);
+
+end
+]%
+
+from HasCASL/Real3D/SolidWorks/SW get SWDefault
+
+spec Prelim = SWDefault
+then
+     ops   diff: Point*Point->Vector;
+           dist: Point*Point->Real;
+           diam: Point*Point->Real;
+
+end
+
+spec ComputeParams = Prelim and FlangeParams
+then
+     ops
+     %% diameters
+
+     %% inner hole
+     d_0:Real = diam(BoundaryTube, Offset);
+
+     %% ring to bolt hole
+     d_3:Real = diam(BoltOffset, Offset);
+
+     %% ring
+     d_4:Real = diam(BoundaryRing, Offset);
+
+     %% bolt hole
+     d_5:Real = diam(BoltBoundary, BoltOffset);
+
+     %% ring thickness
+     e_F:Real = RingHeight;
+end

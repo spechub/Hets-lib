@@ -1,0 +1,238 @@
+library UserManual/Chapter7
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+from UserManual/Chapter3 get
+    Total_Order, Natural, Natural_Order, Natural_Arithmetic, Color,
+    Generated_Set, Integer, Integer_Arithmetic_Order, Monoid,
+    Generic_Monoid
+
+from UserManual/Chapter4 get List_Selectors, Pair_1
+
+from UserManual/Chapter5 get
+    Natural_Subsorts, Integer_Arithmetic_1, Positive
+
+from UserManual/Chapter6 get List_Order
+
+spec List_Order_Nat =
+    List_Order [Natural_Order]
+end
+
+spec Nat_Word =
+    Generic_Monoid [Natural]
+end
+
+spec Nat_Word_1 =
+    Generic_Monoid [Natural] with  Monoid |-> Nat_Word
+end
+
+%[
+spec This_Is_Wrong =
+    Generic_Monoid [Monoid]
+end
+]%
+
+spec Generic_Commutative_Monoid [sort Elem] =
+    Generic_Monoid [sort Elem]
+then
+    {}
+end
+
+spec List_Order_Positive =
+    List_Order [Positive]
+end
+
+spec Nat_Word_2 =
+    Generic_Monoid [Natural_Subsorts fit  Elem |-> Nat]
+end
+
+spec Pair [sort Elem1] [sort Elem2] =
+    free type Pair ::= pair(first:Elem1; second:Elem2)
+end
+
+spec Homogeneous_Pair_1 [sort Elem] [sort Elem] =
+    free type Pair ::= pair(first:Elem; second:Elem)
+end
+
+spec Homogeneous_Pair [sort Elem] =
+    free type Pair ::= pair(first:Elem; second:Elem)
+end
+
+spec Table [sort Key] [sort Val] =
+    {}
+end
+
+spec Pair_Natural_Color =
+    Pair [Natural_Arithmetic] [Color fit  Elem2 |-> RGB]
+end
+
+spec Pair_Natural_Color_1 =
+    Pair_1
+	[Natural_Arithmetic and Color fit  Elem1 |-> Nat, Elem2 |-> RGB]
+end
+
+spec Pair_Natural_Color_2 =
+    Pair [sort Nat] [sort RGB] and Natural_Arithmetic and Color
+end
+
+spec Pair_Pos =
+    Homogeneous_Pair [sort Pos] and Integer_Arithmetic_1
+end
+
+spec Pair_Pos_1 =
+    Homogeneous_Pair [Integer_Arithmetic_1 fit  Elem |-> Pos]
+end
+
+spec My_Table [sort Val] =
+    Table [Natural_Arithmetic] [sort Val]
+end
+
+spec Set_of_List [sort Elem] =
+    Generated_Set [List_Selectors [sort Elem] fit  Elem |-> List]
+end
+
+spec Mistake [sort Elem] =
+    Generated_Set [List_Selectors [sort Elem]]
+end
+
+spec Set_and_List [sort Elem] =
+    Generated_Set [sort Elem] and List_Selectors [sort Elem]
+end
+
+%[
+spec This_Is_Still_Wrong =
+    Generic_Monoid [Generic_Monoid [sort Elem] fit  Elem |-> Monoid]
+end
+]%
+
+spec List_Rev [sort Elem] =
+    free type List[Elem] ::= empty | cons(head:?Elem; tail:?List[Elem])
+    ops __++__ : List[Elem] * List[Elem] -> List[Elem],
+	    assoc, unit empty;
+	reverse : List[Elem] -> List[Elem]
+    forall e:Elem; L, L1, L2:List[Elem]
+    . cons(e, L1) ++ L2 = cons(e, L1 ++ L2)
+    . reverse(empty) = empty
+    . reverse(cons(e, L)) = reverse(L) ++ cons(e, empty)
+end
+
+spec List_Rev_Nat =
+    List_Rev [Natural]
+end
+
+spec Two_Lists =
+    List_Rev [Natural] and List_Rev [Color fit  Elem |-> RGB]
+end
+
+spec Two_Lists_1 =
+    List_Rev [Integer_Arithmetic_1 fit  Elem |-> Nat]
+and List_Rev [Integer_Arithmetic_1 fit  Elem |-> Int]
+end
+
+spec Monoid_C [sort Elem] =
+    sort Monoid[Elem]
+    ops inj : Elem -> Monoid[Elem];
+	1 : Monoid[Elem];
+	__*__ : Monoid[Elem] * Monoid[Elem] -> Monoid[Elem], assoc, unit 1
+    forall x, y:Elem
+    . inj(x) = inj(y) => x = y
+end
+
+spec Monoid_of_Monoid [sort Elem] =
+    Monoid_C [Monoid_C [sort Elem] fit  Elem |-> Monoid[Elem]]
+end
+
+spec List_Rev_Order [Total_Order] =
+    List_Rev [sort Elem]
+then
+local   op insert : Elem * List[Elem] -> List[Elem]
+	forall e, e':Elem; L:List[Elem]
+	. insert(e, empty) = cons(e, empty)
+	. insert(e, cons(e', L)) =
+	      cons(e', insert(e, L)) when e' < e else cons(e, cons(e', L))
+within  op order[__<__] : List[Elem] -> List[Elem]
+	forall e:Elem; L:List[Elem]
+	. order[__<__](empty) = empty
+	. order[__<__](cons(e, L)) = insert(e, order[__<__](L))
+end
+
+spec List_Rev_with_Two_Orders =
+    List_Rev_Order
+	[Integer_Arithmetic_Order fit  Elem |-> Int, __<__ |-> __<__]
+and List_Rev_Order
+	[Integer_Arithmetic_Order fit  Elem |-> Int, __<__ |-> __>__]
+then %implies
+    forall L:List[Int]
+    . order[__<__](L) = reverse(order[__>__](L))
+end
+
+spec List_Weighted_Elem [sort Elem
+			 op weight : Elem -> Nat]
+			      given Natural_Arithmetic =
+    List_Rev [sort Elem]
+then
+    op weight : List[Elem] -> Nat
+    forall e:Elem; L:List[Elem]
+    . weight(empty) = 0
+    . weight(cons(e, L)) = weight(e) + weight(L)
+end
+
+spec List_Weighted_Pair_Natural_Color =
+    List_Weighted_Elem
+	[Pair_Natural_Color fit  Elem |-> Pair, weight |-> first]
+end
+
+spec List_Weighted_Instantiated =
+    List_Weighted_Elem
+	[    sort Value
+	     op weight : Value -> Nat fit  Elem |-> Value, weight |-> weight
+                    %[The fitting will be omitted in future version,
+                      once Hets has implemented implicit fittings
+                      with imports]%
+	]
+end
+
+spec List_Length [sort Elem] given Natural_Arithmetic =
+    List_Rev [sort Elem]
+then
+    op length : List[Elem] -> Nat
+    forall e:Elem; L:List[Elem]
+    . length(empty) = 0
+    . length(cons(e, L)) = length(L) + 1
+then %implies
+    forall L:List[Elem]
+    . length(reverse(L)) = length(L)
+end
+
+spec List_Length_Natural =
+    List_Length [Natural_Arithmetic]
+end
+
+spec Wrong_List_Length [sort Elem] =
+    Natural_Arithmetic and List_Rev [sort Elem]
+then
+    {}
+end
+
+view Integer_as_Total_Order : Total_Order to
+	Integer_Arithmetic_Order
+  =  Elem |-> Int, __<__ |-> __<__
+end
+
+view Integer_as_Reverse_Total_Order : Total_Order to
+	Integer_Arithmetic_Order
+  =  Elem |-> Int, __<__ |-> __>__
+end
+
+spec List_Rev_with_Two_Orders_1 =
+    List_Rev_Order [view Integer_as_Total_Order]
+and List_Rev_Order [view Integer_as_Reverse_Total_Order]
+then %implies
+    forall L:List[Int]
+    . order[__<__](L) = reverse(order[__>__](L))
+end
+
+view List_as_Monoid [sort Elem] : Monoid to List_Rev [sort Elem] =
+     Monoid |-> List[Elem], 1 |-> empty, __*__ |-> __++__
+end

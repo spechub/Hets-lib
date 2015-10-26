@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ASCII"?>
+<CSMOF:Metamodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:CSMOF="urn:CSMOF.ecore" xsi:schemaLocation="urn:CSMOF.ecore ../metamodel/CSMOF.ecore" name="MetamodelWModel">
+  <element xsi:type="CSMOF:DataType" name="String"/>
+  <element xsi:type="CSMOF:Class" name="Classifier" isAbstract="true" subClass="//@element.2 //@element.3">
+    <ownedAttribute lower="0" upper="-1" name="name" type="//@element.0"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Class" superClass="//@element.1">
+    <ownedAttribute lower="0" upper="-1" name="attr" type="//@element.4"/>
+    <ownedAttribute lower="0" upper="-1" name="asoc" type="//@element.3" opposite="//@element.3/@ownedAttribute.0"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Association" superClass="//@element.1">
+    <ownedAttribute lower="0" upper="-1" name="class" type="//@element.2" opposite="//@element.2/@ownedAttribute.1"/>
+  </element>
+  <element xsi:type="CSMOF:Class" name="Attribute">
+    <ownedAttribute lower="0" upper="-1" name="kind" type="//@element.0"/>
+  </element>
+  <model name="ClassModel">
+    <object type="//@element.2" name="A"/>
+    <object type="//@element.2" name="B"/>
+    <object type="//@element.0" name="integer"/>
+    <object type="//@element.4" name="attr1"/>
+    <object type="//@element.4" name="attr2"/>
+    <object type="//@element.3" name="asoc"/>
+    <object type="//@element.0" name="attr1Kind"/>
+    <object type="//@element.0" name="attr2Kind"/>
+    <object type="//@element.0" name="aName"/>
+    <object type="//@element.0" name="bName"/>
+    <object type="//@element.0" name="asocAB"/>
+    <link type="//@element.2/@ownedAttribute.0" source="//@model.0/@object.0" target="//@model.0/@object.3"/>
+    <link type="//@element.2/@ownedAttribute.0" source="//@model.0/@object.1" target="//@model.0/@object.4"/>
+    <link type="//@element.1/@ownedAttribute.0" source="//@model.0/@object.0" target="//@model.0/@object.8"/>
+    <link type="//@element.1/@ownedAttribute.0" source="//@model.0/@object.1" target="//@model.0/@object.9"/>
+    <link type="//@element.4/@ownedAttribute.0" source="//@model.0/@object.3" target="//@model.0/@object.6"/>
+    <link type="//@element.4/@ownedAttribute.0" source="//@model.0/@object.4" target="//@model.0/@object.7"/>
+    <link type="//@element.2/@ownedAttribute.1" source="//@model.0/@object.0" target="//@model.0/@object.5"/>
+    <link type="//@element.2/@ownedAttribute.1" source="//@model.0/@object.1" target="//@model.0/@object.5"/>
+    <link type="//@element.1/@ownedAttribute.0" source="//@model.0/@object.5" target="//@model.0/@object.10"/>
+  </model>
+</CSMOF:Metamodel>

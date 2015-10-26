@@ -1,0 +1,21 @@
+%{http://www.hku.hk/cgi-bin/philodep/knight/puzzle, puzzle no. 82.
+A very special island is inhabited only by knights and knaves. Knights
+always tell the truth, and knaves always lie. You meet three inhabitants:
+Bill, Dave and Zippy. Bill tells you, `I am a knight or Dave is a knight.'
+Dave says that only a knave would say that Zippy is a knave. Zippy claims
+that Dave and Bill are different.}%
+
+logic Propositional
+
+spec KnightsAndKnaves =
+    props bill, dave, zippy
+    . bill  <=> (bill \/ dave)       %(bill's claim)%
+    . dave  <=> (not (not zippy))    %(dave's claim)%
+    . zippy <=> (dave <=> not bill)  %(zippy's claim)%
+    . bill       %(bill is a knight)%  %implied
+    . not bill   %(bill is a knave)%   %implied
+    . dave       %(dave is a knight)%  %implied
+    . not dave   %(dave is a knave)%   %implied
+    . zippy      %(zippy is a knight)% %implied
+    . not zippy  %(zippy is a knave)%  %implied
+end

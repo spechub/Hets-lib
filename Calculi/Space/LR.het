@@ -1,0 +1,258 @@
+library Calculi/Space/LR
+version 0.1
+
+%author: Dominik Luecke
+%date: 2007-04-30
+
+%prec( 
+  {__ + __ } < 
+  { __*__} 
+)%
+
+
+%left_assoc __ + __, __ - __
+%left_assoc __union__, __intersection__
+%left_assoc __ + __, __ * __
+
+from Basic/Algebra_I get ConstructField |-> BasicField
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder
+
+%% FlipFlop Calculus with LR refinements
+
+spec LRRelations[sort Point] =
+     free type LRRelation ::= b | s | i | l | r | e | f | dou | tri
+     pred >>__ __ __ __<< : Point * Point * LRRelation * Point
+end
+
+spec LRCalculus[sort Point] = 
+     LRRelations[sort Point]
+     then
+     forall pa, pb, pc, pd, pe : Point
+     %% Universal Relation
+     . >> pa pb b pc << \/ 
+	  >> pa pb s pc << \/ 
+	  >> pa pb i pc << \/ 
+	  >> pa pb l pc << \/ 
+	  >> pa pb r pc << \/
+	  >> pa pb e pc << \/ 
+	  >> pa pb f pc << \/ 
+	  >> pa pb dou pc << \/ 
+	  >> pa pb tri pc << %(universal)%
+
+     %% Compositions
+     . (>> pa pb b pc << /\ >> pb pc b pd <<) => >> pa pb f pd <<  %(cmps_b_b)%
+     . (>> pa pb b pc << /\ >> pb pc s pd <<) => >> pa pb e pd <<  %(cmps_b_s)%
+     . (>> pa pb b pc << /\ >> pb pc i pd <<) => (>> pa pb b pd <<  
+	  \/ >> pa pb s pd <<  \/ >> pa pb i pd <<)                %(cmps_b_i)%
+     . (>> pa pb b pc << /\ >> pb pc l pd <<) => >> pa pb r pd <<  %(cmps_b_l)%
+     . (>> pa pb b pc << /\ >> pb pc r pd <<) => >> pa pb l pd <<  %(cmps_b_r)%
+     . (>> pa pb b pc << /\ >> pb pc e pd <<) => >> pa pb b pd <<  %(cmps_b_e)%
+     . (>> pa pb b pc << /\ >> pb pc f pd <<) => >> pa pb b pd <<  %(cmps_b_f)%
+     . (>> pa pb b pc << /\ >> pb pc dou pd <<) => false           %(cmps_b_dou)%
+     . (>> pa pb b pc << /\ >> pb pc tri pd <<) => false           %(cmps_b_tri)%
+     %% and so on... 
+
+     . (>> pa pb r pc << /\ >> pb pc r pd <<) => (>>pa pb b pd<<) \/
+	  (>>pa pb i pd<<) \/ (>>pa pb l pd<<) \/ (>>pa pb r pd<<) \/ (>>pa pb s pd<<) 
+	  %(cmps_r_r)%
+end
+
+%%We consider a normed vector space over a totally ordered field
+
+spec Field =
+     BasicField with op e |-> 1
+then %def
+     op -__: Elem -> Elem
+     forall xc: Elem
+     . -xc + xc = 0       %(Field_unary_minus_idef)%
+end
+
+spec FieldWithOrdering =
+     Field and TotalOrder
+then
+    vars a, b, c:Elem
+    . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
+    . (a * c) <= (b * c) if a <= b /\ 0 <= c    %(FWO_times_left)%
+then %implies
+    vars a, b, c, d: Elem
+    . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%
+    . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(FWO_times_right)%
+    . (a + b) <= (c + d) if a <= c /\ b <= d    %(FWO_plus)%
+end
+
+
+spec OrderedField =
+     Field
+then
+     pred Pos: Elem
+     forall xc,yc: Elem
+     . Pos(xc) /\ Pos(yc) => Pos(xc*yc)         %(OF_plus)%
+     . Pos(xc) /\ Pos(yc) => Pos(xc+yc)         %(OF_times)%
+     . Pos(xc) /\ Pos(-xc) => xc = 0            %(OF_mutex)%
+     . Pos(xc) \/ Pos(-xc)                      %(OF_exhaust)%
+end
+
+view OrderedField_in_FieldWithOrdering :
+      OrderedField to
+     { FieldWithOrdering then %def
+       pred Pos: Elem
+       forall xc: Elem
+       . Pos(xc) <=> 0 <= xc
+     }
+end
+
+view FieldWithOrdering_in_OrderedField :
+      FieldWithOrdering to
+     { OrderedField then %def
+       pred __<=__: Elem * Elem
+       forall xc,yc: Elem
+       . xc <= yc  <=> Pos(yc + -xc)
+     }
+end
+
+spec ExtOrderedField[FieldWithOrdering] =
+     ExtTotalOrder[TotalOrder]
+end
+
+spec RichOrderedField = ExtOrderedField[FieldWithOrdering]
+
+spec PreReal =
+     RichOrderedField with Elem |-> PreReal
+then
+  free type Nat ::= 0 | suc(Nat)
+  ops inj:        Nat -> PreReal
+   forall r,s:PreReal; n: Nat 
+   . inj(0) = 0                                   %(PreReal_inj_0)%
+   . inj (suc (n)) = 1 + inj (n)                  %(PreReal_inj_suc)%
+   . exists n: Nat. r <= inj (n)                  %(PreReal_archimedian)%
+then %def
+     ops
+        __-__: PreReal * PreReal -> PreReal;
+        |__| : PreReal -> PreReal;
+        __/__: PreReal * PreReal ->? PreReal;
+        sqr__: PreReal -> PreReal;
+        sqrt__: PreReal ->? PreReal;
+        2    : PreReal;
+	3    : PreReal;
+        4    : PreReal;
+        5    : PreReal;
+        half : PreReal -> PreReal
+     forall r,r',r'':PreReal
+     . | r | = max(r,-r)                %(PreReal_abs_def)%
+     . sqr(r) = r * r                   %(PreReal_sqr_def)%
+     . def sqrt(r) <=> r >= 0           %(PreReal_sqrt_dom)%
+     . sqrt(sqr(r)) = | r |             %(PreReal_sqrt_idef)%
+     . 2 = 1 + 1                        %(PreReal_2_def)%
+     . 3 = 2 + 1                        %(PreReal_3_def)%
+     . 4 = 3 + 1                        %(PreReal_4_def)%
+     . 5 = 4 + 1                        %(PreReal_5_def)%
+     . r-r' = r + -r'                   %(PreReal_minus_def)%
+     . 2 * half(r) = r                  %(PreReal_half_idef)%
+     . -1 * r = -r                      %(PreReal_inverse_prop)%
+     . def (r/r') <=> not (r' = 0)      %(Real_devide_dom)%
+     . def(r/r') => (exists r'' : PreReal . r/r' = r'' /\
+	(r/r' = r'' <=> r'' * r' = r))  %(Real_divide_idef)%
+     . r * 0 = 0                        %(Real_mult_with_zero_1)%
+     . 0 * r = 0                        %(Real_mult_with_zero_2)%
+
+then %implies
+     forall a,b,c,e,r,s,r,r':PreReal
+     . 1>0                              %(one_greater_zero)%
+     . 0<=1                             %(zero_leq_one)%
+     . r>0 => half(r)>0                 %(half_gt_zero)%
+     . r<=s => s+(half(r-s))<=s         %(half_plus_minus)%
+     . a<=b /\ c<=e => a+c<=b+e         %(add_monotone)%
+     . not (a<=b) => a-b>0              %(sub_leq)%
+     . a<=half(a-b)+b => a<=b           %(half_leq)%
+     . 0<=r => 0<=half(r)               %(half_leq_zero)%
+     . a+b=b+a                          %(comm_add)%
+     . half(r+s) = half(r) + half(s)    %(PreReal_half_plus)%
+     . half(r-s) = half(r) - half(s)    %(PreReal_half_minus)%
+     . r - half(r) = half(r)            %(PreReal_minus_half)%
+     . half(r) <= half (s) <=> r <= s   %(PreReal_half_monot)%
+     . (-1) * r + r' = 0 <=> 
+       r + (-1) * r' = 0                %(Real_mult_by_minus_one)% 
+     . (-1) * r + (-1) * r' = 0 <=>
+       r + r' = 0                       %(Real_mult_by_minus_one_2)% 
+     . (-1) * r - r' = 0 <=>
+       r + r' = 0                       %(Real_mult_by_minus_one_3)% 
+end
+
+%% Spec for points
+spec Point[sort Elem] =
+     free type Point ::= /__ __\ (xc : Elem; yc : Elem)
+     forall a,b : Point
+     . a = b <=> xc(a) = xc(b) /\ yc(a) = yc(b)               %(eq_point)%
+     . not (a = b) <=> not (xc(a) = xc(b) /\ yc(a) = yc(b))   %(neq_point)% %implied
+end
+
+%% This spec is intended to be part of the interface from LR to 
+%% its domain
+spec Vector_Point_Relations =
+     PreReal with PreReal |-> Elem
+     then
+     LRRelations [Point[PreReal with PreReal |-> Elem]] 
+     then
+     pred normSP : Point;
+     pred normEP : Point;
+     ops  za : Point * Point * Point -> Elem;
+     ops  zb : Point * Point * Point -> Elem;
+     ops  zc : Point * Point * Point -> Elem;
+     forall sp, ep, pt : Point
+     . normSP (sp) <=> sp = /0 0\
+     . normEP (sp) <=> sp = /0 1\
+     . za (sp,ep,pt) = yc(sp) if xc(sp) = xc(ep)
+     . za (sp,ep,pt) = xc(sp) if not (xc(sp) = xc(ep))
+     . zb (sp,ep,pt) = yc(ep) if xc(sp) = xc(ep)
+     . zb (sp,ep,pt) = xc(ep) if not (xc(sp) = xc(ep))
+     . zc (sp,ep,pt) = yc(pt) if xc(sp) = xc(ep)
+     . zc (sp,ep,pt) = xc(pt) if not (xc(sp) = xc(ep))
+     . (>> sp ep r pt << <=> ((yc(ep) - yc(sp)) * (xc(pt) - xc(sp)) + (xc(sp) - xc(ep)) * (yc(pt) - yc(sp))) > 0) 
+       %(def_vr)% 
+     . (>> sp ep r pt << <=> ((yc(ep) - yc(sp)) * (xc(pt) - xc(sp)) + (xc(sp) - xc(ep)) * (yc(pt) - yc(sp))) < 0)
+       %(def_vl)%  
+     . (>> sp ep i pt << <=> ((yc(ep) - yc(sp)) * (xc(pt) - xc(sp)) + (xc(sp) - xc(ep)) * (yc(pt) - yc(sp))) = 0 
+	  /\ not (ep = pt) /\ (not sp = pt) /\ not (sp = ep) /\
+          0 < (zc(sp,ep,pt) - za(sp,ep,pt) ) / (zb(sp,ep,pt)  - za(sp,ep,pt)) /\
+	(zc(sp,ep,pt) - za(sp,ep,pt) ) / (zb(sp,ep,pt)  - za(sp,ep,pt)) < 1
+	) %(def_vi)%  
+     . (>> sp ep b pt << <=> ((yc(ep) - yc(sp)) * (xc(pt) - xc(sp)) + (xc(sp) - xc(ep)) * (yc(pt) - yc(sp))) = 0 
+	/\ not (ep = pt) /\ (not sp = pt) /\ not (sp = ep)
+	/\
+	(zc(sp,ep,pt) - za(sp,ep,pt) ) / (zb(sp,ep,pt)  - za(sp,ep,pt)) < 0
+       )     %(def_vb)%  
+     . (>> sp ep f pt << <=> ((yc(ep) - yc(sp)) * (xc(pt) - xc(sp)) + (xc(sp) - xc(ep)) * (yc(pt) - yc(sp))) = 0 
+	/\ not (ep = pt) /\ (not sp = pt) /\ not (sp = ep) /\ 
+	(zc(sp,ep,pt) - za(sp,ep,pt)) / (zb(sp,ep,pt)  - za(sp,ep,pt)) > 1
+	)   %(def_vf)% 
+     . (>> sp ep s pt << <=> not (sp = ep) /\ (sp = pt)) %(def_vs)%
+     . (>> sp ep e pt << <=> not (sp = ep) /\ (ep = pt)) %(def_ve)%
+     . (>> sp ep dou pt << <=> sp = ep /\ not (sp = pt)) %(def_dou)%
+     . (>> sp ep tri pt << <=> sp = ep /\ sp = pt)       %(def_tri)%    
+end
+
+%% SparQ accepts this scenario as OK via Scenario Consistency
+%% The assumption of the position of 2 points is ok since 
+%% the LR calculus has the RST property, all other configurations
+%% can be reached via scaling, translation and rotation
+spec ForeverFailure =
+     Vector_Point_Relations
+     then
+     .  not (exists pa, pb, pc, pd, pe, pf : Point . 
+	  normSP(pa) /\
+	  normEP(pb) /\
+	  (>>pa pb r pf<<) /\
+	  (>>pa pb r pd<<) /\
+	  (>>pc pd r pf<<) /\
+	  (>>pc pd r pa<<) /\
+	  (>>pc pd r pb<<) /\
+	  (>>pa pc l pb<<) /\
+	  (>>pa pf r pc<<) /\
+	  (>>pf pc r pb<<) /\
+	  (>>pf pd l pa<<) /\
+	  (>>pf pd r pb<<)) %(failure)% %implied 
+end
+
+view LR_In_Domain : LRCalculus[sort Point] to
+     Vector_Point_Relations
+end

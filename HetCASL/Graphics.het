@@ -1,0 +1,12 @@
+library HasCASL/Graphics
+
+from HasCASL/Real get Real
+
+logic CASL
+spec Graphics =
+  Real hide logic -> CASL
+then
+  free type Coordinate ::= C(x,y:Real)
+  sort Screen
+  op move : Coordinate * Coordinate -> Screen
+end

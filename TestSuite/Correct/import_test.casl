@@ -1,0 +1,17 @@
+library import_test
+
+%% Test of static analysis: imports
+
+spec Nat =
+  sort Nat
+  ops 1,2:Nat;
+  min : Nat
+end
+
+spec Array[ops min,max:Nat] given Nat =
+{ sort s} %[ further stuff]%
+end
+
+spec EFPN =
+Array[Nat fit max |-> 2]
+end

@@ -1,0 +1,181 @@
+library HasCASL/SinCos
+version 0.2
+
+%author: T. Mossakowski, S. Woelfl
+%date: 12-10-2005
+
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%prec {sin__, cos__} <> {-__}
+%left_assoc __ + __, __ * __, __ ^ __
+
+
+from Basic/RelationsAndOrders get
+        TotalOrder, ExtTotalOrder, RichTotalOrder
+from Basic/Numbers get Nat, Int, Rat
+from Basic/Algebra_I get
+        AbelianGroup, ExtAbelianGroup,
+        AbelianGroup_in_ConstructField,
+        Field |-> FieldFromAlgebra_I,
+        Ring, ExtRing
+from HasCASL/Real get
+        RichOrderedField
+from HasCASL/Real get Real
+
+
+spec Field =
+     sort Elem
+     ops
+        0,1 : Elem;
+        __ + __: Elem * Elem -> Elem, assoc, comm, unit 0;
+        __ * __: Elem * Elem -> Elem, assoc, comm, unit 1;
+        -__ : Elem -> Elem;
+        inv__ : Elem ->? Elem
+     forall x, y, z : Elem
+     . not 0 = 1
+     . x + -x = 0
+     . def(inv x) <=> not x = 0
+     . x * inv x = 1 if def(inv x)
+     . x * (y+z) = x * y + x * z
+
+then %implies
+     forall x,y,z: Elem
+     . - (- x) = x                      %(th_f0)%
+     . -x = -1 * x                      %(th_f1)%
+     . 0 * x  = 0                       %(th_f2)%
+     . 1 * x = x                        %(th_f3)%
+     . (-x) * y = -(x * y)              %(th_f4)%
+     . x * y = 0 => x = 0 \/ y = 0      %(th_f5)%
+     . (y+z) * x = x * (y+z)            %(th_f6_h)%
+     . (y+z) * x = y * x  + z * x       %(th_f6)%
+     . inv(inv(x)) = x if def(inv(x)) /\ def(inv(inv(x)))
+                                        %(th_f7)%
+     . -1 * -1 = 1                      %(th_f8)%
+     . x * -y = -(x * y)                %(th_f10)%
+     . (-x) * (-y) = - (- (x * y))      %(th_f11)%
+     . (-x) * (-y) = x * y              %(th_f12)%
+end
+
+
+spec ExtField[Field] = %def
+     ops 2:Elem;
+        __-__: Elem * Elem -> Elem;
+        sqr__: Elem -> Elem;
+        __/__: Elem * Elem ->? Elem
+     forall x,y,z: Elem
+     . 2:Elem = 1 + 1:Elem
+     . x-y = x + -y
+     . sqr(x) = x * x
+     . def(x/y) <=> not y =0
+     . x/y = inv(y) *  x if def(x/y);
+then %implies
+     forall x,y,z: Elem
+     . 2 * x = x + x                             %(th_ef1)%
+     . sqr(x + y) = sqr(x) + 2 * x * y + sqr(y)  %(th_ef2)%
+     . sqr(x - y) = sqr(x) + -2 * x * y + sqr(y) %(th_ef3)%
+     . (x + y) * (x - y) = sqr(x) - sqr(y)       %(th_ef4)%
+end
+
+
+spec FieldWithSinCos =
+     ExtField[Field]
+then
+     ops sin__,cos__ : Elem -> Elem
+     forall x,y: Elem
+     . sin(x - y) = (sin x * cos y) - (cos x * sin y)
+     . cos(x - y) = (cos x * cos y) + (sin x * sin y)
+then %implies
+     forall x,y: Elem
+     . sin(x-x)=0                                               %(sin_minus1)%
+     . sin(x-x)=sin(0)                                          %(sin_minus2)%
+     . sin(0) = 0                                               %(th_sc1)%
+     . cos(0) = 1                                               %(th_sc2)%
+     . sqr(sin(x)) + sqr(cos(x)) = 1                            %(th_sc3)%
+     . cos(-x) = cos x                                          %(th_sc4)%
+     . sin(-x) = - (sin x)                                      %(th_sc5)%
+     . sin(x + y) = (sin x * cos y) + (cos x * sin y)           %(th_sc6)%
+     . cos(x + y) = (cos x * cos y) - (sin x * sin y)           %(th_sc7)%
+     . sin(2 * x) = 2 * sin x * cos x                           %(th_sc8)%
+     . cos(2 * x) = sqr(cos x) - sqr(sin x)                     %(th_sc9)%
+     . cos(2 * x) = (2 * sqr(cos x)) - 1                        %(th_sc10)%
+     . cos(2 * x) = 1 - (2 * sqr(sin x))                        %(th_sc11)%
+     . sin x + sin y =  2 * sin((x+y)/2) * cos((x-y)/2)         %(th_sc12)%
+     . sin x - sin y =  2 * cos((x+y)/2) * sin((x-y)/2)         %(th_sc13)%
+     . cos x + cos y =  2 * cos((x+y)/2) * cos((x-y)/2)         %(th_sc14)%
+     . cos x - cos y = -2 * sin((x+y)/2) * sin((x-y)/2)         %(th_sc15)%
+     . exists x, y : Elem . not (cos x - cos y = 0)             %(triv_sc16)%
+     . exists x : Elem . not (cos x = sin x)                    %(triv_sc17)%
+
+
+then %def
+     ops tan__: Elem ->? Elem
+     forall x: Elem
+     . def tan x <=> not cos x = 0
+     . tan x * cos x = sin x
+       %[could be extended ... ]%
+
+then %implies
+     forall x,y: Elem
+     . tan(x + y) = (tan x + tan y)/(1 - tan x * tan y)
+
+end
+
+
+logic HasCASL
+
+
+spec RealsWithInv =
+     Real
+then %def
+     op inv__ : Real ->? Real
+     . forall x: Real . inv x = 1 / x
+
+
+spec RealsWithSinCos1 =
+     RealsWithInv
+then %def
+     ops sin__, cos__, tan__ : Real -> Real
+
+    forall x,y: Real
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\
+        forall y:Real .  |(x - y)| < d  => |(sin x - sin y)| < e
+    . forall e:Real . e > 0 => exists d:Real . d > 0 /\
+        forall y:Real .  | (x - y) | < d  => | (cos x - cos y) | < e
+    . sin(x - y) = (sin x * cos y) - (cos x * sin y)
+    . cos(x - y) = (cos x * cos y) + (sin x * sin y)
+    . forall e:Real . e > 0 =>
+        exists y:Real . y > 0 /\ |1 - sin(y)/y| < e
+end
+
+%{ a theorem from analysis shows that a pair of continuous function over reals
+   that fulfill the equations from FieldWithSinCos and
+   lim_(a->0)(sin(a)/a) = 1, must be the pair (sin, cos). Thus the above %def
+}%
+
+view FieldWithSinCos_in_RealsWithSinCos1 :
+     FieldWithSinCos to RealsWithSinCos1
+=    Elem |-> Real
+end
+%[ Creates the theorems from FieldWithSinCos, that are easy (too easy?)
+   to prove via SPASS. ]%
+
+
+from HasCASL/EuclideanSpaces get Real2D
+
+spec RealsWithSinCos2 =
+  RealsWithInv
+then %def
+local Real2D
+within
+     ops sin__, cos__, tan__ : Real -> Real
+        %[ ....
+           here the geometric interpretation of cosine as arc between
+           two vectors via the dot (aka scalar) product in Real2D is missing. ]%
+
+end
+
+view FieldWithSinCos_in_RealsWithSinCos2 :
+     FieldWithSinCos to RealsWithSinCos2
+=    Elem |-> Real
+end

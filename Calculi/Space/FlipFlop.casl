@@ -1,0 +1,239 @@
+library Calculi/Space/FlipFlop
+version 0.6
+%author: T. Soller
+%date: 20-05-05
+%%Calculus Flip-Flop and Extension
+
+
+
+%left_assoc __cup__
+%prec {__cup__} < {__cmps__}
+
+from Basic/StructuredDatatypes get Set
+
+from Basic/Numbers get Nat
+
+
+spec Set1[sort BaseRel] given Nat =
+  Set[sort BaseRel fit Elem |-> BaseRel] with Set[BaseRel] |-> GenRel,
+      __union__ |-> __cup__, __intersection__ |-> __cap__
+then
+  sort BaseRel < GenRel
+
+  ops id : GenRel;
+       1  : GenRel;
+       0  : GenRel = {};
+       trans132, trans213, trans231, trans312, trans321 : BaseRel -> BaseRel;
+       __cmps__ : BaseRel * BaseRel -> GenRel;
+       compl : GenRel -> GenRel
+
+  forall x:BaseRel; u:GenRel
+  . x = {x}
+  . x eps 1
+  . not x eps 0
+  . compl(u) = 1 - u
+
+  . trans132(trans132(x)) = x
+  . trans213(trans213(x)) = x
+  . trans231(trans231(x)) = x
+  . trans312(trans312(x)) = x
+  . trans321(trans321(x)) = x
+
+end
+
+
+
+spec GenerateRelationAlgebra
+     [Set1[sort BaseRel]] = %mono 
+
+  ops trans132, trans213, trans231, trans312, trans321 : GenRel -> GenRel;
+      __cmps__: GenRel * GenRel -> GenRel, assoc, unit id;
+
+      		                                     
+  forall x,y:BaseRel; u,v:GenRel
+
+  . trans321(id) = id
+
+  . (x cup u) cmps (y cup v) = (((x cmps y cup (x cmps v)) cup (u cmps y)) cup
+			       (u cmps v))  			      
+
+  . trans132(x cup u) = trans132(x) cup trans132(u)
+  . trans213(x cup u) = trans213(x) cup trans213(u)
+  . trans231(x cup u) = trans231(x) cup trans231(u)
+  . trans312(x cup u) = trans312(x) cup trans312(u)
+  . trans321(x cup u) = trans321(x) cup trans321(u)
+
+end
+
+
+
+spec FlipFlopBase =
+
+     Set1[free type BaseRel ::= tri | dou | so | sr | bo | fr | ba | ri | le ]
+
+then
+
+. 1 = tri cup dou cup so cup sr cup bo cup fr cup ba cup ri cup le 
+
+%% id relation for 3x1 composition and 321-transformation
+. id = tri cup so
+
+%% transformations
+
+. trans132(ri) = le
+. trans213(ri) = le
+. trans231(ri) = ri
+. trans312(ri) = ri
+. trans321(ri) = le
+
+. trans132(le) = ri
+. trans213(le) = ri
+. trans231(le) = le
+. trans312(le) = le
+. trans321(le) = ri
+
+. trans132(ba) = fr
+. trans213(ba) = bo
+. trans231(ba) = bo
+. trans312(ba) = fr
+. trans321(ba) = ba
+
+. trans132(fr) = ba
+. trans213(fr) = fr
+. trans231(fr) = ba
+. trans312(fr) = bo
+. trans321(fr) = bo
+
+. trans132(bo) = ba
+. trans213(bo) = bo
+. trans231(bo) = fr
+. trans312(bo) = ba
+. trans321(bo) = fr
+
+. trans132(so) = dou
+. trans213(so) = sr
+. trans231(so) = sr
+. trans312(so) = dou
+. trans321(so) = so
+
+. trans132(sr) = sr
+. trans213(sr) = so
+. trans231(sr) = dou
+. trans312(sr) = so
+. trans321(sr) = dou
+
+. trans132(dou) = so
+. trans213(dou) = dou
+. trans231(dou) = so
+. trans312(dou) = sr
+. trans321(dou) = sr
+
+. trans132(tri) = tri
+. trans213(tri) = tri
+. trans231(tri) = tri
+. trans312(tri) = tri
+. trans321(tri) = tri
+
+
+%% composition table 3x1-composition
+
+. ri cmps ri = ri cup le cup ba 
+. ri cmps le = ri cup le cup fr cup bo cup so 
+. ri cmps ba = le
+. ri cmps fr = ri
+. ri cmps bo = ri
+. ri cmps so = ri
+. ri cmps sr = sr
+. ri cmps dou = 0
+. ri cmps tri = 0
+
+. le cmps ri = ri cup le cup fr cup bo cup so
+. le cmps le = ri cup le cup ba
+. le cmps ba = ri
+. le cmps fr = le
+. le cmps bo = le
+. le cmps so = le
+. le cmps sr = sr
+. le cmps dou = 0
+. le cmps tri = 0
+
+. ba cmps ri = le
+. ba cmps le = ri
+. ba cmps ba = fr cup bo cup so
+. ba cmps fr = ba
+. ba cmps bo = ba
+. ba cmps so = ba
+. ba cmps sr = sr
+. ba cmps dou = 0
+. ba cmps tri = 0
+
+. fr cmps ri = ri
+. fr cmps le = le
+. fr cmps ba = ba
+. fr cmps fr = fr
+. fr cmps bo = fr cup bo cup so
+. fr cmps so = fr
+. fr cmps sr = sr
+. fr cmps dou = 0
+. fr cmps tri = 0
+
+. bo cmps ri = ri
+. bo cmps le = le
+. bo cmps ba = ba
+. bo cmps fr = fr cup bo cup so
+. bo cmps bo = bo
+. bo cmps so = bo
+. bo cmps sr = sr
+. bo cmps dou = 0
+. bo cmps tri = 0
+
+. so cmps ri = ri
+. so cmps le = le
+. so cmps ba = ba
+. so cmps fr = fr
+. so cmps bo = bo
+. so cmps so = so
+. so cmps sr = sr
+. so cmps dou = 0
+. so cmps tri = 0
+
+. sr cmps ri = 0
+. sr cmps le = 0
+. sr cmps ba = 0
+. sr cmps fr = 0
+. sr cmps bo = 0
+. sr cmps so = 0
+. sr cmps sr = 0
+. sr cmps dou = so cup fr cup ba cup bo cup le cup ri
+. sr cmps tri = sr
+
+. dou cmps ri = dou
+. dou cmps le = dou
+. dou cmps ba = dou
+. dou cmps fr = dou
+. dou cmps bo = dou
+. dou cmps so = dou
+. dou cmps sr = tri
+. dou cmps dou = 0
+. dou cmps tri = 0
+
+. tri cmps ri = 0
+. tri cmps le = 0
+. tri cmps ba = 0
+. tri cmps fr = 0
+. tri cmps bo = 0
+. tri cmps so = 0
+. tri cmps sr = 0
+. tri cmps dou = dou
+. tri cmps tri = tri
+
+
+end
+ 
+spec FlipFlop = GenerateRelationAlgebra [FlipFlopBase]
+
+then %implies
+  forall x,y:BaseRel     
+  . not x = y => x cap y = 0 %(PairwiseDisjoint)%
+
+end

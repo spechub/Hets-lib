@@ -1,0 +1,165 @@
+library Ontology/Dolce/DolceCons/DolceConsParts
+
+from Ontology/Dolce/DolceSimpl_Esort get Time_Mereology
+
+%%One Point Model Found
+spec TM_Cons=
+     Time_Mereology
+then
+     . exists t:T . true  %% we need at least one time point
+end
+
+%%%%%%%%%%%%%%%% 1 and 2 point models for temp parthood no existence %%%%%%%%%%%%%%%%
+
+spec OnePointTempParthoodNoModel =
+  TM_Cons
+then
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+%%  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+%%  pred tSum  (x,y,z:s) <=> true
+end
+
+
+%%%%%%%%%%%%%%%%%
+
+spec TwoPointTempParthoodNoModel =
+  TM_Cons
+then
+   free type s ::= PointOne | PointTwo
+   pred PRE (x:s;t:T) <=> true
+   pred tOv (x,y:s;t:T) <=> x=y
+   pred tP (x,y:s;t:T) <=> x=y
+   pred tPP (x,y:s;t:T) <=> false
+ end
+
+spec ZeroPointTempParthoodExtNoModel =
+  TM_Cons
+then
+  sort sub
+  free type super ::= sort sub
+   pred PRE:super*T;
+   pred tOv:super*super*T;
+   pred tP:super*super*T;
+   pred tPP:super*super*T;
+end
+
+spec OnePointTempParthoodModel =
+  sort T
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+  pred tSum  (x,y,z:s) <=> true
+end
+		
+spec TempParthoodBinarySum [sorts left,right,sum] =
+  sort T
+  free type sum ::= sort left | sort right
+  pred PRE: sum*T
+  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) ) 
+  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 		
+end
+
+spec TempParthoodTernarySum [sorts part1,part2,part3,sum] =
+  sort T
+  free type sum ::= sort part1 | sort part2 | sort part3
+  pred PRE: sum*T
+  pred tOv (x,y:sum;t:T) <=> ( x in part1 /\ y in part1 /\ tOv(x,y,t) ) \/ ( x in part2 /\ y in part2 /\ tOv(x,y,t) )  \/ ( x in part3 /\ y in part3 /\ tOv(x,y,t) )
+  pred tP (x,y:sum;t:T)  <=> ( x in part1 /\ y in part1 /\ tP(x,y,t) )  \/ ( x in part2 /\ y in part2 /\ tP(x,y,t) )  \/ ( x in part3 /\ y in part3 /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in part1 /\ y in part1 /\ tPP(x,y,t) ) \/ ( x in part2 /\ y in part2 /\ tPP(x,y,t) ) 	\/ ( x in part3 /\ y in part3 /\ tPP(x,y,t) )	
+end
+
+%% here as needs to ge generated in some useful way
+%% probably we need to employ some powerset construction here...
+spec TempParthoodTernaryFullSum [sorts left,right,trash,sum] =
+  sort T
+  free type formal_sum ::= sort left | sort right | tsum(formal_sum;formal_sum)
+  generated type sum ::= q(formal_sum)
+  sort left < sum
+  sort right < sum
+  sort trash < sum
+%[
+  %% the kernel of q should be minimal w.r.t. the following properties:
+  %% (this minimality is a second-order property, note that we can omit it, but then we do not have a definition)
+  %% quotient must leave left and right intact
+  forall l1,l2:left
+  . l1=l2 => q(l1)=q(l2)
+  forall r1,r2:right
+  . r1=r2 => q(r1)=q(r2)
+  %% congruence property
+  forall x,y,z,u:sum
+  . x=y => q(x)=q(y)
+  . q(x)=q(y) /\ q(u)=q(z) => q(tsum(x,u))=q(tsum(y,z))
+  %% for objects in left or right, sum carries over
+  forall l,l1,l2:left
+  . tSum(l,l1,l2) => q(l) = q(tsum(l1,l2))
+  forall r,r1,r2:right
+  . tSum(r,r1,r2) => q(r) = q(tsum(r1,r2))
+  %% the new tSum predicate is based on the tsum operation
+  pred tSum:sum*sum*sum
+  forall x,y,z:formal_sum
+  . x=tsum(y,z) => tSum (q(x),q(y),q(z))
+]%
+  %% the following needs to be adpated:
+  pred PRE: sum*T
+  pred tOv (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tOv(x,y,t) ) \/ ( x in right /\ y in right /\ tOv(x,y,t) )  \/ ( x in trash /\ y in trash /\ tOv(x,y,t) )
+  pred tP (x,y:sum;t:T)  <=> ( x in left /\ y in left /\ tP(x,y,t) )  \/ ( x in right /\ y in right /\ tP(x,y,t) )  \/ ( x in trash /\ y in trash /\ tP(x,y,t) )  
+  pred tPP (x,y:sum;t:T) <=> ( x in left /\ y in left /\ tPP(x,y,t) ) \/ ( x in right /\ y in right /\ tPP(x,y,t) ) 	\/ ( x in trash /\ y in trash /\ tPP(x,y,t) )	
+  pred tDif (x,y,z:sum) <=> false
+end
+
+%%%%%%%%%%%%%%%%%% 1 point model for CEP %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+spec OnePointCEPModel =
+free type s ::= ThePoint
+ pred P:s*s
+ . P(ThePoint,ThePoint)
+  %% Proper Part  
+pred  PP(x:s; y:s) <=> false
+%% Overlap
+pred  Ov(x:s; y:s) <=> true
+%% Atom
+pred  At(x:s) <=> true
+%%  Atomic Part
+pred AtP(x:s; y:s) <=> true
+%%  Binary Sum
+pred  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+%%  Binary Difference
+pred  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+end
+
+%%%%%%%%%%%%%%%%  1 point temp parthood model without universal PRE %%%%%
+
+spec OnePointTempParthoodNoPREModel =
+  sort T
+  free type s ::= ThePoint
+%%  pred PRE (x:s;t:T) <=> true
+  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+  pred tSum  (x,y,z:s) <=> true
+end
+
+%%%%%%%%%%%%%%%%%%%% Konstitution model %%%%%
+
+spec KonstitutionModel =
+	sort T
+	sort s
+	pred K : s * s * T
+	pred At : T
+	pred PP : s * s
+	pred PRE:  s * T
+%%forall x,y: PD; t:T . K(x,y,t) <=> false % works too%
+forall x,y: s; t:T . K(x,y,t) <=> At(t) /\ PP(x,y) /\ PRE(x,t) /\ PRE(y,t)
+end
+
+

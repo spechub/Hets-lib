@@ -1,0 +1,84 @@
+# automatically generated hets proof-script
+
+use Calculi/Time/FlowOfTime
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTimeSMin__E1
+drop-translations
+prover SPASS
+set goals PA_comp_sucpre_intro1
+set axioms no_minima def_suc trans
+prove
+
+set goals PA_comp_sucpre_intro2
+set axioms PA_comp_sucpre_intro1 no_minima def_suc
+prove
+
+set goals PA_comp_sucpre_intro3
+set axioms PA_comp_sucpre_intro2 PA_comp_sucsuc_elim
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTime__E1
+drop-translations
+prover SPASS
+set goals equi_preE_sucE
+set axioms def_sucE def_preE def_suc
+set time-limit 20
+prove
+
+set goals cmp_sym
+set axioms def_cmp
+prove
+
+set goals uncmp_sym
+set axioms def_uncmp cmp_sym
+prove
+
+set goals PA_comp_prepre_elim
+set axioms trans
+prove
+
+set goals PA_comp_preeq_elim
+prove
+
+set goals PA_comp_sucsuc_elim
+set axioms def_suc PA_comp_prepre_elim
+prove
+
+set goals PA_comp_suceq_elim PA_comp_eqpre_elim PA_comp_eqsuc_elim PA_comp_eqeq_elim PA_comp_preeq_intro PA_comp_suceq_intro PA_comp_eqpre_intro PA_comp_eqsuc_intro PA_comp_eqeq_intro
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_DnsFlowOfTime__E1
+drop-translations
+prover SPASS
+set goals PA_comp_prepre_intro
+set axioms dense
+prove
+
+set goals PA_comp_sucsuc_intro
+set axioms def_suc PA_comp_prepre_intro
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Ext_FlowOfTimeSMax__E1
+drop-translations
+prover SPASS
+set goals PA_comp_presuc_intro1
+set axioms no_maxima def_suc trans
+prove
+
+set goals PA_comp_presuc_intro2
+set axioms PA_comp_presuc_intro1 no_maxima def_suc
+prove
+
+set goals PA_comp_presuc_intro3
+set axioms PA_comp_presuc_intro2 PA_comp_sucsuc_elim
+prove

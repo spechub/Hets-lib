@@ -1,0 +1,88 @@
+library Calculi/Space/TopologicalCalculi
+
+from Calculi/Space/RCC5 get RCC5, RCC5Model_OpenDisc
+from Calculi/Space/RCC8 get RCC8, RCC8Model_OpenDisc
+from HasCASL/MetricSpaces get MetricSpace |-> EuclideanPlane
+from HasCASL/TopologicalSpaces get
+     TopologicalSpace_Kuratowski |-> TopologicalSpace
+from Calculi/Time/IntervalAlgebraLin get IAlin |-> AllenIA
+from Calculi/Time/IntervalAlgebraLin get IAlinModel_Allen |-> AllenModelOfIA
+from Calculi/Time/LinearFlowOfTime get DnsLinFlowOfTimeSEnd
+
+view RCC5_to_RCC8 :
+     RCC5
+to   { RCC8
+        then %def
+        ops dr,pp,ppi,eq,po:Rel
+        pred __eps__ : Rel * Rel
+        . dr = dc cup ec
+        . pp = tpp cup ntpp
+        . ppi = tppi cup ntppi
+      }
+=    sort BaseRel |-> Rel
+end
+
+%( Nicht korrekt:
+view RCC8_to_AllenIA :
+     RCC8
+to   { AllenIA then %def
+       ops dc,ec,po,tpp,ntpp,tppi,ntppi,eq: Rel
+       . dc = b cup bi
+       . ec = m cup mi
+       . po = o cup oi
+       . tpp = s cup f
+       . tppi = si cup fi
+       . ntpp = d
+       . ntppi = di
+       . eq = e
+        }
+=    sort BaseRel |-> Rel
+end
+)%
+
+
+%(
+view RCC5_to_AllenIA :
+     RCC5
+to   { AllenIA then %def
+       ops dr,po,pp,ppi,eq: Rel
+       . dr = b cup bi cup m cup mi
+       . po = o cup oi
+       . pp = s cup f cup d
+       . ppi = si cup fi cup di
+       . eq = e
+        }
+=    sort BaseRel |-> Rel
+end
+)%
+
+
+logic HasCASL
+
+view EuclideanPlane_induces_OpenDiscModelOfRCC5 :
+     RCC5
+to
+     RCC5Model_OpenDisc[EuclideanPlane]
+=
+     ops pp|->ppRel, ppi|->ppiRel, po|->poRel, dr|->drRel, eq|->eqRel
+end
+
+
+view EuclideanPlane_induces_OpenDiscModelOfRCC8 :
+     RCC8
+to
+     RCC8Model_OpenDisc[EuclideanPlane]
+=
+     ops dc|->dcRel, ec|->ecRel, po|->poRel, tpp|->tppRel, ntpp|->ntppRel,
+        tppi|->tppiRel, ntppi|->ntppiRel, eq|->eqRel
+end
+
+view DnsLinFlowOfTimeSEnd_induces_AllenModelOfIntervalAlgebraLin :
+     AllenIA
+to
+     AllenModelOfIA[DnsLinFlowOfTimeSEnd]
+=
+     ops b|->bRel, m|->mRel, o|->oRel, d|->dRel, s|->sRel, f|->fRel, e|->eRel,
+        bi|->biRel, mi|->miRel, oi|->oiRel, di|-> diRel, si |-> siRel,
+        fi|->fiRel
+end

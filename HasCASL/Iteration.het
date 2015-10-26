@@ -1,0 +1,45 @@
+library HasCASL/Iteration
+version 0.1
+
+%author: E. Schulz
+%date: 18-09-2008
+
+logic HasCASL
+
+from Basic/Numbers get
+     Nat
+
+spec Sequence = Nat then
+     var a:Type
+
+     types Seq a := Nat -> a; %% sequences will be used for tuples
+     
+     ops  const(x:a) :Seq a = \i:Nat.! x; %(constant_function)%
+	  [__ -> __]__(n:Nat;x:a;s:Seq a) :Seq a =
+	       \i:Nat.! x when i=n else s(i);  %(substitution)%
+end
+
+%% The Signature which is needed to define Iterators
+spec IterationSignature = type Elem
+
+spec Iteration [IterationSignature] = Sequence then
+
+     op fold:(Elem*Elem->Elem)*Elem*Nat*Nat*(Seq Elem)->Elem
+
+     vars f:(Elem*Elem->Elem); d:Elem; low,hi:Nat; x:(Seq Elem)
+     . fold(f,d,low,hi,x) = d when (hi < low)
+                              else f(x(low),fold(f,d,low+1,hi,x))
+
+end
+
+%% The Signature which is needed to define Sums
+spec SumSignature = IterationSignature then
+     ops 0:Elem;
+	 __ + __:Elem*Elem->Elem
+end
+
+spec Sum [SumSignature] given Sequence = Iteration[SumSignature]
+then
+     op sum(low,hi:Nat; x:Seq Elem):Elem = fold(__+__,0,low,hi,x)
+end
+

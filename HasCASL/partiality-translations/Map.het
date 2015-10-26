@@ -1,0 +1,26 @@
+library Map
+
+logic HasCASL
+
+spec Map =
+var a,b: Type
+type List a
+op map: (a ->? b) -> List a ->? List b;
+   nil: List a;
+   cons: a -> List a -> List a;
+   filter: List a -> Pred a -> List a;
+var x:a; l: List a; f: a ->? b; P: Pred a
+. map f nil = nil
+. map f (cons x l) = cons (f x) (map f l)
+. filter (cons x l) P = (cons x (filter l P)) when (P x) else (filter l P)
+. filter nil P = nil
+then
+var a,b: Type
+var x:a; l: List a; f: a ->? a
+then %implies
+var a,b,c: Type
+var x:a; l: List a; f: a ->? a; g: b ->? c; P: Pred a; Q: Pred a
+. def(map f l) => def(map f (filter l P))
+. def(map f l) => (map f (filter l \h:a.Q(f(h)))) = filter (map f l) Q
+. def(f x) => def(cons (f x) l);
+end

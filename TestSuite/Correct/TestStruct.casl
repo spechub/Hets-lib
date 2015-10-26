@@ -1,0 +1,166 @@
+library TestSuite/Correct/TestStruct
+
+%% Provided by Till Mossakowski
+
+
+%% Annotations
+
+spec sp =
+   sort s
+   then %implies
+   forall x:s . true
+   then %cons
+   . true
+   then %def
+   . true
+end
+
+%% Simple structuring operations and their priorities
+
+spec sp1 =
+  closed { free { sorts s,t
+  op f:s->t
+  pred p:s*s} } with sort s|->t, op f|->g, pred p|->q
+  reveal g hide g
+  and
+  local sorts t,u op f:u->t within sort u
+  then sort s; op h:s->s with s|->t, h:s->s |-> k:t->t
+end
+
+%[   `free' and `closed' have the highest precedence; 
+     `with', `reveal', and `hide' have lower precedence; 
+     `within' has still lower precedence; 
+     `and' has lower precedence than all the above; and 
+     `then' has the lowest precedence of all. ]%
+
+%% Parameterized specs
+
+spec gen_sp[sp][sp1] given {sort s} =
+   {}
+end
+
+spec test_gen_sp =
+  gen_sp[sp fit s|->s][sp1]
+end
+
+%% Views
+
+view v1 : sp to sp1
+end
+
+view v2 : sp to sp1 = 
+  sort s|->t
+end
+
+%% Tricky imports
+
+spec Nat =
+  sort Nat
+end
+
+spec PreInt =
+  sorts Nat, Int
+  op abs : Int ->? Nat
+end
+
+spec EuclidianRing =
+     sorts Elem, Nat
+     ops   delta: Elem ->? Nat;
+end
+
+spec ExtEuclidianRing  [EuclidianRing] given Nat = {}
+end
+
+spec
+    Int = ExtEuclidianRing [PreInt fit Elem |-> Int, delta |-> abs]
+end
+
+spec COS =
+  { sort s, t; op c : s; } hide op c : s
+end
+
+%% Views as fitting args
+ 
+spec sp' [sort s,t; op f:s->?t] =
+sort t
+end
+
+spec sp'1 =
+  sp' [sort t,u; op g:u->t   fit sort s|-> u, op f:s->?t |->g:u->t ]
+end
+
+view v : {sorts s,t; op f:s->?t} to {sort s; op g:s->s} =
+sorts s|-> s, t |-> s, op f:s->?t |->g:s->s
+end
+
+spec sp'1a = sp'[view v]
+end
+
+spec sp'2 = sort s; op f:s->?s; sort t with sort s|-> s, op f |->g
+and sort s; op g:s->s
+end
+
+spec sp'3 = sort s ; op f:s->s
+and sort s; op f:s->?s
+end
+
+
+%% Generic views
+
+
+spec
+     PartialOrder =
+  sort Elem
+  pred __<=__ : Elem * Elem
+  forall x,y,z:Elem
+     . x <= x
+     . x <= y /\ y <= z => x <= z
+     . x = y if x <= y /\ y <= x             %(POrder_antisym)%
+end
+
+spec FiniteSet  [sort Elem] given Nat =
+free {
+          type
+                FinSet[Elem]::=    {}
+                                |  {__} (Elem)
+                                |  __ union __ (FinSet[Elem];FinSet[Elem])
+     }
+then %def
+  preds  isNonEmpty:       FinSet[Elem];
+          __ eps__:        Elem * FinSet[Elem];
+         __ isSubsetOf __: FinSet[Elem] * FinSet[Elem]
+end
+
+view PartialOrder_in_FiniteSet  [sort Elem] given Nat:
+     PartialOrder to FiniteSet [sort Elem] =
+     sort Elem     |-> FinSet[Elem] ,
+     pred __ <= __ |-> __ isSubsetOf __
+end
+
+%% Specs from Serge Autexier
+
+spec A[sort s] given {sort t}  =
+sort c;
+op f : s * t -> c;
+
+
+spec B[sort a, s][closed {sort s, t}] given {sort a}, {sort t}  =
+op f : a * s -> t;
+
+
+
+spec C[sort s,t] =
+closed{sort s} then {sort t} then {op f : s -> t}
+end
+
+%% Compound IDS
+
+spec spc [sorts s,t] =
+  sort c[s,t]
+end
+
+spec appl_spc =
+  spc [sorts a,b fit sorts s|->a, t|-> b]
+  then
+  op c:c[a,b]
+end

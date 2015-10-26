@@ -1,0 +1,67 @@
+library Examples/cons_test 
+
+spec sp = {}
+then %cons
+  free type Nat ::= 0 | suc(Nat)
+%% problem: termination proof of the following:
+  op __+__ : Nat*Nat->Nat
+  forall x,y:Nat
+  . x+x=x
+  . x+suc(y)=suc(x+y)   
+end
+
+spec sp1 = sp 
+then %cons
+  free type Bool ::= True | False
+end
+
+%[
+__==__(x,y) -> af2(x,x,y);
+af2(y,x,y) -> True;
+]%
+
+spec predicateDefinitionConsistent = {}
+then %cons
+  free type Nat ::= 0 | suc(Nat)
+  pred __==__ : Nat* Nat
+  forall x,y:Nat
+  . x==y <=> x=y
+end
+
+spec predicateDefinitionInconsistent = {}
+then %cons
+  free type Nat ::= 0 | suc(Nat)
+  pred __==__ : Nat* Nat
+  forall x,y:Nat
+  . x==y <=> x=y
+  . x==y <=> not x=y
+end
+
+spec conditional = {}
+then %cons
+  free type Nat ::= 0 | suc(Nat)
+  pred __>__ : Nat* Nat
+  op __+__ : Nat*Nat->Nat
+  forall x,y:Nat
+  . x>0 => x+0=x
+  . x=0 => x+0=0 
+  . x+suc(y)=suc(x+y)
+end
+
+spec terminating = {}
+then %cons
+  free type Nat ::= 0 | suc(Nat)
+  op __+__ : Nat*Nat->Nat
+  pred __>__ : Nat*Nat
+  forall x,y:Nat
+  . x>0 => x+0=x
+  . x=0 => x+0=0 
+  . x+suc(y)=suc(x+y)
+end
+%[ the patterns on the left hand side overlap
+      x+0        . x>0 => x+0=x
+      x+0        . x=0 => x+0=0 
+this should generate a proof obligation 
+"forall x:Nat . not (x>0) /\ (x=0)"
+This formula is another output of the algorithm
+]%

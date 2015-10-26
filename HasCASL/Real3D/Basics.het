@@ -1,0 +1,207 @@
+library HasCASL/Real3D/Basics
+version 0.2
+
+%author: E. Schulz
+%date: 12-11-2008
+
+%prec({__isIn__, __subset__, __disjoint__,__ :: __ --> __} 
+		 < {__union__, __intersection__, __\\__} )%
+%prec {__union__} < {__*__}
+%%prec { __-__, __+__ } < { __^__ }
+
+logic HasCASL
+
+from Basic/Numbers get
+     DecimalFraction
+from HasCASL/StructuredDatatypes get
+     Multiset
+from HasCASL/Algebra get
+     Monoid, ExtInverse
+from HasCASL/LinearAlgebra get
+     ExtEuclideanVectorSpace
+from HasCASL/AffineGeometry get
+     ExtAffineSpace
+from HasCASL/Reals get
+     RealFunctions, ExtFieldWithOrdering
+
+
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       Real 3D Vector Space                       %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec Prod[Monoid] = Multiset
+then
+     op prod: List Elem -> Elem
+
+     vars x:Elem; l: List Elem
+     . prod([]) = e %(listop basecase)%
+     . prod(x::l) = x * prod(l) %(listop reccase)%
+end
+
+spec RealBase = DecimalFraction and ExtFieldWithOrdering[RealFunctions fit Elem |-> Real]
+then
+     type Rat < Real
+     ops 1,2,3,4,5,6,7,8,9: RealPos;
+	 __^__: Real*Nat -> Real;
+	 __^__: RealPos*Nat -> RealPos
+
+     var r:Real
+     . r^2 = sqr(r)    %(exponent2_def)%
+
+end
+
+spec Points3D = RealBase then
+     free type Point ::= P(C1:Real;C2:Real;C3:Real)  %(Point datatype)%
+     %% imagine that as the first projection
+%%     type Real < Point %(Real embedding into points)%
+     ops 0:Point=P(0,0,0); %(Zero Point)%
+
+	 %% choice operators may only be defined on non-empty types,
+	 %% otherwise they introduce inconsistencies as they guarantee
+	 %% the existence of an element!
+	 choose:Pred(Point) -> Point; %(choice op for Point)%
+
+     . forall P:Pred(Point). (exists y:Point. P(y)) => P(choose(P)) %(Point choice)%
+
+end
+
+spec Vectors3DBase = RealBase then
+     free type Vector ::= V(C1:Real;C2:Real;C3:Real) %(Vector datatype)%
+
+     %% imagine that as the first projection
+%%     type Real < Vector %(Real embedding into vectors)%
+
+     ops 0:Vector=V(0,0,0); %(Zero Vector)%
+	 __+__ : Vector * Vector -> Vector;
+	 - __ : Vector -> Vector;
+
+     pred VectorStar_pred(x:Vector) <=> not x = 0; %(VectorStar_pred_def)%
+     type VectorStar = {x:Vector. VectorStar_pred x}; %(VectorStar type)%
+
+     vars x,y:Vector
+     . x+y = V(C1(x)+C1(y),C2(x)+C2(y),C3(x)+C3(y))  %(def of vector addition)%
+     . -x = V(-C1(x),-C2(x),-C3(x)) %(def of minus vector)%
+end
+
+%( extend by binary inverse )%
+spec Vectors3D =
+ExtInverse[Vectors3DBase fit
+	   Elem |-> Vector, __ * __ |-> __ + __, inv |-> - __]
+     with __ / __:Vector*Vector->Vector |-> __ - __ then
+
+     ops __*__(x:Real;y:Vector):Vector = V(x*C1(y),x*C2(y),x*C3(y));
+     %(scalar multiplication)%
+	 __*__(x,y:Vector):Real = C1(x)*C1(y)+C2(x)*C2(y)+C3(x)*C3(y);
+	 %(scalar product)%
+	 __#__(x,y:Vector):Vector = V(C2(x)*C3(y)-C2(y)*C3(x),
+				      C3(x)*C1(y)-C3(y)*C1(x),
+				      C1(x)*C2(y)-C1(y)*C2(x));
+				      %(vector product)%
+	 e1:Vector = V(1,0,0); %(ONB1)%
+	 e2:Vector = V(0,1,0); %(ONB2)%
+	 e3:Vector = V(0,0,1); %(ONB3)%
+
+then %implies
+%% proofs in Basics_Vectors3D_E1.thy
+
+     var x,y,z:Vector; r:Real
+
+     %{ cross prod props }%
+     . r * (x # y) = (r * x) # y; %(cross left homogenity)%
+     . x # y = -(y # x)    %(cross product antisymmetric)%
+
+end
+
+view Vectors3DIsMonoid: Monoid to Vectors3D =
+     Elem |-> Vector, e |-> 0, __*__ |-> __+__
+end
+
+spec VectorSum = Prod[view Vectors3DIsMonoid] with prod |-> sum
+
+%% proofs for instantiation in Basics_Vectors3DSpace_E1A.thy
+spec Vectors3DSpace = ExtEuclideanVectorSpace[Vectors3D fit Space |-> Vector]
+     and VectorSum
+then %implies
+%% proofs in Basics_Vectors3DSpace_E1.thy
+
+     var x,y,z:Vector; r:Real
+
+     %{ mixed props }%
+     . orth(x,x # y)       %(cross product orthogonal)%
+     . lindep(x,y) <=> (x # y = 0) %(cross product zero iff lindep)%
+     . not(lindep(e1,e2)); %(e1e2 nonlindep)%
+
+end
+
+spec AffineRealSpace3D_aux = Points3D and Vectors3DSpace
+then
+     op __ + __(p: Point;v: Vector):Point =
+	P(C1(p)+C1(v),C2(p)+C2(v),C3(p)+C3(v)); %(point vector map)%
+end
+
+%% proofs for instantiation in Basics_AffineRealSpace3D_aux.thy
+spec AffineRealSpace3D = ExtAffineSpace[AffineRealSpace3D_aux
+					fit Space |-> Vector, Elem |-> Real]
+
+
+%( taken from Set.het but changed the meaning of {f} )%
+spec SetsWithComprehension =
+  var S,T : Type
+  type Set S := Pred(S);
+  ops emptySet : Set S;
+      allSet : Set S;
+      __isIn__ : Pred(S * Set S);
+      __subset__ :Pred( Set(S) * Set(S) );
+      __union__, __intersection__, __\\__  : Set S * Set S -> Set S;
+      bigunion : Set(Set S) -> Set S;
+      __disjoint__ : Pred( Set(S) * Set(S) );
+      __*__ : Set S * Set T -> Set (S*T);
+      {__}(s:Set S):Set S = s; %(set comprehension)%
+      setFromProperty:Set S -> Set S = {__}; %(abbrev of set comprehension)%
+      image(f:(S->T);X:Set S):Set T
+	   = \x:T . exists y:S. y isIn X /\ f(y) = x; %(function image)%
+
+  vars x,x':S; y:T; s,s':Set S; t:Set T; XX:Set(Set S) 
+  . not (x isIn emptySet)  %(emptySet empty)%
+  . x isIn allSet %(allSet contains all)%
+  . x isIn s <=> s x %(def of isIn)%
+  . s subset s' <=> forall x:S . x isIn s => x isIn s' %(def of subset)%
+  . x isIn s union s' <=> x isIn s \/ x isIn s' %(def of union)%
+  . x isIn bigunion XX <=> exists X:Set S . X isIn XX /\ x isIn X %(def of bigunion)%
+  . x isIn s intersection s' <=> x isIn s /\ x isIn s' %(def of intersection)%
+  . x isIn s \\ s' <=> x isIn s /\ not x isIn s' %(def of difference)%
+  . s disjoint s' <=> s intersection s' = emptySet %(def of disjoint)%
+  . (x,y) isIn s * t <=> x isIn s /\ y isIn t %(def of productset)%
+
+then %implies
+%% proofs in Basics_SetsWithComprehension_E1.thy
+
+     var S,T : Type; a:Set S; f:(S->T); x:T
+
+     . a union emptySet = a %(emptySet union right unit)%
+     . x isIn image(f,a) <=> exists y:S. y isIn a /\ f(y) = x
+     %(function image structure)%
+end
+
+spec AffineRealSpace3DWithSets = AffineRealSpace3D and SetsWithComprehension
+then
+     types PointSet := Set Point;
+	   VectorSet := Set Vector;
+	   RealSet := Set Real;
+
+     ops [__ ... __](a,b:Real):RealSet= \r:Real . (r >= a) /\ (r <= b); %(def of interval)%
+	 closedinterval:Real*Real->RealSet= [__ ... __]; %(abbrev of interval)%
+
+	 %{Lifting operations for +}%
+
+	 __+__ (P:PointSet; v:Vector):PointSet = image((\x:Point .! x+v), P); %(plus PointSet Vector)%
+	 __+__ (p:Point; V:VectorSet):PointSet = image((\x:Vector .! p+x), V); %(plus Point VectorSet)%
+	 __+__ (P:PointSet; V:VectorSet):PointSet =
+	       bigunion (image((\x:Vector .! P+x), V)); %(plus PointSet VectorSet)%
+
+	 %{We could also introduce lifting operations for vec}%
+
+end

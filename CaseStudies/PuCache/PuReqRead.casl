@@ -1,0 +1,110 @@
+library CaseStudies/PuCache/PuReqRead
+
+spec GenFile =
+
+sorts
+    Fn;         %% Filename
+    User;
+    File;
+    Data;
+ops
+    fn: File -> Fn;                  %% Liefert den Namen einer Datei
+    data: File -> Data;
+
+spec Client = GenFile then
+
+sorts
+    Clientfs;
+
+preds
+    inCacheFn: Clientfs * Fn * User;   %% Ex. eine Datei unter dem Namen Fn
+                                     %% im ClientFS?
+
+    inCache: Clientfs * File * User; %% Ex. genau diese Datei im ClientFS
+                                     %% (ohne Conflicts)?
+
+    offline: Clientfs * User;        %% Ist das ClientFS offline?
+
+ops
+    fileCfs: Clientfs * Fn ->? File;    %% Liefert die Datei, wenn sie unter dem
+                                     %% Namen Fn im ClientFS existiert
+
+forall c:Clientfs; fn:Fn; f:File; u:User
+  . not def fileCfs(c,fn) if not inCacheFn(c,fn,u)
+    %% Wenn eine Datei unter ihrem Namen im Cfs zugreifbar ist, ist sie im Cfs
+  . inCacheFn(c,fn,u) => inCache(c,fileCfs(c,fn),u)
+    %% Der Dateiname einer Datei, die ich ueber den Dateinamen zugreife,
+    %% ist dieser.
+  . fn(fileCfs(c,fn))=fn
+    %% Dateien, die sich in Lost&Found befinden, sind nicht im ClientFS.
+
+spec Server = GenFile then
+
+sorts
+    Serverfs;
+
+preds
+    inSfsFn: Serverfs * Fn;            %% Ex. eine Datei unter dem Namen Fn
+                                     %% im ServerFS?
+
+    inSfs: Serverfs * File;          %% Ex. genau diese Datei im ServerFS?
+
+ops
+    file: Serverfs * Fn ->? File;    %% Liefert die Datei, wenn sie unter dem
+                                     %% Namen Fn im ServerFS existiert
+
+forall s:Serverfs; fn:Fn
+  . not def file(s,fn) if not inSfsFn(s,fn)
+    %% Wenn eine Datei unter ihrem Namen im Sfs zugreifbar ist, ist sie im Sfs
+  . inSfsFn(s,fn) => inSfs(s,file(s,fn))
+    %% Der Dateiname einer Datei, die ich ueber den Dateinamen zugreife,
+    %% ist dieser.
+  . fn(file(s,fn))=fn
+
+spec Cache = GenFile and Client and Server then
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Requirement-Spezifikation des Cachingverhaltens von Prosecco
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   %% !Vorsicht! Der Typ Pfs umfasst nicht das gesamte System,
+   %% sondern nur den Server eines Systems und einen Client.
+  free type
+    Pfs ::= Pfs (sfs:Serverfs;cfs:Clientfs);
+
+  preds
+    changed: Pfs * Fn * User;        %% Ist die Datei mit Namen Fn im Vergleich
+                                     %% des ClientFS mit dem ServerFS
+                                     %% im ServerFS geaendert worden?
+
+    getAllowed: Pfs * Fn * User;     %% Rechte zum Lesen
+
+  ops
+
+    getData: Pfs * Fn  * User ->? Data;
+                                     %% Liest den Inhalt der Datei des Namens
+                                     %% Fn
+
+  forall fn:Fn; f:File; u:User; c,c1,c2:Clientfs; s,s1,s2: Serverfs; p:Pfs
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Online lesen
+    %% Eine im Pfs ungeaenderte Datei, die in einem ClientFS liegt,
+    %% das online ist, wird aus diesem ClientFS gelesen.
+  . not changed(Pfs(s,c),fn,u) => not offline(c,u) => getAllowed(Pfs(s,c),fn,u)
+                => getData(Pfs(s,c),fn,u) = data(fileCfs(c,fn))
+
+    %% Eine im Pfs geaenderte Datei, die in einem ClientFS liegt, das online
+    %% ist, wird aus ServerFS gelesen.
+  . changed(Pfs(s,c),fn,u) => not offline(c,u) => getAllowed(Pfs(s,c),fn,u)
+                => getData(Pfs(s,c),fn,u) = data(file(s,fn))
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Offline lesen
+    %% Eine Datei, die in einem ClientFS liegt, das offline ist, wird aus
+    %% dem ClientFS gelesen.
+  . offline(c,u) => getAllowed(Pfs(s,c),fn,u)
+                 => getData(Pfs(s,c),fn,u) = data(fileCfs (c,fn))
+
+  . not getAllowed(p,fn,u) => not def getData(p,fn,u)

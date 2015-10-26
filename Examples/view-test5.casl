@@ -1,0 +1,22 @@
+library viewtest5
+
+%% The theorem link is not provable at all
+
+spec sp0 =
+  sort s
+  forall x:s . x=x
+end
+
+
+view v1 : sp0 to sp0 end
+view v2 : sp0 to sp0 end
+
+spec sp[sp0] =
+  sort t
+end
+
+spec sp2[sp0] =
+  sp[sp0]
+then
+  sort u
+end

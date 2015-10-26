@@ -1,0 +1,296 @@
+spec CARDINAL %% [...] %%  =
+sorts
+  CARDINAL;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : CARDINAL->CARDINAL;
+  0 : Nat;
+  0 : CARDINAL;
+  1 : Pos;
+  1 : Nat;
+  1 : CARDINAL;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Wordlength : Nat;
+  __! : Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __*__ : CARDINAL*CARDINAL->?CARDINAL;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __+__ : CARDINAL*CARDINAL->?CARDINAL;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : CARDINAL*CARDINAL->?CARDINAL;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : CARDINAL*CARDINAL->?CARDINAL;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : CARDINAL*CARDINAL->?CARDINAL;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  abs : CARDINAL->CARDINAL;
+  cardToNat : CARDINAL->Nat;
+  max : Nat*Nat->Nat;
+  maxCardinal : CARDINAL;
+  maxCardinal : Nat;
+  min : Nat*Nat->Nat;
+  natToCard : Nat->?CARDINAL;
+  pre : Nat->?Nat;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : CARDINAL*CARDINAL;
+  __<=__ : Nat*Nat;
+  __<__ : CARDINAL*CARDINAL;
+  __<__ : Nat*Nat;
+  __>=__ : CARDINAL*CARDINAL;
+  __>=__ : Nat*Nat;
+  __>__ : CARDINAL*CARDINAL;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec INTEGER %% [...] %%  =
+sorts
+  INTEGER;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  +__ : INTEGER->INTEGER;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : INTEGER->?INTEGER;
+  0 : Int;
+  0 : Nat;
+  0 : INTEGER;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  1 : INTEGER;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  Wordlength : Nat;
+  __! : Nat->Nat;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __*__ : INTEGER*INTEGER->?INTEGER;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __+__ : INTEGER*INTEGER->?INTEGER;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __-__ : INTEGER*INTEGER->?INTEGER;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/__ : INTEGER*INTEGER->?INTEGER;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : INTEGER*INTEGER->?INTEGER;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : INTEGER*INTEGER->?INTEGER;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : INTEGER*INTEGER->?INTEGER;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : INTEGER*INTEGER->?INTEGER;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  abs : INTEGER->?INTEGER;
+  intToInteger : Int->?INTEGER;
+  integerToInt : INTEGER->Int;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  maxInteger : INTEGER;
+  maxInteger : Int;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  minInteger : INTEGER;
+  minInteger : Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : INTEGER*INTEGER;
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : INTEGER*INTEGER;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : INTEGER*INTEGER;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : INTEGER*INTEGER;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  even : Int;
+  even : Nat;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec Int =
+sorts
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec Nat =
+sorts
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec SigOrder %% [...] %%  =
+sort
+  Elem
+preds
+  __<=__ : Elem*Elem;
+  __<__ : Elem*Elem;
+  __>=__ : Elem*Elem;
+  __>__ : Elem*Elem
+
+end

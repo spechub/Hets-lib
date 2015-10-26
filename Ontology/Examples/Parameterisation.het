@@ -1,0 +1,13 @@
+library Ontology/Examples/Parameterisation
+
+logic OWL
+
+spec Atom =
+     Class: Atom
+end
+
+spec Mereology[Atom] =
+     Class: Entity
+     ObjectProperty: partOf
+     Class: Atom SubClassOf: Entity
+end

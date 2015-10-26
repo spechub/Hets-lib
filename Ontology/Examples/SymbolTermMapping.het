@@ -1,0 +1,44 @@
+%% This is a (possibly outdated) subset of AAL.het, which has been created for demonstrating the need to map symbols to terms.
+library SymbolTermMapping
+
+from OpenAALOntology get httpwwwopenaalorgSAMOntology |-> OpenAAL
+
+logic Propositional
+
+spec LightSwitch =
+  props light_on, person_in_room, dark_outside
+  . light_on <=> person_in_room /\ dark_outside
+end
+
+logic OWL
+%% TODO What is the syntax for OWL RL?
+
+spec AAL =
+  OpenAAL
+    with <http://www.openaal.org/SAM/Ontology/person#AP> |-> AssistedPerson
+    %% TODO how to map symbols by their absolute URI?
+  then {
+    Prefix: ht: <http://www.openaal.org/SAM/Ontology/highLevelThing#>
+    
+    Class: LightSwitch
+      SubClassOf: ht:Device
+  }
+
+spec LightSwitchToAALMap =
+  AAL
+  then {
+    Prefix: location: <http://www.openaal.org/SAM/Ontology/location#>
+    Prefix: openaal: <http://www.openaal.org/SAM/Ontology#>
+    
+    Class: person_in_room
+    Class: light_on
+    EquivalentClasses: person_in_room,
+      location:Room that inverse openaal:is-in-room min 1 AssistedPerson
+    EquivalentClasses: light_on,
+      location:Room that inverse openaal:is-in-room only
+        (not (LightSwitch that openaal:has-power-state value Off))
+  }
+
+%[view LightSwitchToAAL : LightSwitch to LightSwitchToAALMap]%
+
+%[I would actually like to write this view without having to implement the LightSwitchToAALMap spec.  The latter establishes a mapping via OWL's equivalence construct, which does not exist in all profiles of OWL, at least not without restrictions.]%

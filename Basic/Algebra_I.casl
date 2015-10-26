@@ -1,0 +1,351 @@
+library Basic/Algebra_I
+version 1.0
+%authors: M. Roggenbach, T. Mossakowski, L. Schroeder
+%date: 21 May 2003
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __
+
+
+from Basic/RelationsAndOrders get TotalOrder, ExtTotalOrder,
+RichTotalOrder, PreOrder, EquivalenceRelation
+
+from Basic/Numbers get Nat, Int, Rat
+
+spec Monoid =
+     sort Elem
+     ops  e:       Elem;
+          __ * __: Elem * Elem -> Elem, assoc, unit e
+end
+
+spec CommutativeMonoid =
+     Monoid
+then
+     op __ * __: Elem * Elem -> Elem, comm
+end
+
+spec Group =
+     Monoid
+then
+     forall x: Elem
+     . exists x': Elem . x' * x = e   %(inv_Group)%
+end
+
+spec AbelianGroup =
+     Group
+and
+     CommutativeMonoid
+end
+
+spec Ring =
+     AbelianGroup with sort Elem,
+                       ops __ * __ |-> __ + __,
+                           e       |-> 0
+and
+     Monoid with ops e, __*__
+then
+     forall x,y,z:Elem
+     . (x + y) * z = (x * z) + (y * z)          %(distr1_Ring)%
+     . z * ( x + y ) = (z * x) + (z * y)        %(distr2_Ring)%
+end
+
+view AbelianGroup_in_Ring_add :
+     AbelianGroup to Ring =
+     ops e |-> 0,
+         __ * __ |-> __ + __
+end
+
+spec CommutativeRing =
+     Ring with ops 0,  __ + __, e, __ * __
+and
+     CommutativeMonoid with ops e, __ * __
+end
+
+spec IntegralDomain =
+     CommutativeRing
+then
+     forall x,y: Elem
+     . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
+     . not (e = 0)                              %(zeroNeqOne)%
+end
+
+spec ConstructField =
+{     CommutativeRing
+then
+     . not e = 0 %(zeroNeqOne_Field)%
+     sort NonZeroElem = { x: Elem . not x = 0 } %(NonZeroElem_def)%
+}
+and
+     {Group with sort Elem |-> NonZeroElem, ops e, __*__}
+end
+
+%% an obvious view which helps to write the specification ExtField:
+
+view AbelianGroup_in_ConstructField :
+     AbelianGroup to ConstructField =
+     sort Elem |-> NonZeroElem
+end
+
+spec Field =
+     ConstructField hide sort NonZeroElem
+end
+
+view IntegralDomain_in_Field : IntegralDomain to Field
+end
+
+spec ExtMonoid  [Monoid] given Nat = %def
+     op __ ^ __: Elem * Nat -> Elem
+     forall x: Elem; n: Pos
+     . x ^ 0 = e                                %(pow_0_Monoid)%
+     . x ^ suc(n) = x * (x ^ n)                 %(pow_suc_Monoid)%
+then %implies
+     forall x: Elem; n,m: Nat
+     . e ^ n = e                                %(pow_unit_Monoid)%
+     . x ^ (n + m)=x ^ n * x ^ m                %(pow_add_Monoid)%
+     . x ^ (n * m)=(x ^ n) ^ m                  %(pow_mult_Monoid)%
+end
+
+spec ExtCommutativeMonoid  [CommutativeMonoid] given Nat = %def
+     ExtMonoid [Monoid]
+then %implies
+     forall x,y: Elem; n: Nat
+     . x^ n * y^ n=(x*y)^ n                     %(pow_basemult_CMonoid)%
+end
+
+spec ExtGroup [Group] given Int = %def
+     ExtMonoid [Monoid]
+then
+     ops __ ^ __: Elem * Int -> Elem;
+        inv:     Elem -> Elem;
+        __ / __: Elem * Elem -> Elem;
+     forall x,y: Elem; p: Pos
+     . inv(x) * x = e                           %(inv_def_Group)%
+     . x / y = x * inv(y)                       %(div_def_Group)%
+     . x^ (- p)=inv(x ^ p)                      %(pow_neg_Group)%
+then %implies
+     forall x,y,z: Elem; n,m: Int
+     . x * inv(x) = e                           %(rightInv_Group)%
+     . x = y if z * x = z * y                   %(leftCancel_Group)%
+     . x = y if x * z = y * z                   %(rightCancel_Group)%
+     . inv(inv(x))=x                            %(invInv_Group)%
+     . inv(e)=e                                 %(invUnit_Group)%
+     . inv(x*y)=inv(y)*inv(x)                   %(invMult_Group)%
+     . e ^ n = e                                %(pow_unit_Group)%
+     . x ^ (n + m)=x ^ n * x ^ m                %(pow_add_Group)%
+     . x ^ (n * m)=(x ^ n) ^ m                  %(pow_mult_Group)%
+end
+
+spec ExtAbelianGroup  [AbelianGroup] given Int = %def
+     ExtGroup[AbelianGroup]
+then %implies
+     forall x,y: Elem; n: Int
+     . x^ n * y^ n=(x*y)^ n                     %(pow_basemult_AbGroup)%
+end
+
+
+spec ExtRing  [Ring ] given Int = %mono
+     ExtAbelianGroup [view AbelianGroup_in_Ring_add]
+     with ops inv     |-> -__,
+              __ / __ |-> __ - __,
+              __ ^ __ : Elem * Nat -> Elem |-> __ times __,
+              __ ^ __ : Elem * Int -> Elem |-> __ times __
+and
+     ExtMonoid[Monoid]
+     with op  __ ^ __
+and
+     preds isIrred, isUnit: Elem
+     sorts NonZero[Elem] = { x: Elem . not x = 0 } %(NonZero[Elem]_def)%;
+           RUnit[Elem] = { x: Elem . isUnit(x) } %(RUnit_def)%;
+     forall x,y: Elem
+     . isUnit(x) <=> exists y: Elem . x * y = e /\ y * x = e
+                                                %(isUnit_def_Ring)%
+     . isIrred(x) <=> (not isUnit(x) /\
+        forall y, z: Elem . (x = y * z => (isUnit(y) \/ isUnit(z))))
+                                                %(isIrred_def_Ring)%
+then %def
+     ops e: RUnit[Elem];
+         -__: RUnit[Elem] -> RUnit[Elem];
+         __ * __: RUnit[Elem] * RUnit[Elem] -> RUnit[Elem]
+end
+
+view Group_in_ExtRing [Ring] given Int :
+     Group to ExtRing[Ring] =
+     sort Elem |-> RUnit[Elem]
+end
+
+spec ExtCommutativeRing  [CommutativeRing] given Int = %mono
+     ExtRing[Ring]
+then
+     preds hasNoZeroDivisors: ();
+           __ divides __ :    Elem * Elem;
+           associated:        Elem * Elem
+     forall x,y: Elem
+     . hasNoZeroDivisors <=> forall x,y: Elem. (x * y = 0 => x=0 \/ y=0)
+                                                %(hasNoZeroDivisors_def)%
+     . x divides y <=> exists z: Elem. x * z = y
+                                                %(divides_def)%
+     . associated(x,y) <=> exists u:RUnit[Elem]. x=u*y
+                                                %(associated_def)%
+then %implies
+     forall x,y:Elem
+     . associated(x,y) <=> (x divides y /\ y divides x)
+end
+
+view PreOrder_in_ExtCRing  [CommutativeRing] given Int :
+     PreOrder to ExtCommutativeRing[CommutativeRing] =
+     pred __ <= __ |-> __ divides __
+end
+
+view
+     AbelianGroup_in_ExtCRing [CommutativeRing] given Int :
+     AbelianGroup to ExtCommutativeRing [CommutativeRing] =
+     sort Elem |-> RUnit[Elem]
+end
+
+view EqRel_in_ExtCRing  [CommutativeRing] given Int :
+     EquivalenceRelation to
+     ExtCommutativeRing[CommutativeRing] =
+     pred __ ~ __ |-> associated
+end
+
+spec ExtIntegralDomain  [IntegralDomain] given Int = %mono
+     ExtCommutativeRing [CommutativeRing]
+then
+     op __ * __:  NonZero[Elem] * NonZero[Elem] -> NonZero[Elem]
+then %implies
+     . hasNoZeroDivisors
+end
+
+
+spec ExtField  [Field] given Int = %mono
+     ExtRing [Ring]
+then
+closed
+     {  ExtAbelianGroup[view AbelianGroup_in_ConstructField]
+        with sort NonZeroElem|->NonZero[Elem],
+             ops inv, __ / __, __ ^ __  }
+then
+     op __ / __: Elem * Elem ->? Elem;
+     forall x:Elem; n: NonZero[Elem]
+     . 0/n=0                                    %(div_def1_Field)%
+     . not def x/0                              %(div_def2_Field)%
+then %implies
+     forall x,y:Elem
+     . def x/y <=> not y=0                      %(div_dom_Field)%
+end
+
+spec RichMonoid =
+     ExtMonoid [Monoid]
+end
+
+spec RichCommutativeMonoid =
+     ExtCommutativeMonoid [CommutativeMonoid]
+end
+
+spec RichGroup =
+     ExtGroup [Group]
+end
+
+spec RichAbelianGroup =
+     ExtAbelianGroup [AbelianGroup]
+end
+
+spec RichRing =
+     ExtRing [Ring]
+end
+
+view Group_in_RichRing : Group to RichRing =
+     sort Elem |-> RUnit[Elem]
+end
+
+spec RichCommutativeRing =
+     ExtCommutativeRing [CommutativeRing]
+end
+
+view PreOrder_in_RichCRing : PreOrder to RichCommutativeRing =
+     pred __ <= __ |-> __ divides __
+end
+
+view EqRel_in_RichCRing :
+     EquivalenceRelation to RichCommutativeRing =
+     pred __ ~ __ |-> associated
+end
+
+view AbelianGroup_in_RichCRing :
+     AbelianGroup to RichCommutativeRing =
+     sort Elem |-> RUnit[Elem]
+end
+
+spec RichIntegralDomain =
+     ExtIntegralDomain [IntegralDomain]
+end
+
+spec RichField =
+     ExtField [Field]
+end
+
+
+view CommutativeMonoid_in_Nat_Add : CommutativeMonoid to Nat =
+     sort Elem |-> Nat,
+     ops e |-> 0,
+         __ * __ |-> __ + __
+end
+
+view CommutativeMonoid_in_Nat_Mult :
+     CommutativeMonoid to Nat =
+     sort Elem |-> Nat,
+     ops e |-> 1,
+         __ * __ |-> __ * __
+end
+
+view CommutativeMonoid_in_Int_Mult :
+     CommutativeMonoid to Int =
+     sort Elem |-> Int,
+     ops e |-> 1,
+         __ * __ |-> __ * __
+end
+
+view AbelianGroup_in_Int_Add :
+     AbelianGroup to Int =
+     sort Elem |-> Int,
+     ops e |-> 0,
+         __ * __ |-> __ + __
+end
+
+view IntegralDomain_in_Int :
+     IntegralDomain to Int =
+     sort Elem |-> Int,
+     op e |-> 1
+end
+
+view Field_in_Rat : Field to Rat =
+     sort Elem |-> Rat,
+     op e |-> 1
+end
+
+spec ResidueClassRing [op n:Int] given Int =
+sort Z[n]
+ops [__]: Int -> Z[n];
+    __+__, __*__: Z[n] * Z[n] -> Z[n];
+    0, e: Z[n]
+forall k,l: Int; x: Z[n]
+. [k] = [l] <=> (k-l) mod n = 0
+. exists m: Int. [m] = x
+. [k] + [l] = [k + l]
+. [k] * [l] = [k * l]
+
+view CommutativeRing_in_ResidueClassRing[op n: Int] given Int :
+        CommutativeRing to ResidueClassRing[op n: Int] =
+sort Elem |-> Z[n]
+
+spec Prime[op n:Int] given Int =
+forall m: Int
+. n mod m = 0 => m = 1 \/ m = n
+
+spec ResidueClassField[Prime[op n: Int]] given Int =
+ResidueClassRing[op n: Int]
+
+view Field_in_ResidueClassField[Prime[op n: Int]] given Int :
+        CommutativeRing to ResidueClassField[Prime[op n: Int]] =
+sort Elem |-> Z[n]

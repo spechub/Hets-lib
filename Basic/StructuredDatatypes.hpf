@@ -1,0 +1,71 @@
+use Basic/StructuredDatatypes
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic BooleanAlgebra__E1
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic PowerSet
+prover SPASS
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic PartialOrder_in_Set__T
+prover MathServe Broker
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic PartialOrder_in_Bag__T
+prover MathServe Broker
+set goals refl
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Set__E2
+prover SPASS
+set goals ga_right_unit___union__
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic List__E2
+prover SPASS
+set goals ga_selector_front ga_disjoint_[]___+__
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic BooleanAlgebra_in_PowerSet__T
+prover SPASS
+set goals zeroAndCap distr1_BooleanAlgebra
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Map
+prover Vampire
+set goals lookup_dom
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic Monoid_in_List__T
+prover SPASS
+set goals ga_left_unit___*__
+prove
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set goals ga_right_unit___*__
+set time-limit 40
+prove

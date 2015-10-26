@@ -1,0 +1,65 @@
+library Ontology/Blending/HouseBoat
+
+spec Medium =
+  sort Medium
+  op medium : Medium
+end
+
+spec LandWater =
+  sorts Person, Object < Thing
+  sort Medium < Thing
+  ops land, water : Medium
+  pred on : Object * Medium
+end
+
+view land : Medium to LandWater =
+  medium |-> land
+end
+
+view water : Medium to LandWater =
+  medium |-> water
+end
+
+spec Object =
+  sort Object
+  op object : Object
+end
+
+
+spec Person =
+  Object
+then
+  sorts Person
+  op person : Person
+  pred use : Person * Object
+  . use(person, object)
+end
+
+
+spec Base =
+  LandWater and Object and Person
+end
+
+spec House =
+  Base with person |-> resident,
+            object |-> house,
+            use |-> live_in
+then
+  op resident : Person
+  op house : Object
+  . on(house, land)
+end
+
+spec Boat =
+  Base with person |-> passenger, object |-> boat, use |-> ride
+then
+  . on(boat, water)
+end
+
+spec HouseBoat = combine Medium, LandWater, Base, House, Boat, land, water
+  with resident |-> resident_passenger,
+%%       object |-> house_boat,
+       land |-> water,  
+       ride |-> live_in_ride 
+end
+

@@ -1,0 +1,133 @@
+library UserManual/Chapter5
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+from UserManual/Chapter3 get
+    Natural, Natural_Arithmetic, Generated_Set
+
+from UserManual/Chapter4 get Natural_Partial_Pre
+
+spec Generic_Monoid_1 [sort Elem] =
+    sort Elem < Monoid
+    ops 1 : Monoid;
+	__*__ : Monoid * Monoid -> Monoid, assoc, unit 1
+end
+
+spec Vehicle =
+    Natural
+then
+    sorts Car, Bicycle < Vehicle
+    ops max_speed : Vehicle -> Nat;
+	weight : Vehicle -> Nat;
+	engine_capacity : Car -> Nat
+end
+
+spec More_Vehicle =
+    Vehicle
+then
+    sort Boat < Vehicle
+end
+
+spec Speed_Regulation =
+    Vehicle
+then
+    ops speed_limit : Vehicle -> Nat;
+	car_speed_limit, bike_speed_limit : Nat
+    forall v:Vehicle
+    . (v in Car) => speed_limit(v) = car_speed_limit
+    . (v in Bicycle) => speed_limit(v) = bike_speed_limit
+end
+
+spec Natural_Subsorts =
+    Natural_Arithmetic
+then
+    pred even : Nat
+    . even(0)
+    . not even(1)
+    forall n:Nat
+    . even(suc(suc(n))) <=> even(n)
+    sort Even = {x : Nat . even(x)}
+    sort Prime = {x : Nat
+		      . 1 < x
+			/\ (forall y, z:Nat . x = y * z => y = 1 \/ z = 1)}
+end
+
+spec Positive =
+    Natural_Partial_Pre
+then
+    sort Pos = {x : Nat . not x = 0}
+end
+
+spec Positive_Arithmetic =
+    Positive
+then
+    ops 1 : Pos;
+	suc : Nat -> Pos;
+	__+__, __*__ : Pos * Pos -> Pos;
+	__+__ : Pos * Nat -> Pos;
+	__+__ : Nat * Pos -> Pos
+end
+
+spec Positive_Pre =
+    Positive_Arithmetic
+then
+    op pre : Pos -> Nat
+end
+
+spec Natural_Positive_Arithmetic =
+    free types
+	Nat ::= 0 | sort Pos;
+	Pos ::= suc(pre:Nat)
+    ops 1: Pos = suc(0);
+	__+__ : Nat * Nat -> Nat, assoc, comm, unit 0;
+	__*__ : Nat * Nat -> Nat, assoc, comm, unit 1;
+	__+__, __*__ : Pos * Pos -> Pos;
+	__+__ : Pos * Nat -> Pos;
+	__+__ : Nat * Pos -> Pos
+    forall x, y:Nat
+    . x + suc(y) = suc(x + y)
+    . x * 0 = 0
+    . x * suc(y) = x + (x * y)
+end
+
+spec Integer_Arithmetic_1 =
+    Natural_Positive_Arithmetic
+then
+    free type Int ::= sort Nat | -__(Pos)
+    ops __+__ : Int * Int -> Int, assoc, comm, unit 0;
+	__-__ : Int * Int -> Int;
+	__*__ : Int * Int -> Int, assoc, comm, unit 1;
+	abs : Int -> Nat
+    forall x:Int; n:Nat; p, q:Pos
+    . suc(n) + - 1 = n
+    . suc(n) + - suc(q) = n + - q
+    . - p + - q = - (p + q)
+    . x - 0 = x
+    . x - p = x + - p
+    . x - - q = x + q
+    . 0 * - q = 0
+    . p * - q = - (p * q)
+    . - p * - q = p * q
+    . abs(n) = n
+    . abs(- p) = p
+end
+
+spec Set_Error_Choose [sort Elem] =
+    Generated_Set [sort Elem]
+then
+    sort Elem < ElemError
+    op choose : Set -> ElemError
+    pred __is_in__ : ElemError * Set
+    forall S:Set
+    . not S = empty => (choose(S) in Elem) /\ choose(S) is_in S
+end
+
+spec Set_Error_Choose_1 [sort Elem] =
+    Generated_Set [sort Elem]
+then
+    sort Elem < ElemError
+    op choose : Set -> ElemError
+    forall S:Set
+    . not S = empty => choose(S) as Elem is_in S
+end

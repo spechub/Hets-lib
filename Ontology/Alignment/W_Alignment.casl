@@ -1,0 +1,38 @@
+library Ontology/Alignment/W_Alignment
+
+spec Ontology1 =
+  sorts Woman < Female
+  sorts Bank
+end
+
+spec Ontology2 =
+  sorts Person, Parent
+  sorts Bank
+end
+
+spec Interface1 =
+  sorts Woman
+end
+
+spec Interface2 =
+  sorts Person
+end
+
+spec Bridge =
+  sorts Woman < Person
+end
+
+view v1 : Interface1 to Ontology1 
+end
+
+view v2 : Interface1 to Bridge
+end
+
+view v3 : Interface2 to Ontology2 
+end
+
+view v4 : Interface2 to Bridge 
+end
+
+
+

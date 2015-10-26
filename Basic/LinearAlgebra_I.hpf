@@ -1,0 +1,19 @@
+use Basic/LinearAlgebra_I
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic ExtVSWithBase__E3
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set time-limit 40
+prove-all
+
+# ------------------------------------------------------------------------------
+
+dg basic VectorSpace_in_Field__T
+prover MathServe Broker
+set goals distr1_VS distr2_VS
+prove

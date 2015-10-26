@@ -1,0 +1,17 @@
+library Modal/KT4BDLW.3
+
+logic Modal
+
+spec KT4BDLW_3 =
+	modality Diamond {
+			[](p => q) => ([]p => []q); %(K)%
+			Diamondp <=> not [] not p; %(Dual)%
+			p => Diamond p; %(T)%
+			Diamond Diamond p => Diamond p %(4)%
+			p => [] Diamond p; %(B)%
+			[] p => Diamond p; %(D)%
+			[]([] p => p) => [] p; %(L)%
+		%%	(Diamond p /\ Diamond q) => (Diamond(p /\ (Diamond q)) \/ Diamond (p /\ q) \/ Diamond (q /\ Diamond p)); %(.3)%
+			[]([]A => A) => [] A %(W)%
+			}
+end

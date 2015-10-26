@@ -1,0 +1,306 @@
+%% CASL specification of Orientation Calculus (Freksa 1992)
+
+library Gum/OrientationCalculi
+version 0.24
+%authors B. Krieg-Brueckner <bkb@informatik.uni-bremen.de>, K. Luettich <luettich@informatik.uni-bremen.de>
+%date 12 March 2007
+
+%% modified Oct 08 (library + comments)
+%% modified July 09 (OrientationDCC < Orientation)
+
+%display @__ %LATEX \overline{__}
+%display __-->__ %LATEX __\longrightarrow{}__
+%display __-->*__ %LATEX __\stackrel{\circ}{\longrightarrow}__
+%display __|__ %LATEX __\angle{}__
+%display __#__>__ %LATEX __\angle{}__\rhd{}__
+%display __++__ %LATEX {__}\Join{__}
+%display __==__ %LATEX {__}\equiv{__}
+
+%prec( {@__} < {~__} )%
+%prec( {__+__, __-__} < {__|__} )%
+%prec( {__via__, __ passBy__, __pass__on__, __along__on__, __#__>__} < {__||__, __++__} )%
+%prec( {__|__} < {__||__, __++__} )%
+%prec( {__||__, __++__} < {__-->__, __-->*__} )%
+%prec( {__-->__, __-->*__} < {__==__})%
+
+%left_assoc __+__, __++__, __||__
+
+spec EgoOrientation = 
+	free type Orientation2 ::= front | back
+	sort Orientation2 < Orientation
+	ops ~__: Orientation -> Orientation; %% inverse / converse
+	    @__ : Orientation -> Orientation; %% full complement
+	    __+__ : Orientation * Orientation -> Orientation,  assoc, comm, unit front;
+	    __-__ : Orientation * Orientation -> Orientation;
+	forall a, b: Orientation 
+		. @front = front  . @back = back
+		. @a = front - a  . @ @a = a  . a + @a = front 
+		. ~a = back + a   . ~ ~a = a  
+then %implies 
+	. ~front = back %(inv_front)% 
+	. back + back = front %(back_plus_back)%
+	forall a : Orientation
+	. a + front = a
+end 
+
+spec EgoOrientation4 = EgoOrientation then
+	free type Orientation4 ::= sort Orientation2 | right | left
+	sort Orientation4 < Orientation
+	. left = ~right 
+	. left = @right
+then %implies 
+	. right + right = back %(right_plus_right)% 
+	. left + right = front %(left_plus_right)%  
+end 
+
+spec EgoOrientation8 = EgoOrientation4 then
+	free type Orientation8 ::= sort Orientation4 | rightFront | 
+                                   rightBack | leftFront | leftBack
+	sort Orientation8 < Orientation
+	. rightFront + rightFront = right
+	. leftFront = @rightFront  . leftBack = @rightBack
+	. rightFront = ~leftBack . leftFront = ~rightBack
+then %implies 
+	. rightFront = @leftFront . rightBack = @leftBack
+%[ implied??	. leftFront = ~rightBack   . rightFront = ~leftBack ]%
+end
+
+spec Identities =
+        sort Id    
+end
+
+spec Locations = Identities then
+        sort Location
+	op id: Location -> Id;
+	pred __==__ : Location * Location;
+	forall x, y: Location 
+	. x == y <=> id(x) = id(y)
+end
+
+spec Arrows = EgoOrientation8 and Locations then
+   free type Pair ::= __-->*__ (source,target: Location) %% edge or loop
+   sort Arrow = {v : Pair . not source(v) = target(v)} %% proper edge, no loop
+   op __-->__ : Location * Location ->? Arrow
+
+   forall x,y: Location
+   . def x --> y <=> x -->* y in Arrow
+   . x --> y = x -->* y if def x --> y
+
+	ops  -__ :    Arrow -> Arrow; %% inverse
+	    __|__ :  Arrow * Arrow -> Orientation  
+
+	forall v, w: Arrow
+	. v | w  = ~(v | -w) 
+	. v | -w = -v | w 
+	. v | w  = @(w | v)
+	. - -v = v
+then %implies 
+	forall v, w: Arrow
+	. v | w = -v | -w 
+	. -v | w = ~(v | w) 
+end
+
+
+spec DoubleCrossCalculus8 = EgoOrientation8 and Arrows then
+	sort Orientation8 < OrientationDCC13
+	sort OrientationDCC13 < OrientationDCC
+	sort OrientationDCC < Orientation
+	ops  ~__ : OrientationDCC -> OrientationDCC; %% inverse
+	    @__ : OrientationDCC -> OrientationDCC; %% complement
+	pred __#__>__ : Arrow * Arrow * OrientationDCC13
+	forall a, b, c, d: Location; o: OrientationDCC13
+	. a-->b # c-->d > o => a==c \/ b==c \/ a==d \/ b==d
+
+	forall entry, exit, c: Location; u, v, w: Arrow
+	. v = entry-->exit /\ w = exit-->c /\ u = entry-->c => 
+	   (v#w>leftFront  <=> v|w=leftFront  /\ v|u=leftFront)
+	/\ (v#w>left       <=> v|w=leftBack   /\ v|u=leftFront)
+	/\ (v#w>leftBack   <=> v|w=leftBack   /\ v|u=leftBack )
+	/\ (v#w>front      <=> v|w=front      /\ v|u=front)
+	/\ (v#w>back       <=> v|w=back       /\ v|u=back )
+	/\ (v#w>rightFront <=> v|w=rightFront /\ v|u=rightFront)
+	/\ (v#w>right      <=> v|w=rightBack  /\ v|u=rightFront)
+	/\ (v#w>rightBack  <=> v|w=rightBack  /\ v|u=rightBack )
+end
+
+spec DoubleCrossCalculus13 = DoubleCrossCalculus8 then
+	free type OrientationDCC13 ::= sort Orientation8 | leftAtEntry | 
+                    rightAtEntry| leftAtExit| rightAtExit | onCourse
+	. leftAtExit = ~ rightAtEntry
+	. leftAtEntry = ~rightAtExit
+	. leftAtExit = @rightAtExit  
+	. leftAtEntry = @rightAtEntry
+	. onCourse = ~onCourse
+	. onCourse = @onCourse
+
+	forall entry, exit, c: Location; u, v, w: Arrow
+	. v = entry-->exit /\ w = exit-->c /\ u = entry-->c => 
+	   (v#w>leftAtExit   <=> v|w=left      /\ v|u=leftFront)
+	/\ (v#w>leftAtEntry  <=> v|w=leftBack  /\ v|u=left )
+	/\ (v#w>rightAtExit  <=> v|w=right     /\ v|u=rightFront)
+	/\ (v#w>rightAtEntry <=> v|w=rightBack /\ v|u=right )
+	/\ (v#w>onCourse     <=> v|w=back      /\ v|u=front)
+end
+
+spec DoubleCrossCalculus = DoubleCrossCalculus13 then
+	free type OrientationDCC ::= sort OrientationDCC13 | atEntry | atExit
+	. atExit = ~atEntry  
+	. atExit = @atExit    
+	. atEntry = @atEntry    
+	pred __#__>__ : Arrow * Pair * OrientationDCC
+	forall a, b, c, d: Location; o: OrientationDCC
+        . a-->b # c-->*d > o => a==c \/ b==c \/ a==d \/ b==d 
+	forall entry, exit: Location
+	. def entry --> exit => entry-->exit#exit-->*exit>atExit 
+	. def entry --> exit /\ def exit --> entry 
+	     => entry-->exit#exit-->entry>atEntry 
+%[	pred __#__>__ : Pair * Arrow * OrientationDCC ]%
+%[	. a-->*b # c-->d > o => a==c \/ b==c \/ a==d \/ b==d ]%
+%[then %implies
+	forall v, w: Arrow
+	. v#w>atEntry  =>  v|w=back  ]%
+end
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% end of DoubleCross specification
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% RouteGraph specification:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%spec DoubleCrossC = DoubleCrossCalculus then
+%	pred dcc : Location * Location * Location * OrientationDCC
+%	forall a, b, c, d: Location; o: OrientationDCC13
+%	. dcc(a,b,d,o) <=> a-->b # c-->*d > o /\ b == c
+%%[	forall a, b, c: Location; o: OrientationDCC13
+%	. dcc(a,b,c,o) <=> a-->b # b-->*c > o  ]%
+%end
+%
+%
+%spec Places = Locations and Arrows then
+%	sort Place < Location
+%	op  originLocation: Place -> Location;
+%	    origin: Place -> Arrow
+%	forall p: Place
+%	. origin(p) = p --> originLocation(p) %(origin_def)%
+%	. not p = originLocation(p) %(originLocation_not_selfreference)% %implied
+%end
+%
+%spec Segments = Places then
+%	sort Segment = 
+%	   {s: Arrow . source(s) in Place /\ target(s) in Place}
+%	ops oEntry, oExit: Segment -> Orientation;  
+%	    __-->__: Place * Place ->? Segment 
+%	forall entry, exit: Place 
+%	. oEntry(entry-->exit) = origin(entry)  | entry-->exit
+%	. oExit(entry-->exit)  = entry-->exit | origin(exit)
+%
+%	forall a, b, c, d: Place 
+%	. a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
+%	. a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
+%	. oExit(a-->b)  = front <=> a-->b | b-->c = oEntry(b-->c)
+%	. oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
+%
+%	. b == d /\ a-->b | b-->c = a-->d | d-->c =>  
+%	  oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) 
+%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%	  oEntry(b-->c) = origin(b) | origin(d) + oEntry(d-->c)
+%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%	  oExit(a-->d) = oExit(a-->b) - origin(d) | origin(b)
+%
+%%[  then %implies
+%	forall a, b, c, d: Place 
+%  	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%	  oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) 
+%	. oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) =>
+%	  oEntry(b-->c) = oExit(a-->d)+(oEntry(d-->c)-oExit(a-->b))
+%]%
+%end
+%
+%
+%spec RoutePredicates = DoubleCrossCalculus and Segments then
+%	preds __via__  : Segment * Location;  
+%	forall a, b, c: Place
+%	. a-->b via c <=> a-->b # b-->c > onCourse
+%then
+%	sort LROrientation = {o:OrientationDCC . o=left \/ o=right}
+%	preds __ passBy__  : Segment * Location;  
+%	      __pass__on__,
+%	      __along__on__ : Segment * Location * OrientationDCC;
+%	forall a, b, c: Place; lr: LROrientation
+%	. a-->b pass c on lr <=> 
+%	  exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
+%	. a-->b passBy c <=> 
+%	  a-->b pass c on left \/ a-->b pass c on right
+%	. a-->b along c on lr <=> 
+%	  forall d: Location . a-->b via d => a-->d # d-->c > lr 
+%end
+%
+%spec Landmarks = Locations then
+%   sort Landmark < Location
+%end
+%
+%spec Examples = RoutePredicates and Landmarks then
+%	ops start, p1, p2, p3, door : Place;
+%	    lifts, mainStairs, stugaRoom, door : Landmark  
+%	. oEntry(start-->door) = back
+%	. start-->p1 via door
+%	. oEntry(p1-->p2) = right
+%	. p1-->p2 passBy lifts
+%	. p2-->p3 passBy mainStairs
+%	. p2-->p3 # p3-->stugaRoom > leftAtExit \/
+%	  p2-->p3 # p3-->stugaRoom > rightAtExit
+%end
+%
+%spec SecretarysOfficeExample = RoutePredicates and Landmarks then
+%	ops start, p1, p2, p3, p4, room8080,door8210,door8080 : Place;
+%	     lifts, window, room8080, door8210, door8080 : Landmark  
+%	. oEntry(start-->door8210) = back
+%	. start-->p1 via door8210
+%	. start-->p1 # p1-->lifts > front
+%	. oEntry(p1-->p2) = right
+%	. p1-->p2 # p2-->window > front
+%	. oEntry(p2-->p3) = left
+%	. oEntry(p3-->p4) = leftFront
+%	. p3-->p4 # p4-->door8080 > right
+%	. p4-->room8080 via door8080
+%end
+%
+%
+%spec RouteGraphs = DoubleCrossCalculus and Segments then
+%	sort RouteGraph
+%	sort AltRoutes%[=	{ar : RouteGraph .  ...}]%	%% connected, single start and goal
+%	sort Route %[= 	{r : AltRoutes .       ...}]%	%% no branches
+%	op __union__ : 	RouteGraph * RouteGraph -> RouteGraph
+%	op __||__ : 	AltRoutes * AltRoutes -> AltRoutes
+%	op __++__ : 	Route * Route -> Route
+%
+%end

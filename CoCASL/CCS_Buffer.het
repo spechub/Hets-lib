@@ -1,0 +1,48 @@
+library CoCASL/CCS_Buffer
+
+%left_assoc __ + __
+
+from Basic/Numbers get Nat
+from Basic/SimpleDatatypes get Boolean
+from CoCASL/CCS get CCS
+
+logic CoCASL
+
+spec Buffer =
+CCS then 
+
+  free type Elem ::= 0 | 1
+  free type Name ::= input(Elem) | output(Elem)
+
+  free type AgentConstant ::= B | B_0 | B_1
+                            | C | C_0 | C_1 | C_00 | C_01 | C_10 | C_11
+
+
+  
+
+ . definitionOf( B   ) =   (input(0) -> B_0) 
+                + (input(1) -> B_1);
+ . definitionOf( B_0 ) =    bar(output(0)) -> B;
+ . definitionOf( B_1 ) =    bar(output(1)) -> B;
+
+ . definitionOf( C   ) =   (input(0) -> C_0) 
+                + (input(1) -> C_1);
+ . definitionOf( C_0 ) =   (input(0) -> C_00)
+                + (input(1) -> C_10)
+                + (bar(output(0)) -> C);
+ . definitionOf( C_1 ) =   (input(0) -> C_01)
+                + (input(1) -> C_11)
+                + (bar(output(1)) -> C);
+  . definitionOf(C_00 ) = bar(output(0)) -> C_0;
+  . definitionOf(C_01 ) = bar(output(1)) -> C_0;
+  . definitionOf(C_10 ) = bar(output(0)) -> C_1;
+  . definitionOf(C_11 ) = bar(output(1)) -> C_1
+
+
+  forall a,b:Elem
+  . [next(input(a))] <next*> <next(bar(output(a)))> true
+  . <next*> <next(input(a))> <next(input(b))> true
+
+end
+
+

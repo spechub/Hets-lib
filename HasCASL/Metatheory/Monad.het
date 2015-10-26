@@ -1,0 +1,54 @@
+library HasCASL/Metatheory/Monad
+
+%display __>>=__ %LATEX __\gg=__
+%display __<-__;;__ %LATEX __\leftarrow__;__
+
+%prec {do__} < {__<-__;;__}
+%right_assoc __<-__;;__
+
+logic HasCASL
+
+spec Functor =
+class Functor < Type -> Type {
+vars  F: Functor; a, b, c: Type
+op    map : (a -> b) -> F a -> F b
+vars  x: F a; f: a -> b; g: b -> c
+. map (\ y: a .! y) x = x
+. map (\ y: a .! g (f y)) x = map g (map f x) }
+
+spec Monad = Functor then
+class Monad < Type -> Type {
+vars  m: Monad; a, b, c: Type
+ops   __>>=__ : m a * (a ->? m b) ->? m b;
+      __>>=__ : m a * (a -> m b) -> m b;
+      ret : a -> m a
+vars  x, y: a; p: m a; q: a ->? m b; r: b ->? m c; f: a ->? b
+. def q x => ret x >>= q = q x
+. p >>= (\ x: a . ret (f x) >>= r)
+  = p >>= \ x: a . r (f x)
+. p >>= ret = p
+. (p >>= q) >>= r = p >>= \ x: a . q x >>= r
+. ret x : m a = ret y => x = y }
+class instance Monad < Functor
+vars  m: Monad; a, b: Type; f: a -> b; x: m a
+. map f x = x >>= \ y: a . ret (f y)
+
+spec MonadTransFormer = Monad then
+class MonadT < Monad -> Monad {
+vars  t: MonadT; m: Monad; a: Type
+op    lift: m a -> t m a
+vars  x: a; p: m a; b: Type; q: a ->? m b
+. lift (ret x) = ret x : t m a
+. lift (p >>= q) = lift p >>= \ y: a . lift (q y) : t m b }
+
+spec CpoMonad = Monad then %% Recursion is built-in
+class CpoMonad < Monad {
+class instance CpoMonad < Cpo -> Cpo
+vars  m: CpoMonad; a, b: Cpo
+ops   __>>=__ : m a * (a -->? m b) -->? m b;
+      %binder(__<-__;;__)%
+      do __ : m a -> m a;
+      ret : a --> m a
+var   x : m a
+. (do x) = x
+}

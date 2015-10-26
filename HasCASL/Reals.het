@@ -1,0 +1,144 @@
+library HasCASL/Reals
+version 0.2
+
+%author: T. Mossakowski, S. Woelfl, E. Schulz, D.Dietrich
+%date: 12-10-2005
+
+%prec { __-__, __+__ } < { __*__, __/__ }
+%prec { __+__ } < { __-__ }
+%prec { __*__ } < { __/__ }
+%prec { __*__, __/__ } < { -__ }
+
+%%from Basic/Numbers get Rat
+from Basic/RelationsAndOrders get
+     TotalOrder, ExtTotalOrder
+from HasCASL/Algebra get Field, RichField
+
+
+logic HasCASL
+
+spec FieldWithOrdering =
+     RichField and TotalOrder
+then
+    vars a, b, c:Elem
+    . (a + c) <= (b + c) if a <= b              %(FWO_plus_left)%
+%% does work with "if", but needs a ";" before "then"!
+    . (a <= b /\ 0 <= c) => (a * c) <= (b * c) %(FWO_times_left)%
+then %implies
+    vars a, b, c, d: Elem
+    . (a + b) <= (a + c) if b <= c              %(FWO_plus_right)%
+    . (a * b) <= (a * c) if b <= c /\ 0 <= a    %(FWO_times_right)%
+    . (a + b) <= (c + d) if a <= c /\ b <= d    %(FWO_plus)%
+end
+
+
+spec OrderedField =
+     RichField
+then
+     pred Pos: Elem
+     vars x,y: Elem
+     . Pos(x) /\ Pos(y) => Pos(x*y)             %(OF_plus)%
+     . Pos(x) /\ Pos(y) => Pos(x+y)             %(OF_times)%
+     . Pos(x) /\ Pos(-x) => x = 0               %(OF_mutex)%
+     . Pos(x) \/ Pos(-x)                        %(OF_exhaust)%
+end
+
+spec ExtOrderedField[OrderedField] = %def
+     pred __<=__: Elem * Elem
+       vars x,y: Elem
+       . x <= y  <=> Pos(y - x) %(leq def)%
+end
+
+spec ExtFieldWithOrdering[FieldWithOrdering] = %def
+       pred Pos: Elem
+       vars x: Elem
+       . Pos(x) <=> 0 <= x %(Pos def)%
+end
+
+view OrderedField_in_FieldWithOrdering :
+     OrderedField to ExtFieldWithOrdering[FieldWithOrdering]
+end
+
+view FieldWithOrdering_in_OrderedField :
+     FieldWithOrdering to ExtOrderedField[OrderedField]
+end
+
+spec Reals = FieldWithOrdering with Elem |-> Real
+%%and Rat
+then
+
+%%  type Rat < Real
+
+  ops
+    inf : Pred(Real) ->? Real;
+  . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2) %(inf def)%
+then %implies
+
+  . forall S: Pred(Real). (exists x:Real. S(x)) /\ (exists B:Real . forall x:Real. S(x) => x <= B) => exists m:Real. m=inf(S) %(Real_completeness)%
+%%If A is a non-empty subset of R, and if A has an upper bound, then A has a least upper bound u, such that for every upper bound v of A, u <= v.
+end
+
+
+
+spec SimpleReals = Reals hide NonZero
+
+spec OrderedReals = ExtTotalOrder[Reals fit Elem |-> Real]
+then %def
+     preds RealNonNeg_pred(x:Real) <=> x >= 0; %(RealNonNeg_pred_def)%
+           RealPos_pred(x:Real) <=> x > 0; %(RealPos_pred_def)%
+
+     types RealNonNeg = {x:Real. RealNonNeg_pred x}; %(RealNonNeg type)%
+           RealPos = {x:Real. RealPos_pred x}; %(RealPos type)%
+           RealPos < RealNonNeg;
+           RealPos < NonZero;
+
+     op abs(x:Real):RealNonNeg = (x as RealNonNeg) when 0 <= x else (-x as RealNonNeg)
+        %(abs def)%
+
+then %implies
+     vars a,b,c:Real
+    . (a * b) <= (c * b) /\ b >= 0 => a <= c    %(times_cancel_right_nonneg_leq)%
+    . 0 <= (a * b) /\ b >= 0 => 0 <= a    %(times_leq_nonneg_cond)%
+end
+
+spec FieldWithValuation =
+     Field
+and  OrderedReals
+then
+     op val: Elem -> RealNonNeg
+     vars x,y:Elem
+     . val(x) >= 0              %(pos definite)%
+     . val(x) = 0 <=> x = 0     %(definite)%
+     . val(x * y) = val(x) * val(y) %(multiplic)%
+     . val(x + y) <= val(x) + val(y) %(triangle inequality)%
+then %implies
+     . val(1) = 1 %(val one fixpoint)%
+end
+
+view OrderedReals_as_FieldWithValuation :
+     FieldWithValuation to OrderedReals
+=    Elem |-> Real, val |-> abs
+end
+
+%( some selected basic functions for the reals )%
+spec RealFunctions = OrderedReals
+then %def
+
+     ops sqr: Real -> RealNonNeg;
+         sqr: NonZero -> RealPos;
+         sqrt: RealNonNeg -> RealNonNeg;
+         sqrt: RealPos -> RealPos;
+         __+__: RealPos*RealPos -> RealPos;
+         __*__: RealPos*RealPos -> RealPos;
+         __/__: RealPos*RealPos -> RealPos;
+         min: Real*Real -> Real;
+         max: Real*Real -> Real;
+         Pi: RealPos
+
+     var r:Real;q:RealNonNeg
+     . sqr(r) = r * r    %(sqr_def)%
+     %{ to see that this definition of sqrt is definitional one need the
+        injectivity of sqr on RealNonNeg e.g. via the intermediate value theorem }%
+
+     . sqr(sqrt(q)) = q  %(sqrt_def)%
+end

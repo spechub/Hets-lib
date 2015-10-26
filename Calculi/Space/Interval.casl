@@ -1,0 +1,116 @@
+library Calculi/Space/Interval version 0.7
+
+%{Moore Intervals}%
+
+%author Regivan H. N. Santiago <regivan@dimap.ufrn.br>
+%date 15 November 2007
+
+%prec {__+__, __-__} < {__*__} 
+%prec {__*__,__/__} < {__..__}
+%prec {__cup__,__ccup__} < {__cap__}
+%prec {__cap__} < {__..__}
+
+%display __..__         %LATEX __\dots__
+%display __subseteq__   %LATEX __\subseteq__
+%display __cap__        %LATEX __\cap__
+%display __cup__        %LATEX __\cup__
+
+from Basic/Numbers get Rat
+
+spec RatProps = Rat then %implies
+forall p, q, r, s : Rat
+. p <= q /\ r <= s 
+     => p + r <= q + s %(monotonicity_of_Rat_addition)% 
+
+spec RatPair = RatProps
+then %mono
+free type RatPair ::= __....__(proj1:Rat;proj2:Rat)
+sort Interval = {a : RatPair . proj1(a) <= proj2(a)}
+sort Rat < Interval
+    forall a: Rat . a = (a .... a) as Interval %(Rat2Interval_embedding)%
+then %def
+
+ops
+__..__ : Rat * Rat ->? Interval;
+
+%% Arithmetic
+__+__ : Interval * Interval -> Interval,comm,assoc,unit 0;
+__-__ : Interval * Interval -> Interval;
+__*__ : Interval * Interval -> Interval,comm,assoc, unit 1;
+__/__ : Interval * Interval ->? Interval;
+-__: Interval -> Interval;
+invm : Interval ->? Interval;
+
+%% Set Operations
+__cap__: Interval * Interval ->? Interval; %(Intersection)%
+__cup__: Interval * Interval ->? Interval; %(Union)%
+__ccup__: Interval * Interval -> Interval; %(Convex Union)%
+
+%% Real valued Operations
+m : Interval -> Rat; %(midpoint)%
+dist : Interval * Interval -> Rat; %(Distance)%
+abs: Interval -> Rat; %(absolute value)%
+width : Interval -> Rat; %(width)%
+
+preds 
+
+__subseteq__:Interval*Interval; %(Subset Order)%
+__inform__:Interval*Interval; %(Information Order)%
+degen:Interval; %($x$ is degenerate)%
+symm:Interval; %($x$ is Symmetric)%
+
+then %def
+vars x, y, w, z : Interval
+vars l1,l2,u1,u2 : Rat
+
+. l1 <= u1 => l1 .. u1 = l1 .... u1 %(Interval_def)%    
+
+%% DA_Definition_Arithmetic
+. l1 <= u1 /\ l2 <= u2 => l1..u1 + l2..u2 = (l1+l2)..(u1+u2) %(Sum_def)%
+. -(l1..u1) = -u1.. -l1             %(Pseudo-inverse additive)%
+. l1..u1 - l2..u2 = l1..u1 + -(l2..u2) %(Interval difference)%
+
+. l1..u1 * l2..u2 =
+  min(min(l1*l2,l1*u2),min(u1*l2,u1*u2))
+  ..max(max(l1*l2,l1*u2),max(u1*l2,u1*u2)) %(Interval multiplication)%
+. not def (invm(l1..u1)) if l1<=0 /\ 0<=u1 
+          %(Definability condition for Pseudo-inverse multiplicative)% 
+. invm(l1..u1)= (1/u1)..(1/l1)  %(Pseudo-inverse multiplicative)%
+. l1..u1 / l2..u2 = l1..u1 * invm(l2..u2)  %(Interval division)%
+
+
+%% DSO_Definition_Set_Operations
+. not def(l1..u1 cap l2.. u2) if max(l1,l2)>min(u1,u2) %(Intersection_def)%
+. l1..u1 cap l2..u2 = max(l1,l2)..min(u1,u2) %(Union_def)%
+. not def(l1..u1 cup l2.. u2) if not def(l1..u1 cap l2.. u2)
+. l1..u1 cup l2..u2 = min(l1,l2)..max(u1,u2)
+. l1..u1 ccup l2..u2 = min(l1,l2)..max(u1,u2)
+
+
+%% DRVF_Definition_Real_valued_functions
+. m(l1..u1)=(l1+u1)/2
+. dist(l1..u1,l2..u2)=max(abs(l1-l2),abs(u1-u2))
+. abs (l1..l2)=max(abs(l1),abs(l2))
+. width(l1..u1)=u1-l1
+
+%% DR_Definition_Relations
+. x subseteq y <=> proj1(y) <= proj1(x) /\ proj2(x) <= proj2(y) 
+                                             %(subseteq_def)%
+. degen(x) <=> proj1(x) = proj2(x)
+. x inform y <=> y subseteq x
+. symm(x) <=> x = -x
+
+then %implies
+
+vars x, y, z, w:Interval
+.  x subseteq y /\  w subseteq z
+   => x+w subseteq y+z  %(monotonicity_of_sum)%
+
+%% Subdistributivity
+. x * (y + z) = (x * y) + (x * z) if degen(x)
+. x * (y + z) subseteq (x * y) + (x * z)
+
+%% Algebraic properties of degenarate intervals
+. x - x = 0 if degen(x) %(inv+)%
+. x * invm(x) = 1 if degen(x) /\ not x = 0 %(inv*)%
+end

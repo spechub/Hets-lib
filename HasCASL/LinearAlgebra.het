@@ -1,0 +1,132 @@
+library HasCASL/LinearAlgebra
+version 0.1
+
+%author: E. Schulz
+%date: 18-09-2008
+
+logic HasCASL
+
+from HasCASL/Reals get
+     FieldWithValuation, RealFunctions,
+     OrderedReals, OrderedReals_as_FieldWithValuation
+from HasCASL/Algebra get
+     ExtInverse, AbelianGroup, Field
+
+spec AdditiveAbelianGroup_aux =
+ExtInverse[AbelianGroup] with
+  Elem |-> Space, __ * __ |-> __ + __, e |-> 0, __ / __ |-> __ - __, inv |-> -__
+end
+
+spec VectorSpace[Field] = AdditiveAbelianGroup_aux
+then
+     op  __ * __: Elem * Space -> Space
+
+     vars s,r:Elem; x,y:Space
+
+     . 1 * x = x                              %(unit)%
+     . (r * s) * x = r * (s * x)              %(mix_assoc)%
+     . (r + s) * x = (r * x) + (s * x)        %(distr_Field)%
+     . r * (x + y) = (r * x) + (r * y)        %(distr_Space)%
+
+then %implies
+     vars x:Space; r:Elem
+     . 0 * x = 0 %(zero by left zero)%
+     . r * 0:Space = 0 %(zero by right zero)%
+
+     . -1 * x = -x %(inverse by -1)%
+     . not(r=0) /\ not(x=0) => not(r*x=0) %(no zero divisor)%
+end
+
+
+%( Definitional extension: lindep-pred )%
+spec ExtVectorSpace[VectorSpace[Field]] = %def
+     preds lindep:Space*Space;
+
+     var x,y:Space
+     . lindep(x,y) <=> (y=0 \/ exists r:Elem. x = r*y) %(lindep_def)%
+
+
+then %implies
+     var x,y,z:Space; r:Elem
+     %{ lindep props }%
+     . lindep(x,x) %(lindep reflexivity)%
+     . lindep(x,y) => lindep(y,x) %(lindep symmetry)%
+     . x = r * y => lindep(x,y)  %(simple lindep condition)%
+     . not(x=0) /\ lindep(x,y) /\ not(lindep(y,z)) => not(lindep(x,z))
+       %(lindep nonlindep transitivity)%
+end
+
+spec NormedSpace[FieldWithValuation] =
+VectorSpace[FieldWithValuation]
+then
+     op ||__|| : Space -> Real
+     vars a:Elem ; v,w: Space
+     . ||a * v|| = val(a) * ||v||	%(homogeneous)%
+     . ||v + w|| <= ||v|| + ||w||      	%(triangle inequality)%
+     . ||v|| = 0 <=> v = 0  	 	%(definite)%
+then %implies
+     forall v:Space. 0 <= ||v||          %(pos definite)%
+end
+
+spec EuclideanVectorSpace =
+     VectorSpace[OrderedReals fit Elem |-> Real]
+then
+     op __*__ : Space * Space -> Real   %% (bilinear form)
+
+     vars a:Real ; v,v',w: Space
+     . (v+v') * w = (v * w) + (v' * w)  %(distributive)%
+     . (a*v) * w = a * (v * w) 		%(homogeneous)%
+     . v * w  = w * v   		%(symmetric)%
+     . not(v = 0) =>  v * v > 0		%(pos definite)%
+
+then %implies
+     vars a:Real ; v,v',w: Space
+     . w * (v+v') = (w * v) + (w * v')  %(right distributive)%
+     . v * (a*w) = a * (v * w) 		%(right homogeneous)%
+     . v * v = 0 =>  v = 0		%(non degenerate)%
+end
+
+%( Definition of Norm and Projection )%
+spec ExtEuclideanVectorSpace[EuclideanVectorSpace] given RealFunctions
+= %def
+ExtVectorSpace[EuclideanVectorSpace fit Elem |-> Real] then
+     ops  ||__|| (x:Space): Real = sqrt(x*x as RealNonNeg); %(norm from inner prod def)%
+	  proj(v,w:Space):Space
+	       = 0 when w = 0 else ((v*w)/(w*w as NonZero)) * w; %(proj def)%
+	  orthcomp(v,w:Space):Space = v - proj(v,w); %(orthcomp def)%
+     pred orth(x,y:Space) <=> x*y=0 %(orthogonal def)%
+
+then %implies
+     vars v,w,x,y,z:Space; r:Real
+
+     %{workaround: should be available from the view below}%
+     . ||r * v|| = abs(r) * ||v||	%(homogeneous)%
+     . ||v|| = 0 <=> v = 0  	 	%(definite)%
+     . 0 <= ||v||                       %(pos definite)%
+
+     %{ homogenity for positive factors }%
+     . r >= 0 => ||r * v|| = r * ||v||	%(pos homogeneous)%
+
+     %{ orth props }%
+     . orth(x,y) => orth(y,x) %(orth symmetric)%
+
+     %{ mixed props }%
+     . lindep(x,y) /\ orth(y,z) => orth(x,z) %(lindep orth transitive)%
+
+     . (exists a,b:Space. not(lindep(a,b)))
+	  => exists c:Space. not(c=0) /\ orth(c,x) %(orthogonal existence theorem)%
+
+     . proj(x,y)=0 => orth(x,y)  %(orthogonal on zero projection)%
+
+     . orth(orthcomp(x,y), y) %(orthogonal projection theorem)%
+
+     . proj(x,y) + orthcomp(x,y) = x %(orthogonal decomposition theorem)%
+
+     . not(z=0) /\ x+y=v+w /\ lindep(x,z) /\ lindep(v,z) /\ orth(z,y) /\ orth(z,w)
+	  => x=v /\ y=w %(unique orthogonal decomposition)%
+end
+
+view EuclideanSpaceIsNormedSpace :
+     NormedSpace[view OrderedReals_as_FieldWithValuation]
+     to ExtEuclideanVectorSpace[EuclideanVectorSpace]
+end

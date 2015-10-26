@@ -1,0 +1,72 @@
+library DL/Family
+
+logic OWL
+
+spec FamilyBase =
+  Class: Person
+  Class: Female
+  Class: Woman   EquivalentTo: Person and Female
+  Class: Man     EquivalentTo: Person and not Woman
+
+  ObjectProperty: hasChild
+  ObjectProperty: hasHusband
+
+  Class: Mother  EquivalentTo: Woman and hasChild some Person
+  Class: Father  EquivalentTo: Man and hasChild some Person
+  Class: Parent  EquivalentTo: Father or Mother
+  Class: Grandmother            EquivalentTo: Mother and hasChild some Parent
+  Class: MotherWithManyChildren EquivalentTo: Mother and (hasChild min 3)
+  Class: MotherWithoutDaughter  EquivalentTo: Mother and (hasChild only (not Woman))
+  Class: Wife    EquivalentTo: Woman and hasHusband some Man
+  Class: Married
+  Class: MarriedMother EquivalentTo: Mother and Married
+         SubClassOf: Female and Person
+  Class: Hybrid  EquivalentTo: Woman and Man
+  Individual: mary Types: Mother
+    Facts:
+        hasChild  john
+  Individual: john Types: Father
+    Facts:
+        hasChild  clara
+  Individual: clara
+end
+
+spec NotConser =
+     FamilyBase
+then %cons
+   Class: MotherWithManyChildren EquivalentTo: Mother and (hasChild max 2)
+   Class: Hybrid  EquivalentTo: Woman and not Man
+   Individual: mary Types: Grandmother
+end
+
+spec Conser =
+     FamilyBase
+then %cons
+     Class: Animal
+
+     ObjectProperty: likesBones
+
+     Class: Dog SubClassOf: likesBones some Animal
+end
+
+spec Family =
+FamilyBase
+then %implies
+  Class: Mother SubClassOf: Parent
+   Individual: mary Types: Grandmother
+  Class: Man
+   EquivalentTo: Woman
+end
+
+logic CASL
+
+spec LittleFamily =
+     FamilyBase
+then
+     pred oneChildFamily : Thing * Thing * Thing
+
+     forall a,b,c:Thing
+     . oneChildFamily (a,b,c) <=> Mother(a) /\ Father(b) /\
+       hasHusband(a,b) /\ hasChild(a,c) /\ hasChild(b,c) /\
+       (forall x : Thing . (hasChild(a,x) \/ hasChild(b,x)) => c = x)
+end

@@ -1,0 +1,2598 @@
+spec AbelianGroup =
+sort
+  Elem
+ops
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+%[ view AbelianGroup_in_ConstructField =
+sorts 
+Elem |-> NonZeroElem
+end ]%
+
+%[ view AbelianGroup_in_Int_Add =
+sorts 
+Elem |-> Int
+ops 
+__*__ |-> __+__:Elem*Elem->Elem, e |-> 0:Elem
+end ]%
+
+%[ view AbelianGroup_in_Ring_add =
+
+ops 
+__*__ |-> __+__:Elem*Elem->Elem, e |-> 0:Elem
+end ]%
+
+spec BinAlg =
+sort
+  Elem
+op
+  __*__ : Elem*Elem->Elem
+
+end
+
+spec CommutativeMonoid =
+sort
+  Elem
+ops
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+%[ view CommutativeMonoid_in_Int_Mult =
+sorts 
+Elem |-> Int
+ops 
+__*__ |-> __*__:Elem*Elem->Elem, e |-> 1:Elem
+end ]%
+
+%[ view CommutativeMonoid_in_Nat_Add =
+sorts 
+Elem |-> Nat
+ops 
+__*__ |-> __+__:Elem*Elem->Elem, e |-> 0:Elem
+end ]%
+
+%[ view CommutativeMonoid_in_Nat_Mult =
+sorts 
+Elem |-> Nat
+ops 
+__*__ |-> __*__:Elem*Elem->Elem, e |-> 1:Elem
+end ]%
+
+spec CommutativeRing =
+sort
+  Elem
+ops
+  0 : Elem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec CommutativeSemiGroup =
+sort
+  Elem
+op
+  __*__ : Elem*Elem->Elem
+
+end
+
+%[ view CommutativeSemiGroup_in_ExtTotalOrder_max =
+
+ops 
+__*__ |-> max:Elem*Elem->Elem
+end ]%
+
+%[ view CommutativeSemiGroup_in_ExtTotalorder_min =
+
+ops 
+__*__ |-> min:Elem*Elem->Elem
+end ]%
+
+%[ view CommutativeSemiGroup_in_RichTotalOrder =
+
+ops 
+__*__ |-> min:Elem*Elem->Elem
+end ]%
+
+spec ConstructField =
+sorts
+  NonZeroElem < Elem;
+  NonZeroElem
+ops
+  0 : Elem;
+  __*__ : NonZeroElem*NonZeroElem->NonZeroElem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  e : NonZeroElem;
+  e : Elem
+
+end
+
+%[ view EqRel_in_ExtCRing =
+
+preds 
+__~__ |-> associated:Elem*Elem
+end ]%
+
+%[ view EqRel_in_ExtGroupAction =
+sorts 
+Elem |-> Space
+preds 
+__~__ |-> connected:Elem*Elem
+end ]%
+
+%[ view EqRel_in_RichCRing =
+
+preds 
+__~__ |-> associated:Elem*Elem
+end ]%
+
+%[ view EqRel_in_RichGroupAction =
+sorts 
+Elem |-> Space
+preds 
+__~__ |-> connected:Elem*Elem
+end ]%
+
+spec EquivalenceRelation =
+sort
+  Elem
+pred
+  __~__ : Elem*Elem
+
+end
+
+spec EuclidianRing =
+sorts
+  Elem;
+  Nat
+ops
+  0 : Elem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  delta : Elem->?Nat;
+  e : Elem
+pred
+  __<__ : Nat*Nat
+
+end
+
+%[ view EuclidianRing_in_Int =
+sorts 
+Elem |-> Int,Nat |-> Nat
+ops 
+0 |-> 0:Elem, __*__ |-> __*__:Elem*Elem->Elem, __+__ |-> __+__:Elem*Elem->Elem, delta |-> abs:Elem->?Nat, e |-> 1:Elem
+preds 
+__<__ |-> __<__:Nat*Nat
+end ]%
+
+spec ExtAbelianGroup %% [...] %%  =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Int->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  even : Int;
+  even : Nat;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtCommutativeMonoid %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec ExtCommutativeRing %% [...] %%  =
+sorts
+  NonZero[Elem],RUnit[Elem],Irred[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  0 : Elem;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Elem*Elem->Elem;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Elem*Elem->Elem;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Int->Elem;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Int*Nat->Int;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  e : RUnit[Elem];
+  e : Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Int;
+  even : Nat;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtCommutativeSemiGroup %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec ExtEuclidianRing %% [...] %%  =
+sorts
+  NonZero[Elem],RUnit[Elem],Irred[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  0 : Elem;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Elem*Elem->Elem;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Elem*Elem->Elem;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Int->Elem;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Int*Nat->Int;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  delta : Elem->?Nat;
+  e : RUnit[Elem];
+  e : Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Int;
+  even : Nat;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtField %% [...] %%  =
+sorts
+  NonZero[Elem],RUnit[Elem],Irred[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : Elem->Elem;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __/__ : Elem*Elem->?Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : NonZero[Elem]*Pos->NonZero[Elem];
+  __^__ : NonZero[Elem]*Nat->NonZero[Elem];
+  __^__ : NonZero[Elem]*Int->NonZero[Elem];
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Int*Nat->Int;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Elem*Int->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Pos->Elem;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : NonZero[Elem];
+  e : Elem;
+  e : RUnit[Elem];
+  inv : NonZero[Elem]->NonZero[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec ExtGroup %% [...] %%  =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Int->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  even : Int;
+  even : Nat;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtGroupAction %% [...] %%  =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Space
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Int->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  connected : Space*Space;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec ExtIntegralDomain %% [...] %%  =
+sorts
+  Irred[Elem],RUnit[Elem],NonZero[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  0 : Elem;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __+__ : Elem*Elem->Elem;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Elem*Elem->Elem;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Int*Nat->Int;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __times__ : Elem*Int->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Int*Nat->Int;
+  __times__ : Nat*Nat->Nat;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  e : RUnit[Elem];
+  e : Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Int;
+  even : Nat;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtMonoid %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec ExtMonoidAction %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos;
+  Space
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  connected : Space*Space;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec ExtRing %% [...] %%  =
+sorts
+  Irred[Elem],RUnit[Elem],NonZero[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Int->Int;
+  +__ : Nat->Nat;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Elem->Elem;
+  0 : Elem;
+  0 : Int;
+  0 : Nat;
+  1 : Int;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : Elem*Elem->Elem;
+  __*__ : Int*Int->Int;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Elem*Elem->Elem;
+  __+__ : Int*Int->Int;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Int*Int->Int;
+  __-__ : Nat*Nat->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Int*Int->?Int;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Int*Int->?Int;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __times__ : Elem*Int->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Int*Nat->Int;
+  __times__ : Nat*Nat->Nat;
+  abs : Int->Nat;
+  abs : Nat->Nat;
+  e : RUnit[Elem];
+  e : Elem;
+  max : Int*Int->Int;
+  max : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Int*Int;
+  __<=__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Nat*Nat;
+  even : Int;
+  even : Nat;
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Int;
+  odd : Nat
+
+end
+
+spec ExtSemiGroup %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Pos;
+  1 : Nat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Elem*Elem->Elem;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Nat*Nat->Nat;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Pos;
+  suc : Nat->Nat
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec ExtTotalOrder %% [...] %%  =
+sort
+  Elem
+ops
+  inf : Elem*Elem->?Elem;
+  max : Elem*Elem->Elem;
+  min : Elem*Elem->Elem;
+  sup : Elem*Elem->?Elem
+preds
+  __<=__ : Elem*Elem;
+  __<__ : Elem*Elem;
+  __>=__ : Elem*Elem;
+  __>__ : Elem*Elem
+
+end
+
+spec Field =
+sort
+  Elem
+ops
+  0 : Elem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+%[ view Field_in_Rat =
+sorts 
+Elem |-> Rat
+ops 
+e |-> 1:Elem
+end ]%
+
+spec Group =
+sort
+  Elem
+ops
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec GroupAction %% [...] %%  =
+sorts
+  Elem;
+  Space
+ops
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec Int =
+sorts
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec IntegralDomain =
+sort
+  Elem
+ops
+  0 : Elem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec Monoid =
+sort
+  Elem
+ops
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec MonoidAction %% [...] %%  =
+sorts
+  Elem;
+  Space
+ops
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec Nat =
+sorts
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec PowerTheorems %% [...] %%  =
+sorts
+  Elem;
+  Exponent
+ops
+  __*__ : Exponent*Exponent->Exponent;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Exponent*Exponent->Exponent;
+  __^__ : Elem*Exponent->Elem
+
+end
+
+spec PowerTheoremsComm %% [...] %%  =
+sorts
+  Elem;
+  Exponent
+ops
+  __*__ : Exponent*Exponent->Exponent;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Exponent*Exponent->Exponent;
+  __^__ : Elem*Exponent->Elem
+
+end
+
+spec PreOrder =
+sort
+  Elem
+pred
+  __<=__ : Elem*Elem
+
+end
+
+%[ view PreOrder_in_ExtCRing =
+
+preds 
+__<=__ |-> __divides__:Elem*Elem
+end ]%
+
+%[ view PreOrder_in_ExtMonoidAction =
+sorts 
+Elem |-> Space
+preds 
+__<=__ |-> connected:Elem*Elem
+end ]%
+
+%[ view PreOrder_in_RichCRing =
+
+preds 
+__<=__ |-> __divides__:Elem*Elem
+end ]%
+
+%[ view PreOrder_in_RichMonoidAction =
+sorts 
+Elem |-> Space
+preds 
+__<=__ |-> connected:Elem*Elem
+end ]%
+
+spec Rat =
+sorts
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Int,Nat,Pos < Rat
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  +__ : Rat->Rat;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : Rat->Rat;
+  0 : Nat;
+  0 : Int;
+  0 : Rat;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  1 : Rat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Rat*Rat->Rat;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Rat*Rat->Rat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Rat*Rat->Rat;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Int*Pos->Rat;
+  __/__ : Rat*Rat->?Rat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Rat*Int->Rat;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  abs : Rat->Rat;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  max : Rat*Rat->Rat;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Rat*Rat->Rat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<=__ : Rat*Rat;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Rat*Rat;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Rat*Rat;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Rat*Rat;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichAbelianGroup =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Int->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichCommutativeMonoid =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec RichCommutativeRing =
+sorts
+  Irred[Elem],RUnit[Elem],NonZero[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Elem*Int->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Int*Nat->Int;
+  __times__ : Nat*Nat->Nat;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  e : RUnit[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Nat;
+  even : Int;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichCommutativeSemiGroup =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec RichEuclidianRing =
+sorts
+  Irred[Elem],RUnit[Elem],NonZero[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Elem*Int->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Int*Nat->Int;
+  __times__ : Nat*Nat->Nat;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  delta : Elem->?Nat;
+  e : Elem;
+  e : RUnit[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Nat;
+  even : Int;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichField =
+sorts
+  Irred[Elem],RUnit[Elem],NonZero[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : Elem->Elem;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Elem*Elem->?Elem;
+  __/__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : NonZero[Elem]*Pos->NonZero[Elem];
+  __^__ : NonZero[Elem]*Nat->NonZero[Elem];
+  __^__ : NonZero[Elem]*Int->NonZero[Elem];
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Int*Nat->Int;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Int->Elem;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  e : RUnit[Elem];
+  e : NonZero[Elem];
+  inv : NonZero[Elem]->NonZero[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichGroup =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Int->Elem;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichGroupAction %% [...] %%  =
+sorts
+  Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Space
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Elem*Elem->Elem;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Int->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  inv : Elem->Elem;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  connected : Space*Space;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichIntegralDomain =
+sorts
+  NonZero[Elem],RUnit[Elem],Irred[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : NonZero[Elem]*NonZero[Elem]->NonZero[Elem];
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Int->Elem;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Int*Nat->Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  e : RUnit[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  __divides__ : Elem*Elem;
+  associated : Elem*Elem;
+  even : Nat;
+  even : Int;
+  hasNoZeroDivisors : ();
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichMonoid =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Nat->Elem;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec RichMonoidAction %% [...] %%  =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos;
+  Space
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Space->Space;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  e : Elem;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  connected : Space*Space;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec RichRing =
+sorts
+  NonZero[Elem],RUnit[Elem],Irred[Elem] < Elem;
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Irred[Elem];
+  NonZero[Elem];
+  RUnit[Elem]
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : RUnit[Elem]->RUnit[Elem];
+  -__ : Elem->Elem;
+  0 : Nat;
+  0 : Int;
+  0 : Elem;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Elem*Elem->Elem;
+  __*__ : RUnit[Elem]*RUnit[Elem]->RUnit[Elem];
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Elem*Elem->Elem;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Elem*Elem->Elem;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Elem*Pos->Elem;
+  __^__ : Elem*Nat->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  __times__ : Elem*Pos->Elem;
+  __times__ : Elem*Nat->Elem;
+  __times__ : Elem*Int->Elem;
+  __times__ : Nat*Nat->Nat;
+  __times__ : Int*Nat->Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  e : Elem;
+  e : RUnit[Elem];
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  isIrred : Elem;
+  isUnit : Elem;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec RichSemiGroup =
+sorts
+  Elem;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Elem*Pos->Elem;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec RichTotalOrder =
+sort
+  Elem
+ops
+  inf : Elem*Elem->?Elem;
+  max : Elem*Elem->Elem;
+  min : Elem*Elem->Elem;
+  sup : Elem*Elem->?Elem
+preds
+  __<=__ : Elem*Elem;
+  __<__ : Elem*Elem;
+  __>=__ : Elem*Elem;
+  __>__ : Elem*Elem
+
+end
+
+spec Ring =
+sort
+  Elem
+ops
+  0 : Elem;
+  __*__ : Elem*Elem->Elem;
+  __+__ : Elem*Elem->Elem;
+  e : Elem
+
+end
+
+spec SemiGroup =
+sort
+  Elem
+op
+  __*__ : Elem*Elem->Elem
+
+end
+
+spec SigPowerBinAlg %% [...] %%  =
+sorts
+  Elem;
+  Exponent
+ops
+  __*__ : Elem*Elem->Elem;
+  __^__ : Elem*Exponent->Elem
+
+end
+
+spec TotalOrder =
+sort
+  Elem
+pred
+  __<=__ : Elem*Elem
+
+end

@@ -1,0 +1,54 @@
+library HasCASL/Real3D/Geometry
+version 0.2
+
+%author: E. Schulz
+%date: 13-11-2008
+
+logic HasCASL
+
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
+
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                          Pure Geometry                           %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+
+spec Plane = AffineRealSpace3DWithSets
+then
+     op Plane(offset:Point;normal:VectorStar):PointSet
+	  = \x:Point . orth(vec(x,offset),normal); %(def of Plane)%
+end
+
+spec Circle = AffineRealSpace3DWithSets
+then
+     op Circle(offset:Point;r:RealPos;orientation:VectorStar):PointSet
+	  = \x:Point . exists y:Vector.
+	    orth(y,orientation) /\ ||y|| <= r /\ x=offset + y; %(def of Circle)%
+end
+
+spec Cylinder = AffineRealSpace3DWithSets
+then
+     op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet
+	  = \x:Point.
+	    let v = vec(offset, x)
+	    in || proj(v,axis) || <= || axis || /\
+	       || orthcomp(v,axis) || <= r /\
+	       v * axis >= 0;  %(def of Cylinder)%
+end
+
+%% simple properties about planes
+spec PlaneProps = Plane then %implies
+%% proofs in Geometry_Plane.thy
+     vars offset,x,y:Point; normal:VectorStar; v:Vector
+
+     . let plane = Plane(offset, normal)
+       in x isIn plane /\ y isIn plane => orth(vec(x,y),normal) %(plane condition for 2 points)%
+
+     . let plane = Plane(offset, normal)
+       in x isIn plane /\ orth(v,normal) => (x+v) isIn plane %(plane condition for point and vector)%
+
+end
+

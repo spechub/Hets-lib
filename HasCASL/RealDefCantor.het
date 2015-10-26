@@ -1,0 +1,162 @@
+library HasCASL/RealDefCantor
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat, Rat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+from HasCASL/Reals get 
+        SimpleReals, FieldWithOrdering
+
+from HasCASL/RealDef get 
+    Quotient, NegExtension, NegExtensionQuotient, Dist, PRat, PRatDist
+
+logic HasCASL
+
+%% =============================================================================
+%% =================================== Cantor ==================================
+%% =============================================================================
+
+%% variant 1: directly construct the reals over the rationals
+spec CRealDef = Rat
+then
+  preds 
+  Cauchy:(Nat->Rat); %% expresses the fact that a sequence is a cauchy sequence
+  samelimit:(Nat->Rat)*(Nat->Rat); %% expresses the fact that two sequences have the same limit without using the limit itself
+      
+then
+    free type RatSeq ::= mk_ratseq (unratseq: Nat->Rat)
+  . forall s:Nat->Rat. Cauchy(s) <=> (forall epsilon:Rat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => abs(s(m) - s(n)) < epsilon)
+  . forall s1,s2:Nat->Rat. samelimit(s1,s2) <=> forall epsilon:Rat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> abs(s1(n)-s2(n))<epsilon 
+  type RatCauchySequences = {s:RatSeq . Cauchy(unratseq s)}
+  pred 
+    __ === __ : RatCauchySequences*RatCauchySequences
+  . forall s1,s2:RatCauchySequences. s1 === s2 <=> samelimit(unratseq s1,unratseq s2)
+  %% Define the operators
+  then 
+    ops
+      __+__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
+      __*__:RatCauchySequences*RatCauchySequences->RatCauchySequences;
+      -__:RatCauchySequences->RatCauchySequences;
+      inv:RatCauchySequences->?RatCauchySequences;
+      0 : RatCauchySequences;
+      1 : RatCauchySequences;
+      forall x,y:RatCauchySequences
+    . x + y = mk_ratseq \n:Nat.! (unratseq x)(n) + (unratseq y)(n)   %% Addition on RatCauchySequences
+    . x * y = mk_ratseq \n:Nat.! (unratseq x)(n) * (unratseq y)(n)   %% Multiplication on RatCauchySequences
+    . 0 = mk_ratseq (\n:Nat.! 0)                                                                     %% Definition of 0
+    . 1 = mk_ratseq (\n:Nat.! 1)                                                                     %% Definition of 1
+    . (-x) = mk_ratseq \n:Nat.! (-(unratseq x)(n))                     %% Definition of add. inverse
+    . not(x=0) => inv(x)= mk_ratseq \n:Nat.! 1/((unratseq x)(n))       %% Definition of mult. inverse
+  %% Now define ordering on top of that by defining what positive means, we thus get an ordered field
+    pred
+      pos:RatCauchySequences
+      . forall r:RatCauchySequences. pos(r) <=> exists q:Rat . exists k:Nat . forall n:Nat. n>k => (unratseq r)(n) > q 
+end
+
+spec CReal = CRealDef and Quotient[CRealDef fit Elem |-> RatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> Real
+then
+  ops
+      __+__:Real*Real->Real;
+      __*__:Real*Real->Real;
+      -__:Real->Real;
+      __-__:Real*Real->Real;
+      __/__:Real*Real->Real;
+      inf : Pred(Real) ->? Real;
+      inv:Real->?Real;
+      0 : Real;
+      1 : Real;
+      forall x,y:RatCauchySequences
+      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
+      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
+      . 0 = mk_quot(0)
+      . 1 = mk_quot(1)
+      . - mk_quot(x) = mk_quot(-x)
+      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
+  preds pos:Real;
+	__ <= __, __ >= __,
+        __ <  __, __ >  __: Real * Real;
+        forall r,s:Real; rn,sn:RatCauchySequences
+        . forall S:Pred(Real) . forall m:Real. inf(S)=m <=> (forall m2:Real. (forall x:Real. S(x)=>x<=m2) => m <=m2)
+        . pos(mk_quot(rn)) <=> pos(rn)
+        . r - s = r + (-s)
+         . not(s=0) => r / s = r * inv(s)
+        . r>s <=> pos(r-s)
+        . mk_quot(rn) >= mk_quot(sn) <=> mk_quot(rn)>mk_quot(sn) \/ mk_quot(rn)-mk_quot(sn)=0
+        . r < s <=> s > r
+        . r <= s <=> s>= r
+  sort RPos = { r:Real . pos(r) }
+end
+
+view RealtoCRealDef :
+     SimpleReals to CReal
+end
+
+%% =============================================================================
+%% ========= variant 2: construct the positive reals and then the reals ========
+%% =============================================================================
+
+
+spec CPRealDef = PRatDist
+then
+  preds 
+  Cauchy:(Nat->PRat); %% expresses the fact that a sequence is a cauchy sequence
+  samelimit:(Nat->PRat)*(Nat->PRat); %% expresses the fact that two sequences have the same limit without using the limit itself
+      
+then
+    free type PRatSeq ::= mk_pratseq (unpratseq: Nat->PRat)
+  . forall s:Nat->PRat. Cauchy(s) <=> (forall epsilon:PRat. epsilon>0 => exists N:Nat. forall m:Nat. m >= N => forall n:Nat. n >= N => dist(s(m),s(n)) < epsilon)
+  . forall s1,s2:Nat->PRat. samelimit(s1,s2) <=> forall epsilon:PRat. epsilon>0 => exists N:Nat. forall n:Nat. n>N=> dist(s1(n),s2(n))<epsilon 
+  type PRatCauchySequences = {s:PRatSeq . Cauchy(unpratseq s)}
+  preds
+    __ === __ : PRatCauchySequences*PRatCauchySequences;
+  ops
+    __+__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    __/__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    __*__:PRatCauchySequences*PRatCauchySequences->PRatCauchySequences;
+    inv:PRatCauchySequences->?PRatCauchySequences;
+    0 : PRatCauchySequences;
+    1 : PRatCauchySequences;
+    forall x,y,r,s:PRatCauchySequences
+    . x + y = mk_pratseq \n:Nat.! (unpratseq x)(n) + (unpratseq y)(n)   %% Addition on PRatCauchySequences
+    . x * y = mk_pratseq \n:Nat.! (unpratseq x)(n) * (unpratseq y)(n)   %% Multiplication on PRatCauchySequences
+    . 0 = mk_pratseq (\n:Nat.! 0)                                                                     %% Definition of 0
+    . 1 = mk_pratseq (\n:Nat.! 1)                                                                     %% Definition of 1
+%%    . not(x=0) => inv(x)= mk_pratseq \n:Nat.! 1/((unpratseq x)(n))       %% Definition of mult. inverse
+    . forall s1,s2:PRatCauchySequences. s1 === s2 <=> samelimit(unpratseq s1,unpratseq s2)
+    . not(s=0) => r / s = r * inv(s)
+end
+
+spec CPReal = CPRealDef and Quotient[CPRealDef fit Elem |-> PRatCauchySequences, __ ~ __ |-> __ === __] with sort Quotient |-> PReal
+then
+  ops
+      __+__:PReal*PReal->PReal;
+      __*__:PReal*PReal->PReal;
+      __/__:PReal*PReal->PReal;
+      inv:PReal->?PReal;
+      0 : PReal;
+      1 : PReal;
+      forall x,y:PRatCauchySequences; r,s:PReal; rn,sn:PRatCauchySequences
+      . mk_quot(x) + mk_quot(y) = mk_quot(x+y)
+      . mk_quot(x) * mk_quot(y) = mk_quot(x*y)
+      . 0 = mk_quot(0)
+      . 1 = mk_quot(1)
+      . not(x=0) => inv(mk_quot(x)) = mk_quot(inv(x))
+      . not(s=0) => r / s = r * inv(s)
+%[then %% prepare the equivalence relation]%
+%[  free type PRealPair ::= mk_prealpair (dest_prealpair: PReal*PReal)]%
+%[  preds]%
+%[    __ === __ :PRealPair*PRealPair;]%
+%[    . forall x1,x2,y1,y2:PReal . mk_prealpair(x1,x2) === mk_prealpair(y1,y2) <=> x1+y2 = x2+y1]%
+end
+
+%[spec CPRealEqv = NegExtension[CPReal fit Elem |-> PReal]]%
+%[end]%
+
+%[spec CPRealfromP = CPReal and Quotient[CPReal fit Elem |-> PRealPair, __ ~ __ |-> __ === __] with sort Quotient |-> Real]%
+%[end]%

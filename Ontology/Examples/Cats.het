@@ -1,0 +1,46 @@
+logic OWL
+
+spec Predators =
+     ObjectProperty: isSlower
+     ObjectProperty: isFaster
+     InverseOf: isSlower
+
+     Class: Carnivore
+     Class: Cheetah
+     SubClassOf: Carnivore, isFaster some Tiger
+
+     Class: Tiger
+     SubClassOf: Carnivore, isSlower some Tiger
+end
+
+logic CASL
+
+spec Prey =
+     sort Thing
+     pred Hare      : Thing
+     pred Mouse     : Thing
+     pred isTastier : Thing * Thing
+     pred Nothing : Thing
+     pred Thing : Thing
+     forall a,b :Thing
+     . not(Nothing(a))
+     . Thing(a)
+     . isTastier (a,b) => not isTastier (b,a)  %(Tastier_asym)%
+     . Hare(a)  /\ Mouse (b) => isTastier (a,b) %(Hare_Tastier)%
+     then %implies
+     forall a,b : Thing
+     . Hare(a)  /\ Mouse (b) => not isTastier (b,a)  %(Mouse_notTastier)%
+end
+
+logic CASL
+
+spec Animals =
+     Predators and {Prey with Hare |-> Lepus}
+     then 
+     pred prefers : Thing * Thing * Thing
+     forall a,b,c : Thing
+     . Tiger(a) /\ isTastier (b,c) => prefers (a,b,c) %(Tiger_gourmet)%
+     then %implies
+     forall a,b,c : Thing
+     . Tiger(a) /\ Lepus(b) /\ Mouse (c) => prefers (a,b,c) %(Tiger_likes_Hares)%
+end

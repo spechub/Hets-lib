@@ -1,0 +1,187 @@
+
+%display __<=__ %LATEX __\leq__
+%display __>=__ %LATEX __\geq__
+
+%prec( 
+  { __ -? __ , __ - __, __ + __ } < 
+  { __*__, __ /? __, __ / __, __div__, __mod__, __ quot __, __rem__ } 
+)%
+
+%prec( 
+  { __*__, __ /? __, __ / __, __div__, __mod__, __ quot __, __rem__ } < 
+  { __ ^ __} 
+)%
+
+%prec( {-__} <> {__ ^ __} )%
+
+%prec { __ E __ } < { __ ::: __ }
+
+%left_assoc __ + __, __ * __, __ @@ __
+
+%number __@@__
+
+%floating __:::__, __E__
+
+from Basic/RelationsAndOrders get LeftTotalRelation, RightUniqueRelation
+
+%% causes bug after qualify names
+%[
+spec Rel1 = LeftTotalRelation and RightUniqueRelation then
+
+     pred inrg:T
+
+     forall x:T. inrg(x) <=> exists y:S. y R x
+end
+]%
+
+spec LTR =
+     sorts S, T
+     pred __ R __: S * T
+     forall s:S . exists t:T . s R t
+end
+
+spec RUR =
+     sorts S, T
+     pred __ R __: S * T
+     forall s:S; t1,t2:T
+     . s R t1 /\ s R t2 => t1=t2
+end
+
+spec RURalt =
+     sorts S, T
+     preds __ R __: S * T;
+	   inrg:T
+
+     forall s:S; t1,t2:T
+     . s R t1 /\ s R t2 => t1=t2 %(right_unicity)%
+
+     forall x:T. inrg(x) <=> exists y:S. y R x %(range_def)%
+
+end
+
+spec Rel1alt = LTR and RUR then
+     preds inrg:T
+
+     forall x:T. inrg(x) <=> exists y:S. y R x %(range_def)%
+end
+
+%% does the order of the union args matter?
+spec Rel1alt1 = RURalt and LTR then
+     forall x:T. inrg(x) => exists y:S. y R x %(range_impl1)%
+end
+spec Rel1alt2 = LTR and RURalt then
+     forall x:T. inrg(x) => exists y:S. y R x %(range_impl1)%
+end
+
+%% bug:
+%% spec Rel2 = RightUniqueRelation then
+spec Rel2 = RUR then
+     pred inrg:T
+
+     forall x:T. inrg(x) <=> exists y:S. y R x %(range_def)%
+end
+
+spec Nat3 = 
+
+  free type Nat ::= 0 | suc(pre:? Nat)
+
+  free types
+       posnats ::= succ(pre2: nats);
+       nats ::= 0 | sort posnats
+
+
+
+  free types
+       List ::= Nil | Cons (hd:? Tree; tl:? List);
+       Tree ::= Leaf | Node (decoration:? Nat; children:? List)
+
+  generated types
+       term ::= Var (v:? Nat) | Plus (p1:? term; p2:?term);
+       formula ::= Eq (lhs:? term; rhs:? term) | Lt (thel:? term; theg:? term) | Le (thel:? term; theg:? term)
+
+  forall a : nats . not (a = succ(a))
+end
+
+
+spec Nat2 = %mono
+
+  free type Nat ::= 0 | suc(pre:? Nat)
+
+  sort P1 < Nat
+
+  ops f:Nat * Nat * Nat -> Nat;
+      g:Nat * Nat * Nat ->? P1
+
+  forall x:P1. f(x,x,x) = g(x,x,x) %(superaxiom)%
+
+end
+
+spec Nat = %mono
+
+  free type Nat ::= 0 | suc(pre:? Nat)
+
+  sort P1 < Nat
+
+  preds   __ <= __, __ >= __, __dvd__,
+          __ <  __, __ > __:   Nat * Nat;
+          even, odd:           Nat
+
+  ops   __! :                       Nat -> Nat;
+        __ + __, __ * __, __ ^ __,
+        min, max, __ -!__ :         Nat * Nat ->  Nat;
+        __ -?__, __ /? __,
+        __ div __, __ mod __:       Nat * Nat ->? Nat;
+
+  %% Operations to represent natural numbers with digits:
+
+  ops  1: Nat = suc (0);                      %(1_def_Nat)%
+       2: Nat = suc (1);                      %(2_def_Nat)%
+       3: Nat = suc (2);                      %(3_def_Nat)%
+
+       __ @@ __ (m:Nat;n:Nat): Nat = (m * suc(suc(suc(suc(suc(suc(suc(3)))))))) + n   %(decimal_def)%
+
+  %% implied operation attributes :
+
+  ops __+__: Nat * Nat -> Nat, 
+             comm, assoc, unit 0; %implied
+      __*__: Nat * Nat -> Nat, 
+             comm, assoc, unit 1; %implied
+      min:   Nat * Nat -> Nat, 
+             comm, assoc;         %implied
+      max:   Nat * Nat -> Nat, 
+             comm, assoc, unit 0; %implied
+
+  forall m,n,r,s,t : Nat
+
+  %% axioms concerning predicates
+
+     . 0 <= n                           %(leq_def1_Nat)% %simp
+     . m dvd n <=> (exists k : Nat . n = m * k) %(dvd_def_Nat)% %simp
+     . not suc(n) <= 0                  %(leq_def2_Nat)% %simp
+     . suc(m) <= suc(n) <=> m <= n      %(leq_def3_Nat)% %simp
+
+     . m >= n <=> n <= m                %(geq_def_Nat)% %simp
+     . m < n  <=> (m <= n /\ not m=n)   %(less_def_Nat)% %simp
+     . m > n  <=> n < m                 %(greater_def_Nat)% %simp
+   
+     . even(0)                          %(even_0_Nat)% %simp
+     . even(suc(m)) <=> odd(m)          %(even_suc_Nat)% %simp
+     . odd(m) <=> not even(m)           %(odd_def_Nat)% %simp
+
+
+then %mono
+     sort Pos = { p: Nat . p > 0 } %(Pos_def)%
+     ops   suc: Nat -> Pos; 
+           1: Pos = suc(0);             %(1_as_Pos_def)%
+           __*__: Pos * Pos -> Pos;
+           __+__: Pos * Nat -> Pos;
+           __+__: Nat * Pos -> Pos
+
+then %implies
+
+     forall m,n,r,s:Nat
+     . min(m,0)=0                                  %(min_0)%  %simp
+     . m = (m div n) * n + (m mod n) if not n = 0  %(div_mod_Nat)%
+     . m ^(r+s) = m^r * m^s                        %(power_Nat)%
+
+end

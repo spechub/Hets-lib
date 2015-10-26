@@ -1,0 +1,309 @@
+library Calculi/Space/OrientationCalculi
+version 0.2
+%author B. Krieg-Brueckner <bkb@informatik.uni-bremen.de>
+
+%display @__ %LATEX \overline{__}
+%display __-->__ %LATEX __\longrightarrow{}__
+%display __-->*__ %LATEX __\stackrel{\circ}{\longrightarrow}__
+%display __|__ %LATEX __\angle{}__
+%display __#__>__ %LATEX __\angle{}__\rhd{}__
+
+%prec( {__|__} < {__-->__, __-->*__} )%
+%prec( {__+__, __-__, __#__>__, __via__, __ passBy__, __pass__on__}
+       < {__|__} )%
+
+%left_assoc __+__
+
+spec EgoOrientation =
+        free type Orientation2 ::= front | back
+        sort Orientation2 < Orientation
+        ops ~__: Orientation -> Orientation; %% inverse / converse
+            @__ : Orientation -> Orientation; %% full complement
+            __+__ : Orientation * Orientation -> Orientation,
+                  assoc, comm, unit front;
+            __-__ : Orientation * Orientation -> Orientation;
+        forall a, b: Orientation
+        . @ @a = a
+        . a + @a = front
+        . ~a = back + a
+        . ~ ~a = a
+        . a - b = a + @b
+then %implies
+        . @front = front
+        . @back = back
+        . ~front = back
+        . back + back = front
+        forall a : Orientation
+        . @a = front - a
+then
+        free type Orientation4 ::= sort Orientation2 | right | left
+        sort Orientation4 < Orientation
+        . left = ~right
+        . left = @right
+then %implies
+        . right + right = back
+        . left + right = front
+then
+        free type Orientation8 ::= sort Orientation4 | rightFront |
+                                   rightBack | leftFront | leftBack
+        sort Orientation8 < Orientation
+        . rightFront + rightFront = right
+        . leftFront = @rightFront  . leftBack = @rightBack
+        . rightFront = ~leftBack . leftFront = ~rightBack
+then %implies
+        . rightFront = @leftFront . rightBack = @leftBack
+end
+
+spec Identities =
+        sort Id
+end
+
+spec Locations = Identities then
+        sort Location
+        op id: Location -> Id;
+end
+
+spec Vectors = EgoOrientation and Locations then
+   sort Vector
+   ops __-->__ : Location * Location ->? Vector;
+       source, target : Vector -> Location
+
+   forall x,y: Location
+   . def x --> y <=> not x = y
+
+        ops  -__ :    Vector -> Vector; %% inverse
+            __|__ :  Vector * Vector -> Orientation
+
+        forall v, w: Vector
+        . v | w  = ~(v | -w)
+        . v | -w = -v | w
+        . v | w  = @ (w | v)
+        . - -v = v
+then %implies
+        forall v, w: Vector
+        . v | w = -v | -w
+        . -v | w = ~(v | w)
+end
+
+spec DoubleCrossCalculus = Vectors then
+        sorts Orientation8 < OrientationDCC13;
+              OrientationDCC13 < OrientationDCC;
+              OrientationDCC < Orientation;
+        pred __#__>__ : Vector * Vector * OrientationDCC
+        forall a, b, c, d: Location; o: OrientationDCC
+        . a-->b # c-->d > o => a=c \/ b=c \/ a=d \/ b=d
+
+        forall entry, exit, c: Location; u, v, w: Vector
+        . v = entry-->exit /\ w = exit-->c /\ u = entry-->c =>
+           (v#w>leftFront  <=> v|w=leftFront  /\ v|u=leftFront)
+        /\ (v#w>left       <=> v|w= leftBack  /\ v|u=leftFront)
+        /\ (v#w>leftBack   <=> v|w=leftBack   /\ v|u=leftBack )
+        /\ (v#w>front      <=> v|w=front      /\ v|u=front)
+        /\ (v#w>back       <=> v|w=back       /\ v|u=back )
+        /\ (v#w>rightFront <=> v|w=rightFront /\ v|u=rightFront)
+        /\ (v#w>right      <=> v|w=rightBack  /\ v|u=rightFront)
+        /\ (v#w>rightBack  <=> v|w=rightBack  /\ v|u=rightBack )
+then
+        free type OrientationDCC13 ::= sort Orientation8 | leftAtEntry |
+                    rightAtEntry| leftAtExit| rightAtExit | onCourse
+        . leftAtExit = ~rightAtEntry
+        . leftAtEntry = ~rightAtExit
+        . leftAtExit = @rightAtExit
+        . leftAtEntry = @rightAtEntry
+        . onCourse = @onCourse
+
+        forall entry, exit, c: Location; u, v, w: Vector
+        . v = entry-->exit /\ w = exit-->c /\ u = entry-->c =>
+           (v#w>leftAtExit   <=> v|w=left      /\ v|u=leftFront)
+        /\ (v#w>leftAtEntry  <=> v|w=leftBack  /\ v|u=left )
+        /\ (v#w>rightAtExit  <=> v|w=right     /\ v|u=rightFront)
+        /\ (v#w>rightAtEntry <=> v|w=rightBack /\ v|u=right )
+        /\ (v#w>onCourse     <=> v|w=back      /\ v|u=front)
+then
+        free type OrientationDCC ::= sort OrientationDCC13 | atEntry | atExit
+        . atExit = ~atEntry
+        . atExit = @atExit
+        . atEntry = @atEntry
+        forall entry, exit: Location
+        . entry = exit \/
+          (entry-->exit#entry-->exit>atExit
+           /\ entry-->exit#exit-->entry>atEntry)
+end
+
+spec Places = DoubleCrossCalculus then
+        sort Place < Location
+        op  oOrigin: Place -> Vector
+end
+
+spec Segments = Places then
+        sort Segment =
+           {s: Vector . source(s) in Place /\ target(s) in Place}
+        ops oEntry, oExit: Segment -> OrientationDCC;
+            oCourse: Segment -> Vector;
+            __-->__: Place * Place ->? Segment
+        forall x, entry, exit: Place
+        . source(oOrigin(x)) = x
+        . oEntry(entry-->exit) = oOrigin(entry) | entry-->exit
+        . oExit(entry-->exit)  = entry-->exit | oOrigin(exit)
+        forall s: Segment
+        . oCourse(s) = s
+then %% recomputation of entry or exit
+        forall a, b, c, d: Place
+        . a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
+        . a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
+        . oExit(a-->b)  = front => a-->b | b-->c = oEntry(b-->c) %implied
+        . oEntry(b-->c) = front => a-->b | b-->c = oExit(a-->b)  %implied
+        . a-->b | b-->c = a-->d | d-->c =>
+          oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) %implied
+then
+        forall a, b, c, d: Place
+        . id(b) = id(d) /\ def b-->c /\ def d-->c =>
+          oEntry(b-->c) = oOrigin(b) | oOrigin(d) + oEntry(d-->c)
+        . id(b) = id(d) /\ def a-->d /\ def a-->b =>
+          oExit(a-->d) = oExit(a-->b) - oOrigin(d) | oOrigin(b)
+end
+
+spec RoutePredicates = Segments then
+        preds __via__  : Segment * Location;
+        forall a, b, c: Place
+        . a-->b via c <=> a-->b # b-->c > onCourse
+then
+        preds __ passBy__  : Segment * Location;
+              __pass__on__ : Segment * Location * OrientationDCC;
+        forall a, b, c: Place; lr: OrientationDCC
+        . a-->b pass c on lr <=>
+          exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
+        . a-->b passBy c <=>
+          a-->b pass c on left \/ a-->b pass c on right
+then
+        sort Landmark < Location
+        ops start, p1, p2, p3, door : Place;
+            door, lifts, mainStairs, stugaRoom : Landmark
+        . oEntry(start-->door) = back
+        . start-->p1 via door
+        . oEntry(p1-->p2) = right
+        . p1-->p2 passBy lifts
+        . p2-->p3 passBy mainStairs
+        . p2-->p3 # p3-->stugaRoom > leftAtExit \/
+          p2-->p3 # p3-->stugaRoom > rightAtExit
+end
+
+from Basic/StructuredDatatypes get List
+
+spec GenGraph [sort NodeLabel] [sort EdgeLabel] =
+     sorts Graph, Edge, Node
+     preds __has__ : Graph * Node;
+           __has__ : Graph * Edge
+     ops source, target : Edge -> Node;
+         label : Edge -> EdgeLabel;
+         label : Node -> NodeLabel
+     forall g : Graph; e: Edge
+     . g has e => g has source(e) /\ g has target(e)
+
+then free
+     { pred reachable : Graph * Node * Node
+     forall g : Graph; e :Edge; l, n, m : Node
+     . g has e /\ source(e) = n /\ target(e) = m => reachable(g, n, m)
+     . reachable (g, l, m) /\ reachable (g, m, n) => reachable (g, l, n)
+     }
+then pred sequentialized (g : Graph) <=>
+          (exists n : Node . forall m : Node .
+                    not n = m /\ g has n /\ g has m => reachable(g, n, m))
+          /\
+          forall e1, e2: Edge .
+                    g has e2 /\ g has e2 /\ (source(e1) = source(e2)
+                     \/ target(e1) = target(e2))
+                     => e1 = e2
+end
+
+spec RouteSegment =
+     sorts RouteSegment, Course, Entry, Exit
+     ops   course : RouteSegment -> Course;
+           entry  : RouteSegment -> Entry;
+           exit   : RouteSegment -> Exit
+end
+
+spec GenPlace =
+     sort RefSystem, Place
+     op origin: Place -> RefSystem
+end
+
+spec GenRouteGraph[GenPlace][RouteSegment] =
+     GenGraph [sort RefSystem] [sort Course]
+     with Graph |-> RouteGraph,
+          Node  |-> Place,
+          Edge  |-> RouteSegment
+then
+     sort Route = { g : RouteGraph . sequentialized(g)
+                    /\ forall n, m : Place .
+                    reachable (g, n, m) => not reachable(g, m, n) }
+end
+
+spec VPlaces =
+     sorts VPlace, Angle
+     op vOrigin : VPlace -> Angle
+end
+
+spec VSegments = VPlaces
+then
+     sorts VSegment, VEdge
+     ops vCourse : VSegment -> VEdge;
+         vEntry : VSegment -> Angle;
+         vExit : VSegment -> Angle
+end
+
+spec ConceptualRouteGraph = GenRouteGraph[Places fit RefSystem |-> Vector,origin |-> oOrigin]
+     [Segments fit RouteSegment |-> Segment,
+          Course |-> Vector,
+          Entry |-> OrientationDCC,
+          Exit |-> OrientationDCC,
+          course |-> oCourse,
+          entry |-> oEntry,
+          exit |-> oExit]
+     with
+          RouteGraph |-> ConceptualModel
+end
+
+spec VoronoiGraph = GenRouteGraph[VPlaces fit RefSystem |-> Angle,
+          Place |-> VPlace,
+          origin |-> vOrigin]
+     [VSegments fit RouteSegment |-> VSegment,
+          Course |-> VEdge,
+          Entry |-> Angle,
+          Exit |-> Angle,
+          course |-> vCourse,
+          entry |-> vEntry,
+          exit |-> vExit]
+     with
+          RouteGraph |-> VoronoiGraph,
+          Route |-> vRoute
+end
+
+spec RouteGraphAbstraction [ConceptualRouteGraph][VoronoiGraph] =
+   preds __abstractionFrom__ : ConceptualModel * VoronoiGraph;
+         __abstractionFrom__ : Place * VPlace;
+         __abstractionFrom__ : Segment * VSegment
+
+   forall p1, p2: Place; vp: VPlace; s: Segment; vs: VSegment;
+          m: ConceptualModel; vg: VoronoiGraph
+   . p1 abstractionFrom vp /\ p2 abstractionFrom vp
+      => p1 = p2
+   . m abstractionFrom vg /\ m has s /\ vg has vs /\
+     source(s) abstractionFrom source(vs) /\
+     target(s) abstractionFrom target(vs)
+      => s abstractionFrom vs
+   . m abstractionFrom vg /\ vg has vp /\ p1 abstractionFrom vp
+      => m has p1
+then
+   forall p1, p2: Place; vs: VSegment;
+          m: ConceptualModel; vg: VoronoiGraph
+   .  m abstractionFrom vg /\ vg has vs /\ p1 abstractionFrom source(vs)
+      /\ p2 abstractionFrom target(vs) /\ not p1 = p2
+    => exists s: Segment . source(s) = p1 /\ target(s) = p2
+then
+   forall p: Place; s: Segment;
+          m: ConceptualModel; vg: VoronoiGraph
+   .  m abstractionFrom vg /\ m has p /\ m has s
+    => exists vs: VSegment; vp: VPlace
+      . vg has vp /\ vg has vs /\ p abstractionFrom vp /\ s abstractionFrom vs
+end

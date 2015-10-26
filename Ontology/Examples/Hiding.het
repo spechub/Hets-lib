@@ -1,0 +1,15 @@
+library OWL/Hiding
+
+logic OWL
+
+spec Family1=
+     ObjectProperty: hasChild
+     Class: Human
+     Class: Male SubClassOf: Human
+     Class: Female SubClassOf: Human
+     Class: Mother EquivalentTo: Female and hasChild some Human
+     Class: Father EquivalentTo: Male and hasChild some Human
+     Class: Parent SubClassOf: hasChild some Human
+hide
+Parent
+end

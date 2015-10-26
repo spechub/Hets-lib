@@ -1,0 +1,13 @@
+(cl-module Strict_Partial_Order
+  (cl-comment 'strict')
+  (forall (x)
+          (not (lt x x)))
+  (cl-comment 'asymmetric')
+  (forall (x y)
+          (if (lt x y)
+              (not (lt y x))))
+  (cl-comment 'transitive')
+  (forall (x y z)
+          (if (and (lt x y)
+                   (lt y z))
+              (lt x z))))

@@ -1,0 +1,93 @@
+library HasCASL/Algebra
+version 0.1
+
+%author: E. Schulz
+%date: 17-09-2008
+
+spec Commutative =
+     sort Elem
+     op  __ * __: Elem * Elem -> Elem, comm
+end
+
+spec Semigroup =
+     sort Elem
+     op  __ * __: Elem * Elem -> Elem, assoc
+end
+
+spec Monoid = Semigroup
+then
+     ops  e:Elem;
+	  __ * __: Elem * Elem -> Elem, unit e;
+end
+
+spec Group =
+     Monoid
+then
+     op inv:Elem->Elem
+
+     forall x: Elem
+     . inv(x) * x = e   %(inv_Group)%
+then %implies
+     forall x: Elem
+     . x * inv(x) = e   %(rinv_Group)%
+end
+
+spec InverseSig =
+     sort Elem
+     ops  __ * __: Elem * Elem -> Elem;
+	  inv: Elem->Elem
+end
+
+%( Definitional extension of unary inv to binary inv (= /) )%
+spec ExtInverse[InverseSig] = %def
+  op __ / __:Elem*Elem->Elem;
+
+  forall x,y:Elem
+  .  x / y = x * inv(y) %(binary_inverse)%
+end
+
+spec AbelianGroup = Group and Commutative
+
+spec Ring =
+     AbelianGroup with ops __ * __ |-> __ + __,
+                           inv     |-> - __,
+                           e       |-> 0
+
+and
+     Monoid with op e |-> 1
+then
+     forall x,y,z:Elem
+     . (x + y) * z = (x * z) + (y * z)          %(distr1_Ring)%
+     . z * ( x + y ) = (z * x) + (z * y)        %(distr2_Ring)%
+then %implies
+     var x:Elem
+     . 0 * x = 0 %(left zero)%
+     . x * 0 = 0 %(right zero)%
+end
+
+spec CommutativeRing = Ring and Commutative
+
+spec IntegralDomain =
+     CommutativeRing
+then
+     forall x,y: Elem
+     . ( x * y = 0 => ( x = 0 \/ y = 0 ) )      %(noZeroDiv)%
+     . not (1 = 0)                              %(zeroNeqOne)%
+end
+
+spec RingWithNonZeros = IntegralDomain
+then
+     sort NonZero = {x:Elem. not (x=0)} %(NonZero type)%
+
+     ops 1:NonZero;
+	 __ * __:NonZero*NonZero->NonZero
+end
+
+spec Field = RingWithNonZeros and Group with Elem |-> NonZero, e |-> 1
+
+spec RichField =
+ExtInverse[Field fit __ * __ |-> __ + __,  inv |-> - __]
+   with __ / __ |-> __ - __
+then
+     op __ / __(x:Elem;y:NonZero):Elem=x*inv(y); %(binary_field_inverse)%
+end

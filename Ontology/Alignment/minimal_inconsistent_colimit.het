@@ -1,0 +1,37 @@
+library minimal_inconistent_colimit
+
+logic OWL
+
+spec Ontology1 =
+  Class: A
+    EquivalentTo: owl:Thing
+end
+
+spec Ontology2 =
+  Class: B
+    EquivalentTo: not B
+end
+
+spec Interface =
+  Class: C
+end
+
+view v1 : Interface to Ontology1 = 
+    C |-> A
+end
+
+view v2 : Interface to Ontology2 = 
+    C |-> B
+end
+
+
+%[ check interactively:
+
+> hetds -I
+use minimal_inconistent_colimit.het
+compute colimit
+dg basic gn_Colimit
+translate OWL2CASL;CASL2SoftFOL
+cons-checker darwin
+check consistency
+]%

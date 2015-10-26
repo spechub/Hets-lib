@@ -1,0 +1,57 @@
+library HasCASL/RealDefDedekind
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat, Rat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+from HasCASL/Reals get 
+        SimpleReals, Reals, FieldWithOrdering
+
+from HasCASL/RealDef get 
+    Quotient, NegExtension, NegExtensionQuotient, Dist, PRat
+
+from HasCASL/Set get
+    Set
+
+logic HasCASL
+
+%% todo: adapt subset in Set to proper subset
+%% how to model abstraction 
+%% what does => mean in isabelle, check type classes
+spec preal = Rat and Set
+then
+ ops
+  cut : Pred(Set(Rat)); %% ask: difference to Set(Rat) -> Boolean? this is already a difference
+  . forall A,B :Set(Rat). cut(A) <=> emptySet subset A
+                                     /\  A subset \r:Rat . 0 < r
+                                     /\ forall y:Rat. A(y) => ((forall z:Rat. 0<z /\ z<y => A(z)) /\ (exists u:Rat. A(u) /\ y<u))
+  type preal = {A: Set(Rat) . cut(A)}
+  ops
+  Abs_preal : Set(Rat)->preal;
+  Rep_preal : preal -> Set(Rat);
+  preal_of_rat :Rat->preal;
+  psup : Set(Rat) ->preal;
+  add_set : Set(Rat)*Set(Rat) -> Set(Rat);
+  diff_set : Set(Rat)*Set(Rat) -> Set(Rat);
+  mult_set: Set(Rat)*Set(Rat) -> Set(Rat);
+  inverse_set : Set(Rat)->Set(Rat);
+  %% instantiation of the axiomatic type class
+
+  %% properties of the definition
+  . forall q:Rat . preal_of_rat q = Abs_preal(\x:Rat. 0 < x /\ x < q)
+  %% check!. forall P:Set(Rat) . psup P = Abs_preal (bigunion \<Union>X \<in> P. Rep_preal X)
+  %% "add_set A B = {w. \<exists>x \<in> A. \<exists>y \<in> B. w = x + y}"
+  %% "diff_set A B = {w. \<exists>x. 0 < w & 0 < x & x \<notin> B & x + w \<in> A}"
+  %% "mult_set A B = {w. \<exists>x \<in> A. \<exists>y \<in> B. w = x * y}"
+  %% "inverse_set A = {x. \<exists>y. 0 < x & x < y & inverse y \<notin> A}"
+then %implies
+  .forall q:Rat.  0 < q => cut( \r:Rat. 0 < r /\ r < q)
+end
+
+%% line 73

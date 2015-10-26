@@ -1,0 +1,31 @@
+library HasCASL/Recursion
+
+logic HasCASL
+
+%{partial implementation of builtin constructs}%
+
+spec Recursion = 
+
+class Cpo
+
+class Cppo < Cpo {
+var a : Cppo
+fun bottom : a  %% bottom is predefined
+}
+
+class instance FlatCpo < Cpo
+
+type instance __*__ : +Cpo -> +Cpo -> Cpo
+type instance __*__ : +Cppo -> +Cppo -> Cppo
+
+type instance Unit : Cppo
+type instance Unit : FlatCpo
+
+type instance __-->?__ : -Cpo -> +Cpo -> Cppo
+
+type instance __-->__ : -Cpo -> +Cpo -> Cpo
+type instance __-->__ : -Cpo -> +Cppo -> Cppo
+
+var c : Cppo
+fun Y : (c --> c) --> c
+

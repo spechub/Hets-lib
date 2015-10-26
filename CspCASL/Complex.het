@@ -1,0 +1,33 @@
+spec Complex_Data = 
+  sorts S < T;
+        S < U;
+        U, T < V;
+end       
+      
+
+logic CspCASL
+
+spec Complex_Processes =
+  data Complex_Data
+  process
+    P : S;
+    P : T;
+    P : U;
+    P : V;
+
+    P(S) : S;
+    P(S, T) : V;
+
+    %[There is only one process named P with a single parameter]%
+    %[therefore there is no choice over which P we refer to.]%
+    P(x) = x -> P(x)          %(Def_P)%
+
+    %[There is only one process named P with two parameters (and one P]%
+    %[with one paremeter) therefore there is no choice over which P's we]%
+    %[refer to.]%
+    P(x, y) = x -> y -> P (x)
+
+    %[we must fully qualifiy the process P as there are multiple]%
+    %[processes named P with no parameters.]%
+    (process P: S) = |~| x::S -> x -> P(x)
+end

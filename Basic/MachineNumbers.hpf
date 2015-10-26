@@ -1,0 +1,46 @@
+use Basic/MachineNumbers
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic INTEGER__E4
+prover SPASS
+set goals divide_INTEGER_dom
+prove
+
+prover Vampire
+set goals ga_right_unit___+__ ga_left_unit___+__ ga_right_unit___*__ ga_left_unit___*__
+set time-limit 40
+prove
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set goals ga_comm___+__ ga_comm___*__
+set time-limit 40
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic CARDINAL__E4
+prover Vampire
+set goals ga_assoc___+__ ga_comm___+__ ga_left_comm___+__ ga_right_unit___+__ ga_left_unit___+__  ga_assoc___*__ ga_right_unit___*__ ga_left_unit___*__ ga_left_comm___*__ sub_CARDINAL_dom div_CARDINAL_dom mod_CARDINAL_dom add_CARDINAL_dom
+set time-limit 40
+prove
+
+drop-translations
+translate CASL2SubCFOL
+translate CASL2SoftFOLInduction
+prover MathServe Broker
+set goals ga_comm___*___78 mult_CARDINAL_dom
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic TotalOrder_in_CARDINAL__T
+prover Vampire
+set goals dichotomy_TotalOrder antisym refl trans
+set time-limit 40
+prove

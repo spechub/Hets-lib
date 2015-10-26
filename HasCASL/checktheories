@@ -1,0 +1,7 @@
+#!/bin/sh
+for file in `ls *.het`
+do  
+  echo "Checke Datei $file ..."
+  errors=`hets $file | grep Error`
+  echo $errors
+done

@@ -1,0 +1,85 @@
+library HasCASL/RealDefDedekind
+version 0.1
+
+%author: D. Dietrich
+%date: 09-2008
+
+from Basic/Numbers get
+        Nat, Rat
+
+from Basic/RelationsAndOrders get
+        EquivalenceRelation, TotalOrder
+
+from HasCASL/Reals get 
+        SimpleReals, Reals, FieldWithOrdering
+
+from HasCASL/RealDef get 
+    Quotient, NegExtension, NegExtensionQuotient, Dist, PRat
+
+from HasCASL/Set get
+    Set
+
+logic HasCASL
+
+%% =============================================================================
+%% ==================================== Dedekind ===============================
+%% =============================================================================
+
+%% one problem that arises are many casesplits. instead one can go via Q^+ to R^+ 
+%% which reduces many cases
+%% Fundamentals of Abstract Analysis [Gleason- p. 121], Landau
+
+%% improve injection of rationals?
+%% improve case distinction multiplication
+%% inv? how to write it down
+%% min condition
+
+spec DReal = Rat and Set
+then
+  preds 
+    dedcut:Pred(Rat); %% Pred(Rat) represents a Set over Rat
+  . forall X:Pred(Rat) . dedcut(X) <=> (exists x:Rat. X(x) /\ not(forall x:Rat. X(x)) 
+                                    /\ forall q:Rat. X(q) => forall r:Rat. r <=q => X(r)
+                                    /\ forall q:Rat. X(q) => exists r:Rat. X(r) /\ r>q)  
+  %% (1) nonempty and not full Q (2) downward closed  (3) no largest element
+  %% the set of Real numbers is the set of all Dedikind Cuts 
+  type DReal = {X: Set(Rat) . dedcut(X)}
+  preds
+     __ <= __ :DReal*DReal;
+     __ < __ :DReal * DReal;
+     pos : DReal;
+    . forall x,y:DReal . x <= y <=> x subset y
+    . forall x:DReal. pos(x) <=> x(0)
+
+%[%%  sort Rat < DReal %% geht net!]%
+
+  ops
+    injR:Rat->DReal;
+    0 : DReal;
+    1 : DReal;
+    abs : DReal -> DReal;
+    __ + __ :DReal * DReal -> DReal;
+    __ * __ :DReal * DReal -> DReal;
+    - __ :DReal->DReal;
+    inv : DReal -> DReal;
+    . forall x:Rat. injR(x) =  \s:Rat . s < x  %% injecting the rationals %%
+    . 0 = injR(0)
+    . 1 = injR(1)
+    . forall x,y:DReal .  (x <= y) <=> x subset y
+    . forall x,y:DReal . (x<y) <=> not(x=y) /\ x <=y
+    . forall x,y:DReal . x + y = \zrat:Rat. exists xrat,yrat:Rat . xrat+yrat=zrat /\ x(zrat) /\ y(zrat) %% x + y = {x + y | x in X /\ y in Y}
+    . forall x:DReal. abs(x) = x when 0 <= x else -x
+    . forall x:DReal. -x = \srat:Rat. x(-srat) %%/\ not(s=min(Q \\ x))
+      %% multiplication: case 1, x>0, y>0
+    . forall x,y:DReal . x * y = (\zrat:Rat. zrat <= 0) union (\zrat:Rat. exists srat,trat:Rat . srat>0 /\ trat>0 /\ x(srat) /\ y(srat) /\ zrat = srat*trat) if pos(x) /\ pos (y)
+      %% multiplication case 2, x=0 or y=0
+      . forall x,y:DReal . x * y = injR(0) if x=0 \/ y=0
+      %% multiplication case 3
+    . forall x,y:DReal . x * y = (((- x) * (- y)):DReal) if not(pos(x))  /\ not(pos(y)) /\ not(x=0) /\ not(y=0)
+      %% multiplication case 4 x<0, y>0
+      . forall x,y:DReal . x * y = -((-x)*y)  if not(pos(x)) /\ not(x=0) /\ pos(y)
+      %% multiplication case 5 x>0, y<0
+      . forall x,y:DReal . x * y = -(x * (-y):DReal) if pos(x) /\ not(pos(y)) /\ not(y=0)
+      . forall x:DReal . inv(x) = (\zrat:Rat. zrat <=0) union (\zrat:Rat. exists srat:Rat . not(x(srat)) /\ srat>0 /\ zrat=1/srat) %%not(s=min(Rat \\ x)) 
+end
+

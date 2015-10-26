@@ -1,0 +1,128 @@
+library HasCASL/Real3D/SolidWorks/HammerPrinciple
+version 0.1
+
+%author: E. Schulz
+%date: 29-06-2009
+
+logic HasCASL
+
+from HasCASL/Real3D/SolidWorks/Principles get Principles
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%             A Principle Specification of a Hammer                %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+
+%[
+
+ - its basic relations, wf1 (head) , wf2 (handle)
+  wf1 oriented area
+
+ - proportions
+
+ - symmetry
+
+ - wf1 orientation
+
+ - wf1 regularity/format
+
+ - line from COG(H) to COG(wf1) orthogonal on wf1
+
+ - COG(H) on Symmetryplane
+
+ - COG(H) on handle-axis(wf2)
+
+ - wf1 is max-extension in orientation direction
+
+
+ --------------- kinds of conditions ---------------
+
+1 boundary conditions for wf1 and wf2 wrt. the body 
+
+2 shape conditions for wf1, wf2 and body
+
+3 geometric conditions for the parts (symmetry, orientation, convex, containment, spatial properties)
+
+]%
+
+spec HammerPrinciple = Principles then
+
+%%1 Hammer is a triple (body, wf1, wf2) (we will call the body sometimes Hammer)
+     free type
+     Hammer ::= Hammer(body, wf1, wf2:PointSet); %(Hammer datatype)%
+
+     op 2 : NonZero %implied
+
+     var h:Hammer
+
+%%2 body is a pointset (by type!)
+
+
+%%3 wf1 is a oriented surface of Hammer
+     . surfaceOf(wf1(h), body(h))
+
+%%4 wf2 is an outer set of Hammer
+     . outerSetOf(wf2(h), body(h))
+
+%%5 wf1 disjoint with wf2
+     . wf1(h) disjoint wf2(h)
+
+
+%%6 Hammers "umquader" (= bounding box) has some given proportions
+%%     free type
+%%     Box ::= Box(width, height, depth: Real); %(Box datatype)%
+
+%%     op boundingBox:PointSet -> Box
+
+%%     var a:Type
+
+%%     preds __ << __:a*a; %(much smaller than)%
+%%	   __ <> __:a*a; %(around)%
+
+     . let bb = boundingBox(body(h));
+           w = width(bb)
+       in depth(bb) << w /\ height(bb) <> (3/2) * w
+
+
+%%7 Hammer, wf1 and wf2 have a z-plane symmetry
+     . forall p:Point . let P(x,y,z) = p;
+                            p' = P(x,y,-z); %% z-flip of p
+			    b = body(h);
+			    w1 = wf1(h);
+			    w2 = wf2(h)
+                        in      (p isIn b <=> p' isIn b)
+                             /\ (p isIn w1 <=> p' isIn w1)
+                             /\ (p isIn w2 <=> p' isIn w2)
+
+
+%%8 Orientation of wf1 at cog(wf1) is in y direction
+%%     pred sameDirection:Vector*Vector %(lindep, nonnull and positive inner product)%
+
+%%     ops cog:PointSet -> Point;
+%%         faceOrientation:PointSet*Point -> Vector %% (only defined for oriented faces)
+
+     . sameDirection(surfaceOrientation(toSurface(wf1(h), body(h)), cog(wf1(h))), V(0,1,0)) %% do we mean (0,1,0) or (0,-1,0)?
+
+
+%%9 wf1 is convex 
+%%     pred convexFace:PointSet %% (only defined for oriented faces)
+     . convexSurface(toSurface(wf1(h), body(h)))
+ 
+%%10 line(cog(body), cog(wf1)) along orientation of wf1 in cut-point (=cog(wf1)) == in y direction (see 8)
+     . sameDirection(surfaceOrientation(toSurface(wf1(h), body(h)), cog(wf1(h))),
+		     vec(cog(body(h)), cog(wf1(h))))
+
+%%11 cog(body) on its symmetry-plane == z-plane (see 7)
+     . C2(cog(body(h))) = 0
+
+%%12 (we need to develop a notion of axis of a solid) axis(wf2) cuts cog(body)
+
+%%13 y(wf1) >= y(p), forall p in body (generalization: a plane touching wf1 and normal to a given direction  separates the body from a halfspace)
+
+%% simplified the condition to the cog of wf1
+     . forall p:Point. p isIn body(h) => C2(p) <= C2(cog(wf1(h)))
+
+
+end

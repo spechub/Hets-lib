@@ -1,0 +1,42 @@
+library HasCASL/StructuredDatatypes
+version 0.1
+%authors: E. Schulz
+%date: 19 Mai 2009
+
+%right_assoc __ :: __
+%list [__], [], __::__
+
+logic HasCASL
+
+spec List =
+
+     var a:Type
+     free type List a ::=  [] |  __ :: __ (first:? a; rest:? List a)
+     %(List datatype)%
+     ops map : forall a, b:Type . (a -> b) -> List a -> List b;
+	 elem: forall a:Type . a -> List a -> Logical;
+	 delete: forall a:Type . a -> List a -> List a;
+	 isPermutation: forall a:Type . List a -> List a -> Logical;
+
+     vars x,y:a; l,l1:List a; b:Type; f:a->b
+     . map f [] = []
+     . map f (x::l) = f(x)::(map f l)
+     . elem x [] = false
+     . elem x (y::l) = true when x = y else elem x l
+     . delete x [] = []
+     . delete x (y::l) = l when x = y else y::delete x l
+     . isPermutation [] l1 <=> [] = l1
+     . isPermutation (x::l) l1 <=> elem x l1 /\ isPermutation l (delete x l1)
+end
+
+spec Multiset = List then
+
+     var a:Type
+     generated type Bag a ::=  Bag (bagcontent: List a)
+     %(Bag datatype)%
+     vars x:a; b,c:Bag a
+     . b = c <=> isPermutation(bagcontent b) = isPermutation(bagcontent c)
+     %(equality for bags)%
+
+
+end

@@ -1,0 +1,36 @@
+library PartialityTest
+
+logic HasCASL
+
+%display __>=__ %LATEX __\geq__
+
+spec PartMinus = 
+  free type Nat ::= 0 | suc(pre:? Nat)
+
+  preds    __ >= __ : Nat * Nat;
+
+  ops   __ -?__ : Nat * Nat ->? Nat;
+	__ + __ : Nat * Nat -> Nat;
+
+forall x,y:Nat
+
+. 0 -? 0 = 0
+. suc(x) -? 0 = suc(x)
+. not def(0 -? suc(x))
+. suc(x) -? suc(y) = x-?y
+
+then %implies
+vars a,b,c,d:Nat
+. def(a-?(b-?(c-?a))) => def(c-?a)
+. def(a-?(b-?(c-?a))) => def(b-?(c-?a))
+. def(a -?(b-?c)) => def(b-?c)
+. a-?a = 0
+. def(a-?b) => c + (a-?b) = (c+a)-?b
+. def(a-?b) /\ def(b-?c) => (a-?b)+(b-?c) = a-?c
+. def(a -?(b-?c)) => a -?(b-?c) = (a+c) -? b
+. def(a-?(b-?(c-?a))) => def(c-?b)
+. def(a-?(b-?(c-?a))) => (a -? (b-? (c-? a))) = (c -? b)
+
+%% def(a-?(b-?(c-?a))) suffices for the left three assumptions 
+%% Implies c>= a, b>= (c-a), a >= (b- (c-a)) = b-c + a
+%% THUS 0 >=  b - c, i.e. c>= b

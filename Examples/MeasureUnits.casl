@@ -1,0 +1,63 @@
+library Examples/MeasureUnits
+
+%prec {__+__,__-__} < {__*__,__/__}
+%prec {__*__,__/__} < {__^__}
+
+from Basic/Numbers get Int, Rat
+from Basic/Algebra_I get Ring
+
+spec MeasureUnits =
+  Int
+then
+  sorts BUnit < Unit
+  ops kg, meter, second, Newton, Celsius, Fahrenheit : BUnit;
+      noUnit, any : Unit;
+      __^__ : Unit * Int -> Unit;
+      __*__ : Unit * Unit -> Unit, assoc, comm
+  forall u : Unit; n : Int
+  . Newton = kg * meter * second ^ -2
+  . u * noUnit = u
+  . u * any = u
+  . any ^ n = any
+  . noUnit ^ n = noUnit
+  . u ^ 0 = noUnit
+  . u * (u ^ n) = u ^ (n + 1)
+then %implies
+  forall u, v : Unit; n, m : Int
+  . u ^ 1 = u
+  . u * u = u ^ 2
+  . (u ^ n) * (u ^ m) = u ^ (n + m)
+  . (u * v) ^ n = (u ^ n) * (v ^ n)
+  . (u ^ n) ^ m = u ^ (n * m)
+then
+  pred compatible(u, v:Unit) <=> u=v \/ u = any \/ v = any
+end
+
+spec UnitNumbers [Ring] given Int =
+  MeasureUnits
+then
+  free type UnitNumber ::= __*__(Elem;Unit)
+  sort Elem < UnitNumber
+  ops __+__,__-__,__/__ : UnitNumber * UnitNumber ->? UnitNumber;
+      __*__ : UnitNumber * UnitNumber -> UnitNumber
+  forall x,y,z:Elem; u,v,w:Unit; a,b,c:UnitNumber 
+  . x = x*noUnit
+  . def x*u + y*v <=> u=v
+  %% I am not sure if 3*meter+4*any should be undefined or yield 7*meter
+  . x*u + y*u = (x+y)*u
+  . def x*u - y*v <=> u=v
+  . def a-b => (a-b=c <=> b+c=a)
+  . (x*u) * (y*v) = (x*y) * (u*v)
+  . def a/b <=> exists! c:UnitNumber . b*c = a
+  . def a/b => (a/b = c  <=> b*c = a)
+end
+
+spec IntUnitNumbers = 
+  UnitNumbers[Int then ops 0,1:Int 
+              fit Elem |-> Int, e |-> 1]
+end
+
+spec RatUnitNumbers = 
+  UnitNumbers[Rat then ops 0,1:Rat 
+              fit Elem |-> Rat, e |-> 1]
+end

@@ -1,0 +1,52 @@
+logic CommonLogic
+
+spec sp1 =
+. (forall (x) (P x))
+. (not (implies (P a) (P a))) %implied
+end
+
+spec sp2 =
+. (not (exists (x) (not (P x))))
+. (= a a)
+. (= b b)
+then %implies
+. (P a) 
+. (P b)
+end
+
+
+spec sp3 =
+. (SubwayLine (Station1 Station2 Station3))
+. (SubwayLine (Station4 Station5))
+end
+
+%[
+spec ancestor =
+. (parent_chain ())
+. (parent_chain (x))
+. (iff (parent_chain (x y ...))
+       (and (parent x y)
+            (parent_chain (y ...))))
+. (iff (ancestor x y) (exists (...) (parent_chain (x ... y))))
+end
+
+spec ancestor1 =
+  ancestor 
+then
+. (parent peter max)
+. (parent max clara)
+. (ancestor peter clara) %implied
+end
+
+spec ancestor2 =
+  ancestor 
+then
+. (iff (parent x y) (or (and (= x peter) (= y max))
+                        (and (= x max) (= y clara))))
+. (not (parent max helga)) %implied
+end
+
+%view v : sp1 to sp2 
+%end
+
+]%

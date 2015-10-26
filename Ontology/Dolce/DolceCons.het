@@ -1,0 +1,856 @@
+library Ontology/Dolce/DolceCons
+version 1.0
+
+from Ontology/Dolce/DolceSimpl_Esort get
+		 Taxonomy, Partial_Order, Ext_Partial_Order,
+         Ext_Overlap_or_Connection, Classical_Extensional_Parthood,
+         Time_Mereology, Unary_Temporal_Dissective, Being_Present,
+         Mereology, Mereology_and_TemporalPart, Binary_Present,
+         Binary_Temporal_Dissective, Temporary_Partial_Order,
+         Temporary_Strict_Partial_Order, Temporary_Parthood_No, Temporary_Parthood,
+         Temporary_Mereology, Constitution_Spec,
+         Constantly_Generically_Constituted, Constitution, Participation,
+         Direct_Quality_Spec, Direct_Quality, Immediate_Quale_Spec,
+         Immediate_Quale, Temporary_Quale_Spec, Temporary_Quale, 
+         Specific_Dependence, Mutual_Specific_Dependence,
+         OneSide_Specific_Dependence, Generic_Dependence,
+         Mutual_Generic_Dependence, OneSide_Generic_Dependence, Dependence,
+         Strongly_Non_Empty, Cumulative, Anti_Cumulative, Homeomerous,
+         Anti_Homeomerous, Atomic, Anti_Atomic, PreDolce, Dolce
+
+
+
+%%-----------------------
+%% Temporary_Parthood with: No Temporal Sums and Diffs; and Universal temporal Presence; and instantiated sort; (tpnop)
+%%-----------------------
+
+spec Temporary_Parthood_No_PRE =
+  Temporary_Parthood_No
+then
+	  . exists  x: s . true;
+  	  . forall t:T . forall x : s . PRE(x, t); 
+%%    forall x : s . forall t:T . PRE(x, t) 
+%%  	  forall t:T . exists x : s . PRE(x, t)
+end
+%%--------------------------------------------
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (1) (T new)
+
+%% from DolceModel.het
+%% arch spec Parthood_Model =
+%%  units
+%%	TM                 : Time_Mereology;
+
+%%One Point Model Found
+spec TM_Cons=
+     Time_Mereology
+then
+     . exists t:T . true  %% we need at least one time point
+end
+
+spec TM_Model= 
+     free type T ::= t0
+     pred At : T;
+	  P,PP,Ov,AtP : T * T;
+	  Sum,Dif: T * T * T
+     . P(t0,t0)
+     . not PP(t0,t0)
+     . Ov(t0,t0)
+     . At(t0)
+     . AtP(t0,t0)
+     . Sum(t0,t0,t0)
+     . not Dif(t0,t0,t0)
+end
+
+view Time_Mereology_Cons_to_Model : TM_Cons to TM_Model
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (5) (SC new)
+
+%% from DolceModel.het
+%%	TempParthoodSC     : {Temporary_Parthood with s |-> SC} given TM;
+
+spec TempParthoodSC_Cons =
+     TM_Cons
+     then %cons
+     Temporary_Parthood_No_PRE with s |-> SC
+end
+
+  
+spec TempParthoodSC_Cons_Model =
+     TM_Cons
+then %def
+     OnePointTempParthoodNoModel with sort s |-> SC
+end
+
+view v_TempParthoodSC_Cons_Model : 
+     TempParthoodSC_Cons to TempParthoodSC_Cons_Model
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4) (TL new, TR new, TQ new)
+spec ImmediateQuale_Cons=
+     TM_Cons
+     then %cons
+     Immediate_Quale
+end
+
+%% We identify time points with temporal location; and temporal qualities with temporal regions
+spec ImmediateQuale_Cons_Model = 
+     TM_Cons
+     then %cons
+     free type TL ::= sort T
+     pred ql(x:T;y:TL) <=> x=y
+     free type TR ::= tr
+     free type TQ ::= sort TR
+     pred ql(x:TR;y:TQ) <=> x=y
+end 
+
+view v_ImmediateQuale_Cons_Model :  
+     ImmediateQuale_Cons to ImmediateQuale_Cons_Model
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+
+
+
+%%%%%%%%%%%%%%%% 1 and 2 point models for temp parthood no existence %%%%%%%%%%%%%%%%
+
+spec OnePointTempParthoodNoModel =
+  TM_Cons
+then
+  free type s ::= ThePoint
+  pred PRE (x:s;t:T) <=> true
+%%  pred tDif (x,y,z:s) <=> false
+  pred tOv (x,y:s;t:T) <=> true
+  pred tP (x,y:s;t:T) <=> true
+  pred tPP (x,y:s;t:T) <=> false
+%%  pred tSum  (x,y,z:s) <=> true
+end
+
+view v_Temporary_Parthood_No_PRE_1 : 
+		Temporary_Parthood_No_PRE to OnePointTempParthoodNoModel
+%% view works
+
+%%%%%%%%%%%%%%%%%
+
+ spec TwoPointTempParthoodNoModel =
+   TM_Cons
+ then
+   free type s ::= PointOne | PointTwo
+   pred PRE (x:s;t:T) <=> true
+   pred tOv (x,y:s;t:T) <=> x=y
+   pred tP (x,y:s;t:T) <=> x=y
+   pred tPP (x,y:s;t:T) <=> false
+ end
+
+		
+view v_Temporary_Parthood_No_PRE_2 : 
+		Temporary_Parthood_No_PRE to TwoPointTempParthoodNoModel
+%% view works		
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6) (SAG new)
+spec TempParthoodSAG_Cons=
+     TM_Cons
+     then %cons
+     Temporary_Parthood_No_PRE with s |-> SAG
+end
+
+spec TempParthoodSAG_Cons_Model =
+     TM_Cons
+then %cons
+     OnePointTempParthoodNoModel with sort s |-> SAG
+end
+
+view v_TempParthoodSAG_Cons_Model : 
+     TempParthoodSAG_Cons to TempParthoodSAG_Cons_Model
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7) (NASO new)
+spec TempParthoodNASO_Cons=
+     TempParthoodSC_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> NASO and
+      OneSide_Generic_Dependence 
+      with s1 |-> NASO, s2 |-> SC}
+end
+
+%% 
+spec TempParthoodNASO_Cons_Model =
+   	 TempParthoodSC_Cons
+then %cons
+     OnePointTempParthoodNoModel with sort s |-> NASO 
+end
+
+view v_TempParthoodNASO_Cons_Model : 
+     TempParthoodNASO_Cons to TempParthoodNASO_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8) (APO new)
+spec TempParthoodAPO_Cons=
+     TempParthoodSAG_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> APO 
+      and
+      OneSide_Generic_Dependence with s1 |-> SAG, 
+      s2 |-> APO}
+end
+
+spec TempParthoodAPO_Cons_Model =
+   	 TempParthoodSAG_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> APO}
+end
+
+view v_TempParthoodAPO_Cons_Model : 
+     TempParthoodAPO_Cons to TempParthoodAPO_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9) (F new)
+spec TempParthoodF_Cons=
+     TempParthoodSAG_Cons
+     then %cons
+     Temporary_Parthood_No_PRE with s |-> F
+end
+
+spec TempParthoodF_Cons_Model =
+   	 TempParthoodSAG_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> F}
+end
+
+view v_TempParthoodF_Cons_Model : 
+     TempParthoodF_Cons to TempParthoodF_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10) (NAPO new)
+spec TempParthoodNAPO_Cons=
+     TempParthoodF_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> NAPO 
+      and
+      OneSide_Generic_Dependence with s1 |-> F, 
+      s2 |-> NAPO}
+end
+
+spec TempParthoodNAPO_Cons_Model =
+	 TempParthoodF_Cons
+then %cons
+     {OnePointTempParthoodNoModel with sort s |-> NAPO}
+end
+
+view v_TempParthoodNAPO_Cons_Model : 
+     TempParthoodNAPO_Cons to TempParthoodNAPO_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11) (ASO new)
+spec TempParthoodASO_Cons=
+     TempParthoodSC_Cons
+     and
+     TempParthoodSAG_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> ASO
+      and 
+      {
+       free type ASO ::= sort SC | sort SAG
+      }
+     }
+end
+%% 
+
+spec TempParthoodASO_Cons_Model =
+	 TempParthoodSC_Cons
+     and
+     TempParthoodSAG_Cons
+	 then %cons
+		%% abstract definition of predicates assuming (arbitrary) existing models	
+     	free type ASO ::= sort SC | sort SAG
+		pred PRE: ASO*T
+   		pred tOv (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tOv(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tOv(x,y,t) ) 
+   		pred tP (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tP(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tP(x,y,t) )
+   		pred tPP (x,y:ASO;t:T) <=> ( x in SC /\ y in SC /\ tPP(x,y,t) ) \/ ( x in SAG /\ y in SAG /\ tPP(x,y,t) )
+end
+
+view v_TempParthoodASO_Cons_Model : 
+     TempParthoodASO_Cons to TempParthoodASO_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) (MOB new)
+spec TempParthoodMOB_Cons=
+     TempParthoodAPO_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> MOB 
+      and
+      OneSide_Specific_Dependence with s1 |-> MOB, 
+      s2 |-> APO}
+end
+
+spec TempParthoodMOB_Cons_Model =
+	 TempParthoodAPO_Cons
+then %cons
+    {OnePointTempParthoodNoModel with sort s |-> MOB 
+	and
+	{esort MOB %%free type MOB ::= MonsterMob 
+	pred PRE: MOB*T;
+	pred SD (x:MOB; y:APO) <=> (exists t:T.(PRE(x,t))) /\ (forall t:T.(PRE(x,t) => PRE(y,t)));
+	} 
+	}  
+%%  
+end
+
+
+view v_TempParthoodMOB_Cons_Model : 
+     TempParthoodMOB_Cons to TempParthoodMOB_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) (SOB new)
+spec TempParthoodSOB_Cons=
+     TempParthoodNASO_Cons
+     and
+     TempParthoodASO_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> SOB 
+      and
+      {
+       free type SOB ::= sort ASO | sort NASO}
+     }
+end
+  
+spec TempParthoodSOB_Cons_Model =
+	 TempParthoodNASO_Cons 
+	 and
+     TempParthoodASO_Cons
+then %cons
+     free type SOB ::= sort ASO | sort NASO
+		pred PRE: SOB*T
+   		pred tOv (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tOv(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tOv(x,y,t) ) 
+   		pred tP (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tP(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tP(x,y,t) )
+   		pred tPP (x,y:SOB;t:T) <=> ( x in ASO /\ y in ASO /\ tPP(x,y,t) ) \/ ( x in NASO /\ y in NASO /\ tPP(x,y,t) )
+end
+%%% Model used repeatedly, so could define a view as for one-point model?
+
+view v_TempParthoodSOB_Cons_Model : 
+     TempParthoodSOB_Cons to TempParthoodSOB_Cons_Model
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) (POB new)   
+spec TempParthoodPOB_Cons=
+     TempParthoodMOB_Cons
+     and
+     TempParthoodNAPO_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> POB
+      and
+      {
+       free type POB ::= sort APO | sort NAPO
+      }
+     }
+end
+
+
+spec TempParthoodPOB_Cons_Model=
+     TempParthoodMOB_Cons
+     and
+     TempParthoodNAPO_Cons
+     then %cons
+     	free type POB ::= sort APO | sort NAPO
+		pred PRE: POB*T
+   		pred tOv (x,y:POB;t:T) <=> ( x in APO /\ y in APO /\ tOv(x,y,t) ) \/ ( x in NAPO /\ y in NAPO /\ tOv(x,y,t) ) 
+   		pred tP (x,y:POB;t:T) <=> ( x in APO /\ y in APO /\ tP(x,y,t) ) \/ ( x in NAPO /\ y in NAPO /\ tP(x,y,t) )
+   		pred tPP (x,y:POB;t:T) <=> ( x in APO /\ y in APO /\ tPP(x,y,t) ) \/ ( x in NAPO /\ y in NAPO /\ tPP(x,y,t) )
+end
+
+view v_TempParthoodPOB_Cons_Model : 
+     TempParthoodPOB_Cons to TempParthoodPOB_Cons_Model
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (15) (NPOB new)   
+spec TempParthoodNPOB_Cons=
+     TempParthoodSOB_Cons
+     and 
+     TempParthoodMOB_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> NPOB
+      and
+      {
+       free type NPOB ::= sort SOB | sort MOB
+      }
+     }
+end
+
+spec TempParthoodNPOB_Cons_Model=
+     TempParthoodSOB_Cons
+     and
+     TempParthoodMOB_Cons
+     then %cons
+    	free type NPOB ::= sort SOB | sort MOB
+		pred PRE: NPOB*T
+   		pred tOv (x,y:NPOB;t:T) <=> ( x in SOB /\ y in SOB /\ tOv(x,y,t) ) \/ ( x in MOB /\ y in MOB /\ tOv(x,y,t) ) 
+   		pred tP (x,y:NPOB;t:T) <=> ( x in SOB /\ y in SOB /\ tP(x,y,t) ) \/ ( x in MOB /\ y in MOB /\ tP(x,y,t) )
+   		pred tPP (x,y:NPOB;t:T) <=> ( x in SOB /\ y in SOB /\ tPP(x,y,t) ) \/ ( x in MOB /\ y in MOB /\ tPP(x,y,t) )
+end
+
+view v_TempParthoodNPOB_Cons_Model : 
+     TempParthoodNPOB_Cons to TempParthoodNPOB_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (16) (M new)   
+spec TempParthoodM_Cons=
+     TempParthoodPOB_Cons
+     then %cons
+     {Temporary_Parthood_No_PRE with s |-> M}
+end
+
+spec TempParthoodM_Cons_Model=
+     TempParthoodPOB_Cons
+     then %cons
+     {OnePointTempParthoodNoModel with sort s |-> M}
+end
+
+view v_TempParthoodM_Cons_Model : 
+     TempParthoodM_Cons to TempParthoodM_Cons_Model
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (17) (NPED new)   
+	spec TempParthoodNPED_Cons=
+     TempParthoodNPOB_Cons
+     then %cons
+     {Temporary_Parthood with s |-> NPED
+      and
+      {
+       esort NPOB < NPED
+      }
+     }
+end
+
+spec TempParthoodNPED_Cons_Model=
+     TempParthoodNPOB_Cons
+     then %cons
+     {esort NPOB < NPED
+	pred PRE (x:NPED;t:T)   <=> ( x in NPOB /\ PRE(x,t) ) \/ not x in NPOB 
+	pred tOv (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tOv(x,y,t) )  
+   	pred tP (x,y:NPED;t:T)  <=> ( x in NPOB /\ y in NPOB /\ tP(x,y,t) )  
+   	pred tPP (x,y:NPED;t:T) <=> ( x in NPOB /\ y in NPOB /\ tPP(x,y,t) ) 
+ %% Temporary Binary Sum: DEF
+	pred tSum(z:NPED; x:NPED; y:NPED) <=> forall w:NPED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
+ %% Temporary Binary Difference: DEF
+	pred tDif(z:NPED; x:NPED; y:NPED) <=> forall w:NPED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))}
+%%	pred PRE : NPED * T
+%%	pred tOv : NPED * NPED * T
+%%	pred tP : NPED * NPED * T
+%%	pred tPP : NPED * NPED * T     }
+end
+
+
+view v_TempParthoodNPED_Cons_Model : 
+     TempParthoodNPED_Cons to TempParthoodNPED_Cons_Model
+
+spec TempParthoodPED_Cons_Model=
+     TempParthoodM_Cons
+     then %cons
+	    free type PED ::= sort POB | sort M | sort F
+		pred PRE: PED*T
+   		pred tOv (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tOv(x,y,t) ) \/ ( x in M /\ y in M /\ tOv(x,y,t) ) \/ ( x in F /\ y in F /\ tOv(x,y,t) ) 
+   		pred tP (x,y:PED;t:T)  <=> ( x in POB /\ y in POB /\ tP(x,y,t) )  \/ ( x in M /\ y in M /\ tP(x,y,t) )  \/ ( x in F /\ y in F /\ tP(x,y,t) )
+   		pred tPP (x,y:PED;t:T) <=> ( x in POB /\ y in POB /\ tPP(x,y,t) ) \/ ( x in M /\ y in M /\ tPP(x,y,t) ) \/ ( x in F /\ y in F /\ tPP(x,y,t) )			
+ 		%% Temporary Binary Sum: DEF
+		pred tSum(z:PED; x:PED; y:PED) <=> forall w:PED;t:T.(tOv(w,z,t) <=> (tOv(w,x,t) \/  tOv(w,y,t)))
+ 		%% Temporary Binary Difference: DEF
+		pred tDif(z:PED; x:PED; y:PED) <=> forall w:PED;t:T.(tP(w,z,t) <=> (tP(w,x,t) /\ not tOv(w,y,t)))
+end
+
+spec      TempParthoodPED_Cons =
+       TempParthoodNPED_Cons with NPED |-> PED
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (19) (ED new) (AS new)   
+spec TempParthoodED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     then %cons
+     {Temporary_Parthood with s |-> ED
+      and
+      {
+       esort AS;
+       free type ED ::= sort PED | sort NPED | sort AS
+      }
+     } 
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (20) (AQ new)   
+spec DependenceAQNPED_Cons=
+     TempParthoodED_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> AQ, 
+				s2 |-> NPED
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (21) (PD new)   
+spec ClassExtParthoodPD_Cons=
+     TempParthoodED_Cons
+     then %cons
+     {Classical_Extensional_Parthood with s |-> PD}
+end
+
+
+%%%%%%%%%%%%%%
+spec Classical_Extensional_Parthood_1_model =
+  free type s ::= a
+ pred P:s*s
+ . P(a,a)
+  preds
+  %% Proper Part
+  PP(x:s; y:s) <=> P(x, y) /\  not  P(y, x); %(Dd14)%
+
+  %% Overlap
+  Ov(x:s; y:s) <=> exists z:s.(P(z, x) /\  P(z, y)); %(Dd15)%
+
+  %% Atom
+  At(x:s) <=> not exists y:s.(PP(y, x)); %(Dd16)%
+
+  %%  Atomic Part
+  AtP(x:s; y:s) <=> P(x, y) /\  At(x); %(Dd17)%
+
+  %%  Binary Sum
+  Sum(z:s; x:s; y:s) <=> forall w:s.(Ov(w,z) <=> (Ov(w, x) \/  Ov(w, y)));
+
+  %%  Binary Difference
+  Dif(z:s; x:s; y:s) <=> forall w:s.(P(w,z) <=> (P(w, x) /\ not Ov(w, y)));
+end
+%%%%%%%%%%%%%%%%
+
+spec sp = {}
+view consistent_cpm1 : sp to Classical_Extensional_Parthood_1_model
+
+view cpm1: Classical_Extensional_Parthood to
+           Classical_Extensional_Parthood_1_model
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (22) (AR new)   
+spec ClassExtParthoodAR_Cons=
+     DependenceAQNPED_Cons
+     then %cons
+     Classical_Extensional_Parthood with s |-> AR
+then
+     . exists x:AR. x in AR
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+spec Particip_Cons=
+     ClassExtParthoodPD_Cons
+     then %cons
+     Participation
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (23) (PQ new)   
+spec DependencePQPED_Cons=
+     TempParthoodED_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> PQ, 
+				s2 |-> PED 
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+spec DependenceTQPD_Cons=
+     Particip_Cons
+     and
+     ImmediateQuale_Cons
+     then %cons
+     Mutual_Specific_Dependence with s1 |-> TQ, 
+				s2 |-> PD
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (24,25) (Q new, EDorPDorQ new)   
+spec BeingPresentEDorDP_Cons=
+     DependenceTQPD_Cons
+     and
+     DependencePQPED_Cons
+     and
+     DependenceAQNPED_Cons
+     then %cons
+     {
+      Being_Present with s |-> EDorPDorQ
+      and
+      {
+       free type Q ::= sort TQ | sort PQ | sort AQ;
+       free type EDorPDorQ ::= sort Q | sort PD | sort ED
+      }
+     }
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (26,27) (SL new, S new)   
+spec BinTempDisS_Cons=
+     DependencePQPED_Cons
+     then %cons
+     Binary_Temporal_Dissective with s1 |-> S, 
+				s2 |-> SL
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (28) (PR new)   
+%% Model with PR 1 Element, PQ 1 Element exists
+spec BinTempDisPR_Cons=
+     Binary_Temporal_Dissective with s1 |-> PR, 
+				s2 |-> PQ
+     and 
+     {
+      esort S < PR
+     }
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+spec ClassExtParthoodS_Cons=
+      BinTempDisS_Cons
+      then %cons
+      Classical_Extensional_Parthood with s |-> S
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+spec BinTempDisAR_Cons=
+     DependenceAQNPED_Cons
+     and
+     ClassExtParthoodAR_Cons
+     then %cons
+     Binary_Temporal_Dissective with s1 |-> AR, 
+				s2 |-> AQ
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+spec ConstitutionPD_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     Constitution_Spec with s |-> PD
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec ConstitutionPED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     {Constantly_Generically_Constituted with 
+      s |-> PED, s1 |-> NAPO, s2 |-> M 	
+      and  Constantly_Generically_Constituted with 
+      s |-> PED, s1 |-> APO, s2 |-> NAPO}
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+spec ConstitutionNPED_Cons=
+     TempParthoodPED_Cons
+     and 
+     TempParthoodNPED_Cons
+     and 
+     Particip_Cons
+     then %cons
+     Constantly_Generically_Constituted with 
+     s |-> NPED, s1 |-> SC, s2 |-> SAG
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec Constitution_Cons=
+     ConstitutionPD_Cons
+     and
+     ConstitutionPED_Cons
+     and
+     ConstitutionNPED_Cons
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec TempQualePR_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons
+     Temporary_Quale_Spec with s1 |-> PR, 
+				s2 |-> PQ
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+spec TempQualeAR_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons   
+     Temporary_Quale_Spec with s1 |-> AR, 
+				s2 |-> AQ
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec TempQualeS_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons 
+     Temporary_Quale_Spec with s1 |-> S, s2 |-> SL
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec TempQuale_Cons=
+     TempQualePR_Cons
+     and
+     TempQualeAR_Cons
+     and
+     TempQualeS_Cons
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec DirectQuality_Cons=
+     BeingPresentEDorDP_Cons
+     and
+     BinTempDisS_Cons
+     then %cons
+     Direct_Quality
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+spec PreDolce_Cons=
+     BeingPresentEDorDP_Cons
+     and 
+     Constitution_Cons
+     and 
+     DirectQuality_Cons
+     and 
+     TempQuale_Cons
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (29-38) (PT, AB, R -- STV, ST, PRO -- EV, ACH, ACC)   
+spec Dolce_Cons=
+     PreDolce_Cons
+     then %cons
+     Taxonomy
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%%
+
+

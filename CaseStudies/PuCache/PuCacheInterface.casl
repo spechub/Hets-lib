@@ -1,0 +1,57 @@
+library CaseStudies/PuCache/PuCacheInterface version 0.1
+from CaseStudies/Misc/Haskell get Maybe
+from Basic/StructuredDatatypes version 0.7 get Pair
+from CaseStudies/PuCache/PuDatatypes get PuDatatypes
+from CaseStudies/PuCache/PuCacheData get PuCacheData
+from CaseStudies/PuCache/PuCacheUtil get PuCacheUtil
+from CaseStudies/PuCache/PuUtil get PuUtil
+from CaseStudies/PuCache/PuCacheAccess get PuCacheAccess
+from CaseStudies/PuCache/PuCacheFile get PuCacheFile
+
+spec PuCacheInterface =
+  PuDatatypes and PuCacheData and PuCacheUtil and PuUtil and PuCacheAccess 
+  and PuCacheFile
+and
+  Maybe [sort Pu_RetRead fit sort Elem |-> Pu_RetRead] 
+and
+  Pair [sort PuCache fit sort S |-> PuCache]
+       [sort Maybe[Pu_RetRead] fit sort T |-> Maybe[Pu_RetRead]]
+and
+  Pair [sort PuCache fit sort S |-> PuCache]
+       [sort Boolean fit sort T |-> Boolean]
+and
+  Pair [sort PuUserEntry fit sort S |-> PuUserEntry]
+       [sort Pu_RetRead fit sort T |-> Pu_RetRead] then
+
+ops
+%% State missing
+  puc_getTime : Time;
+  puc_tryRead : PuCache * Uid * Filehandle * Offset * Count 
+                -> Pair[PuCache, Maybe[Pu_RetRead]];
+  puc_useCache : PuCache * Uid * Filehandle -> Pair[PuCache,Boolean];
+  cacheTime : PuCache * Uid * Filehandle -> Time;
+%% Some kind of state missing
+  serverTime : Uid * Filehandle -> Time;
+
+forall cache:PuCache; uid:Uid; fh:Filehandle; off:Offset; cnt:Count
+. cacheTime(cache, uid, fh) = time(second(puc_cacheGetMTime 
+			   (puc_getUser (cache, uid), Time( 0, 0) ,uid ,fh)))
+%% Some kind of state missing
+. serverTime(uid, fh) = time(retval(val(pu_queryServer 
+				    (Req (uid, GetMTimeArg (fh))))))
+. puc_useCache (cache, uid, fh) = pair(cache,False)
+  when (not (puc_haveUser (cache, uid)))
+  else (pair(cache, (cacheTime(cache,uid,fh) >= serverTime(uid,fh)))
+   when (not ((puc_getOffline (cache)=True) 
+	      \/ (puc_userOffline (puc_getUser (cache, uid))=True)))
+   else pair(cache,True))
+
+. exists resCacheRead:Pair[PuUserEntry, Pu_RetRead] 
+  . puc_tryRead (cache, uid, fh, off, cnt) = 
+     pair((puc_setUser (cache, uid, first(resCacheRead))), 
+        just(second(puc_realRead(cache, second(resCacheRead), uid, fh, off, cnt))))
+     when second(puc_useCache (cache, uid, fh))=True 
+     else pair(cache,nothing)
+   /\ resCacheRead = puc_cacheRead 
+           (puc_getUser (cache, uid), puc_getTime, uid, fh, off, cnt)
+

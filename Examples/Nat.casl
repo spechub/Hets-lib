@@ -1,0 +1,10 @@
+library Examples/Nat
+
+spec Nat =
+  free type Nat ::= 0 | suc(Nat)
+  ops   __ + __  :   Nat * Nat ->  Nat;
+  forall m,n : Nat
+  . 0 + m = m                        %(add_0_Nat)%
+  . suc(n) + m = suc(n + m)          %(add_suc_Nat)%
+  . (0+0)+m=m                        %(zero)% %implied
+end

@@ -1,0 +1,379 @@
+
+library Calculi/Space/DoubleCross
+
+%author Klaus Luettich <luettich@tzi.de>
+%date Nov 2005
+
+%{ Based on Freksa, 1992:
+  "Using Orientation Information for Qualitative Spatial Reasoning"
+
+  This library should give FOL specifications of the double cross calculus
+  with 10 and 15 relations.
+}%
+
+spec DC9_relations_Line =
+
+     %{ we have Points and directed Lines made of two Points
+     }%
+     sort PointLoc
+     type LineLoc ::= L(PointLoc;PointLoc)?
+     %% LineLocs have distinct points
+     forall a,b : PointLoc
+     . not a=b <=> def L(a,b) %(line def)%
+
+
+     %{The numbers in parens are the numbers in Fig. 2}%
+     preds
+           __SF__: PointLoc * LineLoc; %% straight front (0)
+           __RF__: PointLoc * LineLoc; %% right front (1)
+           __RN__: PointLoc * LineLoc; %% right neutral (2)
+           __RB__: PointLoc * LineLoc; %% right back (3)
+           __SB__: PointLoc * LineLoc; %% straight back (4)
+           __LB__: PointLoc * LineLoc; %% left back (5)
+           __LN__: PointLoc * LineLoc; %% left neutral (6)
+           __LF__: PointLoc * LineLoc; %% left front (7)
+           __AE__: PointLoc * LineLoc; %% at end point (b) and (a)
+end
+
+spec DC9_Line =
+     DC9_relations_Line
+then %def
+     %% implications from figure 2
+     forall a,b,c : PointLoc
+     . not a = b => (c LF L(a,b) => c RB L(b,a))
+     . not a = b => (c SF L(a,b) => c SB L(b,a))
+     . not a = b => (c RF L(a,b) => c LB L(b,a))
+     . not a = b => (c LN L(a,b) => c RB L(b,a))
+     . not a = b => (c AE L(a,b) => c SB L(b,a))
+     . not a = b => (c RN L(a,b) => c LB L(b,a))
+     . not a = b => (c LB L(a,b) => c RB L(b,a) \/ c RN L(b,a) \/ c RF L(b,a))
+     . not a = b => (c SB L(a,b) => c SB L(b,a) \/ c AE L(b,a) \/ c SF L(b,a))
+     . not a = b => (c RB L(a,b) => c LB L(b,a) \/ c LN L(b,a) \/ c LF L(b,a))
+%[
+     %% implications from figure 2 with a c relation
+     forall a,b,c : PointLoc
+     . c LF L(a,b) => c RB L(b,a) /\ not a=c
+     . c SF L(a,b) => c SB L(b,a) /\ not a=c
+     . c RF L(a,b) => c LB L(b,a) /\ not a=c
+     . c LN L(a,b) => c RB L(b,a) /\ not a=c
+     . c AE L(a,b) => c SB L(b,a) /\ not a=c
+     . c RN L(a,b) => c LB L(b,a) /\ not a=c
+     . c LB L(a,b) => (c RB L(b,a) \/ c RN L(b,a) \/ c RF L(b,a)) /\ not a=c
+     . c SB L(a,b) => ((c SB L(b,a) /\ (not a=c \/ a=c))
+                       \/ (c AE L(b,a) /\ a=c )
+                       \/ (c SF L(b,a) /\ not a=c))
+     . c RB L(a,b) => (c LB L(b,a) \/ c LN L(b,a) \/ c LF L(b,a)) /\ not a=c
+]%
+     %% jointly exhaustive
+     forall p,a,b : PointLoc
+     . not a=b => p SF L(a,b) \/ p RF L(a,b) \/
+       p RN L(a,b) \/ p RB L(a,b) \/ p SB L(a,b) \/ p LB L(a,b) \/
+       p LN L(a,b) \/ p LF L(a,b) \/ p AE L(a,b)  %(jointly exhaustive)%
+
+     forall a,b,c: PointLoc
+     . not a=b => (c AE L(a,b) <=> c = b) %(c = b)%
+     . not a=b => (c SB L(a,b) => a = c \/ not a = c) %(a and c rel SB)%
+
+     forall a,b,c: PointLoc
+     . not a=b => (c SF L(a,b) \/ c RF L(a,b) \/
+                   c RN L(a,b) \/ c RB L(a,b) \/ c LB L(a,b) \/
+                   c LN L(a,b) \/ c LF L(a,b) \/ c AE L(a,b)
+                   => not a = c)  %(a and c distinct)%
+
+%[    . c SF L(a,b) \/ c RF L(a,b) \/
+       c RN L(a,b) \/ c RB L(a,b) \/ c SB L(a,b) \/ c LB L(a,b) \/
+       c LN L(a,b) \/ c LF L(a,b)
+            => not b = c %(c and b distinct)%
+]%
+
+%[     . c SF L(a,b) \/ c RF L(a,b) \/
+       c RN L(a,b) \/ c RB L(a,b) \/ c SB L(a,b) \/ c LB L(a,b) \/
+       c LN L(a,b) \/ c LF L(a,b) \/ c AE L(a,b)
+            <=> not a = b  %(a and b distinct)%
+]%
+
+end
+
+spec DC9_Line_theorems =
+     {} and DC9_Line
+then %implies
+     %% reasoning check we have points a, b, c and d
+     %% can we infer the position of d wrt a b
+     forall a,b,c,d : PointLoc
+     . (not a=b /\ not b=c /\ not c=d /\ not a=c /\ not a=d /\ not b=d) =>
+          (c RF L(a,b) /\ d LF L(b,c) =>
+              d RF L(a,b) \/ d SF L(a,b) \/ d LF L(a,b)) %(Th1)%
+end
+
+spec SPASS_consistent_DC9_rel_Line =
+     {} and DC9_relations_Line
+then %implies
+     . false %(SPASS_consistency_check)%
+
+spec SPASS_consistent_DC9_Line =
+     {} and DC9_Line
+then %implies
+     . false %(SPASS_consistency_check)%
+
+spec conservative_trick_DC9_Line =
+     {} then DC9_Line
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% second attempt without line and with three valued predicate
+spec DC9_relations =
+
+     %{ we have Points
+     }%
+     sort PointLoc
+
+     %{The numbers in parens are the numbers in Fig. 2}%
+     preds
+           __SF____: PointLoc * PointLoc * PointLoc; %% straight front (0)
+           __RF____: PointLoc * PointLoc * PointLoc; %% right front (1)
+           __RN____: PointLoc * PointLoc * PointLoc; %% right neutral (2)
+           __RB____: PointLoc * PointLoc * PointLoc; %% right back (3)
+           __SB____: PointLoc * PointLoc * PointLoc; %% straight back (4)
+           __LB____: PointLoc * PointLoc * PointLoc; %% left back (5)
+           __LN____: PointLoc * PointLoc * PointLoc; %% left neutral (6)
+           __LF____: PointLoc * PointLoc * PointLoc; %% left front (7)
+           __AE____: PointLoc * PointLoc * PointLoc; %% at end point (b) and (a)
+end
+
+spec PairDisj9_3 [sort s preds p1,p2,p3,p4,p5,p6,p7,p8,p9:s * s * s] =
+     forall x,y,z:s
+     . p1(x,y,z) => not (p2(x,y,z) \/
+                         p3(x,y,z) \/
+                         p4(x,y,z) \/
+                         p5(x,y,z) \/
+                         p6(x,y,z) \/
+                         p7(x,y,z) \/
+                         p8(x,y,z) \/
+                         p9(x,y,z)) %(pair wise disjoint)%
+end
+
+spec DC9 =
+     DC9_relations
+then %def
+     %% should only hold for distinct a and b as 2nd and 2rd argument
+     forall a,b: PointLoc
+     . (exists c:PointLoc . c SF a b) <=> not a=b
+     . (exists c:PointLoc . c RF a b) <=> not a=b
+     . (exists c:PointLoc . c RN a b) <=> not a=b
+     . (exists c:PointLoc . c RB a b) <=> not a=b
+     . (exists c:PointLoc . c SB a b) <=> not a=b
+     . (exists c:PointLoc . c LB a b) <=> not a=b
+     . (exists c:PointLoc . c LN a b) <=> not a=b
+     . (exists c:PointLoc . c LF a b) <=> not a=b
+     . (exists c:PointLoc . c AE a b) <=> not a=b
+
+     forall a,b,c: PointLoc
+     . c SF a b => not c=b /\ not a=c
+     . (c RF a b => not c=b /\ not a=c)
+     . (c RN a b => not c=b /\ not a=c)
+     . (c RB a b => not c=b /\ not a=c)
+     . (c SB a b => not c=b)
+     . (c LB a b => not c=b /\ not a=c)
+     . (c LN a b => not c=b /\ not a=c)
+     . (c LF a b => not c=b /\ not a=c)
+     . (c AE a b => c=b)
+
+     %% implications from figure 2 (exch a and b, fix c)
+     forall a,b,c : PointLoc
+     . c LF a b => c RB b a   %(LF exch a b)%
+     . c SF a b => c SB b a   %(SF exch a b)%
+     . c RF a b => c LB b a   %(RF exch a b)%
+     . c LN a b => c RB b a   %(LN exch a b)%
+     . c AE a b => c SB b a   %(AE exch a b)%
+     . c RN a b => c LB b a   %(RN exch a b)%
+     . c LB a b => (c RB b a \/ c RN b a \/ c RF b a) %(LB exch a b)%
+     . c SB a b => (c SB b a \/ c AE b a \/ c SF b a) %(SB exch a b)%
+     . c RB a b => (c LB b a \/ c LN b a \/ c LF b a) %(RB exch a b)%
+
+     %% exch c and b, fix a
+     forall a,b,c : PointLoc
+     . c LF a b => b RB a c %(LF exch b c)%
+     . c SF a b => b SB a c %(SF exch b c)%
+     . c RF a b => b LB a c %(RF exch b c)%
+     . c LN a b => b RB a c %(LN exch b c)%
+     . c AE a b => b AE a c %(AE exch b c)%
+     . c RN a b => b LB a c %(RN exch b c)%
+     . c LB a b => (b RB a c \/ b RN a c \/ b RF a c) %(LB exch b c)%
+     . c SB a b /\ not a=c => (b SB a c \/ b SF a c) %(SB exch b c)%
+     %% problematic ?
+     . c RB a b => (b LB a c \/ b LN a c \/ b LF a c) %(RB exch b c)%
+
+     %% exch a and c, fix b
+     forall a,b,c: PointLoc
+     . c LF a b => a RF c b %(LF exch a c)%
+     . c SF a b => a SF c b %(SF exch a c)%
+     . c RF a b => a LF c b %(RF exch a c)%
+     . c LN a b => a RN c b %(LN exch a c)%
+     %% . c AE a b => a AE c b %% that means a=b=c
+     . c RN a b => a LN c b %(RN exch a c)%
+     . c LB a b => a RB c b %(LB exch a c)%
+     . c SB a b => a SB c b %(SB exch a c)%
+     . c RB a b => a LB c b %(RB exch a c)%
+
+     %% exch: a -> 1, b -> 2, c -> 3
+     forall a,b,c: PointLoc
+     . c LF a b => a LB b c %(LF c a b -> a b c)%
+     . c SF a b => a SB b c %(SF c a b -> a b c)%
+     . c RF a b => a RB b c %(RF c a b -> a b c)%
+     . c LN a b => a LB b c %(LN c a b -> a b c)%
+     %% . c AE a b => a AE b c %% that means a=b=c
+     . c RN a b => a RB b c %(RN c a b -> a b c)%
+     . c LB a b => a LB b c \/ a LN b c \/ a LF b c %(LB c a b -> a b c)%
+     . c SB a b => (a SB b c \/ a AE b c \/ a SF b c) %(SB c a b -> a b c)%
+     . c RB a b => a RB b c \/ a RN b c \/ a RF b c %(RB c a b -> a b c)%
+
+
+
+     forall a,c: PointLoc
+     . a=c => forall b:PointLoc . (not a=b => c SB a b)  %(a and c rel SB)%
+
+     forall a,b,p:PointLoc
+     . not a = b =>
+          (p SF a b \/ p RF a b \/
+           p RN a b \/ p RB a b \/ p SB a b \/ p LB a b \/
+           p LN a b \/ p LF a b \/ p AE a b)  %(jointly exhaustive)%
+then
+     PairDisj9_3 [DC9_relations
+                  fit p1 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+
+then
+     PairDisj9_3 [DC9_relations
+                  fit p2 |-> __LF____,p1 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p3 |-> __LF____,p2 |-> __SF____,p1 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p4 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p1 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p5 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p1 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p6 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p1 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p7 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p1 |-> __LB____,p8 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p8 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p1 |-> __LN____,p9 |-> __AE____
+                 ]
+then
+     PairDisj9_3 [DC9_relations
+                  fit p9 |-> __LF____,p2 |-> __SF____,p3 |-> __RF____,
+                      p4 |-> __RN____,p5 |-> __RB____,p6 |-> __SB____,
+                      p7 |-> __LB____,p8 |-> __LN____,p1 |-> __AE____
+                 ]
+%[
+then
+
+     forall a,b,c:PointLoc
+     . c SF a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(SF_disjoint)%
+     . c RF a b => not (c SF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(RF_disjoint)%
+     . c RN a b => not (c RF a b \/ c SF a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(RN_disjoint)%
+     . c RB a b => not (c RF a b \/ c RN a b \/ c SF a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(RB_disjoint)%
+     . c SB a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SF a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(SB_disjoint)%
+     . c LB a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c SF a b \/ c LN a b \/
+                        c LF a b \/ c AE a b)  %(LB_disjoint)%
+     . c LN a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c SF a b \/
+                        c LF a b \/ c AE a b)  %(LN_disjoint)%
+     . c LF a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c SF a b \/ c AE a b)  %(LF_disjoint)%
+     . c AE a b => not (c RF a b \/ c RN a b \/ c RB a b \/
+                        c SB a b \/ c LB a b \/ c LN a b \/
+                        c LF a b \/ c SF a b)  %(AE_disjoint)%
+]%
+%[     forall a,b,c: PointLoc
+     . not a=b => ((c SF a b \/ c RF a b \/
+       c RN a b \/ c RB a b \/ c LB a b \/
+       c LN a b \/ c LF a b \/ c AE a b )
+            => not a = c)  %(a and c distinct)%
+     . c AE a b <=> c = b %(c = b)%
+]%
+
+%[     . c SF a b \/ c RF a b \/
+       c RN a b \/ c RB a b \/ c SB a b \/ c LB a b \/
+       c LN a b \/ c LF a b
+            => not b = c %(c and b distinct)%
+]%
+
+%[
+     . (c SF a b \/ c RF a b \/
+       c RN a b \/ c RB a b \/ c SB a b \/ c LB a b \/
+       c LN a b \/ c LF a b \/ c AE a b )
+            <=> not a = b  %(a and b distinct in all cases)%
+]%
+end
+
+spec DC9_theorems =
+     {} and DC9
+then %implies
+     %% reasoning check we have points a, b, c and d
+     %% can we infer the position of d wrt a b
+     %% jointly exhaustive iff not a = b
+     forall a,b:PointLoc
+     . not a = b <=>
+          (exists p:PointLoc .
+           p SF a b \/ p RF a b \/
+           p RN a b \/ p RB a b \/ p SB a b \/ p LB a b \/
+           p LN a b \/ p LF a b \/ p AE a b)  %(Th1)%
+
+     forall a,b,c,d : PointLoc
+     .   c RF a b /\ d RB c b => not a = d %(Th2)%
+     . %% (not a=b /\ not b=c /\ not c=d /\ not a=c /\ not a=d /\ not b=d) =>
+         c RF a b /\ d RB c b =>
+              d RF a b \/ d SF a b \/ d LF a b %(Th3)%
+     . (c RF a b /\ d LF b c => d RF a b ) %(Th4)%
+
+end
+
+spec SPASS_consistent_DC9_rel =
+     {} then DC9_relations
+then %implies
+     . false %(SPASS_consistency_check)%
+
+spec SPASS_consistent_DC9 =
+     {} then DC9
+then %implies
+     . false %(SPASS_consistency_check)%
+
+end

@@ -1,0 +1,501 @@
+<?xml version="1.0"?>
+<!DOCTYPE text [
+<!ENTITY system1 "http://example.com/system1/">
+<!ENTITY system2 "http://example.com/system2/">
+<!ENTITY fn "http://www.w3.org/2005/xpath-functions/#">
+<!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY rl_expr "http://example.com/rules/expressions/#">
+]>
+<text xmlns="http://example.com/xcl/1.0"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+      xmlns:rlx="http://example.com/rules/"
+      id="xcl-text-1">
+  <phrase id="xcl-phrase-1">
+    <forall>
+      <var name="thing1" sort="&system2;A" rlx:do-not-select="1"/>
+      <var name="thing2" sort="&system2;B" rlx:do-not-select="1"/>
+      <var name="thing3" sort="&system2;C" rlx:do-not-select="1"
+	   rlx:constraint-violation-root="1"/>
+      <var name="var4" rlx:summary-select="1"/>
+      <var name="var5"/>
+      <var name="var6"/>
+      <var name="var7"/>
+      <var name="var8" rlx:do-not-select="1"/>
+      <var name="var9"/>
+      <var name="var10" rlx:do-not-select="1"/>
+      <var name="var11" rlx:do-not-select="1"/>
+      <var name="var12" rlx:do-not-select="1"/>
+      <var name="var13" rlx:do-not-select="1"/>
+      <implies>
+	<and>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel1"/>
+	    </relation>
+	    <term name="thing1"/>
+	    <term name="var4" rlx:param-token="pn"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel2"/>
+	    </relation>
+	    <term name="thing1"/>
+	    <term name="var5"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel3"/>
+	    </relation>
+	    <term name="thing1"/>
+	    <term name="var12"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel4"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="thing2"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel5"/>
+	    </relation>
+	    <term name="thing2"/>
+	    <term name="thing1"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel6"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var6"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel7"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var7"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel8"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var13"/>
+	  </atomic>
+	  <not>
+	    <equal>
+	      <term name="var13"/>
+	      <term name="X"/>
+	    </equal>
+	  </not>
+	  <not>
+	    <atomic>
+	      <relation>
+		<term name="&fn;starts-with"/>
+	      </relation>
+	      <term name="var6"/>
+	      <term name="lit5"/>
+	    </atomic>
+	  </not>
+	  <or>
+	    <equal>
+	      <term name="var12"/>
+	      <term name="1" xsd:type="&xsd;string"/>
+	    </equal>
+	    <equal>
+	      <term name="var12"/>
+	      <term name="2" xsd:type="&xsd;string"/>
+	    </equal>
+	  </or>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel9"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var10"/>
+	  </atomic>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel10"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var11"/>
+	  </atomic>
+	  <implies>
+	    <not>
+	      <equal>
+		<term name="var10"/>
+		<term name="null"/>
+	      </equal>
+	    </not>
+	    <atomic>
+	      <relation>
+		<term name="&fn;numeric-greater-than"/>
+	      </relation>
+	      <term name="var11"/>
+	      <term name="0" xsd:type="&xsd;decimal"/>
+	    </atomic>
+	  </implies>
+	  <atomic>
+	    <relation>
+	      <term name="&system2;rel11"/>
+	    </relation>
+	    <term name="thing3"/>
+	    <term name="var8"/>
+	  </atomic>
+	  <not>
+	    <exists>
+	      <var name="thing14" sort="&system2;D" rlx:do-not-select="1"/>
+	      <and>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel12"/>
+		  </relation>
+		  <term name="thing14"/>
+		  <term name="thing3"/>
+		</atomic>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel13"/>
+		  </relation>
+		  <term name="thing14"/>
+		  <term name="X"/>
+		</atomic>
+	      </and>
+	    </exists>
+	  </not>
+	  <not>
+	    <exists>
+	      <var name="thing15" sort="&system2;E" rlx:do-not-select="1"/>
+	      <and>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel14"/>
+		  </relation>
+		  <term name="thing15"/>
+		  <term name="var6"/>
+		</atomic>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel15"/>
+		  </relation>
+		  <term name="thing15"/>
+		  <term name="var5"/>
+		</atomic>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel16"/>
+		  </relation>
+		  <term name="thing15"/>
+		  <term name="X"/>
+		</atomic>
+	      </and>
+	    </exists>
+	  </not>
+	  <exists>
+	    <var name="thing16" sort="&system1;A"
+		 rlx:do-not-select="1"/>
+	    <var name="thing17" sort="&system1;B" 
+		 rlx:do-not-select="1"/>
+	    <and>
+	      <atomic>
+		<relation>
+		  <term name="&system1;rel1"/>
+		</relation>
+		<term name="thing16"/>
+		<term name="thing17"/>
+	      </atomic>
+	      <atomic>
+		<relation>
+		  <term name="&system1;rel2"/>
+		</relation>
+		<term name="thing17"/>
+		<term name="var4"/>
+	      </atomic>
+	    </and>
+	  </exists>
+	  <not>
+	    <exists>
+	      <var name="thing18" sort="&system2;F"
+		   rlx:do-not-select="1"/>
+	      <var name="var19" rlx:do-not-select="1"/>
+	      <and>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel17"/>
+		  </relation>
+		  <term name="thing3"/>
+		  <term name="thing18"/>
+		</atomic>
+		<atomic>
+		  <relation>
+		    <term name="&system2;rel18"/>
+		  </relation>
+		  <term name="thing18"/>
+		  <term name="var19"/>
+		</atomic>
+		<not>
+		  <equal>
+		    <term name="var19"/>
+		    <term name="null"/>
+		  </equal>
+		</not>
+	      </and>
+	    </exists>
+	  </not>
+	  <rlx:bind>
+	    <term>
+	      <function>
+		<term name="&rl_expr;if"/>
+	      </function>
+	      <equal>
+		<term name="var8"/>
+		<term name="50" xsd:type="&xsd;string"/>
+	      </equal>
+	      <term name="lit1"/>
+	      <term name="null"/>
+	    </term>
+	    <term name="var9"/>
+	  </rlx:bind>
+	</and>
+	<exists>
+	  <var name="thing20" sort="&system1;A"
+	       rlx:do-not-select="1"/>
+	  <var name="thing21" sort="&system1;B" 
+	       rlx:do-not-select="1"/>
+	  <var name="thing22" sort="&system1;B"
+	       rlx:do-not-select="1"/>
+	  <var name="var23" rlx:do-not-select="1"/>
+	  <var name="var24" rlx:do-not-select="1"/>
+	  <var name="var25" rlx:do-not-select="1"/>
+	  <and>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel2"/>
+	      </relation>
+	      <term name="thing21"/>
+	      <term name="var4"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel3"/>
+	      </relation>
+	      <term name="thing21"/>
+	      <term name="true" xsd:type="&xsd;boolean"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel4"/>
+	      </relation>
+	      <term name="thing21"/>
+	      <term name="var23"/>
+	    </atomic>
+	    <not>
+	      <atomic>
+		<relation>
+		  <term name="&fn;starts-with"/>
+		</relation>
+		<term name="var23"/>
+		<term name="lit4"/>
+	      </atomic>
+	    </not>
+	    <or>
+	      <atomic>
+		<relation>
+		  <term name="&system1;rel2"/>
+		</relation>
+		<term name="thing22"/>
+		<term name="var6"/>
+	      </atomic>
+	      <exists>
+		<var name="thing26" sort="&system1;C"
+		     rlx:do-not-select="1"/>
+		<var name="thing27" sort="&system1;B"
+		     rlx:do-not-select="1"/>
+		<and>
+		  <atomic>
+		    <relation>
+		      <term name="&system1;rel2"/>
+		    </relation>
+		    <term name="thing27"/>
+		    <term name="var6"/>
+		  </atomic>
+		  <or>
+		    <and>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel5"/>
+			</relation>
+			<term name="thing26"/>
+			<term name="thing27"/>
+		      </atomic>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel6"/>
+			</relation>
+			<term name="thing26"/>
+			<term name="thing22"/>
+		      </atomic>
+		    </and>
+		    <and>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel6"/>
+			</relation>
+			<term name="thing26"/>
+			<term name="thing27"/>
+		      </atomic>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel5"/>
+			</relation>
+			<term name="thing26"/>
+			<term name="thing22"/>
+		      </atomic>
+		    </and>
+		  </or>
+		</and>
+	      </exists> 
+	      <exists>
+		<var name="thing28" rlx:do-not-select="1"
+		     sort="&system1;D"/>
+		<var name="thing29" sort="&system1;B" 
+		     rlx:do-not-select="1"/>
+		<var name="thing30" sort="&system1;E" 
+		     rlx:do-not-select="1"/>
+		<and>
+		  <atomic>
+		    <relation>
+		      <term name="&system1;rel7"/>
+		    </relation>
+		    <term name="thing30"/>
+		    <term name="thing21"/>
+		  </atomic>
+		  <atomic>
+		    <relation>
+		      <term name="&system1;rel8"/>
+		    </relation>
+		    <term name="thing28"/>
+		    <term name="thing30"/>
+		  </atomic>
+		  <atomic>
+		    <relation>
+		      <term name="&system1;rel2"/>
+		    </relation>
+		    <term name="thing29"/>
+		    <term name="var6"/>
+		  </atomic>
+		  <or>
+		    <and>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel9"/>
+			</relation>
+			<term name="thing30"/>
+			<term name="thing22"/>
+		      </atomic>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel10"/>
+			</relation>
+			<term name="thing28"/>
+			<term name="thing29"/>
+		      </atomic>
+		    </and>
+		    <and>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel9"/>
+			</relation>
+			<term name="thing30"/>
+			<term name="thing29"/>
+		      </atomic>
+		      <atomic>
+			<relation>
+			  <term name="&system1;rel10"/>
+			</relation>
+			<term name="thing28"/>
+			<term name="thing22"/>
+		      </atomic>
+		    </and>
+		  </or>
+		</and>
+	      </exists>
+	    </or>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel1"/>
+	      </relation>
+	      <term name="thing20"/>
+	      <term name="thing21"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel11"/>
+	      </relation>
+	      <term name="thing20"/>
+	      <term name="thing22"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel12"/>
+	      </relation>
+	      <term name="thing20"/>
+	      <term name="var5"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel13"/>
+	      </relation>
+	      <term name="thing20"/>
+	      <term name="var7"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel14"/>
+	      </relation>
+	      <term name="thing20"/>
+	      <term name="var24"/>
+	    </atomic>
+	    <implies>
+	      <equal>
+		<term name="var9"/>
+		<term name="lit1"/>
+	      </equal>
+	      <equal>
+		<term name="var24"/>
+		<term name="lit1"/>
+	      </equal>
+	    </implies>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel15"/>
+	      </relation>
+	      <term name="thing22"/>
+	      <term name="lit2"/>
+	    </atomic>
+	    <atomic>
+	      <relation>
+		<term name="&system1;rel16"/>
+	      </relation>
+	      <term name="thing22"/>
+	      <term name="var25"/>
+	    </atomic>
+	    <not>
+	      <atomic>
+		<relation>
+		  <term name="&fn;starts-with"/>
+		</relation>
+		<term name="var25"/>
+		<term name="lit3"/>
+	      </atomic>
+	    </not>
+	  </and>
+	</exists>
+      </implies>
+    </forall>
+    <comment>Certain constellations of data in system 2 must be valid with respect to corresponding constellations of data in system 1.</comment>
+  </phrase>
+</text>

@@ -1,0 +1,17 @@
+library Modal/CTL
+
+logic Modal
+
+spec CTL =     
+	modalities A,F,E,U,X {  E F p <=> E (true U p); %(Ax1)%
+				A F p <=> A (true U p); %(Ax2)%
+				E X (p \/ q) <=> E X p \/ q; %(Ax3)%
+				A X p <=> not E X not p; %(Ax4)%
+				E (p U q) <=> q \/ (p /\ E X E (p U q)); %(Ax5)%
+				A (p U q) <=> q \/ (p /\ A X A (p U q)); %(Ax6)%
+				E X true /\ A X true; %(Ax7)%
+				p => q |- E X p => E X q; %(R1)%
+				r => (not q /\ E X r) |- r => not A (p U q); %(R2)%
+				r => (not q /\ A X (r \/ not E (p U q))) |- r => not E (p U q); %(R3)%
+				p,(p => q) |- q %(R4)% }
+end

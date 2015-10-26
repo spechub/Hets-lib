@@ -1,0 +1,105 @@
+library Basic/LinearAlgebra_II
+version 1.0
+%authors: L. Schroeder, M. Roggenbach, T. Mossakowski
+%date: 9 January 2004
+
+%prec {__ * __} < {__ ^ __}
+%prec {__ + __, __ - __} < {__ / __, __ * __}
+%left_assoc __ + __, __ * __
+
+
+from Basic/Numbers get Nat, Int
+from Basic/Algebra_I get
+     Field, RichField, Ring, ExtRing
+from Basic/Algebra_II get
+     Polynomial
+from Basic/LinearAlgebra_I get
+     VectorSpace, VSWithBase, ExtVectorSpace, Matrix
+
+
+spec FreeVectorSpace [Field][sort Base]= %mono
+free {VectorSpace [Field]
+     then
+          op inject: Base -> Space
+     }
+end
+
+spec Algebra [Field]=
+     VectorSpace [Field]
+and
+     closed
+          {Ring with sort Elem |-> Space,
+                     ops __ + __, __ * __, 0, e}
+then
+     forall r: Elem; x, y: Space
+     . (r * x) * y = r * (x * y)                %(leftLinear_Algebra)%
+     . x * (r * y) = r  * (x * y)               %(rightLinear_Algebra)%
+end
+
+spec FreeAlgebra [Field] =
+     free
+        {Algebra [Field]
+         then
+             op X: Space}
+end
+
+spec ExtFreeVectorSpace [FreeVectorSpace[Field][sort Base]] given Int =
+     ExtVectorSpace [FreeVectorSpace [Field][sort Base]]
+end
+
+spec ExtAlgebra [Algebra [Field]] given Int =
+%mono
+     RichField
+and
+     ExtVectorSpace [VectorSpace [Field]]
+and
+     ExtRing [Algebra [Field] fit sort Elem |-> Space]
+and
+     Polynomial [Field]
+then
+     op eval: Poly[Elem] * Space -> Space
+
+     forall a: Elem; p: Poly[Elem]; x: Space
+     . eval(0,x) = 0                            %(eval_0_EAlgebra)%
+     . eval(a:::p, x) = a * e + eval(p,x) * x   %(eval_cons_EAlgebra)%
+end
+
+spec ExtFreeAlgebra [Field] given Int =
+     ExtAlgebra [FreeAlgebra[Field]]
+end
+
+view Algebra_in_Matrix [Field][op n: Pos] given Nat :
+     Algebra [Field] to Matrix [Field][op n: Pos] =
+     sort Space |-> Matrix[Elem,n],
+     op e: Space |-> 1
+end
+
+spec RichAlgebra [Field] =
+     ExtAlgebra [Algebra [Field]]
+end
+
+spec RichFreeVectorSpace [Field][sort Base] =
+     ExtFreeVectorSpace [FreeVectorSpace [Field][sort Base]]
+end
+
+spec RichFreeAlgebra [Field] =
+     ExtFreeAlgebra [Field]
+end
+
+%% The following view expresses that a vector space is free over
+%% any of its bases
+view FreeVectorSpace_in_VSWithBase [Field] given Int :
+     FreeVectorSpace [Field][sort Base] to
+     {
+          VSWithBase [Field][sort Base]
+     then
+          op inject: Base -> Space
+          forall x:Base
+          . inject(x) = x                       %(inject_def_VSB)%
+     }
+end
+
+view FreeAlgebra_in_Polynomial [Field] given Int :
+     FreeAlgebra[Field] to Polynomial [Field]=
+     sort Space |-> Poly[Elem]
+end

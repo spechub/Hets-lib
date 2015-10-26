@@ -1,0 +1,113 @@
+library arch2
+
+spec sp1 =
+  sort s
+end
+
+spec sp2 =
+  sort t,u
+end
+
+spec sp3 =
+  sort e
+end
+
+spec sp4 =
+  sort f
+end
+
+spec sp5 =
+  sort g
+end
+
+
+%[
+arch spec wrong_asp1 =
+  units A:sp1;
+        B:sp1 -> sp2;
+  result B[A] with t |-> v, u |-> v
+end
+]%
+
+%% hiding
+arch spec asp2 =
+  units A:sp1;
+        B:sp1 -> sp2;
+        C:sp1
+  result B[A] hide s  and C
+end
+
+arch spec asp3 =
+  units A:sp3;
+        B:sp1 -> sp2;
+        C:sp3
+  result B[A] %% hide e and C
+end
+
+
+arch spec asp4 =
+  units A:sp3;
+        B:sp1 -> sp2;
+        C:sp3;
+        T= B[A] hide e and C
+  result T
+end
+
+%% true unit expressions
+arch spec asp5 =
+  units B:sp1 -> sp2;
+  result lambda X:sp1 . B[X]
+end
+
+%% unit imports
+arch spec asp6 =
+  units A:sp1;
+        B:sp2 given A
+  result B
+end
+
+arch spec asp7 =
+  units A:sp1;
+        F: sp1 -> sp2;
+        B:sp2; %%given F[A];
+        C:sp3 given B;
+  result C with e |-> s
+end
+
+arch spec asp8 =
+  units A : {sort a};
+        B : {sort b};
+        C : {sort c};
+        As = A with a |-> s;
+        Bt = B with b |-> t
+  result As with s |-> t and A with a |-> t and C
+end
+
+arch spec asp9 =
+  units A : {sorts s; u};
+        B : {sorts s<t1; t1<u} given A;
+        C : {sorts s<t2; t2<u} given A
+  result B reveal s and C
+end
+
+arch spec asp10 =
+  units P : {sort s} * {sorts s,t} -> {sort u}
+  result lambda X:{sort s}; Y:{sorts s,t} . P[X][Y]
+end
+
+arch spec asp11 =
+  units A:{sort a}
+  result lambda X:{sort s} . X %%with s |-> t
+end
+
+
+arch spec A =
+  units
+    u: {sort s};
+    v  : {sort s};
+    p1 : {sort s} -> {sort t} given u;
+    p2 : {sort s} -> {sort t};
+  result
+    %%p2[v] %%
+    lambda x:{sort s} . p2[x]
+end

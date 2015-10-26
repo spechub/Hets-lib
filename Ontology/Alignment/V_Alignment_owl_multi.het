@@ -1,0 +1,33 @@
+library Ontology/Algnment/V_Alignment_owl
+
+logic OWL
+
+spec Ontology1 =
+  Class: Woman SubClassOf: Person
+  Class: Child SubClassOf: Person
+  Class: Person
+  Class: Bank
+end
+
+spec Ontology2 =
+  Class: Woman SubClassOf: HumanBeing
+  Class: Parent SubClassOf: HumanBeing
+  Class: HumanBeing
+  Class: Bank
+  Class: Human
+end
+
+spec Interface =
+  Class: Woman
+  Class: Person_HumanBeing
+  Class: Person_Human
+end
+
+view v1 : Interface to Ontology1 = 
+    Person_HumanBeing |-> Person, Person_Human |-> Person
+end
+
+view v2 : Interface to Ontology2 = 
+  Person_HumanBeing |-> HumanBeing, Person_Human |-> Human 
+end
+

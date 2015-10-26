@@ -1,0 +1,19 @@
+spec Sig =
+  sort s
+  ops x,y :s
+
+spec Eq = 
+ Sig then 
+  . x = y
+
+refinement Incl = Sig refined to Eq
+
+arch spec ASP =
+ units 
+   M : Sig
+ result M
+
+refinement CompRef = arch spec ASP then {M to Incl}
+
+refinement CantProve = Eq refined to CompRef
+  

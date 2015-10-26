@@ -1,0 +1,58 @@
+library HasCASL/Real3D/SolidWorks/SWCommonPatternsNoView
+version 0.2
+
+%author: E. Schulz
+%date: 12-12-2008
+
+logic HasCASL
+
+from HasCASL/Real3D/Geometry get PlaneProps, Cylinder
+from HasCASL/Real3D/SolidWorks/SolidWorks
+     get SolidWorksWithSemantics
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       The SolidWorks common patterns             %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec SolidWorksPlane_is_AffinePlane = 
+     PlaneProps and SolidWorksWithSemantics then
+     var plane:SWPlane
+     . i(plane) = Plane(SpacePoint(plane),NormalVector(plane)); %(plane is plane)% %implied
+
+end
+
+%%%%%%%%%%%%% semantical equality by theorem %%%%%%%%%%%%%
+
+%% this version has the advantage over the view-version not to have
+%% to give a mapping for all visible signature elements in AffineObjects!!
+
+spec SolidWorksCylByArcExtrusion_is_AffineCylinder = 
+     SolidWorksPlane_is_AffinePlane and Cylinder then
+
+     ops height:RealPos;
+	 center,boundarypoint:Point;
+	 plane:SWPlane; %(real plane)%
+         arc:SWArc=SWArc(center,boundarypoint,boundarypoint); %(def of given arc)%
+	 offset:Point = center; %(cylinder offset)%
+	 radius:RealPos = ||vec(center,boundarypoint)||; %(cylinder radius)%
+	 axis:VectorStar = VWithLength(NormalVector(plane),height); %(cylinder axis)%
+
+     %{constraints for the given parameters}%
+     . height > 0; %(real extrusion)% %% follows from type RealPos
+     . not (center = boundarypoint); %(real arc)%
+     %% follows from type of axis and axis_def!
+
+     . let p = i(plane)
+       in
+       (center isIn p) /\ (boundarypoint isIn p) %(the arc is wellformed)%
+
+
+     %{The main theorem}%
+     . i(SWExtrusion(SWSketch([arc],plane),height))
+	  = Cylinder(offset, radius, axis) %(extrusion is cylinder)% %implied
+
+end
+
+

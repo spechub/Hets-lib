@@ -1,0 +1,80 @@
+library HasCASL/Real3D/RigidBodyMechanics
+version 0.2
+
+%author: E. Schulz
+%date: 21-09-2009
+
+logic HasCASL
+
+from HasCASL/Real3D/Basics get AffineRealSpace3DWithSets
+
+
+%[%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       Mechanics for Flange                       %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
+
+spec RigidBodyMechanics = AffineRealSpace3DWithSets
+then
+     ops
+     %[ The law of the resulting Force on a system of mass points ]%
+     ResultingForce(Fi:List Vector):Vector =
+      sum Fi; %(resulting force)%
+     %[ The law of pressure and force ]%
+     PressureForce(p:Real;A:Vector):Vector =
+      p * A; %(pressure force)%
+end
+
+spec Screw = AffineRealSpace3DWithSets
+then
+     %[ a screw consists of a drawing of the screw and annotations
+        which contain the material and physical properties ]%
+     type screw
+
+     ops
+     %[ assuming we use the maximal force to tighten the screw,
+        this is the resulting force on the tightened material ]%
+     ScrewForce:screw -> Vector; %(screw force)%
+
+     %% Available screws (coming from database):
+     M24x3:screw;
+
+     %% Properties of available screws (coming from database): 
+     . ScrewForce(M24x3) = e1
+end
+
+
+spec FlangeConfig = RigidBodyMechanics then Screw
+then
+     ops
+     %% the normed axis of the flange
+     axis:Vector;
+
+     %% the maximal pressure
+     p:Real;
+
+     %[ the neccessary force to seal the two plates using a joint,
+        such that no gas or fluid can escape from the interior.
+        - material constant, depends on the area and axis of the flange ]%
+     SealingForce : Vector;
+
+     %[ the inner and outer radius of the flange ]%
+     innerRadius : Real;
+     outerRadius : Real;
+
+     %[ a collection of the screws used in this flange ]%
+     screws: List screw
+
+     %[ VERIFICATION CONDITION for the flange:
+        the resulting force of the forces sum of screw forces,
+        sealing force and pressure force has to have a positive value
+        in opposite direction of the axis of the flange ]%
+     . let innerSurface = Pi * innerRadius * innerRadius;
+	   activePressureSurface = innerSurface * axis;
+	   fp = PressureForce(p, activePressureSurface)
+       in
+       ResultingForce(SealingForce :: fp :: map ScrewForce screws) * axis < 0
+
+end
+

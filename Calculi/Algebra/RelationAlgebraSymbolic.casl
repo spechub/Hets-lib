@@ -1,0 +1,186 @@
+library Calculi/Algebra/RelationAlgebraSymbolic
+version 0.4
+%author: T. Mossakowski, K. Luettich, S. Woelfl
+%date: 22-06-2005
+
+%(
+    This library contains specifications that describe how a relation
+    algebra can be built from a finite set of base relations and a composition
+    table.
+)%
+
+
+%left_assoc __cup__,__cap__
+%prec {__cup__} < {__cmps__}
+%prec {__cmps__} < {__cmpl__}
+
+
+from Basic/Numbers get Nat
+%% from Basic/StructuredDatatypes get Set
+from Calculi/Algebra/Set get Set
+from Calculi/Algebra/BooleanAlgebra get
+        BooleanAlgebra,
+        AtomicBooleanAlgebra,
+        ExtBooleanAlgebraByOrderRelations
+from Calculi/Algebra/RelationAlgebra get
+        AtomicRelationAlgebra,
+        AtomicNonAssocRelationAlgebra
+
+
+
+%(
+    If the set of base relations is JEPD, i.e., is the base relations are
+    pairwise disjoint and jointly exhaustive, unions of base relations can be
+    represented as sets of base relations.
+)%
+
+
+
+%( SetRepresentationOfRelations introduces relations as sets of base relations.
+   The result is atomic Boolean Algebra.
+)%
+
+
+spec SetRepresentationOfRelations[sort BaseRel] = %mono
+local  { Set[sort BaseRel fit Elem |-> BaseRel]
+         with           __union__ |-> __cup__,
+             __intersection__ |-> __cap__,
+             __isSubsetOf__ |-> __subset__ }
+within
+     free type Rel ::= sort Set[BaseRel]
+     sort BaseRel < Rel
+     ops
+           0,1 : Rel;
+         compl__: Rel -> Rel;
+        __cup__,__cap__: Rel * Rel -> Rel
+     preds
+           __eps__: BaseRel * Rel;
+         __subset__: Rel * Rel
+     forall x:BaseRel; r:Rel
+     . x = {x}
+     . x eps 1
+     . not x eps 0
+     . x eps compl r <=> not x eps r
+
+then %implies
+     ops
+          __cup__: Rel * Rel -> Rel, assoc, idem, comm, unit 0;
+          __cap__: Rel * Rel -> Rel, assoc, idem, comm, unit 1;
+
+     forall x,y:BaseRel; r:Rel
+             . not x = y => x cap y = 0
+     . exists z:BaseRel . z eps r
+     . r subset 1
+end
+
+view AtomicBooleanAlgebra_from_SetRepresentationOfRelations[sort BaseRel] :
+     {AtomicBooleanAlgebra hide preds __<__, __<=__, __>__, __>=__} to
+        SetRepresentationOfRelations[sort BaseRel]
+=
+     Elem |-> Rel, AtomElem |-> BaseRel
+end
+
+
+%(
+    Spec CompositionTable provides the signature of composition tables,
+    and introduces some operations that may be helpful for specifyng
+    new algebras.
+)%
+
+
+
+spec CompositionTable =
+     sorts BaseRel < Rel
+     ops
+         id      : BaseRel;
+         0,1     : Rel;
+           inv__ : BaseRel -> BaseRel;
+         __cmps__: BaseRel * BaseRel -> Rel;
+          compl__: Rel -> Rel;
+         __cup__ : Rel * Rel -> Rel, assoc, idem, comm, unit 0
+
+     forall x:BaseRel
+     . x cmps id = x
+     . id cmps x = x
+     . inv(id) = id
+end
+
+
+spec ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     SetRepresentationOfRelations[sort BaseRel]
+then %def
+     ops
+          id      : Rel;
+          inv__   : Rel -> Rel;
+          __cmps__: Rel * Rel -> Rel
+
+     forall x,y:BaseRel; r,s:Rel
+     . x eps inv(r) <=> inv(x) eps r
+     . x eps (r cmps s) <=>
+          exists y,z:BaseRel .y eps r /\ z eps s /\ x eps (y cmps z)
+
+then %implies
+     op __cmps__: Rel * Rel -> Rel, unit id;
+     forall x,y,z:BaseRel; r,s:Rel
+     . inv(0) = 0
+     . inv(r cup x) = inv(r) cup inv(x)
+     . inv(inv(r)) = r
+     . r cmps 0 = 0 /\ 0 cmps r = 0
+     . (r cup x) cmps (s cup y) =
+          (r cmps s) cup (r cmps y) cup (x cmps s) cup (x cmps y)
+end
+
+
+
+spec ConstructedPseudoRelationAlgebra =
+     ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable]
+
+
+spec ConstructExtPseudoRelationAlgebra[sort BaseRel][CompositionTable] = %def
+     ConstructPseudoRelationAlgebra[sort BaseRel][CompositionTable]
+and
+     ExtBooleanAlgebraByOrderRelations[BooleanAlgebra with sort Elem |-> Rel]
+
+then %implies
+     forall x,y:Rel
+     . x < y  <=> x subset y /\ not x = y
+     . x <= y <=> x subset y
+     . x > y  <=> y subset x /\ not x = y
+     . x >= y <=> y subset x
+end
+
+
+spec RichConstructedPseudoRelationAlgebra =
+     ConstructExtPseudoRelationAlgebra[sort BaseRel][CompositionTable]
+
+
+
+
+
+%( Not each composition table is suitable for building an abstract
+   (non assoc) relation algebra.
+   The axioms that need to be fullfilled are specified in GroundingCompositionTable.
+)%
+
+
+spec GroundingCompositionTable =
+     CompositionTable
+
+then local SetRepresentationOfRelations[sort BaseRel]
+within
+     forall x,y,z:BaseRel
+     . inv(inv(x)) = x
+     . inv(x) eps (y cmps z) <=> x eps inv(z) cmps inv(y)
+     . (x cmps y) cap inv(z) = 0 => (y cmps z) cap inv(x) = 0
+%%     . inv(x) eps (y cmps z) <=> inv(z) eps (x cmps y)
+%% etc.
+end
+
+
+view AtomicNonAssocRelationAlgebra_from_ConstructPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]:
+     AtomicNonAssocRelationAlgebra
+to
+     ConstructExtPseudoRelationAlgebra[sort BaseRel][GroundingCompositionTable]
+=
+     Rel |-> Rel, AtomRel |-> BaseRel
+end

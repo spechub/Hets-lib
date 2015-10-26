@@ -1,0 +1,192 @@
+library Calculi/Algebra/RelationAlgebraSimple
+version 0.1
+%author: T. Mossakowski
+%date: 07-11-2006
+
+%( 
+    This library defines some basic concepts from the 
+    theory of relation algebras in a simple form
+)%
+
+
+%left_assoc __cup__,__cap__,__cmps__
+%prec {__cup__} < {__cmps__} 
+%prec {__cmps__} < {__cmpl__} 
+
+
+spec RelationAlgebraSimple =
+sorts BaseRel;  %RA_basic_relations
+      Rel;      %RA_relations
+      BaseRel < Rel  
+
+op 0 : Rel %RA_zero
+op 1 : Rel %RA_one
+op __cap__ : Rel * Rel -> Rel  %RA_intersection
+op __cmps__ : Rel * Rel -> Rel %RA_composition
+op __cup__ : Rel * Rel -> Rel  %RA_union
+op compl__ : Rel -> Rel        %RA_complement
+op id : Rel                    %RA_identity
+op inv__ : Rel -> Rel          %RA_converse
+
+
+forall x : BaseRel; y : BaseRel; z : BaseRel
+. x cmps (y cmps z) = (x cmps y) cmps z         %(ga_assoc___*__)%
+forall x, y : Rel . inv (x cmps y) = inv y cmps inv x %(Ax1_2)%
+
+. inv id = id %(Ax1_1_1)%
+
+forall x, y, z : BaseRel
+. (x cmps y) cap inv z = 0 => (y cmps z) cap inv x = 0
+                                                      %(triangle)%
+
+forall x, y : BaseRel . (inv x cmps compl (x cmps y)) cap y = 0
+                                                        %(RelAlg)%
+
+forall x, y, z : BaseRel
+. (x cmps y) cap z = 0 => (inv x cmps z) cap y = 0   %(lPeircean)%
+
+forall x, y, z : BaseRel
+. (x cmps y) cap z = 0 => (z cmps inv y) cap x = 0   %(rPeircean)%
+
+forall x : Rel . not x = 0 => (1 cmps x) cmps 1 = 1 %(tarski)%
+
+forall x : Rel . x cmps 1 = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                       %(tarski1)%
+
+forall x : Rel
+. 1 cmps compl x = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                       %(tarski2)%
+
+forall x : Rel . x = 0 <=> inv x cmps x = 0 %(nnull)%
+
+forall x : Rel
+. 1 cmps compl x = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                     %(tarski2_1)%
+
+forall x : Rel . x = 0 <=> inv x cmps x = 0 %(nnull_1)%
+
+end
+
+spec RelationAlgebra =
+  RelationAlgebraSimple
+then
+
+. compl 0 = 1 %(Ax1)%
+
+. compl 1 = 0 %(Ax2)%
+
+forall x : Rel; y : Rel; z : Rel
+. x cap (y cap z) = (x cap y) cap z           %(ga_assoc___cap__)%
+
+forall x : Rel; y : Rel . x cap y = y cap x %(ga_comm___cap__)%
+
+forall x : Rel . x cap 1 = x %(ga_right_unit___cap__)%
+
+forall x : Rel . 1 cap x = x %(ga_left_unit___cap__)%
+
+forall x : Rel; y : Rel; z : Rel
+. x cup (y cup z) = (x cup y) cup z           %(ga_assoc___cup__)%
+
+forall x : Rel; y : Rel . x cup y = y cup x %(ga_comm___cup__)%
+
+forall x : Rel . x cup 0 = x %(ga_right_unit___cup__)%
+
+forall x : Rel . 0 cup x = x %(ga_left_unit___cup__)%
+
+forall x, y : Rel . x cap (x cup y) = x %(absorption_def1)%
+
+forall x, y : Rel . x cup (x cap y) = x %(absorption_def2)%
+
+forall x : Rel . x cap 0 = 0 %(zeroAndCap)%
+
+forall x : Rel . x cup 1 = 1 %(oneAndCup)%
+
+forall x, y, z : Rel . x cap (y cup z) = (x cap y) cup (x cap z)
+                                         %(distr1_BooleanAlgebra)%
+
+forall x, y, z : Rel . x cup (y cap z) = (x cup y) cap (x cup z)
+                                         %(distr2_BooleanAlgebra)%
+
+forall x : Rel . exists x' : Rel . x cup x' = 1 /\ x cap x' = 0
+                                        %(inverse_BooleanAlgebra)%
+
+forall x : Rel . x cup x = x %(ga_idem___cup__)%
+
+forall x : Rel . x cap x = x %(ga_idem___cap__)%
+
+forall x : Rel . exists! x' : Rel . x cup x' = 1 /\ x cap x' = 0
+                               %(uniqueComplement_BooleanAlgebra)%
+
+. not 0 = 1 %(Ax1_1)%
+
+forall x : Rel; y : Rel; z : Rel
+. x cmps (y cmps z) = (x cmps y) cmps z         %(ga_assoc___*__)%
+
+forall x : Rel . x cmps id = x %(ga_right_unit___*__)%
+
+forall x : Rel . id cmps x = x %(ga_left_unit___*__)%
+
+forall x, y : Rel . inv (x cmps y) = inv y cmps inv x %(Ax1_2)%
+
+forall x : Rel . inv inv x = x %(Ax2_1)%
+
+. inv id = id %(Ax1_1_1)%
+
+forall x, y, z : Rel . (x cup y) cmps z = (x cmps z) cup (y cmps z)
+                                             %(cmps_cup_rdistrib)%
+
+forall x, y : Rel . inv (x cup y) = inv x cup inv y %(inv_cup)%
+
+. inv 0 = 0 %(inv_0)%
+
+forall x : Rel . 0 cmps x = 0 %(rcmps_0)%
+
+forall x : Rel . inv compl x = compl inv x %(inv_compl)%
+
+forall x : Rel . x cup (1 cmps x) = 1 cmps x %(compl_cl_1)%
+
+forall x : Rel . compl (1 cmps x) = 1 cmps compl (1 cmps x)
+                                                    %(compl_cl_2)%
+
+forall x : Rel . x cmps 0 = 0 %(lcmps_0)%
+
+forall x, y, z : Rel . z cmps (x cup y) = (z cmps x) cup (z cmps y)
+                                             %(cmps_cup_ldistrib)%
+
+forall x, y, z : Rel
+. (x cmps y) cap inv z = 0 => (y cmps z) cap inv x = 0
+                                                      %(triangle)%
+
+forall x, y : Rel . (inv x cmps compl (x cmps y)) cap y = 0
+                                                        %(RelAlg)%
+
+forall x, y, z : Rel
+. (x cmps y) cap z = 0 => (inv x cmps z) cap y = 0   %(lPeircean)%
+
+forall x, y, z : Rel
+. (x cmps y) cap z = 0 => (z cmps inv y) cap x = 0   %(rPeircean)%
+
+forall x : Rel . not x = 0 => (1 cmps x) cmps 1 = 1 %(tarski)%
+
+forall x : Rel . x cmps 1 = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                       %(tarski1)%
+
+forall x : Rel
+. 1 cmps compl x = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                       %(tarski2)%
+
+forall x : Rel . x = 0 <=> inv x cmps x = 0 %(nnull)%
+
+forall x : Rel
+. 1 cmps compl x = 1 /\ not x = 0 => (1 cmps x) cmps 1 = 1
+                                                     %(tarski2_1)%
+
+forall x : Rel . x = 0 <=> inv x cmps x = 0 %(nnull_1)%
+
+end
+
+
+
+
+
+

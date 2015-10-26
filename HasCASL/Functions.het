@@ -1,0 +1,37 @@
+library HasCASL/Functions
+
+logic HasCASL
+
+
+spec Functions =
+
+  ops __o__ : forall a, b, c:Type . 
+               (b ->? c) * (a ->? b) -> (a ->? c);
+      comp3 : forall a, b, c, d :Type . 
+               (c ->? d) * (b ->? c) * (a ->? b) -> (a ->? d);
+      id    : forall a:Type . a ->? a;
+
+  vars a, b, c,d : Type;
+         h         : c ->? d;
+         g         : b ->? c;
+         f         : a ->? b;
+         x         : a
+   . g o f = \ x . g (f x)               %(o_def)%
+   . id = \ x . x                        %(id_def)%
+   . comp3(h,g,f) = \ x . h (g (f x))   %(3comp_def)%
+
+ then %implies
+
+  vars a, b, c, d : Type;
+         f'         : a ->? a;
+         h          : c ->? d;
+         g          : b ->? c;
+         f          : a ->? b
+   . comp3(h,g,f) = (h o g) o f         %(3comp_assoc1)%
+   . comp3(h,g,f) = h o (g o f)         %(3comp_assoc2)%
+   . h o (g o f) = (h o g) o f           %(o_assoc)%
+   . f' o id = f'                        %(id_neut)%
+   . f' o f' = id => forall x, y:a .
+         f' x = f' y => x = y            %(inj)%
+   . f' o f' = id => forall x:a .
+         exists y:a . f' y = x           %(surj)%

@@ -1,0 +1,66 @@
+# automatically generated hets proof-script
+
+use Calculi/Space/DRA_X
+
+dg-all auto
+
+# ------------------------------------------------------------------------------
+
+dg basic Point
+drop-translations
+prover SPASS
+set goals neq_point
+set axioms eq_point
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic OrderedField_in_FieldWithOrdering__T
+drop-translations
+prover SPASS
+set goals OF_times OF_mutex OF_exhaust
+prove
+
+drop-translations
+prover Vampire
+set goals OF_plus
+set time-limit 60
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic PreReal__E3
+drop-translations
+prover SPASS
+set goals one_greater_zero zero_leq_one add_monotone comm_add
+prove
+
+set time-limit 40
+set goals half_gt_zero
+prove
+
+drop-translations
+prover MathServe Broker
+set goals Real_mult_by_minus_one Real_mult_by_minus_one_2
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic FieldWithOrdering__E2
+drop-translations
+prover SPASS
+set goals FWO_plus_right FWO_times_right
+prove
+
+drop-translations
+prover Vampire
+set goals FWO_plus
+prove
+
+# ------------------------------------------------------------------------------
+
+dg basic FieldWithOrdering_in_OrderedField__T
+drop-translations
+prover SPASS
+set goals refl
+prove

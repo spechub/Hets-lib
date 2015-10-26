@@ -1,0 +1,53 @@
+library HasCASL/AffineGeometry
+version 0.1
+
+%author: E. Schulz
+%date: 10-02-2009
+
+logic HasCASL
+
+from HasCASL/Algebra get Field
+
+from HasCASL/LinearAlgebra get VectorSpace
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                  %%
+%%                       Affine Point Spaces                        %%
+%%                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+spec AffineSpace[VectorSpace[Field]] =
+     sort Point
+     op __+__:Point*Space->Point; %(point space map)%
+
+     vars p,q:Point; v,w:Space
+     . p+v = p+w => v = w %(plus injective)%
+     . exists y:Space. p+y = q %(plus surjective)%
+     . p+(v+w) = (p+v)+w %(point vector plus associative)%
+end
+
+spec ExtAffineSpace[AffineSpace[VectorSpace[Field]]] = %def
+     op vec:Point*Point->Space; 
+
+     forall p,q:Point. p + vec(p,q) = q %(vec def)%
+then %implies
+     vars p,q,r:Point; v,w:Space
+     . vec(p,q) + vec(q,r) = vec(p,r) %(transitivity of vec plus)%
+     %% the following is not true if one does not assume that p + 0 = p!
+     %% . vec(p,q) = - vec(q,p)          %(antisymmetry of vec)%
+     . p + v = q => v = vec(p,q)      %(plus vec identity)%
+end
+
+%[ NOT NEEDED FOR THE MOMENT
+spec ExtAffineSpaceWithOrigin[ExtAffineSpace[AffineSpace[VectorSpace[Field]]]] =
+     ops origin  : Point;
+	 asPoint(v:Space):Point = origin + v; %(vector point embedding)%
+	 asVector(p:Point):Space = vec(origin,p); %(point vector embedding)%
+
+then %implies
+     vars p,q,r:Point; v,w:Space
+     . asVector(asPoint(v)) = v %(vector point identity)%
+     . asPoint(asVector(p)) = p %(point vector identity)%
+end
+]%

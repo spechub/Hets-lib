@@ -1,0 +1,212 @@
+spec Int =
+sorts
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  0 : Nat;
+  0 : Int;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end
+
+spec Nat =
+sorts
+  Pos < Nat;
+  Pos
+ops
+  +__ : Nat->Nat;
+  0 : Nat;
+  1 : Nat;
+  1 : Pos;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __-?__ : Nat*Nat->?Nat;
+  __/?__ : Nat*Nat->?Nat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __div__ : Nat*Nat->?Nat;
+  __mod__ : Nat*Nat->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __rem__ : Nat*Nat->?Nat;
+  abs : Nat->Nat;
+  max : Nat*Nat->Nat;
+  min : Nat*Nat->Nat;
+  pre : Nat->?Nat;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<__ : Nat*Nat;
+  __>=__ : Nat*Nat;
+  __>__ : Nat*Nat;
+  even : Nat;
+  odd : Nat
+
+end
+
+spec Rat =
+sorts
+  Nat,Pos < Int;
+  Pos < Nat;
+  Pos;
+  Int,Nat,Pos < Rat
+ops
+  +__ : Nat->Nat;
+  +__ : Int->Int;
+  +__ : Rat->Rat;
+  -__ : Nat->Int;
+  -__ : Int->Int;
+  -__ : Rat->Rat;
+  0 : Nat;
+  0 : Int;
+  0 : Rat;
+  1 : Nat;
+  1 : Pos;
+  1 : Int;
+  1 : Rat;
+  2 : Nat;
+  3 : Nat;
+  4 : Nat;
+  5 : Nat;
+  6 : Nat;
+  7 : Nat;
+  8 : Nat;
+  9 : Nat;
+  Nat : Int;
+  __! : Nat->Nat;
+  __*__ : Nat*Nat->Nat;
+  __*__ : Pos*Pos->Pos;
+  __*__ : Int*Int->Int;
+  __*__ : Rat*Rat->Rat;
+  __+__ : Nat*Nat->Nat;
+  __+__ : Nat*Pos->Pos;
+  __+__ : Pos*Nat->Pos;
+  __+__ : Int*Int->Int;
+  __+__ : Rat*Rat->Rat;
+  __-?__ : Nat*Nat->?Nat;
+  __-__ : Nat*Nat->Int;
+  __-__ : Int*Int->Int;
+  __-__ : Rat*Rat->Rat;
+  __/?__ : Nat*Nat->?Nat;
+  __/?__ : Int*Int->?Int;
+  __/__ : Int*Pos->Rat;
+  __/__ : Rat*Rat->?Rat;
+  __@@__ : Nat*Nat->Nat;
+  __^__ : Nat*Nat->Nat;
+  __^__ : Int*Nat->Int;
+  __^__ : Rat*Int->Rat;
+  __div__ : Nat*Nat->?Nat;
+  __div__ : Int*Int->?Int;
+  __mod__ : Nat*Nat->?Nat;
+  __mod__ : Int*Int->?Nat;
+  __quot__ : Nat*Nat->?Nat;
+  __quot__ : Int*Int->?Int;
+  __rem__ : Nat*Nat->?Nat;
+  __rem__ : Int*Int->?Int;
+  abs : Nat->Nat;
+  abs : Int->Nat;
+  abs : Rat->Rat;
+  max : Nat*Nat->Nat;
+  max : Int*Int->Int;
+  max : Rat*Rat->Rat;
+  min : Nat*Nat->Nat;
+  min : Int*Int->Int;
+  min : Rat*Rat->Rat;
+  pre : Nat->?Nat;
+  sign : Int->Int;
+  suc : Nat->Nat;
+  suc : Nat->Pos
+preds
+  __<=__ : Nat*Nat;
+  __<=__ : Int*Int;
+  __<=__ : Rat*Rat;
+  __<__ : Nat*Nat;
+  __<__ : Int*Int;
+  __<__ : Rat*Rat;
+  __>=__ : Nat*Nat;
+  __>=__ : Int*Int;
+  __>=__ : Rat*Rat;
+  __>__ : Nat*Nat;
+  __>__ : Int*Int;
+  __>__ : Rat*Rat;
+  even : Nat;
+  even : Int;
+  odd : Nat;
+  odd : Int
+
+end

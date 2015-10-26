@@ -1,0 +1,117 @@
+library frederic
+
+%% Examples provided by Frederic Voisin
+
+spec correct_formulas1 =
+
+sort N
+preds P, Q, R : () ;
+      Px, Qx, Rx: N;
+      pp (x:N) <=> x=x
+var x:N;
+ .  P => Q => R;  %% groups to the right
+ .  P if Q if R;  %% groups to the left 
+ .  P /\ Q /\ R;  %% groups to the left
+ .  P \/ Q \/ R;  %% groups to the left
+ .  P => Q /\ R;  %% /\ has higher precedence
+ .  P /\ Q => R;  %% /\ has higher precedence
+ .  not P \/ Q ;  %% not has higher precedence
+
+ .  exists x:N . Px(x) => Qx(x) => Rx(x) ;   %% quantification extends to the rig
+ .  P <=> exists x: N . Px(x) <=> R ;        %% correct without grouping
+ .  P <=> ( exists x: N . Px(x) <=> R ) ;    %% same form as above
+
+
+ .  P => exists x:N . Qx(x) /\ Rx(x) ;       %% quantification extends to the rig
+ .  P /\ exists x:N . Qx(x) => Rx(x) ;       %% quantification extends to the rig
+
+ . not exists x:N . Px(x) \/ Qx(x) ;
+ . (not exists x:N . Px(x) ) \/ Qx(x) ;
+ . Px(x) \/ exists x:N . Px(x) if Qx(x) ;
+end
+
+spec NATURAL = sort Nat end
+
+spec fv =
+   NATURAL
+then
+   sort S, Seq, Seq', faces, List ;
+   sort S1, S2 < S3;		   %% Here < is a reserved word
+   sort S0 < S3;
+
+   pred __<__ : Nat*Nat; 	   %% here < is no longer reserved, but * is.
+   op __ * __ : Nat * Nat -> Nat;  %% two * with different meanings.
+      __*__: Seq*Seq->Seq;
+
+   op %[<> : Seq'; ]%
+      <__> : Nat -> Seq';
+   op :->, :->>, :-<, :-| , :-<>, #/:->, &:-|, :>--<  : faces
+
+%% the two next ones are incorrect since we cannot have two adjacent tokens
+%%  :- and O or < and > without a placeholder between them.
+%%
+%%  op :-0 : faces ;
+%%  op     < > : Seq 
+
+%% Not yet handled:
+   ops %[ :- [], ]% :-{} : faces ;
+     f __ ? : S ->? S;
+     { } : List;
+     {__} : S->Nat; 
+     0,1:Nat;
+
+   sort S' = { x : S . { x } = 1 } ;
+   sort Biz = { x:Nat . forall y,z:Nat . x * y < x*z => x < y }
+
+   sort iso1 = iso2 = iso3;
+
+   op mult(x,y:Nat) : Nat = x*y;
+   pred inf(x,y:Nat) <=> x < y;
+
+   op f: Nat*Nat->Nat, comm, assoc, unit 0 * 0;
+   op f: Nat*Nat->Nat, comm, assoc, unit 0;
+
+%% devrait etre errone, puisque 'to' est un mot reserve.
+%% hide add__to__ 
+
+reveal pred __ < __ : Nat * Nat, 
+       op __ * __ : Nat * Nat -> Nat |-> __<__ : Nat* Nat -> Nat
+end
+
+
+
+spec correct_formulas2 =
+
+sorts S<N; N<S
+preds F : () ;
+      F2: N;
+var x:N;
+ops   p __, __ r, __ r2 : N -> N ;
+      q : N ;
+      __ __ : N*N -> N;
+
+%[ thes formulae don't go through 
+  .   p(x) q as S when F else x r = x ;
+
+  .   p (x) q : S when F else x r = x if F2 (x) ;
+%%   syntax error since "r if F2(x)" is a formula, not a term.
+%%   p (x) q : S when F else (r if F2 (x)) ;
+  .   (p (x) q : S when F else x r) = x if F2 (x) ;
+
+  .   p (x) q when F else x r when F2(x) else x r2 = x;
+
+  %% .   p x when F if F2(x) else x r = x;
+
+%%  .   p x when F else x r :N = x;
+%%  .   p x when F else (x r: S) = x ;
+%%  .   (p x when F else x r) : S = x; ]%
+end
+
+spec correct_formulas3 =
+
+sort s
+%%  ops 0,1:s; f, f__:s->s
+  var x,y,z:s
+  . x = y when true else z as s
+%%  . def f(x)
+end

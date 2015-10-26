@@ -1,0 +1,383 @@
+library EnCL/Tests
+
+from EnCL/EN1591 get FlangeParameter, EN1591
+
+logic EnCL
+
+spec Test71 =
+     vars a in [0, 1]
+     . f(a) := a^2 %(A)%
+     . g(x,y) := x-y %(B)%
+     . b := maximize(g(x,f(x)), x) %(C)%
+end
+
+spec Test0 =
+     . sequence
+       . y := cos(x) %(A)%
+       . z := sin(cos(tan(x))) %(B)%
+       . b := sin(cos(tan(4*x + sqrt(x)))) %(B)%
+     end
+end
+
+spec Test102 =
+     . z0 := z4+z3+20 %(coeff0)%
+     . z1 := z2 + 3*z4 + 4 %(coeff1)%
+     . z2 := 3 * z3 - 30 %(coeff2)%
+     . z3 := 5 * z5 + 10 %(coeff3)%
+     . z4 := 15 * z6 %(coeff4)%
+     . z5 := 16 * z7(12) + z7(z4^2) + 2*z8 %(coeff4)%
+     . z6 := 17 * z9 + z10 %(coeff4)%
+     . z7(x) := 7* z9 * x^2 %(coeff4)%
+     . z8 := 8 %(coeff4)%
+     . z9 := 9 %(coeff4)%
+     . z10 := 10 %(coeff4)%
+
+     . sequence
+        . z3 := z0 + z3
+        . z11 := maxloc(z7(v+z4), v, 0, 1)
+       end
+end
+
+spec Test103 =
+     . z7(x) := 7* z9 * x^2 %(coeff4)%
+     . z9 := 9 %(coeff5)%
+
+     . repeat
+        . z11 := maxloc(z7(v+z9), v, 0, 1)
+	. z9 := z9 - 2
+       until z9 < 0
+end
+
+spec Test101 =
+     . z0 := z4+z3+20 %(coeff0)%
+     . z1 := z2 + 3*z4 + 4 %(coeff1)%
+     . z2 := 3 * z3 - 30 %(coeff2)%
+     . z3 := 5 * z4 + 10 %(coeff3)%
+     . z4 := 15 %(coeff4)%
+     . sequence
+       . z := factor(x^5-z4*x^4+z3*x^3-z2*x^2+z1*x-z0) %(B)%
+       end %(program)%
+end
+
+spec Test1011 =
+     . z0 := z4+z3+20 %(coeff0)%
+     . z1 := z2 + 3*z4 + 4 %(coeff1)%
+     . z2 := 3 * z3 - 30 %(coeff2)%
+     . z3 := 5 * z4 + 10 %(coeff3)%
+     . z4 := 15 %(coeff4)%
+end
+
+spec Test1012 =
+     . sequence
+       . z := factor(x^5-z4*x^4+z3*x^3-z2*x^2+z1*x-z0) %(B)%
+       end %(program)%
+end
+
+spec Test1 =
+     . x := 10 %(C)%
+     . x := .10 %(C1)%
+     . x := 10. %(C2)%
+     . x := -10.0e13 %(C3)%
+     . x := .1012e-14 %(C4)%
+     . x := -.1012e-14 %(C5)%
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+end
+
+%% constraints are not supported anymore on the evaluation level
+spec Test2 =
+     . x := 10 %(C)%
+     . x = 10.0 %(D)%
+     . x > 100 %(A)%
+     . x <= 100 %(B)%
+end
+
+%% newton method
+spec Test3 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+     . repeat
+       . x := x + y/z
+       . print(y)
+     until abs(y) < 1.0e-4 %(D)%
+
+     . print(y)
+end
+
+%% newton method with convergence
+spec Test303 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+     . repeat
+       . x := x + y/z
+       . print(x)
+%%       . c := x
+     until convergence(0.001, x) %(D)%
+     . print(x)
+end
+
+%% newton method assertions
+spec Test301 =
+     . y := cos(x) %(A)%
+     . z := sin(x) %(B)%
+     . x := 10 %(C)%
+end
+
+%% newton method program
+spec Test302 = Test301 then
+     . repeat
+       . x := x + y/z %(D)%
+     until abs(y) < 0.00001
+end
+
+spec Test70100 = 
+     vars x in [0,1]
+
+     . f(x) := cos(x) %(A)%
+     . g(x) := sin(x) %(B)%
+end
+
+spec Test70101 = 
+     vars y in [0.4,1.5]
+
+     . f(y) := cos(y) %(A)%
+     . g(y) := sin(y) %(B)%
+end
+
+
+%[
+This reduce script gives a correct evaluation of newtons method:
+
+on rounded;
+z:=sin(u);
+y:=cos(u);
+t := x/2;
+u := 2*t;
+x:=10;
+x:=(x+(y/z));
+x:=(x+(y/z));
+x:=(x+(y/z));
+
+
+This one is not correctly evaluated, since t and u aren't stored
+dependent on x, but just as values!
+
+on rounded;
+z:=sin(u);
+y:=cos(u);
+x:=10;
+t := x/2;
+u := 2*t;
+x:=(x+(y/z));
+x:=(x+(y/z));
+x:=(x+(y/z));
+
+
+--> Try to exploit this behviour in the CAS-interface:
+- Formulate requirements for the CAS system in order to support this behaviour.
+
+Solution (delayed and strict evaluation, in Mathematica via := and =, in Maple with quoting t:=`x/2`)
+]%
+
+spec Test4 =
+     . y := 10 %(A)%
+     . repeat
+       . y := 0.9 * y %(D)%
+%%     until y < 0.7
+     until y < 9
+
+     . case y < 0.6:
+       . print(1, y, cos(pi*y))
+       case else:
+       . print(0, y, maxloc(sin(v), v, 1, 3))
+    end
+
+end
+
+
+
+spec Test5 =
+
+ vars I in {0,1,2}; F in {1,2}
+
+ . d_4 := 220 %(data1)%
+ . d_S := 115 %(data2)%
+ . d_3 := 180 %(data3)%
+ . d_0 := 95 %(data4)%
+ . d_5 := 18 %(data5)%
+ . e_S := 10 %(data6)%
+ . e_1 := 10 %(data7)%
+ . e_2 := 10.001 %(data8)%
+ . l_S := 0.001 %(data9)%
+
+%% not in EN
+ . l_H := 0.001 %(data10)%
+
+ . e_F := 20 %(data11)%
+ . e_P := e_F %(data11.2)%
+
+%% from Bild 4 and Constraint eqGl2 (aus den Formelzeichen)
+ . e_Q := 0 %(data11.3)%
+ . e_Fb := 20 %(data11.4)%
+
+%% not in EN
+ . d_11 := 162 %(data12)%
+
+%% not in EN
+ . f := 0.001 %(data13)%
+
+%% . e_F[F=2] := 20 %(data14)%
+ . e_Gt := 2 %(data15)%
+ . e_G := e_Gt %(data15.1)%
+ . d_G1 := 158 %(data16)%
+ . d_G2 := 162 %(data17)%
+ . h := 0 %(data18)%
+
+%% zylinder-schale, phi_S := 0
+ . phi_S := 0 %(data18.2)%
+ %% depends on temperature T_F
+ %[. E_F[I=0] := 200000 %(dataE.1)%]%
+ %[. E_F[I=1] := 200000 %(dataE.2)%]%
+ %[. E_F[I=2] := 188000 %(dataE.3)%]%
+ %[. P[I=1] := 1.5 %(dataP.1)%]%
+ %[. P[I=2] := 1 %(dataP.2)%]%
+ . F_A := 0 %(dataF.1)%
+ . M_A := 0 %(dataM.1)%
+
+%% temperature
+
+ %[. T_F[I=0] := 20 %(dataT.1)%]%
+ %[. T_F[I=1] := 20 %(dataT.2)%]%
+ %[. T_F[I=2] := 30 %(dataT.3)%]%
+
+%% Schraube
+ . d_B0 := 16 %(data19)%
+ . p_t := 2 %(data19.1)%
+ . U := 3 %(data20)%
+ . l_B := 42 %(data21)%
+ . l_s := 0 %(data22)%
+ . d_Bs := 16 %(data23)%
+ . d_Be := 14.12 %(data24)%
+ . mu := 0.2 %(data25)%
+ . n_B := 8 %(data26)%
+
+
+%% temperature
+
+%[ . T_B[I=0] := 20 %(dataT.4)%]%
+%[ . T_B[I=1] := 20 %(dataT.5)%]%
+%[ . T_B[I=2] := 30 %(dataT.6)%]%
+
+%[%% not in EN (Sicherheitsbeiwerte, Sicherheitsfaktoren)]%
+%[ . S[I=0] := 1.05 %(data26.1)%]%
+%[ . S[I=1] := 1.05 %(data26.2)%]%
+%[ . S[I=2] := 1.5 %(data26.3)%]%
+
+%% Nenn-Berechnungsspannung
+ . f_Bd := 250 %(data26.4)%
+ . f_B := f_Bd / S %(data26.5)%
+
+
+%% Anziehverfahren: Drehmomentschluessel
+%% = Schraubenschluessel mit (ausschliesslich) Drehmoment-Messung
+ . epsilon_1minus := 0.1 + 0.5 * mu  %(tblC.1.1)%
+ . epsilon_1plus := 0.1 + 0.5 * mu  %(tblC.1.2)%
+
+ . M_tnom := 100 %(data100.1)% %% TODO: select a correct value
+
+%% Dichtungswerte
+ . Q_maxy := 546.9 %(data27)%
+ . E_0 := 200000 %(data28)%
+
+
+end
+
+spec Test6 = Test5 then
+
+ . p_B := Pi * d_3/n_B %(eq1)%
+
+     %% effective diameter of screw hole
+ . d_5e := d_5 * sqrt(d_5/p_B) %(eq2)%
+
+     %% diameter of blind hole, we don't have a blind hole
+ %% . d_5 := d_5t * l_5t/e_Fb %(eq3)%
+
+     %% diameter of bolt circle
+ . d_3e := d_3 * (1-2/n_B^2) %(eq4)%
+
+     %% ** Ring
+
+ . b_F := (d_4 - d_0)/2 - d_5e %(eq5.1)%
+ . d_F := (d_4 + d_0)/2 %(eq5.2)%
+     %% this is an implicit equation for A_F!
+     %%  . e_F := 2 * A_F/(d_4 - d_0) %(eq5.3)%
+ . A_F := e_F * (d_4 - d_0) / 2 %(eq5.3)%
+
+
+
+ . b_L := 0 %(eq6.1)%
+ . d_L := 0 %(eq6.2)%
+ . e_L := 0 %(eq6.3)%
+
+     %% * Spheric shell
+
+%%     eq9.1: beta := e_2/e_1
+%%     eq9.2: e_E := e_1 * (1 + (beta-1)*l_H/((beta/3) * sqrt(d_1*e_1) + l_H))
+%%     eq10: d_E := (min(d_1-e_1+e_E, d_2+e_2-e_E) + max(d_1+e_1-e_E, d_2-e_2+e_E))/2
+
+%% we have: 4.1.2.2 Flansch ohne Ansatz
+ . e_E := e_S %(eq11.1)%
+ . d_E := d_S %(eq11.2)%
+
+     %% * 4.1.3 Lever arm
+
+%% @comment
+%%  ANMERKUNG Im Falle einer Flachdichtung koennen die unten angegebenen
+%%  Parameter $h_P und h_G nur errechnet werden nach Auswertung von $d_Ge,
+%%  d. h. nachdem die Berechnungen in 4.3.2 durchgefuehrt wurden.
+
+ . h_P := ((d_Ge - d_E)^2 * (2*d_Ge + d_E)/6 + 2*e_P^2*d_F)/d_Ge^2 %(eq13)%
+
+     %% * 4.1.4 Elasticity related flange paramters
+
+ . gamma := e_E * d_F/(b_F * d_E * cos(phi_S)) %(eq17)%
+
+ . theta := 0.55 * cos(phi_S) * sqrt(d_E * e_E)/e_F %(eq18)%
+
+ %% SIMP: only one assignment
+ %% . lambda1 := 1 - e_P/e_F := e_Q/e_F %(eq19)%
+ . lambda1 := e_Q/e_F %(eq19)%
+
+ . c_F := (1 + gamma * theta) / (1 + gamma * theta * (4 * (1 - 3 * lambda1 + 3 * lambda1^2) + 6 * (1 - 2 * lambda1) * theta + 6 * theta^2) + 3 * gamma^2 * theta^4) %(eq20)%
+
+ . h_S := 1.1 * e_F * sqrt(e_E/d_E) * (1 - 2 * lambda1 + theta)/(1 + gamma + theta) %(eq21)%
+
+ . h_T := e_F * (1 - 2 * lambda1 - gamma * theta^2)/(1 + gamma * theta) %(eq22)%
+
+ . h_Q := (h_S * k_Q + h_T * (2 * d_F * e_P/d_E^2 - 0.5 * tan(phi_S))) * (d_E/d_Ge)^2 %(eq23)%
+
+ . h_R := h_S * k_R - h_T * 0.5 * tan(phi_S) %(eq24)%
+
+     %% fuer Kegel- und Zylinderschale
+ . k_Q := 0.85/cos(phi_S) %(eq25)%
+%% SYNTAX: unaeres minus
+ . k_R := -(0.15/cos(phi_S)) %(eq26)%
+
+ . Z_F := 3 * d_F * c_F/(Pi * b_F * e_F^3) %(eq27.1)%
+ . Z_L := 0 %(eq27.2)%
+
+     %% * 4.2 Schrauben-Parameter
+
+ . A_B := min(d_Be,dBs)^2 * n_B * Pi/4 %(eq33)%
+ . X_B := (l_s/d_Bs^2 + l_e/d_Be^2 + 0.8/d_B0) * 4/(n_B * Pi) %(eq34)%
+
+     %% * 4.3 Dichtungs-Parameter
+
+ . b_Gt := (d_G2 - d_G1)/2  %(eq35.1)%
+ . d_Gt := (d_G2 + d_G1)/2 %(eq35.2)%
+ . A_Gt := Pi * d_Gt * b_Gt %(eq36)%
+
+end
+

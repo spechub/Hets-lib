@@ -1,0 +1,13 @@
+library Modal/LTL
+
+logic Modal
+
+spec LTL =
+     modality X {
+      [] (p => q) => [] p => [] q; %(K)%
+      [X] (p => q) => [X] p => [X] q; %(Ko)%
+      [X] (not p) <=> not [X] p; %(Fun)%
+      [] p => p /\ [X] [] p; %(Mix)%
+      [] (p => [X] p) => p => [] p %(Ind)%
+      }
+end

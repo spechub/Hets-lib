@@ -1,0 +1,83 @@
+logic OWL
+spec FamilyBase = 
+Class: Father
+Class: Female
+Class: Grandmother
+Class: Hybrid
+Class: Man
+Class: Married
+Class: MarriedMother
+Class: Mother
+Class: MotherWithManyChildren
+Class: MotherWithoutDaughter
+Class: Parent
+Class: Person
+Class: Wife
+Class: Woman
+
+ObjectProperty: hasChild
+ObjectProperty: hasHusband
+
+Individual: clara
+Individual: john
+Individual: mary
+
+Class: Person
+
+Class: Female
+
+Class: Woman
+       EquivalentTo: Person and Female
+
+Class: Man
+       EquivalentTo: Person and not Woman
+
+ObjectProperty: hasChild
+
+ObjectProperty: hasHusband
+
+Class: Mother
+       EquivalentTo: Woman and hasChild some Person
+
+Class: Father
+       EquivalentTo: Man and hasChild some Person
+
+Class: Parent
+       EquivalentTo: Father or Mother
+
+Class: Grandmother
+       EquivalentTo: Mother and hasChild some Parent
+
+Class: MotherWithManyChildren
+       EquivalentTo: Mother and hasChild min 3 Thing
+
+Class: MotherWithoutDaughter
+       EquivalentTo: Mother and hasChild only (not Woman)
+
+Class: Wife
+       EquivalentTo: Woman and hasHusband some Man
+
+Class: Married
+
+Class: MarriedMother
+       EquivalentTo: Mother and Married
+
+Class: MarriedMother
+       SubClassOf: Female and Person
+
+Class: Hybrid
+       EquivalentTo: Woman and Man
+
+Individual: mary
+            Types: Mother
+
+Individual: mary
+            Facts: hasChild john
+
+Individual: john
+            Types: Father
+
+Individual: john
+            Facts: hasChild clara
+
+Individual: clara

@@ -1,0 +1,43 @@
+library Ontology/Examples/Biblio
+
+logic OWL
+
+spec Biblio_OWL =
+
+  Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
+
+  Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
+
+  DataProperty: impactFactor
+  DataProperty: name
+  DataProperty: title
+  ObjectProperty: hasJournal
+  ObjectProperty: author
+
+  Class: Researcher
+  SubClassOf: name some xsd:string
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: Article
+  SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
+
+  Class: Journal
+  SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
+end

@@ -1,0 +1,88 @@
+library HasCASL/Petri
+
+from Basic/Numbers get Nat
+
+from HasCASL/Set get Set, Map
+from HasCASL/MultiSet get RichMultiSet, MapMultiSet
+from HasCASL/HLR get HLRCategory
+
+
+logic HasCASL
+
+spec SimplePetriNet = 
+  Map 
+then
+  sorts P,T 
+  type SimpleNet = {(p,pre,post) : Set P  *  (T ->? Set P) * (T ->? Set P)  
+                      	. dom pre=dom post /\
+                     	(forall p1:Set P . p1 isIn range pre => p1 subset p)
+                     	/\ (forall p1:Set P . p1 isIn range post => p1 subset p) }
+  op __union__ : SimpleNet * SimpleNet -> SimpleNet
+
+  forall n1,n2:SimpleNet
+  . n1 union n2 =
+    let (p1,pre1,post1) = n1;
+        (p2,pre2,post2) = n2
+    in (p1 union p2,
+        \(t:T) . (pre1(t) union pre2(t) when def pre2(t) else pre1(t))
+	         when def pre1(t) else pre2(t),
+
+        \(t:T) . (post1(t) union post2(t) when def post2(t) else post1(t))
+	         when def post1(t) else post2(t)) 
+        as SimpleNet
+end
+
+
+spec PetriNet =
+  Map and RichMultiSet 
+then
+  sorts P,T 
+  type Net = {(p,pre,post) : Set P  *  (T ->? MultiSet P) * (T ->? MultiSet P)                                . dom pre=dom post /\
+            (forall p1:MultiSet P . p1 isIn range pre => MultiSetToSet p1 subset p)
+            /\ (forall p1:MultiSet P . p1 isIn range pre => MultiSetToSet p1 subset p) }
+  ops places : Net  -> Set P;
+      transitions : Net  -> Set T;
+      preMap, postMap : Net  -> (T ->? MultiSet P);
+   forall n : Net; p : Set P; pre, post : T ->? MultiSet P
+   . let (p,pre,post)=n in places n = p
+   . let (p,pre,post)=n in transitions n = dom pre
+   . let (p,pre,post)=n in preMap n = pre
+   . let (p,pre,post)=n in postMap n = post
+end
+
+
+spec PetriNetCategory = 
+  PetriNet and MapMultiSet
+then
+  sorts P,T 
+  type HomNet = 
+     {(n1,hp,ht,n2) : Net  * (P->?P) * (T->?T) * Net .
+       hp :: places n1 --> places n2 /\ ht :: transitions n1 --> transitions n2 
+       /\ forall t:T . t isIn transitions n1 =>
+          (   freeMap hp (preMap n1 t) = preMap n2 (ht t)
+           /\ freeMap hp (postMap n1 t) = postMap n2 (ht t) ) } 
+  ops dom : HomNet -> Net;
+      cod : HomNet -> Net;
+      placesMap : HomNet -> (P->?P);
+      transitionsMap : HomNet -> (T->?T);
+      id : Net -> HomNet;
+      __o__ : HomNet * HomNet ->? HomNet 
+  pred injective : HomNet
+   forall n, n1,n2 : Net; p : Set P; pre, post : T ->? MultiSet P; hp:P->?P; ht:T->?T; h, h1, h2:HomNet 
+   . let (n1,hp,ht,n2)=h in dom (h) = n1
+   . let (n1,hp,ht,n2)=h in cod (h) = n2
+   . let (n1,hp,ht,n2)=h in placesMap (h) = hp
+   . let (n1,hp,ht,n2)=h in transitionsMap (h) = ht
+   . def (h2 o h1) <=> cod h1 = dom h2
+   . def (h2 o h1) => h2 o h1 = 
+     (dom h1, placesMap h2 o placesMap h1, transitionsMap h2 o transitionsMap h1,cod h2)
+      as HomNet
+  . injective h <=> injective(placesMap h) /\ injective(transitionsMap h)
+  sort M = {h:HomNet . injective h}
+
+end
+
+
+view CategoryofPetriNets : HLRCategory to PetriNetCategory =
+     Ob |-> Net, Mor |-> HomNet, __o__, dom, cod, id, M
+end

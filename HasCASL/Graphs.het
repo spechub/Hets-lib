@@ -1,0 +1,269 @@
+library HasCASL/Graphs
+
+%left_assoc __union__
+%prec( {__=__} < {__isIn__, __subgraph__, __cliqueOf__, __o__,
+                 __union__, __intersection__, __::__-->__,
+                 __unionMap__, __intersectionMap__, __maxCliqueOf__})%
+
+from HasCASL/Set get Set
+%{ Directed graphs over some arbitrary but fixed node and edge types,
+   given by node set and source and target maps.
+   Note that the node set may be larger than the range of these maps
+   in case that there are isolated nodes. }%
+
+from HasCASL/Set get Map, SetRepresentation
+from HasCASL/HLR get HLRCategory
+
+logic HasCASL
+
+
+spec DirectedGraph =
+  Map
+then
+  var N,E : Type
+  type Graph N E = { (n,source,target) : Set N * (E->?N) * (E->?N)  .
+                      dom source=dom target 
+                      /\ (source :: dom source --> n)
+                      /\ (target :: dom target --> n) }
+end
+
+%{ Some useful operations on directed graphs. }%
+
+spec RichDirectedGraph =
+  DirectedGraph and Map
+then %def
+  var N,E : Type
+  ops emptyGraph : Graph N E;
+      nodes : Graph N E -> Set N;
+      edges : Graph N E -> Set E;
+      sourceMap, targetMap : Graph N E -> (E->?N);
+      addNode,removeNode : N -> Graph N E -> Graph N E;
+      addEdge : E * N * N -> Graph N E -> Graph N E;
+      removeEdge : E -> Graph N E -> Graph N E;
+  preds symmetric, transitive, loopFree, complete : Graph N E;
+         __subgraph__, __cliqueOf__, __maxCliqueOf__ : Graph N E * Graph N E;
+  ops  __union__, __intersection__ : Graph N E * Graph N E -> Graph N E
+
+  forall n,n1,n2:N; e,e1,e2:E; g1,g2,g,g':Graph N E;
+         nn : Set N; s, t, source, target : E->?N
+  . emptyGraph = (emptySet,emptyMap,emptyMap) as Graph N E %(emtpyGraph)%
+
+  . nodes ((nn,s,t) as Graph N E) = nn
+
+  . edges ((nn,source,target) as Graph N E) = dom source      %(edges)%
+
+  . sourceMap ((nn,source,target) as Graph N E) = source
+
+  . targetMap ((nn,source,target) as Graph N E) = target
+
+  . addNode n ((nn,source,target) as Graph N E) =
+    ( nn union {n}, source, target) as Graph N E            %(addNode)%
+
+  . removeNode n ((nn,source,target) as Graph N E) =
+    (nn \\ {n}, source, target) as Graph N E             %(removeNode)%
+
+  . addEdge (e,n1,n2) ((nn,source,target) as Graph N E) =
+    (nn union {n1} union {n2},
+     source[e/n1], target[e/n2]) as Graph N E               %(addEdge)%
+
+  . removeEdge e ((nn,source,target) as Graph N E) =
+    (nn, source-e, target-e) as Graph N E                %(removeEdge)%
+
+  . symmetric g <=> 
+    forall e:E .
+        e isIn (edges g) => 
+        exists e':E . e' isIn (edges g) 
+                      /\ sourceMap g e = targetMap g e'
+                      /\ targetMap g e' = targetMap g e      %(symmetric_def)%
+
+  . transitive g <=>
+    forall e1,e2:E .
+      e1 isIn edges g /\ e2 isIn edges g /\
+      targetMap g e1 = sourceMap g e2 =>
+      exists e3:E . e3 isIn edges g
+                    /\ sourceMap g e3 = sourceMap g e1
+                    /\ targetMap g e3 = targetMap g e2      %(transitive_def)%
+
+  . loopFree g <=>
+    not (exists e:E . e isIn edges g /\ sourceMap g e = targetMap g e)
+                                                              %(loopFree_def)%
+
+  . g1 subgraph g2 <=>
+    (forall n:N . n isIn nodes g1 => n isIn nodes g2) /\
+    (forall e:E . e isIn edges g1 => e isIn edges g2) /\
+    sourceMap g1 = sourceMap g1 intersectionMap sourceMap g2 /\
+    targetMap g1 = targetMap g1 intersectionMap targetMap g2
+                                                              %(subgraph_def)%
+
+  . complete ((nn,source,target) as Graph N E) <=>
+    forall n1,n2:N . n1 isIn nn /\ n2 isIn nn =>
+      exists e:E . source e = n /\ target e = n                   %(complete)%
+
+  . g1 cliqueOf g2 <=>
+    g1 subgraph g2 /\ complete(g1)                            %(cliqueOf_def)%
+
+  . g1 maxCliqueOf g2 <=>
+    g1 cliqueOf g2
+    /\ forall g3:Graph N E . 
+        g1 subgraph g3 /\ g3 cliqueOf g2 => g1=g3         %(max_cliqueOf_def)%
+
+  . g union g' = 
+    (nodes g union nodes g',
+     sourceMap g unionMap sourceMap g',
+     targetMap g unionMap targetMap g') as Graph N E
+
+  . g intersection g' = 
+    (nodes g intersection nodes g',
+     sourceMap g intersectionMap sourceMap g',
+     targetMap g intersectionMap targetMap g') as Graph N E
+end
+
+
+spec SimpleGraph =
+  RichDirectedGraph
+then
+  var N, E : Type
+  type SimpleGraph N E = {(nn,source,target):Graph N E .
+                          forall e1,e2:E . source e1 = source e2
+                                          /\ target e1 = target e2 => e1=e2 }
+  type LoopFreeGraph N E = {g:Graph N E . loopFree g}
+end
+
+
+spec GraphHomomorphism =
+  RichDirectedGraph and Map
+then
+  var a, N1, E1, N2, E2, N3, E3 : Type
+  type Hom N1 E1 N2 E2 = 
+     {(g1,hn,he,g2) : Graph N1 E1 * (N1->?N2) * (E1->?E2) * Graph N2 E2 .
+       hn :: nodes g1 --> nodes g2 /\ he :: edges g1 --> edges g2 
+       /\ forall e:E1 . e isIn edges g1 =>
+          (   hn(sourceMap g1 e) = sourceMap g2 (he e)
+           /\ hn(targetMap g1 e) = targetMap g2 (he e) ) } 
+  var N, E : Type
+  type HomHom E N := Hom E N E N
+  ops undefined : a; 
+      dom : Hom N1 E1 N2 E2 -> Graph N1 E1;
+      cod : Hom N1 E1 N2 E2 -> Graph N2 E2;
+      nodeMap : Hom N1 E1 N2 E2 -> (N1->?N2);
+      edgeMap : Hom N1 E1 N2 E2 -> (E1->?E2);
+      id : Graph N1 E1 -> Hom N1 E1 N1 E1;
+      __o__ : Hom N2 E2 N3 E3 * Hom N1 E1 N2 E2 ->? Hom N1 E1 N3 E3
+  pred injective : Hom N1 E1 N2 E2
+  forall g,g1:Graph N1 E1; hn:N1->?N2; he:E1->?E2; g2:Graph N2 E2; 
+         h,h1:Hom N1 E1 N2 E2; h2:Hom N2 E2 N3 E3
+  . not def (undefined : a)
+  . dom ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g1
+  . cod ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = g2
+  . nodeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = hn
+  . edgeMap ((g1,hn,he,g2) as Hom N1 E1 N2 E2) = he
+  . id g = (g,\n:N1 . n when n isIn nodes g else undefined,
+              \e:E1 . e when e isIn edges g else undefined,
+            g) as HomHom N1 E1
+  . def (h2 o h1) <=> cod h1 = dom h2
+  . def (h2 o h1) => 
+    h2 o h1 = 
+     (dom h1, nodeMap h2 o nodeMap h1, edgeMap h2 o edgeMap h1,cod h2)
+      %% as Hom N1 E1 N2 E2
+  . injective h <=> injective(nodeMap h) /\ injective(edgeMap h)
+end
+
+%[ %% AbstractSetConstruction is missing, case is wrong
+
+%{ Coproducts of directed graphs, defined in terms of the corresponding
+   operations on sets, acting component wise.
+   Note that we have to fix N and E here, since we need 
+   set representations for them
+   in order to get the needed constructions on sets. }%
+
+spec GraphCoproducts [SetRepresentation with S |-> N] 
+     [SetRepresentation with S |-> E] =
+  AbstractSetConstructions[SetRepresentation with S |-> N]
+and
+  AbstractSetConstructions[SetRepresentation with S |-> E]
+and GraphHomomorphism
+then
+  ops __coproduct__ : Graph N E * Graph N E -> Graph N E;
+
+  forall g,g1,g2: Graph N E
+  . g1 coproduct g2 = 
+    let (cn,medn) = nodes g1 coproduct nodes g2
+        (ce,mede) = edges g1 coproduct egdes g2
+        (inln,inrn) = cn   
+        (inle,inre) = ce
+        g = (cod inl,
+             %% needs to be reformulated, since inl, inr are not constructors
+             \y:E -> case y of (inle x) -> inln o (sourceMap g1) x
+                               (inre x) -> inrn o (sourceMap g2) x,
+             \y:E -> case y of (inle x) -> inln o (targetMap g1) x
+                               (inre x) -> inrn o (targetMap g2) x)
+        inlg = (g1,inln,inle,g) as HomHom N E
+        inrg = (g2,inrn,inre,g) as HomHom N E
+        medg c1 = 
+          let (h,k) = c1
+          in (g,medn (nodeMap h,nodeMap k),mede (edgeMap h,edgemap k),cod h)
+    in ((inlg,inrg),medg)
+end
+
+%{ Constructions on directed graphs, defined in terms of the
+   corresponding operations on sets, usually acting component wise.
+   Note that we have to fix N and E here, since we need set
+   representations for them in order to get the needed constructions
+   on sets. }%
+
+spec GraphCoequalizers [SetRepresentation with S |-> N] 
+     [SetRepresentation with S |-> E] =
+  AbstractSetConstructions[SetRepresentation with S |-> N]
+and
+  AbstractSetConstructions[SetRepresentation with S |-> E]
+and GraphHomomorphism
+then
+  type Congruence = {(g,rn,re) : Graph N E * PER N * PER E
+                          . nodes g = dom rn /\ edges g = dom re /\
+                            forall e1,e2:E . (e1,e2) isIn re =>
+                               (sourceMap g e1,sourceMap g e2) isIn rn /\
+                               (targetMap g e1,targetMap g e2) isIn rn }
+  ops graph : Congruence -> Graph N E;
+      nodeRel : Congruence -> PER N;
+      edgeRel : Congruence -> PER E;
+      factor : Congruence ->? Graph N E;
+      __coproduct__ : Graph N E * Graph N E -> Graph N E;
+      pushout : HomHom N E -> HomHom N E ->? 
+                HomHom N E * HomHom N E * Med (Graph N E) (HomHom N E)
+                
+
+  forall g,g1,g2: Graph N E; h1,h2:HomHom N E; r:Relation N E
+
+  . ((g,rn,re) in Congruence)
+    => graph ((g,rn,re) as Congruence) = g
+  . ((g,rn,re) in Congruence)
+    => nodeRel ((g,rn,re) as Congruence) = rn
+  . ((g,rn,re) in Congruence)
+    => edgeRel ((g,rn,re) as Congruence) = re
+
+  . factor c =
+    (factor (graph c) (nodeRel c),
+     mediate (edgeRel c) (coeq (nodeRel c) o sourceMap (graph c)),
+     mediate (edgeRel c) (coeq (nodeRel c) o targetMap (graph c)) )
+
+  . g1 coproduct g2 = 
+    (nodes g1 coproduct nodes g2,
+     sourceMap g1 coproduct sourceMap g2,
+     targetMap g1 coproduct targetMap g2)
+end
+]%
+
+
+spec GraphCategory =
+  sorts N,E 
+and 
+  GraphHomomorphism
+then
+  types G := Graph N E;
+        H := HomHom N E;
+        M = {h:H . injective h}
+end
+
+view CategoryofGraphs : HLRCategory to GraphCategory =
+     Ob |-> G, Mor |-> H, __o__, dom, cod, id, M
+end

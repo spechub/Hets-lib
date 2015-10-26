@@ -1,0 +1,42 @@
+spec Nat =
+ free type Nat ::= 0 | suc(Nat)
+end
+
+spec Nat_Comp =
+ Nat then %def
+ free {
+  pred __<__ : Nat * Nat
+  forall x,y : Nat
+    . 0 < suc(x)
+    . x < y => suc(x) < suc(y)
+ }
+
+spec Pos =
+ Nat then %mono
+ sort Pos = {p:Nat . not p = 0}
+end
+
+spec Nat_Add =
+ Nat then %def
+ op __+__ : Nat * Nat -> Nat
+ forall x,y : Nat
+  . x + 0 = x
+  . x + suc(y) = suc(x + y)
+
+spec Nat_Pred =
+  Nat then %def
+  op pre : Nat -> ?Nat
+  forall x : Nat
+   . not def(pre(0))
+   . pre(suc(x)) = x
+end
+
+spec Nat_Diff =
+  Nat_Pred and Nat_Comp then %def
+  op __-__ : Nat * Nat -> ?Nat
+  forall x, y : Nat
+   . def(x - y) <=> (y < x \/ y = x)
+   . def(x - 0) => x - 0 = x
+   . def(x- suc(y)) => x - suc(y) = pre(x -y)
+end
+

@@ -1,0 +1,253 @@
+library Calculi/Algebra/RelationAlgebraModel
+
+version 0.5
+%author: S. Woelfl
+%date: 22-06-2005
+
+%(
+    This library defines some basic higher order concepts from the
+    theory of relation algebras (cf., for example, I. Hodkinson, Atom
+    structures of relation algebras, 1995).
+)%
+
+from HasCASL/Set get Set
+from Calculi/Algebra/RelationAlgebra get
+        RelationAlgebra,
+        NonAssocRelationAlgebra,
+        ExtPseudoRelationAlgebraByOrderRelations,
+        RelationAlgebraWithOrderRelations,
+        AtomicRelationAlgebra,
+        AtomicNonAssocRelationAlgebra
+from Calculi/Algebra/RelationAlgebraSymbolic get CompositionTable
+from Calculi/Algebra/BooleanAlgebra get BooleanAlgebraWithCompl
+
+
+logic HasCASL
+
+
+%( Part I: Set Algebras of Binary Relations and Algebras of Binary Relations
+)%
+
+
+
+
+spec BinaryRelations[sort Elem] =
+     Set
+then %def
+     type Relation ::= abs(rep:Set(Elem*Elem))
+end
+
+
+spec ConstructFullAlgebraOfBinaryRelations[sort Elem] =
+        BinaryRelations[sort Elem]
+then %def
+     ops
+         0,1,id:Relation;
+         __cup__,__cap__,__cmps__: Relation * Relation -> Relation;
+         compl__,inv__: Relation -> Relation
+
+     forall r,s:Relation; x,y:Elem
+     . rep(0) = emptySet
+     . rep(1) = allSet
+     . rep(r cup s) = rep(r) union rep(s)
+     . rep(r cap s) = rep(r) intersection rep(s)
+     . rep(compl(r)) = rep(1) \\ rep(r)
+     . (x,y) isIn rep(id) <=> x = y
+     . (x,y) isIn rep(r cmps s) <=> exists z:Elem . (x,z) isIn rep(r) /\ (z,y) isIn rep(s)
+     . (x,y) isIn rep(inv(r)) <=> (y,x) isIn rep(r)
+
+then %implies
+     ops
+         __cup__:  Relation * Relation -> Relation, assoc, comm, idem, unit 0;
+         __cap__:  Relation * Relation -> Relation, assoc, comm, idem, unit 1;
+         __cmps__: Relation * Relation -> Relation, assoc, unit id;
+
+     forall x:Relation
+     . compl(compl(x)) = x
+     . inv(inv(x)) = x
+     . inv(id) = id
+end
+
+
+
+spec SetAlgebraOfBinaryRelations1 =
+     BinaryRelations[sort Elem]
+and
+{  local  ConstructFullAlgebraOfBinaryRelations[sort Elem]
+   within
+        sort Rel < Relation
+        ops
+             0,1:Rel;
+            __cup__,__cap__: Rel * Rel -> Rel;
+         compl__: Rel -> Rel
+  }
+
+then %implies
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+         __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+     forall x:Rel
+     . compl(compl(x)) = x
+end
+
+
+spec SetAlgebraOfBinaryRelations =
+     sort Elem
+and local ConstructFullAlgebraOfBinaryRelations[sort Elem]
+within {
+        sort Rel < Relation
+        ops
+             0,1:Rel;
+            __cup__,__cap__: Rel * Rel -> Rel;
+         compl__: Rel -> Rel
+        }
+then %implies
+     ops
+         __cup__:  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+         __cap__:  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+     forall x:Rel
+     . compl(compl(x)) = x
+end
+
+
+spec AlgebraOfBinaryRelations =
+     sort Elem
+and
+local  ConstructFullAlgebraOfBinaryRelations[sort Elem]
+within
+        sort Rel < Relation
+        ops
+                           0,1,id:Rel;
+         __cup__,__cap__,__cmps__: Rel * Rel -> Rel;
+                    compl__,inv__: Rel -> Rel
+
+then %implies
+     ops
+         __cup__ :  Rel * Rel -> Rel, assoc, comm, idem, unit 0;
+         __cap__ :  Rel * Rel -> Rel, assoc, comm, idem, unit 1;
+         __cmps__:  Rel * Rel -> Rel, assoc, unit id;
+     forall x:Rel
+     . compl(compl(x)) = x
+     . inv(inv(x)) = x
+end
+
+
+
+view AlgebraOfBinaryRelations_as_SetAlgebraOfBinaryRelations :
+     SetAlgebraOfBinaryRelations to AlgebraOfBinaryRelations
+
+
+view SetAlgebraOfBinaryRelations_as_BooleanAlgebraWithCompl :
+     BooleanAlgebraWithCompl to SetAlgebraOfBinaryRelations
+=
+     sort Elem |-> Rel
+end
+
+
+view AlgebraOfBinaryRelations_as_RelationAlgebra :
+     RelationAlgebra to AlgebraOfBinaryRelations
+=
+     sort Rel |-> Rel
+end
+
+
+
+%( Part II: Models of Syntatic (Abstract) Relation Algebras
+)%
+
+
+spec ElemStructure =
+     sort Elem
+end
+
+
+spec BaseRelationModel[ElemStructure] =
+     BinaryRelations[sort Elem]
+then
+     type BaseRel < Relation
+end
+
+
+spec JEPDBaseRelationModel =
+     BaseRelationModel[ElemStructure]
+then
+     forall x,y:Elem; r,s:BaseRel
+     . not rep(r) = emptySet
+     . exists r:BaseRel . (x,y) isIn rep(r)                     %(JointlyExhaustive)%
+     . not r = s => rep(r) intersection rep(s) = emptySet       %(PairwiseDisjoint)%
+end
+
+
+
+spec ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+     type Rel = {x:Relation . exists X:Set(BaseRel) .
+                        (forall y,z:Elem . (y,z) isIn rep(x) <=>
+                (exists r:BaseRel . r isIn X /\ (y,z) isIn rep(r)))}
+
+then %implies
+     sorts BaseRel < Rel
+     sorts Rel < Relation
+end
+
+
+%( Following we provide three specs that are needed to check whether a BaseRelationModel
+   is suitable to define a reasonable model.
+)%
+
+
+spec CheckCompositionClosedBaseRelationModel =
+     JEPDBaseRelationModel
+and  ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
+then local ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+within
+    { sort Rel
+      ops __cmps__: BaseRel * BaseRel -> Rel;
+             inv__: BaseRel -> Rel;
+               id : Rel
+    }
+end
+
+
+spec CompositionClosedBaseRelationModel =
+     CheckCompositionClosedBaseRelationModel
+hide sort Rel
+end
+
+
+spec ConstructPseudoModelFromBaseRelationModel[BaseRelationModel[ElemStructure]] = %def
+     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
+and
+     ConstructFullAlgebraOfBinaryRelations[ElemStructure]
+then %def
+     ops __cmps__: BaseRel * BaseRel -> Relation;
+             inv__: BaseRel -> Relation;
+                id: Relation
+end
+
+
+spec ConstructModelFromBaseRelationModel[CompositionClosedBaseRelationModel] = %def
+     ConstructRelationsFromBaseRelationModel[BaseRelationModel[ElemStructure]]
+and  AlgebraOfBinaryRelations
+then %def
+     preds __eps__:BaseRel * Rel;
+          __subset__:Rel*Rel
+     forall x:BaseRel;r,r':Rel
+     . x eps r <=> rep(x) subset rep(r)
+     . r subset r' <=> rep(r) subset rep(r')
+end
+
+
+
+view BooleanAlgebra_from_JEPDBaseRelationModel[JEPDBaseRelationModel] :
+     BooleanAlgebraWithCompl
+to   { ConstructPseudoModelFromBaseRelationModel[JEPDBaseRelationModel]
+        and SetAlgebraOfBinaryRelations }
+=    Elem |-> Rel
+end
+
+
+view RelationAlgebra_from_CompositionClosedBaseRelationModel
+        [CompositionClosedBaseRelationModel] :
+     RelationAlgebra
+to   ConstructModelFromBaseRelationModel[CompositionClosedBaseRelationModel]
+end

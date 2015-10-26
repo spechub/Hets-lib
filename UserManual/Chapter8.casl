@@ -1,0 +1,226 @@
+library UserManual/Chapter8
+
+%author Michel Bidoit <bidoit@lsv.ens-cachan.fr>
+%date   20 Oct 2003
+
+from UserManual/Chapter3 get
+    Natural, Natural_Order, Natural_Arithmetic, Color, Generated_Set
+
+spec Elem =
+    sort Elem
+end
+
+spec Cont [Elem] =
+    generated type Cont[Elem] ::= empty | insert(Elem; Cont[Elem])
+    preds __is_empty : Cont[Elem];
+	  __is_in__ : Elem * Cont[Elem]
+    ops choose : Cont[Elem] ->? Elem;
+	delete : Elem * Cont[Elem] -> Cont[Elem]
+    forall e, e':Elem; C:Cont[Elem]
+    . empty is_empty                        %(is_empty_empty)%
+    . not insert(e, C) is_empty             %(is_empty_insert)%
+    . not e is_in empty                     %(is_in_empty)%
+    . e is_in insert(e', C) <=> e = e' \/ e is_in C  %(is_in_insert)%
+    . def choose(C) <=> not C is_empty               %(choose_dom)%
+    . def choose(C) => choose(C) is_in C             %(is_in_choose)%
+    . e is_in delete(e', C) <=> e is_in C /\ not e = e'   %(is_in_delete)%
+end
+
+spec Cont_Diff [Elem] =
+    Cont [Elem]
+then
+    op diff : Cont[Elem] * Cont[Elem] -> Cont[Elem]
+    forall e:Elem; C, C':Cont[Elem]
+    . e is_in diff(C, C') <=> e is_in C /\ not e is_in C'
+end
+
+spec Req =
+    Cont_Diff [Natural_Order]
+end
+
+spec Flat_Req =
+    free type Nat ::= 0 | suc(Nat)
+    pred __<__ : Nat * Nat
+    generated type Cont[Nat] ::= empty | insert(Nat; Cont[Nat])
+    preds __is_empty : Cont[Nat];
+	  __is_in__ : Nat * Cont[Nat]
+    ops choose : Cont[Nat] ->? Nat;
+	delete : Nat * Cont[Nat] -> Cont[Nat];
+	diff : Cont[Nat] * Cont[Nat] -> Cont[Nat]
+    forall e, e':Nat; C, C':Cont[Nat]
+    . 0 < suc(e)
+    . not e < 0
+    . suc(e) < suc(e') <=> e < e'
+    . empty is_empty
+    . not insert(e, C) is_empty
+    . not e is_in empty
+    . e is_in insert(e', C) <=> e = e' \/ e is_in C
+    . def choose(C) <=> not C is_empty
+    . def choose(C) => choose(C) is_in C
+    . e is_in delete(e', C) <=> e is_in C /\ not e = e'
+    . e is_in diff(C, C') <=> e is_in C /\ not e is_in C'
+end
+
+arch spec System =
+    units
+	N : Natural_Order ; C : Cont [Natural_Order] given N ;
+	D : Cont_Diff [Natural_Order] given C
+    result D
+end
+
+arch spec System_1 =
+    units N : Natural_Order ; CD : Cont_Diff [Natural_Order] given N
+    result CD
+end
+
+spec Cont_Diff_1 =
+    Cont [Natural_Order]
+then
+    op diff : Cont[Nat] * Cont[Nat] -> Cont[Nat]
+    forall x, y:Nat; C, C':Cont[Nat]
+    . diff(C, empty) = C   %(diff_empty_right)%
+    . diff(empty, C') = empty  %(diff_empty_left)%
+    . not x is_in C =>
+      diff(insert(x, C), insert(y, C')) =
+	  insert(x, diff(C, insert(y, C')))
+	      when x < y else diff(C, C') when x = y else diff(insert(x, C), C')  %(diff_insert)%
+    . x is_in diff(C, C') <=> x is_in C /\ not x is_in C'  %(in_diff)%
+end
+
+
+arch spec Inconsistent =
+    units
+	N : Natural_Order ; C : Cont [Natural_Order] given N ;
+	D : Cont_Diff_1 given C
+    result D
+end
+
+arch spec System_G =
+    units
+	N : Natural_Order ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+    result G [F [N]]
+end
+
+arch spec System_A =
+    units
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+    result G [F [NA]]
+end
+
+arch spec System_A_1 =
+    units
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order] ;
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+    result G [F [NA]] hide  1,  __+__,  __*__
+end
+
+arch spec System_A_2 =
+    units
+	NA : Natural_Arithmetic ; F : Natural_Order -> Cont [Natural_Order];
+	G : Cont [Natural_Order] -> Cont_Diff [Natural_Order]
+    result G [F [NA hide  1,  __+__,  __*__]]
+end
+
+unit spec Cont_Comp = Elem -> Cont [Elem]
+end
+
+unit spec Diff_Comp = Cont [Elem] -> Cont_Diff [Elem]
+end
+
+arch spec System_G1 =
+    units N : Natural_Order ; F : Cont_Comp ; G : Diff_Comp
+    result G [F [N]]
+end
+
+unit spec Diff_Comp_1 =
+	Cont [Elem] -> { op diff : Cont[Elem] * Cont[Elem] -> Cont[Elem]
+		         forall e:Elem; C, C':Cont[Elem]
+		         . e is_in diff(C, C') <=> e is_in C /\ not e is_in C' }
+end
+
+arch spec Other_System =
+    units N : Natural_Order ; C : Color ; F : Cont_Comp
+    result F [N] and F [C fit  Elem |-> RGB]
+end
+
+arch spec Other_System_1 =
+    units
+	N : Natural_Order ; C : Color ;
+	FN : Natural_Order -> Cont [Natural_Order];
+	FC : Color -> Cont [Color fit  Elem |-> RGB]
+    result FN [N] and FC [C]
+end
+
+unit spec Set_Comp = Elem -> Generated_Set [Elem]
+end
+
+spec Cont2Set [Elem] =
+    Cont [Elem] and Generated_Set [Elem]
+then
+    op elements_of__ : Cont[Elem] -> Set
+    forall e:Elem; C:Cont[Elem]
+    . elements_of empty = empty
+    . elements_of insert(e, C) = { e } cup elements_of C
+end
+
+arch spec Arch_Cont2Set_Nat =
+    units
+	N : Natural_Order ; C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result F [C [N]] [S [N]]
+end
+
+arch spec Arch_Cont2Set =
+    units
+	C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result lambda X : Elem . F [C [X]] [S [X]]
+end
+
+arch spec Arch_Cont2Set_Used =
+    units N : Natural_Order ; CSF : arch spec Arch_Cont2Set
+    result CSF [N]
+end
+
+arch spec Arch_Cont2Set_Nat_1 =
+    units
+	N : Natural_Order ; C : Cont_Comp ; S : Set_Comp ;
+	G : {Cont [Elem] and Generated_Set [Elem]} -> Cont2Set [Elem]
+    result G [C [N] and S [N] fit  Cont[Elem] |-> Cont[Nat]]
+end
+
+%[
+arch spec Wrong_Arch_Spec =
+    units
+	CN: Cont [Natural_Order]; SN: Generated_Set [Natural_Order];
+	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result F [CN] [SN]
+end
+
+arch spec Badly_Structured_Arch_Spec =
+    units
+	N: Natural_Order; A: Natural_Order -> Natural_Arithmetic;
+	C: Cont_Comp; S: Set_Comp;
+	F: Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result F [C [A [N]]] [S [A [N]]]
+end
+]%
+
+arch spec Well_Structured_Arch_Spec =
+    units
+	N : Natural_Order ; A : Natural_Order -> Natural_Arithmetic ;
+	AN = A [N]; C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result F [C [AN]] [S [AN]]
+end
+
+arch spec Another_Well_Structured_Arch_Spec =
+    units
+	N : Natural_Order ; A : Natural_Order -> Natural_Arithmetic ;
+	C : Cont_Comp ; S : Set_Comp ;
+	F : Cont [Elem] *  Generated_Set [Elem] -> Cont2Set [Elem]
+    result local AN = A [N]
+	   within F [C [AN]] [S [AN]]
+end

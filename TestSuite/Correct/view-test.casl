@@ -1,0 +1,18 @@
+library view_test
+
+spec Assoc =
+  sort Elem
+  op __o__ : Elem * Elem -> Elem, assoc
+end
+
+spec BasicNat =
+  free type Nat ::= 0 | succ(Nat)
+  op __+__ : Nat*Nat->Nat
+  forall x,y:Nat
+  . 0+x=x %(add_Nat_0)%
+  . succ(x)+y = succ(x+y) %(add_Nat_succ)%
+end
+
+view v : Assoc to BasicNat =
+  Elem |-> Nat, __o__ |-> __+__
+end

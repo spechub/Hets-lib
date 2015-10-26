@@ -1,0 +1,129 @@
+library CoCASL/Examples
+
+from Basic/SimpleDatatypes get Boolean
+
+logic CoCASL
+
+spec Stream1 [sort Elem] =
+  cogenerated cotype Stream ::= cons(hd : Elem; tl : Stream)
+  ops even, odd: Stream -> Stream;
+      merge : Stream*Stream -> Stream
+  forall s,s1,s2:Stream
+  . hd(odd(s)) = hd(s)
+  . tl(odd(s)) = odd(tl(tl(s)))
+  . hd(even(s)) = hd(tl(s))
+  . tl(even(s)) = even(tl(tl(s)))
+  . hd(merge(s1,s2)) = hd(s1)
+  . tl(merge(s1,s2)) = merge(s2,tl(s1))
+then %implies
+  forall s:Stream
+  . merge(odd(s),even(s)) = s
+end
+
+
+spec Stream2 [sort Elem] =
+  cofree cotype Stream ::= (hd : Elem; tl : Stream)
+end
+
+spec InfTree [sort Elem] =
+  cofree cotypes InfTree ::= (label : Elem; children : InfForest ); 
+                 InfForest ::= (first :?InfTree; rest :?InfForest ) 
+end
+
+spec BitStream3 =
+  free type Bit ::= 0 | 1 
+then cofree {
+  cotype BitStream ::= (hd : Bit ; tl : BitStream)
+  forall  s : BitStream
+  . hd (s) = 0 /\ hd (tl (s)) = 0 /\ hd (tl (tl (s))) = 1 
+  }
+end
+
+spec BitStream4 =
+  free type Bit ::= 0 | 1 
+then 
+  cofree {
+     cotype BitStream ::= (hd : Bit ; tl : BitStream)
+     . <tl* > hd = 1
+   }
+end
+
+spec ListStreamTree [sort Elem] =
+  free type Tree ::= EmtpyTree |
+                     Tree(left :?Tree; elem :?Elem; right :?Tree) 
+  cofree cotype Stream ::= (hd : Tree; tl : Stream) 
+  free type List ::= Nil | Cons(head :?Stream; tail :?List ) 
+end
+
+spec Moore =
+  sorts In, Out 
+  cotype State ::= (next : In -> State; observe : Out ) 
+end
+
+spec FullyAbstractMoore =
+  sorts In, Out 
+  cogenerated cotype State ::= (next : In -> State; observe : Out) 
+end
+
+spec FinalMoore1 =
+  sorts In, Out 
+  cofree cotype State ::= (next : In -> State; observe : Out) 
+end
+
+spec FunctionType =
+  sorts A, B 
+  cofree cotype Fun[A, B ] ::= (eval : A -> B ) 
+end
+
+spec NonDeterministicAutomata =
+  sort In sort State 
+then free {
+    type FinSet ::= {} | { }(State) | __union__ (FinSet ; FinSet ) 
+    op __union__ : FinSet * FinSet -> FinSet , assoc, comm, idem, unit {} 
+  } 
+then 
+  cotype State ::= (next : In -> FinSet ) 
+end
+
+spec FinalMoore2 =
+  sorts In, Out 
+then 
+  cofree { cotype State ::= (next : In -> State; observe : Out) }
+end
+
+spec FinalNonDeterministicAutomaton =
+  sort In then 
+cofree {
+    sort State then free {
+      type FinSet ::= {} | { }(State) | __union__ (FinSet ; FinSet ) 
+      op __union__ : FinSet * FinSet -> FinSet , assoc, comm, idem, unit {} 
+         } 
+then 
+  cotype State ::= (next : In -> FinSet ) 
+  } 
+end
+
+spec NonRepetitiveNonDeterministicAutomata =
+  sort In 
+  sort State
+then free %modal
+   {
+    type FinSet ::= {} | { }(State) | __union__ (FinSet ; FinSet ) 
+    op __union__ : FinSet * FinSet -> FinSet , assoc, comm, idem, unit {} 
+   } 
+then 
+  cotype State ::= (next : In -> FinSet )
+  . forall i : In . <next(i)* > [next (i)] false
+end
+
+spec FinalElement = 
+  Boolean 
+then 
+  cofree {
+     sort Unit 
+     forall x , y : Unit 
+      . x = y 
+     op el : Unit -> Boolean
+   }
+end
+

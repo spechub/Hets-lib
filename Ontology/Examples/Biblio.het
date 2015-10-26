@@ -1,0 +1,90 @@
+library Ontology/Examples/Biblio
+
+logic OWL
+
+spec Biblio_OWL =
+
+  DataProperty: name
+  DataProperty: title
+  ObjectProperty: hasJournal
+  ObjectProperty: author
+  DataProperty: impactFactor
+
+  Class: Researcher
+  SubClassOf: name some string
+
+  ObjectProperty: hasArticle
+  InverseOf: hasJournal
+
+  Class: Article
+  SubClassOf: author some Thing, title some string, hasJournal some Journal
+
+  Class: Journal
+  SubClassOf: name some string, hasArticle some Thing, impactFactor some integer
+
+end
+
+logic RelScheme
+
+spec Biblio_RS =
+  Tables
+    person(key id:pointer, name:string)
+    author_of(person, paper:pointer)
+    paper(key id:pointer,title:string,published_in:pointer)
+    journal(key id:pointer,name:string,impact_factor:integer)
+
+  Relationships
+    author_of[person]      -> person[id]  one_to_many
+    author_of[paper]       -> paper[id]   one_to_many
+    paper[published_in]    -> journal[id] one_to_many
+end
+
+
+from Basic/Numbers get Rat
+
+logic CASL
+
+%{ this specification could be defined elsewhere }%
+spec Owl =
+     Rat with Rat |-> float
+                , Int |-> integer
+                , Nat |-> nonNegativeInteger
+                , Pos |-> positiveInteger
+     and logic OWL: {}
+     %% include other OWL builtin stuff
+end
+
+logic CASL(Owl)
+
+view Biblio_OWL_in_RS : Biblio_OWL to
+  { Biblio_RS with pointer |-> Thing
+     then %def
+          sorts string, integer < DATA; DATA < Thing
+          preds Thing, Nothing: Thing
+          preds Researcher(x : Thing)
+                  <=> exists n : string; a : Thing
+                    . person(x, n) /\ author_of(x, a);
+                Article(x : Thing)
+                  <=> exists t : string; j : integer . paper(x, t, j);
+                Journal(x : Thing)
+                  <=> exists n : string; i : integer . journal(x, n, i);
+                name(x : Thing; n : DATA)
+                  <=> exists m : string . person(x, m) /\ n = m;
+                hasArticle(x, j : Thing)
+                  <=> exists n, t : string; i : integer
+                    . journal(x, n, i) /\ paper(j, t, x);
+                hasJournal(j, x : Thing)
+                  <=> exists n, t : string; i : integer
+                    . journal(x, n, i) /\ paper(j, t, x);
+                author(a, p : Thing)
+                  <=> exists t, n : string; p : Thing
+                    . paper(a, t, p) /\ person(p, n);
+                title(a : Thing; t : DATA)
+                  <=> exists p : Thing; s : string . paper(a, s, p) /\ s = t;
+                impactFactor(j : Thing; f : DATA)
+                  <=> exists n : string; i : integer
+                    . journal(j, n, i) /\ i = j;
+  }
+end
+
+
