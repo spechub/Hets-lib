@@ -147,14 +147,14 @@ spec Generated_Set [sort Elem] =
     pred __is_in__ : Elem * Set
     ops {__}(e :Elem): Set = insert (e, empty);
 	__cup__ : Set * Set -> Set;
-	remove : Elem * Set -> Set
+	removeElem : Elem * Set -> Set
     forall e, e':Elem; S, S':Set
     . not (e is_in empty)
     . (e is_in insert (e', S)) <=> e = e' \/ (e is_in S)
     . S = S' <=> forall x:Elem . (x is_in S) <=> (x is_in S')
                                                    %(equal_sets)%
     . (e is_in (S cup S')) <=> (e is_in S) \/ (e is_in S')
-    . (e is_in remove (e', S)) <=> not e = e' /\ (e is_in S)
+    . (e is_in removeElem (e', S)) <=> not e = e' /\ (e is_in S)
 then %implies
     forall e, e':Elem; S:Set
     . insert (e, insert (e, S)) = insert (e, S)
@@ -285,23 +285,23 @@ spec Set_Union [sort Elem] =
     Set [sort Elem]
 then %def
     ops __cup__ : Set * Set -> Set, assoc, comm, idem, unit empty;
-	remove : Elem * Set -> Set
+	removeElem : Elem * Set -> Set
     forall e, e':Elem; S, S':Set
     . S cup insert (e', S') = insert (e', S cup S')
-    . remove (e, empty) = empty
-    . remove (e, insert (e, S)) = remove (e, S)
+    . removeElem (e, empty) = empty
+    . removeElem (e, insert (e, S)) = removeElem (e, S)
     . not e = e' =>
-	  remove (e, insert (e', S)) = insert (e', remove (e, S))
+	  removeElem (e, insert (e', S)) = insert (e', removeElem (e, S))
 end
 
 spec Set_Union_1 [sort Elem] =
     Set_Generated [sort Elem]
 then %def
     ops __cup__ : Set * Set -> Set, assoc, comm, idem, unit empty;
-	remove : Elem * Set -> Set
+	removeElem : Elem * Set -> Set
     forall e, e':Elem; S, S':Set
     . (e is_in (S cup S')) <=> (e is_in S) \/ (e is_in S')
-    . (e is_in remove (e', S)) <=> not e = e' /\ (e is_in S)
+    . (e is_in removeElem (e', S)) <=> not e = e' /\ (e is_in S)
 end
 
 spec UnNatural =
