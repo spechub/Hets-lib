@@ -31,9 +31,9 @@ end
 
 arch spec Arch_Sbcs =
     units
-	P: Value -> Preliminary; S: Preliminary -> Sbcs_State;
-	A: Sbcs_State -> Sbcs_Analysis;
-	C: Sbcs_Analysis -> Steam_Boiler_Control_System
+	P : Value -> Preliminary; S : Preliminary -> Sbcs_State;
+	A : Sbcs_State -> Sbcs_Analysis;
+	C : Sbcs_Analysis -> Steam_Boiler_Control_System
     result lambda V : Value . C [A [S [P [V]]]]
 end
 

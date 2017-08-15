@@ -59,17 +59,17 @@ then
   ops
       qty    : Product * Stock ->? Nat;
       add    : Product * Pos * Stock ->? Stock;
-      remove : Product * Pos * Stock ->? Stock;
+      removeP : Product * Pos * Stock ->? Stock;
   pred
       __ is_in __ : Product * Stock
   vars p,p':Product; n:Pos; s:Stock
     . def qty(p,s) <=> p is_in s
     . def add(p,n,s) <=> p is_in s
-    . def remove(p,n,s) <=> p is_in s /\ qty(p,s) >= n
+    . def removeP(p,n,s) <=> p is_in s /\ qty(p,s) >= n
     . qty(p,add(p,n,s)) = qty(p,s) + n if p is_in s
     . qty(p',add(p,n,s)) = qty(p',s) if p is_in s /\ p' is_in s /\ not(p' = p)
-    . qty(p,remove(p,n,s)) = qty(p,s) -? n if p is_in s /\ qty(p,s) >= n
-    . qty(p',remove(p,n,s)) = qty(p',s) if p is_in s /\ p' is_in s /\ not(p'=p)
+    . qty(p,removeP(p,n,s)) = qty(p,s) -? n if p is_in s /\ qty(p,s) >= n
+    . qty(p',removeP(p,n,s)) = qty(p',s) if p is_in s /\ p' is_in s /\ not(p'=p)
 end
 
 
@@ -89,7 +89,7 @@ then
   vars o:Order; s:Stock
 
     . is_invoiced(order_of(invoice_order(o,s))) if invoice_ok(o,s)
-    . stock_of(invoice_order(o,s)) = remove(reference(o),ordered_qty(o),s)
+    . stock_of(invoice_order(o,s)) = removeP(reference(o),ordered_qty(o),s)
                 if invoice_ok(o,s)
 
     . order_of(invoice_order(o,s)) = o if not invoice_ok(o,s)
@@ -127,12 +127,12 @@ then
 
 %% Auxiliary definitions
   ops __ <- __ : OQueue * Order -> OQueue;
-      remove   : Order * OQueue -> OQueue;
+      removeP   : Order * OQueue -> OQueue;
   vars o,o2:Order; oq:OQueue
     . oq <- o = oq ++ (o::[])
-    . remove(o,[]) = []
-    . remove(o,o2::oq) = o2::remove(o,oq) when not(o=o2)
-                        else remove(o,oq)
+    . removeP(o,[]) = []
+    . removeP(o,o2::oq) = o2::removeP(o,oq) when not(o=o2)
+                        else removeP(o,oq)
 end
 
 spec QUEUES = ORDER_QUEUE
@@ -198,10 +198,10 @@ then
                                 if p is_in the_stock(vgs)
 
     . cancel_order(o,vgs) =
-                mk_gs(remove(o,porders(vgs)) as PQueue,
+                mk_gs(removeP(o,porders(vgs)) as PQueue,
                       iorders(vgs),the_stock(vgs))
                         when o is_in porders(vgs)
-           else mk_gs(porders(vgs),remove(o,iorders(vgs)) as IQueue,
+           else mk_gs(porders(vgs),removeP(o,iorders(vgs)) as IQueue,
                       add(reference(o),ordered_qty(o),the_stock(vgs)))
                         when o is_in iorders(vgs)
            else vgs
@@ -217,7 +217,7 @@ then
        /\ osm = invoice_order(o1,the_stock(vgs))
        /\ o2 = order_of(osm)
        /\ s2 = stock_of(osm))
-        => deal_with_order(vgs) = mk_gs(remove(o1,porders(vgs)) as PQueue,
+        => deal_with_order(vgs) = mk_gs(removeP(o1,porders(vgs)) as PQueue,
                                         (iorders(vgs) <- o2) as IQueue,
                                         s2))
                 if invoiceable(porders(vgs),the_stock(vgs))

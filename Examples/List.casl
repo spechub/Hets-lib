@@ -18,7 +18,7 @@ spec List[Elem] =
   . (x::L) ++ K = x :: (L ++ K)       %(concat_NeList_List)%
   . reverse([])=[]                          %(reverse_nil)%
   . reverse(x::L) = reverse(L) ++ (x::[])   %(reverse_NeList)%
-  . null(L) <=> L=[]     %(null)%
+  . null(L) <=> L=[]     %(null_def)%
 
 then %implies
   forall K,L: List[Elem]

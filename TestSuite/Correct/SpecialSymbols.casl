@@ -3,15 +3,15 @@ library SpecialSymbols
 spec sp1 =
   sort s
   op __*__ : s * s -> s
-  op __*__ : s × s -> s
-  forall x:s . x × x = x
+  op __×__ : s × s -> s
+  forall x : s . x × x = x
 end
 
 spec sp2 =
   sort s
   op __×__ : s * s -> s
   op __×*×__ : s * s -> s
-  · ¬ forall x:s . x * x = x
+  · ¬ forall x:s . x × x = x
   . not forall x:s . x ×*× x = x
 end
 

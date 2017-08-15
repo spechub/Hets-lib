@@ -186,9 +186,9 @@ end
 
 
 
-%
-%
-%
+%%
+%%
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -196,111 +196,111 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%spec DoubleCrossC = DoubleCrossCalculus then
-%	pred dcc : Location * Location * Location * OrientationDCC
-%	forall a, b, c, d: Location; o: OrientationDCC13
-%	. dcc(a,b,d,o) <=> a-->b # c-->*d > o /\ b == c
-%%[	forall a, b, c: Location; o: OrientationDCC13
-%	. dcc(a,b,c,o) <=> a-->b # b-->*c > o  ]%
-%end
-%
-%
-%spec Places = Locations and Arrows then
-%	sort Place < Location
-%	op  originLocation: Place -> Location;
-%	    origin: Place -> Arrow
-%	forall p: Place
-%	. origin(p) = p --> originLocation(p) %(origin_def)%
-%	. not p = originLocation(p) %(originLocation_not_selfreference)% %implied
-%end
-%
-%spec Segments = Places then
-%	sort Segment = 
-%	   {s: Arrow . source(s) in Place /\ target(s) in Place}
-%	ops oEntry, oExit: Segment -> Orientation;  
-%	    __-->__: Place * Place ->? Segment 
-%	forall entry, exit: Place 
-%	. oEntry(entry-->exit) = origin(entry)  | entry-->exit
-%	. oExit(entry-->exit)  = entry-->exit | origin(exit)
-%
-%	forall a, b, c, d: Place 
-%	. a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
-%	. a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
-%	. oExit(a-->b)  = front <=> a-->b | b-->c = oEntry(b-->c)
-%	. oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
-%
-%	. b == d /\ a-->b | b-->c = a-->d | d-->c =>  
-%	  oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) 
-%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
-%	  oEntry(b-->c) = origin(b) | origin(d) + oEntry(d-->c)
-%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
-%	  oExit(a-->d) = oExit(a-->b) - origin(d) | origin(b)
-%
-%%[  then %implies
-%	forall a, b, c, d: Place 
-%  	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
-%	  oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) 
-%	. oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) =>
-%	  oEntry(b-->c) = oExit(a-->d)+(oEntry(d-->c)-oExit(a-->b))
-%]%
-%end
-%
-%
-%spec RoutePredicates = DoubleCrossCalculus and Segments then
-%	preds __via__  : Segment * Location;  
-%	forall a, b, c: Place
-%	. a-->b via c <=> a-->b # b-->c > onCourse
-%then
-%	sort LROrientation = {o:OrientationDCC . o=left \/ o=right}
-%	preds __ passBy__  : Segment * Location;  
-%	      __pass__on__,
-%	      __along__on__ : Segment * Location * OrientationDCC;
-%	forall a, b, c: Place; lr: LROrientation
-%	. a-->b pass c on lr <=> 
-%	  exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
-%	. a-->b passBy c <=> 
-%	  a-->b pass c on left \/ a-->b pass c on right
-%	. a-->b along c on lr <=> 
-%	  forall d: Location . a-->b via d => a-->d # d-->c > lr 
-%end
-%
-%spec Landmarks = Locations then
-%   sort Landmark < Location
-%end
-%
-%spec Examples = RoutePredicates and Landmarks then
-%	ops start, p1, p2, p3, door : Place;
-%	    lifts, mainStairs, stugaRoom, door : Landmark  
-%	. oEntry(start-->door) = back
-%	. start-->p1 via door
-%	. oEntry(p1-->p2) = right
-%	. p1-->p2 passBy lifts
-%	. p2-->p3 passBy mainStairs
-%	. p2-->p3 # p3-->stugaRoom > leftAtExit \/
-%	  p2-->p3 # p3-->stugaRoom > rightAtExit
-%end
-%
-%spec SecretarysOfficeExample = RoutePredicates and Landmarks then
-%	ops start, p1, p2, p3, p4, room8080,door8210,door8080 : Place;
-%	     lifts, window, room8080, door8210, door8080 : Landmark  
-%	. oEntry(start-->door8210) = back
-%	. start-->p1 via door8210
-%	. start-->p1 # p1-->lifts > front
-%	. oEntry(p1-->p2) = right
-%	. p1-->p2 # p2-->window > front
-%	. oEntry(p2-->p3) = left
-%	. oEntry(p3-->p4) = leftFront
-%	. p3-->p4 # p4-->door8080 > right
-%	. p4-->room8080 via door8080
-%end
-%
-%
-%spec RouteGraphs = DoubleCrossCalculus and Segments then
-%	sort RouteGraph
-%	sort AltRoutes%[=	{ar : RouteGraph .  ...}]%	%% connected, single start and goal
-%	sort Route %[= 	{r : AltRoutes .       ...}]%	%% no branches
-%	op __union__ : 	RouteGraph * RouteGraph -> RouteGraph
-%	op __||__ : 	AltRoutes * AltRoutes -> AltRoutes
-%	op __++__ : 	Route * Route -> Route
-%
-%end
+%%spec DoubleCrossC = DoubleCrossCalculus then
+%%	pred dcc : Location * Location * Location * OrientationDCC
+%%	forall a, b, c, d: Location; o: OrientationDCC13
+%%	. dcc(a,b,d,o) <=> a-->b # c-->*d > o /\ b == c
+%%%[	forall a, b, c: Location; o: OrientationDCC13
+%%	. dcc(a,b,c,o) <=> a-->b # b-->*c > o  ]%
+%%end
+%%
+%%
+%%spec Places = Locations and Arrows then
+%%	sort Place < Location
+%%	op  originLocation: Place -> Location;
+%%	    origin: Place -> Arrow
+%%	forall p: Place
+%%	. origin(p) = p --> originLocation(p) %(origin_def)%
+%%	. not p = originLocation(p) %(originLocation_not_selfreference)% %implied
+%%end
+%%
+%%spec Segments = Places then
+%%	sort Segment = 
+%%	   {s: Arrow . source(s) in Place /\ target(s) in Place}
+%%	ops oEntry, oExit: Segment -> Orientation;  
+%%	    __-->__: Place * Place ->? Segment 
+%%	forall entry, exit: Place 
+%%	. oEntry(entry-->exit) = origin(entry)  | entry-->exit
+%%	. oExit(entry-->exit)  = entry-->exit | origin(exit)
+%%
+%%	forall a, b, c, d: Place 
+%%	. a-->b | b-->c = (a-->b | b-->d) + (b-->d | b-->c)
+%%	. a-->b | b-->c = oExit(a-->b) + oEntry(b-->c)
+%%	. oExit(a-->b)  = front <=> a-->b | b-->c = oEntry(b-->c)
+%%	. oEntry(b-->c) = front <=> a-->b | b-->c = oExit(a-->b)
+%%
+%%	. b == d /\ a-->b | b-->c = a-->d | d-->c =>  
+%%	  oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) 
+%%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%%	  oEntry(b-->c) = origin(b) | origin(d) + oEntry(d-->c)
+%%	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%%	  oExit(a-->d) = oExit(a-->b) - origin(d) | origin(b)
+%%
+%%%[  then %implies
+%%	forall a, b, c, d: Place 
+%%  	. oExit(a-->b)+oEntry(b-->c) = oExit(a-->d)+oEntry(d-->c) =>
+%%	  oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) 
+%%	. oEntry(b-->c) = a-->d | d-->c  - oExit(a-->b) =>
+%%	  oEntry(b-->c) = oExit(a-->d)+(oEntry(d-->c)-oExit(a-->b))
+%%]%
+%%end
+%%
+%%
+%%spec RoutePredicates = DoubleCrossCalculus and Segments then
+%%	preds __via__  : Segment * Location;  
+%%	forall a, b, c: Place
+%%	. a-->b via c <=> a-->b # b-->c > onCourse
+%%then
+%%	sort LROrientation = {o:OrientationDCC . o=left \/ o=right}
+%%	preds __ passBy__  : Segment * Location;  
+%%	      __pass__on__,
+%%	      __along__on__ : Segment * Location * OrientationDCC;
+%%	forall a, b, c: Place; lr: LROrientation
+%%	. a-->b pass c on lr <=> 
+%%	  exists d: Location . a-->b via d /\ (a-->d # d-->c > lr)
+%%	. a-->b passBy c <=> 
+%%	  a-->b pass c on left \/ a-->b pass c on right
+%%	. a-->b along c on lr <=> 
+%%	  forall d: Location . a-->b via d => a-->d # d-->c > lr 
+%%end
+%%
+%%spec Landmarks = Locations then
+%%   sort Landmark < Location
+%%end
+%%
+%%spec Examples = RoutePredicates and Landmarks then
+%%	ops start, p1, p2, p3, door : Place;
+%%	    lifts, mainStairs, stugaRoom, door : Landmark  
+%%	. oEntry(start-->door) = back
+%%	. start-->p1 via door
+%%	. oEntry(p1-->p2) = right
+%%	. p1-->p2 passBy lifts
+%%	. p2-->p3 passBy mainStairs
+%%	. p2-->p3 # p3-->stugaRoom > leftAtExit \/
+%%	  p2-->p3 # p3-->stugaRoom > rightAtExit
+%%end
+%%
+%%spec SecretarysOfficeExample = RoutePredicates and Landmarks then
+%%	ops start, p1, p2, p3, p4, room8080,door8210,door8080 : Place;
+%%	     lifts, window, room8080, door8210, door8080 : Landmark  
+%%	. oEntry(start-->door8210) = back
+%%	. start-->p1 via door8210
+%%	. start-->p1 # p1-->lifts > front
+%%	. oEntry(p1-->p2) = right
+%%	. p1-->p2 # p2-->window > front
+%%	. oEntry(p2-->p3) = left
+%%	. oEntry(p3-->p4) = leftFront
+%%	. p3-->p4 # p4-->door8080 > right
+%%	. p4-->room8080 via door8080
+%%end
+%%
+%%
+%%spec RouteGraphs = DoubleCrossCalculus and Segments then
+%%	sort RouteGraph
+%%	sort AltRoutes%[=	{ar : RouteGraph .  ...}]%	%% connected, single start and goal
+%%	sort Route %[= 	{r : AltRoutes .       ...}]%	%% no branches
+%%	op __union__ : 	RouteGraph * RouteGraph -> RouteGraph
+%%	op __||__ : 	AltRoutes * AltRoutes -> AltRoutes
+%%	op __++__ : 	Route * Route -> Route
+%%
+%%end

@@ -62,13 +62,13 @@ end
 %% - empty - all elements have count zero
 %% - inc - increment the count of the given element by one
 %% - dec - decrement the count of the given element by one
-%% - remove - set the count of the given element to zero
+%% - removeDict - set the count of the given element to zero
 %% - num - return the count of the given element
 
 spec CounterDict[sort Elem] =
   Nat then
     sort Dict;
-    ops inc, dec, remove : Dict * Elem -> Dict;
+    ops inc, dec, removeDict : Dict * Elem -> Dict;
         num : Dict * Elem -> Nat;
         empty : Dict
         

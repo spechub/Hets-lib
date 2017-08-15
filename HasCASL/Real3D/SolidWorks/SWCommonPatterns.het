@@ -15,7 +15,7 @@ from HasCASL/Real3D/SolidWorks/SolidWorks get SolidWorksWithSemantics
 %%                                                                  %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%]%
 
-view  SolidWorksPlane_is_AffinePlane: Plane to
+view  SolidWorksPlane_is_AffinePlane : Plane to
      { SolidWorksWithSemantics then 
        op Plane(p:Point;v:VectorStar):PointSet =
        i(SWPlane(p,v,0)) %(plane is plane)%
@@ -31,7 +31,7 @@ spec SolidWorksCylinderByArcExtrusion = SolidWorksWithSemantics then
 	       (SWSketch([arc],plane),height); %(def of SWCylinder)%
 end
 
-view SWCylByAE_IsCylinder: Cylinder to 
+view SWCylByAE_IsCylinder : Cylinder to 
      { SolidWorksCylinderByArcExtrusion
        then
        op Cylinder(offset:Point;r:RealPos;axis:VectorStar):PointSet

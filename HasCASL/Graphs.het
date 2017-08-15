@@ -50,24 +50,24 @@ then %def
 
   . nodes ((nn,s,t) as Graph N E) = nn
 
-  . edges ((nn,source,target) as Graph N E) = dom source      %(edges)%
+  . edges ((nn,source,target) as Graph N E) = dom source      %(edges_def)%
 
   . sourceMap ((nn,source,target) as Graph N E) = source
 
   . targetMap ((nn,source,target) as Graph N E) = target
 
   . addNode n ((nn,source,target) as Graph N E) =
-    ( nn union {n}, source, target) as Graph N E            %(addNode)%
+    ( nn union {n}, source, target) as Graph N E            %(addNode_def)%
 
   . removeNode n ((nn,source,target) as Graph N E) =
-    (nn \\ {n}, source, target) as Graph N E             %(removeNode)%
+    (nn \\ {n}, source, target) as Graph N E             %(removeNode_def)%
 
   . addEdge (e,n1,n2) ((nn,source,target) as Graph N E) =
     (nn union {n1} union {n2},
-     source[e/n1], target[e/n2]) as Graph N E               %(addEdge)%
+     source[e/n1], target[e/n2]) as Graph N E               %(addEdge_def)%
 
   . removeEdge e ((nn,source,target) as Graph N E) =
-    (nn, source-e, target-e) as Graph N E                %(removeEdge)%
+    (nn, source-e, target-e) as Graph N E                %(removeEdge_def)%
 
   . symmetric g <=> 
     forall e:E .
@@ -97,7 +97,7 @@ then %def
 
   . complete ((nn,source,target) as Graph N E) <=>
     forall n1,n2:N . n1 isIn nn /\ n2 isIn nn =>
-      exists e:E . source e = n /\ target e = n                   %(complete)%
+      exists e:E . source e = n /\ target e = n                   %(complete_def)%
 
   . g1 cliqueOf g2 <=>
     g1 subgraph g2 /\ complete(g1)                            %(cliqueOf_def)%
