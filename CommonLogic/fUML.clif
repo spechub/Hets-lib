@@ -675,8 +675,8 @@ The add-one relation.
            (buml:Operation x))
        (form:ProcessDefinition x)))
 
-(forall (op b c)
-   (if (form:method op b c)
+(forall (opp b c)
+   (if (form:method opp b c)
        (and (buml:Operation op)
             (buml:Behavior b)
             (buml:Class c))))
@@ -740,8 +740,8 @@ The add-one relation.
            (buml:Operation x))
        (form:ProcessDefinition x)))
 
-(forall (op b c)
-   (if (form:method op b c)
+(forall (opp b c)
+   (if (form:method opp b c)
        (and (buml:Operation op)
             (buml:Behavior b)
             (buml:Class c))))
@@ -1053,16 +1053,16 @@ The add-one relation.
                        (psl:root_occ xsnroot xsn)
                        (psl:occurrence_of xsnroot asnroot))
                   (form:set-property-value-sequence xa on2 sip asnroot)))
-            (forall (op on2 xsnleaf asnleaf fxsnleaf son2)
-              (if (and (buml:output sn op)
-                       (form:structured-input-or-output on2 op)
-                       (form:flows-trans-fork-merge on2 op)
+            (forall (opp on2 xsnleaf asnleaf fxsnleaf son2)
+              (if (and (buml:output sn opp)
+                       (form:structured-input-or-output on2 opp)
+                       (form:flows-trans-fork-merge on2 opp)
                        (psl:leaf_occ xsnleaf xsn)
                        (psl:occurrence_of xsnleaf asnleaf)
                        (form:priorA fxsnleaf xsnleaf)
                        (form:property-value-sequence xa on2 son2 fxsnleaf))
                   (and (form:clear-property-value-sequence xa on2 asnleaf)
-                       (form:set-property-value-sequence xa op son2 asnleaf)))))))
+                       (form:set-property-value-sequence xa opp son2 asnleaf)))))))
 
 /* This constraint requires values of structured node pins to be transferred in and out of the structured node when the node  
    execution begins and ends respectively. */
@@ -1197,24 +1197,24 @@ The add-one relation.
    of the expansion region (op).  It assumes output pin multiplicity upper (opmax) is one or unlimited. This does not put null  
    tokens in output pins when output parameter nodes are empty, as in UML. */
 
-(forall (xa xac xcall op opmax)
-   (iff (form:empty-output-parameter-node xa xac xcall op opmax)
+(forall (xa xac xcall opp opmax)
+   (iff (form:empty-output-parameter-node xa xac xcall opp opmax)
         (forall (sleafxac aleafxac p pnode a fxcall)
            (if (and (psl:leaf_occ sleafxac xac)
                     (psl:occurrence_of sleafxac aleafxac)
-                    (form:pin-parameter-match op p)
+                    (form:pin-parameter-match opp p)
                     (buml:parameter pnode p)
                     (form:activity pnode a)
-                    (form:activity op a)
+                    (form:activity opp a)
                     (form:holdsA fxcall xcall))
                (or (and (= opmax form:1)
                         (forall (v)
                            (if (form:property-value xcall pnode v fxcall)
-                               (form:add-property-value xa op v aleafxac))))
+                               (form:add-property-value xa opp v aleafxac))))
                    (and (= opmax buml:*)
                         (forall (s)
                            (if (form:property-value-sequence xcall pnode s fxcall)
-                               (form:set-property-value-sequence xa op s 
+                               (form:set-property-value-sequence xa opp s 
                                                                  aleafxac)))))))))
 
 /* The fill-empty-parameter-node relation combines the fill-input-parameter-node relation and empty-output-parameter-node   
@@ -1227,11 +1227,11 @@ The add-one relation.
                          (not (buml:ExpansionNode ip))
                          (buml:upper ip ipmax))
                     (form:fill-input-parameter-node xa xac xac ip ipmax)))
-             (forall (op opmax)
-                (if (and (buml:output ac op)
-                         (not (buml:ExpansionNode op))
-                         (buml:upper op opmax))
-                (form:empty-output-parameter-node xa xac xac op opmax))))))
+             (forall (opp opmax)
+                (if (and (buml:output ac opp)
+                         (not (buml:ExpansionNode opp))
+                         (buml:upper opp opmax))
+                (form:empty-output-parameter-node xa xac xac opp opmax))))))
 
 /* The expansion-input-value-output relation links two sequences and their positions. The relation  is one-to-one, except not  
    all positions in the first sequence are necessarily in the second sequence. The relation preserves the ordering of the  
@@ -1268,15 +1268,15 @@ The add-one relation.
    output parameter node of the constructed activity execution, if any, is in the output expansion node in the proper order. It  
    uses the expansion-input-value-output relation for output value ordering. */
 
-(forall (xa xac xcall op sout)
-   (iff (form:contracted-sequence-to-empty xa xac xcall op sout)
+(forall (xa xac xcall opp sout)
+   (iff (form:contracted-sequence-to-empty xa xac xcall opp sout)
         (forall (ptin sin n pnode p a)
            (if (and (form:expansion-input-value-xcall xac ptin xcall)
                     (form:position-count sin ptin n)
-                    (form:pin-parameter-match op p)
+                    (form:pin-parameter-match opp p)
                     (buml:parameter pnode p)
                     (form:activity pnode  a)
-                    (form:activity op a))
+                    (form:activity opp a))
                (and (forall (v fxcallv)
                        (if (and (form:holdsA fxcallv xcall)
                                 (form:property-value xcall pnode v fxcallv))
@@ -1331,17 +1331,17 @@ The add-one relation.
                                        (buml:ExpansionNode ip))
                                   (form:fill-input-parameter-node xa xac xcall ip 
  form:1)))
-                            (forall (op)
-                              (if (and (buml:output ac op)
-                                       (buml:ExpansionNode op))
-                                  (and (form:empty-output-parameter-node xa xac xcall op 
+                            (forall (opp)
+                              (if (and (buml:output ac opp)
+                                       (buml:ExpansionNode opp))
+                                  (and (form:empty-output-parameter-node xa xac xcall opp 
                                                                          form:1)
                                        (exists (s2 fxacs)
                                            (and (form:contracted-sequence-to-empty xa xac 
                                                                               xcall 
- op s2) 
+ opp s2) 
                                                 (form:holdsA fxacs xac)
-                                                (form:property-value-sequence xa op s2 
+                                                (form:property-value-sequence xa opp s2 
                                                                               
  fxacs))))))))) 
 
@@ -1898,13 +1898,13 @@ The add-one relation.
    (if (buml:behavior ac b)
        (form:called ac b)))
 
-(forall (ac op)
-   (if (buml:operation ac op)
-       (form:called ac op)))
+(forall (ac opp)
+   (if (buml:operation ac opp)
+       (form:called ac opp)))
 
-(forall (ac op)
-   (if (buml:operation ac op)
-       (buml:type ac op)))
+(forall (ac opp)
+   (if (buml:operation ac opp)
+       (buml:type ac opp)))
 
 /* The pin-property-match relation links pins and properties as derived from pin and signal property ordering in the model.   */
 (forall (pn p)
@@ -1971,21 +1971,21 @@ The add-one relation.
    behavior (method) based on the thing on which an operation is invoked.  It assumes multiple generalization does not  
    affect the choice of method. */
 
- (forall (o op b f)
-   (if (form:dispatch o op b f)
-       (and (buml:Operation op)
+ (forall (o opp b f)
+   (if (form:dispatch o opp b f)
+       (and (buml:Operation opp)
             (buml:Behavior b)
             (psl:state f))))
 
-(forall (o op b f)
-   (if (form:dispatch o op b f)
+(forall (o opp b f)
+   (if (form:dispatch o opp b f)
        (exists (c)
           (and (form:classifies c o f)
-               (form:method op b c)
+               (form:method opp b c)
                (not (exists (c2 b2)
                        (and (not (= c c2))
                             (buml:general c2 c)
-                            (form:method op b2 c)
+                            (form:method opp b2 c)
                             (form:classifies c2 o f))))))))
 
 /* The execution-performer relation links executions to things performing those executions. */
@@ -2001,22 +2001,22 @@ The add-one relation.
 /* This ensures activities invoked with call operation actions transfer values between pins and parameter nodes, and that  
    called function behaviors only affect pins of their calling actions. */
 
-(forall (ac a op b tip)
+(forall (ac a opp b tip)
    (if (and (buml:CallOperationAction ac)
             (form:activity ac a)
-            (buml:operation ac op)
+            (buml:operation ac opp)
             (buml:target ac tip))
-       (forall (xa xac f fxac to)
+       (forall (xa xac f fxac too)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
                    (form:priorA fxac xac)
-                   (form:property-value xa tip to fxac)
-                   (form:dispatch to op b fxac))
+                   (form:property-value xa tip too fxac)
+                   (form:dispatch too opp b fxac))
               (and (form:classifies b xac f)
-                   (form:execution-performer xac to)
+                   (form:execution-performer xac too)
                    (form:fill-empty-parameter-node a xa ac xac xac))))))
 
-/* The new-object relation links things to PSL occurrences before which the object does not exist.  */
+/* The new-object relation links things too PSL occurrences before which the object does not exist.  */
 (forall (o occ)
    (if (form:new-object o occ)
        (psl:occurrence occ)))
@@ -2070,11 +2070,11 @@ The add-one relation.
             (form:activity ac a)
             (buml:signal ac sig)
             (buml:target ac tip))
-       (forall (xa xac f fxac to)
+       (forall (xa xac f fxac too)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
                    (form:priorA fxac xac)
-                   (form:property-value xa tip to fxac))
+                   (form:property-value xa tip too fxac))
   
             (exists (fxac2 osig)
                  (and (form:holdsA fxac2 xac)
@@ -2084,17 +2084,17 @@ The add-one relation.
                           (if (and (buml:argument ac ip)
                                    (buml:upper ip ipmax))
                               (form:fill-signal-property osig ip ipmax xa xac)))
-                      (form:event-pool to osig fxac2)))))))
+                      (form:event-pool too osig fxac2)))))))
 
 /* 10.4.10 Object Actions (Intermediate) 
    This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution  
    engine (CreateObjectAction, TestIdentityAction, ReadSelfAction, and ValueSpecificationAction). */
 
-(forall (ac a c op)
+(forall (ac a c opp)
    (if (and (buml:CreateObjectAction ac)
             (form:activity ac a)
             (buml:classifier ac c)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f))
@@ -2102,16 +2102,16 @@ The add-one relation.
                  (and (form:holdsA fxac xac)
                       (form:classifies c o fxac)
                       (form:new-object o xac)
-                      (form:property-value xa op o fxac)))))))
+                      (form:property-value xa opp o fxac)))))))
 
 /* This covers testing equivalence of datatype values, which the UML TestIdentityAction does not. */
-(forall (ac a ip1 ip2 op)
+(forall (ac a ip1 ip2 opp)
    (if (and (buml:TestIdentityAction ac)
             (form:activity ac a)
             (buml:first ac ip1)
             (buml:first ac ip2)
 
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f v1 v2 fxac)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2122,13 +2122,13 @@ The add-one relation.
                  (and (form:holdsA fxac2 xac)
                       (if (or (= v1 v2)
                               (form:same-string v1 v2))
-                          (form:property-value xa op form:true fxac2))
+                          (form:property-value xa opp form:true fxac2))
                       (if (not (= v1 v2))
-                          (form:property-value xa op form:false fxac2))))))))
-(forall (ac a op)
+                          (form:property-value xa opp form:false fxac2))))))))
+(forall (ac a opp)
    (if (and (buml:ReadSelfAction ac)
             (form:activity ac a)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f xsuper o)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2140,12 +2140,12 @@ The add-one relation.
                                 (form:execution-performer o2 xsuper2)))))
               (exists (fxac)
                  (and (form:holdsA fxac xac)
-                      (form:property-value xa op o fxac)))))))
-(forall (ac a vs op)
+                      (form:property-value xa opp o fxac)))))))
+(forall (ac a vs opp)
    (if (and (buml:ValueSpecificationAction ac)
             (form:activity ac a)
             (buml:value ac vs)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f))
@@ -2153,25 +2153,25 @@ The add-one relation.
                  (and (form:holdsA fxac xac)
                       (forall (v)
                          (if (buml:value vs v)
-                             (form:property-value xa op v fxac)))
+                             (form:property-value xa opp v fxac)))
                       (if (buml:LiteralNull vs)
-                          (form:property-value xa op form:null fxac))
+                          (form:property-value xa opp form:null fxac))
                       (if (buml:InstanceValue vs)
                           (forall (i)
                              (if (buml:instance vs i)
-                                 (form:property-value xa op i fxac))))))))))
+                                 (form:property-value xa opp i fxac))))))))))
 
 /* 10.4.11 Structural Feature Actions 
    This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution model  
 (ReadStructuralFeatureAction, ClearStructuralFeatureAction, AddStructuralFeatureAction, 
  RemoveStructuralFeatureAction). */
 
-(forall (ac a p oip op)
+(forall (ac a p oip opp)
    (if (and (buml:ReadStructuralFeatureAction ac)
             (form:activity ac a)
             (buml:structuralFeature ac p)
             (buml:object ac oip)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f o fxac v)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2180,13 +2180,13 @@ The add-one relation.
                    (form:property-value o p v fxac))
               (exists (fxac2)
                  (and (form:holdsA fxac2 xac)
-                      (form:property-value xa op v fxac2)))))))
-(forall (ac a p oip op)
+                      (form:property-value xa opp v fxac2)))))))
+(forall (ac a p oip opp)
    (if (and (buml:ClearStructuralFeatureAction ac)
             (form:activity ac a)
             (buml:structuralFeature ac p)
             (buml:object ac oip)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f o fxac)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2197,7 +2197,7 @@ The add-one relation.
                                 (form:property-value o p v fxac2))))
                    (exists (fxac2)
                       (and (form:holdsA fxac2 xac)
-                           (form:property-value xa op o fxac2))))))))
+                           (form:property-value xa opp o fxac2))))))))
 
 (forall (ac a p oip vip)
    (if (and (buml:AddStructuralFeatureAction ac)
@@ -2302,12 +2302,12 @@ The add-one relation.
 (ReadIsClassifiedObjectAction and StartObjectBehaviorAction).
 
  This assumes the isDirect attribute on the action is false. */
-(forall (ac a ip c op)
+(forall (ac a ip c opp)
    (if (and (buml:ReadIsClassifiedObjectAction  ac)
             (form:activity ac a)
             (buml:object ac ip)
             (buml:classifier ac c)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f o fxac)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2316,9 +2316,9 @@ The add-one relation.
               (exists (fxac2)
                  (and (form:holdsA fxac2 xac)
                       (if (form:classifies c o fxac)
-                          (form:property-value xa op form:true fxac2))
+                          (form:property-value xa opp form:true fxac2))
                       (if (not (form:classifies c o fxac))
-                          (form:property-value xa op form:false fxac2))))))))
+                          (form:property-value xa opp form:false fxac2))))))))
 
 /* This assumes the object input is not a behavior, that no arguments are passed, and the action is not synchronous. */
 (forall (ac a ip)
@@ -2359,11 +2359,11 @@ The add-one relation.
    (if (buml:AcceptEventAction ac)
        (buml:type ac form:AcceptEventBehavior)))
 
-(forall (ac a tr op)
+(forall (ac a tr opp)
    (if (and (buml:AcceptEventAction ac)
             (form:activity ac a)
             (buml:trigger ac tr)
-            (buml:result ac op))
+            (buml:result ac opp))
        (forall (xa xac f o xlac fxlac)
           (if (and (form:classifies a xa f)
                    (form:property-value xa ac xac f)
@@ -2375,7 +2375,7 @@ The add-one relation.
                     (exists (fxac2)
                       (and (psl:holds fxac2 xac)
                            (not (form:event-pool o osig fxac2))
-                           (form:property-value xa op osig fxac2)))
+                           (form:property-value xa opp osig fxac2)))
                      (not (exists (xac2 lxac2)
                             (and (form:classifies form:AcceptEventBehavior xac2 f)
                                  (form:execution-performer xac2 o)

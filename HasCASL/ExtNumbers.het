@@ -11,7 +11,7 @@ spec HolNum =
   ops
     NUMERAL : Num -> Num
   then %def
-    forall n:Num. NUMERAL n = n %(NUMERAL)%
+    forall n:Num. NUMERAL n = n %(NUMERAL_def)%
   then %implies
   vars m,n:Num
   vars A:Type
@@ -73,8 +73,8 @@ then
 
 then %def
   forall n:Num
-  . BIT0 n = n + n      %(BIT0)%
-  . BIT1 n = SUC(n + n) %(BIT1)%
+  . BIT0 n = n + n      %(BIT0_def)%
+  . BIT1 n = SUC(n + n) %(BIT1_def)%
 
   %% Definition of Multiplication
   . (forall n:Num. NUMERAL(0) * n = NUMERAL(0)) /\

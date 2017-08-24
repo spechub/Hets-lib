@@ -31,51 +31,51 @@ end
 
 %% hiding
 arch spec asp2 =
-  units A:sp1;
-        B:sp1 -> sp2;
-        C:sp1
+  units A : sp1;
+        B : sp1 -> sp2;
+        C : sp1
   result B[A] hide s  and C
 end
 
 arch spec asp3 =
-  units A:sp3;
-        B:sp1 -> sp2;
-        C:sp3
+  units A : sp3;
+        B : sp1 -> sp2;
+        C : sp3
   result B[A] %% hide e and C
 end
 
 
 arch spec asp4 =
-  units A:sp3;
-        B:sp1 -> sp2;
-        C:sp3;
-        T= B[A] hide e and C
+  units A : sp3;
+        B : sp1 -> sp2;
+        C : sp3;
+        T = B[A] hide e and C
   result T
 end
 
 %% true unit expressions
 arch spec asp5 =
-  units B:sp1 -> sp2;
-  result lambda X:sp1 . B[X]
+  units B : sp1 -> sp2;
+  result lambda X : sp1 . B[X]
 end
 
 %% unit imports
 arch spec asp6 =
-  units A:sp1;
-        B:sp2 given A
+  units A : sp1;
+        B : sp2 given A
   result B
 end
 
 arch spec asp7 =
-  units A:sp1;
-        F: sp1 -> sp2;
-        B:sp2; %%given F[A];
-        C:sp3 given B;
+  units A : sp1;
+        F :  sp1 -> sp2;
+        B : sp2; %%given F[A];
+        C : sp3 given B;
   result C with e |-> s
 end
 
 arch spec asp8 =
-  units A : {sort a};
+  units A :  {sort a};
         B : {sort b};
         C : {sort c};
         As = A with a |-> s;
@@ -92,22 +92,22 @@ end
 
 arch spec asp10 =
   units P : {sort s} * {sorts s,t} -> {sort u}
-  result lambda X:{sort s}; Y:{sorts s,t} . P[X][Y]
+  result lambda X : {sort s}; Y : {sorts s,t} . P[X][Y]
 end
 
 arch spec asp11 =
-  units A:{sort a}
-  result lambda X:{sort s} . X %%with s |-> t
+  units A : {sort a}
+  result lambda X : {sort s} . X %%with s |-> t
 end
 
 
 arch spec A =
   units
-    u: {sort s};
-    v  : {sort s};
+    u : {sort s};
+    v : {sort s};
     p1 : {sort s} -> {sort t} given u;
     p2 : {sort s} -> {sort t};
   result
     %%p2[v] %%
-    lambda x:{sort s} . p2[x]
+    lambda x : {sort s} . p2[x]
 end

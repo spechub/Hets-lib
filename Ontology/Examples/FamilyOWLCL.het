@@ -2,7 +2,7 @@ library DL/Family
 
 logic OWL
 
-spec FamilySkel=
+ontology FamilySkel =
      Class: Person
      Class: Female
      Class: Woman EquivalentTo: Person and Female
@@ -12,7 +12,7 @@ spec FamilySkel=
      Class: Wife    EquivalentTo: Woman and hasHusband some Man
 end
 
-spec FamilyBase =
+ontology FamilyBase =
   Class: Person
   Class: Female
   Class: Woman   EquivalentTo: Person and Female
@@ -41,9 +41,9 @@ spec FamilyBase =
   Individual: clara
 end
 
-view v1: {FamilySkel with logic OWL22CommonLogic} to {FamilyBase with logic OWL22CommonLogic}
+view v1 : {FamilySkel with logic OWL22CommonLogic} to {FamilyBase with logic OWL22CommonLogic}
 
-spec NotConser =
+ontology NotConser =
      FamilyBase
 then %cons
    Class: MotherWithManyChildren EquivalentTo: Mother and (hasChild max 2)
@@ -51,7 +51,7 @@ then %cons
    Individual: mary Types: Grandmother
 end
 
-spec Conser =
+ontology Conser =
      FamilyBase
 then %cons
      Class: Animal
@@ -61,7 +61,7 @@ then %cons
      Class: Dog SubClassOf: likesBones some Animal
 end
 
-spec Family =
+ontology Family =
 FamilyBase
 then %implies
   Class: Mother SubClassOf: Parent
@@ -72,7 +72,7 @@ end
 
 logic CommonLogic
 
-spec LittleFamily = 
+ontology LittleFamily = 
      FamilyBase
 then
 .    (forall (a b c) (iff (oneChildFamily a b c)

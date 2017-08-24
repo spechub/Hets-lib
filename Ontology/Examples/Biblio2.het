@@ -54,12 +54,12 @@ then
   sort integer < Thing
   forall p,j:pointer; n:string; f:integer; a:pointer; t:string
   . journal(j,n,f) <=>
-      Journal(j) /\ name(j,n) /\ impactFactor(j,f)  %(journal)%
+      Journal(j) /\ name(j,n) /\ impactFactor(j,f)  %(journal_def)%
   . paper(a,t,j) <=>
-      Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t) %(paper)%
+      Article(a) /\ Journal(j) /\ hasArticle(j,a) /\ title(a,t) %(paper_def)%
   . author_of(p,a) <=>
-      Researcher(p) /\ Article(a) /\ author(p,a) %(author_of)%
-  . person(p,n) <=> Researcher(p) /\ name(p,n)  %(person)%
+      Researcher(p) /\ Article(a) /\ author(p,a) %(author_of_def)%
+  . person(p,n) <=> Researcher(p) /\ name(p,n)  %(person_def)%
 then %implies
   Biblio_DL with logic -> CASL
 end

@@ -52,9 +52,9 @@ then
      sort string < DATA
      sort integer < DATA
      forall p, a, j:Thing; n:string; i:integer
-     . person (p, n)   =>  Researcher(p) /\ name(p, n)                                        %(person)%
-     . author_of(p, a) =>  Researcher(p) /\ Article(a) /\                                     %(author_of)%
+     . person (p, n)   =>  Researcher(p) /\ name(p, n)                                        %(person_impl)%
+     . author_of(p, a) =>  Researcher(p) /\ Article(a) /\                                     %(author_of_impl)%
                             author(a,p) /\ exists j:Thing . (Journal(j) /\ hasArticle(j,a))
-     . paper(a, n, j)  =>  Article(a) /\ title(a, n) /\ Journal(j) /\ hasJournal(a,j)         %(paper)%
-     . journal (j,n,i) =>  Journal(j) /\ name(j,n) /\ impactFactor(j,i)                       %(journal)%
+     . paper(a, n, j)  =>  Article(a) /\ title(a, n) /\ Journal(j) /\ hasJournal(a,j)         %(paper_def)%
+     . journal (j,n,i) =>  Journal(j) /\ name(j,n) /\ impactFactor(j,i)                       %(journal_def)%
 end
