@@ -23,6 +23,7 @@
                 (psl:root_occ s2Root s2)
                 (psl:min_precedes s1Leaf s2Root a)))))
 
+(cl-comment '
 /* 10.3  Structure
 This sub clause covers the structural aspects of the base semantics.
 
@@ -32,6 +33,7 @@ numbers and sequences introduced for the formalization.
 
 10.3.1.1 Boolean
 */
+')
 
 (forall (x)
    (if (buml:Boolean x)
@@ -62,10 +64,12 @@ numbers and sequences introduced for the formalization.
             (iff (= z form:true)
                  (and (= x form:true)
                       (= y form:true))))))
+(cl-comment '
 /*
 10.3.1.2 Numbers
 The add-one relation.
 */
+')
 
 (forall (x y)
    (if (form:add-one x y)
@@ -81,7 +85,9 @@ The add-one relation.
    (if (form:Number x)
        (exists (y)
           (form:add-one x y))))
+(cl-comment '
 /* The add relation. */
+')
 (forall (x y z)
    (if (form:add x y z)
        (and (form:Number x)
@@ -104,11 +110,15 @@ The add-one relation.
            (form:add x y1 z1)
            (form:add x y z))
       (form:add-one z z1)))
+(cl-comment '
 /* Basic numeric constants. */
+')
 (form:Number form:0)
 (form:add-one form:0 form:1)
 (form:add-one form:-1 form:0)
+(cl-comment '
 /* The less-than relation. */
+')
 (forall (x y)
    (if (form:less-than x y)
        (and (form:Number x)
@@ -120,7 +130,9 @@ The add-one relation.
            (and (form:Number z)
                 (not (= z form:0))
                 (form:add x z y)))))
+(cl-comment '
 /* Specialized numbers: whole, natural, unlimited natural, and integers. */
+')
 (forall (x)
    (iff (form:WholeNumber x)
         (or (= x form:1)
@@ -152,12 +164,16 @@ The add-one relation.
    (iff (form:negate x y)
         (form:add x y form:0)))
 
+(cl-comment '
 /* 10.3.1.3 Sequences 
    Sequences are a finite series of things, where the same thing can appear more than once in the series. The serial aspect is  
    represented by positions, each of which identifies exactly one thing. This thing can be the same as ones identified by  
    other positions in the series. */
+   ')
 
+(cl-comment '
 /* The in-sequence relation links sequences to their postions. */
+')
 (forall (s pt)
    (if (form:in-sequence s pt)
        (and (form:Sequence s)
@@ -172,7 +188,9 @@ The add-one relation.
    (if (form:Position pt)
        (exists (s)
           (form:in-sequence s pt))))
+(cl-comment '
 /* The before-in-sequence relation serializes positions. */
+')
 (forall (s pt1 pt2)
    (if (form:before-in-sequence s pt1 pt2)
        (and (buml:Sequence s)
@@ -226,7 +244,9 @@ The add-one relation.
             (not (exists (pt1)
                     (form:before-in-sequence s pt1 pt22))))
        (= pt2 pt22)))
+(cl-comment '
 /* An empty sequence has no positions. */
+')
 (forall (s)
    (if (form:empty-sequence s)
        (form:Sequence s)))
@@ -236,7 +256,9 @@ The add-one relation.
        (iff (form:empty-sequence s)
             (not (exists (pt)
                     (form:in-sequence s pt))))))
+(cl-comment '
 /* The position-count relation links positions to how far they are along in the sequence. */
+')
 (forall (s pt n)
    (if (form:position-count s pt n)
        (and (form:Sequence s)
@@ -264,7 +286,9 @@ The add-one relation.
             (form:before-in-sequence s pt1 pt2)
             (form:position-count s pt2 n2))
        (form:add-one n1 n2)))
+(cl-comment '
 /* The sequence-length relation links sequences to how many positions they have. */
+')
 (forall (s n)
     (if (form:sequence-length s n)
         (and (form:Sequence s)
@@ -278,8 +302,10 @@ The add-one relation.
                (and (not (exists (pt2)
                             (form:before-in-sequence s pt1 pt2)))
                     (form:position-count s pt1 n))))))
+(cl-comment '
 /* The in-position relation links positions to things they identify.  Each position identifies  
    exactly one thing. */
+   ')
 (forall (pt x)
     (if (form:in-position pt x)
          (form:Position pt)))
@@ -293,8 +319,10 @@ The add-one relation.
    (if (form:Position pt)
        (exists (x)
            (form:in-position pt x))))
+(cl-comment '
 /* The in-position-count relation links sequences to a thing based on how far along the  
    position is in the sequence. */
+   ')
 (forall (s n x)
    (if (form:in-position-count s n x)
        (and (buml:Sequence s)
@@ -305,8 +333,10 @@ The add-one relation.
         (exists (pt)
            (and (form:in-position pt x)
                 (form:position-count s pt n)))))
+(cl-comment '
 /* The same-sequence relation is true for sequences that identify the same things in the same  
    order. */
+   ')
 (forall (s1 s2)
    (if (form:same-sequence s1 s2)
        (and (form:Sequence s1)
@@ -318,8 +348,10 @@ The add-one relation.
            (iff (form:in-position-count s1 n x)
                 (form:in-position-count s2 n x)))))
 
+(cl-comment '
 /* 10.3.1.4 Strings 
    Strings are sequences of characters. */
+   ')
 (forall (s)
     (if (buml:String s)
 
@@ -329,8 +361,10 @@ The add-one relation.
              (form:in-sequence s pt)
              (form:in-position pt x))
         (form:Character x)))
+(cl-comment '
 /* The string-index-character relation links strings to a character based on how far along the  
    position is in the sequence. */
+   ')
 (forall (s n ch)
    (if (form:string-index-character s n ch)
        (and (buml:String s)
@@ -341,7 +375,9 @@ The add-one relation.
    (if (buml:String s)
        (iff (form:string-index-char s n ch)
             (form:in-position-count s n ch))))
+(cl-comment '
 /* The string-length relation links strings to how many positions they have. */
+')
 (forall (s n)
    (if (form:string-length s n)
        (and (buml:String s)
@@ -352,8 +388,10 @@ The add-one relation.
        (forall (n)
           (iff (form:string-length s n)
                (form:sequence-length s n)))))
+(cl-comment '
 /* The same-string relation is true for string that identify the same characters in the same  
    order.  */
+   ')
 (forall (s1 s2)
    (if (form:same-string s1 s2)
        (and (buml:String s1)
@@ -365,24 +403,30 @@ The add-one relation.
        (iff (form:same-string s1 s2)
             (form:same-sequence s1 s2))))
 
+(cl-comment '
 /* 10.3.2  Classification and Generalization 
    Classification links classifiers to the things they classify.  Classifiers are categories into which things fall. */
+   ')
 (forall (c o f)
    (if (form:classifies c o f)
        (and (buml:Classifier c)
             (psl:state f))))
 
+(cl-comment '
 /* A classifier is more general than another when the things classified by the specialized classifier are classified by the  
    general classifier. */
+   ')
 
 (forall (csub csuper o f)
    (iff (buml:general csub csuper)
         (if (form:classifies csub o f)
             (form:classifies csuper o f))))
 
+(cl-comment '
 /* Classification applies in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an occurrence  
    are the same as states prior to legal successor occurrences, so this constaint applies to states holding after occurrences as  
    well as prior. */
+   ')
 
 (forall (occ f c o)
    (if (and (psl:occurrence occ)
@@ -393,8 +437,10 @@ The add-one relation.
           (if (psl:prior f2 occ)
               (form:classifies c o f2)))))
 
+(cl-comment '
 /* 10.3.3  Classifier Cardinality 
    Classifier cardinality is the number of things classified by a classifier in a PSL state. */
+   ')
 (forall (c card f)
   (if (form:classifier-cardinality c card f)
       (and (buml:Classifier c)
@@ -423,17 +469,21 @@ The add-one relation.
             (form:add-one c1Card c1Card1))
        (form:classifier-cardinality (form:union c1 c2) c1Card1 f)))
 
+(cl-comment '
 /* 10.3.4  Properties 
    Properties link things to other things in a certain PSL state. */
+   ')
 
 (forall (o p v f)
    (if (form:property-value o p v f)
        (and (buml:Property p)
             (psl:state f))))
 
+(cl-comment '
 /* Property values apply in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an occurrence  
    are the same as states prior to legal successor occurrences, so this constaint applies to states holding after occurrences as  
    well as prior. */
+   ')
 
 (forall (occ f o p v)
    (if (and (psl:occurrence occ)
@@ -444,7 +494,9 @@ The add-one relation.
           (if (psl:prior f2 occ)
               (form:property-value o p v f2)))))
 
+(cl-comment '
 /* Things with property values must be classified by the class owning the property (classes are classifiers in UML). */
+')
 (forall (c p occ f o v)
    (if (and (buml:ownedAttribute c p)
             (psl:occurrence occ)
@@ -455,7 +507,9 @@ The add-one relation.
           (and (psl:prior f2 occ)
                (form:classifies c o f2)))))
 
+(cl-comment '
 /* Property values must be classified by the type of the property. */
+')
 (forall (p c occ f o v)
    (if (and (buml:type p c)
             (psl:occurrence occ)
@@ -466,8 +520,10 @@ The add-one relation.
           (and (psl:prior f2 occ)
                (form:classifies c v f2)))))
 
+(cl-comment '
 /* The achieves-property-value relation links objects, properties, and values to occurrences that give the property the value.   
    The property does not have the achieved value before the occurrence and does after. */
+   ')
 
 (forall (o p v occ)
    (iff (form:achieves-property-value o p v occ)
@@ -478,7 +534,9 @@ The add-one relation.
                 (and (form:holdsA f occ)
                      (form:property-value o p v f))))))
 
+(cl-comment '
 /* Property value cardinality is number of values of a property on a particular thing. */
+')
 (forall (o p n f)
    (if (form:property-value-cardinality o p n f)
        (and (buml:Property p)
@@ -499,8 +557,10 @@ The add-one relation.
                         (form:property-value o p v fp)))
                (form:classifier-cardinality vc n fvc)))))
 
+(cl-comment '
 /* Property value cardinality is constrained by the multiplicity of the property, but when the constraints are enforced is not  
    defined in UML.  For example, when an object is created, it will violate non-zero lower multiplicities on its properties. */
+   ')
 
 (forall (p m c occ fc o n fp)
    (if (and (buml:lower p m)
@@ -526,8 +586,10 @@ The add-one relation.
        (or (= m n)
            (form:less-than n m))))
 
+(cl-comment '
 /* Composite properties collectively do not have values that form cycles.  Destruction propagation is not formalized because  
    the execution model does not destroy things. */
+   ')
 
 (forall (x y f)
    (iff (form:composite-link-trans x y f)
@@ -553,8 +615,10 @@ The add-one relation.
                (and (psl:prior f occ)
                     (form:composite-link-trans x x f))))))
 
+(cl-comment '
 /* Properties in bUML are ordered and nonunique, which means the values are ordered, and the same value can appear more  
    than once in the order. The property-value-sequence gives the sequence of values of a property in a PSL state. */
+   ')
 
 (forall (o p s f)
    (if (form:property-value-sequence o p s f)
@@ -562,9 +626,11 @@ The add-one relation.
             (form:Sequence s)
             (psl:state f))))
 
+(cl-comment '
 /* Property values sequences apply in all PSL states prior to legal occurrences or to none.  In PSL, states holding after an  
    occurrence are the same as states prior to legal successor occurrences, so this constaint applies to states holding after  
    occurrences as well as prior. */
+   ')
 
 (forall (occ f o p s)
    (if (and (psl:occurrence occ)
@@ -611,11 +677,15 @@ The add-one relation.
                            (form:property-value-sequence o p s f2)
                            (form:empty-sequence s))))))))
 
+(cl-comment '
 /* 10.4  Behavior 
    This sub clause covers the behavioral aspects of the base semantics. */
+   ')
 
+(cl-comment '
 /* 10.4.1  Property Value Modifiers 
    This sub clause specifies PSL activities that modify property values. */
+   ')
 (forall (o p v a)
    (if (or (form:add-property-value o p v a)
            (form:remove-property-value o p v a))
@@ -652,18 +722,24 @@ The add-one relation.
                (form:property-value-sequence o p s f)
                (form:empty-sequence s)))))
 
+(cl-comment '
 /* 10.4.2  Common Behavior 
    This sub clause covers the semantics of elements used in all behaviors. It includes Operations, which appear the bUML  
    Kernel, rather than Common Behavior. 
    1.10.2.1 Syntax */
+   ')
 
+(cl-comment '
 /* Behaviors are classes of executions, as in UML. Behaviors specify constraints on their valid executions. */
+')
 
+(cl-comment '
 /* Operations are formalized as abstract behaviors that specify only inputs and outputs. More details about the executed  
    behavior are not determined until runtime, when the operation is called on a particular object and a more detailed  
    behavior is selected ("dispatch"). Operations are not formalized as features or properties on classes because they have no  
    values at runtime. This sub clause adds a generalization of bml:Behavior and buml:Operation that parameterizes them  
 (form:ProcessDefinition). */
+')
 
 (forall (pd)
    (if (form:ProcessDefinition pd)
@@ -681,8 +757,10 @@ The add-one relation.
             (buml:Behavior b)
             (buml:Class c))))
 
+(cl-comment '
 /* Parameters are formalized as properties. The value of a parameter as a property on an execution is the value of the  
    parameter for that execution in a particular PSL state. This assumes no inout parameters. */
+   ')
 
 (forall (p)
    (if (buml:Parameter p)
@@ -723,12 +801,14 @@ The add-one relation.
                 (or (= dk buml:out)
                     (= dk buml:return))))))
 
+(cl-comment '
 /* 10.4.2.1 Syntax 
    Behaviors are classes of executions, as in UML.  Behaviors specify constraints on their valid executions. 
    Operations are formalized as abstract behaviors that specify only inputs and outputs. More details about the executed  
    behavior are not determined until runtime, when the operation is called on a particular object and a more detailed  
    behavior is selected ("dispatch"). Operations are not formalized as features or properties on classes because they have no  
    values at runtime. This sub clause adds a generalization of bml:Behavior and buml:Operation that parameterizes them  (form:ProcessDefinition). */
+   ')
 
 (forall (pd)
    (if (form:ProcessDefinition pd)
@@ -746,8 +826,10 @@ The add-one relation.
             (buml:Behavior b)
             (buml:Class c))))
 
+(cl-comment '
 /* Parameters are formalized as properties.  The value of a parameter as a property on an execution is the value of the  
    parameter for that execution in a particular PSL state.  This assumes no inout parameters. */
+   ')
 
 (forall (p)
    (if (buml:Parameter p)
@@ -788,12 +870,14 @@ The add-one relation.
                 (or (= dk buml:out)
                     (= dk buml:return))))))
 
+(cl-comment '
 /* 10.4.2.2 Semantics 
    Behaviors are classes of executions. Behaviors specify constraints on their valid executions.  Executions are interpreted as  
    PSL activity occurrences, which represent one of potentially many possible traces that might transpire when the execution  
    model is executing.  Behaviors classify their executions independently of PSL state (the classifies relation on behaviors is  
    never used with PSL states that are constrained against occurrences), and similarly for property values of occurrences  
    when the values are also occurrences. */
+   ')
 
 (forall (pd x f)
    (if (and (form:ProcessDefinition pd)
@@ -806,8 +890,10 @@ The add-one relation.
        (forall (f2)
           (form:classifies pd x f2))))
 
+(cl-comment '
 /* The rest of the axioms in this sub clause relate PSL occurrences to executions to support multiple classification of  
    executions. */
+   ')
 
 (forall (x occ)
    (if (form:execution-occ x occ)
@@ -866,9 +952,11 @@ The add-one relation.
                             (psl:root_occ bocc cabocc)
                             (psl:leaf_occ bocc cabocc))))))))
 
+(cl-comment '
 /* 10.4.3  Activity Edges Generally 
    This sub clause specifies additional syntactic relations on activity edges for the formalization, including a generalization  
    of activity edges that generalizes activity nodes also (form:ActivityElement), see 10.4.4. */
+   ')
 
 (forall (x)
    (if (buml:ActivityEdge x)
@@ -905,28 +993,34 @@ The add-one relation.
                     (buml:outgoing n e2))
                (= e1 e2)))))
 
+(cl-comment '
 /* 10.4.4  Activity Nodes Generally 
    10.4.4.1 Syntax 
    This sub clause specifies additional syntactic relations on activity edges for the formalization, including a generalization  
    of activity nodes that generalizes activity edges also (form:ActivityElement), see 10.4.3. */
+   ')
 
 (forall (x)
    (if (buml:ActivityNode x)
        (form:ActivityElement x)))
 
+(cl-comment '
 /* Executable nodes and object nodes are formalized as properties (executable nodes generalize actions and structured  
    nodes, and object nodes generalize pins and activity parameter nodes). Execution nodes are properties of the activities that  
    contain them, typed by behaviors that vary according by the particular executable node. The value of an execution node  
    as a property on an activity execution is the execution of that node. The value of an object node as a property on an  
    activity execution is the value in that object node in a particular PSL state.  */
+   ')
 
 (forall (n)
    (if (or (buml:ExecutableNode n)
            (buml:ObjectNode n))
        (buml:Property n)))
 
+(cl-comment '
 /* The activity relation in the formalization links activity elements to the activity that contains them, regardless of  
    intervening structured nodes. */
+   ')
 
 (forall (ae a)
   (if (form:activity ae a)
@@ -953,7 +1047,9 @@ The add-one relation.
             (form:activity n a))
        (buml:ownedAttribute a n)))
 
+(cl-comment '
 /* Executable nodes as properties have exactly one type, which is a behavior (UML allows at most one type per property). */
+')
 (forall (n b)
    (if (and (buml:ExecutableNode n)
             (buml:type n b))
@@ -964,9 +1060,11 @@ The add-one relation.
        (exists (b)
           (buml:type n b))))
 
+(cl-comment '
 /* 10.4.4.2 Semantics 
    Executions that are values of executable nodes as properties of activity executions are PSL subactivity occurrences of the  
    the activity execution.  PSL subactivity occurrences happen during their superoccurrences. */
+   ')
 
 (forall (n a xa f xn)
    (if (and (buml:ExecutableNode n)
@@ -975,8 +1073,10 @@ The add-one relation.
             (form:property-value xa n xn f))
        (form:subactivity_occurrence-neq xn xa)))
 
+(cl-comment '
 /* Executions that are values of executable nodes as properties of activity executions are values in all PSL states or none.   
    PSL states are not used to formalize the state of execution. */
+   ')
 
 (forall (n a xa f xn)
    (if (and (buml:ExecutableNode n)
@@ -997,9 +1097,11 @@ The add-one relation.
             (psl:root_occ rxa2 xa2))
        (= rxa1 rxa2)))
 
+(cl-comment '
 /* 10.4.5  Structured Nodes Generally 
    Executions that are values of structured nodes as properties of activity executions are PSL subactivity occurrences of the  
    structured node execution. PSL subactivity occurrences happen during their superoccurrences. */
+   ')
 
 (forall (n sn a xa f xn xsn)
    (if (and (buml:inStructuredNode n sn)
@@ -1028,9 +1130,11 @@ The add-one relation.
                              (exists (e)
                                 (buml:incoming ip e)))))))))
 
+(cl-comment '
 /* This constraint applies to the syntactic pattern of a structured activity node containing executable nodes that have no  
    incoming control flows, no incoming object flows to any pins, and no required inputs.  It requires the contained nodes to  
    execute when the structured node does. */
+   ')
 
 (forall (sn n a)
    (if (and (buml:inStructuredNode sn n)
@@ -1064,8 +1168,10 @@ The add-one relation.
                   (and (form:clear-property-value-sequence xa on2 asnleaf)
                        (form:set-property-value-sequence xa opp son2 asnleaf)))))))
 
+(cl-comment '
 /* This constraint requires values of structured node pins to be transferred in and out of the structured node when the node  
    execution begins and ends respectively. */
+   ')
 
 (forall (sn a)
    (if (and (buml:StructuredNode sn)
@@ -1096,16 +1202,20 @@ The add-one relation.
                       (and (not (form:subactivity_occurrence-neq xout xsn))
                            (form:achieves-property-value o p v xout))))))))
 
+(cl-comment '
 /* 10.4.6  Expansion Regions 
    10.4.6.1 Syntax 
    Expansion regions are formalized as call actions, where the activity called is constructed from the nodes in the region.    
    The activity has parameter nodes corresponding to the pins of the expansion region, including the expansion nodes.  */
+   ')
 
 (forall (n)
    (if (buml:ExpansionRegion n)
        (buml:CallAction n)))
 
+(cl-comment '
 /* The expansion-activity relation links expansion regions to the constructed activity it calls. */
+')
 (forall (ac a)
    (if (form:expansion-activity ac a)
        (and (buml:ExpansionRegion ac)
@@ -1119,20 +1229,26 @@ The add-one relation.
    (if (and (form:expansion-activity ac1 a)
             (form:expansion-activity ac2 a))
        (= ac1 ac2)))
+(cl-comment '
 /* Expansion nodes are formalized as pins. */
+')
 (forall (n)
    (if (buml:ExpansionNode n)
        (buml:Pin n)))
 
+(cl-comment '
 /* 10.4.6.2 Semantics 
    All the values of input expansion nodes are taken as a single collection, whereas in UML each value is taken as a separate  
    collection. It is assumed edges do not cross expansion region boundaries and expansion regions are not nested. */
+   ')
 
+(cl-comment '
 /* The expansion-input-value-xcall relation links executions of expansion region actions (the xac variable) and positions (pt)  
    in a property value sequence of an input expansion node with executions of its constructed activity (xcall) (in the  
    execution model, all input expansion nodes have the same number of values at the beginning of region execution). For  
    each expansion region action executions, this relation is one-to-one between positions and executions of the constructed  
    activity, see the necessary condition on expansion region executions at the end of this sub clause. */
+   ')
 
 (forall (xac pt xcall)
    (if (form:expansion-input-value-xcall xac pt xcall)
@@ -1145,10 +1261,12 @@ The add-one relation.
        (iff (= pt1 pt2)
             (= xcall1 xcall2)))) 
 
+(cl-comment '
 /* The expanded-value-to-fill relation links expansion region actions (the xac variable) under activity executions (xa),  
    executions of the expansion region constructed activity (xcall) to input expansion nodes of the region (ip) and a value of  
    the expansion node (v) to pass to a constructed activity execution.  It uses expansion-input-value-xcall to link each value  
    of the expansion node to one of the constructed activity executions. */
+   ')
 
 (forall (xa xac xcall ip v)
    (iff (form:expanded-value-to-fill xa xac xcall ip v)
@@ -1161,10 +1279,12 @@ The add-one relation.
                        (form:position-count s pt n)
                        (form:in-position pt v)))))))
 
+(cl-comment '
 /* The fill-input-parameter-node relation ensures executions of expansion region actions (the xac variable) transfer values  
    from an input pin of the expansion region (ip) to the corresponding input parameter nodes of the executions of the  
    constructed activity (xcall).  It assumes input pins never have more tokens than the action can accept in one execution,  
    and input pin multiplicity upper is one or unlimited (ipmax). */
+   ')
 
 (forall (xa xac xcall ip ipmax)
    (iff (form:fill-input-parameter-node xa xac xcall ip ipmax)
@@ -1192,10 +1312,12 @@ The add-one relation.
                                (form:set-property-value-sequence xcall pnode s 
                                                                  arootxac)))))))))
 
+(cl-comment '
 /* The empty-output-parameter-node relation ensures executions of expansion region action (the xac variable) transfer  
    values from an outut parameter node of the executions of the constructed activity (xcall) to the corresponding output pin  
    of the expansion region (op).  It assumes output pin multiplicity upper (opmax) is one or unlimited. This does not put null  
    tokens in output pins when output parameter nodes are empty, as in UML. */
+   ')
 
 (forall (xa xac xcall opp opmax)
    (iff (form:empty-output-parameter-node xa xac xcall opp opmax)
@@ -1217,8 +1339,10 @@ The add-one relation.
                                (form:set-property-value-sequence xa opp s 
                                                                  aleafxac)))))))))
 
+(cl-comment '
 /* The fill-empty-parameter-node relation combines the fill-input-parameter-node relation and empty-output-parameter-node   
    relations. */
+   ')
 
 (forall (a xa ac xac xcall)
    (iff (form:fill-empty-parameter-node a xa ac xac xcall)
@@ -1233,9 +1357,11 @@ The add-one relation.
                          (buml:upper opp opmax))
                 (form:empty-output-parameter-node xa xac xac opp opmax))))))
 
+(cl-comment '
 /* The expansion-input-value-output relation links two sequences and their positions. The relation  is one-to-one, except not  
    all positions in the first sequence are necessarily in the second sequence. The relation preserves the ordering of the  
    sequences. */
+   ')
 
 (forall (s1 pt1 s2 pt2)
    (if (form:expansion-input-value-output s1 pt1 s2 pt2)
@@ -1262,11 +1388,13 @@ The add-one relation.
                     (form:position-count s2 pt22 n2)
                     (form:less-than n1 n2))))))
 
+(cl-comment '
 /* The contracted-sequence-to-empty relation links executions of expansion region actions (the xac variable) and executions  
    of its constructed activity (xcall) with property value sequences (s) of an output pin (op). It assumes each execution of the  
    body of the expansion region supplies no more than one value to each output expansion node. It ensures the value of the  
    output parameter node of the constructed activity execution, if any, is in the output expansion node in the proper order. It  
    uses the expansion-input-value-output relation for output value ordering. */
+   ')
 
 (forall (xa xac xcall opp sout)
    (iff (form:contracted-sequence-to-empty xa xac xcall opp sout)
@@ -1296,12 +1424,14 @@ The add-one relation.
                                (form:expansion-input-value-output sin ptin2 sout 
                                                                   ptout)))))))))
 
+(cl-comment '
 /* This is a necessary condition on executions of expansion region actions that its constructed activity execute as many times  
    as there are input values in the input expansion nodes (in the execution model, all input expansion nodes have the same  
    number of values at the beginning of region execution), that values are transferred between pins of the action and  
    parameter nodes of the contructed activity execution, and if the region mode is iterative that the executions are ordered in  
    time in the same way as the input values (see the three conditions in the large conjunction). This assumes parallel  
    expansion nodes have no output expansion nodes. */
+   ')
 
 (forall (ac a acall)
 
@@ -1362,13 +1492,17 @@ The add-one relation.
                              (or (psl:earlier xcall1root xcall2leaf)
                                  (psl:earlier xcall1leaf xcall2root)))))))))))
 
+(cl-comment '
 /* 10.4.7  Control Flow 
    This sub clause gives sufficient conditions for existence of action execution due to control flow, except for 10.4.7.3,  
    which gives a necessary condition. The syntactic patterns of this sub clause do not include any object flows. */
+   ')
 
+(cl-comment '
 /* 10.4.7.1 Top level action 
    This sub clause applies to the syntactic pattern of an action directly contained in an activity that requires no input to start.    
    The constraint requires the action to execute for every execution of the containing activity. */
+   ')
 
 (forall (n a)
    (if (and (buml:activity n a)
@@ -1378,11 +1512,13 @@ The add-one relation.
                 (exists (xn)
                    (form:property-value xa n xn f))))))
 
+(cl-comment '
 /* 10.4.7.2 Initial Node to Action 
    This sub clause applies to the syntactic pattern of a control flow from an initial node to an action, with no more than one  
    edge going out of the initial node, no more than one edge coming into the action, and no pins on the action (for example,  
    see Statement Sequence pattern in Annex A.3.1).  It requires the action to execute for every execution of the containing  
    activity. */
+   ')
 
 (forall (n1 n2)
    (iff (form:same-syntactic-container n1 n2)
@@ -1408,11 +1544,13 @@ The add-one relation.
               (exists (xac)
                  (form:property-value xa ac xac f))))))
 
+(cl-comment '
 /* 10.4.7.3 Action to Action, general necessary condition 
    This sub clause applies to syntactic pattern of a control flow between actions, with any intervening and chained control  
    nodes, and regardless of any other flows. It requires each target action execution to follow no more than one source action  
    execution, and each source action execution to be followed by no more than one source action execution. It does not  
    require the target action to execute.  */
+   ')
 
 (forall (n1 n2)
    (iff (form:flow-trans-control-node n1 n2)
@@ -1424,9 +1562,11 @@ The add-one relation.
                             (buml:ControlNode nt)
                             (form:flow-trans-control-node nt n2))))))))
 
+(cl-comment '
 /* The follows relation links two PSL occurrences (s1 and  s2 variables) under an execution of an activity (a), where the first  
    occurrence happens sometime before the second. The follows relation is used in sufficient conditions for the existence of  
    action executions due to control flow from other actions, for example in sub clause. */
+   ')
 
 (forall (s1 s2 a)
    (if (form:follows s1 s2 a)
@@ -1448,14 +1588,18 @@ The add-one relation.
               (iff (= xac1 xac12)
                    (= xac2 xac22))))))
 
+(cl-comment '
 /* 10.4.7.4 Action to Action, single control flow, optional merge/fork 
    This sub clause applies to the syntactic pattern of a control flow between actions, with any intervening and chained fork  
    and merge nodes (for example, see the Statement Sequence pattern in Annex A.3.1). The target action has no other  
    incoming control flows and no input pins. The constraint requires the target action to execute after the source action does. */
+   ')
 
+(cl-comment '
 /* The flow-trans-fork-merge links activity nodes that have a control or object flow between them (the n1 variable as source,  
    n2 as target), possibily with intervening and chained fork and merge nodes. The flow will be a control flow if the nodes  
    are actions and an object flow if the nodes are object nodes. */
+   ')
 
 (forall (n1 n2)
    (iff (form:flow-trans-fork-merge n1 n2)
@@ -1482,17 +1626,21 @@ The add-one relation.
                   (and (form:property-value xa ac2 xac2 f)
                        (form:follows xac1 xac2 a)))))))
 
+(cl-comment '
 /* 10.4.8  Object Flow 
    This sub clause gives sufficient conditions for the presence of values in object nodes in 10.4.8.1 and 10.4.8.2 and for the  
    existence of action execution due to object flow in 10.4.8.3 through 10.4.8.6, and also control flow in 10.4.8.4 through  
    10.4.8.6. The syntactic patterns of this sub clause do not have object nodes with more than one outgoing edge (no token  
    competition). */
+   ')
 
+(cl-comment '
 /* 10.4.8.1 Object node to object node, optional fork/merge 
    This sub clause applies to the syntactic pattern of object flow between object nodes, with any intervening and chained  
    fork and merge nodes, where the flow is not into or out of a structured node pin (for example, see the two Instance  
    Variable Assignment patterns in Annex A.3.4 and A.3.5). The source object node has exactly one outgoing object flow.  
    The constraints require values in the source object node be transferred to the target object node. */
+   ')
 
 (forall (n sn)
    (iff (form:inStructuredNode-trans n sn)
@@ -1501,8 +1649,10 @@ The add-one relation.
                (and (buml:inStructuredNode n nt)
                     (form:inStructuredNode-trans nt sn))))))
 
+(cl-comment '
 /* The structured-input-or-output relation links input pins (the on1 variable) or output pins (on2) of structured nodes with  
    object nodes in the structured node.  */
+   ')
 
 (forall (on1 on2)
    (iff (form:structured-input-or-output on1 on2)
@@ -1532,6 +1682,7 @@ The add-one relation.
                       (form:subactivity_occurrence-neq
                          (psl:successor amove xsub) xa)))))))
 
+(cl-comment '
 /* 10.4.8.2 Object node to object node, decision, optional fork/merge 
    This sub clause applies to the syntactic pattern of object flow between object nodes, with any intervening and chained  
    fork and merge nodes, one intervening decision node, where the flow is not into or out of a structured node pin (for  
@@ -1545,6 +1696,7 @@ The add-one relation.
    chained fork and merge nodes. The flow has one intervening decision node with a decision input flow from an output pin 
 (dip), possibily with intervening and chained fork and merge nodes, and a guard specification (g). The flow will be a 
    control flow if the nodes (n1 and n2) are actions and an object flow if the nodes are object nodes.  */
+   ')
 
 (forall (n1 n2 dip g)
    (iff (form:flow-trans-fork-merge-decision n1 n2 dip g)
@@ -1569,7 +1721,9 @@ The add-one relation.
                         (or (= nt dip)
                             (form:flow-trans-fork-merge dip nt))))))))
 
+(cl-comment '
 /* This assumes the output pin providing the decision input has exactly one value. */
+')
 (forall (on1 on2 ac dip g a)
    (if (and (buml:ObjectNode on1)
             (buml:ObjectNode on2)
@@ -1595,15 +1749,19 @@ The add-one relation.
                       (psl:occurrence_of occmove amove) 
                       (psl:next_subocc xac occmove a)))))))
 
+(cl-comment '
 /* 10.4.8.3 Action with pins, no incoming control flow or one from initial 
    This sub clause applies to the syntactic pattern of an action with pins, and no incoming control flow or one from an initial  
    node (for example, see the Testing String Equality pattern in Annex A.4.9). It requires the action to execute for every  
    execution of the activity when the input pins are provided enough values to meet their lower multiplicity. */
+   ')
 
+(cl-comment '
 /* The action-input-pins-satisfied links actions (the ac variable) under executions of their containing activities (xa), with  
-   other executions (xsub) after which the values in the action's pins meet their lower multiplicity.  An incoming control  
+   other executions (xsub) after which the values in the action`s pins meet their lower multiplicity.  An incoming control
    flow is required if all input pins are optional (lower multiplicity of zero).  It assumes that the input pin multiplicity lower  
    bound is zero or one. */
+   ')
 
 (forall (ac xa xsub)
    (iff (form:action-input-pins-satisfied ac xa xsub)
@@ -1624,11 +1782,14 @@ The add-one relation.
                             (and (form:holdsA f xsub)
                                  (form:property-value xa ip v f)))))))))
 
+(cl-comment '
 /* The action-pin-trigger relation links actions (the ac variable) under executions of their containing activities (xa), with  
    other executions (xsub) under the activity execution before which the action input pins are not satisfied and after which  
    they are. */
+   ')
 
-(forall (xac ac xa xsub) /* added */
+(cl-comment '/* added */')
+(forall (xac ac xa xsub)
    (iff (form:action-pin-trigger ac xsub xa)
         (and (form:subactivity_occurrence-neq xsub xa)
              (forall (xlsub alsub)
@@ -1639,9 +1800,11 @@ The add-one relation.
                             (not (form:action-input-pins-satisfied ac xa xbsub))
                             (form:action-input-pins-satisfied ac xa xlsub))))))))
 
+(cl-comment '
 /* The take-input relation ensures that executions (the xac variable) remove values from input pins that are values just after  
    another execution is complete (xsub). The other execution brings about pin satisfaction, see action-pin-trigger above. It  
    assumes that the input pin multiplicity upper bound is one or unlimited. */
+   ')
 
 (forall (xac ac xa xsub)
   (iff (form:take-input xac ac xa xsub)
@@ -1685,18 +1848,22 @@ The add-one relation.
                        (psl:min_precedes xsub xac a)
                        (form:take-input xac ac xa xsub)))))))
 
+(cl-comment '
 /* 10.4.8.4 Action with pins, one incoming control flow from action, optional fork/merge 
    This sub clause applies to the syntactic pattern of an action with pins, and one incoming control flow from another action  
    with any intervening and chained fork and merge nodes (for example, see the Method Call pattern in Annex A.4.11). It  
    requires the target action to execute after the source action when the input pins are provided enough values to meet their  
    lower multiplicity. */
+   ')
 
+(cl-comment '
 /* The joinable-control-input relation links actions and their executions (the ac0 and xac0 variables respectively) under  
    executions of their containing activities (xa and a, respectively), with other executions (xsub) under the activity execution  
    that satisfy the pins of a target action (ac). The action executions (xac0) and the other pin-satisfying executions (xsub) are  
    paired one-to-one in time order. The pairing begins with action executions and pin-satisfying executions that have no  
    other ones before them (the first part of the disjunctioin), and the pairs after that are in time order (the second part of the  
    disjunction). */
+   ')
 
 (forall (xac0 xsub xa a ac0)
    (iff (form:joinable-control-input ac0 xac0 xsub ac a xa)
@@ -1718,10 +1885,12 @@ The add-one relation.
                                     (psl:min_precedes xsub2 xsub0 a)
                                     (psl:min_precedes xsub0 xsub a))))))))))
 
+(cl-comment '
 /* The joined-follows relation links PSL occurrences where two of the occurrences (the s1 and  s2 variables) happen before  
    the third (s3) under execution of an activity (a). The third occurrence is constrained to follow no more than one pair of the  
    other two occurrences, and each pair of the other two occurrences to be followed by no more than one of the third 
 (compare to the follows relation in 10.4.7.3). */
+')
 
 (forall (s1 s2 s3 a)
   (if (form:joined-follows s1 s2 s3 a)
@@ -1736,6 +1905,7 @@ The add-one relation.
                  (= s2 s22))
             (= s3 s32))))
 
+(cl-comment '
 /* The joined-action-execution-exists relation establishes existence of executions of actions (the ac variable) under activity  
    exections (xa, an execution of activity a) where an action execution happens after its input pins are satisfied, and after  
    another action execution completes (xac0, an execution of action ac0).  An earlier constraint requires the source of control  
@@ -1743,6 +1913,7 @@ The add-one relation.
    where the input pins are satisfied at the time the source of control flow is completed (the first part of the disjunction), and  
    another where the input pins are satisfied sometime after the source of control flow is completed (the second part of the  
    disjunction), see action-pin-trigger and  joinable-control-input. */
+   ')
 
 (forall (ac ac0 xac0 a xa)
   (iff (form:joined-action-execution-exists ac ac0 xac0 a xa)
@@ -1771,17 +1942,21 @@ The add-one relation.
                     (form:property-value xa ac0 xac0 f))
                (form:joined-action-execution-exists ac ac0 xac0 a xa)))))
 
+(cl-comment '
 /* 10.4.8.5 Action with pins, one incoming control flow from action, decision with decision flow from same  action, optional fork/merge 
    This sub clause applies to the syntactic pattern an action with pins, and one incoming control flow from another action  
    with any intervening and chained fork and merge nodes, and one intervening decision node in both the object flows and  
    control flows (for example, see the Do-While pattern in Annex A.3.10). The decision inputs come from output pins on the  
    same action as the source of the control flow.  It requires the target action to execute after the source action when the  
    input pins are provided enough values to meet their lower multiplicity. */
+   ')
 
+(cl-comment '
 /* The guarded-joined-action-execution-exists relation augments the joined-action-execution-exists relation for a syntactic  
    pattern that has a decision node with a decision input from an output pin (the dip variable) and guard value (g). It assumes  
    the output pin has exactly one value, and the guard is a literal value specification. It ensures the value of the output pin is  
    removed. */
+   ')
 
 (forall (ac ac0 dip g a)
   (iff (form:guarded-joined-action-execution-exists ac ac0 dip g a)
@@ -1805,13 +1980,17 @@ The add-one relation.
             (form:activity ac a))
        (form:guarded-joined-action-execution-exists ac ac0 dip g a)))
 
+(cl-comment '
 /* 10.4.8.6 Action with pins, one incoming control flow from initial, decision with decision flow from initial  action in same, optional fork/merge */
+')
 
+(cl-comment '
 /* This sub clause applies to the syntactic pattern an action with pins, and one incoming control flow from and intial node  
    with any intervening and chained fork and merge nodes, and one intervening decision node the control flow (for example,  
    see the If Statement pattern in Annex A.3.9). The decision inputs come from output pins on the same action as the source  
    of the control flow. It requires the target action to execute for every execution of the activity when the input pins are  
    provided enough values to meet their lower multiplicity. */
+   ')
 
 (forall (i ac dip g ac0 a)
    (if (and (buml:InitialNode i)
@@ -1825,10 +2004,12 @@ The add-one relation.
             (form:activity ac a))
        (form:guarded-joined-action-execution-exists  ac ac0 dip g a)))
 
+(cl-comment '
 /* 10.4.9  Invocation Actions 
    10.4.9.1 Syntax 
    This sub clause specifies additional syntax for invocation actions. The called relation links call actions to behaviors and  
    operations that are called. */
+   ')
 
 (forall (ac pd)
    (if (form:called ac pd)
@@ -1845,8 +2026,10 @@ The add-one relation.
        (exists (po)
           (form:called ac po))))
 
+(cl-comment '
 /* The pin-parameter-match relation links pins and called parameters as derived from pin and parameter ordering in the  
    model. */
+   ')
 
 (forall (pn p)
    (if (form:pin-parameter-match pn p)
@@ -1906,7 +2089,9 @@ The add-one relation.
    (if (buml:operation ac opp)
        (buml:type ac opp)))
 
+(cl-comment '
 /* The pin-property-match relation links pins and properties as derived from pin and signal property ordering in the model.   */
+')
 (forall (pn p)
    (if (form:pin-property-match pn p)
        (and (buml:Pin pn)
@@ -1935,12 +2120,16 @@ The add-one relation.
                     (form:pin-property-match pn p))
                (buml:ownedAttribute sig p)))))
 
+(cl-comment '
 /* 10.4.9.2 Semantics 
    This sub clause gives necessary conditions on executions of invocation actions as used in the execution engine 
 (CallBehaviorAction, CallOpertationAction, and SendSignalAction). */
+')
 
+(cl-comment '
 /* The change-only-pin relation links actions and their executions under the activity executions, where the action executions  
    only affect spins of the action. */
+   ')
 
 (forall (ac xac xa)
    (iff (form:change-only-pin ac xac xa)
@@ -1952,8 +2141,10 @@ The add-one relation.
                     (or (buml:input ac p)
                         (buml:input ac p)))))))
 
+(cl-comment '
 /* This ensures activities invoked with call behavior actions transfer values between pins and parameter nodes, and that  
    called function behaviors only affect pins of their calling actions. */
+   ')
 
 (forall (ac a b)
    (if (and (buml:CallBehaviorAction ac)
@@ -1967,9 +2158,11 @@ The add-one relation.
                    (if (buml:FunctionBehavior b)
                        (form:change-only-pin ac xac xa)))))))
 
+(cl-comment '
 /* The dispatch relation links links objects to operations and behaviors in a PSL states.  It is used to determine more detailed  
    behavior (method) based on the thing on which an operation is invoked.  It assumes multiple generalization does not  
    affect the choice of method. */
+   ')
 
  (forall (o opp b f)
    (if (form:dispatch o opp b f)
@@ -1988,7 +2181,9 @@ The add-one relation.
                             (form:method opp b2 c)
                             (form:classifies c2 o f))))))))
 
+(cl-comment '
 /* The execution-performer relation links executions to things performing those executions. */
+')
 (forall (x o)
   (if (form:execution-performer x o)
       (form:execution x)))
@@ -1998,8 +2193,10 @@ The add-one relation.
            (form:execution-performer x o2))
       (= o1 o2)))
 
+(cl-comment '
 /* This ensures activities invoked with call operation actions transfer values between pins and parameter nodes, and that  
    called function behaviors only affect pins of their calling actions. */
+   ')
 
 (forall (ac a opp b tip)
    (if (and (buml:CallOperationAction ac)
@@ -2016,7 +2213,9 @@ The add-one relation.
                    (form:execution-performer xac too)
                    (form:fill-empty-parameter-node a xa ac xac xac))))))
 
+(cl-comment '
 /* The new-object relation links things too PSL occurrences before which the object does not exist.  */
+')
 (forall (o occ)
    (if (form:new-object o occ)
        (psl:occurrence occ)))
@@ -2037,8 +2236,10 @@ The add-one relation.
                         (form:property-value-sequence o2 p o f)
                         (form:classifies c o f)))))))
 
+(cl-comment '
 /* The fill-signal-property relation links signal objects to input pins that have values for properties of the signal.  It assumes  
    input pin multiplicity upper is one or unlimited. */
+   ')
 
 (forall (osig ip ipmax xa xac)
   (iff (form:fill-signal-property osig ip ipmax xa xac)
@@ -2057,13 +2258,17 @@ The add-one relation.
                           (if (form:property-value xa ip v fxac)
                               (form:add-property-value osig p v arootxac)))))))))
 
+(cl-comment '
 /* The event-pool relation links things to collections of events sent to them and waiting to be processed. */
+')
 (forall (o osig f)
   (if (form:event-pool o osig f)
       (psl:state f)))
 
+(cl-comment '
 /* This ensures ensures send signal action executions transfer values between pins and signal properties, and that the signal  
    is in the event pool of the target. */
+   ')
 
 (forall (ac a sig tip)
    (if (and (buml:SendSignalAction ac)
@@ -2086,9 +2291,11 @@ The add-one relation.
                               (form:fill-signal-property osig ip ipmax xa xac)))
                       (form:event-pool too osig fxac2)))))))
 
+(cl-comment '
 /* 10.4.10 Object Actions (Intermediate) 
    This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution  
    engine (CreateObjectAction, TestIdentityAction, ReadSelfAction, and ValueSpecificationAction). */
+   ')
 
 (forall (ac a c opp)
    (if (and (buml:CreateObjectAction ac)
@@ -2104,7 +2311,9 @@ The add-one relation.
                       (form:new-object o xac)
                       (form:property-value xa opp o fxac)))))))
 
+(cl-comment '
 /* This covers testing equivalence of datatype values, which the UML TestIdentityAction does not. */
+')
 (forall (ac a ip1 ip2 opp)
    (if (and (buml:TestIdentityAction ac)
             (form:activity ac a)
@@ -2161,10 +2370,12 @@ The add-one relation.
                              (if (buml:instance vs i)
                                  (form:property-value xa opp i fxac))))))))))
 
+(cl-comment '
 /* 10.4.11 Structural Feature Actions 
    This sub clause specifies necessary conditions on executions of intermediate object actions as used in the execution model  
 (ReadStructuralFeatureAction, ClearStructuralFeatureAction, AddStructuralFeatureAction, 
  RemoveStructuralFeatureAction). */
+ ')
 
 (forall (ac a p oip opp)
    (if (and (buml:ReadStructuralFeatureAction ac)
@@ -2253,7 +2464,9 @@ The add-one relation.
                                           (form:in-position-count s2 v2 
                                                                nmore1)))))))))))))
 
+(cl-comment '
 /* This assumes isRemoveDuplicates on the action is false. */
+')
 (forall (ac a p oip vip)
    (if (and (buml:RemoveStructuralFeatureAction ac)
             (form:activity ac a)
@@ -2297,11 +2510,13 @@ The add-one relation.
                                         (form:in-position-count s2 v2 
                                                                 nmore1))))))))))))
 
+(cl-comment '
 /* 10.4.12 Object Actions (Complete) 
    This sub clause specifies necessary conditions on executions of complete object actions as used in the execution model 
 (ReadIsClassifiedObjectAction and StartObjectBehaviorAction).
 
  This assumes the isDirect attribute on the action is false. */
+ ')
 (forall (ac a ip c opp)
    (if (and (buml:ReadIsClassifiedObjectAction  ac)
             (form:activity ac a)
@@ -2320,7 +2535,9 @@ The add-one relation.
                       (if (not (form:classifies c o fxac))
                           (form:property-value xa opp form:false fxac2))))))))
 
+(cl-comment '
 /* This assumes the object input is not a behavior, that no arguments are passed, and the action is not synchronous. */
+')
 (forall (ac a ip)
    (if (and (buml:StartObjectBehaviorAction  ac)
             (form:activity ac a)
@@ -2339,9 +2556,11 @@ The add-one relation.
                       (psl:root_occ srootxb xb)
                       (form:subactivity_occurrence-neq srootxb xac)))))))
 
+(cl-comment '
 /* 10.4.13 Accept Event Action 
    This sub clause specifies necessary conditions on executions of AcceptEventAction. The getNextEvent relation links  
-   things and triggers with signal objects in the thing's event pool in a PSL state. */
+   things and triggers with signal objects in the thing`s event pool in a PSL state. */
+   ')
 
 (forall (o osig tr f)
    (if (form:getNextEvent o osig tr f)
