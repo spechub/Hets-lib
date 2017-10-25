@@ -11,16 +11,16 @@ spec Biblio_OWL =
   DataProperty: impactFactor
 
   Class: Researcher
-  SubClassOf: name some string
+  SubClassOf: name some xsd:string
 
   ObjectProperty: hasArticle
   InverseOf: hasJournal
 
   Class: Article
-  SubClassOf: author some Thing, title some string, hasJournal some Journal
+  SubClassOf: author some owl:Thing, title some xsd:string, hasJournal some Journal
 
   Class: Journal
-  SubClassOf: name some string, hasArticle some Thing, impactFactor some integer
+  SubClassOf: name some xsd:string, hasArticle some owl:Thing, impactFactor some xsd:integer
 
 end
 

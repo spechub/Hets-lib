@@ -2,7 +2,7 @@ logic OWL
 
 spec Node =
  ObjectProperty: hasValue
- Class: Node SubClassOf: hasValue some Thing
+ Class: Node SubClassOf: hasValue some owl:Thing
 end
 spec Tree =
 Node
@@ -11,7 +11,7 @@ then free {
  ObjectProperty: child InverseOf: childInv
  Class: EmptyTree
  Class: Tree EquivalentTo: EmptyTree or
-     (Node and childInv max 1 Thing and child some Thing and child only Tree)
+     (Node and childInv max 1 owl:Thing and child some owl:Thing and child only Tree)
   }
 end
 
@@ -19,7 +19,7 @@ spec Stream =
 Node
 then cofree {
   ObjectProperty: succ
-  Class: Stream EquivalentTo: Node and succ max 1 Thing and succ some Stream
+  Class: Stream EquivalentTo: Node and succ max 1 owl:Thing and succ some Stream
 }
 end
 

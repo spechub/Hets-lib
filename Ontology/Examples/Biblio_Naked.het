@@ -4,8 +4,6 @@ logic OWL
 
 spec Biblio_OWL =
 
-  Prefix: xsd: <http://www.w3.org/2001/XMLSchema#>
-
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
 
   DataProperty: impactFactor
@@ -21,10 +19,10 @@ spec Biblio_OWL =
   InverseOf: hasJournal
 
   Class: Article
-  SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
+  SubClassOf: author some owl:Thing, title some xsd:string, hasJournal some Journal
 
   Class: Journal
-  SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+  SubClassOf: name some xsd:string, hasArticle some owl:Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme

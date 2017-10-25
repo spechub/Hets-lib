@@ -4,8 +4,6 @@ logic OWL
 
 spec Biblio_OWL =
 
-  Namespace: xsd <http://www.w3.org/2001/XMLSchema#>
-
   Ontology: <http://www.dfki.de/sks/hets/ontology/Biblio_DL>
 
   DataProperty: name
@@ -21,10 +19,10 @@ spec Biblio_OWL =
   InverseOf: hasJournal
 
   Class: Article
-  SubClassOf: author some Thing, title some xsd:string, hasJournal some Journal
+  SubClassOf: author some owl:Thing, title some xsd:string, hasJournal some Journal
 
   Class: Journal
-  SubClassOf: name some xsd:string, hasArticle some Thing, impactFactor some xsd:integer
+  SubClassOf: name some xsd:string, hasArticle some owl:Thing, impactFactor some xsd:integer
 end
 
 logic RelScheme
@@ -94,7 +92,7 @@ spec BiblioR =
 end
 
 view OWL2R : Biblio_OWL to
-     { BiblioR %% and { logic OWL: {} } %% insert OWL's builtin stuff
+     { BiblioR %% and { logic OWL {} } %% insert OWL's builtin stuff
       then %def
        preds
         researcher (p : Thing) <=> Researcher(p);
