@@ -1,0 +1,9 @@
+spec Partial_Order =
+    sort Elem
+    pred __<__ : Elem * Elem
+    forall x, y, z:Elem
+    . not x < x %(irreflexive)%
+    . x < y /\ y < z => x < z %(transitive)%
+    %% the following is logically entailed
+    . x < y => not y < x %(asymmetric)% %implied
+end
