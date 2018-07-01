@@ -43,13 +43,13 @@ end
 %%	TM                 : Time_Mereology;
 
 %%One Point Model Found
-spec TM_Cons=
+spec TM_Cons =
      Time_Mereology
 then
      . exists t:T . true  %% we need at least one time point
 end
 
-spec TM_Model= 
+spec TM_Model = 
      free type T ::= t0
      pred At : T;
 	  P,PP,Ov,AtP : T * T;
@@ -91,7 +91,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (2,3,4) (TL new, TR new, TQ new)
-spec ImmediateQuale_Cons=
+spec ImmediateQuale_Cons =
      TM_Cons
      then %cons
      Immediate_Quale
@@ -159,7 +159,7 @@ view v_Temporary_Parthood_No_PRE_2 :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (6) (SAG new)
-spec TempParthoodSAG_Cons=
+spec TempParthoodSAG_Cons =
      TM_Cons
      then %cons
      Temporary_Parthood_No_PRE with s |-> SAG
@@ -180,7 +180,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (7) (NASO new)
-spec TempParthoodNASO_Cons=
+spec TempParthoodNASO_Cons =
      TempParthoodSC_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> NASO and
@@ -201,7 +201,7 @@ view v_TempParthoodNASO_Cons_Model :
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (8) (APO new)
-spec TempParthoodAPO_Cons=
+spec TempParthoodAPO_Cons =
      TempParthoodSAG_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> APO 
@@ -222,7 +222,7 @@ view v_TempParthoodAPO_Cons_Model :
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (9) (F new)
-spec TempParthoodF_Cons=
+spec TempParthoodF_Cons =
      TempParthoodSAG_Cons
      then %cons
      Temporary_Parthood_No_PRE with s |-> F
@@ -241,7 +241,7 @@ view v_TempParthoodF_Cons_Model :
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (10) (NAPO new)
-spec TempParthoodNAPO_Cons=
+spec TempParthoodNAPO_Cons =
      TempParthoodF_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> NAPO 
@@ -263,7 +263,7 @@ view v_TempParthoodNAPO_Cons_Model :
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (11) (ASO new)
-spec TempParthoodASO_Cons=
+spec TempParthoodASO_Cons =
      TempParthoodSC_Cons
      and
      TempParthoodSAG_Cons
@@ -298,7 +298,7 @@ view v_TempParthoodASO_Cons_Model :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (12) (MOB new)
-spec TempParthoodMOB_Cons=
+spec TempParthoodMOB_Cons =
      TempParthoodAPO_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> MOB 
@@ -328,7 +328,7 @@ view v_TempParthoodMOB_Cons_Model :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (13) (SOB new)
-spec TempParthoodSOB_Cons=
+spec TempParthoodSOB_Cons =
      TempParthoodNASO_Cons
      and
      TempParthoodASO_Cons
@@ -362,7 +362,7 @@ view v_TempParthoodSOB_Cons_Model :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (14) (POB new)   
-spec TempParthoodPOB_Cons=
+spec TempParthoodPOB_Cons =
      TempParthoodMOB_Cons
      and
      TempParthoodNAPO_Cons
@@ -376,7 +376,7 @@ spec TempParthoodPOB_Cons=
 end
 
 
-spec TempParthoodPOB_Cons_Model=
+spec TempParthoodPOB_Cons_Model =
      TempParthoodMOB_Cons
      and
      TempParthoodNAPO_Cons
@@ -397,7 +397,7 @@ view v_TempParthoodPOB_Cons_Model :
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (15) (NPOB new)   
-spec TempParthoodNPOB_Cons=
+spec TempParthoodNPOB_Cons =
      TempParthoodSOB_Cons
      and 
      TempParthoodMOB_Cons
@@ -410,7 +410,7 @@ spec TempParthoodNPOB_Cons=
      }
 end
 
-spec TempParthoodNPOB_Cons_Model=
+spec TempParthoodNPOB_Cons_Model =
      TempParthoodSOB_Cons
      and
      TempParthoodMOB_Cons
@@ -430,13 +430,13 @@ view v_TempParthoodNPOB_Cons_Model :
 
      
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (16) (M new)   
-spec TempParthoodM_Cons=
+spec TempParthoodM_Cons =
      TempParthoodPOB_Cons
      then %cons
      {Temporary_Parthood_No_PRE with s |-> M}
 end
 
-spec TempParthoodM_Cons_Model=
+spec TempParthoodM_Cons_Model =
      TempParthoodPOB_Cons
      then %cons
      {OnePointTempParthoodNoModel with sort s |-> M}
@@ -449,7 +449,7 @@ view v_TempParthoodM_Cons_Model :
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (17) (NPED new)   
-	spec TempParthoodNPED_Cons=
+	spec TempParthoodNPED_Cons =
      TempParthoodNPOB_Cons
      then %cons
      {Temporary_Parthood with s |-> NPED
@@ -460,7 +460,7 @@ view v_TempParthoodM_Cons_Model :
      }
 end
 
-spec TempParthoodNPED_Cons_Model=
+spec TempParthoodNPED_Cons_Model =
      TempParthoodNPOB_Cons
      then %cons
      {esort NPOB < NPED
@@ -482,7 +482,7 @@ end
 view v_TempParthoodNPED_Cons_Model : 
      TempParthoodNPED_Cons to TempParthoodNPED_Cons_Model
 
-spec TempParthoodPED_Cons_Model=
+spec TempParthoodPED_Cons_Model =
      TempParthoodM_Cons
      then %cons
 	    free type PED ::= sort POB | sort M | sort F
@@ -505,7 +505,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (19) (ED new) (AS new)   
-spec TempParthoodED_Cons=
+spec TempParthoodED_Cons =
      TempParthoodPED_Cons
      and 
      TempParthoodNPED_Cons
@@ -526,7 +526,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (20) (AQ new)   
-spec DependenceAQNPED_Cons=
+spec DependenceAQNPED_Cons =
      TempParthoodED_Cons
      then %cons
      Mutual_Specific_Dependence with s1 |-> AQ, 
@@ -537,7 +537,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (21) (PD new)   
-spec ClassExtParthoodPD_Cons=
+spec ClassExtParthoodPD_Cons =
      TempParthoodED_Cons
      then %cons
      {Classical_Extensional_Parthood with s |-> PD}
@@ -573,7 +573,7 @@ end
 spec sp = {}
 view consistent_cpm1 : sp to Classical_Extensional_Parthood_1_model
 
-view cpm1: Classical_Extensional_Parthood to
+view cpm1 : Classical_Extensional_Parthood to
            Classical_Extensional_Parthood_1_model
 
 
@@ -583,7 +583,7 @@ view cpm1: Classical_Extensional_Parthood to
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (22) (AR new)   
-spec ClassExtParthoodAR_Cons=
+spec ClassExtParthoodAR_Cons =
      DependenceAQNPED_Cons
      then %cons
      Classical_Extensional_Parthood with s |-> AR
@@ -596,7 +596,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-spec Particip_Cons=
+spec Particip_Cons =
      ClassExtParthoodPD_Cons
      then %cons
      Participation
@@ -606,7 +606,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (23) (PQ new)   
-spec DependencePQPED_Cons=
+spec DependencePQPED_Cons =
      TempParthoodED_Cons
      then %cons
      Mutual_Specific_Dependence with s1 |-> PQ, 
@@ -618,7 +618,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-spec DependenceTQPD_Cons=
+spec DependenceTQPD_Cons =
      Particip_Cons
      and
      ImmediateQuale_Cons
@@ -631,7 +631,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (24,25) (Q new, EDorPDorQ new)   
-spec BeingPresentEDorDP_Cons=
+spec BeingPresentEDorDP_Cons =
      DependenceTQPD_Cons
      and
      DependencePQPED_Cons
@@ -652,7 +652,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (26,27) (SL new, S new)   
-spec BinTempDisS_Cons=
+spec BinTempDisS_Cons =
      DependencePQPED_Cons
      then %cons
      Binary_Temporal_Dissective with s1 |-> S, 
@@ -665,7 +665,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (28) (PR new)   
 %% Model with PR 1 Element, PQ 1 Element exists
-spec BinTempDisPR_Cons=
+spec BinTempDisPR_Cons =
      Binary_Temporal_Dissective with s1 |-> PR, 
 				s2 |-> PQ
      and 
@@ -679,7 +679,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-spec ClassExtParthoodS_Cons=
+spec ClassExtParthoodS_Cons =
       BinTempDisS_Cons
       then %cons
       Classical_Extensional_Parthood with s |-> S
@@ -690,7 +690,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-spec BinTempDisAR_Cons=
+spec BinTempDisAR_Cons =
      DependenceAQNPED_Cons
      and
      ClassExtParthoodAR_Cons
@@ -704,7 +704,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-spec ConstitutionPD_Cons=
+spec ConstitutionPD_Cons =
      TempParthoodPED_Cons
      and 
      TempParthoodNPED_Cons
@@ -719,7 +719,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec ConstitutionPED_Cons=
+spec ConstitutionPED_Cons =
      TempParthoodPED_Cons
      and 
      TempParthoodNPED_Cons
@@ -736,7 +736,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-spec ConstitutionNPED_Cons=
+spec ConstitutionNPED_Cons =
      TempParthoodPED_Cons
      and 
      TempParthoodNPED_Cons
@@ -751,7 +751,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec Constitution_Cons=
+spec Constitution_Cons =
      ConstitutionPD_Cons
      and
      ConstitutionPED_Cons
@@ -763,7 +763,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec TempQualePR_Cons=
+spec TempQualePR_Cons =
      BeingPresentEDorDP_Cons
      and
      BinTempDisS_Cons
@@ -777,7 +777,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-spec TempQualeAR_Cons=
+spec TempQualeAR_Cons =
      BeingPresentEDorDP_Cons
      and
      BinTempDisS_Cons
@@ -791,7 +791,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec TempQualeS_Cons=
+spec TempQualeS_Cons =
      BeingPresentEDorDP_Cons
      and
      BinTempDisS_Cons
@@ -804,7 +804,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec TempQuale_Cons=
+spec TempQuale_Cons =
      TempQualePR_Cons
      and
      TempQualeAR_Cons
@@ -817,7 +817,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec DirectQuality_Cons=
+spec DirectQuality_Cons =
      BeingPresentEDorDP_Cons
      and
      BinTempDisS_Cons
@@ -830,7 +830,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-spec PreDolce_Cons=
+spec PreDolce_Cons =
      BeingPresentEDorDP_Cons
      and 
      Constitution_Cons
@@ -844,7 +844,7 @@ end
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% (29-38) (PT, AB, R -- STV, ST, PRO -- EV, ACH, ACC)   
-spec Dolce_Cons=
+spec Dolce_Cons =
      PreDolce_Cons
      then %cons
      Taxonomy
