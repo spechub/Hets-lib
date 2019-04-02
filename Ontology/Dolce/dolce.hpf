@@ -1,0 +1,10 @@
+#!/bin/bash
+cat | /home/till/bin/hets -I <<EOF
+use DolceSimpl.het
+dg basic Classical_Extensional_Parthood
+cons-checker $2
+set time-limit $1
+show-output true
+check-consistency 
+quit
+EOF
