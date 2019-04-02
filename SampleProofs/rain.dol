@@ -1,0 +1,18 @@
+logic Propositional
+ 
+spec Raining =
+  props raining, wet_street
+  . raining => wet_street  
+                    %(if raining, the street is wet)%
+  . not wet_street    %(the street is not wet)%
+  . not raining       %(it is not raining)%  %implied
+end
+
+spec Raining2 =
+  props raining, wet_street
+  . raining => wet_street  
+                    %(if raining, the street is wet)%
+  . wet_street      %(the street is wet)%
+  %% the following does not hold...
+  . raining         %(hence it must rain...)%  %implied
+end

@@ -1,0 +1,27 @@
+logic OWL
+
+ontology Family1 =
+  Class: Person
+  Class: Woman SubClassOf: Person
+  ObjectProperty: hasChild
+  Class: Mother  
+         EquivalentTo: Woman and hasChild some Person
+  Individual: mary Types: Woman Facts: hasChild  john
+  Individual: john
+  Individual: mary 
+       Types: Annotations: Implied "true"^^xsd:boolean
+              Mother
+end
+
+ontology Family2 =
+  Class: Person
+  Class: Woman SubClassOf: Person
+  ObjectProperty: hasChild
+  Class: Mother 
+         EquivalentTo: Woman and hasChild some Person
+  Individual: mary Types: Woman Facts: hasChild  john
+  Individual: john Types: Person
+  Individual: mary 
+       Types: Annotations: Implied "true"^^xsd:boolean
+              Mother
+end
