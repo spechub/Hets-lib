@@ -1,14 +1,14 @@
 # Variables
 
 files := $(wildcard *.casl)
-files += $(filter-out %pp.het,$(wildcard *.het))
+files += $(filter-out %pp.dol,$(wildcard *.dol))
 
 
 # List of libraries that make problems
-ignore_files = DRA.casl DRA.het DRA_FO.casl FlipFlop.casl Modal_RCC8.het PA2.het
+ignore_files = DRA.casl DRA.dol DRA_FO.casl FlipFlop.casl Modal_RCC8.dol PA2.dol
 files := $(filter-out $(ignore_files),$(files))
 
-clean_files := $(wildcard *.thy *.patch *.env *.pp.het)
+clean_files := $(wildcard *.thy *.patch *.env *.pp.dol)
 
 
 # Implicit rules
@@ -20,7 +20,7 @@ clean_files := $(wildcard *.thy *.patch *.env *.pp.het)
 	@echo "Checked: $<"	
 	@echo -----------------------------------------------
 
-%.env : %.het 
+%.env : %.dol 
 	@echo -----------------------------------------------
 	@echo "Check library: $<"	
 	hets -o env $< 
@@ -37,7 +37,7 @@ print:
 
 
 check: $(files)
-	$(MAKE) $(files:%.casl=%.env) $(files:%.het=%.env) 
+	$(MAKE) $(files:%.casl=%.env) $(files:%.dol=%.env) 
 
 
 clean: 
