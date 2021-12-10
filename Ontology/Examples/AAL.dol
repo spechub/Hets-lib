@@ -1,6 +1,6 @@
 library AAL
 
-logic OWL
+logic OWL serialization Manchester
 
 from Ontology/Examples/OpenAALOntology get <http://www.openaal.org/SAM/Ontology> |-> OpenAAL
 
@@ -27,7 +27,7 @@ spec OurAAL =
     . light_on <=> person_in_room /\ dark_outside
   }
   with PropToOWL %% non-default Propositional to OWL translation
-  then logic OWL : {
+  then logic OWL serialization Manchester : {
     %% Under the given translation, this means: The propositional variable person_in_room is true (for one arbitrary but fixed room, but propositional logic doesn't know different rooms!) iff the given OWL individual (not: "_some_ OWL individual", and not: "_all_ OWL individuals") is an instance of the class "Room that inverse is-in-room min 1 AssistedPerson".
     EquivalentClasses: person_in_room,
       Room that inverse is-in-room min 1 AssistedPerson
@@ -38,7 +38,7 @@ spec OurAAL =
   }
 
   %% a simplified remake of the well-known Pizza ontology (http://owl.cs.manchester.ac.uk/tutorials/protegeowltutorial/)
-  then logic OWL : {
+  then logic OWL serialization Manchester : {
     Individual: Tomato
     Individual: Mozzarella
       DifferentFrom: Tomato
@@ -100,7 +100,7 @@ spec ConcreteScenario =
   %% import the TBox from above
   OurAAL
   %% now we add our actual ABox
-  then logic OWL : {
+  then logic OWL serialization Manchester : {
     %% Talk about a concrete pizza.  This item doesn't actually exist in the ProductDB linked open dataset, but we pretend so.
     Individual: ProductWithEAN4001724819806
       Facts: hasTopping Tomato, hasTopping Mozzarella
