@@ -1,6 +1,6 @@
 library Ontology/Examples/Biblio
 
-logic OWL
+logic OWL serialization Manchester
 
 spec Biblio_OWL =
 
@@ -92,7 +92,7 @@ spec BiblioR =
 end
 
 view OWL2R : Biblio_OWL to
-     { BiblioR %% and { logic OWL {} } %% insert OWL's builtin stuff
+     { BiblioR %% and { logic OWL serialization Manchester {} } %% insert OWL's builtin stuff
       then %def
        preds
         researcher (p : Thing) <=> Researcher(p);
