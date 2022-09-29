@@ -1,63 +1,63 @@
 %{ library of basic neural-symbolic integration patterns
   References:
   M. van Bekkum, M. de Boer, F. van Harmelen, A. Meyer-Vitali, A. ten Teije, Modular design patterns for hybrid learning and reasoning systems, Appl. Intell. 51 (2021) 6528–6546.
-  Till Mossakowski, Modular design patterns for neural-symbolic integration: refinement and combination. 6th International Workshop on Neural-Symbolic Learning and Reasoning (NeSy), to appear.
+  Till Mossakowski, Modular design patterns for neural-symbolic integration: refinement and combination. 16th International Workshop on Neural-Symbolic Learning and Reasoning (NeSy).
 
 }%
 
-%prefix( ontohub: <https://ontohub.org/meta/> )%
+%prefix( : <https://ontohub.org/meta/> )%
 logic NeSyPatterns
 
 %% pattern 1a
-pattern Train_from_data = data ontohub:NeSyPatterns.omn
+pattern Train_from_data = data NeSyPatterns.omn
   Data -> Training -> Model;
 end
 
 %% pattern 1b
-pattern Train_from_symbol = data ontohub:NeSyPatterns.omn
+pattern Train_from_symbol = data NeSyPatterns.omn
   Symbol -> Training -> Model;
 end
 
 %% pattern 1c
-pattern Engineer_model = data ontohub:NeSyPatterns.omn
+pattern Engineer_model = data NeSyPatterns.omn
   Actor -> Engineering -> Model;
 end
 
 %% pattern 1d
-pattern Transform = data ontohub:NeSyPatterns.omn
+pattern Transform = data NeSyPatterns.omn
   Instance -> Transformation -> Data;
 end
 
 %% pattern 2a
-pattern Inference_from_data = data ontohub:NeSyPatterns.omn
-  Data -> d:Deduction -> Symbol;
-  Model -> d:Deduction;
+pattern Inference_from_data = data NeSyPatterns.omn
+  Data -> d : Deduction -> Symbol;
+  Model -> d : Deduction;
 end
 
 %% pattern 2b
-pattern Symbolic_inference = data ontohub:NeSyPatterns.omn
-  Symbol -> d:Deduction -> Symbol;
-  Semantic_Model -> d:Deduction;
+pattern Symbolic_inference = data NeSyPatterns.omn
+  Symbol -> d : Deduction -> Symbol;
+  Semantic_Model -> d : Deduction;
 end
 
 %% pattern 2c
-pattern Inference_of_model = data ontohub:NeSyPatterns.omn
-  Instance -> d:Deduction -> Model;
-  Model -> d:Deduction;
+pattern Inference_of_model = data NeSyPatterns.omn
+  Instance -> d : Deduction -> Model;
+  Model -> d : Deduction;
 end
 
 %% pattern 2d
 pattern Embedding =
-  data { ontohub:NeSyPatterns.omn
+  data { NeSyPatterns.omn
          then Prefix: : <http://www.ontohub.org/meta/>
 	      Class: Embedding SubClassOf: Transformation
        }  
-  Symbol -> e:Embedding -> Data;
-  Semantic_Model -> e:Embedding;
+  Symbol -> e : Embedding -> Data;
+  Semantic_Model -> e : Embedding;
 end
 
 %% pattern 3a
-pattern Model = data ontohub:NeSyPatterns.omn
+pattern Model = data NeSyPatterns.omn
   Model;
 end
 view v1 : Model to Train_from_data end
